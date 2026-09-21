@@ -1,0 +1,521 @@
+
+====================================================================================================
+reflection_step_phase_calculator.py  --  all numbers used in C_physics_derivations.md
+====================================================================================================
+numpy 2.4.6
+Conventions: exp(+i(k.r - wt)); |k| = 2pi/lambda [rad/A]; theta = GLANCING angle to the surface.
+Delta_phi = phi(upper terrace) - phi(lower terrace) = -(k_out-k_in).R .
+
+====================================================================================================
+1.  RELATIVISTIC ELECTRON WAVELENGTH  (DERIVED_HERE from lambda = hc/sqrt(T(T+2mc^2)))
+====================================================================================================
+Constants: h = 6.62607015e-34 J s (SI-2019 exact), c = 299792458 m/s (exact),
+           e = 1.602176634e-19 C (exact), m_e c^2 = 510998.95000 eV (CODATA 2018).
+           hc = 1.239841984332e-06 eV m  (derived from the three exact values)
+
+  E (keV)     lambda (A)   lambda (pm)   k=2pi/lam (rad/A)     gamma      beta
+    100.0     0.03701437      3.701437            169.7499  1.195695  0.548221
+    200.0     0.02507934      2.507934            250.5323  1.391390  0.695314
+    300.0     0.01968749      1.968749            319.1461  1.587085  0.776525
+
+Cross-check of the repository's own wavelength helpers at 200 keV:
+   this script                      : 0.02507934 A
+   si110_cleave_slab_generator.py   : 0.02507934 A  (rel. diff 2.23e-10)
+   step_height_reflection_formula.py: 0.02507934 A  (rel. diff 6.50e-09)
+   -> both repository helpers agree with the exact relativistic formula to <3e-7 relative;
+      the m0 = 9.10938356e-31 kg used in the pipeline is the pre-2019 CODATA value (harmless here).
+
+====================================================================================================
+2.  DIAMOND-CUBIC STRUCTURE FACTOR AND THE (nnn) / (n,-n,n) RODS
+====================================================================================================
+F_hkl/f from the explicit 8-atom basis vs the closed form 4*[same parity]*|1+i^(h+k+l)| :
+         hkl   |F|/f (8-atom sum)   |F|/f (closed form)   h+k+l   allowed?
+   (1, 1, 1)             5.656854              5.656854       3    ALLOWED
+   (2, 2, 2)             0.000000              0.000000       6  forbidden
+   (3, 3, 3)             5.656854              5.656854       9    ALLOWED
+   (4, 4, 4)             8.000000              8.000000      12    ALLOWED
+   (5, 5, 5)             5.656854              5.656854      15    ALLOWED
+   (6, 6, 6)             0.000000              0.000000      18  forbidden
+   (7, 7, 7)             5.656854              5.656854      21    ALLOWED
+   (8, 8, 8)             8.000000              8.000000      24    ALLOWED
+   (9, 9, 9)             5.656854              5.656854      27    ALLOWED
+(10, 10, 10)             0.000000              0.000000      30  forbidden
+(11, 11, 11)             5.656854              5.656854      33    ALLOWED
+(12, 12, 12)             8.000000              8.000000      36    ALLOWED
+  (1, -1, 1)             5.656854              5.656854       1    ALLOWED
+  (2, -2, 2)             0.000000              0.000000       2  forbidden
+  (4, -4, 4)             8.000000              8.000000       4    ALLOWED
+  (6, -6, 6)             0.000000              0.000000       6  forbidden
+  (8, -8, 8)             8.000000              8.000000       8    ALLOWED
+   (0, 0, 2)             0.000000              0.000000       2  forbidden
+   (0, 0, 4)             8.000000              8.000000       4    ALLOWED
+   (0, 0, 8)             8.000000              8.000000       8    ALLOWED
+  (0, 0, 12)             8.000000              8.000000      12    ALLOWED
+  (0, 0, 16)             8.000000              8.000000      16    ALLOWED
+  (2, -2, 0)             8.000000              8.000000       0    ALLOWED
+   (2, 2, 0)             8.000000              8.000000       4    ALLOWED
+
+   max |explicit sum - closed form| over the test set = 2.16e-14  -> selection rule confirmed numerically.
+   Rule: all-odd ALLOWED (|F|=4*sqrt(2)*f); all-even ALLOWED only if h+k+l = 4n (|F|=8f); otherwise F = 0.
+   => 222, 666, (10,10,10) and their (n,-n,n) partners are FORBIDDEN.
+
+====================================================================================================
+2b.  STEP VECTORS: IS THE UPPER TERRACE A RIGID TRANSLATE OF THE LOWER?
+====================================================================================================
+a(Si) = 5.4309 A   d_111 = a/sqrt(3) = 3.135532 A (bilayer repeat along <111>)
+   intra-bilayer gap  = d_111/4  = 0.7839 A;  inter-bilayer gap = 3 d_111/4 = 2.3516 A
+   (matches the 0.78 / 2.35 A gaps quoted in si110_cleave_slab_generator.py)
+
+Si(111)/(1,-1,1) single-BILAYER step, h = d_111:
+   R = (a/2)[1,0,1] = [2.71545 0.      2.71545]  with n = [1,1,1]/sqrt3
+      is an fcc lattice vector : True
+      R.n_hat = 3.135532 A   (= d_111? True)
+      in-plane part |R_par|   = 2.217156 A = a/sqrt(6) = 2.217156 A
+   R = (a/2)[1,0,1] = [2.71545 0.      2.71545]  with n = [1,-1,1]/sqrt3 (repo)
+      is an fcc lattice vector : True
+      R.n_hat = 3.135532 A   (= d_111? True)
+      in-plane part |R_par|   = 2.217156 A = a/sqrt(6) = 2.217156 A
+   -> the two terraces of a d_111 step ARE exact rigid translates; the phase factor is the ONLY difference (far from the step edge).
+
+Si(001) steps (n_hat = [0,0,1]):
+   R = (a/4)[0,0,1] single layer  -> fcc lattice vector? False   R.n = 1.357725 A
+   R = (a/2)[0,0,1]               -> fcc lattice vector? False   R.n = 2.715450 A
+   R = (a/2)[1,0,1] double layer  -> fcc lattice vector? True   R.n = 2.715450 A
+   Any fcc lattice vector has R.z_hat = (a/2)*integer, so h = a/4 is
+   UNREACHABLE by a pure translation.  Brute-force search over the 90 deg
+   rotations about [001] and translations on an a/8 grid, for operations
+   S(r) = R r + t with t.z_hat = a/4 that map the 8-atom basis onto itself:
+      S = Rz(+90) + t = a*[0.25 0.25 0.25]   -> maps diamond onto itself
+      S = Rz(+90) + t = a*[0.75 0.75 0.25]   -> maps diamond onto itself
+      S = Rz(-90) + t = a*[0.25 0.25 0.25]   -> maps diamond onto itself
+      S = Rz(-90) + t = a*[0.75 0.75 0.25]   -> maps diamond onto itself
+      (4 such operations found; these are the diamond 4_1 screws.)
+   Consequence (report 2.3):
+    * KINEMATICALLY the specular amplitude obeys Vt'(q) = exp(-i q.t) Vt(R^T q),
+      and R^T q = q for q || n_hat, so the a/4 step gives EXACTLY exp(-i q h).
+    * DYNAMICALLY the two terraces are 90 deg-rotated crystals, so terrace B at
+      azimuth phi behaves like terrace A at azimuth phi-90 deg: the reflection
+      coefficients (moduli AND dynamical phases) differ.  Only the a/2 double
+      step, a PURE translation, is exact to all orders.
+
+====================================================================================================
+3.  REFRACTION BY THE MEAN INNER POTENTIAL  (V0 = 12.0 V, ASSUMPTION)
+====================================================================================================
+  E (keV)     E_eff (V)     V0/E_eff    dK (rad/A)  theta_c (mrad)   k_int/k - 1  V0/T (nonrel)
+    100.0       91815.8 1.306965e-04      1.940625         11.4325     6.535e-05   1.200000e-04
+    200.0      171869.1 6.982057e-05      2.093416          8.3560     3.491e-05   6.000000e-05
+    300.0      244511.1 4.907753e-05      2.235789          7.0056     2.454e-05   4.000000e-05
+
+   E_eff = T(T+2mc^2)/(2T + eV0 + 2mc^2)  (DERIVED_HERE, exact).
+   The relativistic E_eff is ~14% BELOW T at 200 keV, so the non-relativistic V0/T
+   underestimates the refraction by ~16% in sin^2(theta).
+   sin^2(theta_int) = sin^2(theta_ext) + V0/E_eff holds exactly for the NORMAL
+   wavevector components: (k_int sin th_int)^2 = (k sin th_ext)^2 + k^2 V0/E_eff.
+   Writing it as sin^2 th_int = sin^2 th_ext + V0/E_eff additionally assumes k_int ~ k,
+   an error of only 3.49e-05 in amplitude at 200 keV (negligible) -- see report 3.3.
+
+====================================================================================================
+4.  Si(111) SPECULAR ROD (n,-n,n) == (nnn):  REFRACTION-SHIFTED ANGLES AND STEP PHASES
+====================================================================================================
+h1 = d_111 = 3.1355 A (single bilayer);  h2 = 2 d_111 = 6.2711 A (double bilayer)
+V0 = 12.0 V (ASSUMPTION).  'B_vac' = vacuum Bragg angle (what the repository uses).
+'th_int' = internal glancing angle at the Bragg condition; 'th_ext' = the angle you must actually set.
+frac = (|Delta_phi| mod 2pi).  wrap = Delta_phi wrapped into (-pi,pi] (signed, exp(+ik.r)).
+
+--- E = 100 keV  (lambda = 0.037014 A, theta_c = 11.433 mrad) ---
+     (nnn)        F?  d_nnn(A)    B_vac   th_int   th_ext     rho  h_2pi(A) |   |dphi|1     /2pi    frac1  f1/2pi    wrap1 |    frac2  f2/2pi    wrap2
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ (1, 1, 1)   ALLOWED    3.1355    5.902    5.902       --      --        -- | INACCESSIBLE: internal Bragg angle is below the critical angle (total external reflection)
+ (2, 2, 2) FORBIDDEN    1.5678   11.805   11.804    2.942  0.2492    6.2900 |    3.1321   0.4985   3.1321  0.4985  -3.1321 |   6.2642  0.9970   0.0190
+ (3, 3, 3)   ALLOWED    1.0452   17.708   17.707   13.523  0.7637    1.3687 |   14.3945   2.2910   1.8282  0.2910  -1.8282 |   3.6563  0.5819   2.6269
+ (4, 4, 4)   ALLOWED    0.7839   23.612   23.610   20.659  0.8749    0.8959 |   21.9898   3.4998   3.1402  0.4998  -3.1402 |   6.2805  0.9996   0.0027
+ (5, 5, 5)   ALLOWED    0.6271   29.516   29.514   27.211  0.9219    0.6802 |   28.9630   4.6096   3.8303  0.6096   2.4529 |   1.3774  0.2192  -1.3774
+ (6, 6, 6) FORBIDDEN    0.5226   35.422   35.420   33.525  0.9465    0.5521 |   35.6808   5.6788   4.2649  0.6788   2.0183 |   2.2466  0.3576  -2.2466
+ (7, 7, 7)   ALLOWED    0.4479   41.329   41.326   39.714  0.9610    0.4661 |   42.2651   6.7267   4.5660  0.7267   1.7172 |   2.8488  0.4534  -2.8488
+ (8, 8, 8)   ALLOWED    0.3919   47.237   47.234   45.830  0.9702    0.4040 |   48.7700   7.7620   4.7877  0.7620   1.4955 |   3.2923  0.5240   2.9909
+ (9, 9, 9)   ALLOWED    0.3484   53.147   53.143   51.900  0.9766    0.3568 |   55.2236   8.7891   4.9581  0.7891   1.3250 |   3.6331  0.5782   2.6501
+(10, 10, 10) FORBIDDEN    0.3136   59.058   59.055   57.939  0.9811    0.3196 |   61.6420   9.8106   5.0933  0.8106   1.1898 |   3.9035  0.6213   2.3797
+(11, 11, 11)   ALLOWED    0.2850   64.972   64.968   63.956  0.9844    0.2896 |   68.0352  10.8281   5.2033  0.8281   1.0799 |   4.1235  0.6563   2.1597
+(12, 12, 12)   ALLOWED    0.2613   70.888   70.884   69.957  0.9869    0.2648 |   74.4096  11.8427   5.2946  0.8427   0.9886 |   4.3059  0.6853   1.9772
+
+--- E = 200 keV  (lambda = 0.025079 A, theta_c = 8.356 mrad) ---
+     (nnn)        F?  d_nnn(A)    B_vac   th_int   th_ext     rho  h_2pi(A) |   |dphi|1     /2pi    frac1  f1/2pi    wrap1 |    frac2  f2/2pi    wrap2
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ (1, 1, 1)   ALLOWED    3.1355    3.999    3.999       --      --        -- | INACCESSIBLE: internal Bragg angle is below the critical angle (total external reflection)
+ (2, 2, 2) FORBIDDEN    1.5678    7.999    7.998       --      --        -- | INACCESSIBLE: internal Bragg angle is below the critical angle (total external reflection)
+ (3, 3, 3)   ALLOWED    1.0452   11.998   11.998    8.610  0.7176    1.4565 |   13.5264   2.1528   0.9600  0.1528  -0.9600 |   1.9200  0.3056  -1.9200
+ (4, 4, 4)   ALLOWED    0.7839   15.998   15.997   13.642  0.8527    0.9193 |   21.4316   3.4109   2.5820  0.4109  -2.5820 |   5.1640  0.8219   1.1192
+ (5, 5, 5)   ALLOWED    0.6271   19.997   19.997   18.168  0.9085    0.6903 |   28.5415   4.5425   3.4088  0.5425   2.8744 |   0.5343  0.0850  -0.5343
+ (6, 6, 6) FORBIDDEN    0.5226   23.998   23.997   22.495  0.9374    0.5575 |   35.3395   5.6245   3.9236  0.6245   2.3596 |   1.5640  0.2489  -1.5640
+ (7, 7, 7)   ALLOWED    0.4479   27.998   27.997   26.722  0.9544    0.4693 |   41.9774   6.6809   4.2783  0.6809   2.0049 |   2.2733  0.3618  -2.2733
+ (8, 8, 8)   ALLOWED    0.3919   31.999   31.998   30.888  0.9653    0.4060 |   48.5209   7.7223   4.5386  0.7223   1.7446 |   2.7940  0.4447  -2.7940
+ (9, 9, 9)   ALLOWED    0.3484   36.001   35.999   35.017  0.9727    0.3582 |   55.0037   8.7541   4.7382  0.7541   1.5449 |   3.1933  0.5082   3.0899
+(10, 10, 10) FORBIDDEN    0.3136   40.003   40.001   39.119  0.9779    0.3206 |   61.4451   9.7793   4.8964  0.7793   1.3868 |   3.5097  0.5586   2.7735
+(11, 11, 11)   ALLOWED    0.2850   44.006   44.004   43.204  0.9818    0.2903 |   67.8568  10.7997   5.0249  0.7997   1.2582 |   3.7667  0.5995   2.5165
+(12, 12, 12)   ALLOWED    0.2613   48.009   48.007   47.275  0.9847    0.2653 |   74.2465  11.8167   5.1315  0.8167   1.1517 |   3.9798  0.6334   2.3034
+
+--- E = 300 keV  (lambda = 0.019687 A, theta_c = 7.006 mrad) ---
+     (nnn)        F?  d_nnn(A)    B_vac   th_int   th_ext     rho  h_2pi(A) |   |dphi|1     /2pi    frac1  f1/2pi    wrap1 |    frac2  f2/2pi    wrap2
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ (1, 1, 1)   ALLOWED    3.1355    3.139    3.139       --      --        -- | INACCESSIBLE: internal Bragg angle is below the critical angle (total external reflection)
+ (2, 2, 2) FORBIDDEN    1.5678    6.279    6.279       --      --        -- | INACCESSIBLE: internal Bragg angle is below the critical angle (total external reflection)
+ (3, 3, 3)   ALLOWED    1.0452    9.418    9.418    6.295  0.6684    1.5638 |   12.5986   2.0051   0.0322  0.0051  -0.0322 |   0.0644  0.0102  -0.0644
+ (4, 4, 4)   ALLOWED    0.7839   12.558   12.558   10.422  0.8299    0.9445 |   20.8584   3.3197   2.0088  0.3197  -2.0088 |   4.0177  0.6394   2.2655
+ (5, 5, 5)   ALLOWED    0.6271   15.698   15.697   14.048  0.8949    0.7008 |   28.1137   4.4744   2.9809  0.4744  -2.9809 |   5.9619  0.9489   0.3213
+ (6, 6, 6) FORBIDDEN    0.5226   18.838   18.837   17.486  0.9283    0.5630 |   34.9949   5.5696   3.5789  0.5696   2.7042 |   0.8747  0.1392  -0.8747
+ (7, 7, 7)   ALLOWED    0.4479   21.978   21.977   20.831  0.9478    0.4726 |   41.6877   6.6348   3.9885  0.6348   2.2946 |   1.6939  0.2696  -1.6939
+ (8, 8, 8)   ALLOWED    0.3919   25.118   25.117   24.121  0.9603    0.4081 |   48.2705   7.6825   4.2882  0.6825   1.9950 |   2.2931  0.3650  -2.2931
+ (9, 9, 9)   ALLOWED    0.3484   28.259   28.258   27.376  0.9688    0.3596 |   54.7829   8.7190   4.5174  0.7190   1.7657 |   2.7517  0.4379  -2.7517
+(10, 10, 10) FORBIDDEN    0.3136   31.399   31.399   30.607  0.9748    0.3217 |   61.2475   9.7478   4.6989  0.7478   1.5843 |   3.1145  0.4957  -3.1145
+(11, 11, 11)   ALLOWED    0.2850   34.540   34.540   33.822  0.9792    0.2911 |   67.6780  10.7713   4.8461  0.7713   1.4371 |   3.4090  0.5426   2.8742
+(12, 12, 12)   ALLOWED    0.2613   37.682   37.681   37.024  0.9826    0.2659 |   74.0831  11.7907   4.9681  0.7907   1.3151 |   3.6530  0.5814   2.6302
+
+   Accessibility rule (DERIVED_HERE): a reflection can be excited in TRUE reflection
+   (Bragg-case) geometry only if  G.n_hat > 2 dK,  i.e. |G| cos(angle(G,n)) > 2 k sqrt(V0/E_eff).
+   For the (nnn) rod this means n >= 3 at 100-300 keV with V0 = 12 V.
+
+====================================================================================================
+4b.  Si(001) SPECULAR ROD (0,0,L):  a/4 AND a/2 STEPS
+====================================================================================================
+single-layer step a/4 = 1.3577 A;  double-layer step a/2 = 2.7155 A
+The (0,0,L) rod has K_int = pi L / a at the Bragg condition; equivalently order n = L/4 of d = a/4.
+
+--- E = 100 keV (theta_c = 11.433 mrad) ---
+     (00L)        F?  d_00L(A)    B_vac   th_int   th_ext     rho  h_2pi(A) |  frac(a/4)    /2pi     wrap |  frac(a/2)    /2pi     wrap
+---------------------------------------------------------------------------------------------------------------------------------------
+ (0, 0, 4)   ALLOWED    1.3577   13.631   13.631    7.424  0.5446    2.4931 |     3.4218  0.5446   2.8613 |     0.5605  0.0892  -0.5605
+ (0, 0, 8)   ALLOWED    0.6789   27.265   27.264   24.752  0.9078    0.7478 |     5.1249  0.8157   1.1583 |     3.9666  0.6313   2.3166
+(0, 0, 12)   ALLOWED    0.4526   40.904   40.902   39.273  0.9601    0.4714 |     5.5316  0.8804   0.7516 |     4.7800  0.7608   1.5032
+(0, 0, 16)   ALLOWED    0.3394   54.551   54.548   53.337  0.9778    0.3471 |     5.7245  0.9111   0.5587 |     5.1659  0.8222   1.1173
+
+--- E = 200 keV (theta_c = 8.356 mrad) ---
+     (00L)        F?  d_00L(A)    B_vac   th_int   th_ext     rho  h_2pi(A) |  frac(a/4)    /2pi     wrap |  frac(a/2)    /2pi     wrap
+---------------------------------------------------------------------------------------------------------------------------------------
+ (0, 0, 4)   ALLOWED    1.3577    9.236    9.236    3.934  0.4260    3.1872 |     2.6766  0.4260  -2.6766 |     5.3532  0.8520   0.9300
+ (0, 0, 8)   ALLOWED    0.6789   18.473   18.472   16.474  0.8918    0.7612 |     4.9239  0.7837   1.3593 |     3.5647  0.5673   2.7185
+(0, 0, 12)   ALLOWED    0.4526   27.711   27.710   26.420  0.9534    0.4747 |     5.4056  0.8603   0.8776 |     4.5280  0.7207   1.7552
+(0, 0, 16)   ALLOWED    0.3394   36.952   36.950   35.994  0.9741    0.3485 |     5.6319  0.8963   0.6513 |     4.9806  0.7927   1.3026
+
+--- E = 300 keV (theta_c = 7.006 mrad) ---
+     (00L)        F?  d_00L(A)    B_vac   th_int   th_ext     rho  h_2pi(A) |  frac(a/4)    /2pi     wrap |  frac(a/2)    /2pi     wrap
+---------------------------------------------------------------------------------------------------------------------------------------
+ (0, 0, 4)   ALLOWED    1.3577    7.250    7.250    1.867  0.2576    5.2711 |     1.6184  0.2576  -1.6184 |     3.2368  0.5152   3.0464
+ (0, 0, 8)   ALLOWED    0.6789   14.501   14.501   12.696  0.8755    0.7754 |     4.7193  0.7511   1.5639 |     3.1554  0.5022   3.1278
+(0, 0, 12)   ALLOWED    0.4526   21.752   21.752   20.593  0.9467    0.4781 |     5.2787  0.8401   1.0045 |     4.2742  0.6803   2.0090
+(0, 0, 16)   ALLOWED    0.3394   29.005   29.004   28.146  0.9704    0.3498 |     5.5389  0.8815   0.7443 |     4.7946  0.7631   1.4886
+
+====================================================================================================
+5.  SENSITIVITY OF THE (nnn) RESULTS TO V0  (+/- 1 V, 200 keV)
+====================================================================================================
+     (nnn) |                 th_ext(mrad) |              frac(d_111) [rad] |   dth/dV0  dfrac/dV0
+           |      11 V      12 V      13 V |      11 V      12 V      13 V    |    mrad/V      rad/V
+-------------------------------------------------------------------------------------------------
+ (3, 3, 3) |    8.9411    8.6096    8.2648 |    1.4809    0.9600    0.4183    |   -0.3382    -0.5313
+ (4, 4, 4) |   13.8532   13.6415   13.4265 |    2.9145    2.5820    2.2443    |   -0.2133    -0.3351
+ (5, 5, 5) |   18.3270   18.1675   18.0066 |    3.6593    3.4088    3.1560    |   -0.1602    -0.2516
+ (6, 6, 6) |   22.6243   22.4953   22.3656 |    4.1262    3.9236    3.7198    |   -0.1294    -0.2032
+ (7, 7, 7) |   26.8303   26.7216   26.6124 |    4.4490    4.2783    4.1068    |   -0.1089    -0.1711
+ (8, 8, 8) |   30.9823   30.8882   30.7938 |    4.6864    4.5386    4.3904    |   -0.0942    -0.1480
+
+   (dfrac/dV0 is a central difference of the fractional phase; where the
+    phase wraps between 11 and 13 V the difference is meaningless and the
+    unwrapped derivative d|dphi|/dV0 = 2 h dK_ext/dV0 should be used:)
+      (nnn) = (444): d|Delta_phi|/dV0 = -0.3351 rad/V
+      (nnn) = (555): d|Delta_phi|/dV0 = -0.2516 rad/V
+      (nnn) = (666): d|Delta_phi|/dV0 = -0.2032 rad/V
+      (nnn) = (888): d|Delta_phi|/dV0 = -0.1480 rad/V
+
+====================================================================================================
+6.  THE REPOSITORY (666) CHOICE, AND THE REPOSITORY FORMULA h = dphi*lam/(4 pi sin(th_B) (g.n))
+====================================================================================================
+Repository meta (pipeline/meta_tilt_examples.json): alpha_deg = 1.375 -> 23.9983 mrad
+   vacuum Bragg angle of (666) with a = 5.4309 A (generator default)  : 23.9976 mrad = 1.37496 deg   (d_666 = 0.522589 A)
+   vacuum Bragg angle of (666) with a = 5.431  A (meta_tilt_examples) : 23.9972 mrad = 1.37494 deg   (d_666 = 0.522598 A)
+   -> 1.375 deg = 23.997 mrad IS the VACUUM (666) Bragg angle. It ignores refraction.
+
+With refraction (V0 = 12.0 V):
+   internal Bragg glancing angle       = 23.9968 mrad
+   REQUIRED EXTERNAL glancing angle    = 22.4953 mrad
+   offset from the repository setting  = -1.5030 mrad (-6.26 %)
+   |Delta_phi| for h = d_111           = 35.3395 rad = 5.6245 x 2pi
+   fractional (mod 2pi)                = 3.9236 rad = 0.6245 x 2pi   (signed, wrapped: +2.3596 rad)
+   height per 2pi  h_2pi               = 0.5575 A
+   WITHOUT refraction the vacuum momentum transfer would equal G_666 exactly and
+   Delta_phi = -G.R = -2pi*integer == 0 : a d_111 step would be INVISIBLE.  The whole
+   measurable signal at a specular Bragg condition is a refraction effect.
+
+*** What the repository actually simulates: the beam is set to the EXTERNAL angle 1.375 deg. ***
+   theta_ext = 1.375 deg (meta alpha_deg)                
+      K_ext = 6.011767 rad/A,  K_int = 6.365825 rad/A  -> effective rod order n_eff = K_int d_111/pi = 6.3535
+      |Delta_phi| for h = d_111 = 37.700170 rad = 6.000168 x 2pi  ->  mod 2pi = 0.001058 rad
+   theta_ext = 23.9976 mrad (exact vacuum Bragg of 666)  
+      K_ext = 6.011598 rad/A,  K_int = 6.365666 rad/A  -> effective rod order n_eff = K_int d_111/pi = 6.3534
+      |Delta_phi| for h = d_111 = 37.699112 rad = 6.000000 x 2pi  ->  mod 2pi = 0.000000 rad
+   theta_ext = 22.4953 mrad (refraction-corrected)       
+      K_ext = 5.635328 rad/A,  K_int = 6.011598 rad/A  -> effective rod order n_eff = K_int d_111/pi = 6.0000
+      |Delta_phi| for h = d_111 = 35.339499 rad = 5.624456 x 2pi  ->  mod 2pi = 3.923572 rad
+   => AT THE REPOSITORY'S OWN SETTING A SINGLE-BILAYER STEP IS PHASE-INVISIBLE to ~3e-3 rad.
+   The setting is 0.35 rod orders away from the true (666) condition, and it is exactly
+   the angle at which q_vacuum = G_666 and the geometric phase is a multiple of 2pi.
+
+Rocking curve of the d_111 step phase (h = d_111) vs EXTERNAL angle, 200 keV:
+ th_ext(mrad)  th_int(mrad)    n_eff  |dphi| (rad)      /2pi  mod 2pi (rad)  wrapped (rad)
+      18.0000       19.8446   4.9620       28.2783    4.5006         3.1456         3.1376
+      20.0000       21.6751   5.4196       31.4200    5.0006         0.0041        -0.0041
+      21.0000       22.6010   5.6511       32.9908    5.2506         1.5748        -1.5748
+      22.0000       23.5331   5.8841       34.5615    5.5006         3.1456         3.1376
+      22.4953       23.9968   6.0000       35.3395    5.6245         3.9235         2.3596
+      23.0000       24.4705   6.1184       36.1322    5.7506         4.7163         1.5669
+      23.9976       25.4104   6.3534       37.6991    6.0000         6.2832         0.0000
+      25.0000       26.3591   6.5905       39.2735    6.2506         1.5744        -1.5744
+      26.0000       27.3094   6.8281       40.8441    6.5005         3.1450         3.1382
+      26.7216       27.9972   7.0000       41.9774    6.6809         4.2783         2.0049
+
+Sweep over the ASSUMED mean inner potential (200 keV, h = d_111):
+  V0 (V)  th_c(mrad) |      (444) th_ext / frac |      (555) th_ext / frac |      (666) th_ext / frac |      (888) th_ext / frac
+     9.0      7.2365 |    14.2670 /     3.5647 |    18.6418 /     4.1538 |    22.8801 /     4.5280 |    31.1697 /     4.9806
+    10.0      7.6279 |    14.0616 /     3.2420 |    18.4851 /     3.9076 |    22.7526 /     4.3277 |    31.0761 /     4.8337
+    11.0      8.0002 |    13.8532 /     2.9145 |    18.3270 /     3.6593 |    22.6243 /     4.1262 |    30.9823 /     4.6864
+    12.0      8.3560 |    13.6415 /     2.5820 |    18.1675 /     3.4088 |    22.4953 /     3.9236 |    30.8882 /     4.5386
+    13.0      8.6972 |    13.4265 /     2.2443 |    18.0066 /     3.1560 |    22.3656 /     3.7198 |    30.7938 /     4.3904
+    14.0      9.0255 |    13.2080 /     1.9011 |    17.8443 /     2.9011 |    22.2351 /     3.5148 |    30.6991 /     4.2417
+
+Error of the repository read-out h = Delta_phi*lambda/(4 pi sin(th_B)(g.n)):
+   (i)  wrong angle only (using th_B = 23.997 mrad instead of th_ext = 22.495 mrad):
+        h_reported / h_true = sin(th_ext)/sin(th_B) = 0.93738  -> -6.26 %
+        for a true h = d_111 = 3.1355 A this is an error of -0.1963 A
+   (ii) with the WRAPPED phase actually measured (3.9236 rad) fed into the formula:
+        with th_B  = 23.997 mrad -> h = 0.3263 A (true 3.1355 A, factor 9.61 low)
+        with th_ext= 22.495 mrad -> h = 0.3481 A  (= h_2pi * frac = 0.3481 A)
+        -> the 2pi ambiguity, NOT the angle error, dominates.
+
+Repository DEFAULT target reflection (2,-2,0) off the (1,-1,1) facet:
+   d_220 = 1.920113 A, |G| = 3.272300 rad/A, g_hat.n_hat = 0.816497 (repo prints 0.8165)
+   vacuum Bragg angle = 6.5307 mrad (repo meta target_theta_B_mrad)
+   G.n_hat = 2.671821 rad/A     2*dK = 4.186831 rad/A
+   ACCESSIBLE IN REFLECTION GEOMETRY?  G.n > 2 dK  ->  False
+   sin(th_in)+sin(th_out) available in vacuum = 1.066458e-02  -> th_in+th_out = 10.665 mrad,
+   but BOTH beams need > theta_c = 8.356 mrad, i.e. a sum > 16.712 mrad.
+   -> (2,-2,0) CANNOT be excited in Bragg (reflection) geometry from this surface at 200 keV.
+
+   Vacuum-Bragg phase of a d_111 step for a NON-specular g (the repository formula vs the exact answer):
+      repository:   (4 pi/lam) h sin(th_B) (g.n) = 8.377580 rad = 1.333333 x 2pi
+      exact:        G.R with R = (a/2)[1,0,1] = 6.283185 rad = 1.000000 x 2pi
+      The repository formula keeps only the NORMAL component of R (h n_hat) and drops
+      G_par . R_par, which for (2,-2,0) contributes -2.094395 rad = 2pi/3.
+      Exact answer on the vacuum Bragg condition: G.R = 2pi x integer -> the step is INVISIBLE.
+      The repository's predicted 2pi/3-per-bilayer staircase is an artefact of dropping R_par.
+
+====================================================================================================
+7.  2*pi AMBIGUITY AND THE ROCKING-SERIES REQUIREMENT
+====================================================================================================
+h_2pi = lambda / (2 sin theta_ext).  At 200 keV, (666) condition, h_2pi = 0.5575 A
+         h     h (A)  |dphi| (rad)  /2pi wraps  dphi/dtheta (rad/mrad)  max dtheta for <pi (mrad)
+       3 A    3.0000       33.8120      5.3813                  1.5028                     2.0905
+     d_111    3.1355       35.3395      5.6245                  1.5707                     2.0001
+      1 nm   10.0000      112.7066     17.9378                  5.0094                     0.6271
+     10 nm  100.0000     1127.0656    179.3781                 50.0938                     0.0627
+
+   Rule of thumb (DERIVED_HERE): d(|dphi|)/d(theta) = (4 pi h/lambda) cos(theta)
+   => the tilt step must satisfy  dtheta < lambda / (4 h cos theta).
+   The repository's default tilt step (0.15 mrad, si110_cleave_slab_generator.py) is
+   adequate only for h < lambda/(4*0.15e-3) = 41.8 A = 4.18 nm.
+
+====================================================================================================
+8.  MULTISLICE GEOMETRY WITH THE REPOSITORY DEFAULT SLAB
+====================================================================================================
+Defaults read from sample_generators/si110_cleave_slab_generator.py:
+   periods: x 9.4066 A (a sqrt3), y 6.6515 A (a sqrt1.5), z 3.8402 A (a/sqrt2)
+   n_x_si=9, n_y=12, n_z_si=36, x_vac=10 A/side, z_vac=30 A/side
+   Si plate : t_x = Lx_si = 84.659 A, Ly = 79.818 A, Lz_si = 138.248 A
+   supercell: Lx = 104.659 A, Ly = 79.818 A, Lz = 198.248 A
+   4 terraces of Ly/4 = 19.954 A across y (step edges || beam)
+
+-- at theta = repository 23.997 mrad (tan = 0.024003) --
+   rise of the reflected beam over the full cell   : 4.7585 A   (x_vac = 10 A -> no re-entry: True)
+   rise over the Si length only                    : 3.3184 A
+   z needed for a ray to fall the whole 10 A gap   : 416.6 A   (Si is only 138.2 A long)
+   fraction of the NOMINAL 10 A top gap that reaches the surface within the slab : 33.18 %
+   fraction of the TRUE 20 A inter-plate vacuum channel (PBC in x)                 : 16.59 %
+   entrance-plane heights above the surface that land on the crystal: 0.720 .. 4.038 A
+   fraction of the incident plane wave entering through the FRONT END FACE     : 80.89 % (81.58 % counting the rays that descend into it)
+   ratio (end-face transmission)/(useful surface reflection) = 25.5 : 1
+   useful surface-reflection fraction of the whole incident wave = 3.17 %
+
+-- at theta = refraction-corrected 22.495 mrad (tan = 0.022499) --
+   rise of the reflected beam over the full cell   : 4.4604 A   (x_vac = 10 A -> no re-entry: True)
+   rise over the Si length only                    : 3.1105 A
+   z needed for a ray to fall the whole 10 A gap   : 444.5 A   (Si is only 138.2 A long)
+   fraction of the NOMINAL 10 A top gap that reaches the surface within the slab : 31.10 %
+   fraction of the TRUE 20 A inter-plate vacuum channel (PBC in x)                 : 15.55 %
+   entrance-plane heights above the surface that land on the crystal: 0.675 .. 3.785 A
+   fraction of the incident plane wave entering through the FRONT END FACE     : 80.89 % (81.54 % counting the rays that descend into it)
+   ratio (end-face transmission)/(useful surface reflection) = 27.2 : 1
+   useful surface-reflection fraction of the whole incident wave = 2.97 %
+
+Interaction length available to the surface reflection (DERIVED_HERE, geometric):
+   internal glancing angle at the (666) condition: 23.9968 mrad
+   a refracted ray entering at the top surface descends only Lz_si*tan(th_int) = 3.318 A
+   over the whole 138.2 A of crystal, i.e. it crosses 1.058 (1,-1,1) bilayers.
+   -> the beam barely enters the crystal: no Bragg-case dynamical reflection can build up.
+   Lz_si required for a normal penetration depth delta_x (= delta_x / tan(th_int)):
+      delta_x =   0.5 nm -> Lz_si >=      20.8 nm (      208 A)
+      delta_x =   1.0 nm -> Lz_si >=      41.7 nm (      417 A)
+      delta_x =   2.0 nm -> Lz_si >=      83.3 nm (      833 A)
+      delta_x =   5.0 nm -> Lz_si >=     208.3 nm (     2083 A)
+      delta_x =  10.0 nm -> Lz_si >=     416.6 nm (     4166 A)
+   Also needed just to use the vacuum illumination: Lz_si >= x_vac/tan(th_ext) = 444 A. The default is 138 A.
+   Plate thickness t_x = Lx_si = 84.7 A = 27.0 bilayers = 8.47 nm.
+
+Foreshortening / image sampling:
+   theta = 23.997 mrad   : sin(theta) = 0.023996  -> foreshortening 1/sin =   41.67 x ;  surface length per 0.13 A exit-plane pixel =    5.416 A
+   theta = 22.495 mrad   : sin(theta) = 0.022493  -> foreshortening 1/sin =   44.46 x ;  surface length per 0.13 A exit-plane pixel =    5.778 A
+   theta = 50 mrad       : sin(theta) = 0.049979  -> foreshortening 1/sin =   20.01 x ;  surface length per 0.13 A exit-plane pixel =    2.598 A
+   the whole 138.2 A Si surface maps onto 3.110 A of exit-plane height = 23.9 pixels at 0.13 A.
+
+====================================================================================================
+9.  SAMPLING / BANDWIDTH / SLICE THICKNESS
+====================================================================================================
+   px = 0.13 A, E = 100.0 keV: q_Nyq = 3.8462 1/A ( 142.36 mrad), q_max(2/3) = 2.5641 1/A (  94.91 mrad)
+   px = 0.13 A, E = 200.0 keV: q_Nyq = 3.8462 1/A (  96.46 mrad), q_max(2/3) = 2.5641 1/A (  64.31 mrad)
+   px = 0.13 A, E = 300.0 keV: q_Nyq = 3.8462 1/A (  75.72 mrad), q_max(2/3) = 2.5641 1/A (  50.48 mrad)
+   px = 0.50 A, E = 100.0 keV: q_Nyq = 1.0000 1/A (  37.01 mrad), q_max(2/3) = 0.6667 1/A (  24.68 mrad)
+   px = 0.50 A, E = 200.0 keV: q_Nyq = 1.0000 1/A (  25.08 mrad), q_max(2/3) = 0.6667 1/A (  16.72 mrad)
+   px = 0.50 A, E = 300.0 keV: q_Nyq = 1.0000 1/A (  19.69 mrad), q_max(2/3) = 0.6667 1/A (  13.12 mrad)
+
+   The reflected beam sits at +theta and the incident at -theta, so the grid must
+   carry at least |k_x| = k sin(theta): 2*theta = 44.99 mrad of angular span (specular) plus the crystal's own beams.
+   px = 0.50 A (generator default advisory_pixel_size_A) gives q_max = 0.6667 1/A = 16.72 mrad at 200 keV
+   -> CANNOT represent a 24 mrad tilt at all.  px = 0.13 A (meta_tilt_examples.json) gives
+      64.31 mrad, which is adequate.
+
+   |g_666| = 1.91355 1/A must be inside q_max: 0.13 A -> True, 0.50 A -> False
+
+   Paraxial (Fresnel) propagator error over the cell, |phase_exact - phase_paraxial|:
+      alpha =  24.0 mrad over Lz = 198.2 A: |Dphi| = 0.00069 rad  (~k L alpha^4/8 = 0.00206 rad)
+      alpha =  45.0 mrad over Lz = 198.2 A: |Dphi| = 0.00849 rad  (~k L alpha^4/8 = 0.02546 rad)
+      alpha =  48.0 mrad over Lz = 198.2 A: |Dphi| = 0.01098 rad  (~k L alpha^4/8 = 0.03296 rad)
+      alpha =  64.3 mrad over Lz = 198.2 A: |Dphi| = 0.03537 rad  (~k L alpha^4/8 = 0.10613 rad)
+   -> the paraxial propagator is NOT the limiting approximation here.
+
+   Slice thickness: default dz = 1.00 A; crystal z-period a/sqrt2 = 3.8402 A
+      slices per z-period = 3.8402 (NOT an integer -> incommensurate slicing)
+      commensurate alternative: 2 slices/period -> dz = 1.92011 A
+      commensurate alternative: 4 slices/period -> dz = 0.96006 A
+      commensurate alternative: 8 slices/period -> dz = 0.48003 A
+      num_slices = ceil(Lz/dz) = 199 -> actual dz = 0.99622 A
+      transverse walk of the beam per slice = dz*tan(theta) = 0.02250 A (0.1731 px) -> sub-pixel, not a limitation
+
+====================================================================================================
+10.  OFF-AXIS HOLOGRAPHY: CARRIER, RESOLUTION, NOISE
+====================================================================================================
+I = |u_o + u_r|^2 = |u_o|^2 + |u_r|^2 + 2|u_o||u_r| cos(2 pi q_c.r + phi_o - phi_r)
+Sideband isolation returns arg(u_o u_r*) = phi_o - phi_r.
+
+Carrier requirement (DERIVED_HERE): if the object phase/amplitude is band-limited to |q| < B,
+the autocorrelation centre band occupies |q| < 2B and the sidebands sit at +/- q_c with
+radius B, so clean separation needs q_c > 3B, i.e. fringe spacing s = 1/q_c < 1/(3B).
+Equivalently: reconstructed resolution ~ 1/B = 3 s  -> '3 fringes per resolved feature'.
+
+ fringe s (A)   q_c (1/A)  B_max=q_c/3  resolution 1/B (A)  px for 4/fringe (A)
+        0.500      2.0000       0.6667               1.500               0.1250
+        1.000      1.0000       0.3333               3.000               0.2500
+        2.000      0.5000       0.1667               6.000               0.5000
+        5.000      0.2000       0.0667              15.000               1.2500
+
+Phase noise (DERIVED_HERE, see report 7.4): for a reconstruction aperture collecting
+N detected electrons with fringe contrast mu, sigma_phi = sqrt(2)/(mu sqrt(N)).
+    mu     N=1e2     N=1e3     N=1e4     N=1e6   [rad]
+  1.00    0.1414    0.0447    0.0141    0.0014
+  0.50    0.2828    0.0894    0.0283    0.0028
+  0.20    0.7071    0.2236    0.0707    0.0071
+  0.10    1.4142    0.4472    0.1414    0.0141
+
+Height precision implied by the phase precision at the (666) condition (200 keV):
+   sigma_phi = 0.010 rad -> sigma_h = h_2pi*sigma/2pi = 0.00089 A
+   sigma_phi = 0.050 rad -> sigma_h = h_2pi*sigma/2pi = 0.00444 A
+   sigma_phi = 0.100 rad -> sigma_h = h_2pi*sigma/2pi = 0.00887 A
+   sigma_phi = 0.500 rad -> sigma_h = h_2pi*sigma/2pi = 0.04436 A
+
+====================================================================================================
+11.  NUMERICAL SELF-CHECKS
+====================================================================================================
+(a) Translation theorem for the specular beam, truncated (111) stack
+    (q = 2 K_ext = 11.270656 rad/A, depth attenuation 1/200 A, 4000 bilayers):
+    arg(A_upper/A_lower) = +2.359612947 rad
+    predicted -q*h mod 2pi = +2.359612947 rad
+    |A_upper/A_lower|    = 0.999999999998  (must be 1)
+    agreement: 1.23e-12 rad
+
+(b) Equivalence of the two forms of the vacuum step phase,
+    (2 pi/lam) h (sin th_in + sin th_out)  ==  (4 pi/lam) h sin(th_B)(g.n),
+    i.e.  q.n_hat = G.n_hat  when the Bragg condition holds in VACUUM:
+      (6, 6, 6): g.n = 0.333333, th_B =  23.998 mrad, |G.n| = 4.00773212, 2k sin(th_B)(g.n) = 4.00773212, diff = 0.00e+00 rad/A
+      (4, 4, 4): g.n = 0.333333, th_B =  15.998 mrad, |G.n| = 2.67182141, 2k sin(th_B)(g.n) = 2.67182141, diff = 0.00e+00 rad/A
+     (2, -2, 0): g.n = 0.816497, th_B =   6.531 mrad, |G.n| = 2.67182141, 2k sin(th_B)(g.n) = 2.67182141, diff = 4.44e-16 rad/A
+      (2, 2, 0): g.n = 0.000000, th_B =   6.531 mrad, |G.n| = 0.00000000, 2k sin(th_B)(g.n) = 0.00000000, diff = 1.95e-17 rad/A
+      (3, 3, 1): g.n = 0.132453, th_B =  10.065 mrad, |G.n| = 0.66795535, 2k sin(th_B)(g.n) = 0.66795535, diff = 0.00e+00 rad/A
+
+(c) exact  sin^2(th_int) = [ (k sin th_ext)^2 + dK^2 ] / k_int^2   vs
+    approx sin^2(th_int) = sin^2(th_ext) + V0/E_eff :
+    th_ext =  10.000 mrad -> th_int exact  13.0313 mrad, approx  13.0318 mrad, diff -0.45 urad
+    th_ext =  20.000 mrad -> th_int exact  21.6751 mrad, approx  21.6758 mrad, diff -0.76 urad
+    th_ext =  22.495 mrad -> th_int exact  23.9968 mrad, approx  23.9976 mrad, diff -0.84 urad
+    th_ext =  40.000 mrad -> th_int exact  40.8629 mrad, approx  40.8644 mrad, diff -1.43 urad
+
+====================================================================================================
+12.  SYNTHETIC INTENSITY-HOLOGRAM RECONSTRUCTION (no ground truth passed to the reconstruction)
+====================================================================================================
+Object: two terraces, phase step dphi_true, unit amplitude. Reference: unit plane wave with
+carrier of 'fringe' pixels.  Reconstruction: carrier located on an EMPTY hologram, Hann
+sideband aperture of radius q_c/3, reference-hologram division, medians of terrace interiors.
+
+ dphi_true  fringe(px)  dose(e/px)  recovered     error  sigma_terr  res(px)
+    2.3596         8.0           0     2.3596   +0.0000      0.0001     24.0
+    2.3596         8.0       10000     2.3597   +0.0001      0.0006     24.0
+    2.3596         8.0         100     2.3597   +0.0001      0.0059     24.0
+    2.3596         4.0       10000     2.3596   -0.0000      0.0012     12.0
+    2.3596        16.0       10000     2.3585   -0.0011      0.0003     48.0
+    3.9236         8.0       10000    -2.3594   +0.0003      0.0006     24.0
+    0.0000         8.0       10000     0.0003   +0.0003      0.0006     24.0
+   -1.5640         8.0       10000    -1.5637   +0.0003      0.0006     24.0
+
+   Row 6 uses dphi_true = 3.9236 rad (> pi): the reconstruction returns
+   -2.3596 rad, i.e. exactly the same number as a -2.3596 rad step.
+   A single hologram cannot resolve the branch; a tilt series can (section 7).
+   Row 7 is the no-step control; row 8 is the (666) double-bilayer value.
+
+====================================================================================================
+13.  TEST PLAN: NUMBERS A CORRECTED REPOSITORY MUST REPRODUCE (200 keV, a = 5.4309 A, V0 = 12 V)
+====================================================================================================
+   [PASS] T1  lambda(200 keV)                                        got       0.025079 A      want     0.025079 +/- 1e-06
+   [PASS] T2  lambda(100 keV)                                        got       0.037014 A      want     0.037014 +/- 1e-06
+   [PASS] T3  lambda(300 keV)                                        got       0.019687 A      want     0.019688 +/- 1e-06
+   [PASS] T4  vacuum Bragg angle (666)                               got      23.997603 mrad   want    23.997600 +/- 0.001
+   [PASS] T5  critical angle (V0=12 V)                               got       8.355968 mrad   want     8.356000 +/- 0.001
+   [PASS] T6  external angle at the (666) internal condition         got      22.495315 mrad   want    22.495300 +/- 0.001
+   [PASS] T7  |F(666)|/f  (must be 0)                                got       0.000000        want     0.000000 +/- 1e-09
+   [PASS] T8  |F(444)|/f                                             got       8.000000        want     8.000000 +/- 1e-09
+   [PASS] T9  |F(555)|/f                                             got       5.656854        want     5.656854 +/- 1e-09
+   [PASS] T10 step phase (666), h = d_111, mod 2pi                   got       3.923572 rad    want     3.923600 +/- 0.002
+   [PASS] T11 step phase (444), h = d_111, mod 2pi                   got       2.582006 rad    want     2.582000 +/- 0.002
+   [PASS] T12 step phase (555), h = d_111, mod 2pi                   got       3.408765 rad    want     3.408800 +/- 0.002
+   [PASS] T13 step phase (888), h = d_111, mod 2pi                   got       4.538584 rad    want     4.538600 +/- 0.002
+   [PASS] T14 h_2pi at the (666) condition                           got       0.557482 A      want     0.557500 +/- 0.001
+   [PASS] T15 (2,-2,0) reflection-geometry accessibility  (0=no, 1=yes) got       0.000000        want     0.000000 +/- 0.5
+   [PASS] T16 exact G.R / 2pi for (2,-2,0) and a d_111 step (integer!) got       1.000000        want     1.000000 +/- 1e-09
+   [PASS] T17 top-gap illumination reaching the surface (theta_ext)  got      31.104603 %      want    31.100000 +/- 0.05
+   [PASS] T18 incident wave entering the front end face              got      80.890384 %      want    80.890000 +/- 0.05
+   [PASS] T19 reflected-beam rise over the cell (must stay < x_vac)  got       4.460407 A      want     4.460400 +/- 0.001
+   [PASS] T20 foreshortening 1/sin(theta_ext)                        got      44.457450        want    44.460000 +/- 0.02
+   [PASS] T21 antialiased max angle at 0.13 A, 200 keV               got      64.306001 mrad   want    64.310000 +/- 0.02
+   [PASS] T22 antialiased max angle at 0.50 A, 200 keV (too small for 24 mrad) got      16.719560 mrad   want    16.720000 +/- 0.02
+   [PASS] T23 max tilt step for h = 1 nm (phase increment < pi)      got       0.626984 mrad   want     0.627000 +/- 0.001
+   [PASS] T24 hologram round trip recovers the (666) single-step phase got       2.359698 rad    want     2.359613 +/- 0.005
+   [PASS] T25 hologram round trip, no-step control                   got       0.000274 rad    want     0.000000 +/- 0.005
+
+   25/25 checks pass in this script itself.
+
+====================================================================================================
+END OF OUTPUT
+====================================================================================================

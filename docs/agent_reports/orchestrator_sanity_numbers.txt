@@ -1,0 +1,22 @@
+E=100 keV lambda=0.037014 A
+E=200 keV lambda=0.025079 A
+E=300 keV lambda=0.019687 A
+d111 = 3.1355 A
+V0=12.0 V at 200 keV: sin^2(th_int)-sin^2(th_ext) = 6.982e-05
+(333) allowed  th_int= 12.00 mrad th_ext=  8.61 mrad  dphi(h=d111)/2pi=  2.153 frac=0.153 (0.96 rad)  h_2pi=1.456 A
+(444) allowed  th_int= 16.00 mrad th_ext= 13.64 mrad  dphi(h=d111)/2pi=  3.411 frac=0.411 (2.58 rad)  h_2pi=0.919 A
+(555) allowed  th_int= 20.00 mrad th_ext= 18.17 mrad  dphi(h=d111)/2pi=  4.543 frac=0.543 (3.41 rad)  h_2pi=0.690 A
+(666) FORBIDDEN th_int= 24.00 mrad th_ext= 22.50 mrad  dphi(h=d111)/2pi=  5.624 frac=0.624 (3.92 rad)  h_2pi=0.557 A
+(777) allowed  th_int= 28.00 mrad th_ext= 26.72 mrad  dphi(h=d111)/2pi=  6.681 frac=0.681 (4.28 rad)  h_2pi=0.469 A
+(888) allowed  th_int= 32.00 mrad th_ext= 30.89 mrad  dphi(h=d111)/2pi=  7.722 frac=0.722 (4.54 rad)  h_2pi=0.406 A
+(999) allowed  th_int= 36.00 mrad th_ext= 35.02 mrad  dphi(h=d111)/2pi=  8.754 frac=0.754 (4.74 rad)  h_2pi=0.358 A
+(101010) FORBIDDEN th_int= 40.00 mrad th_ext= 39.12 mrad  dphi(h=d111)/2pi=  9.779 frac=0.779 (4.90 rad)  h_2pi=0.321 A
+(111111) allowed  th_int= 44.01 mrad th_ext= 43.20 mrad  dphi(h=d111)/2pi= 10.800 frac=0.800 (5.02 rad)  h_2pi=0.290 A
+(121212) allowed  th_int= 48.01 mrad th_ext= 47.28 mrad  dphi(h=d111)/2pi= 11.817 frac=0.817 (5.13 rad)  h_2pi=0.265 A
+g(2-20) slab frame [1/A]: [0.4252, 0.3007, 0.0] |g|=0.5208
+(2-20) Bragg tilt (vacuum, no refraction): 7.999 mrad; exit glancing = 2.666 mrad; sideways = 7.541 mrad; g.n = 0.8165
+Defaults: Lz total=198.2 A (crystal 138.2); Lx_si=84.7 A + 2x10 A vac; Ly=79.8 A
+tilt 8.0 mrad: only rays within 1.59 A of the surface reach it inside the slab; reflected wave rises 1.59 A over the slab
+tilt 24.0 mrad: only rays within 4.76 A of the surface reach it inside the slab; reflected wave rises 4.76 A over the slab
+px=0.5 A: Nyquist 1.000 1/A (25.1 mrad), 2/3 antialias aperture 0.667 1/A (16.7 mrad)
+px=0.13 A: Nyquist 3.846 1/A (96.5 mrad), 2/3 antialias aperture 2.564 1/A (64.3 mrad)
