@@ -15,11 +15,13 @@ that can be contrasted with the real reflection-mode dark-field holography exper
 |---|---|
 | `docs/00_executive_summary.md` | Findings and decisions in two pages. |
 | `docs/01_repository_audit.md` | What the inspected repository actually simulates, defect list with file:line, section-9 checklist. |
-| `docs/03_physics_summary.md` | The physics the simulation must reproduce: step phase, refraction, wrap period, multislice validity, hologram formation, with numbers. |
-| `docs/05_final_repository_specification.md` | What the final theoretical simulation repository must look like: acceptance criteria, configurations, architecture, forward-model and holography requirements, provenance, comparison protocol, tests, milestones. |
-| `docs/06_project_inputs_required.md` | Laboratory inputs the simulation cannot supply (PROJECT_INPUT list). |
+| `docs/02_literature_position.md` | Osakabe as the starting point, the theory to read, current analogues; access limitations. |
+| `docs/03_physics_summary.md` | The physics the simulation must reproduce: step phase, refraction, wrap period, coherence and shadowing, multislice validity, hologram formation, with numbers. |
+| `docs/04_software_provenance_summary.md` | What prismatique/Prismatic actually compute (mid-plane wave, schema, tilt, ensembles) and the consequences. |
+| `docs/05_final_repository_specification.md` | What the final theoretical simulation repository must look like: acceptance criteria, configurations, architecture, forward-model and holography requirements, phase-validation ladder, provenance, comparison protocol, tests, milestones. |
+| `docs/06_project_inputs_required.md` | Laboratory inputs the simulation cannot supply (PROJECT_INPUT list, 22 items). |
 | `docs/physics_conventions.md`, `docs/model_assumptions.md`, `docs/source_map.tsv`, `docs/references.bib` | Provenance files required by the instruction file (section 10). |
-| `docs/agent_reports/` | The full reports of the four delegated audits: A (code), B (literature), C (physics derivations), D (software provenance), plus calculator output and the orchestrator's independent sanity numbers. |
+| `docs/agent_reports/` | The full reports of the delegated audits: A (code), B (literature) with B2 (bibliography verification log), C (physics derivations) with the calculator output, D (software provenance), E (adversarial review of the summary documents, whose corrections are applied in revision 2 of the summaries), plus the orchestrator's independent sanity numbers. |
 | `tools/reflection_step_phase_calculator.py` | Numpy-only reference calculator reproducing every number in the physics report; 25 self-checks. |
 | `tools/provenance_checks/` | Scripts that exercise the prismatique 0.0.1 API exactly as the inspected pipeline does (no simulation run). |
 
@@ -37,7 +39,9 @@ defined in the instruction file. Two session-specific qualifiers are used in the
 * No multislice or dynamical reflection simulation was executed. Software statements come from reading the
   version-matched source code and exercising the Python API without the compiled engine.
 * All physics is derived from stated premises and reproduced numerically; it has not been checked against
-  the textbook sections it would normally be attributed to.
+  the textbook sections it would normally be attributed to. The adversarial review found and the summaries
+  correct two numerical slips in the physics report (paraxial error, step projection width); the agent
+  reports themselves are kept unedited as the record.
 
 ## Reproducing the numbers
 

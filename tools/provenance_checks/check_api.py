@@ -1,5 +1,9 @@
 import sys, json, traceback
-import os; _HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, _HERE)  # see README.md: rename pyprismatic_stub.py -> pyprismatic.py only when the real engine is absent
+import os, importlib.util
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if importlib.util.find_spec("pyprismatic") is None:
+    sys.path.insert(0, _HERE)  # only then may a local pyprismatic.py (renamed stub) be picked up; it never shadows a real engine
+
 import prismatique, embeam, prismatique.version, embeam.version
 print("prismatique", prismatique.__version__, "| embeam", embeam.version.__version__)
 res = {}
