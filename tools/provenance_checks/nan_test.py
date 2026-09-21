@@ -1,8 +1,17 @@
 import sys, math, numpy as np
 import os, importlib.util
 _HERE = os.path.dirname(os.path.abspath(__file__))
-if importlib.util.find_spec("pyprismatic") is None:
-    sys.path.insert(0, _HERE)  # only then may a local pyprismatic.py (renamed stub) be picked up; it never shadows a real engine
+# Guard against a renamed stub (pyprismatic.py in this directory) shadowing an installed engine:
+# look for the engine with this directory (and the implicit script directory) removed from sys.path.
+_local_stub = os.path.exists(os.path.join(_HERE, "pyprismatic.py"))
+_saved_path = list(sys.path)
+sys.path[:] = [p for p in sys.path if os.path.abspath(p or os.getcwd()) != _HERE]
+_engine_elsewhere = importlib.util.find_spec("pyprismatic") is not None
+sys.path[:] = _saved_path
+assert not (_local_stub and _engine_elsewhere), (
+    "pyprismatic.py stub in " + _HERE + " would shadow the installed engine; delete the stub")
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
 
 import prismatique, embeam
 from prismatique.hrtem import sim as HS

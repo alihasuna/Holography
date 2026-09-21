@@ -77,11 +77,13 @@ Conservation of the surface-parallel wavevector with `k_int^2 - k_ext^2 = 2 m_e 
 ```
 sin^2(theta_int) = (sin^2(theta_ext) + Delta)/(1 + Delta),
 Delta = V0 (1 + T/(m_e c^2)) / (T (1 + T/(2 m_e c^2))) = 6.98e-5 at 200 keV
-theta_c = 8.356 mrad: the internal glancing angle below which a beam inside the crystal cannot escape
-into vacuum (total internal reflection at the surface barrier). Because V0 > 0 the refractive index
-exceeds 1, every externally incident beam enters the crystal with theta_int >= theta_c, and there is
-no total external reflection for electrons.
+theta_c = 8.356 mrad
 ```
+
+`theta_c` is the internal glancing angle below which a beam inside the crystal cannot escape into
+vacuum (total internal reflection at the surface barrier). Because `V0 > 0` the refractive index
+exceeds 1, every externally incident beam enters the crystal with `theta_int >= theta_c`, and there is
+no total external reflection for electrons.
 
 At the n-th order internal Bragg condition for spacing `d` the vacuum step phase for `h = m d` is
 `|Delta_phi| = 2 pi m n sin(theta_ext)/sin(theta_int)`: not an integer multiple of 2 pi.
@@ -99,7 +101,7 @@ At the n-th order internal Bragg condition for spacing `d` the vacuum step phase
 (7,-7,7) rows and the `theta_int` column are tabulated by the script but not asserted. The orchestrator
 reproduced the table independently, `docs/agent_reports/orchestrator_sanity_numbers.txt`, and the
 adversarial reviewer confirmed every printed digit.)
-A non-relativistic treatment (`Delta = V0/T`) would give 14.00 mrad and a step phase of 3.140 rad
+A non-relativistic treatment (`Delta = V0/T`) would give 14.00 mrad and a step phase of 3.14 rad
 (indistinguishable from pi) at (4,-4,4); `V0/T` is 14 percent too small (equivalently the relativistic
 `Delta` is 16 percent larger) and must not be used.
 
@@ -117,7 +119,7 @@ output section 5 (`docs/agent_reports/C_calculator_output.txt`).
 
 A single hologram gives `h` modulo `h_2pi = lambda/(2 sin theta_ext)`, which is 0.4 to 1.5 A for all
 usable conditions at 200 keV. A 3.1 A bilayer step is 3.4 wraps at (4,-4,4); a 10 nm patterned step is
-about 100 wraps. Consequences:
+about 110 wraps at (4,-4,4). Consequences:
 
 * Atomic steps: the branch must come from a lattice constraint (h is an integer multiple of the layer
   spacing) or from a rocking series: `d|Delta_phi|/d(theta) = (4 pi h/lambda) cos(theta)`, which is
@@ -131,10 +133,13 @@ about 100 wraps. Consequences:
   A tilt step can be made finer; a convergence angle cannot, so this decides whether a 10 nm feature is
   measurable at all (`docs/06_project_inputs_required.md`, item 3, blocking). Energy spread is harmless
   by comparison: `d ln(lambda)/dT = -2.9e-6 per eV`, so a 0.7 eV spread changes the step phase by less
-  than 0.003 rad even for a 10 nm step.
+  than 0.004 rad over the whole allowed rod, even for a 10 nm step.
 * Shadowing. A step transverse to the beam whose upper terrace is upstream casts a geometric shadow of
-  length `h/tan(theta_ext)` on the surface behind it: 139 A per Si(111) bilayer, 60 A per Si(001) layer
-  and 444 nm for a 10 nm mesa at 22.5 mrad. Inside the shadow there is no object wave and the
+  length `h/tan(theta_ext)` on the surface behind it. At 22.5 mrad (a round illustrative angle; it is
+  the external angle of the forbidden (6,-6,6) condition) that is 139 A per Si(111) bilayer, 60 A per
+  Si(001) layer and 444 nm for a 10 nm mesa; at the first recommended condition (4,-4,4), 13.6 mrad,
+  it is 230 A per bilayer and 733 nm for a 10 nm mesa; at (8,-8,8), 102 A and 324 nm. Shadow masks
+  must be computed at the actual operating angle, never hard-coded. Inside the shadow there is no object wave and the
   reconstructed phase is meaningless; in the foreshortened image the shadow is `1/sin(theta)` times
   narrower than on the surface but still much wider than the riser. The shadow direction distinguishes
   an up-step from a down-step. Every configuration must compute and mask the shadowed strips before
@@ -154,14 +159,17 @@ about 100 wraps. Consequences:
   (values corrected by the adversarial review; the C report's section 5.1 numbers are three times too
   small because they expand the cosine in the angle rather than in the transverse wavevector). The error
   is common-mode between two terraces reflecting into the same `k_out` and cancels in the step phase,
-  but it is not negligible against the 0.03 rad noise target for absolute phases, which is why an exact
-  propagator is preferred (`docs/05_final_repository_specification.md`, section 4.3).
+  but it is not negligible against the 0.028 rad phase-noise figure of section 4 for absolute phases,
+  which is why an exact propagator is preferred (`docs/05_final_repository_specification.md`, section 4.3).
 * Boundary conditions ARE the obstacle. With the inspected repository's defaults (10 A declared vacuum
   above and below an 85 A plate, 138 A of crystal along the beam, periodic in the surface normal):
   only rays within `L_z,si tan(theta) = 3.11 A` of the surface reach it inside the crystal (31 percent of
-  the nominal 10 A gap, 16 percent of the true 20 A periodic channel); the reflected beam rises 4.46 A
-  over the full 198 A cell, which is what must stay below the vacuum margin; 81 percent of the incident
-  plane wave enters the crystal through the front end face (Laue transmission through an 8.5 nm plate);
+  the declared 10 A top gap; 19 percent of the realised 16.1 A periodic vacuum channel between plate
+  images, which the generator declares as 2 x 10 A, A report section 2a); the reflected beam rises
+  4.46 A over the full 198 A cell, which is what must stay below the vacuum margin; 81 percent of the
+  incident plane wave on the declared geometry (85 percent on the realised atom positions) enters the
+  crystal through the front end face (Laue transmission through a plate 8.5 nm thick as declared,
+  8.9 nm as realised);
   the refracted ray crosses only one bilayer over the whole slab, so no Bragg-case reflection can
   develop; and the Laue-transmitted (n,-n,n) beam leaves in the same direction as the specular beam, so
   a k-space aperture cannot separate top-surface reflection, end-face transmission and back-face
@@ -169,9 +177,10 @@ about 100 wraps. Consequences:
   for a 10 A gap; for a Bragg-case reflection to build up over a normal penetration depth of 2 to 10 nm,
   `L_z` must be 0.08 to 0.42 um at `theta_int = 24 mrad`.
 * Sampling: with a 2/3 anti-aliasing rule the 0.13 A pixel supports 64 mrad at 200 keV (adequate; check
-  T21); the generator's default 0.5 A pixel supports 16.7 mrad under the 2/3 rule and only 12.9 mrad
-  under Prismatic's half-Nyquist rule, so it cannot represent the 24 mrad tilt under either (check T22;
-  D report section 2c reproduces the resulting `IndexError`). Prismatic's ceiling at 0.13 A is 48 mrad.
+  T21); the generator's default 0.5 A advisory pixel (realised 0.4845 A) gives 17.3 mrad under the 2/3
+  rule and 12.9 mrad under Prismatic's half-Nyquist rule (16.7 and 12.5 mrad at the nominal 0.5 A), so
+  it cannot represent the 24 mrad tilt under either (check T22; D report section 2c reproduces the
+  resulting `IndexError`). Prismatic's ceiling at 0.13 A is 48 mrad.
 * Requirements for a valid reflection cell: no vacuum below the back face (semi-infinite emulation with
   an absorbing or apodising region on the bulk side of the surface normal); vacuum margin above the
   surface larger than the illumination height plus `L_z tan(theta)`; illumination confined to the vacuum

@@ -16,9 +16,10 @@ section 0, commands 14-17). They exercise, without running any simulation, the e
                     so `hrtem_sim_intensity_output.h5` is all-NaN for the repository's snapped offsets.
 
 `pyprismatic_stub.py` is a stand-in that only lets `import prismatique` succeed when the compiled
-engine is absent; its `go()` raises, so nothing is ever simulated. The scripts insert their own
-directory on `sys.path`; rename the stub to `pyprismatic.py` in that directory ONLY on a machine
-without the real engine. On the laboratory machine with the real engine installed, do not copy the stub.
+engine is absent; its `go()` raises, so nothing is ever simulated. Rename the stub to `pyprismatic.py`
+in this directory ONLY on a machine without the real engine. Each script checks, with this directory
+removed from `sys.path`, whether a real `pyprismatic` is installed elsewhere and refuses to run (an
+`AssertionError`) if a local `pyprismatic.py` would shadow it.
 
 Environment used for the recorded results: `pip install prismatique==0.0.1 embeam==0.0.1` in a clean
 venv (Python 3.11), which does NOT install `pyprismatic` (prismatique does not declare it).

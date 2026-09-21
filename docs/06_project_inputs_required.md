@@ -8,7 +8,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 ## A. Microscope and beam
 
 1. (blocking) Accelerating voltage used for the reflection holograms and its stability.
-2. Energy spread (FWHM, eV) and effective source size or measured spatial-coherence width at the specimen. (Energy spread is a minor effect: below 0.003 rad of step phase even for a 10 nm step at 0.7 eV.)
+2. Energy spread (FWHM, eV) and effective source size or measured spatial-coherence width at the specimen. (Energy spread is a minor effect: below 0.004 rad of step phase over the whole allowed rod, even for a 10 nm step at 0.7 eV.)
 3. (blocking) Illumination convergence semi-angle at the specimen (mrad) for holography and for REM imaging. The step phase changes by `(4 pi h/lambda) cos(theta)` per radian of incidence angle, so the convergence produces an irreducible phase spread: 1 rad of spread at 0.64 mrad for a 3.1 A bilayer, 0.20 mrad for a 1 nm step, 0.020 mrad for a 10 nm step (200 keV). This decides whether nanometre-scale features can show any phase contrast at all.
 4. (blocking) Objective-aperture semi-angle (mrad) and which reflected beam it selects: the specular (00) rod at which Bragg order, a surface-resonance condition, or a non-specular rod/bulk reflection.
 5. (blocking) Image pixel size at the detector (nm/pixel, both axes) and the magnification for holograms.
@@ -25,7 +25,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 11. (blocking) Surface orientation actually used (Si(001) vs Si(111)), miscut angle and direction, typical terrace widths.
 12. (blocking) Surface preparation state: native oxide, HF-last, UHV flash, ion-milling parameters, expected amorphous damage-layer thickness, any annealing. At 20 mrad glancing incidence a 1 nm amorphous overlayer is crossed over about 50 nm of path on the way in and again on the way out (about 100 nm in total), so this dominates the reflected amplitude and must be modelled rather than ignored.
-13. Pattern geometry for the patterned samples: lateral dimensions, nominal step or trench heights (nm) from AFM or SEM, edge profile, orientation relative to the beam. A feature of height h transverse to the beam shadows `h/tan(theta)` of surface behind it (444 nm for 10 nm at 22.5 mrad).
+13. Pattern geometry for the patterned samples: lateral dimensions, nominal step or trench heights (nm) from AFM or SEM, edge profile, orientation relative to the beam. A feature of height h transverse to the beam shadows `h/tan(theta)` of surface behind it (444 nm for 10 nm at 22.5 mrad, 733 nm at the (4,-4,4) angle of 13.6 mrad).
 14. Whether the intended observable is atomic steps (heights 1.36 A, 2.72 A or 3.14 A) or nanometre-scale patterned steps. The two regimes need different quantification strategies because the height wrap period is only 0.4 to 1.5 A and because of items 3 and 13.
 
 ## D. Reference wave (do not infer from the biprism's intended function)
@@ -41,6 +41,6 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 ## F. Material and specimen-state parameters to be sourced or measured
 
-20. Silicon mean inner potential `V0` with a citable measured or calculated value and uncertainty. The value 12.0 V used in this repository is an ASSUMPTION; a change of 1 V shifts the single-bilayer step phase at the (4,-4,4) condition by about 0.34 rad and biases a height inferred from a fixed measured phase by about 0.05 A.
+20. Silicon mean inner potential `V0` with a citable measured or calculated value and uncertainty. The value 12.0 V used in this repository is an ASSUMPTION; a change of 1 V shifts the single-bilayer step phase at the (4,-4,4) condition by about 0.34 rad, and a height inferred from a fixed measured phase is biased by about +0.05 A per volt by which `V0` is underestimated.
 21. Absorptive (imaginary) potential parameters for Si at the working energy, from a named parameterisation, for the dynamical reflection calculations.
 22. Specimen charging: evidence (phase drift versus dose or time on a flat region) that the oxide-covered surface does not charge under the grazing-incidence illumination footprint, or the measured drift if it does.

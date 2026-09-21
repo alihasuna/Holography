@@ -1,30 +1,32 @@
 # Audit of `hussienba/si110-reflection-holography` (commit 6694959)
 
-Status: 2026-09-21. Orchestrator's synthesis of the full code audit
-(`docs/agent_reports/A_code_audit.md`, 1413 lines, every file read, generator/filter/step-height
-scripts executed on synthetic data), the software-provenance audit
+Status: 2026-09-21, revision 2 (after `docs/agent_reports/E2_review.md`). Orchestrator's synthesis
+of the full code audit (`docs/agent_reports/A_code_audit.md`, 1413 lines, every file read,
+generator/filter/step-height scripts executed on synthetic data), the software-provenance audit
 (`docs/agent_reports/D_software_provenance.md`, version-matched source of prismatique 0.0.1,
-embeam 0.0.1 and the Prismatic 1.2.0 tree) and the physics report
+embeam 0.0.1 and the Prismatic tree at commit d155fb9) and the physics report
 (`docs/agent_reports/C_physics_derivations.md`). File and line numbers refer to the inspected
-commit. Evidence labels as in the instruction file; REPRODUCED means the behaviour was executed or
-the API exercised here, SECTION_READ means the pinned source was read, DERIVED_HERE means computed
-from the repository's own parameters. No prismatique simulation was executed (no compiled engine).
+commit. Evidence labels as in the instruction file: REPRODUCED means the behaviour was executed or the
+API exercised here, SECTION_READ means the pinned source was read, DERIVED_HERE means computed from the
+repository's own parameters. No prismatique simulation was executed (no compiled engine); the forward
+model and the tilt runner were not run (A section 5.7).
 
 ## 1. What the repository is
 
 The repository is a transmission HRTEM multislice (Prismatic through the prismatique wrapper) of a
-free-standing Si plate, 8.5 nm thick, whose (1,-1,1) face is parallel to a [110] beam tilted by 0 to
-24 mrad, followed by Fourier selection of one spot of the resulting complex wave and a kinematic
-phase-to-height formula. In the terms of instruction section 9.1 it implements only complex-wave
-selection; it forms no intensity hologram and performs no hologram reconstruction, although its
-README, its citations and its script docstrings describe it as off-axis holographic reconstruction.
+free-standing Si plate, 8.5 nm thick as declared (8.9 nm realised), whose (1,-1,1) face is parallel to
+a [110] beam tilted by 0 to 24 mrad, followed by Fourier selection of one spot of the resulting complex
+wave and a kinematic phase-to-height formula. In the terms of instruction section 9.1 it implements
+only complex-wave selection; it forms no intensity hologram and performs no hologram reconstruction,
+although its README, its citations and its script docstrings describe it as off-axis holographic
+reconstruction.
 
 | Aspect | Reflection-mode dark-field holography experiment | This repository |
 |---|---|---|
-| Specimen | semi-infinite crystal, one free surface, grazing incidence | 8.5 nm plate with two free surfaces, periodic along its own surface normal with a 16 A image gap (declared 10 A vacuum on each face; measured 7.6 A), no absorber |
-| Illumination | wave arriving from vacuum at the glancing angle | plane wave filling the whole cell: 85 percent starts inside the crystal (end-face entry); 1 percent (8 mrad) to 3 percent (24 mrad) reaches the surface from the vacuum side within the 138 A slab |
-| Measured beam | a Bragg-reflected beam leaving into vacuum | the (2,-2,0) zone-axis Bragg beam of a plate in transmission; (2,-2,0) is not accessible in reflection geometry at 200 keV (C section 3.5); the documented "(666) specular" target ((6,-6,6) for this surface) is kinematically forbidden |
-| Recorded plane | detector plane after the imaging optics | the supercell mid-plane (the engine back-propagates the exit wave by half the cell), labelled "complex exit wave" |
+| Specimen | semi-infinite crystal, one free surface, grazing incidence | plate with two free surfaces, periodic along its own surface normal with a 16.1 A image gap (10 A declared on each face; realised 7.65 A above the surface and 8.43 A behind the back face, A-M8), no absorber |
+| Illumination | wave arriving from vacuum at the glancing angle | plane wave filling the whole cell: 81 percent starts inside the crystal on the declared geometry, 85 percent on the realised atom positions (end-face entry); 1 percent (8 mrad) to 3 percent (24 mrad) reaches the surface from the vacuum side within the slab (138 A declared, 136 A realised along the beam) |
+| Measured beam | a Bragg-reflected beam leaving into vacuum | the (2,-2,0) zone-axis Bragg beam of a plate in transmission; (2,-2,0) is not accessible in reflection geometry at 200 keV (C section 3.3, equation (3.5)); the documented "(666) specular" target ((6,-6,6) for this surface) is kinematically forbidden |
+| Recorded plane | detector plane after the imaging optics | the supercell mid-plane (the engine back-propagates the exit wave by half the cell; SECTION_READ of the engine source), labelled "complex exit wave" |
 | Reference wave, hologram | biprism overlap of object and reference beams; intensity fringes | none; the "phase" is `np.angle` of a band-pass-filtered copy of the simulated field |
 | Quantification | signed, calibrated, branch-resolved height with uncertainty | `h = Delta_phi lambda/(4 pi sin theta_B (g_hat.n_hat))` with the sign discarded, the 2 pi branch ignored, silent defaults for energy, angle and `g_hat.n_hat`, no uncertainty |
 | Ensembles | incoherent average over source, energy, phonons | one static configuration; config, defocus and tilt axes collapsed by `[0,0,0,:,:]` |
@@ -34,7 +36,7 @@ README, its citations and its script docstrings describe it as off-axis holograp
 | Item | Verdict | Evidence (A section 3, D sections 2 to 4) |
 |---|---|---|
 | 9.1 complex wave vs hologram | FAIL | no `u_ref`, no `abs(u_o+u_r)**2`, no reconstruction; `specular_filter.py:500-601` |
-| 9.2 orientation conventions | PARTIAL | rotation matrix orthonormal and right-handed (REPRODUCED); README "(1,1,-1)" incompatible with a [110] beam; examples labelled "Diamond Cubic (100)"; no outward-normal, tilt-sign or structure-factor statement |
+| 9.2 orientation conventions | PARTIAL | generator rotation matrix orthonormal and right-handed (REPRODUCED); README "(1,1,-1)" incompatible with a [110] beam; examples labelled "Diamond Cubic (100)"; no outward-normal, tilt-sign or structure-factor statement |
 | 9.3 propagation approximation | FAIL | nothing documented or tested; the cell is a periodic stack of plates; absorber silently dropped |
 | 9.4 reference beam | FAIL (not applicable to the code, but the README claims holography) | no reference branch exists |
 | 9.5 coherence and ensembles | FAIL | `[0,0,0,:,:]` discards config, defocus and tilt axes; only subset 0 read; thermal parameters written but never used |
@@ -42,60 +44,83 @@ README, its citations and its script docstrings describe it as off-axis holograp
 | 9.7 phase-to-height | FAIL | sign destroyed; wrap ignored; exact-zero-only denominator guard; silent defaults; no uncertainty |
 | 9.8 units, Fourier conventions, processing bias | FAIL | units internally consistent (no stray 2 pi), but apodisation, padding, notch, aperture, unwrapping and default detrending are unquantified; raw phase not saved; constants hard-coded in four places |
 
-## 3. Defects, grouped by consequence
+## 3. Defects, grouped by consequence (evidence label per bullet)
 
-### 3.1 Scripts that do not produce what they claim (REPRODUCED against the pinned API)
+### 3.1 Scripts that do not produce what they claim
 
-* A-C1: `multislice_tilt_series_runner.py:547-556` passes `save_probe_complex` and
-  `wavefunction_z_planes` to `prismatique.hrtem.image.Params`; neither keyword exists in 0.0.1. The
-  `TypeError` is swallowed, `image_params` becomes `None`, the defaults `save_wavefunctions=False`
-  and `save_final_intensity=False` apply, and the tilt runner writes nothing but a parameter JSON
-  after running the full multislice.
-* A-C2: the runner sets `interpolation_factors=(4,4)` while the forward model uses `(1,1)`; the
-  potential grid is 16 times larger than the grid it prints (864 x 640 at 0.121 A instead of
-  216 x 160 at 0.485 A) and the tilt grid is 4 times coarser (nearest available tilt 0.66 mrad off).
-* D-3.1: `absorbing_layers` is not a `sample.ModelParams` keyword; the forward model catches the
-  error, retries without it, and still prints "Absorber window ... (bulk side)". Prismatic has no
-  absorbing boundary at all. The configured window is also on the wrong axis (z, not the bulk-side x).
-* D-3.4: with the tilt sweep the engine simulates every FFT-grid tilt inside the window (1309 plane
-  waves for the 74 requested angles) and the intensity file is filled with NaN because the tilt
-  weights use an exact float comparison against a snapped offset computed with a different wavelength.
-* A-M10: `process_all_tilts.py` calls the renamed `specular_666_filter.py`, uses a hard-coded HPC
-  path, expects a directory layout the runner does not produce, and exits with status 0 after printing an error.
+* A-C1 (SECTION_READ of the pinned signatures; not executed, A section 5.7):
+  `multislice_tilt_series_runner.py:547-556` passes `save_probe_complex` and `wavefunction_z_planes` to
+  `prismatique.hrtem.image.Params`; neither keyword exists in 0.0.1 (`hrtem/image.py:376-388`). The
+  `TypeError` is swallowed, `image_params` becomes `None`, the defaults `save_wavefunctions=False` and
+  `save_final_intensity=False` apply (`hrtem/image.py:203-206, 427-434`), and the tilt runner writes
+  nothing but a parameter JSON after running the full multislice.
+* A-C2 (REPRODUCED): the runner sets `interpolation_factors=(4,4)` while the forward model uses `(1,1)`;
+  the potential grid is 16 times larger than the grid it prints (864 x 640 at 0.121 x 0.125 A instead of
+  216 x 160 at 0.485 x 0.499 A) and the tilt grid is 4 times coarser (nearest available tilt 0.66 mrad off).
+* D-3.1 (REPRODUCED, D command 14): `absorbing_layers` is not a `sample.ModelParams` keyword; the forward
+  model catches the error, retries without it, and still prints "Absorber window ... (bulk side)".
+  Prismatic has no absorbing boundary at all (SECTION_READ). The configured window is also on the wrong
+  axis (z, not the bulk-side x).
+* D-3.4 (REPRODUCED, D commands 15 and 17): with the tilt sweep the engine simulates every FFT-grid tilt
+  inside the window (1309 plane waves for the 74 requested angles) and the intensity file is filled with
+  NaN because the tilt weights use an exact float comparison against a snapped offset computed with a
+  different wavelength formula.
+* A-M9 (REPRODUCED): `--sample-tilt-validation`, the only internal cross-check the repository has,
+  rotates the atoms but keeps the old cell vectors, so the rotated cell vectors miss the periodic cell by
+  0.56 A and 0.30 A and 168 atoms leave the box; the "validation" compares a beam tilt against a sheared,
+  non-periodic crystal, and its writer drops to `%.6f`, which the generator's own comment says can flip
+  atoms across step boundaries.
+* A-M10 (REPRODUCED): `process_all_tilts.py` calls the renamed `specular_666_filter.py`, uses a hard-coded
+  HPC path, expects a directory layout the runner does not produce, and exits with status 0 after printing an error.
 
 ### 3.2 Wrong plane, wrong slice, wrong calibration
 
-* D-2a: `image_wavefunctions` is the exit wave Fresnel back-propagated by half the cell length to
-  the supercell mid-plane (about -99 A for the default cell), unconditionally; every message in the
-  pipeline calls it the exit wave.
-* A-C5 / D-3.4: `specular_filter.py:61-77` takes index `[0,0,0]`; for the runner's output that is
-  tilt (0, -0.94) mrad at the edge of the window, not the intended condition. A synthetic 5-tilt file
-  with the step at index 3 yields a reported step of 0.000 rad with no warning.
-* A-C6 / D-3.5: the pixel size comes from `meta.json`'s advisory value; the HRTEM image pixel is
-  twice the achieved potential pixel (ratio 2.01 for 0.13 A), so the k axes are stretched by two and
-  the filter locks onto the reflection at half the requested |g|. This error partially cancels the
-  next one, so the pipeline can appear to work and fixing either bug alone breaks it.
-* A-C7: the filter searches a ring of radius `1/d_target`, but the Fourier components of a tilted
-  beam lie at `k_in + g`; for the runner's own tilt the correct radius is outside the +-3 percent ring.
-* A-M8: `meta.json` misreports the realised geometry (vacuum 7.65 A actual vs 10.0 declared; slab
-  thickness 88.6 A vs 84.7 A; asymmetric z vacuum) and never writes the true surface position.
-* D-2g: Prismatic mirrors the file z coordinate (`z = L_z - z_file`); the generator ignores this. For
-  this slab the mirror perpendicular to [110] is a lattice symmetry (97 percent atom match), so the
-  effect is benign here but must be handled for any z-asymmetric cell.
+* D-2a (SECTION_READ of the engine source; not confirmed on an executed output file):
+  `image_wavefunctions` is the exit wave Fresnel back-propagated by half the cell length to the
+  supercell mid-plane (about -99 A for the default cell), unconditionally; every message in the pipeline
+  calls it the exit wave.
+* A-C5 / D-3.4 (REPRODUCED): `specular_filter.py:61-77` takes index `[0,0,0]`; for the runner's output
+  that is tilt (0, -0.94) mrad at the edge of the window, not the intended condition. A synthetic 5-tilt
+  file with the step at index 3 yields a reported step of 0.000 rad with no warning.
+* A-C6 / D-3.5 (REPRODUCED on synthetic files; the factor-2 consequence is arithmetic on reproduced
+  facts): the pixel size comes from `meta.json`'s advisory value; the HRTEM image pixel is twice the
+  achieved potential pixel (ratio 2.01 for 0.13 A), so the k axes are stretched by two and the filter
+  locks onto the reflection at half the requested |g|. This error partially cancels the next one, so the
+  pipeline can appear to work and fixing either bug alone breaks it.
+* A-C7 (REPRODUCED): the filter searches a ring of radius `1/d_target`, but the Fourier components of a
+  tilted beam lie at `k_in + g`; for the runner's own tilt the correct radius is outside the +-3 percent ring.
+* A-M8 (REPRODUCED): `meta.json` misreports the realised geometry (vacuum 7.65 A above the surface and
+  8.43 A behind the back face versus 10.0 declared on each; slab thickness 88.6 A versus 84.7 A; slab
+  length 136.3 A versus 138.2 A; asymmetric z vacuum) and never writes the true surface position.
+* A-M17 (REPRODUCED): the memory estimate counts complex128 voxels on the pre-interpolation grid and
+  over-counts by about 30 times; `HRTEM_TARGET_MEM_GB` then coarsens the pixel automatically from that
+  number, which is where the unusable 0.5 A advisory pixel comes from.
+* D-2g (SECTION_READ; consequence REPRODUCED in A section 5.2): Prismatic mirrors the file z coordinate
+  (`z = L_z - z_file`); the generator ignores this. For this slab the mirror perpendicular to [110] is a
+  lattice symmetry (97 percent of atoms return to lattice sites after a rigid +3.84 A shift), so the
+  residual is that the slab sits about 1.92 A further along the beam than written, which is 85 A of
+  surface coordinate after the foreshortening mapping; it must be handled explicitly for any
+  z-asymmetric cell.
 
-### 3.3 The simulated geometry is not a reflection problem (DERIVED_HERE from the defaults)
+### 3.3 The simulated geometry is not a reflection problem (DERIVED_HERE from the defaults, REPRODUCED where stated)
 
-* Only rays within `L_z tan(theta)` of the surface (3 to 4.5 A) reach it inside the slab; the
-  illumination must travel 444 A to fall the declared 10 A gap; 81 to 85 percent of the wave enters
-  through the front end face and propagates as Laue transmission through the plate.
+* Only rays within `L_z,si tan(theta) = 3.11 A` of the surface reach it inside the slab; over the full
+  198 A cell the reflected beam rises 4.46 A, which is what must stay inside the vacuum margin. The
+  illumination must travel 444 A along the beam to descend the declared 10 A gap; 81 percent of the wave
+  (85 percent on the realised atom positions, A section 2a) enters through the front end face and
+  propagates as Laue transmission through the plate.
 * The Laue-transmitted (n,-n,n) beam and the specular beam leave in the same direction, so a k-space
   aperture cannot separate top-surface reflection, end-face transmission and back-face reflection.
 * The refracted ray crosses about one bilayer over the whole slab; no Bragg-case reflection can build up.
-* The 8 A potential extent wraps past the cell edge; 193 atoms are double-counted on the y = 0 plane
-  (a strict inequality at both ends of the periodic direction), producing a line of anomalous
-  projected potential along the beam, geometrically identical to a step edge (A-M7).
-* The generator's default advisory pixel (0.5 A) cannot represent a 24 mrad tilt: prismatique raises
-  `IndexError` (Prismatic's tilt ceiling is `lambda/(4 dx)` = 12.9 mrad there) (D-2c, REPRODUCED).
+* The 8 A potential extent wraps past the cell edge (REPRODUCED). 193 atoms at y = 0 and 172 at y = L_y
+  survive the cut `(y > -L_y/2) & (y < L_y/2)` because the floating-point coordinates fall marginally
+  inside at both edges; under the periodic boundary these are the same plane, so the plane is duplicated
+  and the inter-plane gap collapses from 1.109 A to zero, producing a line of anomalous projected
+  potential along the beam, geometrically identical to a step edge (A-M7, REPRODUCED). The fix is a
+  half-open window with a tolerance plus an assertion on the atom count for the volume.
+* The generator's default advisory pixel (0.5 A, realised 0.4845 A) cannot represent a 24 mrad tilt:
+  prismatique raises `IndexError` (Prismatic's tilt ceiling is `lambda/(4 dx)` = 12.9 mrad there)
+  (D-2c, REPRODUCED).
 
 ### 3.4 The physics targets are inconsistent (DERIVED_HERE, reproduced by the calculator)
 
@@ -107,9 +132,9 @@ README, its citations and its script docstrings describe it as off-axis holograp
   the external angle 22.50 mrad rather than 24.00 mrad for the (6,-6,6) spacing, where a bilayer step
   gives 3.92 rad; away from bulk Bragg points the phase is the ordinary geometric path difference.
 * The default target (2,-2,0) cannot connect two vacuum-propagating beams at 200 keV
-  (`G.n_hat = 2.67 rad/A < 2 k sin theta_c = 4.19 rad/A`); any (2,-2,0) intensity in the simulation
-  is Laue transmission through the plate. For non-specular reflections the repository formula drops
-  the in-plane part of the step translation: with it, `G.R/2 pi` is exactly 1 for a bilayer step (invisible).
+  (`G.n_hat = 2.67 rad/A < 2 dK = 4.19 rad/A`, `dK = k sqrt(Delta)`); any (2,-2,0) intensity in the
+  simulation is Laue transmission through the plate. For non-specular reflections the repository formula
+  drops the in-plane part of the step translation: with it, `G.R/2 pi` is exactly 1 for a bilayer step (invisible).
 
 ### 3.5 Reconstruction defects (REPRODUCED on synthetic 5-D files in the prismatique schema)
 
@@ -139,7 +164,7 @@ README, its citations and its script docstrings describe it as off-axis holograp
 
 * No tests, no CI, no lockfile; `requirements.txt` pins nothing while the README claims a 0.0.1 pin
   whose stated rationale (schema drift) is not supported: `hrtem/sim.py` is byte-identical in 0.0.1 and
-  0.0.4 (D-1.3). `prismatique` does not declare `pyprismatic`; the engine build is unrecorded.
+  0.0.4 (D-1.3, REPRODUCED). `prismatique` does not declare `pyprismatic`; the engine build is unrecorded.
 * Thermal effects are never enabled; the 0.076 A per-axis RMS displacement is inert; the README's
   claim of Debye-Waller treatments is false for this code.
 * README inconsistencies: "(1,1,-1)" vs "[1,-1,1]"; author orders of B08 and B11 reversed; the initial
@@ -148,11 +173,15 @@ README, its citations and its script docstrings describe it as off-axis holograp
 
 ## 4. What survived scrutiny (REPRODUCED)
 
-* The slab rotation matrix is orthonormal (2e-16) and right-handed; the facet is {111} and the beam
-  is a <110> in-plane direction.
+* The generator's slab rotation matrix (`si110_cleave_slab_generator.py:61-73`) is orthonormal (2e-16)
+  and right-handed; the facet is {111} and the beam is a <110> in-plane direction. (The runner's
+  sample-tilt rotation is a separate defect, A-M9.)
 * Terrace heights are exact multiples of d_111 and every cut plane falls in the wide inter-bilayer gap;
   no half-bilayers are produced.
-* The two wavelength formulas are algebraically identical (1e-6 percent difference).
+* Two of the repository's three hard-coded wavelength formulas are algebraically identical and differ
+  only in their constants (1e-6 percent); the third, used only for tilt snapping, is 3.25e-4 percent off,
+  which is what breaks prismatique's exact-float tilt-weight test and produces the all-NaN intensity
+  file (section 3.1). No formula is attributed to a named constants source (instruction section 9.8).
 * Units are consistent inside the filter (cycles per angstrom throughout) and tilts are in mrad at every
   software boundary; no factor-1000 error exists.
 * With the carrier bin forced, detrending off and the true pixel size, the filter recovers an imposed
@@ -165,9 +194,10 @@ and replace every swallowed constructor exception by a hard failure; rewrite the
 (dataset, dims, dtype, pixel size from `/metadata/r_x`, tilt selected by value, all subsets); rewrite the
 quantification (signed differences, branch handling, required metadata, small-denominator policy,
 uncertainty); locate the spot from `k_in + g` with sub-pixel refinement, specify the aperture in
-physical units, detrend off by default, save raw phase; make the grid and geometry explicit; add the
-hologram-formation and reconstruction stages as separate tested operations; add the tests of
-instruction section 10. These are the M0 and M1 milestones of `docs/05_final_repository_specification.md`.
-Whether the reflection geometry can be modelled with this engine at all is a separate decision
-(M2): with periodic boundaries along the surface normal and no absorber, Prismatic cannot represent a
-semi-infinite surface, and the maintainers describe it as no longer actively maintained.
+physical units, detrend off by default, save raw phase; make the grid and geometry explicit and write
+the realised extents into the metadata; add the hologram-formation and reconstruction stages as separate
+tested operations; add the tests of instruction section 10. These are the M0 and M1 milestones of
+`docs/05_final_repository_specification.md`. Whether the reflection geometry can be modelled with this
+engine at all is a separate decision (M2): with periodic boundaries along the surface normal and no
+absorber, Prismatic cannot represent a semi-infinite surface, and the maintainers describe it as no
+longer actively maintained.

@@ -51,8 +51,8 @@ in `docs/01_repository_audit.md` and the agent reports under `docs/agent_reports
 
 | ID | Name | Surface, azimuth | Steps and features | Specular conditions | Status |
 |---|---|---|---|---|---|
-| CFG-A | `si111_cleaved_110azimuth` | (1,-1,1) surface, beam azimuth [110] | lattice-translation bilayer steps `h = m d_111`, `R = m (a/2)[1,0,1]` (stacking-correct in-plane shift); step edges parallel or transverse to the beam (transverse edges shadow 139 A per bilayer) | (4,-4,4), (5,-5,5), (7,-7,7), (8,-8,8); never (6,-6,6) or (2,-2,2) | benchmark inherited from the inspected repository; geometry consistent (normal.beam = 0) |
-| CFG-B | `si001_patterned` | (001) surface, azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces, dynamical difference expected), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad), optional oxide/amorphous overlayer (item 12) | (004), (008), (0,0,12); (002), (006) forbidden | Ali's experiment; all unknowns listed in `docs/06_project_inputs_required.md` |
+| CFG-A | `si111_cleaved_110azimuth` | (1,-1,1) surface, beam azimuth [110] | lattice-translation bilayer steps `h = m d_111`, `R = m (a/2)[1,0,1]` (stacking-correct in-plane shift); step edges parallel or transverse to the beam (transverse edges shadow 230 A per bilayer at (4,-4,4), 102 A at (8,-8,8)) | (4,-4,4), (5,-5,5), (7,-7,7), (8,-8,8); (3,-3,3) is allowed but exits at 8.6 mrad, barely above `theta_c`, with 116x foreshortening, so it is not recommended; never (6,-6,6) or (2,-2,2) | benchmark inherited from the inspected repository; geometry consistent (normal.beam = 0) |
+| CFG-B | `si001_patterned` | (001) surface, azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces, dynamical difference expected), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad and 733 nm at the (4,-4,4) angle), optional oxide/amorphous overlayer (item 12) | (004), (008), (0,0,12); (002), (006) forbidden | Ali's experiment; all unknowns listed in `docs/06_project_inputs_required.md` |
 | CFG-O | `osakabe_1988_reproduction` | UNVERIFIED (P01 not readable here) | monatomic steps | UNVERIFIED | placeholder until P01 (and P08, Osakabe 1992) are read |
 
 Each configuration is a versioned YAML/JSON file with every parameter labelled by evidence level.
@@ -96,7 +96,7 @@ tests/            see section 8
 
 * Explicit `(hkl)` surface, `[uvw]` azimuth, outward normal, active rotation matrices, handedness and
   orthogonality assertions, reciprocal lattice, diamond structure factor with a forbidden-reflection guard
-  (`F_hkl = 0` refuses (2,-2,2), (6,-6,6), (10,-10,10) on the CFG-A rod and (002), (006) on the CFG-B rod).
+  (`F_hkl = 0` refuses (2,-2,2), (6,-6,6), (10,-10,10) on the CFG-A rod and (002), (006), (0,0,10) on the CFG-B rod).
 * Relativistic wavelength from a named constants source; refraction with the relativistic `Delta`
   (`T` in eV); the internal escape angle `theta_c`; internal and external angles for every order of the
   specular rod; the accessibility guard `G.n_hat >= 2 dK` for non-specular reflections; foreshortening;
@@ -190,7 +190,7 @@ Agreement between the geometric-phase model and the multislice near a step is a 
 
 Fast model for large fields of view: `Delta_phi = -(k_out - k_in).R(r)` with refraction-corrected external
 angles, visibility ray-tracing (shadowed strips of length `h/tan(theta)` behind transverse up-steps are
-masked), an optional dynamical residual taken from the multislice engine near step risers, and explicit
+masked, computed at the actual operating angle), an optional dynamical residual taken from the multislice engine near step risers, and explicit
 detection of the invisibility condition (`g.R` integer) and of screw-related terraces where the model is
 not valid. Used for experiment planning and for the rocking-series inversion.
 
@@ -255,8 +255,8 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 ## 8. Test suite (selected per change, instruction file section 10)
 
 * Geometry: handedness, orthogonality, reciprocal vectors, forbidden reflections (T7 to T9), Bragg and
-  refracted angles (T4 to T6), accessibility (T15, T16), wrap period (T14), foreshortening (T20),
-  wavelength (T1 to T3), shadow length equals `h/tan(theta)`.
+  refracted angles (T4 to T6), accessibility (T15), wrap period (T14), foreshortening (T20),
+  wavelength (T1 to T3), shadow length equals `h/tan(theta)` at the operating angle.
 * Propagation: vacuum plane-wave phase advance, inverse propagation, sampling and slice convergence, norm
   preservation for lossless stages, paraxial-versus-exact comparison (expected 0.026 rad at 45 mrad
   over 198 A), shear-tilt versus Fourier-component tilt at 24 and 48 mrad.
@@ -269,7 +269,7 @@ not valid. Used for experiment planning and for the rocking-series inversion.
   known carrier and a non-ideal reference (T24, T25), carrier-location trap, resolution versus mask radius,
   Fresnel-fringe and drift options.
 * Quantification: step phases (T10 to T13), no-step control, positive and negative steps (sign test),
-  near-invisibility condition, rocking-series branch recovery (T23), small-denominator policy, sensitivity
+  near-invisibility condition (T16), rocking-series branch recovery (T23), small-denominator policy, sensitivity
   to angle, convergence and `V0` uncertainty, shadow exclusion.
 * Ensembles: single realisation versus intensity average; convergence with the number of configurations.
 * Inversion (later, ptychography): independent forward-model benchmarks, held-out conditions, gradient
