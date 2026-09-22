@@ -148,8 +148,12 @@ about 110 wraps at (4,-4,4). Consequences:
   shadow lengths printed by `tools/phase1_numbers.py`). Shadow masks
   must be computed at the actual operating angle, never hard-coded. Inside the shadow there is no object wave and the
   reconstructed phase is meaningless; in the foreshortened image the shadow is `1/sin(theta)` times
-  narrower than on the surface but still much wider than the riser. The shadow direction distinguishes
-  an up-step from a down-step. Every configuration must compute and mask the shadowed strips before
+  narrower than on the surface but still much wider than the riser. Conversely, when the upper terrace is
+  downstream, the beam reflected from a strip of length `h/tan(theta_out)` of the lower terrace in front
+  of the riser is intercepted by the riser (a blocked-view strip; DERIVED_HERE, implemented in
+  `reflection_holo/quantification/shadow.py`); for the specular beam both strips have the same length
+  and both are masked. Whether the masked strip lies behind or in front of the riser distinguishes the
+  two step orientations. Every configuration must compute and mask the shadowed strips before
   quantification, and the geometric-phase model must ray-trace visibility rather than evaluate `-q.R`
   alone. (The inspected repository's benchmark avoids the issue by running the step edges parallel to
   the beam.)

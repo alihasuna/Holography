@@ -203,8 +203,9 @@ Agreement between the geometric-phase model and the multislice near a step is a 
 ### 4.5 Geometric-phase model
 
 Fast model for large fields of view: `Delta_phi = -(k_out - k_in).R(r)` with refraction-corrected external
-angles, visibility ray-tracing (shadowed strips of length `h/tan(theta)` behind transverse up-steps are
-masked, computed at the actual operating angle), an optional dynamical residual taken from the multislice engine near step risers, and explicit
+angles, visibility ray-tracing (the illumination shadow of length `h/tan(theta_in)` behind a transverse step
+whose upper terrace is upstream and the blocked-view strip of length `h/tan(theta_out)` in front of one
+whose upper terrace is downstream are masked, computed at the actual operating angles), an optional dynamical residual taken from the multislice engine near step risers, and explicit
 detection of the invisibility condition (`g.R` integer) and of screw-related terraces where the model is
 not valid. Used for experiment planning and for the rocking-series inversion.
 
