@@ -1,0 +1,64 @@
+# CFG-O: placeholder for the reproduction of Osakabe et al. 1988 (P01).
+# Facts from docs/05_final_repository_specification.md section 2 (row CFG-O) and source map SM22.
+# Only the P01 abstract is read (+ABSTRACT(publisher), i.e. SECTION_READ of the abstract only).
+# Status placeholder: a run-level load FAILS; every UNVERIFIED field also fails at run level
+# until the body of P01 (upload 1) and P08 (upload 2) are read. Pt(111), not silicon: no Si
+# structure, V0 or structure factor may be reused.
+schema_version: 1
+config_id: CFG-O
+name: osakabe_1988_reproduction
+status: placeholder
+description: >-
+  Pt(111) at glancing incidence (P01 abstract, sentence 2); monatomic-height steps with a
+  sensitivity of the order of 0.01 nm (sentence 4); reference from two regions of the reflection
+  image overlapped by an electron biprism, read here as a self-reference of type R2 (DERIVED_HERE);
+  optical reconstruction (sentence 3). Energy, reflection order, glancing angle and azimuth are
+  UNVERIFIED.
+parameters:
+  literature_source:
+    value: "Osakabe et al. 1988, Jpn. J. Appl. Phys. 27, L1772-L1774 (P01, doi 10.1143/JJAP.27.L1772)"
+    label: METADATA_VERIFIED
+    source: "docs/references.bib entry P01; Crossref record, docs/agent_reports/B3_crossref_verification_log.md (P01) and crossref_cache/P01.json; body UNREAD"
+  surface_material:
+    value: Pt
+    label: SECTION_READ
+    source: "P01 abstract, sentence 2 (+ABSTRACT(publisher)); source map SM22"
+  surface_normal_hkl:
+    value: [1, 1, 1]
+    label: SECTION_READ
+    source: "P01 abstract, sentence 2 (+ABSTRACT(publisher)): Pt(111); source map SM22"
+  beam_azimuth_uvw:
+    value: null
+    label: UNVERIFIED
+    source: "docs/05 section 2 CFG-O: azimuth UNVERIFIED (P01 body unread)"
+  beam_energy_keV:
+    value: null
+    unit: keV
+    label: UNVERIFIED
+    source: "docs/05 section 2 CFG-O: energy UNVERIFIED (P01 body unread)"
+  reflection_order:
+    value: null
+    label: UNVERIFIED
+    source: "docs/05 section 2 CFG-O: reflection order UNVERIFIED (P01 body unread)"
+  glancing_angle_ext_mrad:
+    value: null
+    unit: mrad
+    label: UNVERIFIED
+    source: "docs/05 section 2 CFG-O: glancing angle UNVERIFIED (P01 body unread)"
+  step_types:
+    value: [monatomic_height_steps]
+    label: SECTION_READ
+    source: "P01 abstract, sentence 4 (+ABSTRACT(publisher)); source map SM22"
+  height_sensitivity_nm:
+    value: 0.01
+    unit: nm
+    label: SECTION_READ
+    source: "P01 abstract, sentence 4 (+ABSTRACT(publisher)): 'of the order of 0.01 nm'"
+  reference_model:
+    value: R2
+    label: DERIVED_HERE
+    source: "P01 abstract (two regions of the reflection image overlapped by an electron biprism); the R2 reading is DERIVED_HERE (SM22)"
+  reconstruction_method:
+    value: optical
+    label: SECTION_READ
+    source: "P01 abstract, sentence 3 (+ABSTRACT(publisher))"

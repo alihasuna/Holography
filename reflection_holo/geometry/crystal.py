@@ -120,7 +120,7 @@ def reciprocal_lattice_cycles(direct_vectors) -> np.ndarray:
     """Reciprocal basis b_j (rows, cycles/A) of a direct basis a_i (rows, A): a_i . b_j = delta_ij.
 
     General (any lattice), b = (A^-1)^T with A the matrix of direct vectors as rows. Raises for a
-    singular basis. Evidence DERIVED_HERE (standard definition).
+    singular basis. Source map SM02 (reciprocal lattice), evidence DERIVED_HERE (standard definition).
     """
     A = np.asarray(direct_vectors, dtype=float)
     if A.shape != (3, 3):
@@ -133,7 +133,8 @@ def reciprocal_lattice_cycles(direct_vectors) -> np.ndarray:
 def rod_decomposition(hkl) -> tuple[tuple[int, int, int], int]:
     """Split a reflection into its primitive rod direction p and order n, hkl = n p (n = gcd > 0).
 
-    Example: (6,-6,6) -> ((1,-1,1), 6); (0,0,8) -> ((0,0,1), 8). Evidence DERIVED_HERE.
+    Example: (6,-6,6) -> ((1,-1,1), 6); (0,0,8) -> ((0,0,1), 8). Source map SM02, evidence
+    DERIVED_HERE.
     """
     h, k, l = _as_hkl(hkl)
     n = gcd(gcd(abs(h), abs(k)), abs(l))

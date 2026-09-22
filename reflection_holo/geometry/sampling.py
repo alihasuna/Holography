@@ -39,7 +39,8 @@ def antialias_max_angle_rad(pixel_A: float, wavelength_A_: float, *, rule: str) 
 
 def require_angle_in_band(angle_rad: float, pixel_A: float, wavelength_A_: float, *,
                           rule: str) -> None:
-    """Refuse (SamplingError) an outgoing-beam angle outside the anti-aliasing band (SM15)."""
+    """Refuse (SamplingError) an outgoing-beam angle outside the anti-aliasing band (SM15;
+    ceiling DERIVED_HERE, 2/3 rule source UNVERIFIED)."""
     ceiling = antialias_max_angle_rad(pixel_A, wavelength_A_, rule=rule)
     if abs(angle_rad) > ceiling:
         raise SamplingError(

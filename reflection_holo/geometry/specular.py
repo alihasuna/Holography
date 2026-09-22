@@ -30,7 +30,7 @@ from reflection_holo.geometry.wavelength import k_ang_per_A, wavelength_A
 
 
 def wrap_to_pi(x):
-    """Wrap an angle to (-pi, +pi] (calculator wrap_to_pi). Evidence DERIVED_HERE."""
+    """Wrap an angle to (-pi, +pi] (calculator wrap_to_pi). Source map SM05, evidence DERIVED_HERE."""
     out = -((-np.asarray(x, dtype=float) + np.pi) % TWO_PI - np.pi)
     return float(out) if np.ndim(out) == 0 else out
 
@@ -92,7 +92,7 @@ class SpecularCondition:
 
     @property
     def foreshortening(self) -> float:
-        """1/sin(theta_ext), the image foreshortening along the beam (SM07, check T20)."""
+        """1/sin(theta_ext), the image foreshortening along the beam (SM07, DERIVED_HERE; T20)."""
         self._require_accessible()
         return float(1.0 / np.sin(self.theta_ext))
 
@@ -112,7 +112,8 @@ class SpecularCondition:
                     mod2pi=frac * TWO_PI, wrapped=wrap_to_pi(signed))
 
     def dphi_dtheta(self, h_A: float) -> float:
-        """d|Delta_phi|/d(theta_ext) = (4 pi h / lambda) cos(theta_ext) in rad/rad (SM05)."""
+        """d|Delta_phi|/d(theta_ext) = (4 pi h / lambda) cos(theta_ext) in rad/rad (SM05,
+        DERIVED_HERE)."""
         self._require_accessible()
         return float(4.0 * np.pi * abs(h_A) / self.lam_A * np.cos(self.theta_ext))
 
@@ -153,7 +154,8 @@ def beam_wavevectors_slab(theta_in_ext: float, theta_out_ext: float, k: float):
         k_in  = k (-sin theta_in,  0, cos theta_in)
         k_out = k (+sin theta_out, 0, cos theta_out)
     Use SurfaceFrame.to_crystal to express them on cubic axes. q = k_out - k_in has
-    q.n_hat = k (sin theta_in + sin theta_out). Evidence DERIVED_HERE (C report section 2.2).
+    q.n_hat = k (sin theta_in + sin theta_out). Source map SM03, evidence DERIVED_HERE (C report
+    section 2.2).
     """
     for th in (theta_in_ext, theta_out_ext):
         if not 0.0 <= th <= np.pi / 2:

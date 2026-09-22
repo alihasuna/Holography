@@ -1,6 +1,7 @@
 """Exceptions raised by the geometry guards (docs/05_final_repository_specification.md section 4.1).
 
-Every guard REFUSES (raises) instead of warning, so that no result can be produced from a forbidden,
+Source map SM02, SM04, SM06, SM15; evidence DERIVED_HERE. Every guard REFUSES (raises) instead of
+warning, so that no result can be produced from a forbidden,
 inaccessible or badly sampled configuration without the caller handling the error explicitly.
 """
 from __future__ import annotations
