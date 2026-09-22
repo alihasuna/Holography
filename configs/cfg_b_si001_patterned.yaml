@@ -61,14 +61,18 @@ parameters:
   target_reflection_hkl:
     value: [0, 0, 8]
     unit: none
-    label: DERIVED_HERE
+    label: ASSUMPTION
     item: 9
+    stands_in_for_item: 9
+    assumption_id: B17
     source: "docs/05 section 2 CFG-B: (008) is the proposed (recommended) working condition, derived there (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x; allowed, accessible); the condition actually recorded is PROJECT_INPUT item 9, not supplied"
   second_reflection_hkl:
     value: [0, 0, 12]
     unit: none
-    label: DERIVED_HERE
+    label: ASSUMPTION
     item: 9
+    stands_in_for_item: 9
+    assumption_id: B17
     source: "docs/05 section 2 CFG-B: (0,0,12) as the recommended second condition; the condition actually recorded is PROJECT_INPUT item 9, not supplied"
   not_recommended_reflections_hkl:
     value: [[0, 0, 4]]
@@ -83,8 +87,10 @@ parameters:
   step_types:
     value: [single_layer_a4_screw_related, double_layer_a2_translation, patterned_mesa_trench]
     unit: none
-    label: DERIVED_HERE
+    label: ASSUMPTION
     item: 14
+    stands_in_for_item: 14
+    assumption_id: B18
     source: "docs/05 section 2 CFG-B lists the three step types this configuration covers (a/4 and a/2 relations DERIVED_HERE, docs/03 section 2 and C2); which of them is the intended observable is PROJECT_INPUT item 14, not supplied"
   step_translations:
     value:
