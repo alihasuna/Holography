@@ -1,0 +1,280 @@
+# S2: consolidation of duplicated quantities and helpers in reflection_holo
+
+Scope: remove duplicates so that each quantity and helper has one canonical implementation that the
+other modules import. No physics and no test tolerance changed. Nothing committed or pushed.
+
+Baseline: repository commit 608ce91 (branch claude/electron-holography-orchestration-nakd7r;
+working tree clean). `venv/bin/pytest -q` before any change: `355 passed in 5.90s`.
+
+"Before" line numbers refer to commit 608ce91; "after" line numbers refer to the working tree at the
+end of this pass.
+
+## Log
+
+### 1. Shadow length (canonical: `reflection_holo.geometry.projection.shadow_length_A`)
+
+Before:
+* `reflection_holo/structure/shadows.py:44-51` private `_shadow_length_A(height_A, theta)` =
+  `float(h) / math.tan(theta)` (a copy of the formula).
+* `reflection_holo/structure/shadows.py:54-56` public labelled wrapper `shadow_length_A(h, theta,
+  theta_label)` calling the private copy; `:183` (per-step nominal length in
+  `terrace_shadow_strips`) and `:303` (ray-trace margin in `feature_shadow_intervals`) also called it.
+* `tests/structure/test_structure_shadows.py:218-223` `test_private_shadow_helper_matches_geometry_module`
+  compared the private copy with the geometry function (rel 1e-15).
+
+After:
+* `reflection_holo/structure/shadows.py:25` `from reflection_holo.geometry import projection`.
+* `reflection_holo/structure/shadows.py:42-50` the labelled wrapper keeps its signature and its
+  label and range checks (`_check_theta`) and returns `projection.shadow_length_A(h, theta)`; the
+  private copy is deleted. `:177` and `:298` call `projection.shadow_length_A`.
+* Test converted, not removed (count unchanged): `tests/structure/test_structure_shadows.py:217-244`
+  `test_structure_shadow_lengths_use_geometry_module` asserts that `structure.shadows` has no
+  `_shadow_length_A`, spies on `geometry.projection.shadow_length_A` and checks that the wrapper (12
+  height/angle pairs, the same grid as the old test) and the per-step nominal length of a built
+  single a/4 staircase call it and return exactly its value. Mutation check: with the wrapper
+  temporarily reverted to an inline `|h|/tan(theta)`, this test failed (`1 failed`); restored.
+* Behaviour difference (not physics): the canonical function uses `|h|`. The old private copy used
+  the signed `h`, so the structure wrapper returned a negative "length" for a negative height. No
+  caller passed a negative height: `terrace_shadow_strips` passes `abs(height)` and the features pass
+  a positive height.
+* `structure/shadows.py:33-39` `_check_theta` is kept: it enforces the theta evidence label and gives
+  the `theta_ext_rad must be in (0, pi/2)` message that the structure tests match. The canonical
+  function checks the range again.
+
+`venv/bin/pytest -q tests/structure` after this change: `98 passed in 0.89s`.
+
+### 2. Phase wrapping (canonical: `reflection_holo.geometry.specular.wrap_to_pi`)
+
+Inventory (grep for `wrap`, `% TWO_PI`, `np.mod`, `np.angle(np.exp`, `np.unwrap` in
+`reflection_holo/`): only two wrapping helpers existed, both the calculator's expression
+`-((-x + pi) % 2pi - pi)` onto (-pi, +pi]. `np.unwrap` (Itoh unwrapping in reconstruction, rocking
+series) and the circular median in `quantification/controls.py` are not wrapping helpers.
+
+Choice: `geometry.specular.wrap_to_pi` is canonical. It was already imported by
+`quantification/controls.py:16`, `quantification/height.py:40`, `quantification/rocking.py:27` and the
+geometry and quantification tests, and the spec places the step phase (SM03, SM05) in geometry.
+
+Before:
+* `reflection_holo/geometry/specular.py:32-35` canonical definition.
+* `reflection_holo/reconstruction/sideband.py:59-61` second definition (same expression; returned a
+  0-d array for a scalar where the geometry one returns a float).
+
+After:
+* `reflection_holo/reconstruction/sideband.py:50` `from reflection_holo.geometry.specular import
+  wrap_to_pi` (definition deleted). `reflection_holo/reconstruction/__init__.py:6-9` still exports the
+  name, so `from reflection_holo.reconstruction import wrap_to_pi` (used by
+  `tests/reconstruction/*`) now returns the geometry object (`is` identity checked).
+* `reflection_holo/geometry/specular.py:33-39` docstring states that it is the package's one
+  wrapping helper. Expression unchanged.
+* Only behaviour difference: a scalar argument through the reconstruction name now gives a Python
+  float instead of a 0-d array. The only scalar use, `tests/reconstruction/holo_cases.py:77`, wraps it
+  in `float()`.
+
+`venv/bin/pytest -q tests/reconstruction tests/geometry tests/quantification` after this change:
+`181 passed in 5.07s`.
+
+### 3. sigma_phi = sqrt(2)/(mu sqrt(N)), SM12 (canonical: `reflection_holo.quantification.noise.phase_noise_sigma_rad`)
+
+What the two definitions were:
+* `reflection_holo/quantification/noise.py:15-22` `phase_noise_sigma_rad(*, contrast_mu, counts_N)`:
+  the formula, with N taken as given ("counts in the reconstruction aperture area").
+* `reflection_holo/reconstruction/sideband.py:475-494` `sideband_phase_noise(fringe_contrast,
+  counts_per_px, mask)`: its own copy of the formula (`:493`), with N = counts_per_px x A_eff and
+  A_eff = n_pix / sum(W^2) pixels (about 1/(pi R^2) for a top-hat disc of radius R).
+
+Reading of docs/03 section 6 ("N counts in the reconstruction aperture area"), SM12 and C report
+section 7.4: eq. (7.3) derives sigma_phi for one sideband coefficient c = (1/M) sum_j I_j
+exp(-2 pi i q_c.r_j) estimated over M pixels, with N = M I_bar, the counts in the real-space area
+that the estimate averages. A reconstruction with a Fourier mask W averages each output pixel over
+A_eff = n_pix / sum(W^2) pixels; the single-bin case (sum W^2 = 1) gives A_eff = M. The two modules
+therefore use the same quantity. N is the counts in the real-space area of one reconstruction
+resolution element; the reconstruction module gives it operationally for a given mask. The two
+definitions are not physically different, so they are unified rather than kept under separate
+names.
+
+Changes:
+* `reflection_holo/quantification/noise.py:20-43`: canonical. The docstring now defines N as "the
+  number of detected electrons in the REAL-SPACE area of ONE reconstruction resolution element, the
+  area over which one reconstructed pixel averages the hologram: A_eff = n_pix / sum_q W(q)^2 pixels"
+  and states the relation to docs/03, SM12 and C eq. (7.3). It also states the scope: one hologram,
+  no reference division, white Poisson noise, sigma_phi << 1. Module docstring `:1-12` updated. The
+  code is unchanged.
+* `reflection_holo/reconstruction/sideband.py:52` imports `phase_noise_sigma_rad`. In
+  `sideband_phase_noise` (`:472-494`), `:493` now returns `phase_noise_sigma_rad(contrast_mu=mu,
+  counts_N=N)`. The docstring says the function supplies N and defers to the canonical formula. The
+  N computation, validation and returned keys are unchanged.
+* Numerical identity: for 2000 random masks, contrasts and doses, old expression vs new call:
+  `max |new - old| over 2000 random masks: 0`. The return type is still `float`.
+* Reconstruction noise test, unchanged file and tolerance (|ratio - 1| <= 4 standard errors),
+  `venv/bin/pytest -q -s tests/reconstruction/test_phase_noise.py`:
+  ```
+  apod=none mu=1.000 counts/px=100 N=18357 sigma_pred=0.01044 sigma_meas=0.01038 ratio=0.9948 rel_se=0.0094 K=16 seed=20260922
+  apod=hann mu=1.000 counts/px=100 N=106376 sigma_pred=0.00434 sigma_meas=0.00435 ratio=1.0029 rel_se=0.0166 K=16 seed=20260922
+  apod=none mu=0.500 counts/px=100 N=18357 sigma_pred=0.02088 sigma_meas=0.02088 ratio=1.0003 rel_se=0.0094 K=16 seed=20260922
+  apod=hann mu=0.500 counts/px=100 N=106376 sigma_pred=0.00867 sigma_meas=0.00885 ratio=1.0210 rel_se=0.0166 K=16 seed=20260922
+  apod=none mu=0.250 counts/px=100 N=18357 sigma_pred=0.04175 sigma_meas=0.04183 ratio=1.0019 rel_se=0.0094 K=16 seed=20260922
+  apod=hann mu=0.250 counts/px=100 N=106376 sigma_pred=0.01734 sigma_meas=0.01757 ratio=1.0127 rel_se=0.0166 K=16 seed=20260922
+  apod=none mu=0.500 counts/px=10 N=1836 sigma_pred=0.06601 sigma_meas=0.06664 ratio=1.0095 rel_se=0.0094 K=16 seed=20260922
+  apod=hann mu=0.500 counts/px=10 N=10638 sigma_pred=0.02742 sigma_meas=0.02789 ratio=1.0171 rel_se=0.0166 K=16 seed=20260922
+  8 passed in 1.54s
+  ```
+  Consistency check: top-hat, R = |q_c|/3 = 1/24 cycles/A, 1 A pixels (`holo_cases.make_grid`), so
+  1/(pi R^2) = 183.3 A^2, and N/(100 counts/px) = 183.57 px (disc pixelation).
+  `tests/quantification/test_quant_noise.py` (calculator table, docs/03 example): 8 passed.
+* Also unchanged: dividing by an equally noisy empty hologram multiplies sigma by sqrt(2). This is
+  stated in `sideband_phase_noise` and has no function of its own.
+
+### 4. Evidence-label checker (canonical: `reflection_holo.io.labels.require_evidence_label`)
+
+Before, three checkers:
+* `reflection_holo/io/config.py:48-50` `EVIDENCE_LABELS`, `TEST_ONLY_LABEL`, and `:238-245` the
+  inline check in `_parse_parameter`: the label must equal one of the seven labels, and TEST_ONLY is
+  accepted only with `allow_test_only` (raises `ConfigError`).
+* `reflection_holo/structure/si001.py:43` `LABEL_PREFIXES = ("PROJECT_INPUT", "TEST_ONLY",
+  "ASSUMPTION")`, `:58-63` `_check_label` (a non-blank string starting with one of the prefixes;
+  `ValueError`), called at `:398` (overlayer) and `:443` (azimuth).
+* `reflection_holo/structure/shadows.py:26` `_LABEL_PREFIXES` (the same tuple) and `:29-33`
+  `_check_label` (same rule, different message), called at `:37` (theta) and `:230` (feature).
+
+Choice: io's version is canonical. It is moved out of `_parse_parameter` into the new module
+`reflection_holo/io/labels.py`, which imports only the standard library. Importing
+`reflection_holo.io.config` directly would not create a cycle (io imports geometry, never
+structure), but it would make structure import yaml and the configuration loader to check a string.
+The module lives in io/ as instructed; it is not a shared module outside io.
+
+After:
+* `reflection_holo/io/labels.py:17-20` `EVIDENCE_LABELS`, `TEST_ONLY_LABEL`, `KNOWN_LABELS`;
+  `:23-49` `require_evidence_label(label, what, *, accepted, qualified, error=ValueError)`. With
+  `qualified=False` the label must equal an accepted label (configuration files). With
+  `qualified=True` it must start with one and may carry text such as "PROJECT_INPUT item 8"
+  (in-memory labelled arguments). `accepted` must be a subset of the known labels.
+* `reflection_holo/io/config.py:47` imports the names from `io.labels`, so
+  `io.config.EVIDENCE_LABELS` still exists for `tests/io`. `:236-242`: the TEST_ONLY-from-file policy
+  message stays in config (it is loader policy); the membership check calls
+  `require_evidence_label(..., qualified=False, error=ConfigError)`.
+* `reflection_holo/structure/si001.py:37` imports it. `:44` `LABEL_PREFIXES` is kept as structure's
+  policy (which labels a caller may attach to a physical argument). `_check_label` is deleted;
+  `:391-392` and `:437-438` call `require_evidence_label(..., accepted=LABEL_PREFIXES,
+  qualified=True)`.
+* `reflection_holo/structure/shadows.py:26,28` import the checker and `LABEL_PREFIXES` from
+  `.si001`. `_LABEL_PREFIXES` and `_check_label` are deleted; `:34-35` and `:224-225` call the
+  canonical checker.
+* Equivalence check: the old `si001._check_label`, old `shadows._check_label` and old io inline
+  logic (read from git HEAD) were compared with the new calls on 28 labels, including None, "", "  ",
+  3, a list, "PROJECT_INPUTS", "ASSUMPTIONAL", " PROJECT_INPUT", lower case, all seven labels,
+  qualified forms, and io with `allow_test_only` both False and True. Output:
+  `prefix tuples equal: True` / `labels checked: 28 mismatches: []`.
+* Message changes: every message still contains "label", which is what the tests match. The
+  structure/shadows wording is now the si001 wording. The io membership message changed from
+  "has label X, not one of (...)" to "label X is not one of (...)".
+
+`venv/bin/pytest -q tests/io tests/structure` after this change: `148 passed in 1.05s`.
+
+### 5. Other duplicates: survey, the two consolidated, and those left
+
+Survey method: every `def` and module-level constant in `reflection_holo/*/*.py` was listed; the
+package was grepped for wavelength and constants (`HC_EV_M`, `M_E_C2_EV`, `5.43`, `2 * np.pi`),
+hashing, grid/frequency helpers, angle-range checks, and the shadow, noise, wrap and label helpers.
+Results for wavelength, constants and grids:
+* Wavelength: one implementation, `geometry/wavelength.py`. No other package module computes it;
+  quantification takes `wavelength_A` as an argument. Physical constants are defined only in
+  `constants.py`. The calculator in `tools/` is the reference implementation the tests compare
+  against, outside the package, and was not touched.
+* Grids: `optics.fields.Grid` is the only coordinate/frequency grid, and reconstruction uses its
+  methods. `geometry.sampling` (anti-aliasing band limits) and `geometry.plate_cell` (cell geometry)
+  compute other quantities.
+
+Consolidated (identical in meaning and in floating-point result):
+* Reference-model names R1/R2/R3 (docs/05 section 5 item 3). Before: `reflection_holo/io/config.py:61`
+  and `reflection_holo/optics/hologram.py:56`, two identical tuples. After: canonical
+  `optics/hologram.py:56`; `io/config.py:48` imports it and the io definition is deleted. The
+  valid names are those that optics implements. `io.config.REFERENCE_MODELS is
+  optics.hologram.REFERENCE_MODELS` is True.
+* Foreshortening 1/sin(theta_ext) (SM07, T20). Before: `reflection_holo/geometry/specular.py:93-97`
+  (`SpecularCondition.foreshortening`, its own `1.0 / np.sin(theta_ext)`) and
+  `geometry/projection.py:37-39` (unchanged). After: canonical `projection.foreshortening`; `specular.py:28`
+  imports it and `:97-102` (property at `:98`) returns `_foreshortening(self.theta_ext)`. Over 65 accessible conditions
+  (d_111, d_001, d_110 rods, orders 1-24, 200 keV, 12 V): `max |new - old|: 0.0`.
+
+Full suite after this step: `355 passed in 6.17s`. Each module also imports on its own in a fresh
+process; importing `reflection_holo.structure` does not import yaml or `io.config`.
+
+## Left duplicated, and why
+
+1. Shadow masks: `quantification/shadow.py` (`shadow_masks`) and `structure/shadows.py`
+   (`shadowed_intervals`, `periodic_shadowed_intervals`, `terrace_shadow_strips`,
+   `feature_shadow_*`). They overlap only for the illumination shadow of piecewise-constant terraces
+   with vertical risers. quantification also computes the blocked-view (exit-side) strip and the
+   usable mask on sampled coordinates, without periodicity. structure computes the illumination
+   shadow only, but for piecewise-linear profiles (sloped sidewalls), periodic cells and as
+   intervals. They are not identical in meaning, so they were not merged. Open issue (not changed):
+   since commit 8913007, docs/03 section 4 and docs/05 section 4.5 require the blocked-view strip to
+   be masked as well. The `structure/shadows.py:11-13` docstring ("exit-side occlusion is not part
+   of the documented model ... NOT IMPLEMENTED") is now out of date, and structure's shadows lack
+   that strip.
+2. Wrap period h_2pi: `geometry/specular.py:88` (`SpecularCondition.h_2pi_A = lam/(2 sin
+   theta_ext)`, NaN when inaccessible), `quantification/height.py:83-91` (`wrap_period_A`, general
+   theta_in != theta_out, raises `SmallDenominatorError`) and `height.py:162` (`TWO_PI / s` inside
+   `height_from_phase`). They mean the same thing for the specular beam, but merging needs a
+   layering decision. Spec 4.1 puts h_2pi in geometry, yet the general function and its error class
+   live in quantification, and geometry must not import quantification. `height.py:162` is also a
+   different arithmetic path (tested against `h_2pi_A` at 1e-12).
+3. Height noise term: `quantification/noise.py:46-48` (`h_2pi sigma_phi / 2 pi`) and the
+   `sigma_phi / s` term inside `height.py:158` (a quadrature sum with the sensitivity uncertainty).
+   The quantity is the same, but it is inline in a larger formula, not a helper.
+4. Specular step phase: `SpecularCondition.step_phase` (`-2 h K_ext`, the calculator port) and
+   `specular_step_phase` (`-(4 pi/lambda) h sin theta_ext`), both in `geometry/specular.py`. The
+   arithmetic paths differ (K_ext against k sin(arcsin(K_ext/k))), so merging would change the
+   calculator-port values at rounding level. Related but different: `dphi_dtheta` (`specular.py:119`)
+   and `quantification/rocking.py:max_tilt_step_rad` (= pi / dphi_dtheta).
+5. Angle-range validators with different intervals and messages:
+   `geometry/projection.py:_check_theta` (open), `structure/shadows.py:_check_theta` (open plus a
+   label), `quantification/height.py:_angles` and `specular.beam_wavevectors_slab` (closed
+   [0, pi/2]), `rocking.max_tilt_step_rad` ([0, pi/2)), and `quantification/shadow.shadow_masks`
+   (open). Other input validators: `optics/hologram._require_finite` and `reconstruction/sideband.
+   _positive`. Tests match some of these messages.
+6. Hashes: `optics.fields.sha256_array` (dtype + shape + bytes); `structure/si001.py:588` (raw
+   `<f8` bytes of the positions, recorded as `positions_sha256`); `io.config.canonical_sha256`
+   (canonical JSON); `provenance.manifest.sha256_file` against `io/config.py` (end of
+   `load_config_file`, `:416`) `hashlib.sha256(blob)`. The first three are different definitions, and
+   unifying them would change recorded hashes. The last pair mean the same thing, but io hashes the
+   exact bytes it parsed in one read, and `sha256_file` would read the file a second time.
+7. Step-edge names: `io/config.py:60` `STEP_EDGE_ORIENTATIONS = ("parallel_to_beam",
+   "transverse_to_beam")` and `structure/si001.py` `Staircase.edges in ("parallel", "transverse")`.
+   Same meaning, different spellings in a configuration schema and a builder API; unifying would
+   change one of those interfaces.
+8. `structure/shadows.shadow_length_A(h, theta, theta_label)` and
+   `geometry/projection.shadow_length_A(h, theta)` share a name. The structure one is a labelled
+   wrapper with no copy of the formula (change 1).
+
+## Final full suite (verbatim, `venv/bin/pytest -q`, after all changes)
+
+```
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 60%]
+........................................................................ [ 81%]
+...................................................................      [100%]
+355 passed in 5.96s
+```
+
+Test count: 355 before and 355 after. No test was removed. The one test that only compared two
+copies, `tests/structure/test_structure_shadows.py::test_private_shadow_helper_matches_geometry_module`,
+was converted in place into `test_structure_shadow_lengths_use_geometry_module` (change 1). No
+tolerance was changed, and no other test file was edited.
+
+## Canonical choices (summary)
+
+| quantity / helper | canonical | users now importing it |
+|---|---|---|
+| shadow length abs(h)/tan(theta_ext) | `geometry.projection.shadow_length_A` | `structure.shadows` (labelled wrapper, per-step lengths, feature margin) |
+| phase wrap to (-pi, pi] | `geometry.specular.wrap_to_pi` | `quantification.{controls,height,rocking}`, `reconstruction.sideband` (re-exported) |
+| sigma_phi = sqrt(2)/(mu sqrt(N)) | `quantification.noise.phase_noise_sigma_rad` (N defined in its docstring) | `reconstruction.sideband.sideband_phase_noise` (supplies N from the mask) |
+| evidence-label check | `io.labels.require_evidence_label` (+ `EVIDENCE_LABELS`, `TEST_ONLY_LABEL`) | `io.config`, `structure.si001`, `structure.shadows` |
+| reference-model names R1/R2/R3 | `optics.hologram.REFERENCE_MODELS` | `io.config` |
+| foreshortening 1/sin(theta_ext) | `geometry.projection.foreshortening` | `geometry.specular.SpecularCondition.foreshortening` |
+
+## NOT RUN
+
+No simulation, engine, configuration validation CLI or manifest-writing run: this pass changed library
+code and one test only. No commit or push.

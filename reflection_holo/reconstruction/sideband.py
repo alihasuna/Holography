@@ -47,18 +47,15 @@ from typing import Any
 import numpy as np
 
 from reflection_holo.constants import TWO_PI
+from reflection_holo.geometry.specular import wrap_to_pi  # noqa: F401  (canonical; re-exported)
 from reflection_holo.optics.fields import Grid, Hologram, _require_2vector, sha256_array
+from reflection_holo.quantification.noise import phase_noise_sigma_rad
 
 SUBPIXEL_METHODS = ("none", "dft_ratio")
 MASK_SHAPES = ("disc",)
 APODISATIONS = ("none", "hann")
 REFERENCE_CORRECTIONS = ("none", "divide_empty")
 UNWRAPPINGS = ("none", "itoh_raster")
-
-
-def wrap_to_pi(x):
-    """Wrap to (-pi, +pi] (same expression as the calculator's wrap_to_pi)."""
-    return -((-np.asarray(x, float) + np.pi) % TWO_PI - np.pi)
 
 
 def _positive(name: str, value, *, allow_inf: bool = False) -> float:
@@ -476,8 +473,11 @@ def sideband_phase_noise(fringe_contrast: float, counts_per_px: float, mask: np.
     """Predicted phase standard deviation sigma_phi = sqrt(2)/(mu sqrt(N)) of ONE hologram (no
     reference division; dividing by an equally noisy empty hologram multiplies it by sqrt(2)).
 
-    N is the number of counts in the effective resolution area A_eff = n_pix / sum(W^2) pixels, i.e.
-    the reciprocal of the W^2-weighted mask area (for a top-hat disc of radius R: 1/(pi R^2)).
+    This function supplies N for a given mask; sigma_phi itself is computed by the canonical
+    reflection_holo.quantification.noise.phase_noise_sigma_rad (SM12), whose docstring defines N.
+    N = counts_per_px * A_eff, the counts in the effective real-space resolution area
+    A_eff = n_pix / sum(W^2) pixels, i.e. the reciprocal of the W^2-weighted mask area (for a
+    top-hat disc of radius R: 1/(pi R^2)).
     Derivation (DERIVED_HERE): I = N_px (1 + mu cos(...)) gives a sideband of modulus N_px mu/2; white
     Poisson noise of variance N_px per pixel gives a complex sideband noise of variance
     N_px sum(W^2)/n_pix; the phase variance is that over 2 |sideband|^2.
@@ -490,6 +490,6 @@ def sideband_phase_noise(fringe_contrast: float, counts_per_px: float, mask: np.
     f_eff = float(np.sum(W ** 2)) / W.size
     area_px = 1.0 / f_eff
     N = n * area_px
-    return {"sigma_phi_rad": float(np.sqrt(2.0) / (mu * np.sqrt(N))), "N_counts": N,
+    return {"sigma_phi_rad": phase_noise_sigma_rad(contrast_mu=mu, counts_N=N), "N_counts": N,
             "effective_area_px": area_px, "fringe_contrast": mu, "counts_per_px": n}
 

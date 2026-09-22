@@ -34,6 +34,7 @@ import numpy as np
 import reflection_holo
 from reflection_holo.constants import A_SI_A, DIAMOND_BASIS
 from reflection_holo.geometry.frames import SurfaceFrame, surface_frame
+from reflection_holo.io.labels import require_evidence_label
 
 from . import checks
 from .checks import POSITION_TOL_A, WINDOW_TOL_A, StructureAssertionError
@@ -53,14 +54,6 @@ _MIN_SUBSTRATE_LAYERS = 4              # the relation check compares the top 4 l
 
 class StaircaseError(ValueError):
     """A requested terrace staircase is refused (spec 4.2 assertions (d) and (e))."""
-
-
-def _check_label(label, what: str) -> str:
-    if not isinstance(label, str) or not label.strip():
-        raise ValueError(f"{what}: an evidence label string is required")
-    if not label.startswith(LABEL_PREFIXES):
-        raise ValueError(f"{what}: label {label!r} must start with one of {LABEL_PREFIXES}")
-    return label
 
 
 def _axis_key(uvw) -> tuple[int, int, int]:
@@ -395,7 +388,8 @@ def _overlayer_option(overlayer, vacuum_above_A: float) -> dict:
     if not isinstance(overlayer, OverlayerSpec):
         raise TypeError("overlayer must be an OverlayerSpec or None (explicit clean surface, "
                         "ASSUMPTION B7)")
-    _check_label(overlayer.label, "overlayer (PROJECT_INPUT item 12)")
+    require_evidence_label(overlayer.label, "overlayer (PROJECT_INPUT item 12)",
+                           accepted=LABEL_PREFIXES, qualified=True)
     if not isinstance(overlayer.material, str) or not overlayer.material.strip():
         raise ValueError("overlayer.material is required")
     T = float(overlayer.thickness_A)
@@ -440,7 +434,8 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     """
     a = float(A_SI_A)
     q = a / 4.0
-    _check_label(azimuth_label, "azimuth (PROJECT_INPUT item 8)")
+    require_evidence_label(azimuth_label, "azimuth (PROJECT_INPUT item 8)",
+                           accepted=LABEL_PREFIXES, qualified=True)
     az = tuple(int(v) for v in azimuth_uvw)
     if tuple(azimuth_uvw) != az and not np.allclose(np.asarray(azimuth_uvw, float), az):
         raise ValueError("azimuth_uvw must be integer indices")

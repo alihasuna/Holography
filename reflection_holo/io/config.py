@@ -44,10 +44,9 @@ from reflection_holo.geometry.crystal import diamond_allowed, rod_decomposition
 from reflection_holo.geometry.errors import GeometryError
 from reflection_holo.geometry.frames import surface_frame
 from reflection_holo.geometry.specular import specular_condition_for
+from reflection_holo.io.labels import EVIDENCE_LABELS, TEST_ONLY_LABEL, require_evidence_label
+from reflection_holo.optics.hologram import REFERENCE_MODELS  # docs/05 section 5 item 3
 
-EVIDENCE_LABELS = ("METADATA_VERIFIED", "SECTION_READ", "REPRODUCED", "PROJECT_INPUT",
-                   "ASSUMPTION", "DERIVED_HERE", "UNVERIFIED")
-TEST_ONLY_LABEL = "TEST_ONLY"
 LEVELS = ("run", "placeholder")
 STATUSES = ("benchmark", "experiment", "placeholder")
 CONFIG_IDS = {"CFG-A": "si111_cleaved_110azimuth", "CFG-B": "si001_patterned",
@@ -58,7 +57,6 @@ PARAM_KEYS_OPTIONAL = ("unit", "item", "note")
 TOP_KEYS = ("schema_version", "config_id", "name", "status", "description", "parameters")
 REFERENCE_TRAJECTORIES = ("vacuum_beside_sample", "reflected_flat_area",
                           "transmitted_thin_region")        # docs/06 item 15
-REFERENCE_MODELS = ("R1", "R2", "R3")                       # docs/05 section 5 item 3
 STEP_EDGE_ORIENTATIONS = ("parallel_to_beam", "transverse_to_beam")
 
 # name -> (kind, unit or None, docs/06 item expected when the label is PROJECT_INPUT, or None)
@@ -236,13 +234,12 @@ def _parse_parameter(cid: str, name: str, spec, allow_test_only: bool) -> Parame
     if extra:
         raise ConfigError(f"{cid}: parameter {name} has unknown keys {extra}")
     label = spec["label"]
-    if label == TEST_ONLY_LABEL:
-        if not allow_test_only:
-            raise ConfigError(f"{cid}: parameter {name} is labelled TEST_ONLY; TEST_ONLY values "
-                              f"are accepted only from in-memory test fixtures")
-    elif label not in EVIDENCE_LABELS:
-        raise ConfigError(f"{cid}: parameter {name} has label {label!r}, not one of "
-                          f"{EVIDENCE_LABELS}")
+    if label == TEST_ONLY_LABEL and not allow_test_only:
+        raise ConfigError(f"{cid}: parameter {name} is labelled TEST_ONLY; TEST_ONLY values "
+                          f"are accepted only from in-memory test fixtures")
+    accepted = EVIDENCE_LABELS + ((TEST_ONLY_LABEL,) if allow_test_only else ())
+    require_evidence_label(label, f"{cid}: parameter {name}", accepted=accepted, qualified=False,
+                           error=ConfigError)
     source = spec["source"]
     if not isinstance(source, str) or not source.strip():
         raise ConfigError(f"{cid}: parameter {name} must state a non-empty source")

@@ -22,38 +22,32 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from reflection_holo.geometry import projection
+from reflection_holo.io.labels import require_evidence_label
+
+from .si001 import LABEL_PREFIXES
+
 _F_TOL_A = 1e-9          # tolerance on H + z tan(theta) when deciding shadowing (angstrom)
-_LABEL_PREFIXES = ("PROJECT_INPUT", "TEST_ONLY", "ASSUMPTION")
-
-
-def _check_label(label, what: str) -> str:
-    if not isinstance(label, str) or not label.strip() or not label.startswith(_LABEL_PREFIXES):
-        raise ValueError(f"{what}: an evidence label starting with one of {_LABEL_PREFIXES} is "
-                         f"required, got {label!r}")
-    return label
 
 
 def _check_theta(theta_ext_rad: float, theta_label: str) -> float:
-    _check_label(theta_label, "external glancing angle (PROJECT_INPUT item 7)")
+    require_evidence_label(theta_label, "external glancing angle (PROJECT_INPUT item 7)",
+                           accepted=LABEL_PREFIXES, qualified=True)
     th = float(theta_ext_rad)
     if not (np.isfinite(th) and 0.0 < th < 0.5 * np.pi):
         raise ValueError(f"theta_ext_rad must be in (0, pi/2), got {theta_ext_rad!r}")
     return th
 
 
-def _shadow_length_A(height_A: float, theta_ext_rad: float) -> float:
-    """Shadow length ``h / tan(theta_ext)`` of a transverse step of height h (SM07, B9).
-
-    Private duplicate of the geometry-module quantity of spec section 4.1 ("shadow length
-    h/tan(theta_ext)"): replace by ``reflection_holo.geometry.projection.shadow_length_A`` at the
-    orchestrator's consolidation (tests/structure checks that the two agree).
-    """
-    return float(height_A) / math.tan(float(theta_ext_rad))
-
-
 def shadow_length_A(height_A: float, theta_ext_rad: float, theta_label: str) -> float:
-    """Public, labelled wrapper of :func:`_shadow_length_A`."""
-    return _shadow_length_A(height_A, _check_theta(theta_ext_rad, theta_label))
+    """Shadow length ``|h| / tan(theta_ext)`` of a transverse step of height h (SM07, B9), with the
+    evidence label of theta_ext required (PROJECT_INPUT item 7).
+
+    Labelled wrapper only: the value is computed by the canonical
+    ``reflection_holo.geometry.projection.shadow_length_A`` (spec section 4.1, "shadow length
+    h/tan(theta_ext)"); this module has no copy of the formula.
+    """
+    return projection.shadow_length_A(height_A, _check_theta(theta_ext_rad, theta_label))
 
 
 # --------------------------------------------------------------------------------------------------
@@ -180,7 +174,7 @@ def terrace_shadow_strips(structure, theta_ext_rad: float, theta_label: str) -> 
         h = abs(s["height_A"])
         per_step.append(dict(step=s["index"], position_A=s["position_A"],
                              upper_terrace_upstream=s["upper_terrace_upstream"],
-                             nominal_shadow_length_A=(_shadow_length_A(h, th)
+                             nominal_shadow_length_A=(projection.shadow_length_A(h, th)
                                                       if s["upper_terrace_upstream"] else 0.0)))
     return ShadowStrips(axis="z", intervals_A=tuple(iv), period_A=Lz, theta_ext_rad=th,
                         theta_label=theta_label, per_step=tuple(per_step),
@@ -227,7 +221,8 @@ class PatternedFeature:
 
 
 def _feature_geometry(f: PatternedFeature):
-    _check_label(f.label, "patterned feature (PROJECT_INPUT item 13)")
+    require_evidence_label(f.label, "patterned feature (PROJECT_INPUT item 13)",
+                           accepted=LABEL_PREFIXES, qualified=True)
     if f.kind not in ("mesa", "trench"):
         raise ValueError("kind must be 'mesa' or 'trench'")
     h = float(f.height_A)
@@ -300,7 +295,7 @@ def feature_shadow_intervals(feature: PatternedFeature, theta_ext_rad: float, th
     """Shadowed z-intervals on the line y = y_A (default: the feature's centre line)."""
     th = _check_theta(theta_ext_rad, theta_label)
     g = _feature_geometry(feature)
-    margin = _shadow_length_A(g["h"], th) + g["big"][0] + 1.0
+    margin = projection.shadow_length_A(g["h"], th) + g["big"][0] + 1.0
     y = g["yc"] if y_A is None else float(y_A)
     return shadowed_intervals(feature_profile_along_beam(feature, y, margin), math.tan(th))
 

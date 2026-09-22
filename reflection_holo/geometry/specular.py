@@ -25,12 +25,16 @@ from reflection_holo.constants import TWO_PI
 from reflection_holo.geometry.crystal import (d_spacing_A, require_allowed_target,
                                               rod_decomposition)
 from reflection_holo.geometry.errors import InaccessibleReflectionError, NotSpecularError
+from reflection_holo.geometry.projection import foreshortening as _foreshortening
 from reflection_holo.geometry.refraction import delta_K_per_A
 from reflection_holo.geometry.wavelength import k_ang_per_A, wavelength_A
 
 
 def wrap_to_pi(x):
-    """Wrap an angle to (-pi, +pi] (calculator wrap_to_pi). Source map SM05, evidence DERIVED_HERE."""
+    """Wrap an angle to (-pi, +pi] (calculator wrap_to_pi). Source map SM05, evidence DERIVED_HERE.
+
+    The package's one phase-wrapping helper: quantification/ and reconstruction/ import it (S2
+    consolidation). Scalars in, float out; arrays in, arrays out."""
     out = -((-np.asarray(x, dtype=float) + np.pi) % TWO_PI - np.pi)
     return float(out) if np.ndim(out) == 0 else out
 
@@ -92,9 +96,10 @@ class SpecularCondition:
 
     @property
     def foreshortening(self) -> float:
-        """1/sin(theta_ext), the image foreshortening along the beam (SM07, DERIVED_HERE; T20)."""
+        """1/sin(theta_ext), the image foreshortening along the beam (SM07, DERIVED_HERE; T20),
+        evaluated by the canonical reflection_holo.geometry.projection.foreshortening."""
         self._require_accessible()
-        return float(1.0 / np.sin(self.theta_ext))
+        return _foreshortening(self.theta_ext)
 
     def step_phase(self, h_A: float) -> dict:
         """Signed and wrapped step phase for a step of signed height h_A (h > 0: up-step).

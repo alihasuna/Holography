@@ -214,10 +214,31 @@ def test_feature_inputs_required_and_checked():
         feature_shadow_intervals(bad, THETA_22P5_MRAD, THETA_LABEL)
 
 
-def test_private_shadow_helper_matches_geometry_module():
-    """Consolidation guard: structure's private helper equals geometry.projection.shadow_length_A."""
-    from reflection_holo.geometry.projection import shadow_length_A as geom_shadow
-    from reflection_holo.structure.shadows import _shadow_length_A
+def test_structure_shadow_lengths_use_geometry_module(monkeypatch):
+    """Consolidation guard (S2): structure.shadows has no copy of the shadow-length formula; its
+    labelled wrapper and the per-step nominal lengths of a built staircase are computed by the
+    canonical geometry.projection.shadow_length_A (spy on the canonical function)."""
+    from reflection_holo.geometry import projection
+    from reflection_holo.structure import shadows as structure_shadows
+    assert not hasattr(structure_shadows, "_shadow_length_A")
+    canonical = projection.shadow_length_A
+    calls = []
+
+    def spy(h_A, theta_ext_rad):
+        calls.append((h_A, theta_ext_rad))
+        return canonical(h_A, theta_ext_rad)
+
+    monkeypatch.setattr(projection, "shadow_length_A", spy)
     for h in (Q, 2 * Q, 100.0, 1000.0):
         for th in (0.0136, THETA_22P5_MRAD, 0.05):
-            assert _shadow_length_A(h, th) == pytest.approx(float(geom_shadow(h, th)), rel=1e-15)
+            calls.clear()
+            assert shadow_length_A(h, th, THETA_LABEL) == canonical(h, th)
+            assert calls == [(h, th)]
+    st = Staircase(edges="transverse", terrace_layers=(0, 1), terrace_widths=(30, 30),
+                   boundary_step_layers=-1)
+    s = build(st, edge_periods=1, substrate_layers=4)
+    calls.clear()
+    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
+    down = [p for p in sh.per_step if p["upper_terrace_upstream"]]
+    assert len(down) == 1 and calls == [(Q, THETA_22P5_MRAD)]
+    assert down[0]["nominal_shadow_length_A"] == canonical(Q, THETA_22P5_MRAD)
