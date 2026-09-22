@@ -7,3 +7,4 @@ venv/
 *.npz
 outputs/
 .pytest_cache/
+*.egg-info/
