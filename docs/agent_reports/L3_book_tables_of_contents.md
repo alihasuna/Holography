@@ -104,7 +104,8 @@ Route read: `https://doi.org/10.1017/CBO9780511615092` resolved to
 (Cambridge Core, HTTP 200; one TOC page). Shown: publication dates "02 December 2009" (online) and
 "27 March 2003" (print); ISBN 9780511615092 and 9780521629959 in the visible block, plus
 `citation_isbn` 9780521620062 in the page metadata; DOI 10.1017/CBO9780511615092; "742 Pages";
-`citation_publication_date` 2003/03. No edition statement (first edition). Chapter number is printed as
+`citation_publication_date` 2003/03, `citation_online_date` 2009/12 (hence the online/print labels on
+the two dates). No edition statement on the page (inference: first and only edition). Chapter number is printed as
 "N - Title"; pages as "pp a-b".
 
 | No. | Title as printed on the route | Pages |
@@ -733,3 +734,343 @@ Formation" (pp. 29-57), ch. 6 "Related Techniques and Specialized Instrumentatio
 (p. 101). Label: structure METADATA_VERIFIED (Wiley Contents PDF + Wiley Crossref deposit). Content: not
 read.
 
+## B12, C02, C03 - Hawkes and Spence (eds.), Springer Handbook of Microscopy, 2019
+
+Bib record: `doi 10.1007/978-3-030-00069-1`, Springer, 2019.
+
+Routes: `https://link.springer.com/book/10.1007/978-3-030-00069-1` (TOC pages `?page=1`, `?page=2`) and
+`https://link.springer.com/content/pdf/bfm:978-3-030-00069-1/1` (29 pp.; printed Contents with parts
+"Part A Electron and Ion Microscopy", "Part B Holography, Ptychography and Diffraction", "Part C
+Photon-based Microscopy", "Part D Applied Microscopy"). Bibliographic block: "Editors : Peter W. Hawkes,
+John C. H. Spence"; "Edition number : 1"; "Copyright information : Springer Nature Switzerland AG 2019";
+Hardcover ISBN 978-3-030-00068-4 "Published: 17 September 2019"; eBook 978-3-030-00069-1 "Published:
+02 November 2019"; "Number of pages : XXXII, 1543".
+
+| No. | Title as printed on the route | Pages |
+|---|---|---|
+| - | Front Matter | I-XXXII |
+| - | Front Matter  [part: Electron and Ion Microscopy] | 1-2 |
+| 1 | Atomic Resolution Transmission Electron Microscopy  [part: Electron and Ion Microscopy] | 3-47 |
+| 2 | Scanning Transmission Electron Microscopy  [part: Electron and Ion Microscopy] | 49-99 |
+| 3 | In Situ Transmission Electron Microscopy  [part: Electron and Ion Microscopy] | 101-187 |
+| 4 | Cryo-Electron Tomography  [part: Electron and Ion Microscopy] | 189-228 |
+| 5 | Scanning Electron Microscopy  [part: Electron and Ion Microscopy] | 229-318 |
+| 6 | Variable Pressure Scanning Electron Microscopy  [part: Electron and Ion Microscopy] | 319-344 |
+| 7 | Analytical Electron Microscopy  [part: Electron and Ion Microscopy] | 345-453 |
+| 8 | High-Speed Electron Microscopy  [part: Electron and Ion Microscopy] | 455-486 |
+| 9 | LEEM, SPLEEM and SPELEEM  [part: Electron and Ion Microscopy] | 487-535 |
+| 10 | Photoemission Electron Microscopy  [part: Electron and Ion Microscopy] | 537-564 |
+| 11 | Spectroscopy with the Low Energy Electron Microscope  [part: Electron and Ion Microscopy] | 565-604 |
+| 12 | Model-Based Electron Microscopy  [part: Electron and Ion Microscopy] | 605-624 |
+| 13 | Aberration Correctors, Monochromators, Spectrometers  [part: Electron and Ion Microscopy] | 625-675 |
+| 14 | Ion Microscopy  [part: Electron and Ion Microscopy] | 677-714 |
+| 15 | Atom-Probe Tomography  [part: Electron and Ion Microscopy] | 715-763 |
+| - | Front Matter  [part: Holography, Ptychography and Diffraction] | 765-766 |
+| 16 | Electron Holography  [part: Holography, Ptychography and Diffraction] | 767-818 |
+| 17 | Ptychography  [part: Holography, Ptychography and Diffraction] | 819-904 |
+| 18 | Electron Nanodiffraction  [part: Holography, Ptychography and Diffraction] | 905-969 |
+| 19 | High-Energy Time-Resolved Electron Diffraction  [part: Holography, Ptychography and Diffraction] | 971-1008 |
+| 20 | Diffractive Imaging of Single Particles  [part: Holography, Ptychography and Diffraction] | 1009-1036 |
+| - | Front Matter  [part: Photon-based Microscopy] | 1037-1038 |
+| 21 | Fluorescence Microscopy  [part: Photon-based Microscopy] | 1039-1088 |
+| 22 | Fluorescence Microscopy with Nanometer Resolution  [part: Photon-based Microscopy] | 1089-1143 |
+| 23 | Zone-Plate X-Ray Microscopy  [part: Photon-based Microscopy] | 1145-1204 |
+| 24 | Microcomputed Tomography  [part: Photon-based Microscopy] | 1205-1236 |
+| - | Front Matter  [part: Applied Microscopy] | 1237-1238 |
+| 25 | Scanning Probe Microscopy in Materials Science  [part: Applied Microscopy] | 1239-1277 |
+| 26 | Electron Tomography in Materials Science  [part: Applied Microscopy] | 1279-1329 |
+| 27 | Scanning Tunneling Microscopy in Surface Science  [part: Applied Microscopy] | 1331-1368 |
+| 28 | Visualizing Electronic Quantum Matter  [part: Applied Microscopy] | 1369-1390 |
+| 29 | Microscopy of Nanoporous Crystals  [part: Applied Microscopy] | 1391-1450 |
+| 30 | Biomedical X-Ray Phase-Contrast Imaging and Tomography  [part: Applied Microscopy] | 1451-1468 |
+| 31 | Atomic Force Microscopy in the Life Sciences  [part: Applied Microscopy] | 1469-1505 |
+| 32 | Microscopy in Forensic Sciences  [part: Applied Microscopy] | 1507-1524 |
+| - | Back Matter  [part: Applied Microscopy] | 1525-1543 |
+
+C02 (Crossref `https://api.crossref.org/works/10.1007/978-3-030-00069-1_16`, fetched): book-chapter
+"Electron Holography"; authors Rafal E. Dunin-Borkowski, András Kovács, Takeshi Kasama, Martha R.
+McCartney, David J. Smith; page "767-818"; container "Springer Handbook of Microscopy" (series "Springer
+Handbooks"); published 2019; ISBNs 9783030000684, 9783030000691. => C02 = ch. 16 (Part B), pp. 767-818,
+DOI 10.1007/978-3-030-00069-1_16: bib record CONFIRMED. Printed section titles (front-matter Contents):
+16.1 Introduction to Electron Holography (767); 16.2 Measurement of Mean Inner Potential and Sample
+Thickness (772); 16.3 Measurement of Magnetic Fields (774); 16.4 Measurement of Electrostatic Fields (791);
+16.5 High-Resolution Electron Holography (800); 16.6 Alternative Forms of Electron Holography (802);
+16.7 Discussion and Conclusions (805); References (806).
+
+C03 (Crossref `https://api.crossref.org/works/10.1007/978-3-030-00069-1_17`, fetched): book-chapter
+"Ptychography"; authors John Rodenburg, Andrew Maiden; page "819-904"; same container, 2019. => C03 =
+ch. 17, pp. 819-904, DOI 10.1007/978-3-030-00069-1_17: bib record CONFIRMED. Printed section titles:
+17.1 Nomenclature (822); 17.2 A Brief History of Ptychography (823); 17.3 How Ptychography Solves the
+Phase Problem (825); 17.4 Sampling and Removal of Artifacts in Images (833); 17.5 Experimental
+Configurations (844); 17.6 Volumetric Imaging (861); 17.7 Spectroscopic Imaging (867); 17.8 Mixed-State
+Decomposition and Handling Partial Coherence (868); 17.9 Theory of Iterative Methods for the
+Ptychographic Inverse Problem (874); 17.10 Wigner Distribution Deconvolution (WDD) and Its Approximations
+(884); 17.11 Conclusions (899); References (900).
+
+Reading-plan mapping:
+- `docs/07_reading_plan.md:39` "C02 in full" -> ch. 16, pp. 767-818. For SM17 (Si mean inner potential)
+  note §16.2 (p. 772) by title.
+- `docs/07_reading_plan.md:40` C03 "forward-model and algorithm sections" -> by title §17.3 (pp. 825-832),
+  §17.8 (pp. 868-873) and §17.9 (pp. 874-883); end pages are the next section's first page minus one
+  (inference from the printed first pages).
+- Label: structure METADATA_VERIFIED; C02, C03 identity METADATA_VERIFIED via Crossref. Content: not read.
+
+## B13 - Kohl and Reimer, Transmission Electron Microscopy: Physics of Image Formation, 5th ed., 2008
+
+Bib record: `doi 10.1007/978-0-387-40093-8`, edition 5, Springer, 2008.
+
+Routes: `https://link.springer.com/book/10.1007/978-0-387-40093-8` (1 TOC page) and the front-matter PDF
+linked there, `https://link.springer.com/content/pdf/bfm:978-0-387-34758-5/1` (15 pp.; note the link uses
+the eBook ISBN; the book DOI uses the hardcover ISBN). Bibliographic block: "Edition number : 5";
+"Copyright information : Springer-Verlag New York 2008"; Hardcover ISBN 978-0-387-40093-8 "Published:
+28 August 2008"; Softcover 978-1-4419-2308-0 (19 November 2010); eBook 978-0-387-34758-5 (15 December 2008).
+
+| No. | Title as printed on the route | Pages |
+|---|---|---|
+| - | Front Matter | 1-15 |
+| 1 | Introduction | 1-15 |
+| 2 | Particle Optics of Electrons | 16-42 [front-matter Contents prints first page 17] |
+| 3 | Wave Optics of Electrons | 43-74 [front-matter Contents prints first page 45] |
+| 4 | Elements of a Transmission Electron Microscope | 75-138 [front-matter Contents prints first page 77] |
+| 5 | Electron–Specimen Interactions. | 139-192 [front-matter Contents prints first page 141] |
+| 6 | Scattering and Phase Contrast | 193-269 [front-matter Contents prints first page 195] |
+| 7 | Theory of Electron Diffraction | 270-325 [front-matter Contents prints first page 273] |
+| 8 | Electron-Diffraction Modesand Applications . | 326-355 [front-matter Contents prints first page 329] |
+| 9 | Imaging of Crystalline Specimens and Their Defects. | 356-415 [front-matter Contents prints first page 359] |
+| 10 | Elemental Analysis by X-ray and Electron Energy-Loss Spectroscopy. | 416-455 [front-matter Contents prints first page 419] |
+| 11 | Specimen Damage by Electron Irradiation | 456-487 [front-matter Contents prints first page 459] |
+| - | Back Matter | 488-586 |
+
+Facts about the two B13 routes:
+- The online page ranges (HTML) and the first pages printed in the book's own Contents DISAGREE from ch. 2
+  on (e.g. ch. 5: online 139-192, printed Contents first page 141; ch. 6: online 193-269, printed 195). A
+  physical copy will follow the printed Contents; the Springer chapter PDFs follow the online ranges. Any
+  locator for B13 must say which pagination it uses.
+- Title differences: online ch. 6 "Scattering and Phase Contrast" vs printed Contents "Scattering and
+  Phase Contrast for Amorphous Specimens"; online ch. 8 "Electron-Diffraction Modesand Applications ."
+  [sic] vs printed "Electron-Diffraction Modes and Applications"; online titles of ch. 5, 9 and 10 end
+  with a stray period.
+- Printed section titles relevant here: 3.1.4 "Electron Interferometry and Coherence" (53); 6.5 "Electron
+  Holography" (241) with 6.5.3 "Off-Axis Holography" (245) and 6.5.4 "Reconstruction of Off-Axis
+  Holograms" (246); 7.4 "Dynamical Theory Including Absorption" (302) with 7.4.2 "Absorption of the
+  Bloch-Wave Field" (306). (Printed pagination.)
+
+Reading-plan mapping (`docs/07_reading_plan.md:41`, "electron-specimen interaction and image-formation
+chapters"): ch. 5 "Electron–Specimen Interactions" (online 139-192 / printed from 141); image formation
+by title: ch. 3 "Wave Optics of Electrons" (online 43-74 / printed from 45) and ch. 6 (online 193-269 /
+printed from 195). Label: structure METADATA_VERIFIED. Content: not read.
+
+## B14 - Williams and Carter, Transmission Electron Microscopy: A Textbook for Materials Science, 2nd ed., 2009
+
+Bib record: `doi 10.1007/978-0-387-76501-3`, edition 2, Springer, 2009.
+
+Routes: `https://link.springer.com/book/10.1007/978-0-387-76501-3` (TOC pages `?page=1..3`) and
+`https://link.springer.com/content/pdf/bfm:978-0-387-76501-3/1` (55 pp.; printed Contents with "PART 1
+BASICS" (1), "PART 2 DIFFRACTION" (195), "PART 3 IMAGING" (369), "PART 4 SPECTROMETRY" (579)).
+Bibliographic block: "Edition number : 2"; "Copyright information : Springer-Verlag US 2009"; Hardcover
+978-0-387-76500-6 (05 August 2009); Softcover 978-0-387-76502-0 (05 August 2009); eBook 978-0-387-76501-3
+(31 July 2009). The online part heading for ch. 1-10 is "Basics".
+
+| No. | Title as printed on the route | Pages |
+|---|---|---|
+| - | Front Matter | I-LXII |
+| - | Front Matter  [part: Basics] | 1-1 |
+| 1 | The Transmission Electron Microscope  [part: Basics] | 3-22 |
+| 2 | Scattering and Diffraction  [part: Basics] | 23-38 |
+| 3 | Elastic Scattering  [part: Basics] | 39-51 |
+| 4 | Inelastic Scattering and Beam Damage  [part: Basics] | 53-71 |
+| 5 | Electron Sources  [part: Basics] | 73-89 |
+| 6 | Lenses, Apertures, and Resolution  [part: Basics] | 91-114 |
+| 7 | How to ‘See’ Electrons  [part: Basics] | 115-126 |
+| 8 | Pumps and Holders  [part: Basics] | 127-140 |
+| 9 | The Instrument  [part: Basics] | 141-171 |
+| 10 | Specimen Preparation  [part: Basics] | 173-193 |
+| - | Front Matter  [part: Diffraction] | 195-195 |
+| 11 | Diffraction in TEM  [part: Diffraction] | 197-209 |
+| 12 | Thinking in Reciprocal Space  [part: Diffraction] | 211-219 |
+| 13 | Diffracted Beams  [part: Diffraction] | 221-233 |
+| 14 | Bloch Waves  [part: Diffraction] | 235-243 |
+| 15 | Dispersion Surfaces  [part: Diffraction] | 245-256 |
+| 16 | Diffraction from Crystals  [part: Diffraction] | 257-269 |
+| 17 | Diffraction from Small Volumes  [part: Diffraction] | 271-282 |
+| 18 | Obtaining and Indexing Parallel-Beam Diffraction Patterns  [part: Diffraction] | 283-309 |
+| 19 | Kikuchi Diffraction  [part: Diffraction] | 311-322 |
+| 20 | Obtaining CBED Patterns  [part: Diffraction] | 323-345 |
+| 21 | Using Convergent-Beam Techniques  [part: Diffraction] | 347-368 |
+| - | Front Matter  [part: Imaging] | 369-369 |
+| 22 | Amplitude Contrast  [part: Imaging] | 371-388 |
+| 23 | Phase-Contrast Images  [part: Imaging] | 389-405 |
+| 24 | Thickness and Bending Effects  [part: Imaging] | 407-417 |
+| 25 | Planar Defects  [part: Imaging] | 419-439 |
+| 26 | Imaging Strain Fields  [part: Imaging] | 441-461 |
+| 27 | Weak-Beam Dark-Field Microscopy  [part: Imaging] | 463-481 |
+| 28 | High-Resolution TEM  [part: Imaging] | 483-509 |
+| 29 | Other Imaging Techniques  [part: Imaging] | 511-532 |
+| 30 | Image Simulation  [part: Imaging] | 533-548 |
+| 31 | Processing and Quantifying Images  [part: Imaging] | 549-578 |
+| - | Front Matter  [part: Spectrometry] | 579-579 |
+| 32 | X-ray Spectrometry  [part: Spectrometry] | 581-603 |
+| 33 | X-ray Spectra and Images  [part: Spectrometry] | 605-623 |
+| 34 | Qualitative X-ray Analysis and Imaging  [part: Spectrometry] | 625-638 |
+| 35 | Quantitative X-ray Analysis  [part: Spectrometry] | 639-662 |
+| 36 | Spatial Resolution and Minimum Detection  [part: Spectrometry] | 663-677 |
+| 37 | Electron Energy-Loss Spectrometers and Filters  [part: Spectrometry] | 679-698 |
+| 38 | Low-Loss and No-Loss Spectra and Images  [part: Spectrometry] | 699-713 |
+| 39 | High Energy-Loss Spectra and Images  [part: Spectrometry] | 715-739 |
+| 40 | Fine Structure and Finer Details  [part: Spectrometry] | 741-760 |
+| - | Back Matter  [part: Spectrometry] | l-1-l-15 |
+
+Printed section titles of possible interest (front-matter Contents; the PDF text layer spaces out some
+digits, e.g. "5 1 9" = 519): 29.6 "Surface Imaging" (519); 29.6.A "Reflection Electron Microscopy" (519);
+29.6.B "Topographic Contrast" (521); 29.11 "Electron Holography" (524).
+
+Reading-plan mapping (`docs/07_reading_plan.md:42`, "as needed"): nothing mandatory. By title, ch. 29
+"Other Imaging Techniques" (pp. 511-532) holds the only REM and holography sections. Label: structure
+METADATA_VERIFIED. Content: not read.
+
+## B15 - Egerton, Electron Energy-Loss Spectroscopy in the Electron Microscope, 3rd ed., 2011
+
+Bib record: `doi 10.1007/978-1-4419-9583-4`, edition 3, Springer, 2011.
+
+Routes: `https://link.springer.com/book/10.1007/978-1-4419-9583-4` (1 TOC page) and
+`https://link.springer.com/content/pdf/bfm:978-1-4419-9583-4/1` (12 pp.). Bibliographic block: "Edition
+number : 3"; "Copyright information : Springer Science+Business Media, LLC 2011"; Hardcover
+978-1-4419-9582-7 (29 July 2011); Softcover 978-1-4899-8649-8 (01 October 2014); eBook 978-1-4419-9583-4
+(29 July 2011). Appendix letters A-F are printed in the Contents ("Appendix A ...").
+
+| No. | Title as printed on the route | Pages |
+|---|---|---|
+| - | Front Matter | i-xii |
+| 1 | An Introduction to EELS | 1-28 |
+| 2 | Energy-Loss Instrumentation | 29-109 |
+| 3 | Physics of Electron Scattering | 111-229 |
+| 4 | Quantitative Analysis of Energy-Loss Data | 231-291 |
+| 5 | TEM Applications of EELS | 293-397 |
+| A | Bethe Theory for High Incident Energies and Anisotropic Materials | 399-404 |
+| B | Computer Programs | 405-418 |
+| C | Plasmon Energies and Inelastic Mean Free Paths | 419-422 |
+| D | Inner-Shell Energies and Edge Shapes | 423-426 |
+| E | Electron Wavelengths, Relativistic Factors, and Physical Constants | 427-428 |
+| F | Options for Energy-Loss Data Acquisition | 429-431 |
+| - | Back Matter | 433-491 |
+
+Printed section titles relevant to the absorptive potential / mean free path (printed Contents; digits
+spaced in the text layer): 3.2 "Inelastic Scattering" (124); 3.3 "Excitation of Outer-Shell Electrons"
+(135) with 3.3.1 "Volume Plasmons" (135) and 3.3.6 "Surface-Reflection Spectra" (164); 3.4 "Single,
+Plural, and Multiple Scattering" (169); B.17 "Total Inelastic and Plasmon Mean Free Paths" (417);
+Appendix C "Plasmon Energies and Inelastic Mean Free Paths" (419).
+
+Reading-plan mapping (`docs/07_reading_plan.md:43`, "inelastic scattering chapters"): ch. 3 "Physics of
+Electron Scattering" (pp. 111-229), in particular §3.2-3.4 (pp. 124-177: from the first page of §3.2 to
+the page before §3.5, printed at 178; inference), and Appendix C (pp. 419-422). There is no chapter titled "inelastic scattering"; the plan's
+plural "chapters" maps to one chapter plus an appendix. Label: structure METADATA_VERIFIED. Content: not
+read.
+
+---
+
+## Upload table (reading plan step 4 order, `docs/07_reading_plan.md:60-61`)
+
+Papers in the step-4 list are outside this task (no book TOC); they are kept in the table so that the
+order is intact. Book locators: chapter number, title and pages as recorded above; "printed" = the book's
+own Contents, "online" = publisher web TOC. Where the plan item is a section, the chapter containing it is
+the unit to upload.
+
+| # | Reading-plan item | Exact locator (this report) | What Ali must upload |
+|---|---|---|---|
+| 1 | P01 | paper, not a book | (see paper reports) |
+| 2 | P08 | paper | (see paper reports) |
+| 3 | P02 + P02E | papers | (see paper reports) |
+| 4 | P03 | paper | (see paper reports) |
+| 5 | B07 dynamical chapters (`:34`) | B07 ch. 12 "Dynamical theory – transfer matrix method" pp. 161-172; ch. 13 "Dynamical theory – embedded R-matrix method" pp. 173-191; ch. 14 "Dynamical theory – integral method" pp. 192-194; plan also names ch. 5 "The diffraction conditions" pp. 28-42 and ch. 7 "Kikuchi and resonance patterns" pp. 62-76 | B07 ch. 12, 13, 14 (pp. 161-194), plus ch. 5 (pp. 28-42) and ch. 7 (pp. 62-76); optional by title: ch. 11 (pp. 154-160), ch. 16 (pp. 211-233), App. F-G (pp. 328-334) |
+| 6 | B08 ch. 5 and 13 (`:35`, `:60`) | B08 "Dynamical Theory Iii. Reflection High-Energy Electron Diffraction" pp. 117-185 (DOI 10.1093/oso/9780198500742.003.0005); "The Atomic Scattering Factor And The Optical Potential" pp. 427-453 (`...003.0013`); numbers 5 and 13 inferred from deposit order | B08 pp. 117-185 and pp. 427-453; ALSO the printed Contents pages (to fix chapter numbers and the appendix titles) and, per plan line 35, ch. 6 pp. 186-227 and the RHEED-routine appendix (one of App. A-D, pp. 470-500; identify from the Contents) |
+| 7 | B06 sampling and multislice chapters (`:33`) | B06 ch. 4 "Sampling and the Fast Fourier Transform" pp. 81-98; ch. 6 "Theory of Calculation of Images of Thick Specimens" pp. 143-195; ch. 7 "Multislice Applications and Examples" pp. 197-239 | B06 ch. 4, 6, 7; for SM17 also ch. 5 "Calculation of Images of Thin Specimens" pp. 99-141 (§5.2 from p. 102) and Appendix C "Atomic Potentials and Scattering Factors" (from p. 283) |
+| 8 | C01 (`:36`) | B09 ch. 6 "The Reconstruction of Off-Axis Electron Holograms", E. Völkl and M. Lehmann, pp. 125-151, DOI 10.1007/978-1-4615-4817-1_6 (Crossref-confirmed) | B09 ch. 6, pp. 125-151 |
+| 9 | C02 (`:39`) | B12 ch. 16 "Electron Holography", Dunin-Borkowski, Kovács, Kasama, McCartney, Smith, pp. 767-818, DOI 10.1007/978-3-030-00069-1_16 (Crossref-confirmed) | B12 ch. 16, pp. 767-818 |
+| 10 | Hÿtch 2011 | paper | (see paper reports) |
+| 11 | a Si mean-inner-potential paper | paper; book sections whose TITLES concern mean inner potential: B09 ch. 12 §2-4 (printed pp. 268-279, Gajdardziska-Josifovska and Carim), B12 ch. 16 §16.2 (p. 772), B11 §7.1 (p. 101) | a paper (outside this task); B09 ch. 12 (pp. 267-293) is a candidate secondary source |
+| 12 | P05 | paper | (see paper reports) |
+| 13 | P06 | paper | (see paper reports) |
+| 14 | C03 (`:40`) | B12 ch. 17 "Ptychography", Rodenburg and Maiden, pp. 819-904, DOI 10.1007/978-3-030-00069-1_17 (Crossref-confirmed); by title §17.3 (825), §17.8 (868), §17.9 (874) | B12 ch. 17, pp. 819-904 (or §17.3-17.9, pp. 825-883) |
+| 15 | B10 ch. 7 (`:37`) | B10 ch. 7 "Electron-Holographic Interferometry", pp. 78-132; §7.2 "Surface Topography" p. 83 | B10 ch. 7, pp. 78-132 (minimum: pp. 83-84) |
+
+Book items in the plan but NOT in the step-4 list (upload later, same format):
+
+| Plan line | Item | Exact locator | Upload |
+|---|---|---|---|
+| `:36` | B09 ch. 13 (diffracted-beam holography; bib key U07) | B09 ch. 13 "Electron Holography Using Diffracted Electron Beams (DBH)", R. A. Herring and G. Pozzi, pp. 295-310, DOI 10.1007/978-1-4615-4817-1_13 | B09 ch. 13, pp. 295-310 |
+| `:30` | B03 wave mechanics / propagation / interference+holography | Vol. 3 ch. 55-60 (pp. 1475-1565), ch. 57 (1495-1504), ch. 58 (1505-1520), ch. 61-63 (1569-1681) | B03 ch. 58 and ch. 63 first; printed Contents pp. vii-xii |
+| `:30`/`:31` | coherence (plan puts it under B03) | Vol. 4 ch. 78 "Coherence and the Brightness Functions" (2323-2369), ch. 79 "Wigner Optics" (2371-2392) | B04 ch. 78 |
+| `:31` | B04 phase problem, sampling | Vol. 4 ch. 74 (2169-2219), ch. 71 (2101-2117) | B04 ch. 71, 74; printed Contents pp. vii-xiii |
+| `:31` | "image formation" (plan puts it under B04) | Vol. 3 ch. 64-68 (1685-1867), esp. ch. 65 (1691-1705), ch. 66 (1707-1796) | B03 ch. 65-66 |
+| `:28` | B01 coherent image formation | ch. 3 "Wave optics" (46-66), ch. 4 "Coherence and Fourier optics" (67-87); aberrations/diffraction unresolved | B01 ch. 3-4 and the printed Contents |
+| `:29` | B02 crystallography / structure factor | ch. 1 "Basic crystallography" (1-78); structure-factor section unresolved | B02 Contents (pp. vii-xiii) first, then the chapter it points to |
+| `:32` | B05 aberration theory | ch. 7-9 (251-385) | as needed |
+| `:38` | B11 reconstruction / quantitative phase | ch. 4 (15-27), ch. 6 §6.2 (62) | B11 ch. 4 and §6.2 |
+| `:41` | B13 interactions / image formation | ch. 5 (online 139-192; printed from 141), ch. 6 §6.5 (printed 241-246 ff.), §7.4 (printed 302) | B13 ch. 5, §6.5, §7.4; state which pagination |
+| `:43` | B15 inelastic scattering | ch. 3 (111-229), §3.2-3.4 (124-177), App. C (419-422) | B15 §3.2-3.4 and App. C |
+
+## Discrepancies between `docs/07_reading_plan.md` and the publisher TOCs (plan not edited)
+
+1. `docs/07_reading_plan.md:24` - heading says "publisher tables of contents are readable". Not for OUP
+   (academic.oup.com Cloudflare, global.oup.com AWS WAF), ScienceDirect or Wiley Online Library (403);
+   B01/B08 structure rests on OUP's Crossref deposit (B01 numbering via WebFetch).
+2. `:28` B01 - no 4th-edition chapter is titled "aberrations" or "diffraction"; only ch. 3-4 map by title.
+3. `:29` B02 - there is no "reciprocal-space chapter"; ch. 1 "Basic crystallography" is the only
+   crystallography chapter; the structure-factor section cannot be located from the online TOC.
+4. `:30` B03 - "coherence chapters" are NOT in Vol. 3: ch. 78-79 are in Vol. 4. Chapter numbering check:
+   Vol. 3 = ch. 54-68, pp. 1457-1998 (series-continuous numbering and pagination).
+5. `:31` B04 - "image formation" is NOT in Vol. 4 (it is Vol. 3 Part XIII, ch. 64-68); B04's
+   "reconstruction" chapter is three-dimensional reconstruction (ch. 75).
+6. `:33` B06 - "Multislice applications" is ch. 7 "Multislice Applications and Examples"; the atomic
+   potential parameterisation needed for SM17 sits (by title) in ch. 5 §5.2 and Appendix C, which the plan
+   does not list.
+7. `:34` B07 - "integral methods" is singular in print (ch. 14 "Dynamical theory – integral method",
+   3 pages, 192-194); the plan gives no chapter numbers (5, 7, 12, 13, 14).
+8. `:35` B08 - "ch. 5 Dynamical theory III: RHEED": title confirmed (full form "... Reflection High-Energy
+   Electron Diffraction", pp. 117-185) but the NUMBER is not printed on any readable page (inferred from
+   deposit order); ch. 6 full title "Resonance Effects In Transmission And Reflection High-Energy Electron
+   Diffraction"; the "RHEED routine appendix" cannot be identified among App. A-D (pp. 470-500).
+9. `:36` B09 - chapter-level claims confirmed; ch. 13 authors are Herring and Pozzi (pp. 295-310). The
+   plan (and bib) omit that ch. 2, 12 and 14 have surface/reflection SECTIONS (titles "Studies of surface
+   structure.", "Applications of holography to surfaces", "The reflection mode").
+10. `:37` B10 - ch. 7 confirmed; the only surface section is §7.2 "Surface Topography" (p. 83); no
+    "reflection" section exists in the printed Contents.
+11. `:38` B11 - no chapter titled reconstruction or quantitative phase; nearest are ch. 4 and §6.2.
+12. `:41` B13 - online and printed paginations differ (e.g. ch. 5: 139-192 online, 141 printed); no chapter
+    titled "image formation".
+13. `:43` B15 - "inelastic scattering chapters" = one chapter (ch. 3) plus Appendix C.
+14. `:60` step 4 - "B08 ch. 5 and 13" omits ch. 6 and the RHEED appendix that `:35` asks for; step 4 omits
+    B09 ch. 13 (`:36`) and all B03/B04 chapters.
+
+Discrepancies with `docs/references.bib` found on the way (not edited; for the bibliography keeper):
+- `references.bib:168`, `:181`, `:1066` - editor "Völkl, Ernst": the publisher page, Crossref book record
+  and front-matter CIP give "Edgar Völkl". `:178` "Völkl, Ernst and Lehmann, Michael": Crossref gives only
+  "E. Völkl", "M. Lehmann".
+- `references.bib:148-155` B07 - has no DOI; Cambridge Core shows and Crossref confirms
+  10.1017/CBO9780511735097 (print 2004-12-13).
+- `references.bib:164` B08 year conflict - OUP's Crossref deposit: published-print 2004-01-08; OUP product
+  page (WebFetch): 11 March 2004.
+- `references.bib:145` B06 "table of contents was never obtained" - now obtained (above).
+- `references.bib:198` B10 "ch. 7 is a guess" - ch. 7 number/title/pages now confirmed.
+- `references.bib:1063-1070` U07 - authors R. A. Herring, G. Pozzi; pages 295-310; DOI
+  10.1007/978-1-4615-4817-1_13 (Crossref-confirmed).
+- B11 (`references.bib:201-209`) - year 2022 (Crossref, product page) vs "© 2023 ... Published 2023" in the
+  book's own running footer.
+- B13 (`references.bib:247-256`) - the book DOI uses the HARDCOVER ISBN (978-0-387-40093-8); eBook ISBN is
+  978-0-387-34758-5.
+
+## Documents to request from Ali (blocked or not on any open route)
+
+- B08: printed Contents pages (to confirm chapter numbers 1-14 and the titles of Appendices A-D) - OUP
+  hosts blocked.
+- B01: printed Contents (section level) - to place "aberrations" and "diffraction".
+- B02: printed Contents pp. vii-xiii - to locate the structure-factor and reciprocal-space sections.
+- B03 and B04: printed Contents (Vol. 3 pp. vii-xii; Vol. 4 pp. vii-xiii) - to settle the ch. 66, 69 and
+  77 title conflicts between Elsevier's shop page and its Crossref deposit (ScienceDirect blocked).
+
+## Label summary
+
+All fifteen books: CHAPTER STRUCTURE METADATA_VERIFIED on the routes named per book (B01 and B08 via OUP's
+Crossref deposit; B01 numbering additionally via a model-mediated WebFetch of the OUP product page; B08
+chapter numbers inferred). C01, C02, C03 and B09 ch. 13: identity, authors, pages and DOI
+METADATA_VERIFIED via `api.crossref.org/works/<DOI>`. No chapter content is SECTION_READ from this work.
