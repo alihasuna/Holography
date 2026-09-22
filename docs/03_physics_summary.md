@@ -1,7 +1,8 @@
 # Physics of reflection-mode dark-field electron holography of Si surfaces: what the simulation must reproduce
 
-Status: 2026-09-21, revision 2 (corrected after the adversarial review in
-`docs/agent_reports/E_review.md`; the review's blocker B1 and major items M1 to M9 are applied here).
+Status: 2026-09-22, revision 4 (Phase 2: Si(001) a/4 symmetry, shadow and blocked-view strips, carrier
+trap and R2 wording from reports C2, S1a-S3 and reviews E4); revision 2 of 2026-09-21 was corrected
+after the adversarial review in `docs/agent_reports/E_review.md`.
 This is the orchestrator's synthesis of `docs/agent_reports/C_physics_derivations.md` (full
 derivations, 25 self-checked numbers reproduced by `tools/reflection_step_phase_calculator.py`) and of
 independent checks made during the analysis. Conventions: `docs/physics_conventions.md`. Evidence
@@ -41,12 +42,17 @@ whose in-plane part `a/sqrt(6) = 2.217 A` is not a surface-net vector; and for a
 step `h = a/2`; NOT true for a Si(001) single-layer step `h = a/4`: its terraces are related by the
 `4_1` and `4_3` screws and by the two <100> d-glides of Fd-3m, never by a translation. At an exact
 <100> beam azimuth the d-glide whose plane contains the beam and the normal (plane (010) for [100],
-glide vector `(a/4)[+-1,0,1]`, normal component a/4) leaves `k_in` and `k_out` unchanged, so for
-bulk-terminated terraces the complex reflectivities are equal up to `exp(-i (k_out - k_in).t)` and the
-step phase is exactly `-(4 pi/lambda)(a/4) sin(theta_ext)`. At a <110> azimuth no such operation
+glide vector `(a/4)[+-1,0,1]`, normal component a/4) leaves `k_in` and every `k_out` in the incidence
+plane unchanged, so for bulk-terminated terraces and a plane wave the specular reflectivities are equal
+up to `exp(-i (k_out - k_in).t)` and the specular step phase is exactly
+`-(4 pi/lambda)(a/4) sin(theta_ext)`; other beams in the incidence plane carry the in-plane glide term
+as well, and beams leaving the incidence plane obey no such relation (item 4). The effect of an
+azimuthal spread (convergence, item 3) is not analysed. At a <110> azimuth no such operation
 exists: the terraces are the two types with top-layer back-bonds parallel (P) and transverse (T) to the
 beam, and the step phase contains a dynamical residual `delta = phi_R,P - phi_R,T` that vanishes
-kinematically and must be computed; it alternates in sign along a staircase of a/4 steps, and a small
+kinematically, is not forced to vanish by symmetry, and must be computed (its value is unknown); it
+alternates in sign along a monotonic staircase of a/4 steps (along a staircase that rises and falls the
+sign follows the order of the terrace types), and a small
 azimuthal misalignment from <100> produces a residual odd in the misalignment. A 2x1 reconstruction,
 not modelled, can break the <100> result. DERIVED_HERE by exhaustive symmetry search on the truncated
 half crystals, `docs/agent_reports/C2_phase2_physics_checks.md` section 1).
@@ -86,7 +92,8 @@ Conservation of the surface-parallel wavevector with `k_int^2 - k_ext^2 = 2 m_e 
 
 ```
 sin^2(theta_int) = (sin^2(theta_ext) + Delta)/(1 + Delta),
-Delta = V0 (1 + T/(m_e c^2)) / (T (1 + T/(2 m_e c^2))) = 6.98e-5 at 200 keV   (first order in V0; see below)
+Delta = V0 (1 + T/(m_e c^2)) / (T (1 + T/(2 m_e c^2))) = 6.98e-5 at 200 keV   (first order in V0; the exact
+form, used by the calculator and the package, is in docs/physics_conventions.md; they differ by 8.4e-6 relative)
 theta_c = 8.356 mrad
 ```
 
@@ -127,8 +134,8 @@ independently (item 7), `V0` does not enter the height (`tools/phase1_numbers.py
 docstring; revision 3 corrects the sign of the earlier wording "+0.05 A per volt of underestimate"). `V0` is a first-order systematic, not a
 correction, and must be a sourced input with an uncertainty (`docs/06_project_inputs_required.md`, item 20).
 
-Si(001), single-layer step `a/4 = 1.358 A` (terraces NOT translation-related; the kinematic value is only
-indicative) and double-layer `a/2 = 2.716 A`, specular orders (004), (008), (0,0,12): see the calculator
+Si(001), single-layer step `a/4 = 1.358 A` (terraces NOT translation-related; the value is exact for the
+specular beam of bulk-terminated terraces at an exact <100> azimuth and only indicative at <110>, section 2) and double-layer `a/2 = 2.716 A`, specular orders (004), (008), (0,0,12): see the calculator
 output section 4b (`docs/agent_reports/C_calculator_output.txt`).
 
 ## 4. The 2 pi branch problem, coherence and shadowing
@@ -154,7 +161,7 @@ about 110 wraps at (4,-4,4). Consequences:
   length `h/tan(theta_ext)` on the surface behind it. At 22.5 mrad (a round illustrative angle; it is
   the external angle of the forbidden (6,-6,6) condition) that is 139 A per Si(111) bilayer, 60 A per
   Si(001) layer and 444 nm for a 10 nm mesa; at the first recommended condition (4,-4,4), 13.6 mrad,
-  it is 230 A per bilayer and 733 nm for a 10 nm mesa; at (8,-8,8), 101 A and 324 nm (revision 3 corrects 102 A;
+  it is 230 A per bilayer and 733 nm for a 10 nm mesa; at (8,-8,8), 101 A and 324 nm (Phase 2 commit 5d59c41 corrected 102 A;
   shadow lengths printed by `tools/phase1_numbers.py`). Shadow masks
   must be computed at the actual operating angle, never hard-coded. Inside the shadow there is no object wave and the
   reconstructed phase is meaningless; in the foreshortened image the shadow is `1/sin(theta)` times
@@ -228,8 +235,10 @@ about 110 wraps at (4,-4,4). Consequences:
   surface: with the reference at image point `r` taken from specimen point `r + s`, the reconstruction
   returns `phi(r) - phi(r + s)`; common-mode phases cancel, and every feature lying in the reference
   region appears a second time, sign-inverted and translated by `-s` (a translated copy, not a mirror
-  image; a step inside the overlap appears with its twin as a strip of phase `-Delta` whose width is the
-  shift component normal to the step edge; C2 section 3, S1c);
+  image; a step inside the overlap appears with its twin as a strip of width `|n.s|`, with `n` the step
+  normal pointing to the upper terrace, and phase `-Delta` if `s` points towards the upper terrace,
+  `+Delta` if it points towards the lower one; C2 section 3 tested only the first case, review E4 M3
+  reproduced both, S1c);
   R3 reference with residual curvature and tilt (long-wavelength topography is entangled with the
   reference phase). The hologram model must also contain the biprism's own Fresnel fringes and finite
   overlap width, specimen drift as a coherent envelope loss, and the possibility of specimen charging
@@ -240,12 +249,14 @@ about 110 wraps at (4,-4,4). Consequences:
   (S1c, C2 section 2): for a 50/50 phase step of 2.36 rad the brightest off-centre Fourier bin of the
   object hologram is not the carrier but a first harmonic of the terrace pattern, one bin off the
   carrier along the step normal (for a sharp 50/50 step this happens whenever
-  `|Delta| > 2 arctan(pi/2) = 2.008 rad`), and it comes as an exactly equal Hermitian pair, one bin in
-  each sideband. The calculator's argmax returned the member in the conjugate sideband, so recentring
+  `|Delta| > 2 arctan(pi/2) = 2.008 rad`). For a sharp step the four first-harmonic bins (`q_c +- 1`
+  along the step normal and their Hermitian partners) are equal; in the calculator's smoothed-edge
+  hologram one Hermitian pair is brighter by 1.56 %, and its two members, one in each sideband, are
+  exactly equal. The calculator's argmax returned the member in the conjugate sideband, so recentring
   on it inverted the sign of the step and added a one-bin ramp worth pi between the terrace medians:
   0.78 rad = -2.36 + pi instead of 2.36 rad (the other member gives -0.78 rad). The carrier must be
-  located on an empty hologram or on the sideband envelope, inside a search region that contains only
-  the `phi_o - phi_r` sideband; which sideband that is for experimental data is a declared input
+  located on an empty or flat-region hologram (never on the object hologram), inside a declared search
+  region that contains only the `phi_o - phi_r` sideband; which sideband that is for experimental data is a declared input
   (PROJECT_INPUT items 10, 16, 19). The code audit found the same defect in the inspected repository's
   `find_peak` (A report, C3).
 

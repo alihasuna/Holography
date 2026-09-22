@@ -33,9 +33,12 @@ The repository is final when all of the following hold:
    versus glancing angle with a dynamical residual below a threshold recorded in
    `configs/benchmarks.yaml` (proposed initial value 0.1 rad, ASSUMPTION). For the CFG-B a/4
    single-layer step (section 2 of `docs/03_physics_summary.md`, assumption B4) the geometric phase
-   holds only at an exact <100> azimuth for bulk-terminated terraces; at <110> the dynamical phase
-   difference between the two terrace types is computed and reported, not compared with the geometric
-   phase, and at <100> the residual is a symmetry test of the forward model (it must vanish).
+   holds only for the specular beam of a plane wave at an exact <100> azimuth for bulk-terminated
+   terraces (not for off-plane beams, a 2x1 reconstruction or an overlayer); at <110> the dynamical
+   phase difference between the two terrace types is computed and reported, not compared with the
+   geometric phase, and at <100> the residual is a symmetry test of the forward model (it must vanish
+   to a tolerance recorded in `configs/benchmarks.yaml`; the simulation grid must respect the glide:
+   in-plane component a/4 along the beam, glide plane a/8 from the atom rows).
    Comparison with Osakabe 1988 is deferred until the body of P01 is read. Its abstract (read on the
    publisher page) gives a Pt(111) surface, so CFG-O is not a silicon benchmark; its energy,
    reflection, glancing angle and measured values are still UNVERIFIED.
@@ -60,7 +63,7 @@ in `docs/01_repository_audit.md` and the agent reports under `docs/agent_reports
 | ID | Name | Surface, azimuth | Steps and features | Specular conditions | Status |
 |---|---|---|---|---|---|
 | CFG-A | `si111_cleaved_110azimuth` | (1,-1,1) surface, beam azimuth [110] | lattice-translation bilayer steps `h = m d_111`, `R = m (a/2)[1,0,1]` (stacking-correct in-plane shift); step edges parallel or transverse to the beam (transverse edges shadow 230 A per bilayer at (4,-4,4), 101 A at (8,-8,8)) | (4,-4,4), (5,-5,5), (7,-7,7), (8,-8,8); (3,-3,3) is allowed but exits at 8.6 mrad, barely above `theta_c`, with 116x foreshortening, so it is not recommended; never (6,-6,6) or (2,-2,2) | benchmark inherited from the inspected repository; geometry consistent (normal.beam = 0) |
-| CFG-B | `si001_patterned` | (001) surface, 200 keV (PROJECT_INPUT, supplied), azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces; at an exact <100> azimuth also glide-related, so the step phase is purely geometric for bulk-terminated terraces, while at <110> a dynamical difference is expected; C2), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad and 733 nm at the (4,-4,4) angle), optional oxide/amorphous overlayer (item 12) | (008) as the proposed working condition (PROJECT_INPUT item 9) (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); (0,0,12) as the second condition; (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface; (002), (006), (0,0,10) forbidden | Ali's experiment; remaining unknowns listed in `docs/06_project_inputs_required.md` |
+| CFG-B | `si001_patterned` | (001) surface, 200 keV (PROJECT_INPUT, supplied), azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (terraces related by screws and <100> d-glides, never by a translation; For the specular beam (and, with the in-plane glide term, for other beams in the incidence plane) of a plane wave at the exact <100> azimuth, bulk-terminated a/4 terraces reflect identically up to `exp(-i (k_out - k_in).t)` (C2 section 1.3; SM26). This does not hold for beams leaving the incidence plane (item 4), for a 2x1 reconstruction whose upper-terrace domain is not a <100>-glide image of the lower one, or for an overlayer; the effect of an azimuthal spread (convergence, item 3) is not analysed. At <110> the residual `delta` is not forced to vanish by symmetry; its value is unknown (open question 3).), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa masks 607 nm at the CFG-B (0,0,8) condition and 378 nm at (0,0,12), `tools/phase1_numbers.py`), optional oxide/amorphous overlayer (item 12) | (008) as the proposed working condition (PROJECT_INPUT item 9) (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); (0,0,12) as the second condition; (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface; (002), (006), (0,0,10) forbidden | Ali's experiment; remaining unknowns listed in `docs/06_project_inputs_required.md` |
 | CFG-O | `osakabe_1988_reproduction` | Pt(111) at glancing incidence (P01 abstract, sentence 2, `+ABSTRACT(publisher)`; not silicon, so no Si structure, `V0` or structure factor may be reused); azimuth UNVERIFIED | monatomic-height steps, sensitivity of the order of 0.01 nm (P01 abstract, sentence 4) | energy, reflection order and glancing angle UNVERIFIED; reference: two regions of the reflection image overlapped by an electron biprism, i.e. a self-reference of type R2 (the R2 reading is DERIVED_HERE); optical reconstruction (abstract, sentence 3) | placeholder: every field not listed here fails on load until the body of P01 (upload 1) and P08 (upload 2) are read; source map SM22 |
 
 Each configuration is a versioned YAML/JSON file with every parameter labelled by evidence level.
@@ -121,7 +124,7 @@ tests/            see section 8
 * Options, each an explicit ASSUMPTION with a source: bulk termination; 2x1 dimer reconstruction of Si(001);
   amorphous SiO2/damage overlayer of given thickness and density; step-riser relaxation none.
 * Patterned features: mesas/trenches with heights and edge profiles from PROJECT_INPUT item 13, with the
-  shadowed strips computed from the geometry for every incidence angle.
+  shadowed and blocked-view strips computed from the geometry for every incidence and exit angle.
 
 ### 4.3 Grazing-incidence multislice (the finite-feature engine)
 
@@ -207,7 +210,9 @@ Fast model for large fields of view: `Delta_phi = -(k_out - k_in).R(r)` with ref
 angles, visibility ray-tracing (the illumination shadow of length `h/tan(theta_in)` behind a transverse step
 whose upper terrace is upstream and the blocked-view strip of length `h/tan(theta_out)` in front of one
 whose upper terrace is downstream are masked, computed at the actual operating angles), an optional dynamical residual taken from the multislice engine near step risers, and explicit
-detection of the invisibility condition (`g.R` integer) and of screw-related terraces where the model is
+detection of the invisibility condition (`g.R` integer) and of terraces related neither by a lattice
+translation nor by an operation fixing `k_in` and `k_out` (the Si(001) a/4 step at any azimuth other than
+an exact <100>, and off-plane beams at <100>), where the model is
 not valid. Used for experiment planning and for the rocking-series inversion.
 
 ## 5. Optics, hologram formation and reconstruction requirements
@@ -240,7 +245,7 @@ not valid. Used for experiment planning and for the rocking-series inversion.
    as a coherent envelope loss; specimen charging as an added, slowly varying phase (ASSUMPTION B8 and
    PROJECT_INPUT item 22).
 6. Detector: MTF, gain and Poisson noise at the recorded dose; raw and noisy holograms both saved.
-7. Reconstruction: one code path for simulation and experiment; carrier located on an empty hologram;
+7. Reconstruction: one code path for simulation and experiment; carrier located on an empty or flat-region hologram (never on the object hologram) inside a declared one-sideband search region;
    mask radius and apodisation recorded; raw wrapped phase, unwrapped phase, masks and fitted ramps all
    preserved; the resolution of the reconstruction (about three fringe spacings) reported.
 8. Quantification: `h = -Delta_phi lambda/(2 pi (sin theta_in,ext + sin theta_out,ext))` for the

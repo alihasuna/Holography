@@ -47,7 +47,9 @@ identical `d` and `|F|`, but only `(n,-n,n)` is specular for this surface; `(4,4
   `Delta = (k_int^2 - k_ext^2)/k_ext^2 = V0 (1 + T/(m_e c^2)) / (T (1 + T/(2 m_e c^2)))`.
   This closed form is first order in `V0`; the exact relativistic expression,
   `Delta = V0 (2 (T + m_e c^2) + V0) / (T (T + 2 m_e c^2))` (all in eV), which the calculator and the
-  package use, differs by 8.4e-6 relative, at most 5.1e-5 rad in an a/4 step phase (C2 checks J1, J1b).
+  package use, differs by 8.4e-6 relative; the a/4 step phase changes by at most 5.1e-5 rad over the (004) to (0,0,16)
+  Bragg conditions (C2 checks J1, J1b), and by 1.0e-4 rad at 2 mrad and 2.0e-4 rad at 1 mrad exit angle
+  (review E4 appendix A.3).
   At 200 keV and `V0 = 12 V` (ASSUMPTION), `Delta = 6.98e-5`. The non-relativistic form
   `Delta = V0/T` is 14 percent too small at 200 keV (the relativistic value is 16 percent larger); do not use it.
 * Critical angle `theta_c`, `sin(theta_c) = dK/k_int` with `dK = k sqrt(Delta)`, is the INTERNAL

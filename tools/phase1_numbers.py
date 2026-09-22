@@ -95,6 +95,9 @@ def main() -> None:
         "10 nm, (4,-4,4) [nm]": 100.0 / np.tan(th444) / 10.0,
         "bilayer, (8,-8,8) [A]": D111 / np.tan(th888),
         "10 nm, (8,-8,8) [nm]": 100.0 / np.tan(th888) / 10.0,
+        # CFG-B's own conditions (Si(001), a/4 rod spacing, orders 2 and 3 = (0,0,8), (0,0,12))
+        "10 nm, (0,0,8) [nm]": 100.0 / np.tan(calc.SpecularCondition(A / 4.0, 2, E_KEV, V0_ASSUMED).theta_ext) / 10.0,
+        "10 nm, (0,0,12) [nm]": 100.0 / np.tan(calc.SpecularCondition(A / 4.0, 3, E_KEV, V0_ASSUMED).theta_ext) / 10.0,
     }
     for k, v in sh.items():
         print(f"   {k:34s} {v:9.2f}")
@@ -120,6 +123,8 @@ def main() -> None:
         ("shadow 10 nm (4,-4,4) [nm]", sh["10 nm, (4,-4,4) [nm]"], 733.0, 0.5),
         ("shadow bilayer (8,-8,8) [A]", sh["bilayer, (8,-8,8) [A]"], 101.0, 0.5),
         ("shadow 10 nm (8,-8,8) [nm]", sh["10 nm, (8,-8,8) [nm]"], 324.0, 0.5),
+        ("shadow 10 nm (0,0,8) [nm]", sh["10 nm, (0,0,8) [nm]"], 607.0, 0.5),
+        ("shadow 10 nm (0,0,12) [nm]", sh["10 nm, (0,0,12) [nm]"], 378.0, 0.5),
     ]
     npass = 0
     print("-" * 96)

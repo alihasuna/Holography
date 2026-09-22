@@ -376,3 +376,115 @@ $ venv/bin/python tools/physics_checks/q1_si001_quarter_step_symmetry.py | tail 
 ```
 Not committed, not pushed. NOT RUN: `python -O` (no `assert` statements remain; asserted by a test);
 any multislice, dynamical or engine run (none exists); experimental data (none available).
+
+## Round 2 (re-audit `docs/agent_reports/A2b_reaudit.md`, 2026-09-22)
+
+Starting point: HEAD `296d0ee` (round 1 committed as `bd654c2`; CFG-B stand-ins relabelled
+ASSUMPTION B17/B18 in `ab8031e`), `527 passed`. Same rules: regression test first, run on the
+unfixed code, no tolerance loosened, no commit. The re-auditor's scripts `r*.py` were re-run
+unchanged at HEAD (before) and, as copies with only the renamed N6 argument adapted, after.
+
+### N1 (gate bypass by labelling), N8 (non-finite values), N9 (registry location)
+
+Fix (`io/config.py:470` label rules, `:104` supplier/date pattern, `:327` registry, `:338`
+finite numbers; new package data `reflection_holo/io/assumption_registry.yaml`, declared in
+`pyproject.toml`): a parameter whose schema names a docs/06 item accepts only PROJECT_INPUT (null,
+or a value whose source contains "supplied by <name> <YYYY-MM-DD>", a valid date), ASSUMPTION with
+`stands_in_for_item` = item and an `assumption_id` that the registry maps to that item, or TEST_ONLY
+from in-memory fixtures (never from files; recorded as test_only; needed because no registered
+stand-in exists for items 3-15). Any other label fails. The registry (importlib.resources, nothing
+read from docs/) maps B1 -> 20, B17 -> 9, B18 -> 14; A3 and every unmapped ID are refused.
+**B2 is not a PROJECT_INPUT stand-in**: no docs/06 item names the lattice parameter and no schema
+gives `lattice_parameter` an item, so B2 is not mapped and `assumption_id: B2` was removed from
+CFG-A and CFG-B (their sources still cite B2). CFG-A's target and recommended reflections lose
+`item: 9` (benchmark definitions; only items 1 and 20 remain docs/06 items in the CFG-A schema,
+imaging parameters included). Numbers must be finite (inf, -inf, nan refused).
+Tests: `tests/io/test_io_config_stand_ins.py` (24 cases, incl. registry IDs present in
+docs/model_assumptions.md, skipped if docs/ is absent). Existing fixtures updated (sources with
+supplier and date; CFG-B fixture stand-ins as registered ASSUMPTION).
+Before: `22 failed, 2 passed`; r5 at HEAD (verbatim excerpt):
+```
+  DERIVED_HERE                                                  : run level PASS; labels ['DERIVED_HERE']; glancing angle quantity (0.01647, 'rad')
+  ASSUMPTION with an unrelated assumption_id 'A3'                        : run level PASS
+  glancing_angle_ext = inf mrad: run level PASS, quantity (inf, 'rad')
+```
+After: `24 passed`; r5: every variant refused, e.g. `ASSUMPTION with assumption_id 'A3': refused ->
+CFG-B: parameter beam_azimuth_uvw: assumption_id 'A3' is not mapped to PROJECT_INPUT item 8 by the r...`.
+
+### N2 (height biased by sub-threshold offsets)
+
+Fix (`quantification/rocking.py:354`; result `:446`): h and sigma_h are the slope of the free
+two-parameter weighted fit and its standard error; the B16 refusals are unchanged; the offset
+residual c - 2 pi n is reported with sigma_c (`offset_residual_rad`, `sigma_offset_residual_rad`).
+The branch indices of the phases use the fitted line. Conditional on acceptance, the intercept check
+selects the intercept error; through the c-h correlation this shifts the mean accepted height by
+beta sigma_c E[z | accepted] (derived; at most about 0.85 sigma_h for offsets up to 3.1 sigma_c).
+Test: `tests/quantification/test_quant_rocking_offsets.py` (the re-auditor's cases, 4000 trials,
+seed 20260923): |mean error| <= sigma_h, agreement with the derived selection shift within
+4 sigma_h/sqrt(K), std <= sigma_h (1 + 4/sqrt(2(K-1))), offset residual as predicted.
+Before: `5 failed` (`AttributeError: ... no attribute 'offset_residual_rad'`); r10 at HEAD: mean
+error -9.2, -27.4, -41.2 sigma_h (delta 0.1, 0.3, 0.45 rad) and +45.8 sigma_h (0.1 mrad).
+After (verbatim excerpt, sigma_h now 0.01439 A):
+```
+delta_0.1: ... mean err -0.00068 A = -0.048 sigma_h (predicted -0.023); std/sigma_h 0.955; ...
+delta_0.3: ... mean err -0.00356 A = -0.247 sigma_h (predicted -0.235); std/sigma_h 0.812; ...
+delta_0.45: ... mean err -0.00938 A = -0.652 sigma_h (predicted -0.656); std/sigma_h 0.639; ...
+angle_0.1mrad: ... mean err +0.01197 A = +0.832 sigma_h (predicted +0.849); std/sigma_h 0.587; ...
+```
+Consequence: sigma_h is 15 times larger than the round-1 constrained value in the 21-tilt regime
+(0.0144 vs 0.0010 A); it is honest (std/sigma_h 0.955 and 0.981 in the round-1 Monte Carlo).
+Round-1 test changes: `test_quant_rocking_noise.py` judges a wrong branch by the returned phase
+branch indices against the true ones (h no longer depends on n); its binomial and sigma bounds are
+unchanged; `alternative_branch_heights_A` (removed) is replaced by offset-residual assertions.
+Note: `test_quant_rocking.py::test_absolute_height_with_noise_and_unsorted_input` asserts
+|h - h_true| < 4 sigma_h; its form is unchanged but sigma_h is now the free-fit value, so the
+check is wider in absolute terms (by decision N2).
+
+### N4 (aliasing above h_max)
+
+Fix (`rocking.py:201` scan, `:258` `aliasing_scan`, `:270` `design_rocking_series`, `:434`
+warning): a noise-free scan of h_max < |h| <= h_max + 2 lambda/min(Delta s) (cached per grid) runs the
+same unwrap, fit and B16 checks; a height accepted with a result wrong by more than sigma_h is an
+alias. If one exists the result carries `aliasing_undetectable=True`, `h_max_A`,
+`assumes_abs_h_le_h_max=True`, examples and the scan limit, and a RuntimeWarning is issued.
+`design_rocking_series` builds a non-uniform series (golden-ratio fractions 0.5-1.0 of the largest
+guarded step) with no alias in the scan.
+Tests: `tests/quantification/test_quant_rocking_alias.py` (6 tests). Before: `6 failed`
+(ImportError x5, `DID NOT WARN`); r10b at HEAD: 622, 1981, 1979 of 2000 wrong heights accepted
+(h = 26, 30, 40 A). After: uniform grid flagged and warned in every accepted trial; on the designed
+13-tilt series (20.0-24.71 mrad) h = 26, 30, 40 A are refused in 2000 of 2000 trials each
+(chi-square 1985/1985/0, intercept 15/15/2000).
+
+### N5 (unwrapper) and N6 (validity criterion)
+
+Fix (`reconstruction/sideband.py:350` region-wise unwrapper, `:605` visibility): the valid pixels are
+split into row runs joined through shared columns (4-connectivity); each connected region is
+unwrapped from its own seed (first valid pixel in raster order), with independent 2 pi offsets,
+labelled in `SidebandResult.unwrap_regions` and counted in `parameters["unwrapping_regions"]`;
+identical to the raster unwrap for an all-valid field. Validity: `empty_min_visibility` (0 < V_min
+<= 1, required with divide_empty, replaces the median-relative threshold) against the empty
+hologram's local visibility V = 2|w_empty|/D (D: the empty intensity low-passed by the same mask
+at q = 0).
+Tests: `tests/reconstruction/test_validity_round2.py` (10 cases). Before: `7 failed, 3 passed`;
+r7 at HEAD: `unwrapped NaN count total 15872 ; NaN count rows 40..119: 10240`; r7b: `R2 shift (0.0,
+-16.0): valid pixels 14336 of 16384; unwrapped finite pixels 0`; r7c: `overlap 30%: ... outside: 8236
+of 8448 flagged VALID, their rms phase error 0.67 rad`. After: `10 passed`; r7: `NaN count total
+1280 ; NaN count rows 40..119: 0`; r7b: `unwrapped finite pixels 14336`; r7c: `outside: 0 of 8448
+flagged VALID` (inside rms error 0.012 rad unchanged). Round-1 validity tests redeclared for the new
+parameter (0.0 -> 0.01, 0.5 -> 0.6 with the reason in a comment: row 0 borders the fringes through
+the periodic FFT, V = 0.58; the invalid-value list follows the (0, 1] domain); holo_cases and the q2
+script declare 0.5 (outputs identical). Limit: a fringe-free band narrower than about one
+resolution length keeps a visibility from the mask's spread (r7b, noiseless 80 % case: 768 of 1280
+such pixels valid, phase error 0.00 rad).
+
+### Nits
+
+* N7 (1e-300 uncertainties): declined. Positive uncertainties are the caller's declaration and no
+  physical floor is defined; the returned sigma_h is honest when sigma_phi is realistic (A2b r8).
+* N8: fixed with N1 (finite numbers). N9: fixed by N1 (registry is package data).
+* Not addressed (no orchestrator decision): N3 (under-declared noise: r10 case C still 1.76e-2
+  wrong phase branches at 31 % under-declaration); the accessibility `>=`/`>` nit.
+
+### Proposed new wording of B16
+
+| B16 | A rocking series gives an absolute step height only if every tilt pair satisfies `(2 pi/lambda) h_max |Delta s| + 3 sqrt(sigma_i^2 + sigma_(i+1)^2) < pi` and the weighted fit `Delta_phi = -(2 pi/lambda) h s + c` with a free intercept gives `sigma_c < pi/3`, `|c - 2 pi n| <= 3 sigma_c` for one integer n, and a chi-squared p-value of at least 1e-3 for the fit with `c = 2 pi n`; otherwise no height is returned. `h` and `sigma_h` are the slope of the free fit and its standard error, so a constant phase offset does not bias `h` and an angle-calibration offset biases it only in second order; the offset residual `c - 2 pi n` is reported with `sigma_c` as a model-consistency quantity. A true `|h| > h_max` aliases; on a non-uniform tilt series (`design_rocking_series`) the aliases fail the chi-squared or intercept check; where a noise-free scan up to `h_max + 2 lambda/min(Delta s)` finds an accepted alias (for example uniform steps) the result is flagged `aliasing_undetectable`, assumes `|h| <= h_max` and warns (`reflection_holo/quantification/rocking.py`). | ASSUMPTION | Premises: Gaussian, independent, correctly declared phase uncertainties (31 % under-declaration raises the wrong phase-branch rate to 1.8e-2, A2b N3, open); one translation height; `|h|` below the scan limit. Monte Carlo in the tests: 0 wrong branches in 3987 accepted series (seed 20260922); offsets up to 3 sigma_c shift the mean accepted height by at most about 0.85 sigma_h, as derived (seed 20260923); the uniform-grid aliases of 26, 30 and 40 A are refused on the designed series in 2000 of 2000 trials each. |
