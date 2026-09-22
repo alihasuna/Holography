@@ -157,7 +157,8 @@ Requirements independent of the engine (numbers DERIVED_HERE, source-map rows SM
    and recorded seeds.
 8. Output: the wave on a DECLARED plane (exit plane of the cell, no hidden propagation), per realisation,
    complex64 or complex128 stated, with axes, pixel sizes and tilt actually used stored in the file.
-9. Exact propagator preferred (abTEM provides one). The paraxial Fresnel error `k dz sin^4(alpha)/8`
+9. Exact propagator preferred (the custom kernel provides one; released abTEM 1.0.10 has only the
+   Fresnel propagator, an exact one exists only in its unreleased 1.1.0 development tree, report D3). The paraxial Fresnel error `k dz sin^4(alpha)/8`
    over a 198 A cell is 0.026 rad at the 45 mrad specular scattering angle and 0.106 rad at the
    64 mrad band edge; it is common-mode between terraces but not negligible for absolute phases, and
    must be reported for whichever engine is used.
@@ -168,9 +169,12 @@ declared output plane, per-realisation output). Because it is the least-scrutini
 it is not trusted until it agrees with abTEM 1.1 to a stated tolerance in both a transmission
 configuration and a reflection-like configuration that abTEM can still run (crystal thick enough that
 the absorber is inert); only then is the absorber enabled. abTEM is the preferred packaged cross-check
-(exact propagator with evanescent handling, 2/3 band limit, explicit exit wave, ensemble control), but
-its propagator-shear tilt is documented as "should generally not exceed one degree" (about 17 mrad)
-while 24 to 48 mrad are needed here: a convergence test comparing the shear tilt against an
+(2/3 band limit, explicit exit wave, ensemble control; in the released 1.0.10 a Fresnel propagator only,
+no absorptive potential except a hand-built complex64 array, GPL-3.0-or-later, report D3), and its
+Kirkland parameterisation (matching Kirkland's own computem table) supplies the custom kernel's projected
+atomic potential as an optional, lazily imported dependency. Its propagator-shear tilt is documented as
+"should generally not exceed one degree" (about 17 mrad; Probe docstring, `waves.py:1860`, while the user
+guide says about 100 mrad) while 24 to 48 mrad are needed here: a convergence test comparing the shear tilt against an
 entrance-plane Fourier-component tilt at 24 and 48 mrad is part of milestone M2, and if abTEM fails it
 the cross-check engine changes. Prismatic is kept only as a documented legacy benchmark with its true
 semantics (mid-plane wave, half-Nyquist band, static lattice, quantised tilt list; upstream
@@ -394,8 +398,9 @@ PROJECT_INPUT items 2, 6, 10, 11 (miscut, terrace widths, terrace types), 16, 17
   values); the patent is now read (SM21) and the P01 abstract gives the surface and the biprism overlap of two
   image regions, read here as a self-reference (DERIVED_HERE; SM22).
 * The exact relativistic refraction and Bragg-case expressions as printed in B07/B08 (derived here, not read).
-* Whether abTEM accepts a complex (absorptive) potential and tilts of 24 to 48 mrad with adequate accuracy
-  (its docstring recommends below one degree; UNVERIFIED; tested in M2).
+* Whether abTEM's propagator-shear tilt is accurate at 24 to 48 mrad (report D3: 0.074 rad specular-beam
+  shear error over 889 A at 24 mrad; at 48 mrad the specular beam leaves the 2/3 band at 0.13 A pixels);
+  abTEM 1.0.10 has no absorptive potential except a hand-built complex64 array (D3).
 * Whether the current upstream `sim-trhepd-rheed` release writes complex amplitudes (the vendored copy
   and the P49 fork compute them and write intensities only), and the sign convention of P49's phases.
 * The dynamical residual threshold of acceptance criterion 3 (0.1 rad proposed, ASSUMPTION).
