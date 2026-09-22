@@ -1,0 +1,14 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1016/0304-3991%2893%2990123-F?fields=title,year,externalIds,citationCount,venue",
+ "_retrieved": "2026-09-22",
+ "paperId": "231c14ae038c71a2ec2abe50dd122b4b8d3bbd34",
+ "externalIds": {
+  "MAG": "2001540499",
+  "DOI": "10.1016/0304-3991(93)90123-F",
+  "CorpusId": 120582026
+ },
+ "title": "Reflection electron holography",
+ "venue": "",
+ "year": 1993,
+ "citationCount": 1
+}

@@ -1,0 +1,366 @@
+{
+ "_url": "https://opencitations.net/index/coci/api/v1/citations/10.1103/PhysRevLett.62.2969",
+ "_retrieved": "2026-09-22",
+ "_list": [
+  {
+   "oci": "062403249440-06203914974",
+   "citing": "10.1016/b978-012333340-7/50264-7",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1996",
+   "timespan": "P6Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06901945697-06203914974",
+   "citing": "10.1142/s0217979200002326",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2000-08-20",
+   "timespan": "P11Y2M1D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "062102819327-06203914974",
+   "citing": "10.1007/978-3-642-79232-8_1",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1994",
+   "timespan": "P4Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06203386547-06203914974",
+   "citing": "10.1016/b978-0-12-333354-4.50031-8",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1994",
+   "timespan": "P4Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06102186318-06203914974",
+   "citing": "10.1063/1.881230",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1990-04",
+   "timespan": "P0Y9M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "061802712094-06203914974",
+   "citing": "10.1007/978-3-662-13913-4_7",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1993",
+   "timespan": "P3Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06702633488-06203914974",
+   "citing": "10.1016/b978-0-12-818979-5.00101-7",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2022",
+   "timespan": "P32Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06110653828-06203914974",
+   "citing": "10.1117/1.jmm.14.4.041304",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2015-08-03",
+   "timespan": "P26Y1M15D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06180797572-06203914974",
+   "citing": "10.1016/0304-3991(91)90076-i",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1991-06",
+   "timespan": "P1Y11M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06180648684-06203914974",
+   "citing": "10.1088/0034-4885/56/8/002",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1993-08-01",
+   "timespan": "P4Y1M13D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06501132958-06203914974",
+   "citing": "10.1016/0039-6028(93)90047-n",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1993-12",
+   "timespan": "P4Y5M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "062402672562-06203914974",
+   "citing": "10.1111/j.1749-6632.1995.tb38969.x",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1995-04",
+   "timespan": "P5Y9M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06902700924-06203914974",
+   "citing": "10.1007/s00419-013-0803-0",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2013-12-03",
+   "timespan": "P24Y5M14D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06120392871-06203914974",
+   "citing": "10.1016/s0168-9002(97)01067-x",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1998-01",
+   "timespan": "P8Y6M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "062502658502-06203914974",
+   "citing": "10.1017/s0424820100136957",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1995-08-13",
+   "timespan": "P6Y1M25D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "062302248701-06203914974",
+   "citing": "10.1080/00018739200101473",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992-02",
+   "timespan": "P2Y7M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06901190774-06203914974",
+   "citing": "10.1002/jemt.1070200414",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992-02-15",
+   "timespan": "P2Y7M27D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06903195999-06203914974",
+   "citing": "10.1016/s1076-5670(08)70068-5",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1996",
+   "timespan": "P6Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06230499561-06203914974",
+   "citing": "10.1093/jmicro/dfaa033",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2020-06-26",
+   "timespan": "P31Y0M7D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06530156710-06203914974",
+   "citing": "10.1002/9783527620647.ch15",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1996-12-27",
+   "timespan": "P7Y6M8D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "062302713076-06203914974",
+   "citing": "10.1007/978-3-540-37204-2_7",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1999",
+   "timespan": "P9Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06220392607-06203914974",
+   "citing": "10.1016/0168-9002(92)90973-8",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992-04",
+   "timespan": "P2Y9M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "0646076019-06203914974",
+   "citing": "10.1002/9783527619283.ch15a",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1996-12-27",
+   "timespan": "P7Y6M8D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "0630451708-06203914974",
+   "citing": "10.1016/0167-5729(94)90005-1",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1994-01",
+   "timespan": "P4Y6M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "061902675025-06203914974",
+   "citing": "10.1017/s0424820100086714",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1991-08",
+   "timespan": "P2Y1M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "061301116833-06203914974",
+   "citing": "10.1016/0039-6028(92)91219-2",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992-05",
+   "timespan": "P2Y10M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "0630599056-06203914974",
+   "citing": "10.2320/matertrans1989.31.551",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1990",
+   "timespan": "P0Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06901190655-06203914974",
+   "citing": "10.1002/jemt.1070200409",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992-02-15",
+   "timespan": "P2Y7M27D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06170804939-06203914974",
+   "citing": "10.1016/0304-3991(93)90124-g",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1993-04",
+   "timespan": "P3Y9M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06901190883-06203914974",
+   "citing": "10.1002/jemt.1070200415",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992-02-15",
+   "timespan": "P2Y7M27D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06202437302-06203914974",
+   "citing": "10.1103/physrevlett.84.4389",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2000-05-08",
+   "timespan": "P10Y10M19D",
+   "journal_sc": "yes",
+   "author_sc": "no"
+  },
+  {
+   "oci": "061901123816-06203914974",
+   "citing": "10.1016/0039-6028(93)90046-m",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1993-12",
+   "timespan": "P4Y5M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06201813773-06203914974",
+   "citing": "10.1021/acs.cgd.9b00339",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2019-08-19",
+   "timespan": "P30Y2M0D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06170805225-06203914974",
+   "citing": "10.1016/0304-3991(92)90195-p",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992-11",
+   "timespan": "P3Y4M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06803060885-06203914974",
+   "citing": "10.1081/e-escs3-120028068",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2015-12-04",
+   "timespan": "P26Y5M15D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06303920456-06203914974",
+   "citing": "10.1103/physrevlett.65.1607",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1990-09-24",
+   "timespan": "P1Y3M5D",
+   "journal_sc": "yes",
+   "author_sc": "no"
+  },
+  {
+   "oci": "0630451749-06203914974",
+   "citing": "10.1016/0167-5729(93)90002-7",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1993-01",
+   "timespan": "P3Y6M",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "062402810199-06203914974",
+   "citing": "10.1007/978-3-642-84482-9_4",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "1992",
+   "timespan": "P2Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06903203719-06203914974",
+   "citing": "10.1002/9783527614561.ch1",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2007-12-23",
+   "timespan": "P18Y6M4D",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "061402851635-06203914974",
+   "citing": "10.1380/jsssj.24.166",
+   "cited": "10.1103/physrevlett.62.2969",
+   "creation": "2003",
+   "timespan": "P13Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  }
+ ]
+}

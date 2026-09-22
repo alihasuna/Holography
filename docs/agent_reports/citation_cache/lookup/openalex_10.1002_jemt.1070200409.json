@@ -1,0 +1,212 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1002/jemt.1070200409?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2119419090",
+ "doi": "https://doi.org/10.1002/jemt.1070200409",
+ "title": "Reflection electron energy‐loss spectroscopy and imaging for surface studies in transmission electron microscopes",
+ "display_name": "Reflection electron energy‐loss spectroscopy and imaging for surface studies in transmission electron microscopes",
+ "publication_year": 1992,
+ "publication_date": "1992-02-15",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5100376569",
+    "display_name": "Zhong Lin Wang",
+    "orcid": "https://orcid.org/0000-0002-5530-0380"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I1289243028",
+     "display_name": "Oak Ridge National Laboratory",
+     "ror": "https://ror.org/01qz5mb56",
+     "country_code": "US",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1289243028",
+      "https://openalex.org/I1330989302",
+      "https://openalex.org/I39565521",
+      "https://openalex.org/I4210159294"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I75027704",
+     "display_name": "University of Tennessee at Knoxville",
+     "ror": "https://ror.org/020f3ap87",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I75027704"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Z. L. Wang",
+   "raw_affiliation_strings": [
+    "Metals and Ceramics Division, Oak Ridge National Laboratory, Tennessee 37831-6376",
+    "Department of Materials Science and Engineering, The University of Tennessee, Knoxville, Tennessee 37996‐2200",
+    "Metals and Ceramics Division, Oak Ridge National Laboratory, Oak Ridge, Tennessee 37831‐6376"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Metals and Ceramics Division, Oak Ridge National Laboratory, Tennessee 37831-6376",
+     "institution_ids": [
+      "https://openalex.org/I1289243028"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Department of Materials Science and Engineering, The University of Tennessee, Knoxville, Tennessee 37996‐2200",
+     "institution_ids": [
+      "https://openalex.org/I75027704"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Metals and Ceramics Division, Oak Ridge National Laboratory, Oak Ridge, Tennessee 37831‐6376",
+     "institution_ids": [
+      "https://openalex.org/I1289243028"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5002765662",
+    "display_name": "James R. Bentley",
+    "orcid": "https://orcid.org/0000-0002-9981-4375"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I1289243028",
+     "display_name": "Oak Ridge National Laboratory",
+     "ror": "https://ror.org/01qz5mb56",
+     "country_code": "US",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1289243028",
+      "https://openalex.org/I1330989302",
+      "https://openalex.org/I39565521",
+      "https://openalex.org/I4210159294"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "J. Bentley",
+   "raw_affiliation_strings": [
+    "Metals and Ceramics Division, Oak Ridge National Laboratory, Oak Ridge, Tennessee 37831-6376"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Metals and Ceramics Division, Oak Ridge National Laboratory, Oak Ridge, Tennessee 37831-6376",
+     "institution_ids": [
+      "https://openalex.org/I1289243028"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1002/jemt.1070200409",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1002/jemt.1070200409",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S6191820",
+   "display_name": "Microscopy Research and Technique",
+   "issn_l": "1059-910X",
+   "issn": [
+    "1059-910X",
+    "1097-0029"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "listed_in": [
+    "cwts-core",
+    "jufo-1",
+    "medline",
+    "norway-1"
+   ],
+   "host_organization": "https://openalex.org/P4310320595",
+   "host_organization_name": "Wiley",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320595"
+   ],
+   "host_organization_lineage_names": [
+    "Wiley"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Microscopy Research and Technique",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 9,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W36895900",
+  "https://openalex.org/W83937806",
+  "https://openalex.org/W104342104",
+  "https://openalex.org/W369299004",
+  "https://openalex.org/W1963674386",
+  "https://openalex.org/W1963924525",
+  "https://openalex.org/W1967429841",
+  "https://openalex.org/W1969426766",
+  "https://openalex.org/W1976899709",
+  "https://openalex.org/W1979123562",
+  "https://openalex.org/W1979499110",
+  "https://openalex.org/W1982540319",
+  "https://openalex.org/W1983281269",
+  "https://openalex.org/W1983994240",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1994975031",
+  "https://openalex.org/W1997372212",
+  "https://openalex.org/W1998723169",
+  "https://openalex.org/W2004996317",
+  "https://openalex.org/W2008742073",
+  "https://openalex.org/W2009656066",
+  "https://openalex.org/W2009836608",
+  "https://openalex.org/W2010036038",
+  "https://openalex.org/W2013769616",
+  "https://openalex.org/W2016979425",
+  "https://openalex.org/W2018047451",
+  "https://openalex.org/W2020050692",
+  "https://openalex.org/W2031735023",
+  "https://openalex.org/W2037426440",
+  "https://openalex.org/W2043396270",
+  "https://openalex.org/W2044619840",
+  "https://openalex.org/W2058029836",
+  "https://openalex.org/W2063325316",
+  "https://openalex.org/W2063415728",
+  "https://openalex.org/W2076102113",
+  "https://openalex.org/W2079119911",
+  "https://openalex.org/W2080460310",
+  "https://openalex.org/W2083503603",
+  "https://openalex.org/W2085889640",
+  "https://openalex.org/W2089171829",
+  "https://openalex.org/W2101186932",
+  "https://openalex.org/W2139782007",
+  "https://openalex.org/W2321426717",
+  "https://openalex.org/W2496560113",
+  "https://openalex.org/W4254292201"
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1016/s1076-5670%2808%2970063-6?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2904888296",
+ "doi": "https://doi.org/10.1016/s1076-5670(08)70063-6",
+ "title": "4.5 Electron Microscopes and Microscopy in Japan",
+ "display_name": "4.5 Electron Microscopes and Microscopy in Japan",
+ "publication_year": 1996,
+ "publication_date": "1996-01-01",
+ "type": "book-chapter",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5108598384",
+    "display_name": "Tsutomu Komoda",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Tsutomu Komoda",
+   "raw_affiliation_strings": [
+    "Central Research Laboratory Hitachi, Ltd., Kokubunji Tokyo 185, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Central Research Laboratory Hitachi, Ltd., Kokubunji Tokyo 185, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1016/s1076-5670(08)70063-6",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1016/s1076-5670(08)70063-6",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S198743898",
+   "display_name": "Advances in imaging and electron physics",
+   "issn_l": "1076-5670",
+   "issn": [
+    "1076-5670"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310319955",
+   "host_organization_name": "Academic Press",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310319955",
+    "https://openalex.org/P4310320990"
+   ],
+   "host_organization_lineage_names": [
+    "Academic Press",
+    "Elsevier BV"
+   ],
+   "type": "book series"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Advances in Imaging and Electron Physics",
+  "raw_type": "book-chapter"
+ },
+ "cited_by_count": 2,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1891522650",
+  "https://openalex.org/W1989317534",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1998459204",
+  "https://openalex.org/W2012216080",
+  "https://openalex.org/W2024014175",
+  "https://openalex.org/W2028109341",
+  "https://openalex.org/W2034782087",
+  "https://openalex.org/W2067813654",
+  "https://openalex.org/W2087675085",
+  "https://openalex.org/W2091539312",
+  "https://openalex.org/W2092612122",
+  "https://openalex.org/W2093357440",
+  "https://openalex.org/W2102910940",
+  "https://openalex.org/W2107186700",
+  "https://openalex.org/W2111865327",
+  "https://openalex.org/W2139489068",
+  "https://openalex.org/W2146064634",
+  "https://openalex.org/W2162489727",
+  "https://openalex.org/W2166969409",
+  "https://openalex.org/W2174110472",
+  "https://openalex.org/W2188631329",
+  "https://openalex.org/W2337944035"
+ ]
+}

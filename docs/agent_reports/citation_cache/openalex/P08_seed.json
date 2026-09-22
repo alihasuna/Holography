@@ -1,0 +1,105 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1002/jemt.1070200415?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,ids",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1989898237",
+ "doi": "https://doi.org/10.1002/jemt.1070200415",
+ "title": "Observation of surfaces by reflection electron holography",
+ "display_name": "Observation of surfaces by reflection electron holography",
+ "publication_year": 1992,
+ "publication_date": "1992-02-15",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5036044050",
+    "display_name": "Nobuyuki Osakabe",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Nobuyuki Osakabe",
+   "raw_affiliation_strings": [
+    "Advanced Research Laboratory, Hitachi, Ltd., Saitama, Japan",
+    "Advanced Research Laboratory, Hitachi Ltd, Hatoyama, Saitama, 350-03, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd., Saitama, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi Ltd, Hatoyama, Saitama, 350-03, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1002/jemt.1070200415",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1002/jemt.1070200415",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S6191820",
+   "display_name": "Microscopy Research and Technique",
+   "issn_l": "1059-910X",
+   "issn": [
+    "1059-910X",
+    "1097-0029"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320595",
+   "host_organization_name": "Wiley",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320595"
+   ],
+   "host_organization_lineage_names": [
+    "Wiley"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Microscopy Research and Technique",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 8,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "ids": {
+  "openalex": "https://openalex.org/W1989898237",
+  "doi": "https://doi.org/10.1002/jemt.1070200415",
+  "mag": "1989898237",
+  "pmid": "https://pubmed.ncbi.nlm.nih.gov/1498359"
+ }
+}

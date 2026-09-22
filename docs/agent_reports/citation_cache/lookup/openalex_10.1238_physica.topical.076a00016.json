@@ -1,0 +1,137 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1238/physica.topical.076a00016?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2044893665",
+ "doi": "https://doi.org/10.1238/physica.topical.076a00016",
+ "title": "Observation of Quantized Vortices in Superconductors by Electron Waves",
+ "display_name": "Observation of Quantized Vortices in Superconductors by Electron Waves",
+ "publication_year": 1998,
+ "publication_date": "1998-01-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5109807543",
+    "display_name": "Akira Tonomura",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Akira Tonomura",
+   "raw_affiliation_strings": [
+    "Advanced Research Laboratory, Hitachi, Ltd, Hatoyama, Saitama 350-03-95, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd, Hatoyama, Saitama 350-03-95, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1238/physica.topical.076a00016",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1238/physica.topical.076a00016",
+  "pdf_url": "https://iopscience.iop.org/article/10.1238/Physica.Topical.076a00016/pdf",
+  "source": {
+   "id": "https://openalex.org/S59012888",
+   "display_name": "Physica Scripta",
+   "issn_l": "0031-8949",
+   "issn": [
+    "0031-8949",
+    "1402-4896"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320083",
+   "host_organization_name": "IOP Publishing",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320083",
+    "https://openalex.org/P4310311669"
+   ],
+   "host_organization_lineage_names": [
+    "IOP Publishing",
+    "Institute of Physics"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Physica Scripta",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 4,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "bronze",
+  "oa_url": "https://iopscience.iop.org/article/10.1238/Physica.Topical.076a00016/pdf",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1238/physica.topical.076a00016",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1238/physica.topical.076a00016",
+  "pdf_url": "https://iopscience.iop.org/article/10.1238/Physica.Topical.076a00016/pdf",
+  "source": {
+   "id": "https://openalex.org/S59012888",
+   "display_name": "Physica Scripta",
+   "issn_l": "0031-8949",
+   "issn": [
+    "0031-8949",
+    "1402-4896"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320083",
+   "host_organization_name": "IOP Publishing",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320083",
+    "https://openalex.org/P4310311669"
+   ],
+   "host_organization_lineage_names": [
+    "IOP Publishing",
+    "Institute of Physics"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Physica Scripta",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1983925642",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W2041899170",
+  "https://openalex.org/W2059823469",
+  "https://openalex.org/W2075368438",
+  "https://openalex.org/W2154421583"
+ ]
+}

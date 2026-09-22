@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/9gzyLNd7AEFvVSVVts6Enz/IxtU</id>
+  <title>arXiv Query: search_query=&amp;id_list=2306.00271&amp;start=0&amp;max_results=10</title>
+  <updated>2026-09-22T18:38:08Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=10&amp;id_list=2306.00271" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2306.00271v1</id>
+    <title>A fast and accurate computation method for reflective diffraction simulations</title>
+    <updated>2023-06-01T01:15:23Z</updated>
+    <link href="https://arxiv.org/abs/2306.00271v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2306.00271v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present a new computation method for simulating reflection high-energy electron diffraction and the total-reflection high-energy positron diffraction experiments. The two experiments are used commonly for the structural analysis of material surface. The present paper improves the conventional numerical method, the multi-slice method, for faster computation, since the present method avoids the matrix-eigenvalue solver for the computation of matrix exponentials and can adopt higher-order ordinary differential equation solvers. Moreover, we propose a high-performance implementation based on multi-thread parallelization and cache-reusable subroutines. In our tests, this new method performs up to 2,000 times faster than the conventional method.</summary>
+    <category term="math.NA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-06-01T01:15:23Z</published>
+    <arxiv:primary_category term="math.NA"/>
+    <author>
+      <name>Shuhei Kudo</name>
+    </author>
+    <author>
+      <name>Yusaku Yamamoto</name>
+    </author>
+    <author>
+      <name>Takeo Hoshi</name>
+    </author>
+  </entry>
+</feed>

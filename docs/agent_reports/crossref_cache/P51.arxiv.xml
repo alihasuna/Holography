@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/mLOYQ9+uhetQersoFMDJXXwidkA</id>
+  <title>arXiv Query: search_query=&amp;id_list=2210.04027&amp;start=0&amp;max_results=10</title>
+  <updated>2026-09-22T18:38:46Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=10&amp;id_list=2210.04027" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2210.04027v1</id>
+    <title>Electron Holographic Mapping of Structural and Electronic Reconstruction at Mono- and Bilayer Steps of h-BN</title>
+    <updated>2022-10-08T13:47:57Z</updated>
+    <link href="https://arxiv.org/abs/2210.04027v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2210.04027v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Here, by making use of medium and high resolution autocorrected off-axis electron holography, we directly probe the electrostatic potential as well as in-plane and out-of-plane charge delocalization at edges and steps in multilayer hexagonal boron nitride. In combination with ab-initio calculations, the data allows to directly reveal the formation of out-of-plane covalent bonds at folded zig-zag edges and steps comprising two monolayers and the absence of which at monolayer steps. The technique paves the way for studying other charge (de)localization phenomena in 2D materials, e.g., at polar edges, topological edge states and defects.</summary>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cond-mat.mes-hall" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2022-10-08T13:47:57Z</published>
+    <arxiv:primary_category term="cond-mat.mtrl-sci"/>
+    <author>
+      <name>Subakti Subakti</name>
+    </author>
+    <author>
+      <name>Mohammadreza Daqiqshirazi</name>
+    </author>
+    <author>
+      <name>Daniel Wolf</name>
+    </author>
+    <author>
+      <name>Martin Linck</name>
+    </author>
+    <author>
+      <name>Felix L. Kern</name>
+    </author>
+    <author>
+      <name>Mitisha Jain</name>
+    </author>
+    <author>
+      <name>Silvan Kretschmer</name>
+    </author>
+    <author>
+      <name>Arkady V. Krasheninnikov</name>
+    </author>
+    <author>
+      <name>Thomas Brumme</name>
+    </author>
+    <author>
+      <name>Axel Lubk</name>
+    </author>
+  </entry>
+</feed>

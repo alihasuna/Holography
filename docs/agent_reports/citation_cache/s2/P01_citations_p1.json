@@ -1,0 +1,407 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1143/JJAP.27.L1772/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000&offset=0",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "fcafa02152cd8aa585722482ae18a95274e6e6c6",
+    "externalIds": {
+     "MAG": "3037662494",
+     "PubMedCentral": "7850541",
+     "DOI": "10.1093/jmicro/dfaa033",
+     "CorpusId": 220075356,
+     "PubMed": "32589205"
+    },
+    "title": "Interference and interferometry in electron holography",
+    "venue": "Microscopy",
+    "year": 2020,
+    "publicationTypes": [
+     "JournalArticle",
+     "Review"
+    ],
+    "journal": {
+     "volume": "70",
+     "pages": "3 - 16",
+     "name": "Microscopy"
+    },
+    "authors": [
+     {
+      "authorId": "48636772",
+      "name": "K. Harada"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "cca2f9fda9eb12f1d516ba0bb45eb62b242925f1",
+    "externalIds": {
+     "MAG": "2033207389",
+     "DOI": "10.1142/S0217979200002326",
+     "CorpusId": 121978832
+    },
+    "title": "ELECTRON STANDING WAVES AT A SURFACE DURING REFLECTION HIGH ENERGY ELECTRON DIFFRACTION AND APPLICATION TO STRUCTURE ANALYSIS",
+    "venue": "",
+    "year": 2000,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "14",
+     "pages": "2171-2222",
+     "name": "International Journal of Modern Physics B"
+    },
+    "authors": [
+     {
+      "authorId": "2256379806",
+      "name": "T. Yamanaka"
+     },
+     {
+      "authorId": "91115657",
+      "name": "S. Ino"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "f1ede422454e1b1d08ecb0d9aab440142a1dca24",
+    "externalIds": {
+     "MAG": "2043535005",
+     "DOI": "10.1016/S0001-8686(97)90026-9",
+     "CorpusId": 96612528
+    },
+    "title": "The possibility of measuring the spin polarization of electrons from the top atom layer of solid surfaces",
+    "venue": "",
+    "year": 1997,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "",
+     "pages": "337-351",
+     "name": "Advances in Colloid and Interface Science"
+    },
+    "authors": [
+     {
+      "authorId": "71530169",
+      "name": "K. Hayakawa"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "829e549805d3c1cebbe2efba123782e9b72fbbff",
+    "externalIds": {
+     "MAG": "2062510886",
+     "DOI": "10.1016/0039-6028(93)90047-N",
+     "CorpusId": 97262396
+    },
+    "title": "Application of electron holography to surface topography observation",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "298",
+     "pages": "345-350",
+     "name": "Surface Science"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "231c14ae038c71a2ec2abe50dd122b4b8d3bbd34",
+    "externalIds": {
+     "MAG": "2001540499",
+     "DOI": "10.1016/0304-3991(93)90123-F",
+     "CorpusId": 120582026
+    },
+    "title": "Reflection electron holography",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "48",
+     "pages": "475-481",
+     "name": "Ultramicroscopy"
+    },
+    "authors": [
+     {
+      "authorId": "11524200",
+      "name": "H. Banzhof"
+     },
+     {
+      "authorId": "153473215",
+      "name": "K. Herrmann"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "98a0457da2f8a1413e19081a631945626c5400c1",
+    "externalIds": {
+     "MAG": "2018753685",
+     "DOI": "10.1016/0304-3991(93)90124-G",
+     "CorpusId": 120579501
+    },
+    "title": "Reflection electron holographic observation of surface displacement field",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "48",
+     "pages": "483-488",
+     "name": "Ultramicroscopy"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     },
+     {
+      "authorId": "48975731",
+      "name": "T. Matsuda"
+     },
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "dace843bf5ef27df1fe53c11f033070303af03cc",
+    "externalIds": {
+     "MAG": "1989898237",
+     "DOI": "10.1002/jemt.1070200415",
+     "CorpusId": 20523610,
+     "PubMed": "1498359"
+    },
+    "title": "Observation of surfaces by reflection electron holography",
+    "venue": "Microscopy research and technique (Print)",
+    "year": 1992,
+    "publicationTypes": [
+     "JournalArticle"
+    ],
+    "journal": {
+     "volume": "20",
+     "name": "Microscopy Research and Technique"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ec957447b3bb1edd9830d7ed59ba679422804463",
+    "externalIds": {
+     "MAG": "2163735975",
+     "DOI": "10.1002/JEMT.1070200414",
+     "CorpusId": 6236208,
+     "PubMed": "1498358"
+    },
+    "title": "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces",
+    "venue": "Microscopy research and technique (Print)",
+    "year": 1992,
+    "publicationTypes": [
+     "JournalArticle"
+    ],
+    "journal": {
+     "volume": "20",
+     "name": "Microscopy Research and Technique"
+    },
+    "authors": [
+     {
+      "authorId": "11524200",
+      "name": "H. Banzhof"
+     },
+     {
+      "authorId": "153473206",
+      "name": "K. Herrmann"
+     },
+     {
+      "authorId": "3323741",
+      "name": "H. Lichte"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "508eaa8b9f79a5d10999b8dfacf21f4cb4de4fb1",
+    "externalIds": {
+     "MAG": "1985130671",
+     "DOI": "10.1016/0039-6028(90)90669-Y",
+     "CorpusId": 93654915
+    },
+    "title": "Magnetic constrast in reflection electron microscopy",
+    "venue": "",
+    "year": 1990,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "234",
+     "pages": "98-107",
+     "name": "Surface Science"
+    },
+    "authors": [
+     {
+      "authorId": "2461570932",
+      "name": "Z. Wang"
+     },
+     {
+      "authorId": "145189952",
+      "name": "J. Spence"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "44cd0a74aa3caff3d15e64092a4541ed445fb182",
+    "externalIds": {
+     "MAG": "1964912842",
+     "DOI": "10.1002/PSSA.2211160113",
+     "CorpusId": 120234584
+    },
+    "title": "Reflection electron microscopy of ultra fast surface processes",
+    "venue": "",
+    "year": 1989,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "116",
+     "pages": "145-152",
+     "name": "Physica Status Solidi (a)"
+    },
+    "authors": [
+     {
+      "authorId": "102812906",
+      "name": "F. Heinricht"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5e0194d7bda5d6d15b03460e16861474a4b4c0eb",
+    "externalIds": {
+     "MAG": "3036073074",
+     "DOI": "10.1017/s0424820100154652",
+     "CorpusId": 237068828
+    },
+    "title": "Observation of surface morphology by reflection electron holography",
+    "venue": "",
+    "year": 1989,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "47",
+     "pages": "536-537",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     },
+     {
+      "authorId": "48975731",
+      "name": "T. Matsuda"
+     },
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "14e6f2104493e79f551116629ddba47588119abd",
+    "externalIds": {
+     "CorpusId": 260198468
+    },
+    "title": "Reflection Electron Steps on Gold and Microscopy and Interferometry of Atomic Platinum Single Crystal Surfaces",
+    "venue": "",
+    "year": 2004,
+    "publicationTypes": null,
+    "journal": null,
+    "authors": [
+     {
+      "authorId": "11524200",
+      "name": "H. Banzhof"
+     },
+     {
+      "authorId": "153473206",
+      "name": "K. Herrmann"
+     },
+     {
+      "authorId": "3323741",
+      "name": "H. Lichte"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "758e4bdc0124730f6a02e47c136ed6c98c812e48",
+    "externalIds": {
+     "MAG": "1992093684",
+     "DOI": "10.1080/00018739200101473",
+     "CorpusId": 120192829
+    },
+    "title": "Electron-holographic interference microscopy",
+    "venue": "",
+    "year": 1992,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "41",
+     "pages": "59-103",
+     "name": "Advances in Physics"
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "d6400d28ae02ced922e6180ba76f0ff900db9b0f",
+    "externalIds": {
+     "MAG": "2312761524",
+     "DOI": "10.1557/PROC-295-271",
+     "CorpusId": 102083921
+    },
+    "title": "The Surface Structure of Oxides Studied with Reflected High Energy Electrons",
+    "venue": "",
+    "year": 1992,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "295",
+     "name": "MRS Proceedings"
+    },
+    "authors": [
+     {
+      "authorId": "50639545",
+      "name": "Tung Hsu"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,368 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1039/9781847557926-00138?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2344883807",
+ "doi": "https://doi.org/10.1039/9781847557926-00138",
+ "title": "Electron Holography of Nanostructured Materials",
+ "display_name": "Electron Holography of Nanostructured Materials",
+ "publication_year": 2007,
+ "publication_date": "2007-08-31",
+ "type": "book-chapter",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5077999397",
+    "display_name": "Rafal E. Dunin‐Borkowski",
+    "orcid": "https://orcid.org/0000-0001-8082-0647"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I241749",
+     "display_name": "University of Cambridge",
+     "ror": "https://ror.org/013meh722",
+     "country_code": "GB",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I241749"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I96673099",
+     "display_name": "Technical University of Denmark",
+     "ror": "https://ror.org/04qtj9h94",
+     "country_code": "DK",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I96673099"
+     ]
+    }
+   ],
+   "countries": [
+    "DK",
+    "GB"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "R.E. Dunin–Borkowski",
+   "raw_affiliation_strings": [
+    "Center for Electron Nanoscopy, Technical University of Denmark DK-2800 Kongens Lyngby",
+    "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ",
+    "Center for Electron Nanoscopy, Technical University of Denmark DK-2800 Kongens Lyngby Denmark",
+    "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ UK"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Center for Electron Nanoscopy, Technical University of Denmark DK-2800 Kongens Lyngby",
+     "institution_ids": [
+      "https://openalex.org/I96673099"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ",
+     "institution_ids": [
+      "https://openalex.org/I241749"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Center for Electron Nanoscopy, Technical University of Denmark DK-2800 Kongens Lyngby Denmark",
+     "institution_ids": [
+      "https://openalex.org/I96673099"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ UK",
+     "institution_ids": [
+      "https://openalex.org/I241749"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5015950595",
+    "display_name": "Takeshi Kasama",
+    "orcid": "https://orcid.org/0000-0003-3312-781X"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I241749",
+     "display_name": "University of Cambridge",
+     "ror": "https://ror.org/013meh722",
+     "country_code": "GB",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I241749"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210110652",
+     "display_name": "RIKEN",
+     "ror": "https://ror.org/01sjwvz98",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I4210110652"
+     ]
+    }
+   ],
+   "countries": [
+    "GB",
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "T. Kasama",
+   "raw_affiliation_strings": [
+    "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ",
+    "Frontier Research System The Institute of Physical and Chemical Research Hatoyama Saitama 350–0395",
+    "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ UK",
+    "Frontier Research System The Institute of Physical and Chemical Research Hatoyama Saitama 350–0395 Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ",
+     "institution_ids": [
+      "https://openalex.org/I241749"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Frontier Research System The Institute of Physical and Chemical Research Hatoyama Saitama 350–0395",
+     "institution_ids": [
+      "https://openalex.org/I4210110652"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Department of Materials Science and Metallurgy, University of Cambridge Pembroke Street Cambridge CB2 3QZ UK",
+     "institution_ids": [
+      "https://openalex.org/I241749"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Frontier Research System The Institute of Physical and Chemical Research Hatoyama Saitama 350–0395 Japan",
+     "institution_ids": [
+      "https://openalex.org/I4210110652"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5012291886",
+    "display_name": "R. J. Harrison",
+    "orcid": "https://orcid.org/0000-0003-3469-762X"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I241749",
+     "display_name": "University of Cambridge",
+     "ror": "https://ror.org/013meh722",
+     "country_code": "GB",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I241749"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210163714",
+     "display_name": "Department of Earth Sciences",
+     "ror": "https://ror.org/0554h7e84",
+     "country_code": "RU",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I1313323035",
+      "https://openalex.org/I4210163714"
+     ]
+    }
+   ],
+   "countries": [
+    "GB",
+    "RU"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "R.J. Harrison",
+   "raw_affiliation_strings": [
+    "Department of Earth Sciences, University of Cambridge Downing Street Cambridge CB2 3EQ",
+    "Department of Earth Sciences, University of Cambridge Downing Street Cambridge CB2 3EQ UK"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Earth Sciences, University of Cambridge Downing Street Cambridge CB2 3EQ",
+     "institution_ids": [
+      "https://openalex.org/I4210163714"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Department of Earth Sciences, University of Cambridge Downing Street Cambridge CB2 3EQ UK",
+     "institution_ids": [
+      "https://openalex.org/I241749"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1039/9781847557926-00138",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1039/9781847557926-00138",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4306463862",
+   "display_name": "Royal Society of Chemistry eBooks",
+   "issn_l": null,
+   "issn": null,
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": false,
+   "host_organization": "https://openalex.org/P4310320556",
+   "host_organization_name": "Royal Society of Chemistry",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320556"
+   ],
+   "host_organization_lineage_names": [
+    "Royal Society of Chemistry"
+   ],
+   "type": "ebook platform"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Nanocharacterisation",
+  "raw_type": "book-chapter"
+ },
+ "cited_by_count": 11,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1537457782",
+  "https://openalex.org/W1546396017",
+  "https://openalex.org/W1963631770",
+  "https://openalex.org/W1963677202",
+  "https://openalex.org/W1967022775",
+  "https://openalex.org/W1968517975",
+  "https://openalex.org/W1968533935",
+  "https://openalex.org/W1968714197",
+  "https://openalex.org/W1969271429",
+  "https://openalex.org/W1970711747",
+  "https://openalex.org/W1972050121",
+  "https://openalex.org/W1973758529",
+  "https://openalex.org/W1973959138",
+  "https://openalex.org/W1976083140",
+  "https://openalex.org/W1976693809",
+  "https://openalex.org/W1978996365",
+  "https://openalex.org/W1981529542",
+  "https://openalex.org/W1983217364",
+  "https://openalex.org/W1985022883",
+  "https://openalex.org/W1989052245",
+  "https://openalex.org/W1992093684",
+  "https://openalex.org/W1994110247",
+  "https://openalex.org/W1995210427",
+  "https://openalex.org/W1997059208",
+  "https://openalex.org/W1998046018",
+  "https://openalex.org/W1998685975",
+  "https://openalex.org/W1998961418",
+  "https://openalex.org/W2001540499",
+  "https://openalex.org/W2001959977",
+  "https://openalex.org/W2003619134",
+  "https://openalex.org/W2004920483",
+  "https://openalex.org/W2008398004",
+  "https://openalex.org/W2008550342",
+  "https://openalex.org/W2009167997",
+  "https://openalex.org/W2009879774",
+  "https://openalex.org/W2010914637",
+  "https://openalex.org/W2011760036",
+  "https://openalex.org/W2013665903",
+  "https://openalex.org/W2013672061",
+  "https://openalex.org/W2018924534",
+  "https://openalex.org/W2018929572",
+  "https://openalex.org/W2020393382",
+  "https://openalex.org/W2020655328",
+  "https://openalex.org/W2024541852",
+  "https://openalex.org/W2025869262",
+  "https://openalex.org/W2025991863",
+  "https://openalex.org/W2028645752",
+  "https://openalex.org/W2028948400",
+  "https://openalex.org/W2029024957",
+  "https://openalex.org/W2029365465",
+  "https://openalex.org/W2034782087",
+  "https://openalex.org/W2035605839",
+  "https://openalex.org/W2035942530",
+  "https://openalex.org/W2039064915",
+  "https://openalex.org/W2039107537",
+  "https://openalex.org/W2040647710",
+  "https://openalex.org/W2040754021",
+  "https://openalex.org/W2041858664",
+  "https://openalex.org/W2043085268",
+  "https://openalex.org/W2043925831",
+  "https://openalex.org/W2044778889",
+  "https://openalex.org/W2044951165",
+  "https://openalex.org/W2048353977",
+  "https://openalex.org/W2050113917",
+  "https://openalex.org/W2050601799",
+  "https://openalex.org/W2055781465",
+  "https://openalex.org/W2057741294",
+  "https://openalex.org/W2058459702",
+  "https://openalex.org/W2061930997",
+  "https://openalex.org/W2064582751",
+  "https://openalex.org/W2066572471",
+  "https://openalex.org/W2067287942",
+  "https://openalex.org/W2068759679",
+  "https://openalex.org/W2069011487",
+  "https://openalex.org/W2069101788",
+  "https://openalex.org/W2069271503",
+  "https://openalex.org/W2069365285",
+  "https://openalex.org/W2069997881",
+  "https://openalex.org/W2070243699",
+  "https://openalex.org/W2070342525",
+  "https://openalex.org/W2070816934",
+  "https://openalex.org/W2072888804",
+  "https://openalex.org/W2075368438",
+  "https://openalex.org/W2075617263",
+  "https://openalex.org/W2077170445",
+  "https://openalex.org/W2079023971",
+  "https://openalex.org/W2079211020",
+  "https://openalex.org/W2081223945",
+  "https://openalex.org/W2082544176",
+  "https://openalex.org/W2084441806",
+  "https://openalex.org/W2084871610",
+  "https://openalex.org/W2085545704",
+  "https://openalex.org/W2087849733",
+  "https://openalex.org/W2088843591",
+  "https://openalex.org/W2090565570",
+  "https://openalex.org/W2091115645",
+  "https://openalex.org/W2092069493",
+  "https://openalex.org/W2094780191",
+  "https://openalex.org/W2095276819",
+  "https://openalex.org/W2095436012",
+  "https://openalex.org/W2096050659",
+  "https://openalex.org/W2101697338",
+  "https://openalex.org/W2103966753",
+  "https://openalex.org/W2105593918",
+  "https://openalex.org/W2107737668",
+  "https://openalex.org/W2111226010",
+  "https://openalex.org/W2113795859",
+  "https://openalex.org/W2142846827",
+  "https://openalex.org/W2153055808",
+  "https://openalex.org/W2156223790",
+  "https://openalex.org/W2160223542",
+  "https://openalex.org/W2160641881",
+  "https://openalex.org/W2160794025",
+  "https://openalex.org/W2163478422",
+  "https://openalex.org/W2168312174",
+  "https://openalex.org/W2300433683",
+  "https://openalex.org/W2607194154",
+  "https://openalex.org/W2911342574",
+  "https://openalex.org/W4230262295",
+  "https://openalex.org/W4233135033"
+ ]
+}

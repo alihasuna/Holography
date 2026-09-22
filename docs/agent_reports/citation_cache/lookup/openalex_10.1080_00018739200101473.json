@@ -1,0 +1,185 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1080/00018739200101473?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1992093684",
+ "doi": "https://doi.org/10.1080/00018739200101473",
+ "title": "Electron-holographic interference microscopy",
+ "display_name": "Electron-holographic interference microscopy",
+ "publication_year": 1992,
+ "publication_date": "1992-02-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5109807543",
+    "display_name": "Akira Tonomura",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I4210110781",
+     "display_name": "ARCH Development Corporation",
+     "ror": "https://ror.org/021wdzv30",
+     "country_code": "US",
+     "type": "nonprofit",
+     "lineage": [
+      "https://openalex.org/I4210110781"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP",
+    "US"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "A. Tonomura",
+   "raw_affiliation_strings": [
+    "Advanced Research Laboratory, Hitachi, Ltd and Tonomura Electron Wavefront Project, JRDC, Hatoyama, Saitama, 350-03, Japan",
+    "Advanced Research Laboratory , Hitachi, Ltd and Tonomura Electron Wavefront Project, JRDC , Hatoyama, Saitama, 350-03, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd and Tonomura Electron Wavefront Project, JRDC, Hatoyama, Saitama, 350-03, Japan",
+     "institution_ids": [
+      "https://openalex.org/I4210110781"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory , Hitachi, Ltd and Tonomura Electron Wavefront Project, JRDC , Hatoyama, Saitama, 350-03, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1080/00018739200101473",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1080/00018739200101473",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S137691401",
+   "display_name": "Advances In Physics",
+   "issn_l": "0001-8732",
+   "issn": [
+    "0001-8732",
+    "1460-6976"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320547",
+   "host_organization_name": "Taylor & Francis",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320547",
+    "https://openalex.org/P4310320449"
+   ],
+   "host_organization_lineage_names": [
+    "Taylor & Francis",
+    "Informa"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Advances in Physics",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 139,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W626807605",
+  "https://openalex.org/W1485300768",
+  "https://openalex.org/W1557313722",
+  "https://openalex.org/W1650849553",
+  "https://openalex.org/W1835713819",
+  "https://openalex.org/W1960857565",
+  "https://openalex.org/W1964585629",
+  "https://openalex.org/W1969469849",
+  "https://openalex.org/W1973431730",
+  "https://openalex.org/W1974346093",
+  "https://openalex.org/W1976083140",
+  "https://openalex.org/W1977349535",
+  "https://openalex.org/W1980774072",
+  "https://openalex.org/W1981653481",
+  "https://openalex.org/W1983925642",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1999683639",
+  "https://openalex.org/W2007747334",
+  "https://openalex.org/W2007803774",
+  "https://openalex.org/W2007983174",
+  "https://openalex.org/W2010067036",
+  "https://openalex.org/W2010390656",
+  "https://openalex.org/W2012216080",
+  "https://openalex.org/W2014454313",
+  "https://openalex.org/W2017332233",
+  "https://openalex.org/W2018866114",
+  "https://openalex.org/W2019040265",
+  "https://openalex.org/W2020665811",
+  "https://openalex.org/W2024987628",
+  "https://openalex.org/W2025113759",
+  "https://openalex.org/W2025807893",
+  "https://openalex.org/W2028948400",
+  "https://openalex.org/W2033402457",
+  "https://openalex.org/W2034782087",
+  "https://openalex.org/W2036671104",
+  "https://openalex.org/W2036715187",
+  "https://openalex.org/W2039666702",
+  "https://openalex.org/W2041899170",
+  "https://openalex.org/W2044917807",
+  "https://openalex.org/W2045465023",
+  "https://openalex.org/W2047650982",
+  "https://openalex.org/W2048216657",
+  "https://openalex.org/W2050884969",
+  "https://openalex.org/W2053336963",
+  "https://openalex.org/W2054313601",
+  "https://openalex.org/W2054923936",
+  "https://openalex.org/W2058459702",
+  "https://openalex.org/W2067287942",
+  "https://openalex.org/W2067423244",
+  "https://openalex.org/W2067726999",
+  "https://openalex.org/W2068568103",
+  "https://openalex.org/W2070243699",
+  "https://openalex.org/W2071297975",
+  "https://openalex.org/W2071846639",
+  "https://openalex.org/W2078951493",
+  "https://openalex.org/W2080781970",
+  "https://openalex.org/W2080888862",
+  "https://openalex.org/W2085084127",
+  "https://openalex.org/W2086860422",
+  "https://openalex.org/W2087675085",
+  "https://openalex.org/W2093360139",
+  "https://openalex.org/W2119357123",
+  "https://openalex.org/W2128222117",
+  "https://openalex.org/W2159285249",
+  "https://openalex.org/W2188631329",
+  "https://openalex.org/W2520177366",
+  "https://openalex.org/W3035994743",
+  "https://openalex.org/W4233968588",
+  "https://openalex.org/W4235084753",
+  "https://openalex.org/W4241686419",
+  "https://openalex.org/W4246309517"
+ ]
+}

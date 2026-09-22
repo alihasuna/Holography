@@ -1,0 +1,244 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1002/9783527619283.ch15a?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W3143095438",
+ "doi": "https://doi.org/10.1002/9783527619283.ch15a",
+ "title": "Reflection Electron Microscopy",
+ "display_name": "Reflection Electron Microscopy",
+ "publication_year": 1996,
+ "publication_date": "1996-12-27",
+ "type": "other",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5095364737",
+    "display_name": "Prof. S. Amelinckx",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I149213910",
+     "display_name": "University of Antwerp",
+     "ror": "https://ror.org/008x57b05",
+     "country_code": "BE",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ],
+   "countries": [
+    "BE"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Prof. S. Amelinckx",
+   "raw_affiliation_strings": [
+    "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium",
+     "institution_ids": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5110838695",
+    "display_name": "Dirk Van Dyck",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I149213910",
+     "display_name": "University of Antwerp",
+     "ror": "https://ror.org/008x57b05",
+     "country_code": "BE",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ],
+   "countries": [
+    "BE"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "D. van Dyck",
+   "raw_affiliation_strings": [
+    "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium",
+     "institution_ids": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5062395092",
+    "display_name": "Jef Van Landuyt",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I149213910",
+     "display_name": "University of Antwerp",
+     "ror": "https://ror.org/008x57b05",
+     "country_code": "BE",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ],
+   "countries": [
+    "BE"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "J. van Landuyt",
+   "raw_affiliation_strings": [
+    "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium",
+     "institution_ids": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5024901212",
+    "display_name": "G. van Tendeloo",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I149213910",
+     "display_name": "University of Antwerp",
+     "ror": "https://ror.org/008x57b05",
+     "country_code": "BE",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ],
+   "countries": [
+    "BE"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "G. van Tendeloo",
+   "raw_affiliation_strings": [
+    "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Electron Microscopy for Materials Science (EMAT), Universitty of Antwerp - RUCA, Groenenborgerlaan 171, 2020 Antwerp, Belgium",
+     "institution_ids": [
+      "https://openalex.org/I149213910"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1002/9783527619283.ch15a",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1002/9783527619283.ch15a",
+  "pdf_url": null,
+  "source": null,
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Handbook of Microscopy Set",
+  "raw_type": "other"
+ },
+ "cited_by_count": 0,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W286747667",
+  "https://openalex.org/W347122285",
+  "https://openalex.org/W1963924525",
+  "https://openalex.org/W1963974416",
+  "https://openalex.org/W1967429841",
+  "https://openalex.org/W1970349611",
+  "https://openalex.org/W1976938275",
+  "https://openalex.org/W1979123562",
+  "https://openalex.org/W1983111074",
+  "https://openalex.org/W1983281269",
+  "https://openalex.org/W1986682264",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1991430431",
+  "https://openalex.org/W1991885922",
+  "https://openalex.org/W1993947564",
+  "https://openalex.org/W1994975031",
+  "https://openalex.org/W1996827606",
+  "https://openalex.org/W2000713053",
+  "https://openalex.org/W2001715995",
+  "https://openalex.org/W2007270943",
+  "https://openalex.org/W2008874108",
+  "https://openalex.org/W2009265386",
+  "https://openalex.org/W2009656066",
+  "https://openalex.org/W2010683050",
+  "https://openalex.org/W2010683656",
+  "https://openalex.org/W2011704041",
+  "https://openalex.org/W2012188472",
+  "https://openalex.org/W2013769616",
+  "https://openalex.org/W2020361642",
+  "https://openalex.org/W2020667649",
+  "https://openalex.org/W2026188463",
+  "https://openalex.org/W2032194943",
+  "https://openalex.org/W2032672364",
+  "https://openalex.org/W2033633088",
+  "https://openalex.org/W2033847910",
+  "https://openalex.org/W2041146478",
+  "https://openalex.org/W2043464588",
+  "https://openalex.org/W2045177994",
+  "https://openalex.org/W2049723054",
+  "https://openalex.org/W2060434164",
+  "https://openalex.org/W2062978970",
+  "https://openalex.org/W2064327316",
+  "https://openalex.org/W2066013167",
+  "https://openalex.org/W2072299834",
+  "https://openalex.org/W2072360355",
+  "https://openalex.org/W2079119911",
+  "https://openalex.org/W2081458279",
+  "https://openalex.org/W2082578291",
+  "https://openalex.org/W2083813469",
+  "https://openalex.org/W2084896476",
+  "https://openalex.org/W2091995783",
+  "https://openalex.org/W2093357440",
+  "https://openalex.org/W2136819243",
+  "https://openalex.org/W2157147558",
+  "https://openalex.org/W2163735975",
+  "https://openalex.org/W2280203907",
+  "https://openalex.org/W2314627503",
+  "https://openalex.org/W2498904616",
+  "https://openalex.org/W3036491714"
+ ]
+}

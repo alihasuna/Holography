@@ -1,0 +1,15 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1002/jemt.1070200415?fields=title,year,externalIds,citationCount,venue",
+ "_retrieved": "2026-09-22",
+ "paperId": "dace843bf5ef27df1fe53c11f033070303af03cc",
+ "externalIds": {
+  "MAG": "1989898237",
+  "DOI": "10.1002/jemt.1070200415",
+  "CorpusId": 20523610,
+  "PubMed": "1498359"
+ },
+ "title": "Observation of surfaces by reflection electron holography",
+ "venue": "Microscopy research and technique (Print)",
+ "year": 1992,
+ "citationCount": 4
+}

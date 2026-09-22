@@ -1,0 +1,118 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1002/jemt.1070200415/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000&offset=0",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "dc74261793a112218e6bae35ca9238701eac73c7",
+    "externalIds": {
+     "MAG": "2021786678",
+     "DOI": "10.1088/0034-4885/56/8/002",
+     "CorpusId": 121056503
+    },
+    "title": "Electron reflection, diffraction and imaging of bulk crystal surfaces in TEM and STEM",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "56",
+     "pages": "997-1065",
+     "name": "Reports on Progress in Physics"
+    },
+    "authors": [
+     {
+      "authorId": "2462333071",
+      "name": "Zhong-Lin Wang"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "98a0457da2f8a1413e19081a631945626c5400c1",
+    "externalIds": {
+     "MAG": "2018753685",
+     "DOI": "10.1016/0304-3991(93)90124-G",
+     "CorpusId": 120579501
+    },
+    "title": "Reflection electron holographic observation of surface displacement field",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "48",
+     "pages": "483-488",
+     "name": "Ultramicroscopy"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     },
+     {
+      "authorId": "48975731",
+      "name": "T. Matsuda"
+     },
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4fe6abb5b2f0c65e26bd1672747037ca9efd6ca2",
+    "externalIds": {
+     "MAG": "144158977",
+     "DOI": "10.1007/978-3-540-48995-5_8",
+     "CorpusId": 135509463
+    },
+    "title": "Energy-Filtered Reflection Electron Microscopy",
+    "venue": "",
+    "year": 1995,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "",
+     "pages": "401-418",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "145189952",
+      "name": "J. Spence"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "d6400d28ae02ced922e6180ba76f0ff900db9b0f",
+    "externalIds": {
+     "MAG": "2312761524",
+     "DOI": "10.1557/PROC-295-271",
+     "CorpusId": 102083921
+    },
+    "title": "The Surface Structure of Oxides Studied with Reflected High Energy Electrons",
+    "venue": "",
+    "year": 1992,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "295",
+     "name": "MRS Proceedings"
+    },
+    "authors": [
+     {
+      "authorId": "50639545",
+      "name": "Tung Hsu"
+     }
+    ]
+   }
+  }
+ ]
+}

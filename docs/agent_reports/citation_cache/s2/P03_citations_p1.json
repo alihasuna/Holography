@@ -1,0 +1,45 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1016/0304-3991%2893%2990123-F/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000&offset=0",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "ffe0b402d0badf983019867a8b588d2f4e064f6b",
+    "externalIds": {
+     "DOI": "10.1007/978-3-030-00069-1_16",
+     "CorpusId": 263428897
+    },
+    "title": "Electron Holography",
+    "venue": "Springer Handbook of Microscopy",
+    "year": 2019,
+    "publicationTypes": null,
+    "journal": {
+     "name": "Springer Handbook of Microscopy"
+    },
+    "authors": [
+     {
+      "authorId": "1388408260",
+      "name": "R. Dunin-Borkowski"
+     },
+     {
+      "authorId": "2163450909",
+      "name": "A. Kovács"
+     },
+     {
+      "authorId": "2250169330",
+      "name": "T. Kasama"
+     },
+     {
+      "authorId": "3037848",
+      "name": "M. McCartney"
+     },
+     {
+      "authorId": "2301575814",
+      "name": "David J. Smith"
+     }
+    ]
+   }
+  }
+ ]
+}

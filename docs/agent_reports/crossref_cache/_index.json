@@ -1,0 +1,944 @@
+{
+ "ABTEM.json": {
+  "fetched_utc": "2026-09-22T18:36:17Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ABTEM.json",
+  "url": "https://api.crossref.org/works/10.12688/openreseurope.13015.2"
+ },
+ "B01.json": {
+  "fetched_utc": "2026-09-22T18:33:47Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B01.json",
+  "url": "https://api.crossref.org/works/10.1093/acprof:oso/9780199668632.001.0001"
+ },
+ "B02.json": {
+  "fetched_utc": "2026-09-22T18:33:47Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B02.json",
+  "url": "https://api.crossref.org/works/10.1017/CBO9780511615092"
+ },
+ "B03.isbn.json": {
+  "fetched_utc": "2026-09-22T18:33:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B03.isbn.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9780128189795&rows=20"
+ },
+ "B03.json": {
+  "fetched_utc": "2026-09-22T18:42:31Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B03.json",
+  "url": "https://api.crossref.org/works/10.1016/c2018-0-04650-2"
+ },
+ "B03.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:18Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/B03.publisher.html",
+  "url": "https://shop.elsevier.com/books/principles-of-electron-optics-volume-3/hawkes/978-0-12-818979-5"
+ },
+ "B03.search.json": {
+  "fetched_utc": "2026-09-22T18:33:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B03.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Hawkes+Kasper+Principles+of+Electron+Optics%2C+Volume+3%3A+Fundamental+Wave+Optics+Academic+Press+2022&rows=5"
+ },
+ "B04.isbn.json": {
+  "fetched_utc": "2026-09-22T18:33:50Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B04.isbn.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9780323916462&rows=20"
+ },
+ "B04.json": {
+  "fetched_utc": "2026-09-22T18:42:32Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B04.json",
+  "url": "https://api.crossref.org/works/10.1016/c2021-0-01238-4"
+ },
+ "B04.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:18Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/B04.publisher.html",
+  "url": "https://shop.elsevier.com/books/principles-of-electron-optics-volume-4/hawkes/978-0-323-91646-2"
+ },
+ "B04.search.json": {
+  "fetched_utc": "2026-09-22T18:33:49Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B04.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Hawkes+Kasper+Principles+of+Electron+Optics%2C+Volume+4%3A+Advanced+Wave+Optics+Academic+Press+2022&rows=5"
+ },
+ "B05.json": {
+  "fetched_utc": "2026-09-22T18:33:51Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B05.json",
+  "url": "https://api.crossref.org/works/10.1007/978-3-642-32119-1"
+ },
+ "B05.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:19Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/B05.publisher.html",
+  "url": "https://link.springer.com/book/10.1007/978-3-642-32119-1"
+ },
+ "B06.json": {
+  "fetched_utc": "2026-09-22T18:33:52Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B06.json",
+  "url": "https://api.crossref.org/works/10.1007/978-3-030-33260-0"
+ },
+ "B07.json": {
+  "fetched_utc": "2026-09-22T18:37:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B07.json",
+  "url": "https://api.crossref.org/works/10.1017/cbo9780511735097"
+ },
+ "B07.search.json": {
+  "fetched_utc": "2026-09-22T18:33:53Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B07.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Ichimiya+Cohen+Reflection+High-Energy+Electron+Diffraction+Cambridge+University+Press+2004&rows=5"
+ },
+ "B08.json": {
+  "fetched_utc": "2026-09-22T18:34:11Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B08.json",
+  "url": "https://api.crossref.org/works/10.1093/oso/9780198500742.001.0001"
+ },
+ "B08.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:20Z",
+  "status": 403,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/B08.publisher.html",
+  "url": "https://academic.oup.com/book/54675"
+ },
+ "B09.json": {
+  "fetched_utc": "2026-09-22T18:34:12Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B09.json",
+  "url": "https://api.crossref.org/works/10.1007/978-1-4615-4817-1"
+ },
+ "B10.json": {
+  "fetched_utc": "2026-09-22T18:34:14Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B10.json",
+  "url": "https://api.crossref.org/works/10.1007/978-3-540-37204-2"
+ },
+ "B11.isbn.json": {
+  "fetched_utc": "2026-09-22T18:34:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B11.isbn.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9783527348046&rows=20"
+ },
+ "B11.json": {
+  "fetched_utc": "2026-09-22T18:37:17Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B11.json",
+  "url": "https://api.crossref.org/works/10.1002/9783527829712"
+ },
+ "B11.search.json": {
+  "fetched_utc": "2026-09-22T18:34:15Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B11.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Shindo+Tomita+Material+Characterization+Using+Electron+Holography+Wiley-VCH+2022&rows=5"
+ },
+ "B12.json": {
+  "fetched_utc": "2026-09-22T18:34:19Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B12.json",
+  "url": "https://api.crossref.org/works/10.1007/978-3-030-00069-1"
+ },
+ "B13.isbn.json": {
+  "fetched_utc": "2026-09-22T18:44:03Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B13.isbn.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9780387400938&rows=40"
+ },
+ "B13.json": {
+  "fetched_utc": "2026-09-22T18:34:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B13.json",
+  "url": "https://api.crossref.org/works/10.1007/978-0-387-40093-8"
+ },
+ "B13.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:21Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/B13.publisher.html",
+  "url": "https://link.springer.com/book/10.1007/978-0-387-40093-8"
+ },
+ "B14.isbn.json": {
+  "fetched_utc": "2026-09-22T18:44:05Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B14.isbn.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9780387765006&rows=60"
+ },
+ "B14.json": {
+  "fetched_utc": "2026-09-22T18:34:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B14.json",
+  "url": "https://api.crossref.org/works/10.1007/978-0-387-76501-3"
+ },
+ "B14.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:21Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/B14.publisher.html",
+  "url": "https://link.springer.com/book/10.1007/978-0-387-76501-3"
+ },
+ "B15.json": {
+  "fetched_utc": "2026-09-22T18:34:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B15.json",
+  "url": "https://api.crossref.org/works/10.1007/978-1-4419-9583-4"
+ },
+ "BLACKBURN14.json": {
+  "fetched_utc": "2026-09-22T18:37:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/BLACKBURN14.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2013.08.009"
+ },
+ "BLACKBURN14.search.json": {
+  "fetched_utc": "2026-09-22T18:36:22Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/BLACKBURN14.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Blackburn+Loudon+Vortex+beam+production+and+contrast+enhancement+from+a+magnetic+spiral+phase+plate+Ultramicroscopy+136+2014+127&rows=5"
+ },
+ "C01.json": {
+  "fetched_utc": "2026-09-22T18:34:13Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/C01.json",
+  "url": "https://api.crossref.org/works/10.1007/978-1-4615-4817-1_6"
+ },
+ "C02.json": {
+  "fetched_utc": "2026-09-22T18:34:22Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/C02.json",
+  "url": "https://api.crossref.org/works/10.1007/978-3-030-00069-1_16"
+ },
+ "C03.json": {
+  "fetched_utc": "2026-09-22T18:34:23Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/C03.json",
+  "url": "https://api.crossref.org/works/10.1007/978-3-030-00069-1_17"
+ },
+ "HANADA95.json": {
+  "fetched_utc": "2026-09-22T18:37:32Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HANADA95.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevb.51.13320"
+ },
+ "HANADA95.search.json": {
+  "fetched_utc": "2026-09-22T18:36:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HANADA95.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Hanada+Daimon+Ino+Physical+Review+B+51+1995+13320&rows=5"
+ },
+ "P01.json": {
+  "fetched_utc": "2026-09-22T18:33:17Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P01.json",
+  "url": "https://api.crossref.org/works/10.1143/JJAP.27.L1772"
+ },
+ "P02.json": {
+  "fetched_utc": "2026-09-22T18:34:28Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P02.json",
+  "url": "https://api.crossref.org/works/10.1103/PhysRevLett.62.2969"
+ },
+ "P02E.json": {
+  "fetched_utc": "2026-09-22T18:33:18Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P02E.json",
+  "url": "https://api.crossref.org/works/10.1103/PhysRevLett.63.584.3"
+ },
+ "P03.json": {
+  "fetched_utc": "2026-09-22T18:33:21Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P03.json",
+  "url": "https://api.crossref.org/works/10.1016/0304-3991(93)90123-F"
+ },
+ "P04.json": {
+  "fetched_utc": "2026-09-22T18:34:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P04.json",
+  "url": "https://api.crossref.org/works/10.1186/s40679-017-0046-1"
+ },
+ "P05.json": {
+  "fetched_utc": "2026-09-22T18:34:30Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P05.json",
+  "url": "https://api.crossref.org/works/10.1016/j.micron.2021.103141"
+ },
+ "P06.json": {
+  "fetched_utc": "2026-09-22T18:34:30Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P06.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2009.05.012"
+ },
+ "P07.json": {
+  "fetched_utc": "2026-09-22T18:33:28Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P07.json",
+  "url": "https://api.crossref.org/works/10.1093/jmicro/dfaa033"
+ },
+ "P07.search.json": {
+  "fetched_utc": "2026-09-22T18:33:23Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P07.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Harada+Interference+and+interferometry+in+electron+holography+Microscopy+70+2021+3&rows=5"
+ },
+ "P08.json": {
+  "fetched_utc": "2026-09-22T18:34:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P08.json",
+  "url": "https://api.crossref.org/works/10.1002/jemt.1070200415"
+ },
+ "P09.json": {
+  "fetched_utc": "2026-09-22T18:34:34Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P09.json",
+  "url": "https://api.crossref.org/works/10.1002/jemt.1070200414"
+ },
+ "P10.json": {
+  "fetched_utc": "2026-09-22T18:35:21Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P10.json",
+  "url": "https://api.crossref.org/works/10.1002/jemt.1070200403"
+ },
+ "P11.json": {
+  "fetched_utc": "2026-09-22T18:35:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P11.json",
+  "url": "https://api.crossref.org/works/10.1002/jemt.1070200404"
+ },
+ "P12.json": {
+  "fetched_utc": "2026-09-22T18:35:20Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P12.json",
+  "url": "https://api.crossref.org/works/10.1002/jemt.1070200407"
+ },
+ "P13.json": {
+  "fetched_utc": "2026-09-22T18:35:19Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P13.json",
+  "url": "https://api.crossref.org/works/10.1002/jemt.1070200408"
+ },
+ "P14.json": {
+  "fetched_utc": "2026-09-22T18:37:17Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P14.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(80)90675-5"
+ },
+ "P14.search.json": {
+  "fetched_utc": "2026-09-22T18:35:00Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P14.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Osakabe+Tanishiro+Yagi+Reflection+electron+microscopy+of+clean+and+gold+deposited+%28111%29+silicon+surfaces+Surface+Science+97+1980+393&rows=5"
+ },
+ "P15.json": {
+  "fetched_utc": "2026-09-22T18:37:18Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P15.json",
+  "url": "https://api.crossref.org/works/10.1103/revmodphys.59.639"
+ },
+ "P15.search.json": {
+  "fetched_utc": "2026-09-22T18:35:01Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P15.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Tonomura+Applications+of+electron+holography+Reviews+of+Modern+Physics+59+1987+639&rows=5"
+ },
+ "P16.json": {
+  "fetched_utc": "2026-09-22T18:35:03Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P16.json",
+  "url": "https://api.crossref.org/works/10.1080/00018739200101473"
+ },
+ "P17.json": {
+  "fetched_utc": "2026-09-22T18:37:20Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P17.json",
+  "url": "https://api.crossref.org/works/10.1143/jjap.22.176"
+ },
+ "P17.search.json": {
+  "fetched_utc": "2026-09-22T18:35:07Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P17.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Ichimiya+Many-beam+calculation+of+reflection+high+energy+electron+diffraction+%28RHEED%29+intensities+by+the+multi-slice+method+Japanese+Journal+of+Applied+Physics+22+1983+176&rows=5"
+ },
+ "P18.json": {
+  "fetched_utc": "2026-09-22T18:37:20Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P18.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767386098756"
+ },
+ "P18.search.json": {
+  "fetched_utc": "2026-09-22T18:35:08Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P18.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Peng+Cowley+Dynamical+diffraction+calculations+for+RHEED+and+REM+Acta+Crystallographica+Section+A+42+1986+545&rows=5"
+ },
+ "P19.json": {
+  "fetched_utc": "2026-09-22T18:35:09Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P19.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(88)90925-9"
+ },
+ "P20.json": {
+  "fetched_utc": "2026-09-22T18:37:21Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P20.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767388010888"
+ },
+ "P20.search.json": {
+  "fetched_utc": "2026-09-22T18:35:13Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P20.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Ma+Marks+Bloch-wave+solution+in+the+Bragg+case+Acta+Crystallographica+Section+A+45+1989&rows=5"
+ },
+ "P21.json": {
+  "fetched_utc": "2026-09-22T18:37:22Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P21.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767389009141"
+ },
+ "P21.search.json": {
+  "fetched_utc": "2026-09-22T18:35:15Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P21.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Ma+Marks+Bloch+waves+and+multislice+in+transmission+and+reflection+diffraction+Acta+Crystallographica+Section+A+46+1990+11&rows=5"
+ },
+ "P22.json": {
+  "fetched_utc": "2026-09-22T18:37:23Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P22.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767390002781"
+ },
+ "P22.search.json": {
+  "fetched_utc": "2026-09-22T18:35:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P22.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Ma+Marks+Surface+phenomena+in+RHEED+and+REM+Acta+Crystallographica+Section+A+46+1990+594&rows=5"
+ },
+ "P23.json": {
+  "fetched_utc": "2026-09-22T18:35:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P23.json",
+  "url": "https://api.crossref.org/works/10.1107/S0021889887086916"
+ },
+ "P24.json": {
+  "fetched_utc": "2026-09-22T18:37:23Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P24.json",
+  "url": "https://api.crossref.org/works/10.1016/0304-3991(84)90210-9"
+ },
+ "P24.search.json": {
+  "fetched_utc": "2026-09-22T18:35:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P24.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Uchida+J%C3%A4ger+Lehmpfuhl+Direct+imaging+of+atomic+steps+in+reflection+electron+microscopy+Ultramicroscopy+13+1984+325&rows=5"
+ },
+ "P25.json": {
+  "fetched_utc": "2026-09-22T18:37:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P25.json",
+  "url": "https://api.crossref.org/works/10.1016/0304-3991(87)90226-9"
+ },
+ "P25.search.json": {
+  "fetched_utc": "2026-09-22T18:35:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P25.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Uchida+Lehmpfuhl+Observation+of+double+contours+of+monoatomic+steps+on+single+crystal+surfaces+in+reflection+electron+microscopy+Ultramicroscopy+23+1987+53&rows=5"
+ },
+ "P26.json": {
+  "fetched_utc": "2026-09-22T18:37:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P26.json",
+  "url": "https://api.crossref.org/works/10.1016/0304-3991(90)90041-j"
+ },
+ "P26.search.json": {
+  "fetched_utc": "2026-09-22T18:35:28Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P26.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Yao+Cowley+Electron+diffraction+conditions+and+surface+imaging+in+reflection+electron+microscopy+Ultramicroscopy+33+1990+237&rows=5"
+ },
+ "P27.json": {
+  "fetched_utc": "2026-09-22T18:35:03Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P27.json",
+  "url": "https://api.crossref.org/works/10.1016/0304-3991(92)90213-4"
+ },
+ "P28.json": {
+  "fetched_utc": "2026-09-22T18:37:19Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P28.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(93)90046-m"
+ },
+ "P28.search.json": {
+  "fetched_utc": "2026-09-22T18:35:05Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P28.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Cowley+Electron+holography+and+holographic+diffraction+for+surface+studies+Surface+Science+298+1993+336&rows=5"
+ },
+ "P30.json": {
+  "fetched_utc": "2026-09-22T18:35:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P30.json",
+  "url": "https://api.crossref.org/works/10.1038/nature07049"
+ },
+ "P31.json": {
+  "fetched_utc": "2026-09-22T18:37:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P31.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2011.04.008"
+ },
+ "P31.search.json": {
+  "fetched_utc": "2026-09-22T18:35:34Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P31.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=H%C3%BFtch+Houdellier+H%C3%BCe+Dark-field+electron+holography+for+the+measurement+of+geometric+phase+Ultramicroscopy+111+2011+1328&rows=5"
+ },
+ "P32.json": {
+  "fetched_utc": "2026-09-22T18:37:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P32.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2013.07.007"
+ },
+ "P32.search.json": {
+  "fetched_utc": "2026-09-22T18:35:41Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P32.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Lubk+Javon+Cherkashin+Dynamic+scattering+theory+for+dark-field+electron+holography+of+3D+strain+fields+Ultramicroscopy+136+2014+42&rows=5"
+ },
+ "P33.json": {
+  "fetched_utc": "2026-09-22T18:37:28Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P33.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2019.112844"
+ },
+ "P33.search.json": {
+  "fetched_utc": "2026-09-22T18:35:43Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P33.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Mei%C3%9Fner+Niermann+Berger+Dynamical+diffraction+effects+on+the+geometric+phase+of+inhomogeneous+strain+fields+Ultramicroscopy+207+2019&rows=5"
+ },
+ "P34.json": {
+  "fetched_utc": "2026-09-22T18:35:46Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P34.json",
+  "url": "https://api.crossref.org/works/10.1038/nphoton.2011.11"
+ },
+ "P35.json": {
+  "fetched_utc": "2026-09-22T18:37:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P35.json",
+  "url": "https://api.crossref.org/works/10.1038/ncomms1569"
+ },
+ "P35.search.json": {
+  "fetched_utc": "2026-09-22T18:35:50Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P35.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Godard+Carbone+Allain+Three-dimensional+high-resolution+quantitative+microscopy+of+extended+crystals+Nature+Communications+2+2011&rows=5"
+ },
+ "P36.json": {
+  "fetched_utc": "2026-09-22T18:35:53Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P36.json",
+  "url": "https://api.crossref.org/works/10.1063/1.4914927"
+ },
+ "P37.json": {
+  "fetched_utc": "2026-09-22T18:35:53Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P37.json",
+  "url": "https://api.crossref.org/works/10.1038/nmat4798"
+ },
+ "P38.arxiv.xml": {
+  "fetched_utc": "2026-09-22T18:39:00Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P38.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2307.01735"
+ },
+ "P38.json": {
+  "fetched_utc": "2026-09-22T18:37:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P38.json",
+  "url": "https://api.crossref.org/works/10.1364/optica.505478"
+ },
+ "P38.search.json": {
+  "fetched_utc": "2026-09-22T18:35:55Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P38.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=J%C3%B8rgensen+Besley+Slyamov+Hard+X-ray+grazing-incidence+ptychography%3A+large+field-of-view+nanostructure+imaging+with+ultra-high+surface+sensitivity+Optica+11+2024+197&rows=5"
+ },
+ "P39.arxiv.xml": {
+  "fetched_utc": "2026-09-22T18:39:05Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P39.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2402.06762"
+ },
+ "P39.json": {
+  "fetched_utc": "2026-09-22T18:35:57Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P39.json",
+  "url": "https://api.crossref.org/works/10.1063/5.0204240"
+ },
+ "P40.json": {
+  "fetched_utc": "2026-09-22T18:35:58Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P40.json",
+  "url": "https://api.crossref.org/works/10.1364/OE.591755"
+ },
+ "P41.json": {
+  "fetched_utc": "2026-09-22T18:35:59Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P41.json",
+  "url": "https://api.crossref.org/works/10.1038/s43586-025-00438-3"
+ },
+ "P42.json": {
+  "fetched_utc": "2026-09-22T18:37:30Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P42.json",
+  "url": "https://api.crossref.org/works/10.1093/jmicro/dfaa055"
+ },
+ "P42.search.json": {
+  "fetched_utc": "2026-09-22T18:36:04Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P42.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Blackburn+McLeod+Practical+implementation+of+high-resolution+electron+ptychography+and+comparison+with+off-axis+electron+holography+Microscopy+70+2021+131&rows=5"
+ },
+ "P43.json": {
+  "fetched_utc": "2026-09-22T18:36:05Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P43.json",
+  "url": "https://api.crossref.org/works/10.1016/j.micron.2022.103317"
+ },
+ "P44.json": {
+  "fetched_utc": "2026-09-22T18:37:30Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P44.json",
+  "url": "https://api.crossref.org/works/10.1093/jmicro/dfaa066"
+ },
+ "P44.search.json": {
+  "fetched_utc": "2026-09-22T18:36:06Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P44.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Herring+Phase+imaging+dislocations+using+diffracted+beam+interferometry+Microscopy+70+2021&rows=5"
+ },
+ "P45.json": {
+  "fetched_utc": "2026-09-22T18:36:00Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P45.json",
+  "url": "https://api.crossref.org/works/10.1063/1.4737152"
+ },
+ "P46.json": {
+  "fetched_utc": "2026-09-22T18:36:03Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P46.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2013.11.002"
+ },
+ "P47.json": {
+  "fetched_utc": "2026-09-22T18:35:59Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P47.json",
+  "url": "https://api.crossref.org/works/10.1063/1.1715155"
+ },
+ "P49.arxiv.xml": {
+  "fetched_utc": "2026-09-22T18:38:34Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P49.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2306.00271"
+ },
+ "P49.search.json": {
+  "fetched_utc": "2026-09-22T18:36:09Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P49.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Kudo+A+fast+and+accurate+computation+method+for+reflective+diffraction+simulations+2023&rows=5"
+ },
+ "P51.arxiv.xml": {
+  "fetched_utc": "2026-09-22T18:39:10Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P51.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2210.04027"
+ },
+ "P51.json": {
+  "fetched_utc": "2026-09-22T18:37:31Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P51.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevresearch.5.033137"
+ },
+ "P51.search.json": {
+  "fetched_utc": "2026-09-22T18:36:08Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/P51.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Subakti+Daqiqshirazi+Wolf+Electron+holographic+mapping+of+structural+and+electronic+reconstruction+at+mono-+and+bilayer+steps+of+h-BN+Physical+Review+Research+5+2023+033137&rows=5"
+ },
+ "PAT01.patent.html": {
+  "fetched_utc": "2026-09-22T18:34:34Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/PAT01.patent.html",
+  "url": "https://patents.google.com/patent/US4998788A/en"
+ },
+ "PYMULTISLICE.readme.md": {
+  "fetched_utc": "2026-09-22T18:38:28Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/PYMULTISLICE.readme.md",
+  "url": "https://raw.githubusercontent.com/HamishGBrown/py_multislice/master/README.md"
+ },
+ "RHEEDIUM.datacite.json": {
+  "fetched_utc": "2026-09-22T18:36:20Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/RHEEDIUM.datacite.json",
+  "url": "https://api.datacite.org/dois/10.5281/zenodo.14757400"
+ },
+ "RHEEDIUM.json": {
+  "fetched_utc": "2026-09-22T18:38:32Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/RHEEDIUM.json",
+  "url": "https://api.crossref.org/works/10.5281/zenodo.14757400"
+ },
+ "RHEEDIUM.ra.json": {
+  "fetched_utc": "2026-09-22T18:36:19Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/RHEEDIUM.ra.json",
+  "url": "https://doi.org/ra/10.5281/zenodo.14757400"
+ },
+ "S01.datacite.json": {
+  "fetched_utc": "2026-09-22T18:44:52Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/S01.datacite.json",
+  "url": "https://api.datacite.org/dois/10.5281/zenodo.18296081"
+ },
+ "S01.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:22Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/S01.publisher.html",
+  "url": "https://mrfitzpa.github.io/prismatique/"
+ },
+ "S01.readme.md": {
+  "fetched_utc": "2026-09-22T18:38:26Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/S01.readme.md",
+  "url": "https://raw.githubusercontent.com/mrfitzpa/prismatique/main/README.md"
+ },
+ "S02.page.html": {
+  "fetched_utc": "2026-09-22T18:34:32Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/S02.page.html",
+  "url": "https://prism-em.com/"
+ },
+ "S02.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:23Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/S02.publisher.html",
+  "url": "https://prism-em.github.io/about-cite/"
+ },
+ "SIMTRHEPD-CPC.json": {
+  "fetched_utc": "2026-09-22T18:36:12Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SIMTRHEPD-CPC.json",
+  "url": "https://api.crossref.org/works/10.1016/j.cpc.2022.108371"
+ },
+ "SIMTRHEPD.readme.md": {
+  "fetched_utc": "2026-09-22T18:38:27Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/SIMTRHEPD.readme.md",
+  "url": "https://raw.githubusercontent.com/sim-trhepd-rheed/sim-trhepd-rheed/main/README.md"
+ },
+ "U01.json": {
+  "fetched_utc": "2026-09-22T18:33:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U01.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(93)90062-o"
+ },
+ "U01.search.json": {
+  "fetched_utc": "2026-09-22T18:33:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U01.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=McCoy+Maksym+Simulation+of+high-resolution+REM+images+Surface+Science&rows=5"
+ },
+ "U02.json": {
+  "fetched_utc": "2026-09-22T18:37:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U02.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(93)90043-j"
+ },
+ "U02.search.json": {
+  "fetched_utc": "2026-09-22T18:36:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U02.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Dynamical+theory+of+RHEED+from+stepped+surfaces+Surface+Science&rows=5"
+ },
+ "U03.patent.html": {
+  "fetched_utc": "2026-09-22T18:36:32Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/U03.patent.html",
+  "url": "https://patents.google.com/patent/US10755892B2/en"
+ },
+ "U04.json": {
+  "fetched_utc": "2026-09-22T18:37:34Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U04.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevb.38.1172"
+ },
+ "U04.search.json": {
+  "fetched_utc": "2026-09-22T18:36:35Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U04.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Zhao+Poon+Tong+Physical+Review+B+38+1988+1172&rows=5"
+ },
+ "U05.isbn.json": {
+  "fetched_utc": "2026-09-22T18:42:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U05.isbn.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9780444820518&rows=100"
+ },
+ "U05.search.json": {
+  "fetched_utc": "2026-09-22T18:36:36Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U05.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Tonomura+Allard+Pozzi+Electron+Holography+International+Workshop+on+Electron+Holography+Elsevier+1995&rows=5"
+ },
+ "U06.isbn-osakabe.json": {
+  "fetched_utc": "2026-09-22T18:42:26Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U06.isbn-osakabe.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9780444820518&query.author=Osakabe&rows=20"
+ },
+ "U06.search.json": {
+  "fetched_utc": "2026-09-22T18:36:37Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U06.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Osakabe+1995&rows=5"
+ },
+ "U07.json": {
+  "fetched_utc": "2026-09-22T18:42:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U07.json",
+  "url": "https://api.crossref.org/works/10.1007/978-1-4615-4817-1_13"
+ },
+ "U07.search.json": {
+  "fetched_utc": "2026-09-22T18:36:38Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U07.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=V%C3%B6lkl+Allard+Joy+Electron+Holography+using+Diffracted+Electron+Beams+%28DBH%29+Introduction+to+Electron+Holography+Springer%2FPlenum+1999&rows=5"
+ },
+ "U08.json": {
+  "fetched_utc": "2026-09-22T18:37:34Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U08.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2014.06.005"
+ },
+ "U08.search.json": {
+  "fetched_utc": "2026-09-22T18:36:43Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U08.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Dynamical+effects+in+strain+measurements+by+dark-field+electron+holography+Ultramicroscopy+2014&rows=5"
+ },
+ "U09.json": {
+  "fetched_utc": "2026-09-22T18:37:36Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U09.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2015.10.002"
+ },
+ "U09.search.json": {
+  "fetched_utc": "2026-09-22T18:36:44Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U09.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Differential+phase-contrast+dark-field+electron+holography+for+strain+mapping+Ultramicroscopy+2016&rows=5"
+ },
+ "U10.json": {
+  "fetched_utc": "2026-09-22T18:42:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U10.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2025.114122"
+ },
+ "U10.search.json": {
+  "fetched_utc": "2026-09-22T18:36:46Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U10.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Dynamical+diffraction+effects+of+inhomogeneous+strain+fields+investigated+by+scanning+CBED+and+dark-field+electron+holography+Ultramicroscopy+2025&rows=5"
+ },
+ "U11.search.json": {
+  "fetched_utc": "2026-09-22T18:37:01Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U11.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Four-wave+dark-field+electron+holography+for+imaging+strain+fields&rows=5"
+ },
+ "U12.publisher.html": {
+  "fetched_utc": "2026-09-22T18:42:28Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/U12.publisher.html",
+  "url": "https://www.hremresearch.com/holodark/"
+ },
+ "U13.search.json": {
+  "fetched_utc": "2026-09-22T18:37:02Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U13.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Ishizuka+1998&rows=5"
+ },
+ "U13.search2.json": {
+  "fetched_utc": "2026-09-22T18:42:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U13.search2.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Ishizuka+multislice+inclined+illumination&rows=5"
+ },
+ "U14.search.json": {
+  "fetched_utc": "2026-09-22T18:37:04Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U14.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Philosophical+Magazine+Letters+71+1995&rows=5"
+ },
+ "U14.search2.json": {
+  "fetched_utc": "2026-09-22T18:42:30Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U14.search2.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=multislice+inclined+illumination+Philosophical+Magazine+Letters+71+1995&rows=5"
+ },
+ "U15.search.json": {
+  "fetched_utc": "2026-09-22T18:37:05Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U15.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Sub-%C3%A5ngstr%C3%B6m+resolution+ptychography+in+a+scanning+electron+microscope+at+20+keV+Nature+Communications+2025&rows=5"
+ },
+ "U16.json": {
+  "fetched_utc": "2026-09-22T18:37:37Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U16.json",
+  "url": "https://api.crossref.org/works/10.1017/s1431927620016104"
+ },
+ "U16.search.json": {
+  "fetched_utc": "2026-09-22T18:37:10Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U16.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Forbidden+reflection+moir%C3%A9+patterns+in+metal%E2%80%932D+material+interfaces+Microscopy+and+Microanalysis+26+2020+860&rows=5"
+ },
+ "U17.readme.md": {
+  "fetched_utc": "2026-09-22T18:38:30Z",
+  "status": 200,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/U17.readme.md",
+  "url": "https://raw.githubusercontent.com/yux1991/PyRHEED/master/README.md"
+ },
+ "U18.readme.md": {
+  "fetched_utc": "2026-09-22T18:38:31Z",
+  "status": 404,
+  "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/U18.readme.md",
+  "url": "https://raw.githubusercontent.com/ElsevierSoftwareX/SOFTX_2020_278/master/README.md"
+ },
+ "U18.search.json": {
+  "fetched_utc": "2026-09-22T18:37:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/U18.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=rheed%2B%2B+RHEED+intensity+oscillations+epitaxial+growth+SoftwareX&rows=5"
+ },
+ "ZLWANG96.isbn.json": {
+  "fetched_utc": "2026-09-22T18:35:31Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZLWANG96.isbn.json",
+  "url": "https://api.crossref.org/works?filter=isbn%3A9780521482660&rows=20"
+ },
+ "ZLWANG96.json": {
+  "fetched_utc": "2026-09-22T18:37:26Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZLWANG96.json",
+  "url": "https://api.crossref.org/works/10.1017/cbo9780511525254"
+ },
+ "ZLWANG96.search.json": {
+  "fetched_utc": "2026-09-22T18:35:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZLWANG96.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Wang+Reflection+Electron+Microscopy+and+Spectroscopy+for+Surface+Analysis+Cambridge+University+Press+1996&rows=5"
+ }
+}

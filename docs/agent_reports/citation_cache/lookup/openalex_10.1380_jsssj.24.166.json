@@ -1,0 +1,149 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1380/jsssj.24.166?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1994085323",
+ "doi": "https://doi.org/10.1380/jsssj.24.166",
+ "title": "Electron Energy Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter.",
+ "display_name": "Electron Energy Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter.",
+ "publication_year": 2003,
+ "publication_date": "2003-01-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5069512933",
+    "display_name": "Y. Tanishiro",
+    "orcid": "https://orcid.org/0000-0003-1916-3961"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I114531698",
+     "display_name": "Tokyo Institute of Technology",
+     "ror": "https://ror.org/0112mx960",
+     "country_code": "JP",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I114531698",
+      "https://openalex.org/I4400009020"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Yasumasa TANISHIRO",
+   "raw_affiliation_strings": [
+    "Department of Condensed Matter Physics, Tokyo Institute of Technology",
+    "Department of Condensed Matter Physics, Tokyo Institute of Technology Oh-okayama, Meguro-ku, Tokyo 152-8551"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Condensed Matter Physics, Tokyo Institute of Technology",
+     "institution_ids": [
+      "https://openalex.org/I114531698"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Department of Condensed Matter Physics, Tokyo Institute of Technology Oh-okayama, Meguro-ku, Tokyo 152-8551",
+     "institution_ids": [
+      "https://openalex.org/I114531698"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1380/jsssj.24.166",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1380/jsssj.24.166",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/jsssj/24/3/24_3_166/_pdf",
+  "source": {
+   "id": "https://openalex.org/S4210219936",
+   "display_name": "Hyomen Kagaku",
+   "issn_l": "0388-5321",
+   "issn": [
+    "0388-5321",
+    "1881-4743"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": false,
+   "listed_in": [],
+   "host_organization": "https://openalex.org/P4324113792",
+   "host_organization_name": "Surface Science Society of Japan",
+   "host_organization_lineage": [
+    "https://openalex.org/P4324113792"
+   ],
+   "host_organization_lineage_names": [
+    "Surface Science Society of Japan"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by-nc",
+  "license_id": "https://openalex.org/licenses/cc-by-nc",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Hyomen Kagaku",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 6,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "diamond",
+  "oa_url": "https://www.jstage.jst.go.jp/article/jsssj/24/3/24_3_166/_pdf",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1380/jsssj.24.166",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1380/jsssj.24.166",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/jsssj/24/3/24_3_166/_pdf",
+  "source": {
+   "id": "https://openalex.org/S4210219936",
+   "display_name": "Hyomen Kagaku",
+   "issn_l": "0388-5321",
+   "issn": [
+    "0388-5321",
+    "1881-4743"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": false,
+   "listed_in": [],
+   "host_organization": "https://openalex.org/P4324113792",
+   "host_organization_name": "Surface Science Society of Japan",
+   "host_organization_lineage": [
+    "https://openalex.org/P4324113792"
+   ],
+   "host_organization_lineage_names": [
+    "Surface Science Society of Japan"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by-nc",
+  "license_id": "https://openalex.org/licenses/cc-by-nc",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Hyomen Kagaku",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1965043020",
+  "https://openalex.org/W1969275388",
+  "https://openalex.org/W1979228338",
+  "https://openalex.org/W1985653315",
+  "https://openalex.org/W1988536001",
+  "https://openalex.org/W1990158776",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W2004450703",
+  "https://openalex.org/W2053066435",
+  "https://openalex.org/W2081932846",
+  "https://openalex.org/W2090515605",
+  "https://openalex.org/W4242135867"
+ ]
+}

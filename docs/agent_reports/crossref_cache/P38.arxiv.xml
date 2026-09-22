@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/NGWwGMnVm760mvJHttu7Rz4PJ04</id>
+  <title>arXiv Query: search_query=&amp;id_list=2307.01735&amp;start=0&amp;max_results=10</title>
+  <updated>2026-09-22T18:38:40Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=10&amp;id_list=2307.01735" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2307.01735v1</id>
+    <title>Hard X-ray grazing incidence ptychography: Large field-of-view nanostructure imaging with ultra-high surface sensitivity</title>
+    <updated>2023-07-04T14:11:17Z</updated>
+    <link href="https://arxiv.org/abs/2307.01735v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2307.01735v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We demonstrate a technique that allows highly surface sensitive imaging of nanostructures on planar surfaces over large areas, providing a new avenue for research in materials science, especially for \textit{in situ} applications. The capabilities of hard X-ray grazing incidence ptychography combine aspects from imaging, reflectometry and grazing incidence small angle scattering in providing large field-of-view images with high resolution transverse to the beam, horizontally and along the surface normal. Thus, it yields data with resolutions approaching electron microscopy, in two dimensions, but over much larger areas and with a poorer resolution in the third spatial dimension, along the beam propagation direction. Similar to grazing incidence small angle X-ray scattering, this technique facilitates the characterization of nanostructures across statistically significant surface areas or volumes within potentially feasible time frames for \textit{in situ} experiments, while also providing spatial information.</summary>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="physics.app-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-07-04T14:11:17Z</published>
+    <arxiv:comment>8 pages, 6 figures</arxiv:comment>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>P. S. Jørgensen</name>
+    </author>
+    <author>
+      <name>L. Besley</name>
+    </author>
+    <author>
+      <name>A. M. Slyamov</name>
+    </author>
+    <author>
+      <name>A. Diaz</name>
+    </author>
+    <author>
+      <name>M. Guizar-Sicairos</name>
+    </author>
+    <author>
+      <name>M. Odstrcil</name>
+    </author>
+    <author>
+      <name>M. Holler</name>
+    </author>
+    <author>
+      <name>C. Silvestre</name>
+    </author>
+    <author>
+      <name>B. Chang</name>
+    </author>
+    <author>
+      <name>C. Detlefs</name>
+    </author>
+    <author>
+      <name>J. W. Andreasen</name>
+    </author>
+  </entry>
+</feed>

@@ -1,0 +1,158 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1007/978-3-540-37204-2_7?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W658614855",
+ "doi": "https://doi.org/10.1007/978-3-540-37204-2_7",
+ "title": "Electron-Holographic Interferometry",
+ "display_name": "Electron-Holographic Interferometry",
+ "publication_year": 1999,
+ "publication_date": "1999-01-01",
+ "type": "book-chapter",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5109807543",
+    "display_name": "Akira Tonomura",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Akira Tonomura",
+   "raw_affiliation_strings": [
+    "Advanced Research Laboratory, Hitachi, Ltd., Saitama, Japan",
+    "Advanced Research Laboratory Hitachi, Ltd. Saitama, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd., Saitama, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory Hitachi, Ltd. Saitama, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1007/978-3-540-37204-2_7",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1007/978-3-540-37204-2_7",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4210217358",
+   "display_name": "Springer series in optical sciences/SPringer series in optical sciences",
+   "issn_l": "0342-4111",
+   "issn": [
+    "0342-4111",
+    "1556-1534"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310319965",
+   "host_organization_name": "Springer Nature",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310319965"
+   ],
+   "host_organization_lineage_names": [
+    "Springer Nature"
+   ],
+   "type": "book series"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Springer Series in Optical Sciences",
+  "raw_type": "book-chapter"
+ },
+ "cited_by_count": 8,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1645753398",
+  "https://openalex.org/W1960857565",
+  "https://openalex.org/W1969469849",
+  "https://openalex.org/W1970611834",
+  "https://openalex.org/W1973665527",
+  "https://openalex.org/W1974346093",
+  "https://openalex.org/W1976083140",
+  "https://openalex.org/W1977349535",
+  "https://openalex.org/W1977367748",
+  "https://openalex.org/W1983925642",
+  "https://openalex.org/W1986795152",
+  "https://openalex.org/W1990499473",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1994427023",
+  "https://openalex.org/W1994501919",
+  "https://openalex.org/W1999465943",
+  "https://openalex.org/W1999683639",
+  "https://openalex.org/W2005731098",
+  "https://openalex.org/W2007747334",
+  "https://openalex.org/W2007803774",
+  "https://openalex.org/W2010192870",
+  "https://openalex.org/W2017131808",
+  "https://openalex.org/W2019020675",
+  "https://openalex.org/W2020916816",
+  "https://openalex.org/W2021541287",
+  "https://openalex.org/W2034782087",
+  "https://openalex.org/W2038437321",
+  "https://openalex.org/W2041899170",
+  "https://openalex.org/W2048216657",
+  "https://openalex.org/W2054254955",
+  "https://openalex.org/W2058459702",
+  "https://openalex.org/W2058523120",
+  "https://openalex.org/W2061930997",
+  "https://openalex.org/W2064502505",
+  "https://openalex.org/W2065807353",
+  "https://openalex.org/W2067177568",
+  "https://openalex.org/W2067726999",
+  "https://openalex.org/W2070243699",
+  "https://openalex.org/W2074632990",
+  "https://openalex.org/W2075368438",
+  "https://openalex.org/W2075699386",
+  "https://openalex.org/W2075840687",
+  "https://openalex.org/W2078951493",
+  "https://openalex.org/W2079732841",
+  "https://openalex.org/W2081001522",
+  "https://openalex.org/W2082904789",
+  "https://openalex.org/W2089880989",
+  "https://openalex.org/W2094780191",
+  "https://openalex.org/W2094862703",
+  "https://openalex.org/W2095246948",
+  "https://openalex.org/W2119357123",
+  "https://openalex.org/W2163442345",
+  "https://openalex.org/W2170661929",
+  "https://openalex.org/W2300089865",
+  "https://openalex.org/W2487426483",
+  "https://openalex.org/W2626825091",
+  "https://openalex.org/W3126173400"
+ ]
+}

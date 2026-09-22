@@ -1,0 +1,151 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1016/0304-3991%2892%2990195-p?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2032672364",
+ "doi": "https://doi.org/10.1016/0304-3991(92)90195-p",
+ "title": "Resolution limitation in the electron microscopy of surfaces",
+ "display_name": "Resolution limitation in the electron microscopy of surfaces",
+ "publication_year": 1992,
+ "publication_date": "1992-11-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5109918212",
+    "display_name": "JOHN M. COWLEY",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I55732556",
+     "display_name": "Arizona State University",
+     "ror": "https://ror.org/03efmqc40",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I55732556"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "J.M. Cowley",
+   "raw_affiliation_strings": [
+    "Department of Physics and Astronomy, Arizona State #N#    University, Tempe, AZ 85287-1504, USA"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Physics and Astronomy, Arizona State #N#    University, Tempe, AZ 85287-1504, USA",
+     "institution_ids": [
+      "https://openalex.org/I55732556"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1016/0304-3991(92)90195-p",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1016/0304-3991(92)90195-p",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S27731274",
+   "display_name": "Ultramicroscopy",
+   "issn_l": "0304-3991",
+   "issn": [
+    "0304-3991",
+    "1879-2723"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "listed_in": [
+    "cwts-core",
+    "jufo-1",
+    "medline",
+    "norway-1"
+   ],
+   "host_organization": "https://openalex.org/P4310320990",
+   "host_organization_name": "Elsevier BV",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320990"
+   ],
+   "host_organization_lineage_names": [
+    "Elsevier BV"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Ultramicroscopy",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 5,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W147488886",
+  "https://openalex.org/W186498427",
+  "https://openalex.org/W1970349611",
+  "https://openalex.org/W1978747248",
+  "https://openalex.org/W1983281269",
+  "https://openalex.org/W1985973733",
+  "https://openalex.org/W1987698258",
+  "https://openalex.org/W1989118406",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1991885922",
+  "https://openalex.org/W2001740575",
+  "https://openalex.org/W2001891147",
+  "https://openalex.org/W2002581296",
+  "https://openalex.org/W2006686968",
+  "https://openalex.org/W2007179625",
+  "https://openalex.org/W2009656066",
+  "https://openalex.org/W2019340519",
+  "https://openalex.org/W2021868085",
+  "https://openalex.org/W2027021095",
+  "https://openalex.org/W2028404493",
+  "https://openalex.org/W2031862380",
+  "https://openalex.org/W2034077391",
+  "https://openalex.org/W2034570393",
+  "https://openalex.org/W2043856630",
+  "https://openalex.org/W2050534998",
+  "https://openalex.org/W2051497731",
+  "https://openalex.org/W2057925354",
+  "https://openalex.org/W2059988485",
+  "https://openalex.org/W2060816178",
+  "https://openalex.org/W2063884759",
+  "https://openalex.org/W2069365285",
+  "https://openalex.org/W2076532307",
+  "https://openalex.org/W2077909929",
+  "https://openalex.org/W2078909307",
+  "https://openalex.org/W2081789451",
+  "https://openalex.org/W2082501616",
+  "https://openalex.org/W2083813469",
+  "https://openalex.org/W2084688288",
+  "https://openalex.org/W2084896476",
+  "https://openalex.org/W2086191186",
+  "https://openalex.org/W2089171829",
+  "https://openalex.org/W2090027058",
+  "https://openalex.org/W2106924877",
+  "https://openalex.org/W2129756604",
+  "https://openalex.org/W2313915438",
+  "https://openalex.org/W2319251777",
+  "https://openalex.org/W2483345361",
+  "https://openalex.org/W2602161126",
+  "https://openalex.org/W2607010293",
+  "https://openalex.org/W3147740451",
+  "https://openalex.org/W4238592539"
+ ]
+}

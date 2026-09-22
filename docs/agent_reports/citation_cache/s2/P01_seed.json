@@ -1,0 +1,14 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1143/JJAP.27.L1772?fields=title,year,externalIds,citationCount,venue",
+ "_retrieved": "2026-09-22",
+ "paperId": "1238381a85139fd1c334a0a0b8f609c2d3977e7b",
+ "externalIds": {
+  "MAG": "2054923936",
+  "DOI": "10.1143/JJAP.27.L1772",
+  "CorpusId": 117105988
+ },
+ "title": "Observation of Atomic Steps by Reflection Electron Holography",
+ "venue": "",
+ "year": 1988,
+ "citationCount": 14
+}

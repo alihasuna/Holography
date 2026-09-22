@@ -1,0 +1,195 @@
+{
+ "_url": "https://api.crossref.org/works/10.1002/jemt.1070200415",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2025,
+     10,
+     17
+    ]
+   ],
+   "date-time": "2025-10-17T00:20:04Z",
+   "timestamp": 1760660404763,
+   "version": "build-2065373602"
+  },
+  "reference-count": 20,
+  "publisher": "Wiley",
+  "issue": "4",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       2005,
+       2,
+       4
+      ]
+     ],
+     "date-time": "2005-02-04T00:00:00Z",
+     "timestamp": 1107475200000
+    },
+    "content-version": "vor",
+    "delay-in-days": 4738,
+    "URL": "http://onlinelibrary.wiley.com/termsAndConditions#vor"
+   }
+  ],
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Microscopy Res &amp; Technique"
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1992,
+     2,
+     15
+    ]
+   ]
+  },
+  "DOI": "10.1002/jemt.1070200415",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2005,
+     2,
+     23
+    ]
+   ],
+   "date-time": "2005-02-23T17:50:56Z",
+   "timestamp": 1109181056000
+  },
+  "page": "457-462",
+  "source": "Crossref",
+  "is-referenced-by-count": 7,
+  "title": [
+   "Observation of surfaces by reflection electron holography"
+  ],
+  "prefix": "10.1002",
+  "volume": "20",
+  "author": [
+   {
+    "given": "Nobuyuki",
+    "family": "Osakabe",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   }
+  ],
+  "member": "311",
+  "published-online": {
+   "date-parts": [
+    [
+     2005,
+     2,
+     4
+    ]
+   ]
+  },
+  "container-title": [
+   "Microscopy Research and Technique"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://api.wiley.com/onlinelibrary/tdm/v1/articles/10.1002%2Fjemt.1070200415",
+    "content-type": "unspecified",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/pdf/10.1002/jemt.1070200415",
+    "content-type": "unspecified",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2025,
+     10,
+     16
+    ]
+   ],
+   "date-time": "2025-10-16T13:41:47Z",
+   "timestamp": 1760622107000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jemt.1070200415"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1992,
+     2,
+     15
+    ]
+   ]
+  },
+  "references-count": 20,
+  "journal-issue": {
+   "issue": "4",
+   "published-print": {
+    "date-parts": [
+     [
+      1992,
+      2,
+      15
+     ]
+    ]
+   }
+  },
+  "alternative-id": [
+   "10.1002/jemt.1070200415"
+  ],
+  "URL": "https://doi.org/10.1002/jemt.1070200415",
+  "archive": [
+   "Portico"
+  ],
+  "relation": {},
+  "ISSN": [
+   "1059-910X",
+   "1097-0029"
+  ],
+  "issn-type": [
+   {
+    "type": "print",
+    "value": "1059-910X"
+   },
+   {
+    "type": "electronic",
+    "value": "1097-0029"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1992,
+     2,
+     15
+    ]
+   ]
+  }
+ }
+}

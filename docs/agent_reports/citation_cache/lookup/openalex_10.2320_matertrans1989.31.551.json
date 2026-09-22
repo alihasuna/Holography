@@ -1,0 +1,198 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.2320/matertrans1989.31.551?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1993895665",
+ "doi": "https://doi.org/10.2320/matertrans1989.31.551",
+ "title": "Applications of Electron Holography to Materials Science",
+ "display_name": "Applications of Electron Holography to Materials Science",
+ "publication_year": 1990,
+ "publication_date": "1990-01-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5110031429",
+    "display_name": "Junji Endo",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Junji Endo",
+   "raw_affiliation_strings": [
+    "Advanced Research Laboratory, Hitachi, Ltd",
+    "Advanced Research Laboratory, Hitachi, Ltd.,"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd.,",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5109807543",
+    "display_name": "Akira Tonomura",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Akira Tonomura",
+   "raw_affiliation_strings": [
+    "Advanced Research Laboratory, Hitachi, Ltd",
+    "Advanced Research Laboratory, Hitachi, Ltd.,"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd.,",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.2320/matertrans1989.31.551",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.2320/matertrans1989.31.551",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S139051620",
+   "display_name": "Materials Transactions JIM",
+   "issn_l": "0916-1821",
+   "issn": [
+    "0916-1821",
+    "2432-471X"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4322765269",
+   "host_organization_name": "Japan Institute of Metals",
+   "host_organization_lineage": [
+    "https://openalex.org/P4322765269"
+   ],
+   "host_organization_lineage_names": [
+    "Japan Institute of Metals"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Materials Transactions, JIM",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 3,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "diamond",
+  "oa_url": "https://doi.org/10.2320/matertrans1989.31.551",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.2320/matertrans1989.31.551",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.2320/matertrans1989.31.551",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S139051620",
+   "display_name": "Materials Transactions JIM",
+   "issn_l": "0916-1821",
+   "issn": [
+    "0916-1821",
+    "2432-471X"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4322765269",
+   "host_organization_name": "Japan Institute of Metals",
+   "host_organization_lineage": [
+    "https://openalex.org/P4322765269"
+   ],
+   "host_organization_lineage_names": [
+    "Japan Institute of Metals"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Materials Transactions, JIM",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1973217747",
+  "https://openalex.org/W1980704699",
+  "https://openalex.org/W1982627233",
+  "https://openalex.org/W1983854305",
+  "https://openalex.org/W1986682132",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1991101760",
+  "https://openalex.org/W2012216080",
+  "https://openalex.org/W2019040265",
+  "https://openalex.org/W2020232579",
+  "https://openalex.org/W2030493348",
+  "https://openalex.org/W2034782087",
+  "https://openalex.org/W2036671104",
+  "https://openalex.org/W2041899170",
+  "https://openalex.org/W2050884969",
+  "https://openalex.org/W2053336963",
+  "https://openalex.org/W2067287942",
+  "https://openalex.org/W2071297975",
+  "https://openalex.org/W2086203184",
+  "https://openalex.org/W4252768072"
+ ]
+}

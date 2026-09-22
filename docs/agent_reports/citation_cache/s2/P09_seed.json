@@ -1,0 +1,15 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1002/jemt.1070200414?fields=title,year,externalIds,citationCount,venue",
+ "_retrieved": "2026-09-22",
+ "paperId": "ec957447b3bb1edd9830d7ed59ba679422804463",
+ "externalIds": {
+  "MAG": "2163735975",
+  "DOI": "10.1002/JEMT.1070200414",
+  "CorpusId": 6236208,
+  "PubMed": "1498358"
+ },
+ "title": "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces",
+ "venue": "Microscopy research and technique (Print)",
+ "year": 1992,
+ "citationCount": 3
+}

@@ -1,0 +1,151 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1016/0167-5729%2894%2990005-1?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2042523451",
+ "doi": "https://doi.org/10.1016/0167-5729(94)90005-1",
+ "title": "Recent advances in electron phase microscopy",
+ "display_name": "Recent advances in electron phase microscopy",
+ "publication_year": 1994,
+ "publication_date": "1994-01-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5109807543",
+    "display_name": "Akira Tonomura",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I65143321",
+     "display_name": "Hitachi (Japan)",
+     "ror": "https://ror.org/02exqgm79",
+     "country_code": "JP",
+     "type": "company",
+     "lineage": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Akira Tonomura",
+   "raw_affiliation_strings": [
+    "Advanced Research Laboratory, Hitachi, Ltd. and Tonomura Electron Wavefront Project, Research Development Corporation of Japan, JRDC, Hotoyama, Saitama 350-03, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Research Laboratory, Hitachi, Ltd. and Tonomura Electron Wavefront Project, Research Development Corporation of Japan, JRDC, Hotoyama, Saitama 350-03, Japan",
+     "institution_ids": [
+      "https://openalex.org/I65143321"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1016/0167-5729(94)90005-1",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1016/0167-5729(94)90005-1",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S120139636",
+   "display_name": "Surface Science Reports",
+   "issn_l": "0167-5729",
+   "issn": [
+    "0167-5729",
+    "1879-274X"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320990",
+   "host_organization_name": "Elsevier BV",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320990"
+   ],
+   "host_organization_lineage_names": [
+    "Elsevier BV"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Surface Science Reports",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 6,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1969469849",
+  "https://openalex.org/W1974346093",
+  "https://openalex.org/W1976083140",
+  "https://openalex.org/W1977349535",
+  "https://openalex.org/W1983925642",
+  "https://openalex.org/W1986795152",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1994501919",
+  "https://openalex.org/W1999465943",
+  "https://openalex.org/W1999683639",
+  "https://openalex.org/W2000745844",
+  "https://openalex.org/W2005731098",
+  "https://openalex.org/W2007747334",
+  "https://openalex.org/W2010067036",
+  "https://openalex.org/W2010192870",
+  "https://openalex.org/W2014454313",
+  "https://openalex.org/W2014620891",
+  "https://openalex.org/W2017332233",
+  "https://openalex.org/W2019040265",
+  "https://openalex.org/W2020487560",
+  "https://openalex.org/W2021541287",
+  "https://openalex.org/W2024987628",
+  "https://openalex.org/W2025807893",
+  "https://openalex.org/W2025835107",
+  "https://openalex.org/W2028948400",
+  "https://openalex.org/W2034782087",
+  "https://openalex.org/W2041899170",
+  "https://openalex.org/W2043040392",
+  "https://openalex.org/W2043975138",
+  "https://openalex.org/W2046846376",
+  "https://openalex.org/W2054923936",
+  "https://openalex.org/W2061930997",
+  "https://openalex.org/W2065807353",
+  "https://openalex.org/W2067177568",
+  "https://openalex.org/W2067287942",
+  "https://openalex.org/W2070243699",
+  "https://openalex.org/W2071297975",
+  "https://openalex.org/W2071846639",
+  "https://openalex.org/W2074632990",
+  "https://openalex.org/W2075368438",
+  "https://openalex.org/W2075699386",
+  "https://openalex.org/W2078553977",
+  "https://openalex.org/W2079732841",
+  "https://openalex.org/W2079842899",
+  "https://openalex.org/W2081001522",
+  "https://openalex.org/W2084349857",
+  "https://openalex.org/W2087675085",
+  "https://openalex.org/W2089880989",
+  "https://openalex.org/W2093360139",
+  "https://openalex.org/W2094780191",
+  "https://openalex.org/W2095246948",
+  "https://openalex.org/W2159285249",
+  "https://openalex.org/W2163442345",
+  "https://openalex.org/W2497432837",
+  "https://openalex.org/W4255994326",
+  "https://openalex.org/W4285719527",
+  "https://openalex.org/W6668580368"
+ ]
+}

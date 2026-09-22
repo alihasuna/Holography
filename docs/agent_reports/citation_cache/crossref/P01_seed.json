@@ -1,0 +1,294 @@
+{
+ "_url": "https://api.crossref.org/works/10.1143/JJAP.27.L1772",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2025,
+     10,
+     16
+    ]
+   ],
+   "date-time": "2025-10-16T19:41:38Z",
+   "timestamp": 1760643698831,
+   "version": "3.37.3"
+  },
+  "reference-count": 41,
+  "publisher": "IOP Publishing",
+  "issue": "9A",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       1988,
+       9,
+       1
+      ]
+     ],
+     "date-time": "1988-09-01T00:00:00Z",
+     "timestamp": 589075200000
+    },
+    "content-version": "vor",
+    "delay-in-days": 0,
+    "URL": "https://iopscience.iop.org/page/copyright"
+   },
+   {
+    "start": {
+     "date-parts": [
+      [
+       1988,
+       9,
+       1
+      ]
+     ],
+     "date-time": "1988-09-01T00:00:00Z",
+     "timestamp": 589075200000
+    },
+    "content-version": "tdm",
+    "delay-in-days": 0,
+    "URL": "https://iopscience.iop.org/info/page/text-and-data-mining"
+   }
+  ],
+  "content-domain": {
+   "domain": [
+    "iopscience.iop.org"
+   ],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Jpn. J. Appl. Phys."
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1988,
+     9,
+     1
+    ]
+   ]
+  },
+  "DOI": "10.1143/jjap.27.l1772",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2005,
+     2,
+     23
+    ]
+   ],
+   "date-time": "2005-02-23T01:25:53Z",
+   "timestamp": 1109121953000
+  },
+  "page": "L1772",
+  "update-policy": "https://doi.org/10.1088/crossmark-policy",
+  "source": "Crossref",
+  "is-referenced-by-count": 22,
+  "title": [
+   "Observation of Atomic Steps by Reflection Electron Holography"
+  ],
+  "prefix": "10.35848",
+  "volume": "27",
+  "author": [
+   {
+    "given": "Nobuyuki",
+    "family": "Osakabe",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Tsuyoshi",
+    "family": "Matsuda",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Junji",
+    "family": "Endo",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Akira",
+    "family": "Tonomura",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   }
+  ],
+  "member": "266",
+  "container-title": [
+   "Japanese Journal of Applied Physics"
+  ],
+  "original-title": [],
+  "link": [
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.27.L1772",
+    "content-type": "text/html",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.27.L1772/pdf",
+    "content-type": "application/pdf",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.27.L1772/pdf",
+    "content-type": "application/pdf",
+    "content-version": "vor",
+    "intended-application": "syndication"
+   },
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.27.L1772/pdf",
+    "content-type": "application/pdf",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2022,
+     12,
+     5
+    ]
+   ],
+   "date-time": "2022-12-05T19:16:13Z",
+   "timestamp": 1670267773000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.27.L1772"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1988,
+     9,
+     1
+    ]
+   ]
+  },
+  "references-count": 41,
+  "journal-issue": {
+   "issue": "9A",
+   "published-print": {
+    "date-parts": [
+     [
+      1988,
+      9,
+      1
+     ]
+    ]
+   }
+  },
+  "URL": "https://doi.org/10.1143/jjap.27.l1772",
+  "relation": {},
+  "ISSN": [
+   "0021-4922",
+   "1347-4065"
+  ],
+  "issn-type": [
+   {
+    "type": "print",
+    "value": "0021-4922"
+   },
+   {
+    "type": "electronic",
+    "value": "1347-4065"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1988,
+     9,
+     1
+    ]
+   ]
+  },
+  "assertion": [
+   {
+    "value": "Observation of Atomic Steps by Reflection Electron Holography",
+    "name": "article_title",
+    "label": "Article Title"
+   },
+   {
+    "value": "Japanese Journal of Applied Physics",
+    "name": "journal_title",
+    "label": "Journal Title"
+   },
+   {
+    "value": "paper",
+    "name": "article_type",
+    "label": "Article Type"
+   },
+   {
+    "value": "Copyright (c) 1988 The Japan Society of Applied Physics",
+    "name": "copyright_information",
+    "label": "Copyright Information"
+   },
+   {
+    "value": "1988-07-12",
+    "name": "date_received",
+    "label": "Date Received",
+    "group": {
+     "name": "publication_dates",
+     "label": "Publication dates"
+    }
+   },
+   {
+    "value": "1988-08-17",
+    "name": "date_accepted",
+    "label": "Date Accepted",
+    "group": {
+     "name": "publication_dates",
+     "label": "Publication dates"
+    }
+   },
+   {
+    "name": "date_epub",
+    "label": "Online publication date",
+    "group": {
+     "name": "publication_dates",
+     "label": "Publication dates"
+    }
+   }
+  ]
+ }
+}

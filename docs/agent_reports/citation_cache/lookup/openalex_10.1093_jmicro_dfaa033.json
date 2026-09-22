@@ -1,0 +1,236 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1093/jmicro/dfaa033?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W3037662494",
+ "doi": "https://doi.org/10.1093/jmicro/dfaa033",
+ "title": "Interference and interferometry in electron holography",
+ "display_name": "Interference and interferometry in electron holography",
+ "publication_year": 2020,
+ "publication_date": "2020-06-22",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5103633683",
+    "display_name": "Ken Harada",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I4210110652",
+     "display_name": "RIKEN",
+     "ror": "https://ror.org/01sjwvz98",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I4210110652"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Ken Harada",
+   "raw_affiliation_strings": [
+    "CEMS, RIKEN (The Institute of Physical and Chemical Research), Hatoyama, Saitama 350-0395, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "CEMS, RIKEN (The Institute of Physical and Chemical Research), Hatoyama, Saitama 350-0395, Japan",
+     "institution_ids": [
+      "https://openalex.org/I4210110652"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1093/jmicro/dfaa033",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1093/jmicro/dfaa033",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4210174966",
+   "display_name": "Microscopy",
+   "issn_l": "2050-5698",
+   "issn": [
+    "2050-5698",
+    "2050-5701"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310311648",
+   "host_organization_name": "Oxford University Press",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310311648",
+    "https://openalex.org/P4310311647"
+   ],
+   "host_organization_lineage_names": [
+    "Oxford University Press",
+    "University of Oxford"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Microscopy",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 26,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "hybrid",
+  "oa_url": "https://doi.org/10.1093/jmicro/dfaa033",
+  "any_repository_has_fulltext": true
+ },
+ "best_oa_location": {
+  "id": "doi:10.1093/jmicro/dfaa033",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1093/jmicro/dfaa033",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4210174966",
+   "display_name": "Microscopy",
+   "issn_l": "2050-5698",
+   "issn": [
+    "2050-5698",
+    "2050-5701"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310311648",
+   "host_organization_name": "Oxford University Press",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310311648",
+    "https://openalex.org/P4310311647"
+   ],
+   "host_organization_lineage_names": [
+    "Oxford University Press",
+    "University of Oxford"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Microscopy",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1519847288",
+  "https://openalex.org/W1666853924",
+  "https://openalex.org/W1835713819",
+  "https://openalex.org/W1846410870",
+  "https://openalex.org/W1969869637",
+  "https://openalex.org/W1972050121",
+  "https://openalex.org/W1974200596",
+  "https://openalex.org/W1977174196",
+  "https://openalex.org/W1978996365",
+  "https://openalex.org/W1980704699",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1991101760",
+  "https://openalex.org/W1991507528",
+  "https://openalex.org/W1994501919",
+  "https://openalex.org/W2006354005",
+  "https://openalex.org/W2007125962",
+  "https://openalex.org/W2010902062",
+  "https://openalex.org/W2012216080",
+  "https://openalex.org/W2013665903",
+  "https://openalex.org/W2014454313",
+  "https://openalex.org/W2014620891",
+  "https://openalex.org/W2017332233",
+  "https://openalex.org/W2019020675",
+  "https://openalex.org/W2020393382",
+  "https://openalex.org/W2023321992",
+  "https://openalex.org/W2025807893",
+  "https://openalex.org/W2027051514",
+  "https://openalex.org/W2028948400",
+  "https://openalex.org/W2031884095",
+  "https://openalex.org/W2034333400",
+  "https://openalex.org/W2034782087",
+  "https://openalex.org/W2036715187",
+  "https://openalex.org/W2041747863",
+  "https://openalex.org/W2041899170",
+  "https://openalex.org/W2050451272",
+  "https://openalex.org/W2050884969",
+  "https://openalex.org/W2053336963",
+  "https://openalex.org/W2054322765",
+  "https://openalex.org/W2054890758",
+  "https://openalex.org/W2054923936",
+  "https://openalex.org/W2057269087",
+  "https://openalex.org/W2061930997",
+  "https://openalex.org/W2062813579",
+  "https://openalex.org/W2065807353",
+  "https://openalex.org/W2065858499",
+  "https://openalex.org/W2066858417",
+  "https://openalex.org/W2067287942",
+  "https://openalex.org/W2070066535",
+  "https://openalex.org/W2076237025",
+  "https://openalex.org/W2077489619",
+  "https://openalex.org/W2079370746",
+  "https://openalex.org/W2080398676",
+  "https://openalex.org/W2080923570",
+  "https://openalex.org/W2084349857",
+  "https://openalex.org/W2084441806",
+  "https://openalex.org/W2086203184",
+  "https://openalex.org/W2087675085",
+  "https://openalex.org/W2093048787",
+  "https://openalex.org/W2093203937",
+  "https://openalex.org/W2108671008",
+  "https://openalex.org/W2110973002",
+  "https://openalex.org/W2116768645",
+  "https://openalex.org/W2117363688",
+  "https://openalex.org/W2125569951",
+  "https://openalex.org/W2128222117",
+  "https://openalex.org/W2132325323",
+  "https://openalex.org/W2146064634",
+  "https://openalex.org/W2154960118",
+  "https://openalex.org/W2159285249",
+  "https://openalex.org/W2160794025",
+  "https://openalex.org/W2167536595",
+  "https://openalex.org/W2188631329",
+  "https://openalex.org/W2470972219",
+  "https://openalex.org/W2484949473",
+  "https://openalex.org/W2506128405",
+  "https://openalex.org/W2531477900",
+  "https://openalex.org/W2568394361",
+  "https://openalex.org/W2603649406",
+  "https://openalex.org/W2773725687",
+  "https://openalex.org/W2783509833",
+  "https://openalex.org/W2783674213",
+  "https://openalex.org/W2810683013",
+  "https://openalex.org/W2885948954",
+  "https://openalex.org/W2889333018",
+  "https://openalex.org/W2902470151",
+  "https://openalex.org/W2920884561",
+  "https://openalex.org/W2957447807",
+  "https://openalex.org/W3001326838",
+  "https://openalex.org/W3003975520",
+  "https://openalex.org/W3010099098",
+  "https://openalex.org/W3013158741",
+  "https://openalex.org/W3021509614",
+  "https://openalex.org/W3042611723",
+  "https://openalex.org/W3098818737",
+  "https://openalex.org/W4244382369",
+  "https://openalex.org/W4246467468",
+  "https://openalex.org/W4252156518",
+  "https://openalex.org/W4254422073",
+  "https://openalex.org/W4285719527",
+  "https://openalex.org/W6638637120",
+  "https://openalex.org/W6638889488",
+  "https://openalex.org/W6666998981",
+  "https://openalex.org/W6687094276",
+  "https://openalex.org/W6720371566",
+  "https://openalex.org/W6722351491"
+ ]
+}

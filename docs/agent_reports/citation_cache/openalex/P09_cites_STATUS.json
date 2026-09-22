@@ -1,0 +1,7 @@
+{
+ "status": "NOT RETRIEVED: HTTP 429 (OpenAlex daily budget for unauthenticated list queries exhausted)",
+ "date_utc": "2026-09-22T18:39:20+00:00",
+ "url": "https://api.openalex.org/works?filter=cites%3AW2163735975&per-page=200&cursor=%2A&select=id%2Cdoi%2Ctitle%2Cdisplay_name%2Cpublication_year%2Cpublication_date%2Ctype%2Cauthorships%2Cprimary_location%2Ccited_by_count%2Copen_access%2Cbest_oa_location",
+ "retry_after_s": 19240,
+ "server_message": "{\"error\":\"Rate limit exceeded\",\"message\":\"Insufficient budget. This request has no API key, so it counts against the free daily budget shared by everyone on your network's IP address, and that budget is used up ($0 remaining; resets at midnight UTC). Use your own key instead: add ?api_key=YOUR_KEY to the URL, or send it as an \\\"Authorization: Bearer YOUR_KEY\\\" header. Keys are free and have their own budget: https://help.openalex.org/api/authentication/\",\"retryAfter\":19240,\"costUsd\":0.0001,\"dailyRemainingUsd\":0,\"prepaidRemainingUsd\":0,\"creditsRequired\":1,\"creditsRemaining\":0,\"onetimeCreditsRem"
+}

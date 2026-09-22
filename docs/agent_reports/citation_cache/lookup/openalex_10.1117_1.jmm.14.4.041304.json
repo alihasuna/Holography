@@ -1,0 +1,375 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1117/1.jmm.14.4.041304?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1085130950",
+ "doi": "https://doi.org/10.1117/1.jmm.14.4.041304",
+ "title": "Development of lossy and near-lossless compression methods for wafer surface structure digital holograms",
+ "display_name": "Development of lossy and near-lossless compression methods for wafer surface structure digital holograms",
+ "publication_year": 2015,
+ "publication_date": "2015-08-03",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5100461097",
+    "display_name": "Hongbo Zhang",
+    "orcid": "https://orcid.org/0000-0002-6923-5604"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I859038795",
+     "display_name": "Virginia Tech",
+     "ror": "https://ror.org/02smfhw86",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Hongbo Zhang",
+   "raw_affiliation_strings": [
+    "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United States"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United States",
+     "institution_ids": [
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5103790307",
+    "display_name": "Wenjing Zhou",
+    "orcid": "https://orcid.org/0009-0006-3211-1081"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I113940042",
+     "display_name": "Shanghai University",
+     "ror": "https://ror.org/006teas31",
+     "country_code": "CN",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I113940042"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I859038795",
+     "display_name": "Virginia Tech",
+     "ror": "https://ror.org/02smfhw86",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ],
+   "countries": [
+    "CN",
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Wenjing Zhou",
+   "raw_affiliation_strings": [
+    "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United StatesbShanghai University, Department of Precision Mechanical Engineering, 149 Yanchang Road, Shanghai 200072, China"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United StatesbShanghai University, Department of Precision Mechanical Engineering, 149 Yanchang Road, Shanghai 200072, China",
+     "institution_ids": [
+      "https://openalex.org/I113940042",
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5066616510",
+    "display_name": "Donald E. Leber",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I859038795",
+     "display_name": "Virginia Tech",
+     "ror": "https://ror.org/02smfhw86",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Donald Leber",
+   "raw_affiliation_strings": [
+    "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United States"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United States",
+     "institution_ids": [
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5101869993",
+    "display_name": "Zhijuan Hu",
+    "orcid": "https://orcid.org/0009-0004-0571-0498"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I21945476",
+     "display_name": "Shanghai Normal University",
+     "ror": "https://ror.org/01cxqmw89",
+     "country_code": "CN",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I21945476"
+     ]
+    }
+   ],
+   "countries": [
+    "CN"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Zhijuan Hu",
+   "raw_affiliation_strings": [
+    "Shanghai Normal University, Mathematics and Science College, 100 Guilin Road, Shanghai 200234, China"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Shanghai Normal University, Mathematics and Science College, 100 Guilin Road, Shanghai 200234, China",
+     "institution_ids": [
+      "https://openalex.org/I21945476"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5022323597",
+    "display_name": "Xin Yang",
+    "orcid": "https://orcid.org/0000-0003-2123-7210"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I3923682",
+     "display_name": "Soochow University",
+     "ror": "https://ror.org/05t8y2r12",
+     "country_code": "CN",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I3923682"
+     ]
+    }
+   ],
+   "countries": [
+    "CN"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Xin Yang",
+   "raw_affiliation_strings": [
+    "Soochow University, Institute of Information Optics Engineering, 1 Shixin Street, Suzhou, Jiangsu 210056, China"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Soochow University, Institute of Information Optics Engineering, 1 Shixin Street, Suzhou, Jiangsu 210056, China",
+     "institution_ids": [
+      "https://openalex.org/I3923682"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5002456113",
+    "display_name": "P.W.M. Tsang",
+    "orcid": "https://orcid.org/0000-0003-0066-2031"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I168719708",
+     "display_name": "City University of Hong Kong",
+     "ror": "https://ror.org/03q8dnn23",
+     "country_code": "HK",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I168719708"
+     ]
+    }
+   ],
+   "countries": [
+    "HK"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Peter W. M. Tsang",
+   "raw_affiliation_strings": [
+    "City University of Hong Kong, Department of Electronic Engineering, 83 Tat Chee Avenue, Kowloon, Hong Kong, China"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "City University of Hong Kong, Department of Electronic Engineering, 83 Tat Chee Avenue, Kowloon, Hong Kong, China",
+     "institution_ids": [
+      "https://openalex.org/I168719708"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5063569263",
+    "display_name": "Ting‐Chung Poon",
+    "orcid": "https://orcid.org/0000-0002-7070-6856"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I859038795",
+     "display_name": "Virginia Tech",
+     "ror": "https://ror.org/02smfhw86",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Ting-Chung Poon",
+   "raw_affiliation_strings": [
+    "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United States"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Virginia Tech, Bradley Department of Electrical and Computer Engineering, Perry Street, Blacksburg, Virginia 24060, United States",
+     "institution_ids": [
+      "https://openalex.org/I859038795"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1117/1.jmm.14.4.041304",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1117/1.jmm.14.4.041304",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S205064806",
+   "display_name": "Journal of Micro/Nanolithography MEMS and MOEMS",
+   "issn_l": "1537-1646",
+   "issn": [
+    "1537-1646",
+    "1932-5134",
+    "1932-5150"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "listed_in": [
+    "cwts-core",
+    "jufo-1",
+    "norway-1"
+   ],
+   "host_organization": "https://openalex.org/P4310315543",
+   "host_organization_name": "SPIE",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310315543"
+   ],
+   "host_organization_lineage_names": [
+    "SPIE"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Journal of Micro/Nanolithography, MEMS, and MOEMS",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 8,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1586355707",
+  "https://openalex.org/W1981646550",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1991687249",
+  "https://openalex.org/W1997059208",
+  "https://openalex.org/W2003410902",
+  "https://openalex.org/W2003677034",
+  "https://openalex.org/W2004629065",
+  "https://openalex.org/W2011639724",
+  "https://openalex.org/W2018733476",
+  "https://openalex.org/W2030280249",
+  "https://openalex.org/W2032472180",
+  "https://openalex.org/W2033731720",
+  "https://openalex.org/W2036384654",
+  "https://openalex.org/W2039378421",
+  "https://openalex.org/W2050611421",
+  "https://openalex.org/W2053844219",
+  "https://openalex.org/W2058698449",
+  "https://openalex.org/W2063905729",
+  "https://openalex.org/W2072888804",
+  "https://openalex.org/W2076240508",
+  "https://openalex.org/W2083645411",
+  "https://openalex.org/W2088843591",
+  "https://openalex.org/W2100068253",
+  "https://openalex.org/W2103106600",
+  "https://openalex.org/W2111771616",
+  "https://openalex.org/W2113524221",
+  "https://openalex.org/W2114770744",
+  "https://openalex.org/W2124069048",
+  "https://openalex.org/W2145096794",
+  "https://openalex.org/W2148852986",
+  "https://openalex.org/W2152328854",
+  "https://openalex.org/W2161304138",
+  "https://openalex.org/W2163478422",
+  "https://openalex.org/W2169892604",
+  "https://openalex.org/W2289917018",
+  "https://openalex.org/W4214540058",
+  "https://openalex.org/W4292692451",
+  "https://openalex.org/W6634952453",
+  "https://openalex.org/W6658945901",
+  "https://openalex.org/W6665131842"
+ ]
+}

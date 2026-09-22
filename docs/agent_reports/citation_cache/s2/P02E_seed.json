@@ -1,0 +1,14 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1103/PhysRevLett.63.584.3?fields=title,year,externalIds,citationCount,venue",
+ "_retrieved": "2026-09-22",
+ "paperId": "ac2a4a7d878da562fe7113dd27b2ebda74775a44",
+ "externalIds": {
+  "MAG": "3033879513",
+  "DOI": "10.1103/physrevlett.63.584.3",
+  "CorpusId": 230761570
+ },
+ "title": "Erratum: Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography [Phys. Rev. Lett. 62, 2969 (1989)]",
+ "venue": "",
+ "year": 1989,
+ "citationCount": 0
+}

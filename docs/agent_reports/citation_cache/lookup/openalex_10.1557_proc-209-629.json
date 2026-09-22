@@ -1,0 +1,128 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1557/proc-209-629?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2100868674",
+ "doi": "https://doi.org/10.1557/proc-209-629",
+ "title": "Study of Surface Defects With the Reflected Electrons",
+ "display_name": "Study of Surface Defects With the Reflected Electrons",
+ "publication_year": 1990,
+ "publication_date": "1990-01-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5111760493",
+    "display_name": "Tung Hsu",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I223532165",
+     "display_name": "University of Utah",
+     "ror": "https://ror.org/03r0ha626",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I223532165"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": true,
+   "raw_author_name": "Tung Hsu",
+   "raw_affiliation_strings": [
+    "Department of Materials Science and Engineering, University of Utah, Salt Lake City, UT, 84112, USA",
+    "Department of Materials Science & Engineering, University of Utah, Salt Lake City, UT 84112, U.S.A"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Materials Science and Engineering, University of Utah, Salt Lake City, UT, 84112, USA",
+     "institution_ids": [
+      "https://openalex.org/I223532165"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Department of Materials Science & Engineering, University of Utah, Salt Lake City, UT 84112, U.S.A",
+     "institution_ids": [
+      "https://openalex.org/I223532165"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1557/proc-209-629",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1557/proc-209-629",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S2530005873",
+   "display_name": "MRS Proceedings",
+   "issn_l": "0272-9172",
+   "issn": [
+    "0272-9172",
+    "1946-4274"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310311721",
+   "host_organization_name": "Cambridge University Press",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310311721",
+    "https://openalex.org/P4310311702"
+   ],
+   "host_organization_lineage_names": [
+    "Cambridge University Press",
+    "University of Cambridge"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "MRS Proceedings",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 0,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W87398764",
+  "https://openalex.org/W645195605",
+  "https://openalex.org/W1981208523",
+  "https://openalex.org/W1985999057",
+  "https://openalex.org/W1986682264",
+  "https://openalex.org/W1990910702",
+  "https://openalex.org/W1996827606",
+  "https://openalex.org/W2009265386",
+  "https://openalex.org/W2010683050",
+  "https://openalex.org/W2031735023",
+  "https://openalex.org/W2041146478",
+  "https://openalex.org/W2054923936",
+  "https://openalex.org/W2056225473",
+  "https://openalex.org/W2058320851",
+  "https://openalex.org/W2058431073",
+  "https://openalex.org/W2060816178",
+  "https://openalex.org/W2064236699",
+  "https://openalex.org/W2067834462",
+  "https://openalex.org/W2080109662",
+  "https://openalex.org/W2083503603",
+  "https://openalex.org/W2091041312",
+  "https://openalex.org/W2093815148",
+  "https://openalex.org/W2139489068",
+  "https://openalex.org/W2154451250",
+  "https://openalex.org/W2315185595"
+ ]
+}

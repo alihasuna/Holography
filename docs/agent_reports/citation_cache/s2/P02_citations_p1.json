@@ -1,0 +1,974 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1103/PhysRevLett.62.2969/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000&offset=0",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "fcafa02152cd8aa585722482ae18a95274e6e6c6",
+    "externalIds": {
+     "MAG": "3037662494",
+     "PubMedCentral": "7850541",
+     "DOI": "10.1093/jmicro/dfaa033",
+     "CorpusId": 220075356,
+     "PubMed": "32589205"
+    },
+    "title": "Interference and interferometry in electron holography",
+    "venue": "Microscopy",
+    "year": 2020,
+    "publicationTypes": [
+     "JournalArticle",
+     "Review"
+    ],
+    "journal": {
+     "volume": "70",
+     "pages": "3 - 16",
+     "name": "Microscopy"
+    },
+    "authors": [
+     {
+      "authorId": "48636772",
+      "name": "K. Harada"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "406f9a8fd424ce49994833d7308a23a804243bdb",
+    "externalIds": {
+     "MAG": "2969661582",
+     "DOI": "10.1021/ACS.CGD.9B00339",
+     "CorpusId": 202041375
+    },
+    "title": "Elastic Variation of Quasi-One-Dimensional Cubic-Phase GaN at Nanoscale",
+    "venue": "Crystal Growth & Design",
+    "year": 2019,
+    "publicationTypes": null,
+    "journal": {
+     "name": "Crystal Growth & Design"
+    },
+    "authors": [
+     {
+      "authorId": "50111980",
+      "name": "S. C. Lee"
+     },
+     {
+      "authorId": "97556310",
+      "name": "E. Peterson"
+     },
+     {
+      "authorId": "14005104",
+      "name": "Y.-B. Jiang"
+     },
+     {
+      "authorId": "40070719",
+      "name": "C. Wetzel"
+     },
+     {
+      "authorId": "1711251",
+      "name": "S. Brueck"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "445a72031f968a27953df66e598f0064ac4fa67a",
+    "externalIds": {
+     "MAG": "1085130950",
+     "DOI": "10.1117/1.JMM.14.4.041304",
+     "CorpusId": 106416023
+    },
+    "title": "Development of lossy and near-lossless compression methods for wafer surface structure digital holograms",
+    "venue": "",
+    "year": 2015,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "14",
+     "name": "Journal of Micro/Nanolithography, MEMS, and MOEMS"
+    },
+    "authors": [
+     {
+      "authorId": "48212791",
+      "name": "Hongbo Zhang"
+     },
+     {
+      "authorId": "2118882049",
+      "name": "Wenjing Zhou"
+     },
+     {
+      "authorId": "2081990022",
+      "name": "Donald Leber"
+     },
+     {
+      "authorId": "2667112",
+      "name": "Zhijuan Hu"
+     },
+     {
+      "authorId": "2150439014",
+      "name": "Xin Yang"
+     },
+     {
+      "authorId": "34843158",
+      "name": "P. Tsang"
+     },
+     {
+      "authorId": "144065024",
+      "name": "T. Poon"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "c9f75860e137ff636436bbf231fdb5945162f8e8",
+    "externalIds": {
+     "MAG": "2968160089",
+     "DOI": "10.1081/e-escs3-120028068",
+     "CorpusId": 202212266
+    },
+    "title": "Electron Microscopy: Surface Diffraction",
+    "venue": "",
+    "year": 2015,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "",
+     "pages": "2359-2371",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "144303470",
+      "name": "J. Cowley"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "7f8372e4a55f9d8c93be447685ad072d9e1dbc3b",
+    "externalIds": {
+     "MAG": "2046839664",
+     "DOI": "10.1007/S00419-013-0803-0",
+     "CorpusId": 56438308
+    },
+    "title": "The interaction of a screw dislocation with a circular inhomogeneity near the free surface",
+    "venue": "",
+    "year": 2014,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "84",
+     "pages": "343-353",
+     "name": "Archive of Applied Mechanics"
+    },
+    "authors": [
+     {
+      "authorId": "92860168",
+      "name": "Chi-Ping Jiang"
+     },
+     {
+      "authorId": "2059231790",
+      "name": "Hui Chai"
+     },
+     {
+      "authorId": "2026296868",
+      "name": "P. Yan"
+     },
+     {
+      "authorId": "47005836",
+      "name": "F. Song"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "c065aedaef6ca6d554583e7771c42a5033834004",
+    "externalIds": {
+     "DOI": "10.1007/s00419-013-0803-0",
+     "CorpusId": 253884758
+    },
+    "title": "The interaction of a screw dislocation with a circular inhomogeneity near the free surface",
+    "venue": "Archive of applied mechanics (1991)",
+    "year": 2013,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "84",
+     "pages": "343 - 353",
+     "name": "Archive of Applied Mechanics"
+    },
+    "authors": [
+     {
+      "authorId": "92860168",
+      "name": "Chi-Ping Jiang"
+     },
+     {
+      "authorId": "2059231790",
+      "name": "Hui Chai"
+     },
+     {
+      "authorId": "2026296868",
+      "name": "P. Yan"
+     },
+     {
+      "authorId": "47005836",
+      "name": "F. Song"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "cca2f9fda9eb12f1d516ba0bb45eb62b242925f1",
+    "externalIds": {
+     "MAG": "2033207389",
+     "DOI": "10.1142/S0217979200002326",
+     "CorpusId": 121978832
+    },
+    "title": "ELECTRON STANDING WAVES AT A SURFACE DURING REFLECTION HIGH ENERGY ELECTRON DIFFRACTION AND APPLICATION TO STRUCTURE ANALYSIS",
+    "venue": "",
+    "year": 2000,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "14",
+     "pages": "2171-2222",
+     "name": "International Journal of Modern Physics B"
+    },
+    "authors": [
+     {
+      "authorId": "2256379806",
+      "name": "T. Yamanaka"
+     },
+     {
+      "authorId": "91115657",
+      "name": "S. Ino"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "85705e3a137dfb0cb5885b452894d94e5a1da76d",
+    "externalIds": {
+     "MAG": "2044893665",
+     "DOI": "10.1238/PHYSICA.TOPICAL.076A00016",
+     "CorpusId": 121448128
+    },
+    "title": "Observation of quantized vortices in superconductors by electron waves",
+    "venue": "",
+    "year": 1998,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "1998",
+     "pages": "16-23",
+     "name": "Physica Scripta"
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "42c0b80aa64693fde5b2e4cf26e5d9a10cbcdea6",
+    "externalIds": {
+     "MAG": "3036731550",
+     "DOI": "10.1017/s0424820100136957",
+     "CorpusId": 232704840
+    },
+    "title": "Reflection diffracted beam interferometry (RDBI) applied to the study of surfaces",
+    "venue": "",
+    "year": 1995,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "53",
+     "pages": "116-117",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "98404049",
+      "name": "R. Herring"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5cdf8b9de89fd92f43e71e4cdf8da9ee81972b56",
+    "externalIds": {
+     "MAG": "2028802221",
+     "DOI": "10.1111/j.1749-6632.1995.tb38969.x",
+     "CorpusId": 84288132
+    },
+    "title": "Recent Advances in Electron Interferometry",
+    "venue": "",
+    "year": 1995,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "755",
+     "name": "Annals of the New York Academy of Sciences"
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "829e549805d3c1cebbe2efba123782e9b72fbbff",
+    "externalIds": {
+     "MAG": "2062510886",
+     "DOI": "10.1016/0039-6028(93)90047-N",
+     "CorpusId": 97262396
+    },
+    "title": "Application of electron holography to surface topography observation",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "298",
+     "pages": "345-350",
+     "name": "Surface Science"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5f9529d034e66cbc8986ad9c7229fdb18c65eae1",
+    "externalIds": {
+     "MAG": "2018232746",
+     "DOI": "10.1016/0039-6028(93)90046-M",
+     "CorpusId": 121782581
+    },
+    "title": "Electron holography and holographic diffraction for surface studies",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "298",
+     "pages": "336-344",
+     "name": "Surface Science"
+    },
+    "authors": [
+     {
+      "authorId": "144303470",
+      "name": "J. Cowley"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "dc74261793a112218e6bae35ca9238701eac73c7",
+    "externalIds": {
+     "MAG": "2021786678",
+     "DOI": "10.1088/0034-4885/56/8/002",
+     "CorpusId": 121056503
+    },
+    "title": "Electron reflection, diffraction and imaging of bulk crystal surfaces in TEM and STEM",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "56",
+     "pages": "997-1065",
+     "name": "Reports on Progress in Physics"
+    },
+    "authors": [
+     {
+      "authorId": "2462333071",
+      "name": "Zhong-Lin Wang"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "98a0457da2f8a1413e19081a631945626c5400c1",
+    "externalIds": {
+     "MAG": "2018753685",
+     "DOI": "10.1016/0304-3991(93)90124-G",
+     "CorpusId": 120579501
+    },
+    "title": "Reflection electron holographic observation of surface displacement field",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "48",
+     "pages": "483-488",
+     "name": "Ultramicroscopy"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     },
+     {
+      "authorId": "48975731",
+      "name": "T. Matsuda"
+     },
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "06390f5dfe0ed4257f2d113131c6aa9d7729c694",
+    "externalIds": {
+     "MAG": "2032672364",
+     "DOI": "10.1016/0304-3991(92)90195-P",
+     "CorpusId": 96326544
+    },
+    "title": "Resolution limitation in the electron microscopy of surfaces",
+    "venue": "",
+    "year": 1992,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "47",
+     "pages": "187-198",
+     "name": "Ultramicroscopy"
+    },
+    "authors": [
+     {
+      "authorId": "144303470",
+      "name": "J. Cowley"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "1596bd61d9619a74b74054aebb3024d290591964",
+    "externalIds": {
+     "MAG": "2045891499",
+     "DOI": "10.1016/0039-6028(92)91219-2",
+     "CorpusId": 98213522
+    },
+    "title": "Advances in direct methods in LEED: the diffuse LEED pattern as a hologram",
+    "venue": "",
+    "year": 1992,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "",
+     "pages": "1-6",
+     "name": "Surface Science"
+    },
+    "authors": [
+     {
+      "authorId": "6146278",
+      "name": "P. D. de Andres"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "bf05c73fcb5b98b3ea55dd9653308d8b767b1cf7",
+    "externalIds": {
+     "MAG": "2119419090",
+     "DOI": "10.1002/jemt.1070200409",
+     "CorpusId": 22323638,
+     "PubMed": "1498353"
+    },
+    "title": "Reflection electron energy‐loss spectroscopy and imaging for surface studies in transmission electron microscopes",
+    "venue": "Microscopy research and technique (Print)",
+    "year": 1992,
+    "publicationTypes": [
+     "JournalArticle",
+     "Review"
+    ],
+    "journal": {
+     "volume": "20",
+     "name": "Microscopy Research and Technique"
+    },
+    "authors": [
+     {
+      "authorId": "2461570932",
+      "name": "Z. Wang"
+     },
+     {
+      "authorId": "145709297",
+      "name": "J. Bentley"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "dace843bf5ef27df1fe53c11f033070303af03cc",
+    "externalIds": {
+     "MAG": "1989898237",
+     "DOI": "10.1002/jemt.1070200415",
+     "CorpusId": 20523610,
+     "PubMed": "1498359"
+    },
+    "title": "Observation of surfaces by reflection electron holography",
+    "venue": "Microscopy research and technique (Print)",
+    "year": 1992,
+    "publicationTypes": [
+     "JournalArticle"
+    ],
+    "journal": {
+     "volume": "20",
+     "name": "Microscopy Research and Technique"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ec957447b3bb1edd9830d7ed59ba679422804463",
+    "externalIds": {
+     "MAG": "2163735975",
+     "DOI": "10.1002/JEMT.1070200414",
+     "CorpusId": 6236208,
+     "PubMed": "1498358"
+    },
+    "title": "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces",
+    "venue": "Microscopy research and technique (Print)",
+    "year": 1992,
+    "publicationTypes": [
+     "JournalArticle"
+    ],
+    "journal": {
+     "volume": "20",
+     "name": "Microscopy Research and Technique"
+    },
+    "authors": [
+     {
+      "authorId": "11524200",
+      "name": "H. Banzhof"
+     },
+     {
+      "authorId": "153473206",
+      "name": "K. Herrmann"
+     },
+     {
+      "authorId": "3323741",
+      "name": "H. Lichte"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "b726325f17a6c2c5779373717920aefca361c336",
+    "externalIds": {
+     "MAG": "2040280918",
+     "DOI": "10.1016/0304-3991(91)90076-I",
+     "CorpusId": 94897828
+    },
+    "title": "Contrast simulation of high resolution electron holography on surface structures",
+    "venue": "",
+    "year": 1991,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "35",
+     "pages": "245-253",
+     "name": "Ultramicroscopy"
+    },
+    "authors": [
+     {
+      "authorId": "3426471",
+      "name": "T. Tanji"
+     },
+     {
+      "authorId": "67108353",
+      "name": "J. Ito"
+     },
+     {
+      "authorId": "10006376",
+      "name": "K. Yada"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "cd0c7719af243d477053c55493ab2674978b49db",
+    "externalIds": {
+     "MAG": "2036111952",
+     "DOI": "10.1103/PHYSREVLETT.65.1607",
+     "CorpusId": 29133117,
+     "PubMed": "10042313"
+    },
+    "title": "High-resolution imaging of a dislocation on Cu(111).",
+    "venue": "Physical Review Letters",
+    "year": 1990,
+    "publicationTypes": [
+     "JournalArticle"
+    ],
+    "journal": {
+     "volume": "65 13",
+     "pages": "\n          1607-1610\n        ",
+     "name": "Physical review letters"
+    },
+    "authors": [
+     {
+      "authorId": "70350472",
+      "name": "A. Samsavar"
+     },
+     {
+      "authorId": "47272924",
+      "name": "E. Hirschorn"
+     },
+     {
+      "authorId": "2105718377",
+      "name": "T. Miller"
+     },
+     {
+      "authorId": "40795393",
+      "name": "F. Leibsle"
+     },
+     {
+      "authorId": "2311322070",
+      "name": "J. Eades"
+     },
+     {
+      "authorId": "2254464216",
+      "name": "Tai-Chang Chiang"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "80f5edfa9c9147b07ba1cfeb4c646c2fdbbe5240",
+    "externalIds": {
+     "MAG": "1993895665",
+     "DOI": "10.2320/MATERTRANS1989.31.551",
+     "CorpusId": 137498988
+    },
+    "title": "Applications of Electron Holography to Materials Science",
+    "venue": "",
+    "year": 1990,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "31",
+     "pages": "551-560",
+     "name": "Materials Transactions"
+    },
+    "authors": [
+     {
+      "authorId": "17617771",
+      "name": "J. Endo"
+     },
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4d1db63e5dee7a5aedd7f8e263ff521530e0e03e",
+    "externalIds": {
+     "MAG": "2030731354",
+     "DOI": "10.1063/1.881230",
+     "CorpusId": 121541613
+    },
+    "title": "Electron Holography: A New View of the Microscopic",
+    "venue": "",
+    "year": 1990,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "43",
+     "pages": "22-29",
+     "name": "Physics Today"
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "14e6f2104493e79f551116629ddba47588119abd",
+    "externalIds": {
+     "CorpusId": 260198468
+    },
+    "title": "Reflection Electron Steps on Gold and Microscopy and Interferometry of Atomic Platinum Single Crystal Surfaces",
+    "venue": "",
+    "year": 2004,
+    "publicationTypes": null,
+    "journal": null,
+    "authors": [
+     {
+      "authorId": "11524200",
+      "name": "H. Banzhof"
+     },
+     {
+      "authorId": "153473206",
+      "name": "K. Herrmann"
+     },
+     {
+      "authorId": "3323741",
+      "name": "H. Lichte"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "88f9ec1a481b88ec54a1da296183ee9b23b7394f",
+    "externalIds": {
+     "MAG": "1994085323",
+     "DOI": "10.1380/JSSSJ.24.166",
+     "CorpusId": 96215369
+    },
+    "title": "Electron Energy Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter.",
+    "venue": "",
+    "year": 2003,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "24",
+     "pages": "166-173",
+     "name": "Hyomen Kagaku"
+    },
+    "authors": [
+     {
+      "authorId": "13166834",
+      "name": "Y. Tanishiro"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ef015e2dcadec76de3ac5a534d0a7282fcb0e180",
+    "externalIds": {
+     "MAG": "1474060399",
+     "DOI": "10.1016/S1076-5670(08)70068-5",
+     "CorpusId": 117345184
+    },
+    "title": "4.5 Electron Microscopes and Microscopy in Japan: 4.5F Instrumentation",
+    "venue": "",
+    "year": 1996,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "96",
+     "pages": "685-722",
+     "name": "Advances in Imaging and Electron Physics"
+    },
+    "authors": [
+     {
+      "authorId": "91271863",
+      "name": "T. Komoda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "2b4d4dc9a0028dc71d417ee030e2b318d1d2c0b0",
+    "externalIds": {
+     "MAG": "2904888296",
+     "DOI": "10.1016/S1076-5670(08)70063-6",
+     "CorpusId": 117715543
+    },
+    "title": "4.5 Electron Microscopes and Microscopy in Japan: 4.5A Electron Microscope Development at Hitachi in the 1940s",
+    "venue": "",
+    "year": 1996,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "96",
+     "pages": "653-657",
+     "name": "Advances in Imaging and Electron Physics"
+    },
+    "authors": [
+     {
+      "authorId": "91271863",
+      "name": "T. Komoda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "79d5adff69fb7fd169742f470901efd7284e4c85",
+    "externalIds": {
+     "MAG": "24734613",
+     "DOI": "10.1007/978-3-642-79232-8_1",
+     "CorpusId": 117619836
+    },
+    "title": "Electron Holography and Its Applications to the Observation of the Microscopic World",
+    "venue": "",
+    "year": 1994,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "",
+     "pages": "3-12",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ae90c470897c1de365cd540e80e6aa8a1674cdd9",
+    "externalIds": {
+     "MAG": "2042523451",
+     "DOI": "10.1016/0167-5729(94)90005-1",
+     "CorpusId": 94942258
+    },
+    "title": "Recent advances in electron phase microscopy",
+    "venue": "",
+    "year": 1994,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "20",
+     "pages": "317-364",
+     "name": "Surface Science Reports"
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "7f66d9cfea0d60a836a27cddc68b0c4ebfa77205",
+    "externalIds": {
+     "MAG": "1993975719",
+     "DOI": "10.1016/0167-5729(93)90002-7",
+     "CorpusId": 96287956
+    },
+    "title": "Reflection electron microscopy : studies of surface structures and surface dynamic processes",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "17",
+     "pages": "307-362",
+     "name": "Surface Science Reports"
+    },
+    "authors": [
+     {
+      "authorId": "91558442",
+      "name": "K. Yagi"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "6c19688d7714e36b08e8f0d688dba6487f7b765c",
+    "externalIds": {
+     "MAG": "658614855",
+     "DOI": "10.1007/978-3-662-13913-4_7",
+     "CorpusId": 118740613
+    },
+    "title": "Electron-Holographic Interferometry",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "",
+     "pages": "69-106",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "3c1efc349a66ad493b077cd8ecff100021dd2c24",
+    "externalIds": {
+     "MAG": "2101611935",
+     "DOI": "10.1007/978-3-642-84482-9_4",
+     "CorpusId": 136491510
+    },
+    "title": "Electron Holography and Its Applications to Surface Observation",
+    "venue": "",
+    "year": 1992,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "",
+     "pages": "31-38",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "758e4bdc0124730f6a02e47c136ed6c98c812e48",
+    "externalIds": {
+     "MAG": "1992093684",
+     "DOI": "10.1080/00018739200101473",
+     "CorpusId": 120192829
+    },
+    "title": "Electron-holographic interference microscopy",
+    "venue": "",
+    "year": 1992,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "41",
+     "pages": "59-103",
+     "name": "Advances in Physics"
+    },
+    "authors": [
+     {
+      "authorId": "34900760",
+      "name": "A. Tonomura"
+     }
+    ]
+   }
+  }
+ ]
+}

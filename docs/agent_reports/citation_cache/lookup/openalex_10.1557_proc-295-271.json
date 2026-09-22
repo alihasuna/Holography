@@ -1,0 +1,128 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1557/proc-295-271?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2312761524",
+ "doi": "https://doi.org/10.1557/proc-295-271",
+ "title": "The Surface Structure of Oxides Studied with Reflected High Energy Electrons",
+ "display_name": "The Surface Structure of Oxides Studied with Reflected High Energy Electrons",
+ "publication_year": 1992,
+ "publication_date": "1992-01-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5111760493",
+    "display_name": "Tung Hsu",
+    "orcid": null
+   },
+   "institutions": [],
+   "countries": [],
+   "is_corresponding": true,
+   "raw_author_name": "Tung Hsu",
+   "raw_affiliation_strings": [
+    "P.O. Box 58364, Salt Lake City, Utah, 84158-0364, USA"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "P.O. Box 58364, Salt Lake City, Utah, 84158-0364, USA",
+     "institution_ids": []
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1557/proc-295-271",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1557/proc-295-271",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S2530005873",
+   "display_name": "MRS Proceedings",
+   "issn_l": "0272-9172",
+   "issn": [
+    "0272-9172",
+    "1946-4274"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310311721",
+   "host_organization_name": "Cambridge University Press",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310311721",
+    "https://openalex.org/P4310311702"
+   ],
+   "host_organization_lineage_names": [
+    "Cambridge University Press",
+    "University of Cambridge"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "MRS Proceedings",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 0,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1530922356",
+  "https://openalex.org/W1967429841",
+  "https://openalex.org/W1970349611",
+  "https://openalex.org/W1970703664",
+  "https://openalex.org/W1972307400",
+  "https://openalex.org/W1972458645",
+  "https://openalex.org/W1978203906",
+  "https://openalex.org/W1986682264",
+  "https://openalex.org/W1986779207",
+  "https://openalex.org/W1987766287",
+  "https://openalex.org/W1989118406",
+  "https://openalex.org/W1989898237",
+  "https://openalex.org/W1996827606",
+  "https://openalex.org/W1997372212",
+  "https://openalex.org/W1999649798",
+  "https://openalex.org/W2003347343",
+  "https://openalex.org/W2005747287",
+  "https://openalex.org/W2007337782",
+  "https://openalex.org/W2010683050",
+  "https://openalex.org/W2010683656",
+  "https://openalex.org/W2013769616",
+  "https://openalex.org/W2014653175",
+  "https://openalex.org/W2016611796",
+  "https://openalex.org/W2019529605",
+  "https://openalex.org/W2029204051",
+  "https://openalex.org/W2033582947",
+  "https://openalex.org/W2042279438",
+  "https://openalex.org/W2044619840",
+  "https://openalex.org/W2052910771",
+  "https://openalex.org/W2053904984",
+  "https://openalex.org/W2054923936",
+  "https://openalex.org/W2058320851",
+  "https://openalex.org/W2062978970",
+  "https://openalex.org/W2065431840",
+  "https://openalex.org/W2080109662",
+  "https://openalex.org/W2081007315",
+  "https://openalex.org/W2081073100",
+  "https://openalex.org/W2083190368",
+  "https://openalex.org/W2083503603",
+  "https://openalex.org/W2083813469",
+  "https://openalex.org/W2119419090",
+  "https://openalex.org/W2157147558",
+  "https://openalex.org/W2163735975",
+  "https://openalex.org/W2481613642",
+  "https://openalex.org/W2581525011",
+  "https://openalex.org/W2767082419",
+  "https://openalex.org/W3035794497"
+ ]
+}

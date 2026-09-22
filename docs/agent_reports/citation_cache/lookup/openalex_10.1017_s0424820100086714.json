@@ -1,0 +1,82 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1017/s0424820100086714?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W3036830923",
+ "doi": "https://doi.org/10.1017/s0424820100086714",
+ "title": "Resolution limitations in the Electron microscopy of surfaces",
+ "display_name": "Resolution limitations in the Electron microscopy of surfaces",
+ "publication_year": 1991,
+ "publication_date": "1991-08-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5109918212",
+    "display_name": "JOHN M. COWLEY",
+    "orcid": null
+   },
+   "institutions": [],
+   "countries": [],
+   "is_corresponding": true,
+   "raw_author_name": "J.M. Cowley",
+   "raw_affiliation_strings": [],
+   "raw_orcid": null,
+   "affiliations": []
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1017/s0424820100086714",
+  "is_oa": false,
+  "landing_page_url": "http://doi.org/10.1017/s0424820100086714",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4210239783",
+   "display_name": "Proceedings annual meeting Electron Microscopy Society of America",
+   "issn_l": "0424-8201",
+   "issn": [
+    "0424-8201",
+    "2690-1315"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": false,
+   "listed_in": [],
+   "host_organization": "https://openalex.org/P4310311721",
+   "host_organization_name": "Cambridge University Press",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310311721",
+    "https://openalex.org/P4310311702"
+   ],
+   "host_organization_lineage_names": [
+    "Cambridge University Press",
+    "University of Cambridge"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Proceedings, annual meeting, Electron Microscopy Society of America",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 1,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1970349611",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1998559581",
+  "https://openalex.org/W2043856630",
+  "https://openalex.org/W2060816178",
+  "https://openalex.org/W2084896476",
+  "https://openalex.org/W2087253214"
+ ]
+}

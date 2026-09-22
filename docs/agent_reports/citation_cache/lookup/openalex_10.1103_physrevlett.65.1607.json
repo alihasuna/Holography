@@ -1,0 +1,343 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1103/physrevlett.65.1607?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2036111952",
+ "doi": "https://doi.org/10.1103/physrevlett.65.1607",
+ "title": "High-resolution imaging of a dislocation on Cu(111)",
+ "display_name": "High-resolution imaging of a dislocation on Cu(111)",
+ "publication_year": 1990,
+ "publication_date": "1990-09-24",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5047864355",
+    "display_name": "A. Samsavar",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I157725225",
+     "display_name": "University of Illinois Urbana-Champaign",
+     "ror": "https://ror.org/047426m28",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A. Samsavar",
+   "raw_affiliation_strings": [
+    "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+    "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5031058110",
+    "display_name": "E. S. Hirschorn",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I157725225",
+     "display_name": "University of Illinois Urbana-Champaign",
+     "ror": "https://ror.org/047426m28",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "E. S. Hirschorn",
+   "raw_affiliation_strings": [
+    "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+    "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5111610544",
+    "display_name": "T. Miller",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I157725225",
+     "display_name": "University of Illinois Urbana-Champaign",
+     "ror": "https://ror.org/047426m28",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "T. Miller",
+   "raw_affiliation_strings": [
+    "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+    "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5113539532",
+    "display_name": "Fred M. Leibsle",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I157725225",
+     "display_name": "University of Illinois Urbana-Champaign",
+     "ror": "https://ror.org/047426m28",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "F. M. Leibsle",
+   "raw_affiliation_strings": [
+    "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+    "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5112738608",
+    "display_name": "J. A. Eades",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I157725225",
+     "display_name": "University of Illinois Urbana-Champaign",
+     "ror": "https://ror.org/047426m28",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "J. A. Eades",
+   "raw_affiliation_strings": [
+    "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+    "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5002298309",
+    "display_name": "T.‐C. Chiang",
+    "orcid": "https://orcid.org/0000-0001-7118-8299"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I157725225",
+     "display_name": "University of Illinois Urbana-Champaign",
+     "ror": "https://ror.org/047426m28",
+     "country_code": "US",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ],
+   "countries": [
+    "US"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "T.-C. Chiang",
+   "raw_affiliation_strings": [
+    "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+    "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Physics, University of Illinois at Urbana-Champaign, 1110 West Green Street, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Materials Research Laboratory, University of Illinois at Urbana-Champaign, 104 South Goodwin Avenue, Urbana, Illinois 61801",
+     "institution_ids": [
+      "https://openalex.org/I157725225"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1103/physrevlett.65.1607",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1103/physrevlett.65.1607",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S24807848",
+   "display_name": "Physical Review Letters",
+   "issn_l": "0031-9007",
+   "issn": [
+    "0031-9007",
+    "1079-7114",
+    "1092-0145"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "listed_in": [
+    "cwts-core",
+    "jufo-3",
+    "medline",
+    "norway-2"
+   ],
+   "host_organization": "https://openalex.org/P4310320261",
+   "host_organization_name": "American Physical Society",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320261"
+   ],
+   "host_organization_lineage_names": [
+    "American Physical Society"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Physical Review Letters",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 52,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W27679251",
+  "https://openalex.org/W1596584641",
+  "https://openalex.org/W1971541163",
+  "https://openalex.org/W1973858916",
+  "https://openalex.org/W1983533743",
+  "https://openalex.org/W1984388422",
+  "https://openalex.org/W1990705543",
+  "https://openalex.org/W1990743687",
+  "https://openalex.org/W1997372212",
+  "https://openalex.org/W2005659039",
+  "https://openalex.org/W2010015935",
+  "https://openalex.org/W2032040141",
+  "https://openalex.org/W2050109096",
+  "https://openalex.org/W2062465444",
+  "https://openalex.org/W2072342921"
+ ]
+}
