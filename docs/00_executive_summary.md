@@ -73,34 +73,37 @@ differences of the surface topography are measured in units of the wavelength. T
 translation-covariance phase `Delta_phi = -(k_out - k_in).R` used here, with the external angles and
 the vacuum wavelength. The body of the 1988 paper (P01) is closed here; its abstract, read on the
 publisher's page, gives a Pt(111) surface at glancing incidence, an electron biprism overlapping two
-regions of the reflection image (a self-reference, type R2), optical reconstruction and a sensitivity of
+regions of the reflection image (read here as a self-reference, type R2; DERIVED_HERE), optical
+reconstruction and a sensitivity of
 the order of 0.01 nm on monatomic steps. P01 is therefore a platinum benchmark, not a silicon one; its
 energy, reflection, glancing angle, phase relation and measured values are UNVERIFIED, and CFG-O stays a
 placeholder until the body is read (upload 1). The Hitachi patent US 4,998,788 (Osakabe and Tonomura,
 issued 1991), now read in full, is a different arrangement: a direct (vacuum) reference wave that does
 not illuminate the specimen, compensated either by objective over-focus with an image-side biprism or by
-a condenser-side biprism; it describes the earlier experiments as interference between reflected waves.
-After 1993 the citation graph shows reflection electron holography only by the Tokyo Institute of
-Technology group (Si(111)7x7, 2001 to 2003, both waves reflected), and no electron reflection-mode
-ptychography (`docs/02_literature_position.md`).
+a condenser-side biprism; it describes the prior art, P01 and an unidentified 1987 report jointly, as
+interference between reflected waves (a statement of the patent, UNVERIFIED for P01).
+The citation graph and the searches of report L4 found post-1993 reflection interferometry by one group
+only, the Tokyo Institute of Technology (Si(111)7x7, 2001 to 2003), and no electron reflection-mode
+ptychography; the Japanese databases were not searched, so this is an absence in the sources searched,
+not proof of absence (`docs/02_literature_position.md`).
 
 ## What is needed from the laboratory
 
 `docs/06_project_inputs_required.md` lists 22 items. Supplied by Ali: the accelerating voltage, 200 keV
-(1), the Si(001) surface (11, miscut still open) and ion milling (12, parameters still open). Seven
-remain blocking: the illumination convergence semi-angle (3), which alone decides whether nanometre features can
+(1), the Si(001) surface (11) and ion milling (12). Eight remain blocking: the illumination convergence semi-angle (3), which alone decides whether nanometre features can
 show phase contrast (a 10 nm step reaches 1 rad of phase spread at 0.02 mrad); the objective-aperture
 semi-angle and which beam it selects (4); the detector pixel size and magnification (5); the external
-glancing angle and its calibration (7); the beam azimuth (8); the preparation details (12), because oxide and ion-milling damage can suppress the Bragg-reflected object
+glancing angle and its calibration (7); the beam azimuth (8); the miscut and terrace widths (11); the
+preparation details (12), because oxide and ion-milling damage can suppress the Bragg-reflected object
 wave entirely; and the reference-wave trajectory (15). The most valuable non-blocking input is a
 measured rocking curve (9), because it fixes the angle scale and the mean inner potential together.
 
 ## Limitations of this analysis
 
 * Revision 2 was written with every scholarly host blocked. With network access, every bibliography
-  record is now checked against Crossref or the publisher, the open sources are read in full and the
-  citation graph has been run; the paywalled papers (P01, P02, P03, P08, P31, P06) and all book chapters
-  are still unread and are requested from Ali in `docs/07_reading_plan.md`. The Japanese databases were
+  record is now checked against Crossref or the publisher, the open sources named in docs/02 are read
+  (in full or in the parts listed there) and the citation graph has been run; the paywalled papers (P01,
+  P02, P03, P06, P08, P09, P31) and all book chapters are still unread and are requested from Ali in `docs/07_reading_plan.md`. The Japanese databases were
   not searched.
 * No multislice or dynamical reflection simulation was executed; software facts come from reading the
   version-matched source and exercising the Python API without the compiled engine, and each document
@@ -109,15 +112,16 @@ measured rocking curve (9), because it fixes the angle scale and the mean inner 
   be checked against the dynamical RHEED chapters of Ichimiya and Cohen (B07) and Peng, Dudarev and
   Whelan (B08), and the mean inner potential of silicon must be sourced (assumed 12.0 V here;
   a 1 V change moves the bilayer step phase by 0.34 rad at the (4,-4,4) condition; the one DFT value
-  read, 12.53 V for a (110) slab, is not adopted, and the mean inner potential depends on the surface).
+  read, 12.53 V for a bulk-terminated slab, is not adopted, and the mean inner potential depends on the surface).
 
 ## Recommended next steps
 
 1. Read P01 and P08 (uploads 1 and 2) and the B07/B08 chapters; fill CFG-O; upgrade the evidence labels
    (P07 and the patent are read: neither gives Osakabe's 1988 parameters).
 2. Supply the PROJECT_INPUT items; record a rocking curve of the selected reflection.
-3. Build milestone M1 (geometry and quantification core, tests T1 to T25 and the shadow-length test)
-   from the calculator (Phase 2).
+3. Build milestone M1 (geometry and quantification core, tests T1 to T25 and the shadow-length test, as
+   Ali specified for Phase 2; T24 and T25 are re-run in M3 with the full holography chain) from the
+   calculator.
 4. Build the reflection cell (M2), validate flat-surface rocking curves against a dynamical solver and
    the reflection phase against the analytic and two-beam rungs of the validation ladder, before any
    step or pattern is simulated.

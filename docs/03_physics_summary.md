@@ -107,15 +107,19 @@ A non-relativistic treatment (`Delta = V0/T`) would give 14.00 mrad and a step p
 
 Sensitivity to the mean inner potential: `d|Delta_phi|/dV0` is -0.34 rad/V at (4,-4,4) and
 -0.20 rad/V at the (6,-6,6) setting; the external peak angle moves by -0.21 mrad/V and -0.13 mrad/V
-respectively. A height inferred from a fixed measured phase with an assumed `V0` rises by 0.049 A per volt of
-assumed `V0` at (4,-4,4), so underestimating `V0` makes the inferred height too SMALL by about
-0.049 A per volt (`tools/phase1_numbers.py`; revision 3 corrects the sign of the earlier wording
-"+0.05 A per volt of underestimate"). `V0` is a first-order systematic, not a
+respectively. If the glancing angle is not measured
+but taken as the external angle of the internal Bragg condition computed with the assumed `V0`, a
+height inferred from a fixed, correctly unwrapped phase, `h_inf = |Delta_phi|/(2 k sin theta_ext(V0))`,
+rises by 1.56 % of h per volt of assumed `V0` at (4,-4,4) (0.049 A/V for a bilayer) and by 1.07 %/V at
+(0,0,8) (0.029 A/V for an a/2 step). Underestimating `V0` therefore makes the height too small, by an amount
+proportional to h. If `theta_ext` is measured
+independently (item 7), `V0` does not enter the height (`tools/phase1_numbers.py`, premise in its
+docstring; revision 3 corrects the sign of the earlier wording "+0.05 A per volt of underestimate"). `V0` is a first-order systematic, not a
 correction, and must be a sourced input with an uncertainty (`docs/06_project_inputs_required.md`, item 20).
 
 Si(001), single-layer step `a/4 = 1.358 A` (terraces NOT translation-related; the kinematic value is only
 indicative) and double-layer `a/2 = 2.716 A`, specular orders (004), (008), (0,0,12): see the calculator
-output section 5 (`docs/agent_reports/C_calculator_output.txt`).
+output section 4b (`docs/agent_reports/C_calculator_output.txt`).
 
 ## 4. The 2 pi branch problem, coherence and shadowing
 

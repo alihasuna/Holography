@@ -1,7 +1,8 @@
 # Software provenance summary (full report in `docs/agent_reports/D_software_provenance.md`)
 
-Status: 2026-09-21; revision 3, 2026-09-22 (public documentation read in full: P04, the prismatique
-rendered docs and the Prismatic project pages, `docs/agent_reports/L2_computational_open_sources.md`).
+Status: 2026-09-21; revision 3, 2026-09-22 (public documentation read: P04 in full; the prismatique
+rendered docs and the Prismatic project pages in the parts listed in
+`docs/agent_reports/L2_computational_open_sources.md` section 1).
 Established from version-matched source code (prismatique 0.0.1 and 0.0.4,
 embeam 0.0.1 and 0.0.5 from PyPI; Prismatic from `prism-em/prismatic` at commit d155fb9,
 2026-01-30, `setup.py` version 1.2.0, the HRTEM-capable 2.x generation) and by exercising the Python
@@ -26,9 +27,9 @@ output file (report D, section 7, item 3, names the one small run that would con
 | `hrtem/sim.py` is byte-identical in prismatique 0.0.1 and 0.0.4; the README's pin rationale (schema drift) is unsupported | D command 14 group | REPRODUCED |
 | Prismatic upstream is no longer actively maintained (January 2026 notice) and recommends abTEM | `prismatic-cpp/README.md` | SECTION_READ |
 | Licences: Prismatic GPL-3.0, prismatique GPLv3, the inspected repository MIT | `LICENSE`, `METADATA`; L2 rows C4, B22 | SECTION_READ |
-| prismatique 0.0.1 with embeam 0.0.4 or later raises `TypeError` in `tilt.step_size` (`tilt.py:548`; fixed upstream in v0.0.2); `embeam==0.0.1` must be pinned together with `prismatique==0.0.1`, and `tools/provenance_checks/tilt_test.py` fails with the embeam the resolver installs today | L2 section B.3, B-V3; source map SM18 | REPRODUCED |
+| prismatique 0.0.1's `tilt.step_size` raises `TypeError` with embeam 0.0.4 or later (`tilt.py:548`; fixed upstream in v0.0.2; the simulation path `tilt.series`, `hrtem.sim` does not call it, L2 B-V4); `embeam==0.0.1` must be pinned together with `prismatique==0.0.1`, and `tools/provenance_checks/tilt_test.py` fails with the embeam the resolver installs today | L2 section B.3, B-V3; source map SM18 | REPRODUCED |
 | Prismatic's citation page asks users to cite three papers: Ophus 2017 (P04), Pryor et al. 2017 (Adv. Struct. Chem. Imaging 3, 15) and Rangel DaCosta et al. 2021 (P05), with no GPU condition (report D's advice to cite Pryor only for the GPU path is superseded) | prism-em.com citation page; L2 rows C3, E25, E26; SM20 | SECTION_READ |
-| Public documentation confirms the half-maximum-angle anti-aliasing aperture, the grid-quantised entrance-plane tilt, periodic x-y boundaries and the absence of an absorber (P04 p. 3, Eqs. (3), (6); prismatique docs). The back-propagation of the saved HRTEM wave by half the supercell length is stated in NO public document read (P04 predates HRTEM mode; P05 not read) and rests on the C++ source only | L2 rows E4, E7, E10, E19 | SECTION_READ (docs and source); back-propagation source-only |
+| Public documentation confirms the half-maximum-angle anti-aliasing aperture, the grid-quantised entrance-plane tilt, periodic x-y boundaries and the absence of an absorber (P04 p. 3, Eq. (6), p. 4; S01 sec. 2.3.1, 2.6.18, 2.10.3). The back-propagation of the saved HRTEM wave by half the supercell length is stated in NO public document read (P04 predates HRTEM mode; P05 not read) and rests on the C++ source only | L2 rows E4, E7, E10, E19 | SECTION_READ (docs and source); back-propagation source-only |
 | The engine's own default is thermal effects ON, the wrapper's default OFF; any direct Prismatic or pyprismatic run must set it explicitly. The aberration-file example on the Prismatic website contradicts the engine's convention (m = radial power) | L2 rows E16, E30 | SECTION_READ |
 
 ## Consequences for the final repository

@@ -28,7 +28,8 @@ The repository is final when all of the following hold:
    against an independent dynamical reflection solver. If that solver exposes only intensities, the
    rocking-curve criterion is restricted to peak positions and widths and that restriction is recorded;
    the phase is then validated by rungs 1 to 3 of the ladder.
-3. A monatomic-step benchmark on the configuration Ali specifies (CFG-A or CFG-B) reproduces the
+3. A monatomic-step benchmark on CFG-B (Ali's Si(001)), with CFG-A as the translation-step validation
+   case, reproduces the
    refraction-corrected geometric phase versus glancing angle with a dynamical residual below a
    threshold recorded in `configs/benchmarks.yaml` (proposed initial value 0.1 rad, ASSUMPTION).
    Comparison with Osakabe 1988 is deferred until the body of P01 is read. Its abstract (read on the
@@ -55,7 +56,7 @@ in `docs/01_repository_audit.md` and the agent reports under `docs/agent_reports
 | ID | Name | Surface, azimuth | Steps and features | Specular conditions | Status |
 |---|---|---|---|---|---|
 | CFG-A | `si111_cleaved_110azimuth` | (1,-1,1) surface, beam azimuth [110] | lattice-translation bilayer steps `h = m d_111`, `R = m (a/2)[1,0,1]` (stacking-correct in-plane shift); step edges parallel or transverse to the beam (transverse edges shadow 230 A per bilayer at (4,-4,4), 102 A at (8,-8,8)) | (4,-4,4), (5,-5,5), (7,-7,7), (8,-8,8); (3,-3,3) is allowed but exits at 8.6 mrad, barely above `theta_c`, with 116x foreshortening, so it is not recommended; never (6,-6,6) or (2,-2,2) | benchmark inherited from the inspected repository; geometry consistent (normal.beam = 0) |
-| CFG-B | `si001_patterned` | (001) surface, 200 keV (PROJECT_INPUT, supplied), azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces, dynamical difference expected), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad and 733 nm at the (4,-4,4) angle), optional oxide/amorphous overlayer (item 12) | (008) as the working condition (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); (0,0,12) as the second condition; (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface; (002), (006), (0,0,10) forbidden | Ali's experiment; remaining unknowns listed in `docs/06_project_inputs_required.md` |
+| CFG-B | `si001_patterned` | (001) surface, 200 keV (PROJECT_INPUT, supplied), azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces, dynamical difference expected), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad and 733 nm at the (4,-4,4) angle), optional oxide/amorphous overlayer (item 12) | (008) as the proposed working condition (PROJECT_INPUT item 9) (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); (0,0,12) as the second condition; (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface; (002), (006), (0,0,10) forbidden | Ali's experiment; remaining unknowns listed in `docs/06_project_inputs_required.md` |
 | CFG-O | `osakabe_1988_reproduction` | Pt(111) at glancing incidence (P01 abstract, sentence 2, `+ABSTRACT(publisher)`; not silicon, so no Si structure, `V0` or structure factor may be reused); azimuth UNVERIFIED | monatomic-height steps, sensitivity of the order of 0.01 nm (P01 abstract, sentence 4) | energy, reflection order and glancing angle UNVERIFIED; reference: two regions of the reflection image overlapped by an electron biprism, i.e. a self-reference of type R2 (the R2 reading is DERIVED_HERE); optical reconstruction (abstract, sentence 3) | placeholder: every field not listed here fails on load until the body of P01 (upload 1) and P08 (upload 2) are read; source map SM22 |
 
 Each configuration is a versioned YAML/JSON file with every parameter labelled by evidence level.
@@ -220,8 +221,8 @@ not valid. Used for experiment planning and for the rocking-series inversion.
    wave that does not illuminate the specimen, compensated either by objective over-focus with one
    diverging image-side biprism and a two-hole aperture, with image offset `d = Cs alpha^3 -
    Delta f alpha`, or by a condenser-side biprism that pre-tilts the reference by the sum of the
-   incidence and reflection angles); R2 is the arrangement of the P01 abstract (two regions of the
-   reflection image overlapped by a biprism). An R1 reference must pass the dark-field objective
+   incidence and reflection angles); R2 is how the P01 abstract is read here (two regions of the
+   reflection image overlapped by a biprism; the R2 reading is DERIVED_HERE). An R1 reference must pass the dark-field objective
    aperture: the model must declare whether it uses a second aperture hole, a condenser-biprism
    pre-tilt of `2 theta_ext`, or no aperture, because an aperture centred on `k_out` blocks an
    untilted vacuum reference (DERIVED_HERE, L1 inference I6).
@@ -299,39 +300,40 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 | Milestone | Deliverable | Depends on |
 |---|---|---|
 | M0 Honesty and provenance | Correct the inspected repository's documentation (mid-plane wave, forbidden (6,-6,6), inaccessible (2,-2,0), inert absorber and thermal settings, tilt-index and pixel-size defects, runner writing no output); pin versions; add loader assertions; keep CFG-A as a documented legacy benchmark | report D section 5.2, report A section 7 |
-| M1 Physics core | `geometry/` and `quantification/` from the calculator; tests T1 to T23 and the shadow-length test; source map entries | nothing |
+| M1 Physics core | `geometry/` and `quantification/` from the calculator; tests T1 to T25 and the shadow-length test (Ali's Phase 2 specification, 2026-09-22; T24 and T25 are re-run in M3 with the full holography chain); source map entries | nothing |
 | M2 Reflection forward model | Custom kernel with absorber and confined illumination, validated against abTEM before the absorber is enabled; abTEM tilt-range test at 24 and 48 mrad; flat-surface rocking curves against the dynamical solver; phase-validation ladder; convergence studies | M1, solver access |
 | M3 Holography chain | R1/R2/R3, hologram formation with Fresnel-fringe, drift and charging options, shared reconstruction, T24/T25 and the carrier trap | M1 |
 | M4 Benchmarks | CFG-A bilayer steps (phase versus angle; double-contour contrast check; transverse steps with shadows), CFG-B a/4 and a/2 steps, patterned features, overlayer sensitivity | M2, M3 |
 | M5 Experimental comparison | Calibration, blind comparison, uncertainty budget, paper figures | M4 and PROJECT_INPUT items 1 to 22 |
 | M6 Reflection ptychography (optional) | Differentiable dynamical forward model; multiplicative-object algorithms explicitly not assumed valid | M2 |
 
-## 10. Literature position (from `docs/agent_reports/B_literature.md`, index-level evidence only)
+## 10. Literature position (revision 3: `docs/02_literature_position.md`)
 
-* Starting point: Osakabe et al. 1988 (P01) and 1989 (P02, GaAs(110), dislocation surface undulation,
-  0.01 A precision claimed at abstract level), Osakabe 1992 (P08), Banzhof and Herrmann 1993 (P03),
-  Banzhof, Herrmann and Lichte 1992 (P09: pi and 0.9 pi steps on Au(111) and Pt(111) with an image-side
-  biprism, abstract level). P08 is reported at abstract-index level as measuring the 'phase shift of a
-  Bragg-reflected electron wave' through 'geometrical path differences ... measured in units of
-  wavelengths' (`+ABSTRACT(index)`; the paper was not read). The content of P01 itself could not be read here.
-* Theory to read before implementing: Peng and Cowley 1986/1988 (transmission-type multislice applied to
+* Starting point: P01 is known from its abstract only (Pt(111), two regions of the reflection image
+  overlapped by a biprism, optical reconstruction, sensitivity of the order of 0.01 nm); P02 and P03
+  from their metadata only (P02E, read, gives GaAs(110) and the (880) reflection for P02); P08 and P09
+  from their PubMed abstracts (P08: the phase shift of a Bragg-reflected wave measured by holographic
+  interferometry, path differences in units of the wavelength; P09: pi and 0.9 pi steps on Au(111) and
+  Pt(111) with an image-side biprism, interpreted in terms of refraction).
+* Theory to read before implementing (identities Crossref-verified, none read): Peng and Cowley 1986/1988 (transmission-type multislice applied to
   the Bragg case), Ichimiya 1983 (surface-parallel slicing), Ma and Marks 1989 to 1992 (Bloch-wave Bragg
   case, multislice-versus-Bloch consistency in reflection), Yao and Cowley 1990 (Bragg-Bragg and
   Bragg-channelling resonances, double-contour step contrast), B07 and B08 chapters on dynamical RHEED.
-* Methodological analogues: dark-field electron holography (Hÿtch et al. 2008, 2011; Lubk et al. 2014;
-  Meißner et al. 2019 show that dynamical effects must be included even in transmission); X-ray CTR and
+* Methodological analogues: dark-field electron holography (Hÿtch et al. 2008 and 2011, not read; their
+  2010 companion, read in sections 1-2; Lubk et al. 2014 and Meißner et al. 2019, not read, are recorded at index level in
+  report B as showing that dynamical effects must be included even in transmission); X-ray CTR and
   Bragg ptychography (Zhu et al. 2015 on Pt(111) steps is the closest analogue); split-illumination
   holography (Tanigaki et al. 2012, 2014) for condenser-side biprisms; Blackburn and McLeod 2021 and
   Herring 2021/2022 for the group's public holography and diffracted-beam interferometry work.
-* No published electron reflection-mode ptychography and no post-2015 reflection electron holography
-  experiment was found, but the citation-graph search could not be run (blocked), so this is a search
-  failure, not evidence of absence.
+* After 1993 the citation graph and the searches of report L4 found reflection interferometry only by
+  the Tokyo Institute of Technology group (Si(111)7x7, 2001 to 2003) and no electron reflection-mode
+  ptychography; this is an absence in the databases searched, not a proof of absence.
 
 ## 11. What this specification does not settle
 
 * The body of Osakabe 1988 (energy, reflection, glancing angle, phase relation and sign, measured
-  values); the patent is now read (SM21) and the P01 abstract gives the surface and the self-reference
-  arrangement (SM22).
+  values); the patent is now read (SM21) and the P01 abstract gives the surface and the biprism overlap of two
+  image regions, read here as a self-reference (DERIVED_HERE; SM22).
 * The exact relativistic refraction and Bragg-case expressions as printed in B07/B08 (derived here, not read).
 * Whether abTEM accepts a complex (absorptive) potential and tilts of 24 to 48 mrad with adequate accuracy
   (its docstring recommends below one degree; UNVERIFIED; tested in M2).
