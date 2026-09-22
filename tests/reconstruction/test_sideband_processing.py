@@ -7,9 +7,9 @@ Tolerances stated per test. Where a flat-control tolerance is needed, T25's 5e-3
 import numpy as np
 import pytest
 
-from holo_cases import (NO_ARTEFACTS, T24_TOL_RAD, T25_TOL_RAD, calculator_T24_reference, calculator_mask,
-                        calculator_measure, calculator_search, calculator_setup_holograms, make_grid,
-                        r1_reference)
+from holo_cases import (EMPTY_THRESHOLD, NO_ARTEFACTS, SIM_SIDEBAND, T24_TOL_RAD, T25_TOL_RAD, calculator_T24_reference,
+                        calculator_mask, calculator_measure, calculator_search, calculator_setup_holograms,
+                        make_grid, r1_reference)
 from reflection_holo.optics import (Grid, Hologram, Wave, hologram_intensity, reference_r3_curved_tilted,
                                     vacuum_object_wave)
 from reflection_holo.reconstruction import (CarrierSearch, MaskSpec, fit_phase_plane, locate_carrier,
@@ -27,7 +27,7 @@ def _flat_pair(grid, q, phi_o, phi_rel):
 
 
 def _search(q, subpixel):
-    return CarrierSearch((-q[0], -q[1]), 0.5 * float(np.hypot(*q)), 0.02, subpixel)
+    return CarrierSearch((-q[0], -q[1]), 0.5 * float(np.hypot(*q)), 0.02, subpixel, SIM_SIDEBAND)
 
 
 def _hann_third(c):
@@ -95,12 +95,13 @@ def test_r3_residual_is_entangled_without_correction_and_removed_with_empty_holo
     q, t, curv, cen = (0.0, 0.125), (1.0 / 512, 0.0), (2e-6, 0.5e-6, 1e-6), (256.0, 256.0)
     u_r = reference_r3_curved_tilted(grid, carrier_cycles_per_A=q, amplitude=1.0, relative_phase_rad=0.0,
                                      residual_tilt_cycles_per_A=t, residual_curvature_rad_per_A2=curv,
-                                     curvature_centre_A=cen, realisation=None)
+                                     curvature_centre_A=cen, aperture_passage="no_aperture",
+                                     realisation=None)
     H = hologram_intensity(Wave(np.ones(grid.shape), grid, "flat", None), u_r, artefacts=NO_ARTEFACTS,
                            content="object")
     H_e = hologram_intensity(vacuum_object_wave(grid, amplitude=1.0, realisation=None), u_r,
                              artefacts=NO_ARTEFACTS, content="empty")
-    c = locate_carrier(H_e, CarrierSearch((-q[0] - t[0], -q[1] - t[1]), 0.05, 0.05, "none"))
+    c = locate_carrier(H_e, CarrierSearch((-q[0] - t[0], -q[1] - t[1]), 0.05, 0.05, "none", SIM_SIDEBAND))
     assert c.integer_bin == (511, 448)          # the residual tilt is part of the located carrier
     r0, r1 = grid.coordinates_A()
     quad = curv[0] * (r0 - cen[0]) ** 2 + 2 * curv[1] * (r0 - cen[0]) * (r1 - cen[1]) + curv[2] * (r1 - cen[1]) ** 2
@@ -112,7 +113,8 @@ def test_r3_residual_is_entangled_without_correction_and_removed_with_empty_holo
     assert np.max(np.abs(d[sl])) <= 1e-3
     assert np.ptp((raw.unwrapped_phase)[sl]) > 0.1                 # the residual is really there
     corr = reconstruct_sideband(H, carrier=c, mask=_hann_third(c), empty_hologram=H_e,
-                                reference_correction="divide_empty", unwrapping="none")
+                                reference_correction="divide_empty", unwrapping="none",
+                                empty_amplitude_threshold=EMPTY_THRESHOLD)
     assert np.max(np.abs(corr.wrapped_phase[sl])) <= T25_TOL_RAD
     assert np.array_equal(corr.wrapped_phase_raw, raw.wrapped_phase_raw)   # raw kept, uncorrected
 
@@ -135,7 +137,8 @@ def test_no_implicit_detrend_and_explicit_plane_fit():
                              artefacts=NO_ARTEFACTS, content="empty")
     c = locate_carrier(H_e, _search(q, "none"))
     res = reconstruct_sideband(H, carrier=c, mask=_hann_third(c), empty_hologram=H_e,
-                               reference_correction="divide_empty", unwrapping="itoh_raster")
+                               reference_correction="divide_empty", unwrapping="itoh_raster",
+                               empty_amplitude_threshold=EMPTY_THRESHOLD)
     raw_before = res.wrapped_phase_raw.copy()
     region = np.zeros(grid.shape, bool)
     region[80:176, 80:176] = True
@@ -181,11 +184,11 @@ def test_required_processing_inputs():
     q = (0.0, 0.125)
     H, H_e = _flat_pair(grid, q, 0.0, 0.0)
     with pytest.raises(TypeError):
-        CarrierSearch((-q[0], -q[1]), 0.05, 0.02)               # subpixel not declared
+        CarrierSearch((-q[0], -q[1]), 0.05, 0.02, sideband_declaration=SIM_SIDEBAND)  # subpixel
     with pytest.raises(ValueError):
-        CarrierSearch(None, 0.05, 0.02, "none")                 # missing sideband guess
+        CarrierSearch(None, 0.05, 0.02, "none", SIM_SIDEBAND)                 # missing sideband guess
     with pytest.raises(ValueError):
-        CarrierSearch((-q[0], -q[1]), 0.05, 0.02, "parabolic")  # undeclared method
+        CarrierSearch((-q[0], -q[1]), 0.05, 0.02, "parabolic", SIM_SIDEBAND)  # undeclared method
     with pytest.raises(ValueError):
         MaskSpec(None, "disc", "hann")
     with pytest.raises(TypeError):
@@ -207,7 +210,9 @@ def test_required_processing_inputs():
                              reference_correction="none", unwrapping="none")
     q_hi = (0.0, 0.375)                                         # 24 bins of 64, close to Nyquist 0.5
     H_hi, H_hi_e = _flat_pair(grid, q_hi, 0.0, 0.0)
-    c_hi = locate_carrier(H_hi_e, _search(q_hi, "none"))
+    # search disc 0.1 about -q_hi stays inside the band (0.475 < 0.5 cycles/A); a disc reaching the
+    # Nyquist line would hold Hermitian pairs and is refused (audit A2 M1)
+    c_hi = locate_carrier(H_hi_e, CarrierSearch((-q_hi[0], -q_hi[1]), 0.1, 0.02, "none", SIM_SIDEBAND))
     with pytest.raises(ValueError):                             # 0.375 + 0.13 crosses Nyquist
         reconstruct_sideband(H_hi, carrier=c_hi, mask=MaskSpec(0.13, "disc", "none"), empty_hologram=None,
                              reference_correction="none", unwrapping="none")

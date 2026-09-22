@@ -1,8 +1,11 @@
 # CFG-A: translation-step validation case inherited from the inspected repository.
 # Facts from docs/05_final_repository_specification.md section 2 (row CFG-A). Loader:
-# reflection_holo.io.config (every parameter is {value, label, source}; labels are the seven
-# evidence labels). Repository defaults of the inspected repository are labelled PROJECT_INPUT
-# (repository default), as in the calculator and source map SM09.
+# reflection_holo.io.config (every parameter is {value, label, source, unit}; labels are the seven
+# evidence labels; schema reflection_holo.io.config.SCHEMAS["CFG-A"]). The geometry defaults of the
+# inspected repository define this benchmark; they are not laboratory inputs (docs/06), so they are
+# labelled ASSUMPTION with source "inspected repository default" (audit A2 m4), not PROJECT_INPUT.
+# Every parameter states its unit ("none" for a parameter that is not a physical quantity); the
+# loader converts lengths to A and angles to rad through one unit table (audit A2 m5).
 schema_version: 1
 config_id: CFG-A
 name: si111_cleaved_110azimuth
@@ -16,53 +19,64 @@ description: >-
 parameters:
   surface_material:
     value: Si
-    label: PROJECT_INPUT
-    source: "inspected repository default (commit 6694959, si110_cleave_slab_generator.py); docs/05 section 2 CFG-A"
+    unit: none
+    label: ASSUMPTION
+    source: "inspected repository default (commit 6694959, si110_cleave_slab_generator.py); benchmark definition, docs/05 section 2 CFG-A"
   surface_normal_hkl:
     value: [1, -1, 1]
-    label: PROJECT_INPUT
-    source: "inspected repository generator default (commit 6694959); docs/physics_conventions.md, crystallographic frame (x_hat = [1,-1,1]/sqrt 3)"
+    unit: none
+    label: ASSUMPTION
+    source: "inspected repository default (commit 6694959, generator); benchmark definition, docs/05 section 2 CFG-A; docs/physics_conventions.md, crystallographic frame (x_hat = [1,-1,1]/sqrt 3)"
   beam_azimuth_uvw:
     value: [1, 1, 0]
-    label: PROJECT_INPUT
-    source: "inspected repository default (commit 6694959); [1,-1,1].[1,1,0] = 0 (DERIVED_HERE, docs/physics_conventions.md)"
+    unit: none
+    label: ASSUMPTION
+    source: "inspected repository default (commit 6694959); benchmark definition, docs/05 section 2 CFG-A; [1,-1,1].[1,1,0] = 0 (DERIVED_HERE, docs/physics_conventions.md)"
   beam_energy_keV:
     value: 200.0
     unit: keV
     label: PROJECT_INPUT
     item: 1
     source: "docs/06 item 1, supplied by Ali 2026-09-22: 200 keV for all reflection holography work; 300 keV is never used"
-  lattice_parameter_A:
+  lattice_parameter:
     value: 5.4309
     unit: A
     label: ASSUMPTION
+    assumption_id: B2
     source: "model_assumptions B2 (standard room-temperature value); equals reflection_holo.constants.A_SI_A"
   mean_inner_potential_V:
     value: 12.0
     unit: V
     label: ASSUMPTION
     item: 20
+    stands_in_for_item: 20
+    assumption_id: B1
     source: "model_assumptions B1; equals reflection_holo.constants.V0_SI_ASSUMPTION_V; the sourced or measured value is PROJECT_INPUT item 20"
   target_reflection_hkl:
     value: [4, -4, 4]
+    unit: none
     label: DERIVED_HERE
     item: 9
     source: "docs/05 section 2 CFG-A and docs/03 section 4 ('the first recommended condition (4,-4,4)'); allowed (SM02), accessible (SM04, SM06)"
   recommended_reflections_hkl:
     value: [[4, -4, 4], [5, -5, 5], [7, -7, 7], [8, -8, 8]]
+    unit: none
     label: DERIVED_HERE
     item: 9
     source: "docs/05 section 2 CFG-A"
   not_recommended_reflections_hkl:
     value: [[3, -3, 3]]
+    unit: none
     label: DERIVED_HERE
     source: "docs/05 section 2 CFG-A: allowed, but exits at 8.6 mrad, barely above theta_c, with 116x foreshortening"
   forbidden_rod_reflections_hkl:
     value: [[2, -2, 2], [6, -6, 6], [10, -10, 10]]
+    unit: none
     label: DERIVED_HERE
     source: "source map SM02; docs/05 sections 2 and 4.1 (never (6,-6,6) or (2,-2,2))"
   step_types:
     value: [lattice_translation_bilayer]
+    unit: none
     label: DERIVED_HERE
     source: "docs/05 section 2 CFG-A: h = m d_111, R = m (a/2)[1,0,1]"
   step_translations:
@@ -71,9 +85,11 @@ parameters:
         vector_cubic_a_units: [0.5, 0.0, 0.5]
         height: "d_111 = a/sqrt(3)"
         relation: lattice_translation
+    unit: none
     label: DERIVED_HERE
     source: "docs/03 section 2 (R = (a/2)[1,0,1], R.n_hat = d_111, in-plane part a/sqrt(6)); C report section 2.3"
   step_edge_orientations:
     value: [parallel_to_beam, transverse_to_beam]
+    unit: none
     label: DERIVED_HERE
     source: "docs/05 section 2 CFG-A; transverse edges shadow h/tan(theta_ext) of surface, computed at the operating angle (SM07)"

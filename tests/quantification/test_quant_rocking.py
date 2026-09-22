@@ -34,6 +34,12 @@ def test_docs03_10nm_tilt_step():
     check(max_tilt_step_rad(h_A=100.0, wavelength_A=LAM, theta_ext_rad=th) * 1e3, 0.06, 0.005)
 
 
+def TEST_ONLY_SIGMA(th):
+    """TEST_ONLY declared phase uncertainty (0.01 rad per tilt) for noise-free series; a positive
+    uncertainty is required (criterion B16)."""
+    return np.full(np.shape(th), 0.01)
+
+
 def series(h, thetas):
     return wrap_to_pi(specular_step_phase(h, thetas, LAM))
 
@@ -42,8 +48,8 @@ def series(h, thetas):
 def test_absolute_height_recovered_noise_free(h):
     """>= 3 tilts spanning more than one h_2pi: h recovered absolutely, not modulo h_2pi."""
     th = np.arange(20.0, 25.01, 0.5) * 1e-3              # 0.5 mrad < 0.627 mrad for 1 nm
-    res = resolve_rocking_series(th, th, series(h, th), wavelength_A=LAM, h_max_A=10.5,
-                                 max_intercept_offset_cycles=0.25)
+    res = resolve_rocking_series(th, th, series(h, th), sigma_phi_rad=TEST_ONLY_SIGMA(th),
+                                 wavelength_A=LAM, h_max_A=10.5)
     check(res.h_A, h, 1e-9)
     total = specular_step_phase(h, th, LAM)
     assert np.all(res.branch_indices == np.rint((total - wrap_to_pi(total)) / (2 * np.pi)))
@@ -59,8 +65,8 @@ def test_absolute_height_with_noise_and_unsorted_input():
     th = np.arange(20.0, 25.01, 0.25) * 1e-3
     perm = rng.permutation(th.size)
     w = wrap_to_pi(specular_step_phase(h, th, LAM) + rng.normal(0.0, 0.05, th.size))
-    res = resolve_rocking_series(th[perm], th[perm], w[perm], wavelength_A=LAM, h_max_A=10.5,
-                                 max_intercept_offset_cycles=0.25)
+    res = resolve_rocking_series(th[perm], th[perm], w[perm], sigma_phi_rad=np.full(th.size, 0.05),
+                                 wavelength_A=LAM, h_max_A=10.5)
     assert abs(res.h_A - h) < 4 * res.sigma_h_A + 1e-6
     assert res.sigma_h_A < 0.05
 
@@ -68,8 +74,8 @@ def test_absolute_height_with_noise_and_unsorted_input():
 def test_tilt_step_guard_refuses_coarse_series():
     th = np.arange(20.0, 25.01, 0.8) * 1e-3              # 0.8 mrad > 0.627 mrad for 1 nm
     with pytest.raises(TiltStepTooLargeError):
-        resolve_rocking_series(th, th, series(10.0, th), wavelength_A=LAM, h_max_A=10.0,
-                               max_intercept_offset_cycles=0.25)
+        resolve_rocking_series(th, th, series(10.0, th), sigma_phi_rad=TEST_ONLY_SIGMA(th),
+                               wavelength_A=LAM, h_max_A=10.0)
 
 
 def test_non_translation_phase_is_refused():
@@ -78,14 +84,14 @@ def test_non_translation_phase_is_refused():
     th = np.arange(20.0, 25.01, 0.5) * 1e-3
     w = wrap_to_pi(specular_step_phase(10.0, th, LAM) + 2.0)
     with pytest.raises(BranchAmbiguityError):
-        resolve_rocking_series(th, th, w, wavelength_A=LAM, h_max_A=10.5,
-                               max_intercept_offset_cycles=0.25)
+        resolve_rocking_series(th, th, w, sigma_phi_rad=TEST_ONLY_SIGMA(th), wavelength_A=LAM,
+                               h_max_A=10.5)
 
 
 def test_needs_three_tilts_and_prior_bound():
     th = np.array([20e-3, 21e-3])
     with pytest.raises(ValueError):
-        resolve_rocking_series(th, th, series(1.0, th), wavelength_A=LAM, h_max_A=2.0,
-                               max_intercept_offset_cycles=0.25)
+        resolve_rocking_series(th, th, series(1.0, th), sigma_phi_rad=TEST_ONLY_SIGMA(th),
+                               wavelength_A=LAM, h_max_A=2.0)
     with pytest.raises(TypeError):
         resolve_rocking_series(th, th, series(1.0, th), wavelength_A=LAM)

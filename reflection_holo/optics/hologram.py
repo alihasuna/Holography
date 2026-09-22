@@ -30,6 +30,8 @@ Reference-wave models (selectable by name; every parameter is REQUIRED, no defau
       u_r = A exp(i (2 pi (q_c + t).r + phi_rel + c00 d0^2 + 2 c01 d0 d1 + c11 d1^2)),
       d = r - r_centre. Long-wavelength object phase is entangled with this residual unless an empty
       hologram recorded with the same reference is used for correction (PROJECT_INPUT item 17).
+      A vacuum-type reference like R1, so its passage through the dark-field objective aperture is
+      declared in the same way (recorded; it does not change the field).
 
 ``relative_phase_rad`` is a free simulation parameter; it is NOT evidence that the hardware can set
 the phase (docs/05 section 5 item 3).
@@ -45,6 +47,7 @@ declared integer seed; gain 1 count per electron; MTF NOT IMPLEMENTED.
 """
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 from typing import Any, Sequence
 
@@ -161,14 +164,18 @@ def reference_r2_self_reference(object_wave: Wave, *, shift_A, carrier_cycles_pe
 def reference_r3_curved_tilted(grid: Grid, *, carrier_cycles_per_A, amplitude: float,
                                relative_phase_rad: float, residual_tilt_cycles_per_A,
                                residual_curvature_rad_per_A2, curvature_centre_A,
-                               realisation: int | None) -> Wave:
+                               aperture_passage: str, realisation: int | None) -> Wave:
     """R3: plane-wave reference with an explicit residual tilt and quadratic phase (B5; no source).
 
     residual_curvature_rad_per_A2 = (c00, c01, c11): phase c00 d0^2 + 2 c01 d0 d1 + c11 d1^2 with
-    d = r - curvature_centre_A. All arguments required.
+    d = r - curvature_centre_A. aperture_passage: as for R1 (docs/05 section 5 item 3; audit A2
+    m7). All arguments required.
     """
     if not isinstance(grid, Grid):
         raise TypeError("grid must be a Grid")
+    if aperture_passage not in APERTURE_PASSAGES:
+        raise ValueError(f"aperture_passage must be one of {APERTURE_PASSAGES} (docs/05 section 5 "
+                         f"item 3); got {aperture_passage!r}")
     q = _check_carrier(grid, carrier_cycles_per_A)
     t = _require_2vector("residual_tilt_cycles_per_A", residual_tilt_cycles_per_A)
     qe = _check_carrier(grid, (q[0] + t[0], q[1] + t[1]))
@@ -187,7 +194,7 @@ def reference_r3_curved_tilted(grid: Grid, *, carrier_cycles_per_A, amplitude: f
     meta = {"reference_model": "R3", "carrier_cycles_per_A": list(q), "residual_tilt_cycles_per_A": list(t),
             "effective_carrier_cycles_per_A": list(qe),
             "residual_curvature_rad_per_A2": c.tolist(), "curvature_centre_A": list(rc),
-            "amplitude": a, "relative_phase_rad": ph,
+            "amplitude": a, "relative_phase_rad": ph, "aperture_passage": aperture_passage,
             "labels": {"model": "ASSUMPTION B5 (R3 has no source)", "carrier": "PROJECT_INPUT item 16",
                        "residual": "PROJECT_INPUT item 17", "relative_phase": "simulation parameter only"}}
     return Wave(data, grid, "reference R3", realisation, meta)
@@ -290,8 +297,9 @@ def ensemble_hologram_intensity(realisations: Sequence[tuple[Wave, Wave]], *,
     """Partially coherent hologram: mean over realisations of |u_o^k + u_r^k|^2 (SM13).
 
     Each element of ``realisations`` is one (object, reference) pair sharing a realisation; the
-    average is taken AFTER squaring. Complex waves are never averaged. Realisation indices, when set,
-    must agree within a pair and be distinct across pairs.
+    average is taken AFTER squaring. Complex waves are never averaged. With more than one pair every
+    wave must carry an integer realisation index (the pairing is otherwise unverifiable; audit A2
+    m7); indices must agree within a pair and be distinct across pairs.
     """
     if not isinstance(artefacts, ArtefactOptions):
         raise TypeError("artefacts must be an ArtefactOptions")
@@ -300,6 +308,12 @@ def ensemble_hologram_intensity(realisations: Sequence[tuple[Wave, Wave]], *,
         raise ValueError("at least one realisation is required")
     grid = pairs[0][0].grid
     artefacts.check(grid)
+    if len(pairs) > 1:
+        for k, pair in enumerate(pairs):
+            if len(pair) == 2 and (pair[0].realisation is None or pair[1].realisation is None):
+                raise ValueError(f"realisation {k}: with {len(pairs)} pairs every object and reference "
+                                 f"wave needs an integer realisation index (None cannot be checked "
+                                 f"for pairing; SM13, audit A2 m7)")
     seen = set()
     acc = np.zeros(grid.shape, dtype=np.float64)
     for k, pair in enumerate(pairs):
@@ -314,12 +328,17 @@ def ensemble_hologram_intensity(realisations: Sequence[tuple[Wave, Wave]], *,
             seen.add(u_o.realisation)
     intensity = acc / len(pairs)
     carriers = {tuple(p[1].metadata.get("effective_carrier_cycles_per_A") or ()) for p in pairs}
+    masks = [np.asarray(p[1].metadata["valid_mask"], dtype=bool) for p in pairs
+             if "valid_mask" in p[1].metadata]
     meta = {"formation": "incoherent mean over realisations of |u_o^k + u_r^k|^2 (after squaring)",
             "n_realisations": len(pairs),
             "reference_models": sorted({str(p[1].metadata.get("reference_model")) for p in pairs}),
             "reference_carrier_cycles_per_A": (list(next(iter(carriers))) if len(carriers) == 1
                                                and next(iter(carriers)) else None),
             "artefacts": artefacts.as_record(), "grid": grid.as_record()}
+    if masks:
+        # a pixel is valid only if it is valid in every realisation's reference (audit A2 m1)
+        meta["valid_mask"] = np.logical_and.reduce(masks)
     return Hologram(intensity, grid, content, meta, None)
 
 
@@ -352,7 +371,7 @@ def apply_poisson_noise(holograms: Sequence[Hologram], *, dose_e_per_px: float, 
         if not mean > 0:
             raise ValueError("hologram mean intensity must be > 0 to scale to a dose")
         counts = rng.poisson(h.intensity / mean * dose).astype(float)
-        meta = dict(h.metadata)
+        meta = copy.deepcopy(h.metadata)          # no state shared with the input hologram
         meta["detector"] = {"noise": "Poisson", "dose_e_per_px": dose, "seed": int(seed),
                             "draw_index": k, "n_holograms_in_draw": len(hs),
                             "generator": "numpy.random.default_rng (PCG64)",

@@ -4,6 +4,10 @@ Positions are in angstrom in the slab frame x = outward normal, y = z x x, z = b
 (docs/physics_conventions.md). The comment line carries the cell (``Lattice``), ``pbc``, the frame
 rows in cubic crystal coordinates, the crystal origin, the azimuth, the options with their labels
 and the SHA-256 of the positions. No engine-specific writer exists yet.
+
+Both writers also write a run manifest (docs/05 section 6; audit A2 m8) under the REQUIRED
+``outputs_root`` (a directory named ``outputs``), recording the written file's SHA-256 and the
+structure's builder, lattice parameter and labels.
 """
 from __future__ import annotations
 
@@ -12,6 +16,8 @@ import shlex
 from pathlib import Path
 
 import numpy as np
+
+from reflection_holo.provenance.manifest import build_manifest, sha256_file, write_manifest
 
 
 def _vec(v) -> str:
@@ -25,7 +31,25 @@ def _kv(key: str, value) -> str:
     return f'{key}="{v}"' if (not v or any(c in v for c in ' ="\'')) else f"{key}={v}"
 
 
-def write_xyz(structure, path) -> Path:
+def _structure_manifest(structure, path: Path, writer: str, outputs_root) -> Path:
+    md = structure.metadata
+    summary = dict(builder=md.get("builder"), schema=md.get("schema"),
+                   positions_sha256=md.get("positions_sha256"), n_atoms=int(structure.n_atoms),
+                   lattice=md.get("lattice"), azimuth=md.get("azimuth"),
+                   options={k: v.get("label") if isinstance(v, dict) else v
+                            for k, v in md.get("options", {}).items()})
+    m = build_manifest(run_name=f"{writer}_{path.stem}", config=None, input_paths=[], seeds={},
+                       thread_count=1, precision={"positions": "float64 in memory; text as written"},
+                       engines={}, wave_planes={}, beam_energy_keV=None,
+                       extra=dict(writer=f"reflection_holo.structure.xyz.{writer}",
+                                  outputs=[dict(path=str(path), sha256=sha256_file(path),
+                                                bytes=path.stat().st_size)],
+                                  structure=summary))
+    return write_manifest(m, outputs_root=outputs_root)
+
+
+def write_xyz(structure, path, *, outputs_root) -> Path:
+    """Write the extended-XYZ file and its run manifest under ``outputs_root``; returns the path."""
     path = Path(path)
     md = structure.metadata
     cell = np.asarray(structure.cell_A, float)
@@ -55,6 +79,7 @@ def write_xyz(structure, path) -> Path:
     for s, r in zip(structure.species, structure.positions_A):
         lines.append(f"{s} {r[0]:.10f} {r[1]:.10f} {r[2]:.10f}")
     path.write_text("\n".join(lines) + "\n")
+    _structure_manifest(structure, path, "write_xyz", outputs_root)
     return path
 
 
@@ -76,10 +101,12 @@ def read_xyz(path):
     return np.array(species), np.array(pos), header
 
 
-def write_metadata_json(structure, path) -> Path:
-    """Write the full structure metadata (terrace map, steps, options, labels) as JSON."""
+def write_metadata_json(structure, path, *, outputs_root) -> Path:
+    """Write the full structure metadata (terrace map, steps, options, labels) as JSON, and its run
+    manifest under ``outputs_root``; returns the path."""
     path = Path(path)
     path.write_text(json.dumps(structure.metadata, indent=2, sort_keys=True, default=_jsonable))
+    _structure_manifest(structure, path, "write_metadata_json", outputs_root)
     return path
 
 

@@ -14,10 +14,15 @@ from reflection_holo.io.config import (EVIDENCE_LABELS, ConfigError, MissingProj
                                        load_config_dict, load_config_file)
 
 
-def P(value, label, source="TEST_ONLY fixture", **kw):
-    d = dict(value=value, label=label, source=source)
+def P(value, label, unit, source="TEST_ONLY fixture", **kw):
+    """One parameter; the unit is always stated ("none" for a non-quantity)."""
+    d = dict(value=value, label=label, source=source, unit=unit)
     d.update(kw)
     return d
+
+
+V0_B1 = dict(item=20, stands_in_for_item=20, assumption_id="B1")   # traceable ASSUMPTION (A2 M2)
+STEP_TRANSLATIONS = {"double_layer": {"vector_cubic_a_units": [0.5, 0.0, 0.5]}}
 
 
 def cfg_b_complete():
@@ -26,24 +31,27 @@ def cfg_b_complete():
         schema_version=1, config_id="CFG-B", name="si001_patterned", status="experiment",
         description="TEST_ONLY in-memory fixture",
         parameters=dict(
-            surface_material=P("Si", "PROJECT_INPUT", item=11),
-            surface_normal_hkl=P([0, 0, 1], "PROJECT_INPUT", item=11),
-            beam_azimuth_uvw=P([1, 1, 0], "TEST_ONLY", item=8),
-            beam_energy_keV=P(200.0, "PROJECT_INPUT", unit="keV", item=1),
-            lattice_parameter_A=P(5.4309, "ASSUMPTION", unit="A"),
-            mean_inner_potential_V=P(12.0, "ASSUMPTION", unit="V", item=20),
-            target_reflection_hkl=P([0, 0, 8], "ASSUMPTION", item=9),
-            second_reflection_hkl=P([0, 0, 12], "ASSUMPTION", item=9),
-            forbidden_rod_reflections_hkl=P([[0, 0, 2], [0, 0, 6], [0, 0, 10]], "DERIVED_HERE"),
-            glancing_angle_ext_mrad=P(16.5, "TEST_ONLY", unit="mrad", item=7),
-            convergence_semi_angle_mrad=P(0.01, "TEST_ONLY", unit="mrad", item=3),
-            objective_aperture_semi_angle_mrad=P(1.0, "TEST_ONLY", unit="mrad", item=4),
-            image_pixel_size_nm=P({"along_beam": 0.5, "perpendicular": 0.5}, "TEST_ONLY",
-                                  unit="nm", item=5),
-            reference_trajectory=P("vacuum_beside_sample", "TEST_ONLY", item=15),
-            pattern_geometry=P({"mesa_height_nm": 10.0}, "TEST_ONLY", item=13),
-            surface_preparation_method=P("ion-milled", "PROJECT_INPUT", item=12),
-            surface_preparation_details=P({"oxide": "TEST_ONLY"}, "TEST_ONLY", item=12),
+            surface_material=P("Si", "PROJECT_INPUT", "none", item=11),
+            surface_normal_hkl=P([0, 0, 1], "PROJECT_INPUT", "none", item=11),
+            beam_azimuth_uvw=P([1, 1, 0], "TEST_ONLY", "none", item=8),
+            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", item=1),
+            lattice_parameter=P(5.4309, "ASSUMPTION", "A"),
+            mean_inner_potential_V=P(12.0, "ASSUMPTION", "V", **V0_B1),
+            target_reflection_hkl=P([0, 0, 8], "DERIVED_HERE", "none", item=9),
+            second_reflection_hkl=P([0, 0, 12], "DERIVED_HERE", "none", item=9),
+            forbidden_rod_reflections_hkl=P([[0, 0, 2], [0, 0, 6], [0, 0, 10]], "DERIVED_HERE",
+                                            "none"),
+            step_types=P(["double_layer_a2_translation"], "DERIVED_HERE", "none", item=14),
+            step_translations=P(STEP_TRANSLATIONS, "DERIVED_HERE", "none"),
+            glancing_angle_ext=P(16.5, "TEST_ONLY", "mrad", item=7),
+            convergence_semi_angle=P(0.01, "TEST_ONLY", "mrad", item=3),
+            objective_aperture_semi_angle=P(1.0, "TEST_ONLY", "mrad", item=4),
+            image_pixel_size=P({"along_beam": 0.5, "perpendicular": 0.5}, "TEST_ONLY", "nm",
+                               item=5),
+            reference_trajectory=P("vacuum_beside_sample", "TEST_ONLY", "none", item=15),
+            pattern_geometry=P({"mesa_height_nm": 10.0}, "TEST_ONLY", "none", item=13),
+            surface_preparation_method=P("ion-milled", "PROJECT_INPUT", "none", item=12),
+            surface_preparation_details=P({"oxide": "TEST_ONLY"}, "TEST_ONLY", "none", item=12),
         ))
 
 
@@ -52,15 +60,20 @@ def cfg_a_fixture():
         schema_version=1, config_id="CFG-A", name="si111_cleaved_110azimuth", status="benchmark",
         description="TEST_ONLY in-memory fixture",
         parameters=dict(
-            surface_material=P("Si", "PROJECT_INPUT"),
-            surface_normal_hkl=P([1, -1, 1], "PROJECT_INPUT"),
-            beam_azimuth_uvw=P([1, 1, 0], "PROJECT_INPUT"),
-            beam_energy_keV=P(200.0, "PROJECT_INPUT", unit="keV", item=1),
-            lattice_parameter_A=P(5.4309, "ASSUMPTION", unit="A"),
-            mean_inner_potential_V=P(12.0, "ASSUMPTION", unit="V", item=20),
-            target_reflection_hkl=P([4, -4, 4], "DERIVED_HERE", item=9),
+            surface_material=P("Si", "ASSUMPTION", "none"),
+            surface_normal_hkl=P([1, -1, 1], "ASSUMPTION", "none"),
+            beam_azimuth_uvw=P([1, 1, 0], "ASSUMPTION", "none"),
+            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", item=1),
+            lattice_parameter=P(5.4309, "ASSUMPTION", "A"),
+            mean_inner_potential_V=P(12.0, "ASSUMPTION", "V", **V0_B1),
+            target_reflection_hkl=P([4, -4, 4], "DERIVED_HERE", "none", item=9),
+            recommended_reflections_hkl=P([[4, -4, 4]], "DERIVED_HERE", "none", item=9),
             forbidden_rod_reflections_hkl=P([[2, -2, 2], [6, -6, 6], [10, -10, 10]],
-                                            "DERIVED_HERE"),
+                                            "DERIVED_HERE", "none"),
+            step_types=P(["lattice_translation_bilayer"], "DERIVED_HERE", "none"),
+            step_translations=P({"bilayer": {"vector_cubic_a_units": [0.5, 0.0, 0.5]}},
+                                "DERIVED_HERE", "none"),
+            step_edge_orientations=P(["transverse_to_beam"], "DERIVED_HERE", "none"),
         ))
 
 
@@ -69,12 +82,12 @@ def cfg_o_fixture():
         schema_version=1, config_id="CFG-O", name="osakabe_1988_reproduction",
         status="placeholder", description="TEST_ONLY in-memory fixture",
         parameters=dict(
-            surface_material=P("Pt", "SECTION_READ"),
-            surface_normal_hkl=P([1, 1, 1], "SECTION_READ"),
-            beam_energy_keV=P(None, "UNVERIFIED", unit="keV"),
-            glancing_angle_ext_mrad=P(None, "UNVERIFIED", unit="mrad"),
-            reflection_order=P(None, "UNVERIFIED"),
-            reference_model=P("R2", "DERIVED_HERE"),
+            surface_material=P("Pt", "SECTION_READ", "none"),
+            surface_normal_hkl=P([1, 1, 1], "SECTION_READ", "none"),
+            beam_energy_keV=P(None, "UNVERIFIED", "keV"),
+            glancing_angle_ext=P(None, "UNVERIFIED", "mrad"),
+            reflection_order=P(None, "UNVERIFIED", "none"),
+            reference_model=P("R2", "DERIVED_HERE", "none"),
         ))
 
 
@@ -95,8 +108,8 @@ def test_complete_test_only_fixture_loads_at_run_level():
     assert len(cfg.sha256_canonical) == 64
 
 
-CFG_B_NULL_ITEMS = [("convergence_semi_angle_mrad", 3), ("objective_aperture_semi_angle_mrad", 4),
-                    ("image_pixel_size_nm", 5), ("glancing_angle_ext_mrad", 7),
+CFG_B_NULL_ITEMS = [("convergence_semi_angle", 3), ("objective_aperture_semi_angle", 4),
+                    ("image_pixel_size", 5), ("glancing_angle_ext", 7),
                     ("beam_azimuth_uvw", 8), ("surface_preparation_details", 12),
                     ("pattern_geometry", 13), ("reference_trajectory", 15)]
 
@@ -128,7 +141,7 @@ def test_all_eight_nulls_are_named_together():
 
 def test_null_project_input_must_name_its_item():
     d = cfg_b_complete()
-    d["parameters"]["beam_azimuth_uvw"] = P(None, "PROJECT_INPUT")
+    d["parameters"]["beam_azimuth_uvw"] = P(None, "PROJECT_INPUT", "none")
     with pytest.raises(ConfigError, match="docs/06 item"):
         load(d, level="placeholder")
 
@@ -166,14 +179,14 @@ def test_300_keV_refused_for_every_configuration():
     with pytest.raises(ConfigError, match="300 keV is never used"):
         load(d, level="placeholder")
     o = cfg_o_fixture()
-    o["parameters"]["beam_energy_keV"] = P(300.0, "SECTION_READ", unit="keV")
+    o["parameters"]["beam_energy_keV"] = P(300.0, "SECTION_READ", "keV")
     with pytest.raises(ConfigError):
         load(o, level="placeholder")
 
 
 def test_cfg_o_is_placeholder_only():
     cfg = load(cfg_o_fixture(), level="placeholder")
-    assert cfg.unverified == ["beam_energy_keV", "glancing_angle_ext_mrad", "reflection_order"]
+    assert cfg.unverified == ["beam_energy_keV", "glancing_angle_ext", "reflection_order"]
     with pytest.raises(UnverifiedParameterError):
         cfg.value("beam_energy_keV")
     with pytest.raises(PlaceholderConfigError):
@@ -185,10 +198,10 @@ def test_unverified_fields_fail_run_level_even_if_not_placeholder():
     o["status"] = "experiment"
     with pytest.raises(UnverifiedParameterError) as exc:
         load(o, level="run")
-    assert exc.value.names == ["beam_energy_keV", "glancing_angle_ext_mrad", "reflection_order"]
-    o["parameters"]["reflection_order"] = P("(3,3,3)", "UNVERIFIED")   # non-null still fails
-    o["parameters"]["beam_energy_keV"] = P(200.0, "SECTION_READ", unit="keV")
-    o["parameters"]["glancing_angle_ext_mrad"] = P(20.0, "SECTION_READ", unit="mrad")
+    assert exc.value.names == ["beam_energy_keV", "glancing_angle_ext", "reflection_order"]
+    o["parameters"]["reflection_order"] = P("(3,3,3)", "UNVERIFIED", "none")   # non-null still fails
+    o["parameters"]["beam_energy_keV"] = P(200.0, "SECTION_READ", "keV")
+    o["parameters"]["glancing_angle_ext"] = P(20.0, "SECTION_READ", "mrad")
     with pytest.raises(UnverifiedParameterError, match="reflection_order"):
         load(o, level="run")
 
@@ -201,7 +214,7 @@ def test_cfg_a_fixture_loads_at_run_level():
 @pytest.mark.parametrize("label", ["VERIFIED", "assumption", "", None, "+ABSTRACT(publisher)"])
 def test_labels_must_be_one_of_the_seven(label):
     d = cfg_a_fixture()
-    d["parameters"]["lattice_parameter_A"]["label"] = label
+    d["parameters"]["lattice_parameter"]["label"] = label
     with pytest.raises(ConfigError, match="label"):
         load(d)
 
@@ -231,10 +244,10 @@ def test_file_loader_hashes_and_checks_the_name(tmp_path):
 
 
 @pytest.mark.parametrize("mutation,match", [
-    (lambda d: d["parameters"]["lattice_parameter_A"].pop("source"), "lacks"),
-    (lambda d: d["parameters"]["lattice_parameter_A"].update(extra=1), "unknown keys"),
-    (lambda d: d["parameters"].update(made_up=P(1, "ASSUMPTION")), "unknown parameter"),
-    (lambda d: d["parameters"]["lattice_parameter_A"].update(value=None), "null"),
+    (lambda d: d["parameters"]["lattice_parameter"].pop("source"), "lacks"),
+    (lambda d: d["parameters"]["lattice_parameter"].update(extra=1), "unknown keys"),
+    (lambda d: d["parameters"].update(made_up=P(1, "ASSUMPTION", "none")), "unknown parameter"),
+    (lambda d: d["parameters"]["lattice_parameter"].update(value=None), "null"),
     (lambda d: d.update(colour="red"), "unknown top-level"),
     (lambda d: d.update(name="other"), "name must be"),
     (lambda d: d["parameters"]["surface_normal_hkl"].update(value=[1, -1]), "three integers"),
@@ -284,9 +297,9 @@ def test_crystallographic_cross_checks():
 
 def test_value_returns_a_copy():
     cfg = load(cfg_b_complete())
-    v = cfg.value("image_pixel_size_nm")
+    v = cfg.value("image_pixel_size")
     v["along_beam"] = 99.0
-    assert cfg.value("image_pixel_size_nm")["along_beam"] == 0.5
+    assert cfg.value("image_pixel_size")["along_beam"] == 0.5
 
 
 def test_fixture_is_not_mutated_by_loading():

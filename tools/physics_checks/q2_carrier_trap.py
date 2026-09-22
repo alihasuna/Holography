@@ -292,13 +292,16 @@ def section_D(D: float):
     same = float(np.max(np.abs(H_obj.intensity - I_obj_calc)))
     print(f"   package object hologram vs calculator's: max |difference| = {same:.1e}")
     check("Q2-D1 the package forms the calculator's hologram (1e-12)", same < 1e-12)
-    car0 = locate_carrier(H_obj, CarrierSearch(sideband_guess_cycles_per_A=(0.0, 0.0),
-                                               search_radius_cycles_per_A=np.inf,
-                                               exclusion_radius_cycles_per_A=0.05, subpixel="none"),
-                          allow_object_hologram=True)
+    # S3 (audit A2 M1): the package refuses a search region holding both sidebands, so the trap bin is
+    # reached by declaring the conjugate half plane (+q_c) on purpose; it is the whole-plane brightest
+    # bin, as the comparison with the calculator's own whole-plane search (255, 320) below shows.
+    conj_side = CarrierSearch(sideband_guess_cycles_per_A=(0.0, 1.0 / FRINGE), search_radius_cycles_per_A=0.0625,
+                              exclusion_radius_cycles_per_A=0.05, subpixel="none",
+                              sideband_declaration="demonstration: the conjugate sideband (+q_c) declared on purpose")
+    car0 = locate_carrier(H_obj, conj_side, allow_object_hologram=True)
     m0 = MaskSpec(radius_cycles_per_A=car0.carrier_magnitude_cycles_per_A / 3.0, shape="disc", apodisation="hann")
     r0 = reconstruct_sideband(H_obj, carrier=car0, mask=m0, empty_hologram=None, reference_correction="none",
-                              unwrapping="none")
+                              unwrapping="none", trap_demonstration=True)
     rec_c, _, R_c = calc._sideband_wave(I_obj_calc, peak_idx=(255, 320))
     dmax = float(np.max(np.abs(np.angle(np.exp(1j * (r0.wrapped_phase - np.angle(rec_c)))))))
     print(f"   package phase map at bin (511, 64) vs calculator _sideband_wave at (255, 320): max |difference| = "
@@ -312,17 +315,25 @@ def section_D(D: float):
         res = reconstruct_sideband(H_obj, carrier=car, mask=mask,
                                    empty_hologram=H_emp if empty == "divide" else None,
                                    reference_correction="divide_empty" if empty == "divide" else "none",
-                                   unwrapping="none")
+                                   unwrapping="none", trap_demonstration=allow,
+                                   empty_amplitude_threshold=0.1 if empty == "divide" else None)
         return car, res, measure(res.wrapped_phase, mask.radius_cycles_per_A)   # R in cycles/px (1 A px)
 
-    whole = CarrierSearch(sideband_guess_cycles_per_A=(0.0, 0.0), search_radius_cycles_per_A=np.inf,
-                          exclusion_radius_cycles_per_A=0.05, subpixel="none")
-    car, res, st = run(whole, allow=True)
-    print(f"   whole-plane search on the OBJECT hologram (allowed only for demonstration): bin {car.integer_bin}, "
-          f"{res.sideband_sign_check}; step {st:+.4f} rad")
+    try:
+        CarrierSearch(sideband_guess_cycles_per_A=(0.0, -1.0 / FRINGE), search_radius_cycles_per_A=np.inf,
+                      exclusion_radius_cycles_per_A=0.05, subpixel="none",
+                      sideband_declaration="whole plane (refused)")
+        whole_refused = False
+    except ValueError:
+        whole_refused = True
+    print(f"   the package refuses a whole-plane search (both sidebands, audit A2 M1): {whole_refused}")
+    car, res, st = run(conj_side, allow=True)
+    print(f"   conjugate half plane declared on purpose, on the OBJECT hologram (demonstration only): bin "
+          f"{car.integer_bin}, {res.sideband_sign_check}; step {st:+.4f} rad")
     ok1 = car.integer_bin == (511, 64) and abs(st - calc.wrap_to_pi(-D + np.pi)) <= 1e-3
     right_side = CarrierSearch(sideband_guess_cycles_per_A=(0.0, -1.0 / FRINGE), search_radius_cycles_per_A=0.0625,
-                               exclusion_radius_cycles_per_A=0.05, subpixel="none")
+                               exclusion_radius_cycles_per_A=0.05, subpixel="none",
+                               sideband_declaration="simulation: -q_c of the declared R1 reference")
     car2, res2, st2 = run(right_side, allow=True)
     print(f"   search restricted to the correct sideband, on the OBJECT hologram: bin {car2.integer_bin}, "
           f"{res2.sideband_sign_check}; step {st2:+.4f} rad")
@@ -331,18 +342,20 @@ def section_D(D: float):
     mask3 = MaskSpec(radius_cycles_per_A=car3.carrier_magnitude_cycles_per_A / 3.0, shape="disc",
                      apodisation="hann")
     res3 = reconstruct_sideband(H_obj, carrier=car3, mask=mask3, empty_hologram=H_emp,
-                                reference_correction="divide_empty", unwrapping="none")
+                                reference_correction="divide_empty", unwrapping="none",
+                                empty_amplitude_threshold=0.1)   # S3: declared (audit A2 m1)
     st3 = measure(res3.wrapped_phase, mask3.radius_cycles_per_A)
     print(f"   carrier located on the EMPTY hologram (correct sideband), divided: bin {car3.integer_bin}, "
           f"{res3.sideband_sign_check}; step {st3:+.4f} rad")
     try:
-        locate_carrier(H_obj, whole)
+        locate_carrier(H_obj, conj_side)
         refused = False
     except ValueError:
         refused = True
     print(f"   the package refuses an object hologram by default: {refused}")
-    check("Q2-D2 package whole-plane object search: unshifted bin (511, 64) = fftshifted (255, 320), "
-          "flagged CONJUGATE, step -Delta + pi", ok1 and res.sideband_sign_check.startswith("CONJUGATE"))
+    check("Q2-D2 package: whole-plane search refused; the conjugate half plane on the object hologram gives "
+          "unshifted bin (511, 64) = fftshifted (255, 320), flagged CONJUGATE, step -Delta + pi",
+          whole_refused and ok1 and res.sideband_sign_check.startswith("CONJUGATE"))
     check("Q2-D3 package search restricted to the correct sideband still fails on the object hologram: "
           "(1, 448), step Delta - pi", ok2)
     check("Q2-D4 package correct path recovers Delta (T24 tol 5e-3) and refuses object holograms by default",

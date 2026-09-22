@@ -133,10 +133,12 @@ def test_small_denominator_boundary():
     sig = 1e-3
     s_sig = (2 * np.pi / lam) * np.sqrt(2) * sig          # cos ~ 1
     th = 1.5 * s_sig / (2 * (2 * np.pi / lam))            # s = 1.5 sigma_s
+    # sigma_wavelength_rel 1e-6 (the TEST_ONLY value above): a zero uncertainty is refused (A2 m2);
+    # it adds (1e-6 s)^2 to sigma_s^2, negligible against s = 1.5 sigma_s
     est = height_from_phase(0.1, branch_index=0, branch_source="test", wavelength_A=lam,
                             theta_in_ext_rad=th, theta_out_ext_rad=th, sigma_phi_rad=0.03,
                             sigma_theta_in_rad=sig, sigma_theta_out_rad=sig,
-                            sigma_wavelength_rel=0.0)
+                            sigma_wavelength_rel=1e-6)
     assert est.sensitivity_rad_per_A > est.sigma_sensitivity_rad_per_A
     assert est.sigma_h_A > abs(est.h_A) * 0.5
 

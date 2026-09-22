@@ -12,7 +12,7 @@ reference's valid region (the residual is leakage of the centre band; 1e-4 rad w
 """
 import numpy as np
 
-from holo_cases import NO_ARTEFACTS, make_grid
+from holo_cases import NO_ARTEFACTS, SIM_SIDEBAND, make_grid
 from reflection_holo.optics import Wave, hologram_intensity, reference_r2_self_reference
 from reflection_holo.reconstruction import (CarrierSearch, MaskSpec, locate_carrier, reconstruct_sideband,
                                             wrap_to_pi)
@@ -41,7 +41,7 @@ def _reconstruct():
     ref_flat = reference_r2_self_reference(u_flat, **kw)
     H = hologram_intensity(u_o, ref, artefacts=NO_ARTEFACTS, content="object")
     H_flat = hologram_intensity(u_flat, ref_flat, artefacts=NO_ARTEFACTS, content="flat_region")
-    carrier = locate_carrier(H_flat, CarrierSearch((-Q[0], -Q[1]), 0.5 * Q[1], 0.05, "none"))
+    carrier = locate_carrier(H_flat, CarrierSearch((-Q[0], -Q[1]), 0.5 * Q[1], 0.05, "none", SIM_SIDEBAND))
     mask = MaskSpec(carrier.carrier_magnitude_cycles_per_A / 3.0, "disc", "hann")
     res = reconstruct_sideband(H, carrier=carrier, mask=mask, empty_hologram=None,
                                reference_correction="none", unwrapping="none")

@@ -81,10 +81,13 @@ def reconstruct(phi: np.ndarray, shift, sideband: str = "correct", phi_rel: floa
     H = hologram_intensity(u_o, ref, artefacts=ART, content="object")
     H_f = hologram_intensity(u_f, ref_f, artefacts=ART, content="flat_region")
     guess = (-Q[0], -Q[1]) if sideband == "correct" else (Q[0], Q[1])
-    car = locate_carrier(H_f, CarrierSearch(guess, 0.5 * Q[1], 0.05, "none"))
+    decl = ("simulation: -q_ref of the declared R2 reference" if sideband == "correct" else
+            "demonstration: the conjugate sideband (+q_ref) declared on purpose")
+    car = locate_carrier(H_f, CarrierSearch(guess, 0.5 * Q[1], 0.05, "none", decl))
     mask = MaskSpec(car.carrier_magnitude_cycles_per_A / 3.0, "disc", "hann")
     res = reconstruct_sideband(H, carrier=car, mask=mask, empty_hologram=None,
-                               reference_correction="none", unwrapping="none")
+                               reference_correction="none", unwrapping="none",
+                               trap_demonstration=(sideband != "correct"))  # S3: explicit opt-in
     return res, ref.metadata["valid_mask"], car
 
 

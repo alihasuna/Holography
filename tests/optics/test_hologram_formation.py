@@ -83,7 +83,8 @@ def test_r3_reference_phase():
     q, t, c, rc = (0.25, 0.0625), (0.01, -0.005), (1e-3, 2e-4, -5e-5), (10.0, 90.0)
     u = reference_r3_curved_tilted(g, carrier_cycles_per_A=q, amplitude=1.0, relative_phase_rad=0.2,
                                    residual_tilt_cycles_per_A=t, residual_curvature_rad_per_A2=c,
-                                   curvature_centre_A=rc, realisation=None)
+                                   curvature_centre_A=rc, aperture_passage="no_aperture",
+                                   realisation=None)
     i0, i1 = 5, 40
     r0, r1_ = i0 * 0.5, i1 * 2.0
     d0, d1 = r0 - rc[0], r1_ - rc[1]

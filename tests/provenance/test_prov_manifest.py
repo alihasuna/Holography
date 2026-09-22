@@ -7,19 +7,19 @@ import json
 import numpy as np
 import pytest
 
-from reflection_holo.io.config import load_config_dict
+from pathlib import Path
+
+from reflection_holo.io.config import load_config_file
 from reflection_holo.provenance.manifest import (REQUIRED_KEYS, build_manifest, git_state,
                                                  write_manifest)
 
+REPO = Path(__file__).resolve().parents[2]
+
 
 def _config():
-    P = lambda v, l, **kw: dict(value=v, label=l, source="TEST_ONLY fixture", **kw)  # noqa: E731
-    d = dict(schema_version=1, config_id="CFG-A", name="si111_cleaved_110azimuth",
-             status="benchmark", description="TEST_ONLY fixture",
-             parameters=dict(surface_material=P("Si", "PROJECT_INPUT"),
-                             surface_normal_hkl=P([1, -1, 1], "PROJECT_INPUT"),
-                             beam_energy_keV=P(200.0, "PROJECT_INPUT", unit="keV", item=1)))
-    return load_config_dict(d, level="run", allow_test_only=True)
+    """The shipped CFG-A, loaded at run level (read only). The former three-parameter fixture no
+    longer loads at run level (audit A2 M2 (d): required parameters absent)."""
+    return load_config_file(REPO / "configs" / "cfg_a_si111_cleaved_110azimuth.yaml", level="run")
 
 
 def _manifest(tmp_path, **over):

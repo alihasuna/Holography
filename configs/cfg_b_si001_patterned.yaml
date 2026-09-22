@@ -1,31 +1,40 @@
 # CFG-B: Ali's experiment, Si(001), ion-milled, 200 keV.
 # Facts from docs/05_final_repository_specification.md section 2 (row CFG-B) and
-# docs/06_project_inputs_required.md. Loader: reflection_holo.io.config. Every blocking input that
-# has not been supplied is null with its docs/06 item number: a run-level load FAILS and names
-# items 3, 4, 5, 7, 8, 12, 13 and 15. No default replaces them.
+# docs/06_project_inputs_required.md. Loader: reflection_holo.io.config (schema
+# reflection_holo.io.config.SCHEMAS["CFG-B"]). Every blocking input that has not been supplied is
+# null with its docs/06 item number: a run-level load FAILS and names items 3, 4, 5, 7, 8, 12, 13
+# and 15. Deleting one of these entries does not help: an absent required parameter fails exactly
+# like a null one (audit A2 M2). An ASSUMPTION standing in for a docs/06 item must carry
+# stands_in_for_item and assumption_id (a docs/model_assumptions.md row). No default replaces an
+# input. Every parameter states its unit ("none" if it is not a physical quantity).
 schema_version: 1
 config_id: CFG-B
 name: si001_patterned
 status: experiment
 description: >-
   Ali's reflection-mode dark-field holography experiment on an ion-milled Si(001) surface at
-  200 keV: single-layer a/4 steps (screw-related terraces, dynamical difference expected),
-  double-layer a/2 steps, patterned mesas and trenches of nm height (item 13), optional oxide or
+  200 keV: single-layer a/4 steps (terraces related by the 4_1 and 4_3 screws and the two <100>
+  d-glides; at an exact <100> azimuth the bulk-terminated step phase is purely geometric, at <110>
+  a dynamical difference between the terrace types is expected; C2, SM26), double-layer a/2 steps
+  (lattice translation), patterned mesas and trenches of nm height (item 13), optional oxide or
   amorphous overlayer (item 12). Proposed working condition (0,0,8) (item 9), second condition
   (0,0,12).
 parameters:
   surface_material:
     value: Si
+    unit: none
     label: PROJECT_INPUT
     item: 11
     source: "docs/06 item 11, partly supplied by Ali 2026-09-22 (the surface is Si(001)); miscut and terrace widths not supplied"
   surface_normal_hkl:
     value: [0, 0, 1]
+    unit: none
     label: PROJECT_INPUT
     item: 11
     source: "docs/06 item 11, supplied by Ali 2026-09-22 (Si(001))"
   beam_azimuth_uvw:
     value: null
+    unit: none
     label: PROJECT_INPUT
     item: 8
     source: "docs/06 item 8 (blocking): beam azimuth [110] or [100], not supplied"
@@ -35,70 +44,79 @@ parameters:
     label: PROJECT_INPUT
     item: 1
     source: "docs/06 item 1, supplied by Ali 2026-09-22: 200 keV for all reflection holography work; 300 keV is never used"
-  lattice_parameter_A:
+  lattice_parameter:
     value: 5.4309
     unit: A
     label: ASSUMPTION
+    assumption_id: B2
     source: "model_assumptions B2 (standard room-temperature value); equals reflection_holo.constants.A_SI_A"
   mean_inner_potential_V:
     value: 12.0
     unit: V
     label: ASSUMPTION
     item: 20
+    stands_in_for_item: 20
+    assumption_id: B1
     source: "model_assumptions B1; equals reflection_holo.constants.V0_SI_ASSUMPTION_V; the sourced or measured value is PROJECT_INPUT item 20"
   target_reflection_hkl:
     value: [0, 0, 8]
-    label: ASSUMPTION
+    unit: none
+    label: DERIVED_HERE
     item: 9
-    source: "docs/05 section 2 CFG-B: (008) is the proposed working condition (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); the condition actually recorded is PROJECT_INPUT item 9, not supplied"
+    source: "docs/05 section 2 CFG-B: (008) is the proposed (recommended) working condition, derived there (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x; allowed, accessible); the condition actually recorded is PROJECT_INPUT item 9, not supplied"
   second_reflection_hkl:
     value: [0, 0, 12]
-    label: ASSUMPTION
+    unit: none
+    label: DERIVED_HERE
     item: 9
-    source: "docs/05 section 2 CFG-B: (0,0,12) as the second condition; PROJECT_INPUT item 9 not supplied"
+    source: "docs/05 section 2 CFG-B: (0,0,12) as the recommended second condition; the condition actually recorded is PROJECT_INPUT item 9, not supplied"
   not_recommended_reflections_hkl:
     value: [[0, 0, 4]]
+    unit: none
     label: DERIVED_HERE
     source: "docs/05 section 2 CFG-B: (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface"
   forbidden_rod_reflections_hkl:
     value: [[0, 0, 2], [0, 0, 6], [0, 0, 10]]
+    unit: none
     label: DERIVED_HERE
     source: "source map SM02; docs/05 sections 2 and 4.1"
   step_types:
     value: [single_layer_a4_screw_related, double_layer_a2_translation, patterned_mesa_trench]
-    label: ASSUMPTION
+    unit: none
+    label: DERIVED_HERE
     item: 14
-    source: "docs/05 section 2 CFG-B; whether the observable is atomic steps or nm-scale patterned steps is PROJECT_INPUT item 14, not supplied"
+    source: "docs/05 section 2 CFG-B lists the three step types this configuration covers (a/4 and a/2 relations DERIVED_HERE, docs/03 section 2 and C2); which of them is the intended observable is PROJECT_INPUT item 14, not supplied"
   step_translations:
     value:
       single_layer:
-        relation: "diamond 4_1 screw about [001], translation part t_z = a/4 (not a lattice translation)"
+        relation: "diamond 4_1 and 4_3 screws about [001] and the two <100> d-glides, translation part t_z = a/4 (not a lattice translation). At an exact <100> azimuth B4 applies for bulk-terminated terraces (d-glide in the incidence plane; SM26, C2); at <110> it does not (dynamical residual delta; open question 3)"
         height: "a/4"
       double_layer:
         vector_cubic_a_units: [0.5, 0.0, 0.5]
         height: "a/2"
         relation: lattice_translation
+    unit: none
     label: DERIVED_HERE
-    source: "docs/03 section 2; C report section 2.3 and calculator section 2b (screw search)"
-  glancing_angle_ext_mrad:
+    source: "docs/03 section 2; C report section 2.3 and calculator section 2b (screw search); C2 section 1 (the <100> d-glides; SM26)"
+  glancing_angle_ext:
     value: null
     unit: mrad
     label: PROJECT_INPUT
     item: 7
     source: "docs/06 item 7 (blocking): external glancing angle and its calibration, not supplied"
-  convergence_semi_angle_mrad:
+  convergence_semi_angle:
     value: null
     unit: mrad
     label: PROJECT_INPUT
     item: 3
     source: "docs/06 item 3 (blocking): illumination convergence semi-angle at the specimen, not supplied"
-  objective_aperture_semi_angle_mrad:
+  objective_aperture_semi_angle:
     value: null
     unit: mrad
     label: PROJECT_INPUT
     item: 4
     source: "docs/06 item 4 (blocking): objective-aperture semi-angle and the beam it selects, not supplied"
-  image_pixel_size_nm:
+  image_pixel_size:
     value: null
     unit: nm
     label: PROJECT_INPUT
@@ -106,21 +124,25 @@ parameters:
     source: "docs/06 item 5 (blocking): image pixel size on both axes and magnification, not supplied"
   reference_trajectory:
     value: null
+    unit: none
     label: PROJECT_INPUT
     item: 15
     source: "docs/06 item 15 (blocking): trajectory of the reference beam at the specimen plane, not supplied"
   pattern_geometry:
     value: null
+    unit: none
     label: PROJECT_INPUT
     item: 13
     source: "docs/06 item 13: lateral dimensions, heights, edge profile and orientation of the patterned features, not supplied"
   surface_preparation_method:
     value: ion-milled
+    unit: none
     label: PROJECT_INPUT
     item: 12
     source: "docs/06 item 12, partly supplied by Ali 2026-09-22 (the surface is ion-milled)"
   surface_preparation_details:
     value: null
+    unit: none
     label: PROJECT_INPUT
     item: 12
     source: "docs/06 item 12 (blocking): oxide, HF-last, UHV flash, ion-milling parameters, damage-layer thickness, annealing, not supplied"

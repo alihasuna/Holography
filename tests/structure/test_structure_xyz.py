@@ -9,7 +9,7 @@ from reflection_holo.structure import read_xyz, write_metadata_json, write_xyz
 
 def test_xyz_round_trip_records_frame(mixed_110, tmp_path):
     s = mixed_110
-    p = write_xyz(s, tmp_path / "s.xyz")
+    p = write_xyz(s, tmp_path / "s.xyz", outputs_root=tmp_path / "outputs")
     species, pos, hdr = read_xyz(p)
     assert species.tolist() == ["Si"] * s.n_atoms
     assert np.max(np.abs(pos - s.positions_A)) < 1e-9
@@ -30,7 +30,8 @@ def test_xyz_round_trip_records_frame(mixed_110, tmp_path):
 
 def test_metadata_json_round_trip(mixed_110, tmp_path):
     s = mixed_110
-    md = json.loads(write_metadata_json(s, tmp_path / "s.json").read_text())
+    md = json.loads(write_metadata_json(s, tmp_path / "s.json",
+                                        outputs_root=tmp_path / "outputs").read_text())
     assert md["atom_count"] == s.n_atoms
     assert md["azimuth"]["uvw"] == [1, 1, 0]
     assert [x["type"] for x in md["steps"]] == ["translation", "screw", "screw"]

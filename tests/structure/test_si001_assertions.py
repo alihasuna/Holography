@@ -112,25 +112,25 @@ def test_d_steps_other_than_a4_a2_are_refused(layers, boundary):
     st = Staircase(edges="transverse", terrace_layers=layers,
                    terrace_widths=(2,) * len(layers), boundary_step_layers=boundary)
     with pytest.raises(StaircaseError, match=r"only a/4 .* and a/2"):
-        validate_staircase(st)
+        validate_staircase(st, A_SI_A)
 
 
 def test_d_zero_height_step_is_refused():
     st = Staircase(edges="parallel", terrace_layers=(0, 0, 1), terrace_widths=(2, 2, 2),
                    boundary_step_layers=-1)
     with pytest.raises(StaircaseError, match="same height"):
-        validate_staircase(st)
+        validate_staircase(st, A_SI_A)
 
 
 def test_d_measured_height_mismatch_is_caught():
     st = Staircase(edges="parallel", terrace_layers=(0, 2), terrace_widths=(2, 2),
                    boundary_step_layers=-2)
-    steps = validate_staircase(st)
-    assert_step_heights([10 * Q, 12 * Q], st, steps)
+    steps = validate_staircase(st, A_SI_A)
+    assert_step_heights([10 * Q, 12 * Q], st, steps, A_SI_A)
     with pytest.raises(StructureAssertionError, match=r"\(d\)"):
-        assert_step_heights([10 * Q, 11 * Q], st, steps)        # built a/4 where a/2 requested
+        assert_step_heights([10 * Q, 11 * Q], st, steps, A_SI_A)        # built a/4 where a/2 requested
     with pytest.raises(StructureAssertionError, match=r"\(d\)"):
-        assert_step_heights([10 * Q, 12 * Q + 1e-3], st, steps)
+        assert_step_heights([10 * Q, 12 * Q + 1e-3], st, steps, A_SI_A)
 
 
 # --- (e) ------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ def test_e_inspected_repository_staircase_0123_is_refused():
     st = Staircase(edges="transverse", terrace_layers=(0, 1, 2, 3), terrace_widths=(4, 4, 4, 4),
                    boundary_step_layers=+1)
     with pytest.raises(StaircaseError) as e:
-        validate_staircase(st)
+        validate_staircase(st, A_SI_A)
     msg = str(e.value)
     assert "net height change of +4 layers" in msg
     assert "hidden 3-layer down-step" in msg and "vicinal cell" in msg
@@ -148,12 +148,12 @@ def test_e_inspected_repository_staircase_0123_is_refused():
     st = Staircase(edges="transverse", terrace_layers=(0, 1, 2, 3), terrace_widths=(4, 4, 4, 4),
                    boundary_step_layers=-3)
     with pytest.raises(StaircaseError, match="hidden 3-layer down-step"):
-        validate_staircase(st)
+        validate_staircase(st, A_SI_A)
     # not declared at all (0): still a net height change
     st = Staircase(edges="transverse", terrace_layers=(0, 1, 2, 3), terrace_widths=(4, 4, 4, 4),
                    boundary_step_layers=0)
     with pytest.raises(StaircaseError, match="net height change of \\+3 layers"):
-        validate_staircase(st)
+        validate_staircase(st, A_SI_A)
     # and the builder refuses it before building anything
     with pytest.raises(StaircaseError):
         build(st)
@@ -163,16 +163,16 @@ def test_e_continuous_staircases_are_accepted():
     for layers, b in (((0, 1, 2, 1), -1), ((0, 2, 1), -1), ((0, 1, 0), 0), ((0,), 0)):
         st = Staircase(edges="transverse", terrace_layers=layers,
                        terrace_widths=(2,) * len(layers), boundary_step_layers=b)
-        steps = validate_staircase(st)
+        steps = validate_staircase(st, A_SI_A)
         assert sum(x["delta_layers"] for x in steps) == 0
 
 
 def test_e_measured_closing_step_mismatch_is_caught():
     st = Staircase(edges="parallel", terrace_layers=(0, 1), terrace_widths=(2, 2),
                    boundary_step_layers=-1)
-    steps = validate_staircase(st)
+    steps = validate_staircase(st, A_SI_A)
     with pytest.raises(StructureAssertionError, match=r"\(d\)|\(e\)"):
-        assert_step_heights([10 * Q, 11 * Q + 1e-3], st, steps)
+        assert_step_heights([10 * Q, 11 * Q + 1e-3], st, steps, A_SI_A)
 
 
 # --- (f) ------------------------------------------------------------------------------------------
@@ -188,12 +188,12 @@ def test_f_classification_rejects_mislabelled_steps(mixed_110):
     ax = [tuple(t["top_layer_backbond_axis_crystal"]) for t in tm]
     rel_a2 = find_terrace_relations(*_layers(s, 0), *_layers(s, 1), A_SI_A)   # a/2 step
     rel_a4 = find_terrace_relations(*_layers(s, 1), *_layers(s, 2), A_SI_A)   # a/4 step
-    assert classify_relation(rel_a2, 2, ax[0], ax[1]) == "translation"
-    assert classify_relation(rel_a4, -1, ax[1], ax[2]) == "screw"
+    assert classify_relation(rel_a2, 2, ax[0], ax[1], A_SI_A) == "translation"
+    assert classify_relation(rel_a4, -1, ax[1], ax[2], A_SI_A) == "screw"
     with pytest.raises(StructureAssertionError, match=r"\(f\) a/4 step"):
-        classify_relation(rel_a2, 1, ax[0], ax[1])
+        classify_relation(rel_a2, 1, ax[0], ax[1], A_SI_A)
     with pytest.raises(StructureAssertionError, match=r"\(f\) a/2 step"):
-        classify_relation(rel_a4, 2, ax[1], ax[2])
+        classify_relation(rel_a4, 2, ax[1], ax[2], A_SI_A)
 
 
 def test_f_non_lattice_shift_of_a_terrace_is_caught(mixed_110):
@@ -205,13 +205,13 @@ def test_f_non_lattice_shift_of_a_terrace_is_caught(mixed_110):
     assert rel and not [r for r in rel if r["lattice_symmetry"]]
     ax = [tuple(t["top_layer_backbond_axis_crystal"]) for t in s.metadata["terrace_map"]]
     with pytest.raises(StructureAssertionError, match=r"\(f\) a/2 step: no pure lattice"):
-        classify_relation(rel, 2, ax[0], ax[1])
+        classify_relation(rel, 2, ax[0], ax[1], A_SI_A)
     # same for a screw-related pair shifted off the lattice
     rcC, dC = _layers(s, 2)
     rel = find_terrace_relations(*_layers(s, 1), rcC + np.array([A_SI_A / 8, 0.0, 0.0]), dC,
                                  A_SI_A)
     with pytest.raises(StructureAssertionError, match=r"\(f\) a/4 step: no 90-degree lattice"):
-        classify_relation(rel, -1, ax[1], ax[2])
+        classify_relation(rel, -1, ax[1], ax[2], A_SI_A)
 
 
 def test_f_imperfect_layer_is_caught(mixed_110):

@@ -3,8 +3,9 @@ import inspect
 
 import pytest
 
+from reflection_holo.constants import A_SI_A
 from reflection_holo.structure import OverlayerSpec, Staircase, build_si001_terraces
-from si001_test_inputs import AZIMUTH_LABEL, OVERLAYER_LABEL, build
+from si001_test_inputs import AZIMUTH_LABEL, LATTICE_LABEL, OVERLAYER_LABEL, build
 
 FLAT = Staircase(edges="transverse", terrace_layers=(0, 1), terrace_widths=(2, 2),
                  boundary_step_layers=-1)
@@ -13,7 +14,8 @@ FLAT = Staircase(edges="transverse", terrace_layers=(0, 1), terrace_widths=(2, 2
 def _kwargs():
     return dict(azimuth_uvw=(1, 1, 0), azimuth_label=AZIMUTH_LABEL, staircase=FLAT,
                 edge_periods=2, substrate_layers=5, first_terrace_backbond_uvw=(1, 1, 0),
-                termination="bulk", overlayer=None, vacuum_above_A=10.0)
+                termination="bulk", overlayer=None, vacuum_above_A=10.0,
+                lattice_parameter_A=A_SI_A, lattice_parameter_label=LATTICE_LABEL)
 
 
 def test_builder_has_no_defaults():

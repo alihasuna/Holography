@@ -14,7 +14,7 @@ sigma_pred <= 0.07 rad so that the small-noise linearisation holds.
 import numpy as np
 import pytest
 
-from holo_cases import NO_ARTEFACTS, make_grid, r1_reference
+from holo_cases import NO_ARTEFACTS, SIM_SIDEBAND, make_grid, r1_reference
 from reflection_holo.optics import Wave, apply_poisson_noise, fringe_contrast, hologram_intensity, vacuum_object_wave
 from reflection_holo.reconstruction import (CarrierSearch, MaskSpec, locate_carrier, reconstruct_sideband,
                                             sideband_phase_noise, wrap_to_pi)
@@ -46,7 +46,8 @@ def test_phase_noise_matches_sqrt2_over_mu_sqrtN(mu_target, counts, apodisation)
     noisy = apply_poisson_noise([H_emp] + [H] * K, dose_e_per_px=counts, seed=SEED)
     assert [h.metadata["detector"]["draw_index"] for h in noisy] == list(range(K + 1))
     assert all(h.metadata["detector"]["seed"] == SEED for h in noisy)
-    carrier = locate_carrier(noisy[0], CarrierSearch((-Q[0], -Q[1]), 0.5 * Q[1], 0.05, "none"))
+    carrier = locate_carrier(noisy[0], CarrierSearch((-Q[0], -Q[1]), 0.5 * Q[1], 0.05, "none",
+                                                     SIM_SIDEBAND))
     mask = MaskSpec(carrier.carrier_magnitude_cycles_per_A / 3.0, "disc", apodisation)
     devs = []
     for h in noisy[1:]:

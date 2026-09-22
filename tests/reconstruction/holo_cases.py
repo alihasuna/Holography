@@ -25,6 +25,12 @@ T24_TOL_RAD = 5e-3
 T25_TOL_RAD = 5e-3
 
 TEST_PIXEL_A = 1.0          # TEST_ONLY (stands in for PROJECT_INPUT item 5)
+# the phi_o - phi_r sideband of a simulated hologram is at -q_ref of its declared reference
+SIM_SIDEBAND = "simulation: -q_ref of the declared reference (phi_o - phi_r sideband)"
+# TEST_ONLY declared validity threshold for reference-hologram division (processing choice,
+# PROJECT_INPUT item 19): pixels whose empty sideband is at or below 0.1 x its median are NaN.
+# None of the synthetic empty holograms here comes near it, so results are unchanged bit for bit.
+EMPTY_THRESHOLD = 0.1
 NO_ARTEFACTS = ArtefactOptions(biprism_fresnel_fringes=None, drift=None, charging_phase_rad=None)
 
 _calc = None
@@ -104,7 +110,8 @@ def calculator_search(q_ref, subpixel: str) -> CarrierSearch:
     calculator's centre disc r < 0.05 cycles/px."""
     qm = float(np.hypot(*q_ref))
     return CarrierSearch(sideband_guess_cycles_per_A=(-q_ref[0], -q_ref[1]), search_radius_cycles_per_A=0.5 * qm,
-                         exclusion_radius_cycles_per_A=0.05 / TEST_PIXEL_A, subpixel=subpixel)
+                         exclusion_radius_cycles_per_A=0.05 / TEST_PIXEL_A, subpixel=subpixel,
+                         sideband_declaration=SIM_SIDEBAND)
 
 
 def calculator_mask(carrier) -> MaskSpec:
@@ -122,7 +129,8 @@ def roundtrip(dphi_rad: float, *, n: int = 512, fringe_px: float = 8.0, dose_per
                                                            carrier_sign=carrier_sign)
     carrier = locate_carrier(H_emp, calculator_search(q_ref, subpixel))
     res = reconstruct_sideband(H_obj, carrier=carrier, mask=calculator_mask(carrier), empty_hologram=H_emp,
-                               reference_correction="divide_empty", unwrapping="none")
+                               reference_correction="divide_empty", unwrapping="none",
+                               empty_amplitude_threshold=EMPTY_THRESHOLD)
     recovered, sigma = calculator_measure(res.wrapped_phase, res.resolution_A / TEST_PIXEL_A, n)
     return {"recovered": recovered, "sigma": sigma, "res_px": res.resolution_A / TEST_PIXEL_A,
             "result": res, "carrier": carrier}

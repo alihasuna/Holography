@@ -28,7 +28,10 @@ sensitivity s = |q.n_hat| is compared with its propagated uncertainty
                 + (s sigma_lambda/lambda)^2,
 and the conversion is REFUSED (SmallDenominatorError, before any division) when s <= sigma_s.
 Otherwise the height uncertainty sigma_h^2 = (sigma_phi / s)^2 + (h sigma_s / s)^2 is returned
-with h.
+with h. Every declared uncertainty must be finite and strictly positive (a zero would disable the
+refusal; audit A2 m2), the phase uncertainty must be below pi (a larger one carries no phase
+information), a zero sensitivity (theta_in = theta_out = 0) is refused first, and the wavelength
+must be finite and positive.
 """
 from __future__ import annotations
 
@@ -53,11 +56,26 @@ def _angles(theta_in_ext_rad, theta_out_ext_rad):
     return ti, to
 
 
+def _wavelength(wavelength_A) -> float:
+    lam = float(wavelength_A)
+    if not (np.isfinite(lam) and lam > 0.0):
+        raise ValueError(f"wavelength_A must be finite and > 0 (A), got {wavelength_A!r}")
+    return lam
+
+
+def _positive_sigma(name: str, v) -> float:
+    x = float(v)
+    if not (np.isfinite(x) and x > 0.0):
+        raise ValueError(f"{name} must be finite and > 0, got {v!r}: a zero uncertainty would "
+                         f"disable the small-denominator refusal (audit A2 m2)")
+    return x
+
+
 def sensitivity_rad_per_A(*, wavelength_A: float, theta_in_ext_rad: float,
                           theta_out_ext_rad: float) -> float:
     """|q.n_hat| = (2 pi / lambda)(sin theta_in + sin theta_out) in rad/A (SM03, DERIVED_HERE)."""
     ti, to = _angles(theta_in_ext_rad, theta_out_ext_rad)
-    return float(TWO_PI / wavelength_A * (np.sin(ti) + np.sin(to)))
+    return float(TWO_PI / _wavelength(wavelength_A) * (np.sin(ti) + np.sin(to)))
 
 
 def sensitivity_uncertainty_rad_per_A(*, wavelength_A: float, theta_in_ext_rad: float,
@@ -65,13 +83,13 @@ def sensitivity_uncertainty_rad_per_A(*, wavelength_A: float, theta_in_ext_rad: 
                                       sigma_theta_out_rad: float,
                                       sigma_wavelength_rel: float) -> float:
     """Propagated 1-sigma uncertainty of |q.n_hat| from the angle calibration and the relative
-    wavelength (energy) uncertainty, first order (SM03, DERIVED_HERE). All arguments required."""
+    wavelength (energy) uncertainty, first order (SM03, DERIVED_HERE). All arguments required;
+    every uncertainty must be finite and > 0."""
     ti, to = _angles(theta_in_ext_rad, theta_out_ext_rad)
     for name, v in (("sigma_theta_in_rad", sigma_theta_in_rad),
                     ("sigma_theta_out_rad", sigma_theta_out_rad),
                     ("sigma_wavelength_rel", sigma_wavelength_rel)):
-        if not (np.isfinite(v) and v >= 0.0):
-            raise ValueError(f"{name} must be finite and >= 0, got {v!r}")
+        _positive_sigma(name, v)
     s = sensitivity_rad_per_A(wavelength_A=wavelength_A, theta_in_ext_rad=ti,
                               theta_out_ext_rad=to)
     k = TWO_PI / wavelength_A
@@ -85,10 +103,11 @@ def wrap_period_A(*, wavelength_A: float, theta_in_ext_rad: float,
     """Height wrap period h_2pi = lambda / (sin theta_in + sin theta_out) in A; lambda/(2 sin theta)
     for the specular beam (SM05, DERIVED_HERE; check T14). Refuses a zero sensitivity."""
     ti, to = _angles(theta_in_ext_rad, theta_out_ext_rad)
+    lam = _wavelength(wavelength_A)
     den = np.sin(ti) + np.sin(to)
     if not den > 0.0:
         raise SmallDenominatorError("sin(theta_in) + sin(theta_out) = 0: no height sensitivity")
-    return float(wavelength_A / den)
+    return float(lam / den)
 
 
 def branch_index_of(phase_unwrapped_rad) -> int:
@@ -122,26 +141,33 @@ def height_from_phase(wrapped_phase_rad: float, *, branch_index: int, branch_sou
                       sigma_theta_out_rad: float, sigma_wavelength_rel: float) -> HeightEstimate:
     """Signed height h = -Delta_phi lambda / (2 pi (sin theta_in,ext + sin theta_out,ext)).
 
-    wrapped_phase_rad must lie in (-pi, pi]; the unwrapped phase is wrapped + 2 pi branch_index,
+    wrapped_phase_rad must lie in (-pi, pi] (-pi itself excluded, as wrap_to_pi maps it to +pi);
+    the unwrapped phase is wrapped + 2 pi branch_index,
     and branch_source states where the branch comes from (e.g. "principal branch, single
     hologram: NOT resolved", "rocking series", "lattice constraint"). All keywords are required.
     Applies the small-denominator policy BEFORE dividing (SmallDenominatorError when
-    |q.n_hat| <= its propagated uncertainty). docs/05 section 5 item 8; SM03, SM05; DERIVED_HERE.
+    |q.n_hat| = 0 or <= its propagated uncertainty). Every uncertainty must be finite and > 0,
+    sigma_phi_rad < pi (audit A2 m2). docs/05 section 5 item 8; SM03, SM05; DERIVED_HERE.
     """
     w = float(wrapped_phase_rad)
-    if not np.isfinite(w) or w <= -np.pi - 1e-12 or w > np.pi + 1e-12:
+    if not np.isfinite(w) or w <= -np.pi or w > np.pi:
         raise ValueError(f"wrapped_phase_rad must lie in (-pi, pi]; got {w!r}. Pass the wrapped "
                          f"phase and the branch index separately")
     if int(branch_index) != branch_index:
         raise ValueError("branch_index must be an integer")
     if not isinstance(branch_source, str) or not branch_source.strip():
         raise ValueError("branch_source must state where the branch index comes from")
-    if not (np.isfinite(sigma_phi_rad) and sigma_phi_rad >= 0.0):
-        raise ValueError("sigma_phi_rad must be finite and >= 0")
     ti, to = _angles(theta_in_ext_rad, theta_out_ext_rad)
-
     s = sensitivity_rad_per_A(wavelength_A=wavelength_A, theta_in_ext_rad=ti,
                               theta_out_ext_rad=to)
+    if not s > 0.0:
+        raise SmallDenominatorError(
+            f"sensitivity |q.n_hat| = {s:.6g} rad/A: no height sensitivity at theta_in = "
+            f"{ti * 1e3:.4f} mrad, theta_out = {to * 1e3:.4f} mrad; height refused")
+    sphi = _positive_sigma("sigma_phi_rad", sigma_phi_rad)
+    if not sphi < np.pi:
+        raise ValueError(f"sigma_phi_rad = {sphi!r} >= pi: a phase with this uncertainty carries no "
+                         f"information (audit A2 m2)")
     sigma_s = sensitivity_uncertainty_rad_per_A(
         wavelength_A=wavelength_A, theta_in_ext_rad=ti, theta_out_ext_rad=to,
         sigma_theta_in_rad=sigma_theta_in_rad, sigma_theta_out_rad=sigma_theta_out_rad,
@@ -155,7 +181,7 @@ def height_from_phase(wrapped_phase_rad: float, *, branch_index: int, branch_sou
     m = int(branch_index)
     phi = w + TWO_PI * m
     h = -phi / s
-    sigma_h = float(np.hypot(sigma_phi_rad / s, h * sigma_s / s))
+    sigma_h = float(np.hypot(sphi / s, h * sigma_s / s))
     return HeightEstimate(
         h_A=float(h), sigma_h_A=sigma_h, wrapped_phase_rad=w, branch_index=m,
         branch_source=branch_source, unwrapped_phase_rad=float(phi),
@@ -171,5 +197,7 @@ def height_candidates_A(wrapped_phase_rad: float, branches, *, wavelength_A: flo
     Evidence DERIVED_HERE."""
     s = sensitivity_rad_per_A(wavelength_A=wavelength_A, theta_in_ext_rad=theta_in_ext_rad,
                               theta_out_ext_rad=theta_out_ext_rad)
+    if not s > 0.0:
+        raise SmallDenominatorError("sin(theta_in) + sin(theta_out) = 0: no height sensitivity")
     m = np.asarray(list(branches), dtype=float)
     return -(float(wrapped_phase_rad) + TWO_PI * m) / s

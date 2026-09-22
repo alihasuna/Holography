@@ -8,28 +8,55 @@ docs/06_project_inputs_required.md. Every parameter is a mapping with the keys
             UNVERIFIED
             (TEST_ONLY is accepted only for in-memory test fixtures, never from a file)
     source  where the value comes from (file, section, item, sentence)
-and optionally unit, item (the docs/06 item number; REQUIRED when a PROJECT_INPUT value is null)
-and note. Unknown keys and unknown parameter names are refused.
+    unit    REQUIRED for every parameter: a unit of the one unit table UNITS whose dimension matches
+            the parameter, or "none" for a parameter that is not a physical quantity (strings,
+            Miller indices, mappings of labels). An unknown unit fails.
+and optionally
+    item                the docs/06 item number. REQUIRED, whatever the label, when the
+                        configuration's schema (SCHEMAS) gives the parameter a docs/06 item, and
+                        refused otherwise; a PROJECT_INPUT without a docs/06 item fails.
+    stands_in_for_item  REQUIRED (equal to item) for an ASSUMPTION value standing in for a docs/06
+                        item, together with
+    assumption_id       the row of docs/model_assumptions.md that states the assumption (e.g.
+                        "B1"); verified against that file. Optional for other ASSUMPTION values.
+    note
+Unknown keys, unknown parameter names, parameters outside the configuration's schema and duplicate
+YAML keys (anywhere in the file) are refused.
+
+Schemas (SCHEMAS, audit A2 M2): each configuration type lists its REQUIRED parameters with their
+docs/06 item numbers (None: not a laboratory input of that configuration, e.g. a CFG-A benchmark
+definition) and its optional parameters. A required parameter that is ABSENT counts exactly like a
+null one: it is listed at placeholder level and fails at run level, naming its item.
 
 Two load levels, stated by the caller (no default):
-  * level="run": any PROJECT_INPUT whose value is null FAILS (MissingProjectInputError naming the
-    docs/06 item numbers); any UNVERIFIED field FAILS (UnverifiedParameterError); a configuration
-    whose status is "placeholder" FAILS. No default ever replaces a missing input.
-  * level="placeholder": the configuration is validated and returned with the missing and
-    unverified fields listed; value() still refuses to return a null.
+  * level="run": a PROJECT_INPUT that is null or absent FAILS (MissingProjectInputError naming the
+    docs/06 item numbers); any UNVERIFIED field FAILS (UnverifiedParameterError); an absent
+    required parameter without a docs/06 item FAILS (MissingRequiredParameterError); a
+    configuration whose status is "placeholder" FAILS. No default ever replaces a missing input.
+  * level="placeholder": the configuration is validated and returned with the missing, absent and
+    unverified fields listed; value() still refuses to return a null or an absent parameter.
+
+Units (audit A2 m5): parameters are stored as declared (value(), e.g. 16.5 with unit "mrad") and
+converted through UNITS to the canonical units of the code, A, rad, keV and V (quantity(), e.g.
+(0.0165, "rad")); docs/physics_conventions.md, "Angstrom everywhere in code", angles "stored in
+radians". A parameter name carries a unit suffix only when that is the one unit it accepts
+(beam_energy_keV, mean_inner_potential_V).
 
 Energy rule: the beam energy is 200 keV for every configuration (PROJECT_INPUT item 1, Ali,
 2026-09-22; reflection_holo.constants.BEAM_ENERGY_SUPPLIED_KEV). Any other stated energy fails at
 every level; CFG-A and CFG-B must state it (null fails at every level). CFG-O's energy is UNVERIFIED
 (null) until the body of P01 is read.
-Crystallographic cross-checks for silicon configurations: the azimuth must lie in the surface plane
-(reflection_holo.geometry.frames.surface_frame); a target reflection must be on the specular rod,
-allowed (forbidden-reflection guard, SM02) and accessible (SM04, SM06); every reflection listed as
-forbidden must indeed have F = 0.
+Materials (audit A2 m10): surface_material must be a canonical element symbol, and the one of its
+configuration: "Si" for CFG-A and CFG-B, "Pt" for CFG-O; any other spelling fails, so the silicon
+cross-checks cannot be skipped. Crystallographic cross-checks for silicon configurations: the
+azimuth must lie in the surface plane (reflection_holo.geometry.frames.surface_frame); a target
+reflection must be on the specular rod, allowed (forbidden-reflection guard, SM02) and accessible
+(SM04, SM06); every reflection listed as forbidden must indeed have F = 0.
 """
 from __future__ import annotations
 
 import copy
+import functools
 import hashlib
 import json
 import re
@@ -52,42 +79,94 @@ STATUSES = ("benchmark", "experiment", "placeholder")
 CONFIG_IDS = {"CFG-A": "si111_cleaved_110azimuth", "CFG-B": "si001_patterned",
               "CFG-O": "osakabe_1988_reproduction"}
 N_PROJECT_INPUT_ITEMS = 22
-PARAM_KEYS_REQUIRED = ("value", "label", "source")
-PARAM_KEYS_OPTIONAL = ("unit", "item", "note")
+PARAM_KEYS_REQUIRED = ("value", "label", "source", "unit")
+PARAM_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note")
 TOP_KEYS = ("schema_version", "config_id", "name", "status", "description", "parameters")
 REFERENCE_TRAJECTORIES = ("vacuum_beside_sample", "reflected_flat_area",
                           "transmitted_thin_region")        # docs/06 item 15
 STEP_EDGE_ORIENTATIONS = ("parallel_to_beam", "transverse_to_beam")
+MATERIALS = ("Si", "Pt")                                    # canonical element symbols only
+MODEL_ASSUMPTIONS_PATH = Path(__file__).resolve().parents[2] / "docs" / "model_assumptions.md"
 
-# name -> (kind, unit or None, docs/06 item expected when the label is PROJECT_INPUT, or None)
-PARAMETERS: dict[str, tuple[str, str | None, int | None]] = {
-    "surface_material": ("str", None, 11),
-    "surface_normal_hkl": ("int3", None, 11),
-    "beam_azimuth_uvw": ("int3", None, 8),
-    "beam_energy_keV": ("positive", "keV", 1),
-    "lattice_parameter_A": ("positive", "A", None),
-    "mean_inner_potential_V": ("positive", "V", 20),
-    "target_reflection_hkl": ("int3", None, 9),
-    "second_reflection_hkl": ("int3", None, 9),
-    "recommended_reflections_hkl": ("int3_list", None, 9),
-    "not_recommended_reflections_hkl": ("int3_list", None, None),
-    "forbidden_rod_reflections_hkl": ("int3_list", None, None),
-    "step_types": ("str_list", None, 14),
-    "step_translations": ("mapping", None, None),
-    "step_edge_orientations": ("edge_orientations", None, None),
-    "glancing_angle_ext_mrad": ("positive", "mrad", 7),
-    "convergence_semi_angle_mrad": ("nonnegative", "mrad", 3),
-    "objective_aperture_semi_angle_mrad": ("positive", "mrad", 4),
-    "image_pixel_size_nm": ("pixel_size", "nm", 5),
-    "reference_trajectory": ("reference_trajectory", None, 15),
-    "reference_model": ("reference_model", None, None),
-    "pattern_geometry": ("mapping", None, 13),
-    "surface_preparation_method": ("str", None, 12),
-    "surface_preparation_details": ("mapping", None, 12),
-    "reflection_order": ("str", None, None),
-    "height_sensitivity_nm": ("positive", "nm", None),
-    "reconstruction_method": ("str", None, 19),
-    "literature_source": ("str", None, None),
+# The one unit table: unit -> (dimension, factor to the canonical unit of that dimension).
+UNITS: dict[str, tuple[str, float | None]] = {
+    "A": ("length", 1.0), "nm": ("length", 10.0), "um": ("length", 1.0e4),
+    "rad": ("angle", 1.0), "mrad": ("angle", 1.0e-3),
+    "keV": ("energy", 1.0),
+    "V": ("potential", 1.0),
+    "none": ("none", None),
+}
+CANONICAL_UNITS = {"length": "A", "angle": "rad", "energy": "keV", "potential": "V", "none": "none"}
+
+# name -> (kind, dimension)
+PARAMETERS: dict[str, tuple[str, str]] = {
+    "surface_material": ("material", "none"),
+    "surface_normal_hkl": ("int3", "none"),
+    "beam_azimuth_uvw": ("int3", "none"),
+    "beam_energy_keV": ("positive", "energy"),
+    "lattice_parameter": ("positive", "length"),
+    "mean_inner_potential_V": ("positive", "potential"),
+    "target_reflection_hkl": ("int3", "none"),
+    "second_reflection_hkl": ("int3", "none"),
+    "recommended_reflections_hkl": ("int3_list", "none"),
+    "not_recommended_reflections_hkl": ("int3_list", "none"),
+    "forbidden_rod_reflections_hkl": ("int3_list", "none"),
+    "step_types": ("str_list", "none"),
+    "step_translations": ("mapping", "none"),
+    "step_edge_orientations": ("edge_orientations", "none"),
+    "glancing_angle_ext": ("positive", "angle"),
+    "convergence_semi_angle": ("nonnegative", "angle"),
+    "objective_aperture_semi_angle": ("positive", "angle"),
+    "image_pixel_size": ("pixel_size", "length"),
+    "reference_trajectory": ("reference_trajectory", "none"),
+    "reference_model": ("reference_model", "none"),
+    "pattern_geometry": ("mapping", "none"),
+    "surface_preparation_method": ("str", "none"),
+    "surface_preparation_details": ("mapping", "none"),
+    "reflection_order": ("str", "none"),
+    "height_sensitivity": ("positive", "length"),
+    "reconstruction_method": ("str", "none"),
+    "literature_source": ("str", "none"),
+}
+
+# Per configuration type: the material, the REQUIRED parameters and the optional ones, each with its
+# docs/06 item number (None: not a laboratory input of this configuration). CFG-A is a benchmark
+# defined by docs/05 section 2 (its geometry is the inspected repository's default, not a laboratory
+# input); its imaging inputs are optional (a hologram simulation of CFG-A must declare them, and
+# value() refuses an absent one). CFG-B is Ali's experiment (docs/06). CFG-O reproduces P01; its
+# values come from the literature, not from docs/06.
+SCHEMAS: dict[str, dict[str, Any]] = {
+    "CFG-A": dict(
+        material="Si",
+        required={"surface_material": None, "surface_normal_hkl": None, "beam_azimuth_uvw": None,
+                  "beam_energy_keV": 1, "lattice_parameter": None, "mean_inner_potential_V": 20,
+                  "target_reflection_hkl": 9, "recommended_reflections_hkl": 9,
+                  "forbidden_rod_reflections_hkl": None, "step_types": None,
+                  "step_translations": None, "step_edge_orientations": None},
+        optional={"second_reflection_hkl": 9, "not_recommended_reflections_hkl": None,
+                  "glancing_angle_ext": 7, "convergence_semi_angle": 3,
+                  "objective_aperture_semi_angle": 4, "image_pixel_size": 5,
+                  "reference_trajectory": 15, "reference_model": None,
+                  "reconstruction_method": 19}),
+    "CFG-B": dict(
+        material="Si",
+        required={"surface_material": 11, "surface_normal_hkl": 11, "beam_azimuth_uvw": 8,
+                  "beam_energy_keV": 1, "lattice_parameter": None, "mean_inner_potential_V": 20,
+                  "target_reflection_hkl": 9, "forbidden_rod_reflections_hkl": None,
+                  "step_types": 14, "step_translations": None, "glancing_angle_ext": 7,
+                  "convergence_semi_angle": 3, "objective_aperture_semi_angle": 4,
+                  "image_pixel_size": 5, "reference_trajectory": 15, "pattern_geometry": 13,
+                  "surface_preparation_method": 12, "surface_preparation_details": 12},
+        optional={"second_reflection_hkl": 9, "recommended_reflections_hkl": 9,
+                  "not_recommended_reflections_hkl": None, "step_edge_orientations": None,
+                  "reference_model": None, "reconstruction_method": 19}),
+    "CFG-O": dict(
+        material="Pt",
+        required={"literature_source": None, "surface_material": None, "surface_normal_hkl": None,
+                  "beam_azimuth_uvw": None, "beam_energy_keV": None, "reflection_order": None,
+                  "glancing_angle_ext": None, "step_types": None, "height_sensitivity": None,
+                  "reference_model": None, "reconstruction_method": None},
+        optional={}),
 }
 
 
@@ -96,11 +175,19 @@ class ConfigError(ValueError):
 
 
 class MissingProjectInputError(ConfigError):
-    """A PROJECT_INPUT is null at run level. .items holds the docs/06 item numbers."""
+    """A PROJECT_INPUT is null or absent at run level. .items holds the docs/06 item numbers."""
 
     def __init__(self, message: str, items: list[int], names: list[str]):
         super().__init__(message)
         self.items = items
+        self.names = names
+
+
+class MissingRequiredParameterError(ConfigError):
+    """A required parameter without a docs/06 item is absent at run level. .names holds them."""
+
+    def __init__(self, message: str, names: list[str]):
+        super().__init__(message)
         self.names = names
 
 
@@ -122,9 +209,13 @@ class Parameter:
     value: Any
     label: str
     source: str
-    unit: str | None = None
+    unit: str
     item: int | None = None
     note: str | None = None
+    stands_in_for_item: int | None = None
+    assumption_id: str | None = None
+    canonical_value: Any = None           # value converted through UNITS (None when null)
+    canonical_unit: str = "none"
 
 
 @dataclass
@@ -136,19 +227,32 @@ class LoadedConfig:
     schema_version: int
     level: str
     parameters: dict[str, Parameter]
-    missing_project_inputs: list[tuple[str, int]]
+    missing_project_inputs: list[tuple[str, int]]      # null or absent, with docs/06 item
     unverified: list[str]
     test_only: bool
     sha256_canonical: str
     source_path: str | None = None
     sha256_file: str | None = None
+    missing_required: list[tuple[str, int | None]] = field(default_factory=list)   # absent
     raw: dict = field(default_factory=dict, repr=False)
 
+    def _absent(self, name: str):
+        req = SCHEMAS[self.config_id]["required"]
+        if name in req:
+            item = req[name]
+            if item is not None:
+                raise MissingProjectInputError(
+                    f"{self.config_id}: {name} is a missing PROJECT_INPUT (absent from the "
+                    f"configuration; docs/06_project_inputs_required.md item {item})", [item], [name])
+            raise MissingRequiredParameterError(
+                f"{self.config_id}: required parameter {name} is absent", [name])
+        raise ConfigError(f"{self.config_id}: parameter {name!r} is not defined")
+
     def value(self, name: str):
-        """Return a parameter value; refuses a null (naming the docs/06 item) or an unknown name.
-        Source map: no row; evidence label: not applicable (no physical claim)."""
+        """Return a parameter value as declared; refuses a null or absent one (naming the docs/06
+        item) and an unknown name. Source map: no row; evidence label: not applicable."""
         if name not in self.parameters:
-            raise ConfigError(f"{self.config_id}: parameter {name!r} is not defined")
+            self._absent(name)
         p = self.parameters[name]
         if p.value is None:
             if p.label == "PROJECT_INPUT":
@@ -158,6 +262,16 @@ class LoadedConfig:
             raise UnverifiedParameterError(f"{self.config_id}: {name} is UNVERIFIED (null)",
                                            [name])
         return copy.deepcopy(p.value)
+
+    def quantity(self, name: str) -> tuple[Any, str]:
+        """(value in the canonical unit, canonical unit): A, rad, keV or V, converted through the
+        one unit table UNITS. Refuses nulls, absent names and parameters without a physical unit.
+        Source map: no row; evidence label: not applicable (unit conversion)."""
+        self.value(name)
+        p = self.parameters[name]
+        if p.canonical_unit == "none":
+            raise ConfigError(f"{self.config_id}: {name} has no physical unit; use value()")
+        return copy.deepcopy(p.canonical_value), p.canonical_unit
 
     def label(self, name: str) -> str:
         return self.parameters[name].label
@@ -169,6 +283,17 @@ def canonical_sha256(data: dict) -> str:
     applicable (no physical claim)."""
     blob = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+@functools.lru_cache(maxsize=1)
+def model_assumption_ids() -> frozenset[str]:
+    """Row identifiers (A1, B1, ...) of the tables in docs/model_assumptions.md."""
+    try:
+        text = MODEL_ASSUMPTIONS_PATH.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ConfigError(f"cannot verify assumption_id: {MODEL_ASSUMPTIONS_PATH} unreadable "
+                          f"({exc})") from exc
+    return frozenset(re.findall(r"^\|\s*([AB]\d+)\s*\|", text, flags=re.MULTILINE))
 
 
 def _is_int(v) -> bool:
@@ -185,6 +310,11 @@ def _check_kind(cid: str, name: str, kind: str, v) -> None:
     if kind == "str":
         if not isinstance(v, str) or not v.strip():
             bad("a non-empty string")
+    elif kind == "material":
+        if v not in MATERIALS:
+            bad(f"a canonical element symbol, one of {MATERIALS} (exact spelling)")
+        if v != SCHEMAS[cid]["material"]:
+            bad(f"{SCHEMAS[cid]['material']!r} for {cid}")
     elif kind == "int3":
         if not (isinstance(v, list) and len(v) == 3 and all(_is_int(x) for x in v)) \
                 or not any(v):
@@ -219,17 +349,48 @@ def _check_kind(cid: str, name: str, kind: str, v) -> None:
         if not (isinstance(v, list) and v and all(x in STEP_EDGE_ORIENTATIONS for x in v)):
             bad(f"a non-empty list drawn from {STEP_EDGE_ORIENTATIONS}")
     else:  # pragma: no cover - registry error
-        raise AssertionError(kind)
+        raise ConfigError(f"registry error: unknown kind {kind!r}")
+
+
+def _check_unit(cid: str, name: str, dimension: str, unit) -> tuple[str, float | None]:
+    if not isinstance(unit, str) or unit not in UNITS:
+        raise ConfigError(f"{cid}: parameter {name}: unknown unit {unit!r} (unit table: "
+                          f"{sorted(UNITS)})")
+    dim, factor = UNITS[unit]
+    if dim != dimension:
+        if dimension == "none":
+            raise ConfigError(f"{cid}: parameter {name} is not a physical quantity; its unit must "
+                              f"be 'none', got {unit!r}")
+        ok = sorted(u for u, (d, _) in UNITS.items() if d == dimension)
+        raise ConfigError(f"{cid}: parameter {name} needs a unit of {dimension} ({ok}); {unit!r} "
+                          f"is {'not a physical unit' if dim == 'none' else 'a unit of ' + dim}")
+    return CANONICAL_UNITS[dimension], factor
+
+
+def _convert(kind: str, value, factor):
+    if value is None or factor is None:
+        return copy.deepcopy(value)
+    if kind == "pixel_size":
+        return {k: float(v) * factor for k, v in value.items()}
+    return float(value) * factor
 
 
 def _parse_parameter(cid: str, name: str, spec, allow_test_only: bool) -> Parameter:
     if name not in PARAMETERS:
         raise ConfigError(f"{cid}: unknown parameter {name!r}")
+    schema = SCHEMAS[cid]
+    if name in schema["required"]:
+        schema_item = schema["required"][name]
+    elif name in schema["optional"]:
+        schema_item = schema["optional"][name]
+    else:
+        raise ConfigError(f"{cid}: parameter {name} is not part of the {cid} schema")
     if not isinstance(spec, dict):
-        raise ConfigError(f"{cid}: parameter {name} must be a mapping {{value, label, source}}")
+        raise ConfigError(f"{cid}: parameter {name} must be a mapping {{value, label, source, unit}}")
     missing = [k for k in PARAM_KEYS_REQUIRED if k not in spec]
     if missing:
-        raise ConfigError(f"{cid}: parameter {name} lacks {missing}")
+        raise ConfigError(f"{cid}: parameter {name} lacks {missing} (every parameter states its "
+                          f"unit, 'none' if it is not a physical quantity)")
     extra = sorted(set(spec) - set(PARAM_KEYS_REQUIRED) - set(PARAM_KEYS_OPTIONAL))
     if extra:
         raise ConfigError(f"{cid}: parameter {name} has unknown keys {extra}")
@@ -243,40 +404,73 @@ def _parse_parameter(cid: str, name: str, spec, allow_test_only: bool) -> Parame
     source = spec["source"]
     if not isinstance(source, str) or not source.strip():
         raise ConfigError(f"{cid}: parameter {name} must state a non-empty source")
-    kind, unit_expected, item_expected = PARAMETERS[name]
-    unit = spec.get("unit")
-    if unit_expected is not None and unit != unit_expected:
-        raise ConfigError(f"{cid}: parameter {name} must state unit {unit_expected!r}, "
-                          f"got {unit!r}")
-    if unit_expected is None and unit is not None:
-        raise ConfigError(f"{cid}: parameter {name} is dimensionless; unit {unit!r} not allowed")
+    kind, dimension = PARAMETERS[name]
+    unit = spec["unit"]
+    canonical_unit, factor = _check_unit(cid, name, dimension, unit)
+
     item = spec.get("item")
-    if item is not None:
-        if not _is_int(item) or not 1 <= item <= N_PROJECT_INPUT_ITEMS:
-            raise ConfigError(f"{cid}: parameter {name}: item must be a docs/06 item number "
-                              f"1..{N_PROJECT_INPUT_ITEMS}, got {item!r}")
-        if item_expected is not None and item != item_expected:
-            raise ConfigError(f"{cid}: parameter {name} belongs to docs/06 item "
-                              f"{item_expected}, not {item}")
+    if item is not None and (not _is_int(item) or not 1 <= item <= N_PROJECT_INPUT_ITEMS):
+        raise ConfigError(f"{cid}: parameter {name}: item must be a docs/06 item number "
+                          f"1..{N_PROJECT_INPUT_ITEMS}, got {item!r}")
+    if schema_item is None:
+        if label == "PROJECT_INPUT":
+            raise ConfigError(f"{cid}: parameter {name} is labelled PROJECT_INPUT but has no docs/06 "
+                              f"item in the {cid} schema: a PROJECT_INPUT must name its docs/06 "
+                              f"item (audit A2 m4)")
+        if item is not None:
+            raise ConfigError(f"{cid}: parameter {name} has no docs/06 item in the {cid} schema; "
+                              f"'item: {item}' is not allowed")
+    else:
+        if item is None:
+            raise ConfigError(f"{cid}: parameter {name} must name its docs/06 item {schema_item} "
+                              f"('item: {schema_item}'), whatever its label (audit A2 M2)")
+        if item != schema_item:
+            raise ConfigError(f"{cid}: parameter {name} belongs to docs/06 item {schema_item}, "
+                              f"not {item}")
+
+    sfi = spec.get("stands_in_for_item")
+    aid = spec.get("assumption_id")
+    if label == "ASSUMPTION" and schema_item is not None:
+        if sfi is None:
+            raise ConfigError(
+                f"{cid}: ASSUMPTION {name} stands in for PROJECT_INPUT item {schema_item}: it must "
+                f"carry 'stands_in_for_item: {schema_item}' and 'assumption_id' (a row of "
+                f"docs/model_assumptions.md)")
+        if sfi != schema_item:
+            raise ConfigError(f"{cid}: parameter {name}: stands_in_for_item {sfi!r} must equal its "
+                              f"docs/06 item {schema_item}")
+        if aid is None:
+            raise ConfigError(f"{cid}: ASSUMPTION {name} stands in for PROJECT_INPUT item "
+                              f"{schema_item}: it must name its assumption_id (a row of "
+                              f"docs/model_assumptions.md)")
+    elif sfi is not None:
+        raise ConfigError(f"{cid}: parameter {name}: stands_in_for_item is only for an ASSUMPTION "
+                          f"standing in for a docs/06 item")
+    if aid is not None:
+        if label != "ASSUMPTION":
+            raise ConfigError(f"{cid}: parameter {name}: assumption_id is only for ASSUMPTION values")
+        if not isinstance(aid, str) or aid not in model_assumption_ids():
+            raise ConfigError(f"{cid}: parameter {name}: assumption_id {aid!r} is not a row of "
+                              f"docs/model_assumptions.md")
+
     value = spec["value"]
     if value is None:
         if label not in ("PROJECT_INPUT", "UNVERIFIED"):
             raise ConfigError(f"{cid}: parameter {name} is null with label {label}; only a "
                               f"PROJECT_INPUT or an UNVERIFIED field may be null")
-        if label == "PROJECT_INPUT" and item is None:
-            raise ConfigError(f"{cid}: null PROJECT_INPUT {name} must name its docs/06 item")
     else:
         _check_kind(cid, name, kind, value)
     note = spec.get("note")
     if note is not None and not isinstance(note, str):
         raise ConfigError(f"{cid}: parameter {name}: note must be a string")
     return Parameter(name=name, value=value, label=label, source=source, unit=unit, item=item,
-                     note=note)
+                     note=note, stands_in_for_item=sfi, assumption_id=aid,
+                     canonical_value=_convert(kind, value, factor), canonical_unit=canonical_unit)
 
 
 def _cross_checks(cid: str, params: dict[str, Parameter]) -> None:
     def val(n):
-        return params[n].value if n in params else None
+        return params[n].canonical_value if n in params else None
 
     energy = val("beam_energy_keV")
     if energy is not None and float(energy) != BEAM_ENERGY_SUPPLIED_KEV:
@@ -295,7 +489,7 @@ def _cross_checks(cid: str, params: dict[str, Parameter]) -> None:
         except ValueError as exc:
             raise ConfigError(f"{cid}: {exc}") from exc
 
-    if val("surface_material") != "Si":
+    if SCHEMAS[cid]["material"] != "Si":
         return                                   # no Si structure factor or V0 may be reused
     for hkl in val("forbidden_rod_reflections_hkl") or []:
         if diamond_allowed(hkl):
@@ -306,7 +500,7 @@ def _cross_checks(cid: str, params: dict[str, Parameter]) -> None:
     to_check = [(n, val(n)) for n in targets] + targets_list
     if to_check and normal is None:
         raise ConfigError(f"{cid}: target reflections need surface_normal_hkl")
-    a = val("lattice_parameter_A")
+    a = val("lattice_parameter")                 # canonical: A
     V0 = val("mean_inner_potential_V")
     for name, hkl in to_check:
         if a is None or V0 is None or energy is None:
@@ -362,8 +556,12 @@ def load_config_dict(data: dict, *, level: str, allow_test_only: bool = False,
               for n, s in data["parameters"].items()}
     _cross_checks(cid, params)
 
-    missing_pi = sorted(((p.name, p.item) for p in params.values()
-                         if p.value is None and p.label == "PROJECT_INPUT"), key=lambda t: t[1])
+    required = SCHEMAS[cid]["required"]
+    missing_required = [(n, required[n]) for n in required if n not in params]
+    absent_pi = [(n, i) for n, i in missing_required if i is not None]
+    null_pi = [(p.name, p.item) for p in params.values()
+               if p.value is None and p.label == "PROJECT_INPUT"]
+    missing_pi = sorted(null_pi + absent_pi, key=lambda t: (t[1], t[0]))
     unverified = sorted(p.name for p in params.values() if p.label == "UNVERIFIED")
     test_only = any(p.label == TEST_ONLY_LABEL for p in params.values())
 
@@ -373,8 +571,10 @@ def load_config_dict(data: dict, *, level: str, allow_test_only: bool = False,
                 f"{cid} is a placeholder configuration and cannot be loaded at run level "
                 f"(unverified fields: {', '.join(unverified) or 'none'})")
         if missing_pi:
+            absent = {n for n, _ in absent_pi}
             items = [i for _, i in missing_pi]
-            listing = "; ".join(f"item {i} ({n})" for n, i in missing_pi)
+            listing = "; ".join(f"item {i} ({n}{', absent' if n in absent else ''})"
+                                for n, i in missing_pi)
             raise MissingProjectInputError(
                 f"{cid}: run-level load refused, missing PROJECT_INPUT "
                 f"(docs/06_project_inputs_required.md): {listing}",
@@ -383,21 +583,53 @@ def load_config_dict(data: dict, *, level: str, allow_test_only: bool = False,
             raise UnverifiedParameterError(
                 f"{cid}: run-level load refused, UNVERIFIED fields: {', '.join(unverified)}",
                 unverified)
+        absent_other = [n for n, i in missing_required if i is None]
+        if absent_other:
+            raise MissingRequiredParameterError(
+                f"{cid}: run-level load refused, required parameters absent: "
+                f"{', '.join(absent_other)} (schema {cid})", absent_other)
 
     return LoadedConfig(config_id=cid, name=data["name"], status=status,
                         description=data["description"], schema_version=1, level=level,
                         parameters=params, missing_project_inputs=missing_pi,
                         unverified=unverified, test_only=test_only,
                         sha256_canonical=canonical_sha256(data), source_path=source_path,
-                        sha256_file=sha256_file, raw=copy.deepcopy(data))
+                        sha256_file=sha256_file, missing_required=missing_required,
+                        raw=copy.deepcopy(data))
+
+
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """yaml.SafeLoader that refuses duplicate mapping keys (PyYAML keeps the last one silently)."""
+
+
+def _construct_unique_mapping(loader, node, deep=False):
+    loader.flatten_mapping(node)
+    seen = {}
+    for key_node, _ in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in seen:
+            raise ConfigError(f"duplicate key {key!r} at line {key_node.start_mark.line + 1} "
+                              f"(first at line {seen[key]}): a duplicate key would silently "
+                              f"override the earlier value (audit A2 M2)")
+        seen[key] = key_node.start_mark.line + 1
+    return yaml.SafeLoader.construct_mapping(loader, node, deep=deep)
+
+
+_UniqueKeyLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+                                 _construct_unique_mapping)
+
+
+def load_yaml_unique(text: str | bytes):
+    """Parse YAML refusing duplicate keys anywhere (ConfigError)."""
+    return yaml.load(text, Loader=_UniqueKeyLoader)  # noqa: S506 - SafeLoader subclass
 
 
 _FILE_RE = re.compile(r"^cfg_([a-z])_([a-z0-9_]+)\.yaml$")
 
 
 def load_config_file(path, *, level: str) -> LoadedConfig:
-    """Load a configuration YAML file (TEST_ONLY labels refused). The file name must be
-    cfg_<letter>_<name>.yaml and agree with config_id and name. level is required.
+    """Load a configuration YAML file (TEST_ONLY labels and duplicate keys refused). The file name
+    must be cfg_<letter>_<name>.yaml and agree with config_id and name. level is required.
     Source map: no row (software requirement, docs/05 sections 0 and 3); evidence label: not
     applicable (no physical claim)."""
     p = Path(path)
@@ -405,7 +637,7 @@ def load_config_file(path, *, level: str) -> LoadedConfig:
     if not m:
         raise ConfigError(f"configuration file name {p.name!r} must match cfg_<x>_<name>.yaml")
     blob = p.read_bytes()
-    data = yaml.safe_load(blob)
+    data = load_yaml_unique(blob)
     if not isinstance(data, dict):
         raise ConfigError(f"{p}: not a YAML mapping")
     expected_id = f"CFG-{m.group(1).upper()}"

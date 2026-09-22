@@ -12,9 +12,12 @@ class SmallDenominatorError(QuantificationError):
 
 
 class BranchAmbiguityError(QuantificationError):
-    """A rocking series is inconsistent with a single lattice-translation height (the fitted
-    intercept is not an integer number of 2 pi within the stated tolerance)."""
+    """The 2 pi branch of a rocking series is unresolved (criterion B16): the intercept standard
+    error is not below pi/3, the intercept is not consistent with 2 pi n at 3 sigma (not a single
+    lattice-translation height), or the residual chi-square is inconsistent with the declared
+    phase uncertainties. The message starts with "branch unresolved"."""
 
 
 class TiltStepTooLargeError(QuantificationError):
-    """Consecutive tilts of a rocking series can change the phase by pi or more for |h| <= h_max."""
+    """Consecutive tilts of a rocking series can change the phase by pi or more for |h| <= h_max,
+    once three standard deviations of the increment's noise are included (criterion B16)."""

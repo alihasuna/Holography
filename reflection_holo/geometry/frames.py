@@ -65,6 +65,8 @@ def surface_frame(normal_hkl, azimuth_uvw) -> SurfaceFrame:
     z = b / np.linalg.norm(b)
     y = np.cross(z, x)
     R = np.vstack([x, y, z])
-    assert np.allclose(R @ R.T, np.eye(3), atol=1e-12), "frame not orthonormal"
-    assert abs(np.linalg.det(R) - 1.0) < 1e-12, "frame not right-handed"
+    if not np.allclose(R @ R.T, np.eye(3), atol=1e-12):      # explicit raises survive python -O
+        raise RuntimeError("frame not orthonormal")
+    if not abs(np.linalg.det(R) - 1.0) < 1e-12:
+        raise RuntimeError("frame not right-handed")
     return SurfaceFrame(tuple(int(v) for v in normal_hkl), tuple(int(v) for v in azimuth_uvw), R)

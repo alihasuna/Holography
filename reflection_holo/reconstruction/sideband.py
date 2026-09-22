@@ -10,8 +10,13 @@ default).
 Procedure
 1. ``locate_carrier``: on an EMPTY (reference-only) or flat-region hologram, never on an object
    hologram (refused unless the trap is demonstrated on purpose): the brightest |FFT| bin inside a
-   declared search disc around the expected sideband, outside a declared exclusion disc about q = 0
-   (argmax taken in centred fftshift order, the calculator's tie-break for exactly equal bins).
+   declared search disc around the expected sideband, outside a declared exclusion disc about q = 0.
+   The sideband is DECLARED (``CarrierSearch.sideband_declaration``, with its evidence) and the
+   search region must lie on one side of a line through the origin (disc radius < |guess|), and
+   must hold no Hermitian pair of bins on the grid (Nyquist aliasing): |F(q)| = |F(-q)| for a real
+   hologram, so a region holding both sidebands would choose by array order (audit A2 M1;
+   model_assumptions B15). Exactly equal bins inside the region go to the one closest to the
+   guess, then to the first in centred (fftshift) order.
    Sub-pixel refinement (declared): "none" (integer bin) or "dft_ratio": along each axis, the exact
    single-tone interpolation from the complex ratio rho = X[k +- 1]/X[k] of the peak bin and its larger
    neighbour, u = (1 - rho)/(1 - rho z^-+1), z = exp(2 pi i/n), delta = n arg(u)/(2 pi) bins
@@ -20,8 +25,9 @@ Procedure
 2. Sideband selection: the sideband at q_s holds u_o u_r^*, i.e. phi_o - phi_r, when q_s = -q_ref for a
    reference u_r ~ exp(+2 pi i q_ref.r) (numpy FFT sign, exp(+ik.r) convention; physics_conventions).
    Which of the two sidebands this is in an experiment is a declared input (PROJECT_INPUT items 10 and
-   16); for simulated holograms the choice is checked against the recorded reference carrier and the
-   outcome is stored in ``SidebandResult.sideband_sign_check``.
+   16); for simulated holograms the choice is checked against the recorded reference carrier, the
+   outcome is stored in ``SidebandResult.sideband_sign_check``, and a CONJUGATE result is refused
+   unless the call is an explicit trap demonstration.
 3. Mask: a disc of declared radius R (cycles/A) centred on the refined q_s, apodisation "none"
    (top-hat) or "hann" (0.5 (1 + cos(pi r/R)) for r < R). The disc must not contain q = 0 and must lie
    inside the Nyquist band; otherwise the call fails.
@@ -30,9 +36,15 @@ Procedure
    exp(i(phi_o - phi_r)) with numpy's normalisation. No zero padding, no real-space window.
 5. Reference correction (declared): "none", or "divide_empty": w_obj / w_empty with the same carrier
    and mask applied to the empty hologram (removes the residual carrier, the reference's residual
-   phase and the mask's own transfer).
-6. Unwrapping (declared): "none" or "itoh_raster": 1-D Itoh unwrapping down column 0, then along each
-   row from its unwrapped first pixel. Path-following, NOT residue-aware: it fails at phase
+   phase and the mask's own transfer). Validity (audit A2 m1): with "divide_empty" the caller
+   declares ``empty_amplitude_threshold`` t (0 <= t < 1); where |w_empty| <= t x median(|w_empty|)
+   (exact zeros always) the corrected phase and amplitude are NaN and ``valid_mask`` is False, with
+   a RuntimeWarning; with "none", exact zeros of |w_obj| are treated the same way. The reference's
+   own validity (the R2 ``valid_mask`` of the hologram metadata) is ANDed into ``valid_mask``; those
+   values are kept but flagged.
+6. Unwrapping (declared): "none" or "itoh_raster": 1-D Itoh unwrapping down column 0 from its first
+   valid pixel, then along each row from its unwrapped first pixel; a pixel whose path meets an
+   invalid (NaN or masked) pixel is NaN. Path-following, NOT residue-aware: it fails at phase
    singularities and in low-amplitude or noisy regions. The raw wrapped phase is always kept.
 7. NO ramp or plane is removed by the reconstruction. ``fit_phase_plane`` / ``subtract_phase_plane``
    are separate, explicit calls with a declared fitting region; their inputs are never modified.
@@ -41,6 +53,7 @@ Resolution (SM12): 1/R, reported in A and in fringe spacings (|q_s|/R; 3 for R =
 """
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -75,34 +88,57 @@ def _positive(name: str, value, *, allow_inf: bool = False) -> float:
 class CarrierSearch:
     """Declared carrier-location method (PROJECT_INPUT item 19). No defaults.
 
-    sideband_guess_cycles_per_A   expected position of the phi_o - phi_r sideband (= -q_ref)
-    search_radius_cycles_per_A    search disc about the guess (inf: whole plane)
+    sideband_guess_cycles_per_A   expected position of the phi_o - phi_r sideband (= -q_ref); non-zero
+    search_radius_cycles_per_A    search disc about the guess; finite and < |guess|, so that the
+                                  disc lies on one side of a line through the origin and cannot
+                                  hold both Hermitian partners (audit A2 M1; B15)
     exclusion_radius_cycles_per_A disc about q = 0 excluded from the search (centre band)
     subpixel                      "none" or "dft_ratio" (module docstring, step 1)
+    sideband_declaration          which sideband the guess is and on what evidence, e.g. "-q_ref of
+                                  the simulated reference" or "PROJECT_INPUT items 10, 16: ..."
     """
 
     sideband_guess_cycles_per_A: tuple[float, float]
     search_radius_cycles_per_A: float
     exclusion_radius_cycles_per_A: float
     subpixel: str
+    sideband_declaration: str
 
     def __post_init__(self):
-        object.__setattr__(self, "sideband_guess_cycles_per_A",
-                           _require_2vector("sideband_guess_cycles_per_A", self.sideband_guess_cycles_per_A))
-        object.__setattr__(self, "search_radius_cycles_per_A",
-                           _positive("search_radius_cycles_per_A", self.search_radius_cycles_per_A, allow_inf=True))
+        g = _require_2vector("sideband_guess_cycles_per_A", self.sideband_guess_cycles_per_A,
+                             allow_zero=False)
+        object.__setattr__(self, "sideband_guess_cycles_per_A", g)
+        r = self.search_radius_cycles_per_A
+        if r is None:
+            raise ValueError("search_radius_cycles_per_A is required (PROJECT_INPUT item 19); no "
+                             "default is substituted")
+        r = float(r)
+        if np.isnan(r) or r <= 0:
+            raise ValueError(f"search_radius_cycles_per_A must be > 0; got {r!r}")
+        if not r < float(np.hypot(*g)):
+            raise ValueError(
+                f"search disc of radius {r} cycles/A about the guess {g} (|guess| = "
+                f"{np.hypot(*g):.6g}) is not confined to one side of a line through the origin: it "
+                f"holds Hermitian partners q and -q, whose |F| are equal for a real hologram, so the "
+                f"sideband would be chosen by array order (audit A2 M1; model_assumptions B15). "
+                f"Declare the phi_o - phi_r sideband and use a radius < |guess|")
+        object.__setattr__(self, "search_radius_cycles_per_A", r)
         v = self.exclusion_radius_cycles_per_A
         if v is None or not np.isfinite(float(v)) or float(v) < 0:
             raise ValueError("exclusion_radius_cycles_per_A must be a finite value >= 0")
         object.__setattr__(self, "exclusion_radius_cycles_per_A", float(v))
         if self.subpixel not in SUBPIXEL_METHODS:
             raise ValueError(f"subpixel must be one of {SUBPIXEL_METHODS}; got {self.subpixel!r}")
+        d = self.sideband_declaration
+        if not isinstance(d, str) or not d.strip():
+            raise ValueError("sideband_declaration must declare which sideband the guess is and on "
+                             "what evidence (PROJECT_INPUT items 10, 16, 19 for experiments; B15)")
 
     def as_record(self) -> dict:
         return {"sideband_guess_cycles_per_A": list(self.sideband_guess_cycles_per_A),
                 "search_radius_cycles_per_A": self.search_radius_cycles_per_A,
                 "exclusion_radius_cycles_per_A": self.exclusion_radius_cycles_per_A,
-                "subpixel": self.subpixel}
+                "subpixel": self.subpixel, "sideband_declaration": self.sideband_declaration}
 
 
 @dataclass(frozen=True)
@@ -197,13 +233,26 @@ def locate_carrier(hologram: Hologram, search: CarrierSearch, *,
     sel &= np.hypot(q0, q1) > search.exclusion_radius_cycles_per_A
     if not np.any(sel):
         raise ValueError("the declared search region contains no frequency bins")
-    mag = np.where(sel, np.abs(F), -1.0)
-    # argmax in centred (fftshift) order, as the calculator's _sideband_wave: an exact tie (the
-    # Hermitian pair +-q of a real hologram, when the region contains both) goes to the more negative
-    # axis-0 frequency, then the more negative axis-1 frequency.
-    ks = np.unravel_index(int(np.argmax(np.fft.fftshift(mag))), mag.shape)
     n0, n1 = grid.shape
-    k = (int((ks[0] - n0 // 2) % n0), int((ks[1] - n1 // 2) % n1))
+    i0, i1 = np.nonzero(sel)
+    p0, p1 = (-i0) % n0, (-i1) % n1
+    partner = sel[p0, p1]
+    if np.any(partner):
+        distinct = partner & ((p0 != i0) | (p1 != i1))
+        j = int(np.argmax(distinct)) if np.any(distinct) else int(np.argmax(partner))
+        raise ValueError(
+            f"the declared search region holds the bin {(int(i0[j]), int(i1[j]))} and its Hermitian "
+            f"partner {(int(p0[j]), int(p1[j]))} (through Nyquist aliasing): |F| is equal on both "
+            f"(a self-partner bin is real and carries no sideband phase), so the sideband would be "
+            f"chosen by array order (audit A2 M1; B15); move the search disc away from the "
+            f"Nyquist band")
+    mag = np.where(sel, np.abs(F), -1.0)
+    # exactly equal bins inside the region: closest to the guess, then first in centred order
+    cand = np.argwhere(mag == mag.max())
+    dist = np.hypot(q0[cand[:, 0], cand[:, 1]] - g[0], q1[cand[:, 0], cand[:, 1]] - g[1])
+    shifted = np.column_stack([(cand[:, 0] + n0 // 2) % n0, (cand[:, 1] + n1 // 2) % n1])
+    best = np.lexsort((shifted[:, 1], shifted[:, 0], dist))[0]
+    k = (int(cand[best, 0]), int(cand[best, 1]))
     qb = (float(q0[k]), float(q1[k]))
     if search.subpixel == "dft_ratio":
         off = (_dft_ratio_offset(F, k, 0), _dft_ratio_offset(F, k, 1))
@@ -278,12 +327,33 @@ def _demodulate(intensity: np.ndarray, grid: Grid, qs: tuple[float, float], W: n
 # unwrapping and explicit ramp fitting
 # ------------------------------------------------------------------------------------------------
 
-def unwrap_itoh_raster(phase: np.ndarray) -> np.ndarray:
-    """1-D Itoh unwrapping down column 0, then along every row (see module docstring, step 6)."""
+def unwrap_itoh_raster(phase: np.ndarray, valid: np.ndarray | None = None) -> np.ndarray:
+    """1-D Itoh unwrapping down column 0, then along every row (see module docstring, step 6).
+
+    ``valid`` (default: the finite pixels) marks the pixels the path may use. The path starts at the
+    first valid pixel of column 0; a pixel is unwrapped only if its path (down column 0 from the
+    start, then along its row) meets no invalid pixel; every other pixel is NaN (no value is
+    invented). For an all-valid input this is exactly the plain raster unwrap."""
     p = np.asarray(phase, dtype=float)
-    col0 = np.unwrap(p[:, 0])
-    rows = np.unwrap(p, axis=1)
-    return rows + (col0 - p[:, 0])[:, None]
+    ok = np.isfinite(p) if valid is None else (np.asarray(valid, dtype=bool) & np.isfinite(p))
+    if ok.shape != p.shape:
+        raise ValueError("valid must have the shape of the phase")
+    if ok.all():
+        col0 = np.unwrap(p[:, 0])
+        rows = np.unwrap(p, axis=1)
+        return rows + (col0 - p[:, 0])[:, None]
+    out = np.full(p.shape, np.nan)
+    start = np.flatnonzero(ok[:, 0])
+    if start.size == 0:
+        return out
+    s = int(start[0])
+    stop = s + (int(np.argmin(ok[s:, 0])) if not ok[s:, 0].all() else ok.shape[0] - s)
+    col0 = np.unwrap(p[s:stop, 0])
+    for k, i in enumerate(range(s, stop)):
+        row_ok = ok[i]
+        end = int(np.argmin(row_ok)) if not row_ok.all() else row_ok.size
+        out[i, :end] = np.unwrap(p[i, :end]) + (col0[k] - p[i, 0])
+    return out
 
 
 @dataclass(frozen=True, eq=False)
@@ -323,6 +393,9 @@ def fit_phase_plane(phase_unwrapped: np.ndarray, grid: Grid, region: np.ndarray,
         raise ValueError("region_description is required")
     if m.sum() < 3:
         raise ValueError("fitting region needs at least 3 pixels")
+    if not np.all(np.isfinite(p[m])):
+        raise ValueError("the fitting region contains invalid (non-finite) pixels; exclude them "
+                         "from the declared region (SidebandResult.valid_mask)")
     for ax in (0, 1):
         both = m & np.roll(m, -1, axis=ax)
         both = both.copy()
@@ -363,6 +436,9 @@ class SidebandResult:
     wrapped_phase         after the declared reference correction (== raw when "none")
     unwrapped_phase       per the declared unwrapping (None when "none")
     amplitude             |w| after the declared correction (|u_o||u_r| when "none")
+    valid_mask            False where the phase is undefined (NaN: sideband amplitude at or below
+                          the declared threshold) or the reference is invalid (R2 source outside
+                          the field; values kept); module docstring, step 5
     """
 
     wrapped_phase_raw: np.ndarray
@@ -381,11 +457,12 @@ class SidebandResult:
     resolution_fringe_spacings: float
     sideband_sign_check: str
     grid: Grid
+    valid_mask: np.ndarray
     parameters: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         for name in ("wrapped_phase_raw", "wrapped_phase", "unwrapped_phase", "amplitude",
-                     "amplitude_raw", "object_sideband", "empty_sideband", "mask"):
+                     "amplitude_raw", "object_sideband", "empty_sideband", "mask", "valid_mask"):
             a = getattr(self, name)
             if a is not None:
                 a.setflags(write=False)
@@ -405,13 +482,24 @@ def _sign_check(hologram: Hologram, qs: tuple[float, float]) -> str:
 
 def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation, mask: MaskSpec,
                          empty_hologram: Hologram | None, reference_correction: str,
-                         unwrapping: str) -> SidebandResult:
+                         unwrapping: str, empty_amplitude_threshold: float | None = None,
+                         trap_demonstration: bool = False) -> SidebandResult:
     """Sideband reconstruction with every processing choice declared (module docstring).
 
     The carrier must come from ``locate_carrier`` on an empty or flat-region hologram with the same
     pixel sizes, axes and plane (a crop of different shape is allowed; the sideband centre is
     transferred in cycles/A). Returns phases only; heights belong to quantification/.
+
+    ``empty_amplitude_threshold`` (0 <= t < 1, relative to the median |empty sideband|) must be
+    declared with reference_correction="divide_empty" and must not be given otherwise (step 5).
+
+    Refused (ValueError): a carrier located on an OBJECT hologram (the brightest-bin trap, audit
+    A2 m7) and, for simulated holograms that record their reference carrier, a sideband that is the
+    CONJUGATE of phi_o - phi_r (audit A2 M1). ``trap_demonstration=True`` lifts both refusals ONLY
+    for tests and scripts that demonstrate the trap; it is recorded in ``parameters``.
     """
+    if not isinstance(trap_demonstration, bool):
+        raise TypeError("trap_demonstration must be True or False")
     if not isinstance(object_hologram, Hologram):
         raise TypeError("object_hologram must be a Hologram")
     if not isinstance(carrier, CarrierLocation):
@@ -422,6 +510,9 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
         raise ValueError(f"reference_correction must be one of {REFERENCE_CORRECTIONS}")
     if unwrapping not in UNWRAPPINGS:
         raise ValueError(f"unwrapping must be one of {UNWRAPPINGS}")
+    if carrier.hologram_content == "object" and not trap_demonstration:
+        raise ValueError("the carrier was located on an OBJECT hologram (brightest-bin trap, audit "
+                         "C3; docs/03 section 6): refused unless trap_demonstration=True")
     grid = object_hologram.grid
     grid.assert_same_sampling(carrier.grid, "object hologram and carrier-location hologram")
     if reference_correction == "divide_empty":
@@ -430,27 +521,66 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
         grid.assert_same(empty_hologram.grid, "object and empty holograms")
         if empty_hologram.content == "object":
             raise ValueError("the reference-correction hologram must be empty or flat_region")
+        if empty_amplitude_threshold is None:
+            raise ValueError("reference_correction='divide_empty' requires a declared "
+                             "empty_amplitude_threshold (relative to the median |empty sideband|; "
+                             "PROJECT_INPUT item 19)")
+        thr = float(empty_amplitude_threshold)
+        if not (np.isfinite(thr) and 0.0 <= thr < 1.0):
+            raise ValueError(f"empty_amplitude_threshold must lie in [0, 1); got {empty_amplitude_threshold!r}")
     elif empty_hologram is not None:
         raise ValueError("empty_hologram given but reference_correction='none': declare the correction")
+    elif empty_amplitude_threshold is not None:
+        raise ValueError("empty_amplitude_threshold applies only to reference_correction='divide_empty'")
 
     qs = carrier.sideband_centre_cycles_per_A
+    sign_check = _sign_check(object_hologram, qs)
+    if sign_check.startswith("CONJUGATE") and not trap_demonstration:
+        raise ValueError(f"sideband sign check: {sign_check}; the located sideband is the conjugate "
+                         f"of the declared phi_o - phi_r sideband ({carrier.search.sideband_declaration!r}),"
+                         f" which flips the sign of the phase and of every height (audit A2 M1)")
     W = sideband_mask(grid, qs, mask)
     w_obj = _demodulate(object_hologram.intensity, grid, qs, W)
     phase_raw = np.angle(w_obj)
     amp_raw = np.abs(w_obj)
     w_emp = None
+    valid = np.ones(grid.shape, dtype=bool)
+    reference_masks = []
+    for name, h in (("object", object_hologram), ("empty", empty_hologram)):
+        vm = h.metadata.get("valid_mask") if h is not None else None
+        if vm is not None:
+            vm = np.asarray(vm, dtype=bool)
+            if vm.shape != grid.shape:
+                raise ValueError(f"{name} hologram valid_mask is not on the grid")
+            valid &= vm
+            reference_masks.append(f"{name} hologram reference valid_mask ({int((~vm).sum())} px)")
     if reference_correction == "divide_empty":
         w_emp = _demodulate(empty_hologram.intensity, grid, qs, W)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            w = w_obj / w_emp
+        amp_emp = np.abs(w_emp)
+        cut = thr * float(np.median(amp_emp))
+        undefined = amp_emp <= cut
+        w = np.full(grid.shape, np.nan + 1j * np.nan)
+        w[~undefined] = w_obj[~undefined] / w_emp[~undefined]
+        what = (f"empty-hologram sideband amplitude at or below {thr:g} x its median "
+                f"({cut:.4g})")
     else:
-        w = w_obj
+        undefined = amp_raw == 0.0
+        w = np.where(undefined, np.nan + 1j * np.nan, w_obj)
+        what = "object-hologram sideband amplitude exactly 0 (phase undefined)"
+    n_undef = int(undefined.sum())
+    if n_undef:
+        warnings.warn(f"{n_undef} of {undefined.size} pixels have {what}: phase and amplitude set "
+                      f"to NaN and valid_mask False there (audit A2 m1)", RuntimeWarning,
+                      stacklevel=2)
+    valid &= ~undefined
     phase = np.angle(w)
     amp = np.abs(w)
-    unwrapped = unwrap_itoh_raster(phase) if unwrapping == "itoh_raster" else None
+    unwrapped = unwrap_itoh_raster(phase, valid) if unwrapping == "itoh_raster" else None
     R = mask.radius_cycles_per_A
     qmag = float(np.hypot(*qs))
     params = {"carrier": carrier.as_record(), "mask": mask.as_record(),
+              "sideband_declaration": carrier.search.sideband_declaration,
+              "trap_demonstration": trap_demonstration,
               "reference_correction": reference_correction, "unwrapping": unwrapping,
               "zero_padding": "none", "real_space_window": "none", "ramp_removal": "none (never implicit)",
               "fft": "numpy.fft.fft2, kernel exp(-2 pi i q.r), unshifted layout",
@@ -459,10 +589,14 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
               "grid": grid.as_record(), "mask_radius_over_carrier": R / qmag,
               "centre_band_clearance_cycles_per_A": qmag - R,
               "resolution_definition": "1/R (SM12: about three fringe spacings for R = |q_c|/3)",
+              "validity": {"empty_amplitude_threshold_relative": (thr if reference_correction
+                                                                  == "divide_empty" else None),
+                           "n_invalid_amplitude": n_undef, "reference_masks": reference_masks,
+                           "n_invalid_total": int((~valid).sum())},
               "numpy_version": np.__version__}
     return SidebandResult(phase_raw, phase, unwrapped, amp, amp_raw, w_obj, w_emp, W, carrier, mask,
                           reference_correction, unwrapping, 1.0 / R, qmag / R,
-                          _sign_check(object_hologram, qs), grid, params)
+                          sign_check, grid, valid, params)
 
 
 # ------------------------------------------------------------------------------------------------

@@ -77,12 +77,16 @@ class SpecularCondition:
         self.theta_B_vac = float(np.arcsin(s)) if s <= 1.0 else np.nan
 
         self.K_int = np.pi * self.n / self.d_A
-        self.theta_int = float(np.arcsin(np.clip(self.K_int / self.k_int, -1, 1)))
+        if self.K_int > self.k_int:
+            raise ValueError(
+                f"order {self.n} of d = {self.d_A:.6f} A is beyond backscattering: sin(theta_int) = "
+                f"K_int / k_int = {self.K_int / self.k_int:.4f} > 1 (refused, not clipped; audit A2)")
+        self.theta_int = float(np.arcsin(self.K_int / self.k_int))
 
         arg = self.K_int**2 - self.dK**2
         self.accessible = bool(arg > 0.0)
         self.K_ext = float(np.sqrt(arg)) if self.accessible else np.nan
-        self.theta_ext = (float(np.arcsin(np.clip(self.K_ext / self.k, -1, 1)))
+        self.theta_ext = (float(np.arcsin(self.K_ext / self.k))   # K_ext <= k since K_int <= k_int
                           if self.accessible else np.nan)
         self.rho = self.K_ext / self.K_int if self.accessible else np.nan
         self.h_2pi_A = (self.lam_A / (2.0 * np.sin(self.theta_ext))

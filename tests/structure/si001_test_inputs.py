@@ -5,12 +5,14 @@ from pathlib import Path
 
 import numpy as np
 
+from reflection_holo.constants import A_SI_A
 from reflection_holo.structure import Staircase, build_si001_terraces
 
 AZIMUTH_LABEL = "TEST_ONLY: stands in for PROJECT_INPUT item 8 (beam azimuth)"
 THETA_LABEL = "TEST_ONLY: stands in for PROJECT_INPUT item 7 (external glancing angle)"
 OVERLAYER_LABEL = "TEST_ONLY: stands in for PROJECT_INPUT item 12 (overlayer)"
 FEATURE_LABEL = "TEST_ONLY: stands in for PROJECT_INPUT item 13 (pattern geometry)"
+LATTICE_LABEL = "ASSUMPTION B2"          # reflection_holo.constants.A_SI_A, passed explicitly
 
 # docs/03 section 4: "At 22.5 mrad (a round illustrative angle ...)" -- TEST_ONLY angle
 THETA_22P5_MRAD = 22.5e-3
@@ -19,13 +21,16 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def build(staircase, azimuth=(1, 1, 0), edge_periods=2, substrate_layers=5,
-          backbond=(1, 1, 0), overlayer=None, termination="bulk", vacuum_above_A=10.0):
+          backbond=(1, 1, 0), overlayer=None, termination="bulk", vacuum_above_A=10.0,
+          lattice_parameter_A=A_SI_A, lattice_parameter_label=LATTICE_LABEL):
     """Test helper: every builder argument is passed explicitly."""
     return build_si001_terraces(azimuth_uvw=azimuth, azimuth_label=AZIMUTH_LABEL,
                                 staircase=staircase, edge_periods=edge_periods,
                                 substrate_layers=substrate_layers,
                                 first_terrace_backbond_uvw=backbond, termination=termination,
-                                overlayer=overlayer, vacuum_above_A=vacuum_above_A)
+                                overlayer=overlayer, vacuum_above_A=vacuum_above_A,
+                                lattice_parameter_A=lattice_parameter_A,
+                                lattice_parameter_label=lattice_parameter_label)
 
 
 def brute_force_pairs(pos, Ly, Lz, cutoff):

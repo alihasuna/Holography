@@ -11,9 +11,14 @@ Physics of the steps (docs/03 section 2; calculator section 2b and ``screw_searc
 
 * an a/2 (double-layer) step joins terraces related by a pure lattice translation with
   ``t . n_hat = a/2``: model_assumptions B4 applies far from the riser;
-* an a/4 (single-layer) step joins terraces related by the diamond 4_1 screw: a 90 degree rotation
-  about [001] plus a translation with ``t . n_hat = a/4``; the top-layer back-bond axis (and the
-  dimer-row direction, were a reconstruction enabled) rotates by 90 degrees; B4 does NOT apply.
+* an a/4 (single-layer) step joins terraces related by the diamond 4_1 and 4_3 screws (a 90 degree
+  rotation about [001] plus a translation with ``t . n_hat = a/4``) and by the two <100> d-glides,
+  never by a translation; the top-layer back-bond axis (and the dimer-row direction, were a
+  reconstruction enabled) rotates by 90 degrees. At an exact <100> azimuth the d-glide whose plane
+  contains the beam and the normal fixes k_in and k_out, so B4 applies for bulk-terminated terraces
+  (C2 section 1; SM26); at <110> no operation fixes the beam, and B4 does not apply (dynamical
+  residual delta, model_assumptions open question 3). ``b4_statement`` records this per step from
+  the operations measured on the atoms (audit A2 m3).
 
 Both relations are verified numerically on the built atoms by :func:`find_terrace_relations`, which
 generalises the calculator's ``screw_search`` (90 degree rotations times translations on an a/8
@@ -32,7 +37,7 @@ from dataclasses import dataclass
 import numpy as np
 
 import reflection_holo
-from reflection_holo.constants import A_SI_A, DIAMOND_BASIS
+from reflection_holo.constants import DIAMOND_BASIS
 from reflection_holo.geometry.frames import SurfaceFrame, surface_frame
 from reflection_holo.io.labels import require_evidence_label
 
@@ -133,9 +138,10 @@ class Si001Structure:
 # --------------------------------------------------------------------------------------------------
 # Assertions (d) and (e): the staircase request
 # --------------------------------------------------------------------------------------------------
-def validate_staircase(st: Staircase, a_A: float = A_SI_A) -> list[dict]:
+def validate_staircase(st: Staircase, a_A: float) -> list[dict]:
     """Refuse staircases that are not continuous under the periodic boundary or whose steps are not
-    a/4 or a/2; return the step list (including a non-zero step at the periodic cell edge)."""
+    a/4 or a/2; return the step list (including a non-zero step at the periodic cell edge).
+    a_A: the lattice parameter (required; the builder's labelled argument)."""
     if st.edges not in ("parallel", "transverse"):
         raise ValueError(f"edges must be 'parallel' or 'transverse' to the beam, got {st.edges!r}")
     t = [int(v) for v in st.terrace_layers]
@@ -147,7 +153,11 @@ def validate_staircase(st: Staircase, a_A: float = A_SI_A) -> list[dict]:
         raise ValueError("terrace heights (a/4 layers) and widths (periods) must be integers")
     if any(v < 1 for v in w):
         raise ValueError("terrace widths must be at least one in-plane period")
-    b = int(st.boundary_step_layers)
+    braw = st.boundary_step_layers
+    if isinstance(braw, bool) or not isinstance(braw, (int, np.integer, float, np.floating)) \
+            or int(braw) != braw:
+        raise ValueError(f"boundary_step_layers must be an integer number of a/4 layers, got {braw!r}")
+    b = int(braw)
     q = a_A / 4.0
     n = len(t)
     steps = []
@@ -188,7 +198,7 @@ def validate_staircase(st: Staircase, a_A: float = A_SI_A) -> list[dict]:
 
 
 def assert_step_heights(measured_tops_A, st: Staircase, steps: list[dict],
-                        a_A: float = A_SI_A, tol_A: float = POSITION_TOL_A) -> None:
+                        a_A: float, tol_A: float = POSITION_TOL_A) -> None:
     """(d)/(e) on the built atoms: every measured step (including the one at the periodic cell edge)
     equals the requested a/4 or a/2 height, and the measured closing step equals the declared one."""
     h = np.asarray(measured_tops_A, float)
@@ -226,7 +236,7 @@ _MIRROR_NORMALS = {"mirror(100)": (1, 0, 0), "mirror(010)": (0, 1, 0),
 _SCREW_OPS = ("Rz(+90)", "Rz(-90)")
 
 
-def is_diamond_symmetry(M: np.ndarray, t_crystal_A: np.ndarray, a_A: float = A_SI_A,
+def is_diamond_symmetry(M: np.ndarray, t_crystal_A: np.ndarray, a_A: float,
                         tol_A: float = POSITION_TOL_A) -> bool:
     """True if r -> M r + t maps the diamond lattice onto itself.
 
@@ -264,7 +274,7 @@ def _layer_offsets(rc: np.ndarray, depth: np.ndarray, a_A: float, tol_A: float, 
 
 
 def find_terrace_relations(rc_A: np.ndarray, depth_A: np.ndarray, rc_B: np.ndarray,
-                           depth_B: np.ndarray, a_A: float = A_SI_A, grid: int = 8,
+                           depth_B: np.ndarray, a_A: float, grid: int = 8,
                            tol_A: float = POSITION_TOL_A) -> list[dict]:
     """Operations S(r) = M r + t mapping the top layers of terrace A onto those of terrace B.
 
@@ -311,7 +321,7 @@ def find_terrace_relations(rc_A: np.ndarray, depth_A: np.ndarray, rc_B: np.ndarr
 
 
 def classify_relation(relations: list[dict], delta_layers: int, axis_from, axis_to,
-                      a_A: float = A_SI_A, tol_A: float = POSITION_TOL_A) -> str:
+                      a_A: float, tol_A: float = POSITION_TOL_A) -> str:
     """(f): a/2 steps must be pure lattice translations, a/4 steps 4_1 screws (and not
     translations), with the top-layer back-bond axis unchanged or rotated by 90 degrees."""
     names = {r["operation"] for r in relations}
@@ -338,6 +348,35 @@ def classify_relation(relations: list[dict], delta_layers: int, axis_from, axis_
             raise StructureAssertionError("(f) a/4 step: top-layer back-bond axis did not rotate")
         return "screw"
     raise StructureAssertionError(f"(f) step of {delta_layers} layers is not a/4 or a/2")
+
+
+B4_TRANSLATION = "applies far from the riser (pure translation)"
+B4_A4_100 = "B4 applies for bulk-terminated terraces (d-glide in the incidence plane; SM26, C2)"
+B4_A4_110 = "does not apply (dynamical residual delta; open question 3)"
+B4_A4_OTHER = "does not apply"
+
+
+def b4_statement(kind: str, azimuth_uvw, incidence_plane_operations) -> str:
+    """Whether model_assumptions B4 (dynamical reflection phase cancels between the terraces) holds
+    for a step, from its measured relation (audit A2 m3; C2 section 1; SM26).
+
+    kind "translation" (a/2): B4 applies far from the riser. kind "screw" (a/4): at an exact <100>
+    azimuth AND with an incidence-plane glide measured on the atoms, B4 applies for bulk-terminated
+    terraces; at <110> it does not (the dynamical residual delta, open question 3); at any other
+    azimuth, or without the measured glide, it does not apply. The caveats of B4 (riser region,
+    2x1 reconstruction, overlayer, strain, azimuthal misalignment to first order) are stated in
+    docs/model_assumptions.md and are not re-asserted here.
+    """
+    if kind == "translation":
+        return B4_TRANSLATION
+    if kind != "screw":
+        raise ValueError(f"kind must be 'translation' or 'screw', got {kind!r}")
+    az = tuple(int(v) for v in azimuth_uvw)
+    if az in _AZIMUTHS["<100>"]:
+        return B4_A4_100 if list(incidence_plane_operations) else B4_A4_OTHER
+    if az in _AZIMUTHS["<110>"]:
+        return B4_A4_110
+    return B4_A4_OTHER
 
 
 def _measure_backbond_axes(layer, terrace, tops, pairs, frame, a_A, tol_A):
@@ -414,7 +453,8 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                          edge_periods: int, substrate_layers: int,
                          first_terrace_backbond_uvw, termination: str,
                          overlayer: OverlayerSpec | None,
-                         vacuum_above_A: float) -> Si001Structure:
+                         vacuum_above_A: float, lattice_parameter_A: float,
+                         lattice_parameter_label: str) -> Si001Structure:
     """Build a bulk-terminated Si(001) terrace staircase and run assertions (a) to (g).
 
     Every argument is required (keyword-only, no defaults):
@@ -431,8 +471,17 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     overlayer                    :class:`OverlayerSpec` (PROJECT_INPUT item 12) or None (explicit
                                  clean surface, ASSUMPTION B7)
     vacuum_above_A               vacuum above the highest top layer inside the (non-periodic) x box
+    lattice_parameter_A, lattice_parameter_label
+                                 the lattice parameter (A) and its evidence label, e.g.
+                                 reflection_holo.constants.A_SI_A with "ASSUMPTION B2", or a
+                                 configuration's value with its label (audit A2 m6; never
+                                 hard-coded)
     """
-    a = float(A_SI_A)
+    require_evidence_label(lattice_parameter_label, "lattice parameter (model_assumptions B2)",
+                           accepted=LABEL_PREFIXES, qualified=True)
+    a = float(lattice_parameter_A)
+    if not (np.isfinite(a) and a > 0.0):
+        raise ValueError(f"lattice_parameter_A must be finite and > 0, got {lattice_parameter_A!r}")
     q = a / 4.0
     require_evidence_label(azimuth_label, "azimuth (PROJECT_INPUT item 8)",
                            accepted=LABEL_PREFIXES, qualified=True)
@@ -558,10 +607,9 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                 incidence_plane_mirror_note=(
                     "DERIVED_HERE symmetry fact measured on the atoms: a mirror (or glide) whose "
                     "plane contains the beam azimuth and the normal maps one terrace onto the "
-                    "other; its consequence for the dynamical reflectivity is NOT asserted here"),
-                model_assumption_B4=("applies far from the riser (pure translation)"
-                                     if kind == "translation" else
-                                     "does NOT apply (4_1 screw-related terraces)"),
+                    "other; its consequence for the reflectivity is model_assumption_B4 "
+                    "(C2 section 1.3; SM26)"),
+                model_assumption_B4=b4_statement(kind, az, mirrors),
             ))
     passed.append("(f) a/2 terraces related by a pure lattice translation, a/4 terraces by a "
                   "90-degree screw (measured on the atoms)")
@@ -598,7 +646,7 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                               "(docs/physics_conventions.md)",
                    x_hat_crystal=frame.x_hat.tolist(), y_hat_crystal=frame.y_hat.tolist(),
                    z_hat_crystal=frame.z_hat.tolist(), crystal_origin_slab_A=origin.tolist()),
-        lattice=dict(a_A=a, a_label="ASSUMPTION B2", basis="constants.DIAMOND_BASIS (SM02)",
+        lattice=dict(a_A=a, a_label=lattice_parameter_label, basis="constants.DIAMOND_BASIS (SM02)",
                      layer_spacing_A=q, nearest_neighbour_A=nearest_neighbour_distance_A(a),
                      in_plane_period_A=float(p), one_continuous_lattice=True),
         cell=dict(vectors_A=cell.tolist(), pbc=[False, True, True],

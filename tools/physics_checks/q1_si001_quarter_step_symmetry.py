@@ -555,7 +555,8 @@ def section_G(results):
             s = S.build_si001_terraces(azimuth_uvw=az, azimuth_label="TEST_ONLY C2 symmetry check",
                                        staircase=st, edge_periods=2, substrate_layers=4,
                                        first_terrace_backbond_uvw=bb, termination="bulk",
-                                       overlayer=None, vacuum_above_A=8.0)
+                                       overlayer=None, vacuum_above_A=8.0,
+                                       lattice_parameter_A=A, lattice_parameter_label="ASSUMPTION B2")
             st0 = s.metadata["steps"][0]
             rel = st0["relation"]
             found = sorted(names_pkg[n] for n in rel["operations_found"])
