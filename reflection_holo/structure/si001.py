@@ -351,8 +351,13 @@ def classify_relation(relations: list[dict], delta_layers: int, axis_from, axis_
 
 
 B4_TRANSLATION = "applies far from the riser (pure translation)"
-B4_A4_100 = "B4 applies for bulk-terminated terraces (d-glide in the incidence plane; SM26, C2)"
-B4_A4_110 = "does not apply (dynamical residual delta; open question 3)"
+B4_A4_100 = ("B4 applies for the specular beam (and, with the in-plane glide term, for other beams "
+             "in the incidence plane) of a plane wave on bulk-terminated terraces (d-glide in the "
+             "incidence plane); it does not apply to beams leaving the incidence plane, a 2x1 "
+             "reconstruction or an overlayer; the azimuthal spread is not analysed "
+             "(SM26, C2, E4 M1)")
+B4_A4_110 = ("does not apply (dynamical residual delta, not forced to vanish by symmetry (value "
+             "unknown); open question 3)")
 B4_A4_OTHER = "does not apply"
 
 
@@ -361,9 +366,12 @@ def b4_statement(kind: str, azimuth_uvw, incidence_plane_operations) -> str:
     for a step, from its measured relation (audit A2 m3; C2 section 1; SM26).
 
     kind "translation" (a/2): B4 applies far from the riser. kind "screw" (a/4): at an exact <100>
-    azimuth AND with an incidence-plane glide measured on the atoms, B4 applies for bulk-terminated
-    terraces; at <110> it does not (the dynamical residual delta, open question 3); at any other
-    azimuth, or without the measured glide, it does not apply. The caveats of B4 (riser region,
+    azimuth AND with an incidence-plane glide measured on the atoms, B4 applies for the specular beam
+    (and, with the in-plane glide term, for other beams in the incidence plane) of a plane wave on
+    bulk-terminated terraces, not for beams leaving the incidence plane, a 2x1 reconstruction or an
+    overlayer, and the azimuthal spread is not analysed (review E4 M1); at <110> it does not apply
+    (the dynamical residual delta is not forced to vanish by symmetry, value unknown, open
+    question 3); at any other azimuth, or without the measured glide, it does not apply. The caveats of B4 (riser region,
     2x1 reconstruction, overlayer, strain, azimuthal misalignment to first order) are stated in
     docs/model_assumptions.md and are not re-asserted here.
     """

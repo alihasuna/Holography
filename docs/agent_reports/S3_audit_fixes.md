@@ -525,3 +525,43 @@ The six warnings are the intended N4 aliasing warnings on the uniform grids of
 `tests/quantification/test_quant_rocking.py`. phase1_numbers has 19 checks since the orchestrator's
 commit 682c4ba. Not committed by S3 (the orchestrator snapshots the tree). NOT RUN: engine or
 dynamical runs, experimental data, `python -O`.
+
+### Round 2, last item: E4 M1 scope in the builder's B4 statements
+
+Fix: `reflection_holo/structure/si001.py` `B4_A4_100` now reads "B4 applies for the specular beam
+(and, with the in-plane glide term, for other beams in the incidence plane) of a plane wave on
+bulk-terminated terraces (d-glide in the incidence plane); it does not apply to beams leaving the
+incidence plane, a 2x1 reconstruction or an overlayer; the azimuthal spread is not analysed (SM26,
+C2, E4 M1)"; `B4_A4_110` reads "does not apply (dynamical residual delta, not forced to vanish by
+symmetry (value unknown); open question 3)"; the other-azimuth string "does not apply" and the a/2
+string are unchanged; `b4_statement` docstring updated. Test:
+`tests/structure/test_si001_audit_fixes.py` expectations updated first; before the code change
+`8 failed, 6 passed`; after `14 passed`. q1 (C2) still `41/41 self-checks pass`. Not committed.
+
+```
+$ venv/bin/pytest -q
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+........................................................................ [ 37%]
+........................................................................ [ 49%]
+........................................................................ [ 62%]
+........................................................................ [ 74%]
+........................................................................ [ 86%]
+........................................................................ [ 99%]
+....                                                                     [100%]
+=============================== warnings summary ===============================
+tests/quantification/test_quant_rocking.py::test_absolute_height_recovered_noise_free[10.0]
+tests/quantification/test_quant_rocking.py::test_absolute_height_recovered_noise_free[-10.0]
+tests/quantification/test_quant_rocking.py::test_absolute_height_recovered_noise_free[3.135531576941939]
+tests/quantification/test_quant_rocking.py::test_absolute_height_recovered_noise_free[2.7155]
+tests/quantification/test_quant_rocking.py::test_absolute_height_recovered_noise_free[-9.406594730825816]
+  /home/user/Holography/tests/quantification/test_quant_rocking.py:51: RuntimeWarning: aliasing above h_max = 10.5 A is undetectable on this tilt grid: a true height of 12.54 A would be accepted as -12.54 A (noise-free scan up to 60.7 A). The result assumes |h| <= h_max; use design_rocking_series() for a non-uniform series (A2b N4)
+    res = resolve_rocking_series(th, th, series(h, th), sigma_phi_rad=TEST_ONLY_SIGMA(th),
+
+tests/quantification/test_quant_rocking.py::test_absolute_height_with_noise_and_unsorted_input
+  /home/user/Holography/tests/quantification/test_quant_rocking.py:68: RuntimeWarning: aliasing above h_max = 10.5 A is undetectable on this tilt grid: a true height of 25.09 A would be accepted as -25.08 A (noise-free scan up to 110.8 A). The result assumes |h| <= h_max; use design_rocking_series() for a non-uniform series (A2b N4)
+    res = resolve_rocking_series(th[perm], th[perm], w[perm], sigma_phi_rad=np.full(th.size, 0.05),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+580 passed, 6 warnings in 19.69s
+```

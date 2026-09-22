@@ -20,8 +20,13 @@ from reflection_holo.structure import Staircase, build_si001_terraces, validate_
 from reflection_holo.structure import si001
 from si001_test_inputs import AZIMUTH_LABEL, LATTICE_LABEL, build
 
-B4_100 = "B4 applies for bulk-terminated terraces (d-glide in the incidence plane; SM26, C2)"
-B4_110 = "does not apply (dynamical residual delta; open question 3)"
+# round 2, last item (review E4 M1): the <100> statement carries its scope
+B4_100 = ("B4 applies for the specular beam (and, with the in-plane glide term, for other beams in "
+          "the incidence plane) of a plane wave on bulk-terminated terraces (d-glide in the "
+          "incidence plane); it does not apply to beams leaving the incidence plane, a 2x1 "
+          "reconstruction or an overlayer; the azimuthal spread is not analysed (SM26, C2, E4 M1)")
+B4_110 = ("does not apply (dynamical residual delta, not forced to vanish by symmetry (value "
+          "unknown); open question 3)")
 B4_A2 = "applies far from the riser (pure translation)"
 MIXED = Staircase(edges="transverse", terrace_layers=(0, 2, 1), terrace_widths=(3, 3, 3),
                   boundary_step_layers=-1)                  # a/2 up, a/4 down, a/4 down at the edge
