@@ -1,9 +1,10 @@
 # CFG-B: Ali's experiment, Si(001), ion-milled, 200 keV.
 # Facts from docs/05_final_repository_specification.md section 2 (row CFG-B) and
 # docs/06_project_inputs_required.md. Loader: reflection_holo.io.config (schema
-# reflection_holo.io.config.SCHEMAS["CFG-B"]). Every blocking input that has not been supplied is
-# null with its docs/06 item number: a run-level load FAILS and names items 3, 4, 5, 7, 8, 12, 13
-# and 15. Deleting one of these entries does not help: an absent required parameter fails exactly
+# reflection_holo.io.config.SCHEMAS["CFG-B"]). Every required input that has not been supplied is
+# null with its docs/06 item number: a run-level load FAILS and names items 3, 4, 5, 7, 8, 12,
+# 13 (not blocking, required here) and 15; the unsupplied parts of item 11 (miscut, terrace widths,
+# terrace types) have no field yet. Deleting one of these entries does not help: an absent required parameter fails exactly
 # like a null one (audit A2 M2). A parameter with a docs/06 item takes only PROJECT_INPUT (null, or a
 # value whose source says "supplied by <name> <YYYY-MM-DD>") or an ASSUMPTION with stands_in_for_item
 # and an assumption_id that reflection_holo/io/assumption_registry.yaml maps to that item (B1 -> 20,
@@ -16,9 +17,12 @@ status: experiment
 description: >-
   Ali's reflection-mode dark-field holography experiment on an ion-milled Si(001) surface at
   200 keV: single-layer a/4 steps (terraces related by the 4_1 and 4_3 screws and the two <100>
-  d-glides; at an exact <100> azimuth the bulk-terminated step phase is purely geometric, at <110>
-  a dynamical difference between the terrace types is expected; C2, SM26), double-layer a/2 steps
-  (lattice translation), patterned mesas and trenches of nm height (item 13), optional oxide or
+  d-glides. For the specular beam (and, with the in-plane glide term, for other beams in the
+  incidence plane) of a plane wave at the exact <100> azimuth, bulk-terminated a/4 terraces reflect
+  identically up to exp(-i (k_out - k_in).t) (C2 section 1.3; SM26). Not for beams leaving the
+  incidence plane (item 4), a 2x1 reconstruction, or an overlayer; azimuthal spread (item 3) not
+  analysed; at <110> the residual is not forced to vanish (value unknown, open question 3).),
+  double-layer a/2 steps (lattice translation), patterned mesas and trenches of nm height (item 13), optional oxide or
   amorphous overlayer (item 12). Proposed working condition (0,0,8) (item 9), second condition
   (0,0,12).
 parameters:
@@ -86,7 +90,7 @@ parameters:
     label: DERIVED_HERE
     source: "source map SM02; docs/05 sections 2 and 4.1"
   step_types:
-    value: [single_layer_a4_screw_related, double_layer_a2_translation, patterned_mesa_trench]
+    value: [single_layer_a4, double_layer_a2_translation, patterned_mesa_trench]
     unit: none
     label: ASSUMPTION
     item: 14
@@ -96,7 +100,7 @@ parameters:
   step_translations:
     value:
       single_layer:
-        relation: "diamond 4_1 and 4_3 screws about [001] and the two <100> d-glides, translation part t_z = a/4 (not a lattice translation). At an exact <100> azimuth B4 applies for bulk-terminated terraces (d-glide in the incidence plane; SM26, C2); at <110> it does not (dynamical residual delta; open question 3)"
+        relation: "diamond 4_1 and 4_3 screws about [001] and the two <100> d-glides, translation part t_z = a/4 (not a lattice translation). For the specular beam (and, with the in-plane glide term, for other beams in the incidence plane) of a plane wave at the exact <100> azimuth, bulk-terminated a/4 terraces reflect identically up to exp(-i (k_out - k_in).t) (C2 section 1.3; SM26). Not for beams leaving the incidence plane (item 4), a 2x1 reconstruction, or an overlayer; azimuthal spread (item 3) not analysed; at <110> the residual is not forced to vanish (value unknown, open question 3)."
         height: "a/4"
       double_layer:
         vector_cubic_a_units: [0.5, 0.0, 0.5]

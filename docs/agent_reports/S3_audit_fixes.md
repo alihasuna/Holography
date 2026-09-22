@@ -488,3 +488,40 @@ such pixels valid, phase error 0.00 rad).
 ### Proposed new wording of B16
 
 | B16 | A rocking series gives an absolute step height only if every tilt pair satisfies `(2 pi/lambda) h_max |Delta s| + 3 sqrt(sigma_i^2 + sigma_(i+1)^2) < pi` and the weighted fit `Delta_phi = -(2 pi/lambda) h s + c` with a free intercept gives `sigma_c < pi/3`, `|c - 2 pi n| <= 3 sigma_c` for one integer n, and a chi-squared p-value of at least 1e-3 for the fit with `c = 2 pi n`; otherwise no height is returned. `h` and `sigma_h` are the slope of the free fit and its standard error, so a constant phase offset does not bias `h` and an angle-calibration offset biases it only in second order; the offset residual `c - 2 pi n` is reported with `sigma_c` as a model-consistency quantity. A true `|h| > h_max` aliases; on a non-uniform tilt series (`design_rocking_series`) the aliases fail the chi-squared or intercept check; where a noise-free scan up to `h_max + 2 lambda/min(Delta s)` finds an accepted alias (for example uniform steps) the result is flagged `aliasing_undetectable`, assumes `|h| <= h_max` and warns (`reflection_holo/quantification/rocking.py`). | ASSUMPTION | Premises: Gaussian, independent, correctly declared phase uncertainties (31 % under-declaration raises the wrong phase-branch rate to 1.8e-2, A2b N3, open); one translation height; `|h|` below the scan limit. Monte Carlo in the tests: 0 wrong branches in 3987 accepted series (seed 20260922); offsets up to 3 sigma_c shift the mean accepted height by at most about 0.85 sigma_h, as derived (seed 20260923); the uniform-grid aliases of 26, 30 and 40 A are refused on the designed series in 2000 of 2000 trials each. |
+
+### Addendum: review E4 items (code, configuration, tests)
+
+| Item | Fix | Test | Before -> after |
+|---|---|---|---|
+| E4 M3, R2 strip sign | none needed in code (the documents had the wrong sign) | `tests/reconstruction/test_self_reference_R2.py::test_r2_step_strip_sign_and_width` (shifts (+-96, 0) and (+-96, 40); strip phase -sign(n.s) Delta, width \|n.s\| within 1 px, band-limited ideal within the module TOL 1e-3 rad) | passes on the unmodified code; it discriminates: plateau -1.1994 rad for n.s = +96 and +1.1994 rad for n.s = -96, where the old documented rule says -1.2000 for both |
+| E4 m8, step-type name | `single_layer_a4` in CFG-B; `io/config.py` `STEP_TYPES` vocabulary, kind `step_types` (the old name and unknown names fail) | `tests/io/test_io_cfg_b_text.py::test_step_type_is_single_layer_a4_and_names_are_a_vocabulary` | ImportError -> pass |
+| E4 M1, scope clause | the clause verbatim in the CFG-B description and `step_translations.single_layer.relation` | `...::test_single_layer_scope_clause_in_description_and_relation`; round-1 `test_si001_audit_fixes.py::test_cfg_b_relation_comment_matches_b4` updated to the new text | failed -> pass |
+| E4 m5, CFG-B header | "names items 3, 4, 5, 7, 8, 12, 13 (not blocking, required here) and 15; the unsupplied parts of item 11 (miscut, terrace widths, terrace types) have no field yet" | `...::test_cfg_b_header_names_the_items_correctly` | failed -> pass |
+| E4 n10, CFG-A item 9 | already removed with A2b N1 | `...::test_cfg_a_benchmark_reflections_carry_no_docs06_item` | passed before (done by N1) |
+| E4 n1, projection docstring | `tests/geometry/test_geom_projection.py::test_shadow_bilayer_888` docstring: printed 102 A until 5d59c41 corrected it to 101 A (101.48 A computed); value stays 101.0 +- 0.5 | docstring only, no test | - |
+
+Not changed: the builder's B4 metadata strings (round-1 wording decided by the orchestrator) do not
+carry the E4 M1 scope clause; say if they should.
+
+### Final runs, round 2 (verbatim)
+
+```
+$ venv/bin/pytest -q | tail -1
+580 passed, 6 warnings in 19.93s
+$ venv/bin/python tools/reflection_step_phase_calculator.py | tail -3
+====================================================================================================
+END OF OUTPUT
+====================================================================================================
+$ venv/bin/python tools/reflection_step_phase_calculator.py | grep "checks pass"
+   25/25 checks pass in this script itself.
+$ venv/bin/python tools/phase1_numbers.py | tail -1
+   19/19 checks pass
+$ venv/bin/python tools/physics_checks/q1_si001_quarter_step_symmetry.py | tail -1   (q2, q3 likewise)
+   41/41 self-checks pass
+   21/21 self-checks pass
+   7/7 self-checks pass
+```
+The six warnings are the intended N4 aliasing warnings on the uniform grids of
+`tests/quantification/test_quant_rocking.py`. phase1_numbers has 19 checks since the orchestrator's
+commit 682c4ba. Not committed by S3 (the orchestrator snapshots the tree). NOT RUN: engine or
+dynamical runs, experimental data, `python -O`.

@@ -99,6 +99,10 @@ TOP_KEYS = ("schema_version", "config_id", "name", "status", "description", "par
 REFERENCE_TRAJECTORIES = ("vacuum_beside_sample", "reflected_flat_area",
                           "transmitted_thin_region")        # docs/06 item 15
 STEP_EDGE_ORIENTATIONS = ("parallel_to_beam", "transverse_to_beam")
+# step-type names (a vocabulary, so a misspelt or retired name fails). The relation of each step
+# (translation, screw, glide) is stated in step_translations, not in the name (review E4 m8).
+STEP_TYPES = ("lattice_translation_bilayer", "single_layer_a4", "double_layer_a2_translation",
+              "patterned_mesa_trench", "monatomic_height_steps")
 MATERIALS = ("Si", "Pt")                                    # canonical element symbols only
 REGISTRY_RESOURCE = "assumption_registry.yaml"              # package data of reflection_holo.io
 SUPPLIER_DATE_RE = re.compile(r"supplied by (?P<who>[A-Za-z][^,;:()]*?) (?P<date>\d{4}-\d{2}-\d{2})\b")
@@ -126,7 +130,7 @@ PARAMETERS: dict[str, tuple[str, str]] = {
     "recommended_reflections_hkl": ("int3_list", "none"),
     "not_recommended_reflections_hkl": ("int3_list", "none"),
     "forbidden_rod_reflections_hkl": ("int3_list", "none"),
-    "step_types": ("str_list", "none"),
+    "step_types": ("step_types", "none"),
     "step_translations": ("mapping", "none"),
     "step_edge_orientations": ("edge_orientations", "none"),
     "glancing_angle_ext": ("positive", "angle"),
@@ -381,6 +385,9 @@ def _check_kind(cid: str, name: str, kind: str, v) -> None:
     elif kind == "reference_model":
         if v not in REFERENCE_MODELS:
             bad(f"one of {REFERENCE_MODELS}")
+    elif kind == "step_types":
+        if not (isinstance(v, list) and v and all(x in STEP_TYPES for x in v)):
+            bad(f"a non-empty list drawn from {STEP_TYPES}")
     elif kind == "edge_orientations":
         if not (isinstance(v, list) and v and all(x in STEP_EDGE_ORIENTATIONS for x in v)):
             bad(f"a non-empty list drawn from {STEP_EDGE_ORIENTATIONS}")

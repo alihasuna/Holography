@@ -60,9 +60,10 @@ def test_cfg_b_relation_comment_matches_b4():
     path = Path(__file__).resolve().parents[2] / "configs" / "cfg_b_si001_patterned.yaml"
     rel = yaml.safe_load(path.read_text())["parameters"]["step_translations"]["value"][
         "single_layer"]["relation"]
-    assert "At an exact <100> azimuth B4 applies for bulk-terminated terraces (d-glide in the " \
-           "incidence plane; SM26, C2)" in rel
-    assert "at <110> it does not (dynamical residual delta; open question 3)" in rel
+    # round 2 (review E4 M1): the relation carries the scope clause of the <100> result
+    assert ("of a plane wave at the exact <100> azimuth, bulk-terminated a/4 terraces reflect "
+            "identically up to exp(-i (k_out - k_in).t) (C2 section 1.3; SM26)") in rel
+    assert "at <110> the residual is not forced to vanish (value unknown, open question 3)" in rel
     assert "screw-related terraces, dynamical difference expected" not in path.read_text()
 
 
