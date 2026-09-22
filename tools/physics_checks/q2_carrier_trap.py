@@ -316,7 +316,7 @@ def section_D(D: float):
                                    empty_hologram=H_emp if empty == "divide" else None,
                                    reference_correction="divide_empty" if empty == "divide" else "none",
                                    unwrapping="none", trap_demonstration=allow,
-                                   empty_amplitude_threshold=0.1 if empty == "divide" else None)
+                                   empty_min_visibility=0.5 if empty == "divide" else None)
         return car, res, measure(res.wrapped_phase, mask.radius_cycles_per_A)   # R in cycles/px (1 A px)
 
     try:
@@ -343,7 +343,7 @@ def section_D(D: float):
                      apodisation="hann")
     res3 = reconstruct_sideband(H_obj, carrier=car3, mask=mask3, empty_hologram=H_emp,
                                 reference_correction="divide_empty", unwrapping="none",
-                                empty_amplitude_threshold=0.1)   # S3: declared (audit A2 m1)
+                                empty_min_visibility=0.5)   # S3: declared (A2 m1, A2b N6)
     st3 = measure(res3.wrapped_phase, mask3.radius_cycles_per_A)
     print(f"   carrier located on the EMPTY hologram (correct sideband), divided: bin {car3.integer_bin}, "
           f"{res3.sideband_sign_check}; step {st3:+.4f} rad")
