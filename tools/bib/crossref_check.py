@@ -49,6 +49,9 @@ INDEX = CACHE / "_index.json"
 TSV = REPORTS / "B3_crossref_results.tsv"
 LOG = REPORTS / "B3_crossref_verification_log.md"
 CORR = Path(__file__).resolve().parent / "b3_corrections.yaml"
+CORR2 = Path(__file__).resolve().parent / "b3_pass2.yaml"
+SPECS = [CORR, CORR2]                      # applied in this order on top of the baseline
+TSV2 = REPORTS / "B3_pass2_results.tsv"
 SCRATCH = Path("/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib")
 BASELINE_REV = "4a9df525a7d33ad974293e0cac04f31e479fc816"
 UA = "Holography-bibcheck/1.0"
@@ -450,9 +453,15 @@ def evaluate_candidate(key, e, c):
 
 
 # ======================================================================= new entries (claimed citations)
-def load_spec():
+def load_spec(path=CORR):
     import yaml
-    return (yaml.safe_load(CORR.read_text()) or {}) if CORR.exists() else {}
+    return (yaml.safe_load(path.read_text()) or {}) if path.exists() else {}
+
+
+def load_claim_rec(key):
+    """Record of an existing entry re-identified in pass 2 from another report's claim."""
+    p = CACHE / f"{key}.claim.json"
+    return json.loads(p.read_text())["message"] if p.exists() else None
 
 
 def claimed_entry(key, d):
@@ -581,9 +590,38 @@ def cmd_fetch(args):
                 if st != 200:
                     st, _ = cached_get(f"{key}.patent.html", f"https://patents.google.com/patent/{pn}B2/en", idx, args.refresh, accept="text/html", where=SCRATCH)
                 print(f"   patent {pn} -> {st}")
+    # pass-2 extra fetches declared in the YAML (publisher pages, READMEs, chapter records)
+    spec2 = load_spec(CORR2)
+    for x in spec2.get("extra_fetch") or []:
+        if args.keys and x["key"] not in args.keys:
+            continue
+        where = SCRATCH if x.get("scratch") else CACHE
+        st, _ = cached_get(x["name"], x["url"], idx, args.refresh, accept=x.get("accept", "application/json"), where=where)
+        print(f"[{x['key']}] extra {x['name']} -> {st}")
+    # pass-2 claims on EXISTING entries: search with the claimed citation, strict five-field
+    for key, ops in (spec2.get("entries") or {}).items():
+        if not ops.get("claimed") or (args.keys and key not in args.keys):
+            continue
+        ce = claimed_entry(key, {"claimed": ops["claimed"], "type": "article", "source": ops.get("claim_source", "")})
+        q = query_string(key, ce)
+        url = CROSSREF + "?" + urllib.parse.urlencode({"query.bibliographic": q, "rows": 5})
+        st, body = cached_get(f"{key}.claim.search.json", url, idx, args.refresh)
+        print(f"[{key}] claim search -> {st}  q={q[:80]!r}")
+        for c in json.loads(body)["message"]["items"] if body else []:
+            ev = evaluate_candidate(key, ce, c)
+            if ev["verdict"].startswith("ACCEPT-5FIELD"):
+                st, _ = cached_get(f"{key}.claim.json", works_url(c["DOI"]), idx, args.refresh)
+                print(f"   accepted {c['DOI']} -> /works {st}")
+                break
+            print(f"   candidate {c['DOI']} {ev['verdict']}")
     # claimed new entries (coordinator requests), tested like the baseline entries
-    for key, d in (load_spec().get("new_entries") or {}).items():
+    new_all = {}
+    for path in SPECS:
+        new_all.update(load_spec(path).get("new_entries") or {})
+    for key, d in new_all.items():
         if args.keys and key not in args.keys:
+            continue
+        if d.get("manual"):
             continue
         e = claimed_entry(key, d)
         print(f"[{key}] new entry (claimed by {d['source']})", flush=True)
@@ -688,15 +726,19 @@ def arxiv_fields(key):
             "id": grab("id")[0]}
 
 
-def new_entry_verdict(key, d):
-    """Re-test the claimed citation against the cached record; return (ok, verdict text)."""
+def new_entry_verdict(key, d, strict=False, rec=None):
+    """Re-test the claimed citation against the cached record; return (ok, verdict text).
+    strict=True accepts only the five-field verdict (pass 2)."""
+    if d.get("manual"):
+        return True, "manual route: " + d.get("route", "")
     claimed = claimed_entry(key, d)
     if d.get("search", True):
-        rec = load_rec(key)
+        rec = rec if rec is not None else load_rec(key)
         if rec is None:
-            return False, "no accepted Crossref record"
+            return False, "no Crossref record passed the acceptance test (see search candidates)"
         ev = evaluate_candidate(key, claimed, rec)
-        return ev["verdict"].startswith("ACCEPT"), ev["verdict"] + " " + json.dumps({k: v for k, v in ev.items() if k != "verdict"})
+        ok = ev["verdict"].startswith("ACCEPT-5FIELD" if strict else "ACCEPT")
+        return ok, ev["verdict"] + " " + json.dumps({k: v for k, v in ev.items() if k != "verdict"})
     a = arxiv_fields(key)
     ok_t = bt.fold(a["title"]) == bt.fold(u(claimed, "title"))
     fam = bt.parse_name(bt.split_names(claimed.get("author"))[0])["family"]
@@ -705,13 +747,29 @@ def new_entry_verdict(key, d):
     return ok_t and ok_a and ok_y, f"arXiv: title {'match' if ok_t else 'MISMATCH'}, first author {'match' if ok_a else 'MISMATCH'}, year {'match' if ok_y else 'MISMATCH'}"
 
 
+def insert_unverified(text, block):
+    m = re.search(r"\n\n%% ===== END OF UNVERIFIED CANDIDATES", text)
+    return text[:m.start()] + "\n\n" + block + text[m.start():]
+
+
 def add_new_entries(text, spec, touched):
     items = (spec.get("new_entries") or {}).items()
-    anchor = "%% --- 4k. Records added by B3 at the coordinator's request (claimed in L5, verified here) ---"
+    anchor = spec.get("new_entries_anchor",
+                      "%% --- 4k. Records added by B3 at the coordinator's request (claimed in L5, verified here) ---")
+    strict = bool(spec.get("strict_new_entries"))
     for key, d in items:
-        ok, why = new_entry_verdict(key, d)
+        ok, why = new_entry_verdict(key, d, strict=strict)
         if not ok:
-            print(f"{key}: NOT added ({why})")
+            if d.get("on_fail") == "unverified":
+                fields = dict(d["claimed"])
+                fields.update({k: str(v).strip() for k, v in (d.get("unverified_set") or {}).items()})
+                width = max(len(n) for n in fields)
+                body = ",\n".join(f"  {n.ljust(width)} = {{{v}}}" for n, v in fields.items())
+                text = insert_unverified(text, f"@{d.get('unverified_type', 'misc')}{{{key},\n{body}\n}}")
+                touched.append(key)
+                print(f"{key}: added to the UNVERIFIED section ({why})")
+            else:
+                print(f"{key}: NOT added ({why})")
             continue
         fields = {}
         rec = load_rec(key) if d.get("search", True) else None
@@ -731,25 +789,30 @@ def add_new_entries(text, spec, touched):
     return text
 
 
-def cmd_apply(args):
-    import yaml
-    spec = yaml.safe_load(CORR.read_text()) or {}
-    # Always rebuild from the baseline commit, so that `apply` is idempotent and the
-    # current file is exactly baseline + b3_corrections.yaml.
-    text = read_baseline()
+def apply_spec(text, spec):
+    """Apply one corrections spec (YAML) to the bib text and return the new text."""
     for old, rep in spec.get("header_replace") or []:
         if old not in text:
             raise SystemExit(f"header_replace text not found: {old[:60]!r}")
         text = text.replace(old, rep)
+    move_anchor = spec.get("move_anchor", "%% --- 4j. Records moved from the UNVERIFIED section by the B3 Crossref pass ---")
     touched = []
     for key, ops in (spec.get("entries") or {}).items():
         touched.append(key)
         ents = entries_by_key(text)
         e = ents[key]
         rec = None
-        rp = CACHE / f"{key}.json"
-        if rp.exists():
-            rec = json.loads(rp.read_text())["message"]
+        if ops.get("claimed"):
+            # an existing entry re-identified from another report's claim (pass 2): strict test
+            rec = load_claim_rec(key)
+            ok, why = new_entry_verdict(key, {"claimed": ops["claimed"], "type": e.etype,
+                                              "source": ops.get("claim_source", "")}, strict=True, rec=rec or {})
+            if rec is None or not ok:
+                raise SystemExit(f"{key}: claimed record not accepted on the five-field rule: {why}")
+        else:
+            rp = CACHE / f"{key}.json"
+            if rp.exists():
+                rec = json.loads(rp.read_text())["message"]
         new = {}
         for fld in ops.get("from_crossref", []) or []:
             if rec is None:
@@ -773,14 +836,18 @@ def cmd_apply(args):
             if lab == "crossref":
                 lab = ("METADATA\\_VERIFIED (route: Crossref API /works record of the doi field, cached as "
                        f"docs/agent\\_reports/crossref\\_cache/{key}.json; B3, 2026-09-22)")
-            new["note"] = f"evidence: {lab}; label before B3: {m.group(1).strip()}; provenance:" + note[m.end():]
+            tag = ops.get("relabel_keep", "label before B3")
+            old_lab = m.group(1).strip()
+            if ops.get("relabel_replace_head"):
+                # pass 2: keep the pass-1 label as the "label before" text, drop older ones
+                old_lab = old_lab.split("; label before B3")[0]
+            new["note"] = f"evidence: {lab}; {tag}: {old_lab}; provenance:" + note[m.end():]
         if "note_prefix" in ops:
             note = new.get("note", e.get("note"))
             m = re.match(r"evidence:.*?; provenance:", note, re.S)
             if not m:
                 raise SystemExit(f"{key}: note has no 'evidence: ...; provenance:' head")
             new["note"] = ops["note_prefix"].strip() + note[m.end():]
-        # write fields: replace in place (from last offset to first), or insert before note
         edits = []
         for name, val in new.items():
             f = e.fieldobj(name)
@@ -797,35 +864,44 @@ def cmd_apply(args):
         for name in ops.get("remove", []) or []:
             f = e.fieldobj(name)
             if f is not None:
-                end = text.index("\n", f.vend) + 1
-                edits.append((f.fstart, end, ""))
-        for s, t_, val in sorted(edits, key=lambda x: -x[0]):
-            text = text[:s] + val + text[t_:]
+                end_ = text.index("\n", f.vend) + 1
+                edits.append((f.fstart, end_, ""))
+        for s_, t_, val in sorted(edits, key=lambda x: -x[0]):
+            text = text[:s_] + val + text[t_:]
         if ops.get("move_to_verified"):
-            ents = entries_by_key(text)
-            e = ents[key]
+            e = entries_by_key(text)[key]
             block = text[e.start:e.end]
-            s = e.start
             t_ = e.end
             while t_ < len(text) and text[t_] == "\n":
                 t_ += 1
-            text = text[:s] + text[t_:]
-            anchor = "%% --- 4j. Records moved from the UNVERIFIED section by the B3 Crossref pass"
-            if anchor not in text:
+            text = text[:e.start] + text[t_:]
+            if move_anchor not in text:
                 m = re.search(r"\n\n%% =+\n%% PART 5\n", text)
-                text = text[:m.start()] + "\n\n" + anchor + " ---" + text[m.start():]
+                text = text[:m.start()] + "\n\n" + move_anchor + text[m.start():]
             m = re.search(r"\n\n%% =+\n%% PART 5\n", text)
             text = text[:m.start()] + "\n\n" + block + text[m.start():]
-            if e.etype != ops.get("type", e.etype):
-                pass
         if ops.get("type"):
-            ents = entries_by_key(text)
-            e = ents[key]
+            e = entries_by_key(text)[key]
             text = text[:e.start] + "@" + ops["type"] + text[e.start + 1 + len(e.etype):]
     text = add_new_entries(text, spec, touched)
     for key in touched:
         e = entries_by_key(text)[key]
         text = text[:e.start] + render_entry(text, e) + text[e.end:]
+    return text
+
+
+def state_after(n):
+    """Bib text after applying the first n specs to the baseline commit."""
+    text = read_baseline()
+    for path in SPECS[:n]:
+        text = apply_spec(text, load_spec(path))
+    return text
+
+
+def cmd_apply(args):
+    # Always rebuild from the baseline commit, so that `apply` is idempotent and the
+    # current file is exactly baseline + b3_corrections.yaml + b3_pass2.yaml.
+    text = state_after(len(SPECS))
     BIB.write_text(text)
     errs, warns, stats = bt.validate(text)
     print("validate:", stats, "errors:", errs)
@@ -857,7 +933,9 @@ def cmd_report(args):
     partial = (spec or {}).get("partial") or {}
     accepted_res = load_accept(spec)
     idx = load_index()
-    base_t, cur_t = read_baseline(), BIB.read_text()
+    # pass 1 is reported on the in-memory state after the pass-1 spec, so later passes
+    # cannot change its numbers
+    base_t, cur_t = read_baseline(), state_after(1)
     base, cur = entries_by_key(base_t), entries_by_key(cur_t)
     build_parent_isbns(base)
     rows, blocks, corrections = [], [], []
