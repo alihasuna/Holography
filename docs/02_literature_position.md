@@ -63,9 +63,10 @@ from an abstract and 28 from the title only (L4 sections 2 and 3). Result:
   interferometry, energy filtering and coherence, not height measurement.
 * Herring, Proc. MSA 53, 116 (1995) proposes reflection diffracted-beam interferometry; the abstract read
   does not show that a reflection interferogram was recorded.
-* Nothing after 2003, and nothing on Si(001) or on ion-milled surfaces, was found in OpenAlex, Semantic
-  Scholar, COCI, Europe PMC, arXiv or the Crossref top-100 lists with the queries recorded in L4
-  section 4. The nine citing works after 2003 are reviews, transmission holography, one REM encyclopedia
+* Nothing after 2003, and nothing on Si(001) or on ion-milled surfaces, was found in the citation graph
+  (OpenAlex reverse check, Semantic Scholar, COCI) or in the topic searches of Semantic Scholar, Europe
+  PMC, arXiv and the Crossref top-100 lists recorded in L4 section 4 (the OpenAlex topic queries did not
+  run). The nine citing works after 2003 are reviews, transmission holography, one REM encyclopedia
   entry and three unrelated papers (four of the nine classified from the title only, UNVERIFIED). This is an absence in the databases and queries named, not proof of
   absence; the Japanese databases are the most likely place for more work by the Tokyo group.
 

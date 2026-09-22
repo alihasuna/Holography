@@ -120,11 +120,11 @@ measured rocking curve (9), because it fixes the angle scale and the mean inner 
    (P07 and the patent are read: neither gives Osakabe's 1988 parameters).
 2. Supply the PROJECT_INPUT items; record a rocking curve of the selected reflection.
 3. Build milestone M1 (geometry and quantification core, tests T1 to T25 and the shadow-length test, as
-   Ali specified for Phase 2; T24 and T25 are re-run in M3 with the full holography chain) from the
+   Ali specified for Phase 2, PROJECT_INPUT, Ali, 2026-09-22; T24 and T25 are re-run in M3 with the full holography chain) from the
    calculator.
 4. Build the reflection cell (M2), validate flat-surface rocking curves against a dynamical solver and
    the reflection phase against the analytic and two-beam rungs of the validation ladder, before any
    step or pattern is simulated.
-5. Only then simulate holograms of Si(111) bilayer steps (the monatomic-step benchmark CFG-A; it is not
-   Osakabe's configuration, which the P01 abstract gives as Pt(111)) and of the Si(001) patterned
+5. Only then simulate holograms of Si(111) bilayer steps (CFG-A, the translation-step validation case;
+   it is not Osakabe's configuration, which the P01 abstract gives as Pt(111)) and of the Si(001) patterned
    samples, process them with the experimental reconstruction code, and compare blind.

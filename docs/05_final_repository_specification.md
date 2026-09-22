@@ -28,10 +28,13 @@ The repository is final when all of the following hold:
    against an independent dynamical reflection solver. If that solver exposes only intensities, the
    rocking-curve criterion is restricted to peak positions and widths and that restriction is recorded;
    the phase is then validated by rungs 1 to 3 of the ladder.
-3. A monatomic-step benchmark on CFG-B (Ali's Si(001)), with CFG-A as the translation-step validation
-   case, reproduces the
-   refraction-corrected geometric phase versus glancing angle with a dynamical residual below a
-   threshold recorded in `configs/benchmarks.yaml` (proposed initial value 0.1 rad, ASSUMPTION).
+3. A step benchmark on the translation-related steps (the CFG-B a/2 double-layer step on Ali's Si(001),
+   and the CFG-A bilayer as the validation case) reproduces the refraction-corrected geometric phase
+   versus glancing angle with a dynamical residual below a threshold recorded in
+   `configs/benchmarks.yaml` (proposed initial value 0.1 rad, ASSUMPTION). For the CFG-B a/4
+   single-layer step, whose terraces are screw-related (section 2 of `docs/03_physics_summary.md`,
+   assumption B4), the geometric phase does not hold: the dynamical phase difference between the two
+   terraces is computed and reported, not compared with the geometric phase.
    Comparison with Osakabe 1988 is deferred until the body of P01 is read. Its abstract (read on the
    publisher page) gives a Pt(111) surface, so CFG-O is not a silicon benchmark; its energy,
    reflection, glancing angle and measured values are still UNVERIFIED.
@@ -300,7 +303,7 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 | Milestone | Deliverable | Depends on |
 |---|---|---|
 | M0 Honesty and provenance | Correct the inspected repository's documentation (mid-plane wave, forbidden (6,-6,6), inaccessible (2,-2,0), inert absorber and thermal settings, tilt-index and pixel-size defects, runner writing no output); pin versions; add loader assertions; keep CFG-A as a documented legacy benchmark | report D section 5.2, report A section 7 |
-| M1 Physics core | `geometry/` and `quantification/` from the calculator; tests T1 to T25 and the shadow-length test (Ali's Phase 2 specification, 2026-09-22; T24 and T25 are re-run in M3 with the full holography chain); source map entries | nothing |
+| M1 Physics core | `geometry/` and `quantification/` from the calculator; tests T1 to T25 and the shadow-length test (Ali's Phase 2 specification, PROJECT_INPUT, Ali, 2026-09-22; T24 and T25 are re-run in M3 with the full holography chain); source map entries | nothing |
 | M2 Reflection forward model | Custom kernel with absorber and confined illumination, validated against abTEM before the absorber is enabled; abTEM tilt-range test at 24 and 48 mrad; flat-surface rocking curves against the dynamical solver; phase-validation ladder; convergence studies | M1, solver access |
 | M3 Holography chain | R1/R2/R3, hologram formation with Fresnel-fringe, drift and charging options, shared reconstruction, T24/T25 and the carrier trap | M1 |
 | M4 Benchmarks | CFG-A bilayer steps (phase versus angle; double-contour contrast check; transverse steps with shadows), CFG-B a/4 and a/2 steps, patterned features, overlayer sensitivity | M2, M3 |

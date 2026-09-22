@@ -59,6 +59,8 @@ python3 -m venv venv && venv/bin/pip install numpy
 venv/bin/python tools/reflection_step_phase_calculator.py   # prints 25/25 checks pass
 venv/bin/python tools/phase1_numbers.py                     # prints 10/10 checks pass
 venv/bin/python tools/lit/citation_lists.py build --list    # citation counts (offline; rewrites L4_citing_works.tsv)
-venv/bin/python tools/bib/crossref_check.py report          # bibliography counts (add --pass 1 for pass 1;
-                                                            # rewrites generated blocks under docs/agent_reports/)
+venv/bin/python tools/bib/crossref_check.py report          # bibliography counts (rewrites generated blocks
+                                                            # under docs/agent_reports/; the --pass 1 form also
+                                                            # rewrites 12 committed lines of the B3 log, so run it
+                                                            # on a scratch copy)
 ```
