@@ -1576,3 +1576,216 @@ Discrepancy kinds: `family`/`diacritics`/`given`/`count`/`incomplete` (names), `
 - Label: `(new entry)` -> `METADATA_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent_reports/crossref_cache/SCHOWALTER26M.json; B3, 2026-09-22)`
 
 <!-- END GENERATED -->
+
+## Pass 2 (2026-09-22)
+
+Requested by the orchestrator through the coordinator: add the references proposed by the Phase 1
+reports and apply their record corrections; then, by a second message, update the evidence labels
+of entries that have now been read. Sections above this one are left unedited; their generated
+block is a snapshot of pass 1 (`report --pass 1` regenerates it from the in-memory pass-1 state,
+which the refactored script still reproduces byte for byte).
+
+Reproduce: `venv/bin/python tools/bib/crossref_check.py fetch` / `apply` / `report` / `validate`.
+`apply` now builds `docs/references.bib` = baseline commit 4a9df52 + `tools/bib/b3_corrections.yaml`
+(pass 1) + `tools/bib/b3_pass2.yaml` (pass 2); `report` (default `--pass 2`) writes
+`docs/agent_reports/B3_pass2_results.tsv` and the generated block below. All counts come from it.
+
+### Rule used for new entries (stricter than pass 1)
+
+A report's claimed citation (kept verbatim in `b3_pass2.yaml`, journal abbreviations written out) is
+sent to `query.bibliographic`; a candidate is accepted only on the five-field verdict ACCEPT-5FIELD
+(first author, title, container, year, volume all match; volume is n/a for chapters). The DOI and
+the bib fields are then copied from the candidate's `/works` record, never from the report. A claim
+that cannot pass because Crossref lacks a field goes to the UNVERIFIED section with the gap stated.
+Two acceptance-test fixes were made before running it, and both only turn "absent in the record"
+into "untestable", never into a match: a record without any date no longer counts as a year
+mismatch, and a title is compared with each element of the record's title array, because Crossref
+stores alternate-language titles there.
+
+### Dispositions by item
+
+(A) L1 sections 5.3 and 6
+* US 5,192,867 -> **PAT02**, verified on the USPTO printed front page
+  (<https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5192867>, HTTP 200, 14-page image
+  PDF). Google Patents returned HTTP 503 twice and WebFetch 503, so the page was rendered with
+  PyMuPDF installed in the session scratch directory (not in the project venv) and read as an image.
+  Five inventors (Osakabe, Endo, Tonomura, Tomita, Furutsu), Hitachi, Ltd., Appl. 697,576 filed
+  1991-05-09, continuation-in-part of 663,472, itself a continuation of 462,769 (= PAT01), patent
+  dated 1993-03-09. **Key conflict flagged:** B_literature.md had used the policy ID [PAT02] for
+  US 10,755,892 (key U03). As instructed, key PAT02 now denotes US 5,192,867, and U03's note says so.
+* Harada et al. 2005 -> **HARADA05**, strict accept (10.1093/jmicro/dfh098). The dispute is recorded:
+  Crossref gives only "K. Harada", while P07 ref. 65 gives Harada, Akashi, Togawa, Matsuda and
+  Tonomura. The bib has "Harada, K. and others", with the P07 list in the note.
+* PAT01: two inventors, the filing and issue dates and the year were already applied in pass 1. Pass
+  2 removes the summariser paraphrases, attributes the five-inventor list and the 1991/1993 dates to
+  PAT02, and adds L1's reading.
+* P07 DOI and P01 issue 9A: already applied in pass 1 (no change).
+
+(B) L2 section H
+* P49 -> @article from the Crossref CPC record (the claim passes the strict test), keeping the arXiv
+  eprint. The record is cached as `P49.claim.json` so that pass-1 inputs are unchanged.
+* **PRYOR17**, **CHEN95**, **LOANE91**: all three pass the strict test. For CHEN95, Crossref deposits
+  "Op de Beeck" as family "de Beeck" with given names "M. Op"; the usual form is used, as in L2 and in
+  the Crossref records of the 1995 proceedings (kept difference).
+* P05 (author list, CC BY licence note) and SIMTRHEPD-CPC: already applied or confirmed in pass 1;
+  SIMTRHEPD-CPC still matches its record (residual check below).
+* B06: note added (Crossref issued 2020, no edition number in the record; prismatique's "(2010)" is
+  wrong).
+* S01: CITATION.cff fetched (raw.githubusercontent.com, HTTP 200). It gives "Matthew R. C.
+  Fitzpatrick", which equals the author field; note updated.
+* S02: the LICENSE fetched is GNU GPL version 3. Note updated with the three-paper request (P04,
+  PRYOR17, P05).
+
+(C) L4 section 6.2 (16 candidates)
+* 14 were added as proposed, with L4's keys: SUZUKI2001, TANISHIRO2003, OSAKABE1993UM, OSAKABE1993SS,
+  OSAKABE1989EMSA, HERRING1995, TANJI1991, TANISHIRO1999JEM, TANISHIRO1999JJAP, WANG1993RPP,
+  YAGI1993SSR, SENHORST2026, SENHORST2024 and SEABERG2014. All pass the strict test. TANISHIRO2003's
+  record also carries the Japanese title, so only the English title is used and the capitalised
+  family name is normalised (kept differences). TANISHIRO1999JJAP keeps Crossref's "Mimoda" as
+  deposited, noted.
+* TAKEGUCHI1990 -> UNVERIFIED section. Crossref has the title, journal and year, but no authors,
+  volume or pages. The authors (from OpenAlex, via L4) are in the entry and flagged as such; no DOI.
+* BLACKBURN2025 is the existing entry **U15**. The claimed byline passes the strict test, so U15 was
+  completed from its record and moved to the verified section; no duplicate key was created.
+
+(D) L5 sections 6.3 and 4
+* P31 DOI and C03 manuscript note: already in pass 1.
+* P02E note: now marked as read (L5 2.4). The erratum only reprints Fig. 3 of P02, so the
+  "re-check every number" warning is withdrawn from P02E, from P02, and from the standing warning in
+  the file header (consequential edits).
+* P01 note: abstract read (L5 2.1). The surface is Pt(111), and the arrangement is self-referencing:
+  two regions of the surface image are overlapped.
+* P08, P09, P31 and P05 now carry +ABSTRACT(PubMed), with L5 locators.
+* M2-M14: twelve pass the strict test and were added with the prescribed keys: KRUSE06,
+  GAJDARDZISKA93, KIM98, WANG97, AUSLENDER24, PENNINGTON15, OKEEFFE94, REZ94, SALDIN94, KAWASUSO98,
+  HANADA94 and TANAKA24. KIM98 uses the live Wiley DOI (...3.0.CO;2-N), not the legacy duplicate
+  (...3.3.CO;2-E); both pass. OKEEFFE94's and HANADA94's titles are LaTeX transcriptions.
+  **SCHOWALTER05 -> UNVERIFIED section**: its Crossref record has no publication date or volume, so
+  the year cannot be matched.
+* M15 -> B07 note: chapter 11 "Fourier components of the crystal potential", pp. 154-160, confirmed
+  by its Crossref chapter record (`B07.ch11.json`).
+
+Coordinator's label message: new labels as instructed, each with its report locator; metadata
+fields are unchanged. P04: SECTION_READ (L2 A), and the old "SECTION_READ (instruction file)" is
+corrected in the note. P07: SECTION_READ (L1 1.1), with "nothing on Osakabe's arrangement". PAT01:
+SECTION_READ (L1 3). P02E: SECTION_READ (L5 2.4). C03: SECTION_READ of the accepted manuscript (L5
+2.5). P49: SECTION_READ of arXiv v1 and code (L2 D); the CPC version is not read. S01: SECTION_READ
+(L2 B). S02: SECTION_READ (L2 C). HYTCH10: SECTION_READ (L5 2.6). SCHOWALTER26A: SECTION_READ (L5 4).
+P01: +ABSTRACT(publisher) (L5 2.1). P08, P09 and P31: +ABSTRACT(PubMed). P05: +ABSTRACT(PubMed)
+(L5 2.7). These readings are the reports'; B3 did not re-read the sources.
+
+<!-- BEGIN GENERATED PASS 2 -->
+### Counts (produced by `tools/bib/crossref_check.py report`)
+
+| Quantity | Count |
+|---|---|
+| entries before pass 2 | 99 |
+| entries after pass 2 | 132 |
+| verified section before | 93 |
+| verified section after | 125 |
+| UNVERIFIED section before | 6 |
+| UNVERIFIED section after | 7 |
+| entries with a doi field before | 82 |
+| entries with a doi field after | 114 |
+| existing entries touched by pass 2 | 20 |
+| ... of which with metadata fields changed | 2 |
+| ... of which with the evidence label changed | 16 |
+| ... moved out of the UNVERIFIED section | 1 |
+| new entries proposed | 33 |
+| ... added to the verified section (Crossref, strict five-field) | 30 |
+| ... added to the verified section (patent-office record) | 1 |
+| ... added to the UNVERIFIED section (gap stated) | 2 |
+| claimed citations tested against Crossref (new + re-identified) | 34 |
+| ... accepted on the strict five-field rule | 32 |
+| HTTP failures in pass-2 requests (network error, 429, 5xx) | 1 |
+| entries with a doi whose fields still differ from their record (not counting kept differences) | 0 |
+
+Validation: {"entries": 132, "unique_keys": 132, "verified_section": 125, "unverified_section": 7, "with_doi": 114}; errors: none; doi fields not backed by a cached registry record: none.
+
+### Metadata changes to existing entries (before -> after; `note` excluded)
+
+| key | field | before | after |
+|---|---|---|---|
+| P49 | title | A fast and accurate computation method for reflective diffraction simulations | A fast and efficient computation method for reflective diffraction simulations |
+| P49 | year | 2023 | 2024 |
+| P49 | howpublished | arXiv preprint arXiv:2306.00271; a journal version in Computer Physics Communications (reported November 2023) carries ScienceDirect PII S0010465523003740 | (removed) |
+| P49 | journal | (absent) | Computer Physics Communications |
+| P49 | volume | (absent) | 296 |
+| P49 | pages | (absent) | 109029 |
+| P49 | doi | (absent) | 10.1016/j.cpc.2023.109029 |
+| P49 | @type | misc | article |
+| U15 | author | (absent) | Blackburn, Arthur M. and Cordoba, Cristina and Fitzpatrick, Matthew R. and McLeod, Robert A. |
+| U15 | volume | (absent) | 16 |
+| U15 | number | (absent) | 1 |
+| U15 | pages | (absent) | 8977 |
+| U15 | doi | (absent) | 10.1038/s41467-025-64133-3 |
+| U15 | @type | misc | article |
+
+### Evidence-label changes
+
+| key | before | after |
+|---|---|---|
+| P49 | METADATA_VERIFIED (route: arXiv API record of 2306.00271, cached as docs/agent_reports/crossref_cache/P49.arxiv.xml; B3, 2026-09-22) -- preprint | SECTION_READ (arXiv v1 2306.00271 and its code; L2 section D) + METADATA_VERIFIED (route: Crossref API record of the Computer Physics Communications version, found with the citation claimed in L2 section H and accepted on the strict five-field rule, cached as docs/agent_reports/crossref_cache/P49.claim.json; B3 pass 2, 2026-09-22); THE CPC VERSION WAS NOT READ |
+| U15 | METADATA_VERIFIED(index, single); AUTHORS UNVERIFIED | METADATA_VERIFIED (route: Crossref API record found with the citation claimed in docs/agent_reports/L4_citation_search.md section 6.2 (proposed key BLACKBURN2025), accepted on the strict five-field rule, cached as docs/agent_reports/crossref_cache/U15.claim.json; B3 pass 2, 2026-09-22) |
+| P01 | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P01.json; B3, 2026-09-22) | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P01.json; B3) +ABSTRACT(publisher) (IOP landing page; L5 section 2.1) |
+| P02E | existence METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P02E.json; B3, 2026-09-22); CONTENT UNVERIFIED | SECTION_READ (in full; L5 section 2.4) + METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P02E.json; B3) |
+| P04 | SECTION_READ (instruction file) + METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P04.json; B3, 2026-09-22) | SECTION_READ (in full; L2 section A) + METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P04.json; B3) |
+| P05 | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P05.json; B3, 2026-09-22) | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P05.json; B3) +ABSTRACT(PubMed) (Europe PMC; L5 section 2.7) |
+| P07 | METADATA_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent_reports/crossref_cache/P07.json; B3, 2026-09-22) | SECTION_READ (in full, JATS XML of PMC7850541; L1 section 1.1) + METADATA_VERIFIED (route: Crossref API record accepted on the five-field rule, cached as docs/agent_reports/crossref_cache/P07.json; B3) |
+| PAT01 | METADATA_VERIFIED (route: Google Patents record https://patents.google.com/patent/US4998788A/en, HTTP 200; B3, 2026-09-22); DESCRIPTION NOT READ | SECTION_READ (in full, printed patent read as images; L1 section 3) + METADATA_VERIFIED (route: Google Patents record https://patents.google.com/patent/US4998788A/en; B3) |
+| C03 | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/C03.json; B3, 2026-09-22) | SECTION_READ (author accepted manuscript, White Rose eprint 127795; L5 section 2.5) + METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/C03.json; B3) |
+| P08 | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P08.json; B3, 2026-09-22) | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P08.json; B3) +ABSTRACT(PubMed) (L5 section 2.2) |
+| P09 | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P09.json; B3, 2026-09-22) | METADATA_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent_reports/crossref_cache/P09.json; B3) +ABSTRACT(PubMed) (L5 section 2.2) |
+| P31 | METADATA_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent_reports/crossref_cache/P31.json; B3, 2026-09-22) | METADATA_VERIFIED (route: Crossref API record accepted on the five-field rule, cached as docs/agent_reports/crossref_cache/P31.json; B3) +ABSTRACT(PubMed) (L5 section 2.6) |
+| HYTCH10 | METADATA_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the article number standing in for the title that the claim did not state -- first author, journal, volume 241 and year 2010 match -- cached as docs/agent_reports/crossref_cache/HYTCH10.json; B3, 2026-09-22) | SECTION_READ (HAL hal-01742031 full text; L5 section 2.6) + METADATA_VERIFIED (route: Crossref API record, cached as docs/agent_reports/crossref_cache/HYTCH10.json; B3) |
+| SCHOWALTER26A | METADATA_VERIFIED (route: arXiv API record of 2607.05948, cached as docs/agent_reports/crossref_cache/SCHOWALTER26A.arxiv.xml; B3, 2026-09-22) -- preprint | SECTION_READ (arXiv v1 in full; L5 section 4) + METADATA_VERIFIED (route: arXiv API record, cached as docs/agent_reports/crossref_cache/SCHOWALTER26A.arxiv.xml; B3) |
+| S01 | METADATA_VERIFIED (route: DataCite record of the Zenodo DOI printed in the README, cached as docs/agent_reports/crossref_cache/S01.datacite.json, plus the documentation page https://mrfitzpa.github.io/prismatique/; B3, 2026-09-22) + SECTION_READ (GitHub README only, B_literature.md) | SECTION_READ (rendered documentation, README and v0.0.1 docstrings; L2 section B) + METADATA_VERIFIED (route: DataCite record of the Zenodo concept DOI and CITATION.cff; B3) |
+| S02 | METADATA_VERIFIED (route: project pages https://prism-em.com/ and https://prism-em.github.io/about-cite/, HTTP 200; B3, 2026-09-22) + SECTION_READ (GitHub README only, B_literature.md) | SECTION_READ (project pages and repository README; L2 section C) + METADATA_VERIFIED (route: project pages https://prism-em.com/ and https://prism-em.github.io/about-cite/, HTTP 200; B3) |
+
+### New entries (claimed citation -> strict test)
+
+| key | status | doi | query / record URL | verdict | residual |
+|---|---|---|---|---|---|
+| PAT02 | ADDED-VERIFIED | - | <https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5192867> | manual route: USPTO printed patent, front page, https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5192867 (HTTP 200; Google Patents returned 503) | none |
+| HARADA05 | ADDED-VERIFIED | 10.1093/jmicro/dfh098 | <https://api.crossref.org/works?query.bibliographic=Harada+Akashi+Togawa+Optical+system+for+double-biprism+electron+holography+Journal+of+Electron+Microscopy+54+2005+19&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| PRYOR17 | ADDED-VERIFIED | 10.1186/s40679-017-0048-z | <https://api.crossref.org/works?query.bibliographic=Pryor+Ophus+Miao+A+streaming+multi-GPU+implementation+of+image+simulation+algorithms+for+scanning+transmission+electron+microscopy+Advanced+Structural+and+Chemical+Imaging+3+2017+15&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| CHEN95 | ADDED-VERIFIED | 10.1002/pssa.2211500103 | <https://api.crossref.org/works?query.bibliographic=Chen+Van+Dyck+Op+de+Beeck+Modification+of+the+multislice+method+for+calculating+coherent+STEM+images+physica+status+solidi+%28a%29+150+1995+13&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| LOANE91 | ADDED-VERIFIED | 10.1107/s0108767391000375 | <https://api.crossref.org/works?query.bibliographic=Loane+Xu+Silcox+Thermal+vibrations+in+convergent-beam+electron+diffraction+Acta+Crystallographica+Section+A+47+1991+267&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| SUZUKI2001 | ADDED-VERIFIED | 10.1143/jjap.40.2527 | <https://api.crossref.org/works?query.bibliographic=Suzuki+Tanishiro+Ishiguro+Energy-filtered+Electron+Interferometry+in+Reflection+Electron+Microscopy+Japanese+Journal+of+Applied+Physics+40+2001+2527&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| TANISHIRO2003 | ADDED-VERIFIED | 10.1380/jsssj.24.166 | <https://api.crossref.org/works?query.bibliographic=Tanishiro+Electron+Energy+Loss+Spectroscopy+in+REM-RHEED%3A+Energy+Filtering+by+Omega-type+Energy+Filter+Hyomen+Kagaku+24+2003+166&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| TAKEGUCHI1990 | ADDED-UNVERIFIED | - | <https://api.crossref.org/works?query.bibliographic=Takeguchi+Harada+Shimizu+Observation+of+GaAs%28110%29+Surface+Defect+by+Reflection+Electron+Holography+Journal+of+Electron+Microscopy+1990&rows=5> | no Crossref record passed the acceptance test (see search candidates) | none |
+| OSAKABE1993UM | ADDED-VERIFIED | 10.1016/0304-3991(93)90124-g | <https://api.crossref.org/works?query.bibliographic=Osakabe+Matsuda+Endo+Reflection+electron+holographic+observation+of+surface+displacement+field+Ultramicroscopy+48+1993+483&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| OSAKABE1993SS | ADDED-VERIFIED | 10.1016/0039-6028(93)90047-n | <https://api.crossref.org/works?query.bibliographic=Osakabe+Application+of+electron+holography+to+surface+topography+observation+Surface+Science+298+1993+345&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| OSAKABE1989EMSA | ADDED-VERIFIED | 10.1017/s0424820100154652 | <https://api.crossref.org/works?query.bibliographic=Osakabe+Endo+Matsuda+Observation+of+surface+morphology+by+reflection+electron+holography+Proceedings%2C+annual+meeting%2C+Electron+Microscopy+Society+of+America+47+1989+536&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| HERRING1995 | ADDED-VERIFIED | 10.1017/s0424820100136957 | <https://api.crossref.org/works?query.bibliographic=Herring+Reflection+diffracted+beam+interferometry+%28RDBI%29+applied+to+the+study+of+surfaces+Proceedings%2C+annual+meeting%2C+Electron+Microscopy+Society+of+America+53+1995+116&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| TANJI1991 | ADDED-VERIFIED | 10.1016/0304-3991(91)90076-i | <https://api.crossref.org/works?query.bibliographic=Tanji+Ito+Yada+Contrast+simulation+of+high+resolution+electron+holography+on+surface+structures+Ultramicroscopy+35+1991+245&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| TANISHIRO1999JEM | ADDED-VERIFIED | 10.1093/oxfordjournals.jmicro.a023755 | <https://api.crossref.org/works?query.bibliographic=Tanishiro+Okamoto+Takeguchi+Design+features+of+a+new+ultra-high+vacuum+electron+microscope+with+an+omega+filter+Journal+of+Electron+Microscopy+48+1999+837&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| TANISHIRO1999JJAP | ADDED-VERIFIED | 10.1143/jjap.38.6540 | <https://api.crossref.org/works?query.bibliographic=Tanishiro+Okamoto+Suzuki+Image+Conservation+in+Inelastically+Scattered+Electrons+in+Reflection+Electron+Microscopy+Japanese+Journal+of+Applied+Physics+38+1999+6540&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| WANG1993RPP | ADDED-VERIFIED | 10.1088/0034-4885/56/8/002 | <https://api.crossref.org/works?query.bibliographic=Wang+Electron+reflection%2C+diffraction+and+imaging+of+bulk+crystal+surfaces+in+TEM+and+STEM+Reports+on+Progress+in+Physics+56+1993+997&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| YAGI1993SSR | ADDED-VERIFIED | 10.1016/0167-5729(93)90002-7 | <https://api.crossref.org/works?query.bibliographic=Yagi+Reflection+electron+microscopy%3A+studies+of+surface+structures+and+surface+dynamic+processes+Surface+Science+Reports+17+1993+307&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| SENHORST2026 | ADDED-VERIFIED | 10.1364/oe.601179 | <https://api.crossref.org/works?query.bibliographic=Senhorst+Witte+Coene+2D+approximation+quickly+breaks+down+in+reflection+ptychography+Optics+Express+34+2026+22163&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| SENHORST2024 | ADDED-VERIFIED | 10.1364/oe.542569 | <https://api.crossref.org/works?query.bibliographic=Senhorst+Shao+Weerdenburg+Mitigating+tilt-induced+artifacts+in+reflection+ptychography+via+optimization+of+the+tilt+angles+Optics+Express+32+2024+44017&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| SEABERG2014 | ADDED-VERIFIED | 10.1364/optica.1.000039 | <https://api.crossref.org/works?query.bibliographic=Seaberg+Zhang+Gardner+Tabletop+nanometer+extreme+ultraviolet+imaging+in+an+extended+reflection+mode+using+coherent+Fresnel+ptychography+Optica+1+2014+39&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| KRUSE06 | ADDED-VERIFIED | 10.1016/j.ultramic.2005.06.057 | <https://api.crossref.org/works?query.bibliographic=Kruse+Schowalter+Lamoen+Determination+of+the+mean+inner+potential+in+III-V+semiconductors%2C+Si+and+Ge+by+density+functional+theory+and+electron+holography+Ultramicroscopy+106+2006+105&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| GAJDARDZISKA93 | ADDED-VERIFIED | 10.1016/0304-3991(93)90197-6 | <https://api.crossref.org/works?query.bibliographic=Gajdardziska-Josifovska+McCartney+de+Ruijter+Accurate+measurements+of+mean+inner+potential+of+crystal+wedges+using+digital+electron+holograms+Ultramicroscopy+50+1993+285&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| KIM98 | ADDED-VERIFIED | 10.1002/(sici)1521-396x(199803)166:1<445::aid-pssa445>3.0.co;2-n | <https://api.crossref.org/works?query.bibliographic=Kim+Zuo+Spence+Ab-initio+LDA+Calculations+of+the+Mean+Coulomb+Potential+V0+in+Slabs+of+Crystalline+Si%2C+Ge+and+MgO+physica+status+solidi+%28a%29+166+1998+445&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 0.995, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| WANG97 | ADDED-VERIFIED | 10.1063/1.118556 | <https://api.crossref.org/works?query.bibliographic=Wang+Chou+Libera+Transmission+electron+holography+of+silicon+nanospheres+with+surface+oxide+layers+Applied+Physics+Letters+70+1997+1296&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| AUSLENDER24 | ADDED-VERIFIED | 10.1016/j.ultramic.2023.113862 | <https://api.crossref.org/works?query.bibliographic=Auslender+Pandey+Kohn+Mean+inner+potential+of+elemental+crystals+from+density-functional+theory+calculations%3A+Efficient+computation+and+trends+Ultramicroscopy+255+2024+113862&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| PENNINGTON15 | ADDED-VERIFIED | 10.1016/j.ultramic.2015.07.011 | <https://api.crossref.org/works?query.bibliographic=Pennington+Boothroyd+Dunin-Borkowski+Surface+effects+on+mean+inner+potentials+studied+using+density+functional+theory+Ultramicroscopy+159+2015+34&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| OKEEFFE94 | ADDED-VERIFIED | 10.1107/s010876739300474x | <https://api.crossref.org/works?query.bibliographic=O%27Keeffe+Spence+On+the+average+Coulomb+potential+%28Sigma0%29+and+constraints+on+the+electron+density+in+crystals+Acta+Crystallographica+Section+A+50+1994+33&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 0.966, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| REZ94 | ADDED-VERIFIED | 10.1107/s0108767393013200 | <https://api.crossref.org/works?query.bibliographic=Rez+Rez+Grant+Dirac-Fock+calculations+of+X-ray+scattering+factors+and+contributions+to+the+mean+inner+potential+for+electron+scattering+Acta+Crystallographica+Section+A+50+1994+481&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| SALDIN94 | ADDED-VERIFIED | 10.1016/0304-3991(94)90175-9 | <https://api.crossref.org/works?query.bibliographic=Saldin+Spence+On+the+mean+inner+potential+in+high-+and+low-energy+electron+diffraction+Ultramicroscopy+55+1994+397&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| KAWASUSO98 | ADDED-VERIFIED | 10.1103/physrevlett.81.2695 | <https://api.crossref.org/works?query.bibliographic=Kawasuso+Okada+Reflection+High+Energy+Positron+Diffraction+from+a+Si%28111%29+Surface+Physical+Review+Letters+81+1998+2695&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| HANADA94 | ADDED-VERIFIED | 10.1016/0039-6028(94)91162-2 | <https://api.crossref.org/works?query.bibliographic=Hanada+Ino+Daimon+Study+of+the+Si%28111%297x7+surface+by+RHEED+rocking+curve+analysis+Surface+Science+313+1994+143&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 0.984, "C": "match", "Y": "match", "V": "match", "P": "match"} | none |
+| SCHOWALTER05 | ADDED-UNVERIFIED | - | <https://api.crossref.org/works?query.bibliographic=Schowalter+Rosenauer+Lamoen+Ab+initio+computation+of+the+mean+inner+Coulomb+potential+for+technologically+important+semiconductors+Springer+Proceedings+in+Physics+2005+233&rows=5> | ACCEPT-SUBSTITUTED(Y<-P) {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "untestable", "V": "n/a", "P": "match"} | none |
+| TANAKA24 | ADDED-VERIFIED | 10.1007/978-4-431-56940-4_33 | <https://api.crossref.org/works?query.bibliographic=Tanaka+Theoretical+Basis+of+Electron+Holography+for+Thick+Crystals+and+Mean+Inner+Potential+Electron+Nano-imaging+Springer+2024+339&rows=5> | ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "n/a", "P": "match"} | none |
+
+### Re-identified existing entries
+
+- P49: ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"}; claim search <https://api.crossref.org/works?query.bibliographic=Kudo+Yamamoto+Hoshi+A+fast+and+efficient+computation+method+for+reflective+diffraction+simulations+Computer+Physics+Communications+296+2024+109029&rows=5>
+- U15: ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"}; claim search <https://api.crossref.org/works?query.bibliographic=Blackburn+Cordoba+Fitzpatrick+Sub-%C3%A5ngstr%C3%B6m+resolution+ptychography+in+a+scanning+electron+microscope+at+20+keV+Nature+Communications+16+2025+8977&rows=5>
+
+### Residual check over all entries with a doi
+
+none
+<!-- END GENERATED PASS 2 -->

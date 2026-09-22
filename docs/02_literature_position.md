@@ -14,6 +14,8 @@ UNVERIFIED.
 
 * Every record of `docs/references.bib` was checked against Crossref, DataCite, arXiv or the patent
   office (B3; counts printed by `tools/bib/crossref_check.py report`).
+  Key change: in `docs/references.bib` the key PAT02 now denotes US 5,192,867; revision 2's report
+  `B_literature.md` used [PAT02] for US 10,755,892, which is the bibliography entry U03.
 * Read in full: P04, P07, the patent US 4,998,788 (PAT01) with part of US 5,192,867, the prismatique
   rendered documentation (S01), the Prismatic project pages (S02), the P49 preprint and its code, the
   erratum P02E, the accepted manuscript of chapter C03, Hÿtch et al. 2010 (companion of P31), and the

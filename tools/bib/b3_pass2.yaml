@@ -1,0 +1,564 @@
+# B3 PASS 2 (2026-09-22): corrections and additions proposed by the Phase 1 reports
+# (docs/agent_reports/L1_holography_open_sources.md, L2_computational_open_sources.md,
+#  L4_citation_search.md, L5_open_access_check.md), applied by `crossref_check.py apply`
+# on top of b3_corrections.yaml (pass 1). Same schema as pass 1, plus:
+#
+# claimed          : the citation a report CLAIMS; it is tested against the registry and never
+#                    copied into the bib. Journal abbreviations of the reports are written out in
+#                    full here (e.g. "Acta Cryst. A" -> "Acta Crystallographica Section A").
+# strict_new_entries: true -> a new entry is written from its Crossref record only on the
+#                    five-field verdict ACCEPT-5FIELD; otherwise `on_fail: unverified` puts the
+#                    claimed fields in the UNVERIFIED section with the gap stated.
+# manual           : new entry verified on a non-Crossref record (patent office page); the fields
+#                    are transcribed in `set` and the record is named in manual_routes.
+# extra_fetch      : additional records fetched by `crossref_check.py fetch` (scratch = not committed).
+
+strict_new_entries: true
+new_entries_anchor: '%% --- 4l. Records added by B3 pass 2 (Phase 1 reports L1, L2, L4, L5; strict five-field rule) ---'
+move_anchor: '%% --- 4m. Records moved from the UNVERIFIED section by B3 pass 2 ---'
+
+extra_fetch:
+  - {key: PAT02, name: PAT02.patent.html, url: 'https://patents.google.com/patent/US5192867A/en', accept: 'text/html', scratch: true}
+  - {key: S01, name: S01.CITATION.cff, url: 'https://raw.githubusercontent.com/mrfitzpa/prismatique/main/CITATION.cff', accept: '*/*', scratch: true}
+  - {key: S02, name: S02.LICENSE.txt, url: 'https://raw.githubusercontent.com/prism-em/prismatic/master/LICENSE', accept: '*/*', scratch: true}
+  # chapter DOI of B07 quoted by L5 section 4 (M15); fetched to test it, not copied into a doi field
+  - {key: B07, name: B07.ch11.json, url: 'https://api.crossref.org/works/10.1017/cbo9780511735097.012'}
+
+new_entries:
+  PAT02:
+    type: misc
+    manual: true
+    route: 'USPTO printed patent, front page, https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5192867 (HTTP 200; Google Patents returned 503)'
+    source: 'L1 section 6'
+    claimed:
+      title: 'Electron optical measurement apparatus'
+    set:
+      author: 'Osakabe, Nobuyuki and Endo, Junji and Tonomura, Akira and Tomita, Masahiro and Furutsu, Tadao'
+      title: 'Electron optical measurement apparatus'
+      year: '1993'
+      howpublished: 'US Patent 5,192,867 A; application US 697,576 filed 9 May 1991, continuation-in-part of US 663,472 (4 March 1991, abandoned), itself a continuation of US 462,769 (US 4,998,788 = [PAT01]); priorities JP 1-004999 (13 January 1989) and JP 2-117544 (9 May 1990); issued 9 March 1993; assignee Hitachi, Ltd.'
+      url: 'https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5192867'
+      note: 'evidence: METADATA\_VERIFIED (route: USPTO printed patent, front page read as an image in B3 pass 2 from https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5192867, HTTP 200; Google Patents returned HTTP 503; B3 pass 2, 2026-09-22); provenance: proposed by docs/agent\_reports/L1\_holography\_open\_sources.md section 6 (L1 read the front page, cols. 3-4 and part of col. 7). Front page: inventors Nobuyuki Osakabe, Junji Endo, Akira Tonomura, Masahiro Tomita and Tadao Furutsu; assignee Hitachi, Ltd.; Appl. No. 697,576 filed May 9, 1991; related U.S. data "Continuation-in-part of Ser. No. 663,472, Mar. 4, 1991, abandoned, which is a continuation of Ser. No. 462,769, Nov. 10, 1990, Pat. No. 4,998,788" (US 4,998,788 itself prints the filing date of 462,769 as Jan. 10, 1990); date of patent Mar. 9, 1993. THIS IS THE PATENT TO WHICH THE B REPORT''S FIVE-INVENTOR LIST AND 1991/1993 DATES BELONG (they were wrongly attached to [PAT01]). KEY NOTE: B\_literature.md had used the policy ID [PAT02] for US 10,755,892 (cite key U03); the coordinator assigned key PAT02 to this patent in B3 pass 2, so [PAT02] now means US 5,192,867. L1 reports a reflection embodiment (Fig. 4) with a condenser biprism; not read in B3.'
+  # ---------------------------------------------------------------- L1
+  HARADA05:
+    type: article
+    source: 'L1 section 6 (citation from P07 ref. 65)'
+    set:
+      author: 'Harada, K. and others'
+    auto_note: 'AUTHOR LIST DISPUTED: the Crossref record lists only "K. Harada"; [P07] (ref. 65, read in L1) lists Harada, Akashi, Togawa, Matsuda and Tonomura. The author field therefore gives the Crossref name plus "and others"; check the byline on the article before citing.'
+    claimed:
+      author: 'Harada, K. and Akashi, T. and Togawa, Y. and Matsuda, T. and Tonomura, A.'
+      title: 'Optical system for double-biprism electron holography'
+      journal: 'Journal of Electron Microscopy'
+      volume: '54'
+      number: '1'
+      pages: '19--27'
+      year: '2005'
+  # ---------------------------------------------------------------- L2
+  PRYOR17:
+    type: article
+    source: 'L2 section H'
+    auto_note: 'One of the three papers the Prismatic citation page asks users to cite (with [P04] and [P05]; see [S02]).'
+    claimed:
+      author: 'Pryor, A. and Ophus, C. and Miao, J.'
+      title: 'A streaming multi-GPU implementation of image simulation algorithms for scanning transmission electron microscopy'
+      journal: 'Advanced Structural and Chemical Imaging'
+      volume: '3'
+      pages: '15'
+      year: '2017'
+  CHEN95:
+    type: article
+    source: 'L2 section H'
+    auto_note: 'Reference [38] of [P04]; the tilt-in-propagator precedent cited in L2.'
+    set:
+      author: 'Chen, J. H. and {Van Dyck}, D. and {Op de Beeck}, M. and Broeckx, J. and {Van Landuyt}, J.'
+    claimed:
+      author: 'Chen, J. H. and Van Dyck, D. and Op de Beeck, M. and Broeckx, J. and Van Landuyt, J.'
+      title: 'Modification of the multislice method for calculating coherent STEM images'
+      journal: 'physica status solidi (a)'
+      volume: '150'
+      number: '1'
+      pages: '13--22'
+      year: '1995'
+  LOANE91:
+    type: article
+    source: 'L2 section H'
+    auto_note: 'Source cited by prismatique for its Einstein-model frozen phonons (L2).'
+    claimed:
+      author: 'Loane, R. F. and Xu, P. and Silcox, J.'
+      title: 'Thermal vibrations in convergent-beam electron diffraction'
+      journal: 'Acta Crystallographica Section A'
+      volume: '47'
+      pages: '267--278'
+      year: '1991'
+  # ---------------------------------------------------------------- L4 section 6.2
+  SUZUKI2001:
+    type: article
+    source: 'L4 section 6.2, tier 1'
+    auto_note: ''
+    claimed:
+      author: 'Suzuki, Takayuki and Tanishiro, Yasumasa and Ishiguro, Nami and Minoda, Hiroki and Yagi, Katsumichi'
+      title: 'Energy-filtered Electron Interferometry in Reflection Electron Microscopy'
+      journal: 'Japanese Journal of Applied Physics'
+      volume: '40'
+      number: '4R'
+      pages: '2527'
+      year: '2001'
+  TANISHIRO2003:
+    type: article
+    source: 'L4 section 6.2, tier 1'
+    auto_note: 'The Crossref record also carries the Japanese title; the English title matched.'
+    set:
+      author: 'Tanishiro, Yasumasa'
+      title: 'Electron Energy Loss Spectroscopy in {REM-RHEED}: Energy Filtering by Omega-type Energy Filter'
+    claimed:
+      author: 'Tanishiro, Yasumasa'
+      title: 'Electron Energy Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter'
+      journal: 'Hyomen Kagaku'
+      volume: '24'
+      number: '3'
+      pages: '166--173'
+      year: '2003'
+  TAKEGUCHI1990:
+    type: article
+    source: 'L4 section 6.2, tier 1 (authors from OpenAlex W1954243266, not Crossref)'
+    on_fail: unverified
+    unverified_type: misc
+    unverified_set:
+      note: 'evidence: UNVERIFIED (B3 pass 2, 2026-09-22: fails the strict five-field rule); provenance: proposed by docs/agent\_reports/L4\_citation\_search.md section 6.2. A Crossref record with this exact title, journal and year exists (cached as docs/agent\_reports/crossref\_cache/TAKEGUCHI1990.search.json, first candidate) but it CARRIES NO AUTHORS, NO VOLUME AND NO PAGES, so first author and volume cannot be matched. THE AUTHOR FIELD COMES FROM OpenAlex W1954243266 (via L4), NOT FROM CROSSREF. NO volume, pages OR doi FIELD. Read the volume, pages and byline on the OUP page before moving it up. Relevance: a 1990 Journal of Electron Microscopy report of reflection electron holography of GaAs(110) (L4, abstract level).'
+    claimed:
+      author: 'Takeguchi, Masaki and Harada, Ken and Shimizu, Ryuichi'
+      title: 'Observation of GaAs(110) Surface Defect by Reflection Electron Holography'
+      journal: 'Journal of Electron Microscopy'
+      year: '1990'
+  OSAKABE1993UM:
+    type: article
+    source: 'L4 section 6.2, tier 1'
+    auto_note: ''
+    claimed:
+      author: 'Osakabe, N. and Matsuda, T. and Endo, J. and Tonomura, A.'
+      title: 'Reflection electron holographic observation of surface displacement field'
+      journal: 'Ultramicroscopy'
+      volume: '48'
+      number: '4'
+      pages: '483--488'
+      year: '1993'
+  OSAKABE1993SS:
+    type: article
+    source: 'L4 section 6.2, tier 1'
+    auto_note: ''
+    claimed:
+      author: 'Osakabe, Nobuyuki'
+      title: 'Application of electron holography to surface topography observation'
+      journal: 'Surface Science'
+      volume: '298'
+      number: '2--3'
+      pages: '345--350'
+      year: '1993'
+  OSAKABE1989EMSA:
+    type: article
+    source: 'L4 section 6.2, tier 1'
+    auto_note: ''
+    claimed:
+      author: 'Osakabe, N. and Endo, J. and Matsuda, T. and Tonomura, A.'
+      title: 'Observation of surface morphology by reflection electron holography'
+      journal: 'Proceedings, annual meeting, Electron Microscopy Society of America'
+      volume: '47'
+      pages: '536--537'
+      year: '1989'
+  HERRING1995:
+    type: article
+    source: 'L4 section 6.2, tier 1'
+    auto_note: ''
+    claimed:
+      author: 'Herring, Rodney A.'
+      title: 'Reflection diffracted beam interferometry (RDBI) applied to the study of surfaces'
+      journal: 'Proceedings, annual meeting, Electron Microscopy Society of America'
+      volume: '53'
+      pages: '116--117'
+      year: '1995'
+  TANJI1991:
+    type: article
+    source: 'L4 section 6.2, tier 1 ("check before citing")'
+    auto_note: 'L4 flags it "check before citing": whether the geometry is reflection or profile imaging is unknown.'
+    claimed:
+      author: 'Tanji, T. and Ito, J. and Yada, K.'
+      title: 'Contrast simulation of high resolution electron holography on surface structures'
+      journal: 'Ultramicroscopy'
+      volume: '35'
+      number: '3--4'
+      pages: '245--253'
+      year: '1991'
+  TANISHIRO1999JEM:
+    type: article
+    source: 'L4 section 6.2, tier 2'
+    auto_note: ''
+    claimed:
+      author: 'Tanishiro, Y. and Okamoto, K. and Takeguchi, M. and Minoda, H. and Suzuki, T. and Yagi, K.'
+      title: 'Design features of a new ultra-high vacuum electron microscope with an omega filter'
+      journal: 'Journal of Electron Microscopy'
+      volume: '48'
+      number: '6'
+      pages: '837--842'
+      year: '1999'
+  TANISHIRO1999JJAP:
+    type: article
+    source: 'L4 section 6.2, tier 2'
+    auto_note: 'Crossref spells the fifth author "Mimoda" (copied as deposited); Tanishiro 2003 ref. 10 spells it "Minoda".'
+    claimed:
+      author: 'Tanishiro, Yasumasa and Okamoto, Kimiharu and Suzuki, Takayuki and Ishiguro, Nami and Minoda, Hiroki and Miura, Hidetoshi and Yagi, Katsumichi and Takeguchi, Masaki'
+      title: 'Image Conservation in Inelastically Scattered Electrons in Reflection Electron Microscopy'
+      journal: 'Japanese Journal of Applied Physics'
+      volume: '38'
+      number: '11R'
+      pages: '6540'
+      year: '1999'
+  WANG1993RPP:
+    type: article
+    source: 'L4 section 6.2, tier 2'
+    auto_note: ''
+    claimed:
+      author: 'Wang, Z. L.'
+      title: 'Electron reflection, diffraction and imaging of bulk crystal surfaces in TEM and STEM'
+      journal: 'Reports on Progress in Physics'
+      volume: '56'
+      number: '8'
+      pages: '997--1065'
+      year: '1993'
+  YAGI1993SSR:
+    type: article
+    source: 'L4 section 6.2, tier 2'
+    auto_note: 'Tanishiro 2003 ref. 1 cites "K. Yagi: Surf. Sci. Rep. 19, 305 (1993)", which differs from this Crossref record (volume 17, 307-362); not established that they are the same article (L4).'
+    claimed:
+      author: 'Yagi, Katsumichi'
+      title: 'Reflection electron microscopy: studies of surface structures and surface dynamic processes'
+      journal: 'Surface Science Reports'
+      volume: '17'
+      number: '6'
+      pages: '307--362'
+      year: '1993'
+  SENHORST2026:
+    type: article
+    source: 'L4 section 6.2, tier 3'
+    auto_note: ''
+    claimed:
+      author: 'Senhorst, Sander and Witte, Stefan and Coene, Wim'
+      title: '2D approximation quickly breaks down in reflection ptychography'
+      journal: 'Optics Express'
+      volume: '34'
+      number: '12'
+      pages: '22163'
+      year: '2026'
+  SENHORST2024:
+    type: article
+    source: 'L4 section 6.2, tier 3'
+    auto_note: ''
+    claimed:
+      author: 'Senhorst, Sander and Shao, Yifeng and Weerdenburg, Sven and Horsten, Roland and Porter, Christina and Coene, Wim'
+      title: 'Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles'
+      journal: 'Optics Express'
+      volume: '32'
+      number: '25'
+      pages: '44017'
+      year: '2024'
+  SEABERG2014:
+    type: article
+    source: 'L4 section 6.2, tier 3'
+    auto_note: ''
+    claimed:
+      author: 'Seaberg, Matthew D. and Zhang, Bosheng and Gardner, Dennis F. and Shanblatt, Elisabeth R. and Murnane, Margaret M. and Kapteyn, Henry C. and Adams, Daniel E.'
+      title: 'Tabletop nanometer extreme ultraviolet imaging in an extended reflection mode using coherent Fresnel ptychography'
+      journal: 'Optica'
+      volume: '1'
+      number: '1'
+      pages: '39'
+      year: '2014'
+  # ---------------------------------------------------------------- L5 section 4 (M2-M14)
+  KRUSE06:
+    type: article
+    source: 'L5 section 4, M2'
+    auto_note: ''
+    claimed:
+      author: 'Kruse, P. and Schowalter, M. and Lamoen, D. and Rosenauer, A. and Gerthsen, D.'
+      title: 'Determination of the mean inner potential in III-V semiconductors, Si and Ge by density functional theory and electron holography'
+      journal: 'Ultramicroscopy'
+      volume: '106'
+      number: '2'
+      pages: '105--113'
+      year: '2006'
+  GAJDARDZISKA93:
+    type: article
+    source: 'L5 section 4, M3'
+    auto_note: ''
+    claimed:
+      author: 'Gajdardziska-Josifovska, M. and McCartney, M. R. and de Ruijter, W. J. and Smith, D. J. and Weiss, J. K. and Zuo, J. M.'
+      title: 'Accurate measurements of mean inner potential of crystal wedges using digital electron holograms'
+      journal: 'Ultramicroscopy'
+      volume: '50'
+      pages: '285--299'
+      year: '1993'
+  KIM98:
+    type: article
+    source: 'L5 section 4, M4'
+    # Crossref holds two DOIs for this article; both pass the five-field test. The second accepted
+    # candidate (...3.0.CO;2-N) is the live Wiley record (resource onlinelibrary.wiley.com, cited 21
+    # times); the first (...3.3.CO;2-E) is a legacy duplicate (resource doi.wiley.com, cited 0 times).
+    candidate: 2
+    auto_note: 'Crossref holds two DOIs for this article; the live Wiley one (...3.0.CO;2-N) is used, the legacy duplicate (...3.3.CO;2-E) is not.'
+    claimed:
+      author: 'Kim, M. Y. and Zuo, J. M. and Spence, J. C. H.'
+      title: 'Ab-initio LDA Calculations of the Mean Coulomb Potential V0 in Slabs of Crystalline Si, Ge and MgO'
+      journal: 'physica status solidi (a)'
+      volume: '166'
+      pages: '445--451'
+      year: '1998'
+  WANG97:
+    type: article
+    source: 'L5 section 4, M5'
+    auto_note: ''
+    claimed:
+      author: 'Wang, Y. C. and Chou, T. M. and Libera, M. and Kelly, T. F.'
+      title: 'Transmission electron holography of silicon nanospheres with surface oxide layers'
+      journal: 'Applied Physics Letters'
+      volume: '70'
+      pages: '1296--1298'
+      year: '1997'
+  AUSLENDER24:
+    type: article
+    source: 'L5 section 4, M6'
+    auto_note: ''
+    claimed:
+      author: 'Auslender, A. and Pandey, N. and Kohn, A. and Di{\''e}guez, O.'
+      title: 'Mean inner potential of elemental crystals from density-functional theory calculations: Efficient computation and trends'
+      journal: 'Ultramicroscopy'
+      volume: '255'
+      pages: '113862'
+      year: '2024'
+  PENNINGTON15:
+    type: article
+    source: 'L5 section 4, M7'
+    auto_note: ''
+    claimed:
+      author: 'Pennington, R. S. and Boothroyd, C. B. and Dunin-Borkowski, R. E.'
+      title: 'Surface effects on mean inner potentials studied using density functional theory'
+      journal: 'Ultramicroscopy'
+      volume: '159'
+      pages: '34--45'
+      year: '2015'
+  OKEEFFE94:
+    type: article
+    source: 'L5 section 4, M8'
+    auto_note: 'The record title contains the Greek capital Sigma, typeset here as $\Sigma_0$.'
+    set:
+      title: 'On the average Coulomb potential ($\Sigma_0$) and constraints on the electron density in crystals'
+    claimed:
+      author: 'O''Keeffe, M. and Spence, J. C. H.'
+      title: 'On the average Coulomb potential (Sigma0) and constraints on the electron density in crystals'
+      journal: 'Acta Crystallographica Section A'
+      volume: '50'
+      pages: '33--45'
+      year: '1994'
+  REZ94:
+    type: article
+    source: 'L5 section 4, M9'
+    auto_note: 'L5 reports an erratum, Acta Cryst. A53 (1997) 522; not checked in B3.'
+    claimed:
+      author: 'Rez, D. and Rez, P. and Grant, I.'
+      title: 'Dirac-Fock calculations of X-ray scattering factors and contributions to the mean inner potential for electron scattering'
+      journal: 'Acta Crystallographica Section A'
+      volume: '50'
+      pages: '481--497'
+      year: '1994'
+  SALDIN94:
+    type: article
+    source: 'L5 section 4, M10'
+    auto_note: ''
+    claimed:
+      author: 'Saldin, D. K. and Spence, J. C. H.'
+      title: 'On the mean inner potential in high- and low-energy electron diffraction'
+      journal: 'Ultramicroscopy'
+      volume: '55'
+      pages: '397--406'
+      year: '1994'
+  KAWASUSO98:
+    type: article
+    source: 'L5 section 4, M11'
+    auto_note: ''
+    claimed:
+      author: 'Kawasuso, A. and Okada, S.'
+      title: 'Reflection High Energy Positron Diffraction from a Si(111) Surface'
+      journal: 'Physical Review Letters'
+      volume: '81'
+      pages: '2695--2698'
+      year: '1998'
+  HANADA94:
+    type: article
+    source: 'L5 section 4, M12'
+    auto_note: ''
+    set:
+      title: 'Study of the {Si(111)7$\times$7} surface by {RHEED} rocking curve analysis'
+    claimed:
+      author: 'Hanada, T. and Ino, S. and Daimon, H.'
+      title: 'Study of the Si(111)7x7 surface by RHEED rocking curve analysis'
+      journal: 'Surface Science'
+      volume: '313'
+      pages: '143--154'
+      year: '1994'
+  SCHOWALTER05:
+    type: incollection
+    source: 'L5 section 4, M13'
+    on_fail: unverified
+    unverified_type: incollection
+    unverified_set:
+      note: 'evidence: UNVERIFIED (B3 pass 2, 2026-09-22: fails the strict five-field rule); provenance: proposed by docs/agent\_reports/L5\_open\_access\_check.md section 4 (M13). The Crossref record found for this claim (cached as docs/agent\_reports/crossref\_cache/SCHOWALTER05.json) matches first author, title, container ("Springer Proceedings in Physics" / "Microscopy of Semiconducting Materials") and pages 233-236, but CARRIES NO PUBLICATION DATE and no volume, so the year (2005, from L5) cannot be matched. NO doi FIELD; the year and booktitle are L5''s. Check the year and volume on the Springer page before moving it up.'
+    claimed:
+      author: 'Schowalter, M. and Rosenauer, A. and Lamoen, D. and Kruse, P. and Gerthsen, D.'
+      title: 'Ab initio computation of the mean inner Coulomb potential for technologically important semiconductors'
+      booktitle: 'Springer Proceedings in Physics'
+      pages: '233--236'
+      year: '2005'
+  TANAKA24:
+    type: incollection
+    source: 'L5 section 4, M14'
+    auto_note: ''
+    claimed:
+      author: 'Tanaka, N.'
+      title: 'Theoretical Basis of Electron Holography for Thick Crystals and Mean Inner Potential'
+      booktitle: 'Electron Nano-imaging'
+      publisher: 'Springer'
+      pages: '339--341'
+      year: '2024'
+
+header_replace:
+  - - |-
+      %%   * [P02] has an erratum, [P02E]. Re-check every number taken from [P02].
+    - |-
+      %%   * [P02] has an erratum, [P02E]. B3 pass 2: [P02E] has been read
+      %%     (L5 section 2.4); it only reprints Fig. 3 of [P02] and corrects no
+      %%     number, so the "re-check every number" warning is withdrawn.
+
+entries:
+  P49:
+    claim_source: 'L2 section H (journal version of the preprint)'
+    claimed:
+      author: 'Kudo, S. and Yamamoto, Y. and Hoshi, T.'
+      title: 'A fast and efficient computation method for reflective diffraction simulations'
+      journal: 'Computer Physics Communications'
+      volume: '296'
+      pages: '109029'
+      year: '2024'
+    type: article
+    from_crossref: [author, title, journal, volume, pages, 'year:auto', doi]
+    remove: [howpublished]
+    relabel: 'SECTION\_READ (arXiv v1 2306.00271 and its code; L2 section D) + METADATA\_VERIFIED (route: Crossref API record of the Computer Physics Communications version, found with the citation claimed in L2 section H and accepted on the strict five-field rule, cached as docs/agent\_reports/crossref\_cache/P49.claim.json; B3 pass 2, 2026-09-22); THE CPC VERSION WAS NOT READ'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['TITLE DISCREPANCY, UNRESOLVED: the preprint title is reported as "A fast and ACCURATE computation method for reflective diffraction simulations" while the journal version was reported as "A fast and EFFICIENT ..."; the preprint form is used here and the entry is @misc for that reason. NO DOI FIELD -- none appears in either source document.', 'B3 PASS 2: THE ENTRY NOW DESCRIBES THE JOURNAL VERSION (@article; authors, title, journal, volume, article number, year and DOI copied from the Crossref record), keeping the arXiv eprint. The two titles differ: journal "A fast and efficient computation method ...", preprint arXiv:2306.00271v1 "A fast and accurate computation method ...".']
+      - ['JOURNAL VERSION: a Crossref search returned a Computer Physics Communications record (volume 296, 2024) whose PII equals S0010465523003740 and whose title is "A fast and efficient computation method for reflective diffraction simulations"; it was NOT merged here because the five-field rule fails on the year (this entry''s 2023 is the preprint''s). Its DOI is in the B3 log only; cite the journal version after the orchestrator decides.', 'The journal version was merged in B3 pass 2 on the orchestrator''s instruction (L2 section H), after the claimed citation passed the strict five-field test; its PII is S0010465523003740. What was read (L2 section D) is the arXiv v1 text and the code at github.com/shuheikudo/trhepd-opt, not the CPC article.']
+  U15:
+    claim_source: 'L4 section 6.2, tier 3 (BLACKBURN2025)'
+    claimed:
+      author: 'Blackburn, Arthur M. and Cordoba, Cristina and Fitzpatrick, Matthew R. and McLeod, Robert A.'
+      title: 'Sub-{\aa}ngstr{\"o}m resolution ptychography in a scanning electron microscope at 20 keV'
+      journal: 'Nature Communications'
+      volume: '16'
+      number: '1'
+      pages: '8977'
+      year: '2025'
+    type: article
+    from_crossref: [author, volume, number, pages, 'year:auto', doi]
+    move_to_verified: true
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found with the citation claimed in docs/agent\_reports/L4\_citation\_search.md section 6.2 (proposed key BLACKBURN2025), accepted on the strict five-field rule, cached as docs/agent\_reports/crossref\_cache/U15.claim.json; B3 pass 2, 2026-09-22); label before B3 pass 2: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 5.2 (title only); B3 pass 1 found the record but could not accept it without an author; L4 supplied the byline. RESOLVED IN B3 PASS 2: authors Arthur M. Blackburn, Cristina Cordoba, Matthew R. Fitzpatrick and Robert A. McLeod, Nature Communications 16(1), article 8977, 2025. THE KEY STAYS U15 (L4''s proposed key BLACKBURN2025 would duplicate this entry). Transmission-in-SEM (abstract level, L4); relevant ONLY as a low-energy ptychography precedent of the University of Victoria group, not as reflection work.'
+  P01:
+    relabel: 'METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P01.json; B3) +ABSTRACT(publisher) (IOP landing page; L5 section 2.1)'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['FULL TEXT AND EVEN THE ABSTRACT ARE UNOBTAINED: the surface, electron energy, reflection order, glancing angle, reference-wave arrangement, phase equation, measured phase values and stated limitations of this paper are ALL UNKNOWN to this project -- cite none of them here.', 'ABSTRACT READ (L5 section 2.1, IOP landing page; B3 pass 2 records it, it did not re-read it): "Two regions in a reflection electron image of a Pt(111) surface at glancing angle incidence are overlapped by means of an electron biprism to form an off-axis electron hologram"; the interferogram is reconstructed OPTICALLY; sensitivity "of the order of 0.01 nm" by observing mono-atomic-height steps. SURFACE: Pt(111). At abstract level this is a SELF-REFERENCE arrangement (two surface regions), not the vacuum reference wave of patent [PAT01]. THE BODY IS STILL UNREAD: electron energy, reflection order, glancing angle, phase equation, measured values and limitations remain unknown -- cite none of them here.']
+  P02:
+    note_replace:
+      - ['SEE [P02E] -- re-check every number against the erratum.', 'SEE [P02E]: read in full (L5 section 2.4), it only reprints Fig. 3 of this paper (GaAs(110), (880) Bragg reflection, foreshortening 28) and corrects no number.']
+  P02E:
+    relabel: 'SECTION\_READ (in full; L5 section 2.4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P02E.json; B3)'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['The erratum ITSELF was never displayed and WHAT IT CORRECTS IS UNKNOWN.', 'B3 pass 2 (from L5 section 2.4, not re-read here): the erratum is read in full; its whole text is "Figure 3 did not reproduce properly in print. A correct rendition is given here." Fig. 3 caption: GaAs(110) surface, (880) Bragg reflection, screw dislocation, foreshortening factor 28. It corrects NO number, equation or sentence of [P02].']
+      - ['ANY QUANTITATIVE NUMBER TAKEN FROM [P02] MUST BE RE-CHECKED AGAINST THIS ERRATUM BEFORE PUBLICATION.', 'The earlier warning to re-check every number of [P02] against this erratum is WITHDRAWN (B3 pass 2).']
+  P04:
+    relabel: 'SECTION\_READ (in full; L2 section A) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P04.json; B3)'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['provenance: instruction-file record (section 7, [P04]), which states "The HTML Theory and methods section, including the multislice equations (1)-(5), was inspected. This is SECTION\_READ, not a reproduction of results."', 'provenance: instruction-file record (section 7, [P04]). CORRECTION (B3 pass 2): the earlier label "SECTION\_READ (instruction file)" was wrong in form -- the instruction file''s statement that the Theory and methods section and equations (1)-(5) "was inspected" is a claim by its author, not a reading of [P04] by this project. The paper was read in full in L2 section A; that is the SECTION\_READ now recorded.']
+      - [' This is the ONLY paper in the whole project carrying SECTION\_READ.', '']
+  P05:
+    relabel: 'METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P05.json; B3) +ABSTRACT(PubMed) (Europe PMC; L5 section 2.7)'
+    relabel_keep: 'label before B3 pass 2'
+  P07:
+    relabel: 'SECTION\_READ (in full, JATS XML of PMC7850541; L1 section 1.1) + METADATA\_VERIFIED (route: Crossref API record accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P07.json; B3)'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['NOT OBTAINED -- THIS IS THE PROJECT''S LARGEST GAP: the task designated [P07] the most reliable accessible secondary source and asked for a full read; every host serving it is blocked. Nothing about Osakabe''s experiments, reference-wave arrangements, figure numbers or section locators was extracted from it. It is FREE at PMC7850541 -- open it first when network access returns.', 'B3 pass 2 (from L1 section 1.1, not re-read here): READ IN FULL from the PMC JATS XML (abstract, all body sections, 14 figure captions, Table 1, equations (1)-(33), 99 references); locators are PMC section headings and paragraph counts, because the XML has no page breaks. [P07] CONTAINS NOTHING ON OSAKABE''S REFLECTION ARRANGEMENT (L1): it is no source for the reference-wave geometry of [P01], [P02] or [PAT01].']
+  PAT01:
+    relabel: 'SECTION\_READ (in full, printed patent read as images; L1 section 3) + METADATA\_VERIFIED (route: Google Patents record https://patents.google.com/patent/US4998788A/en; B3)'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['This confirms, at abstract level, statement (i) of the earlier note: the Hitachi reference wave is a wave that PASSES BESIDE THE SPECIMEN, not a second reflected beam. Statement (ii) (focal distance and biprism potential chosen for a recordable fringe interval, single-stage biprism) is still unverified: the description and claims were not read.', 'B3 pass 2 (from L1 section 3, not re-read here): the printed patent was read in full. Front page: inventors Osakabe and Tonomura only, assignee Hitachi, Ltd., Appl. No. 462,769 filed Jan. 10, 1990, priority JP 1-4999 of Jan. 13, 1989, patent dated Mar. 12, 1991. The five-inventor list and the 1991/1993 dates of the B report belong to the related US 5,192,867 = [PAT02]. Content (L1 section 3.2): embodiment 1 superimposes the specimen-reflected wave on a DIRECT wave that does not illuminate the specimen, with a single biprism below the objective back focal plane and an over-focused objective; embodiment 2 splits the illumination with a condenser biprism and uses two further biprisms; the patent states no accelerating voltage of an actual apparatus, specimen, surface, reflection or glancing angle. The earlier summariser paraphrases of the description are withdrawn. Note that the abstract of [P01] describes a self-reference arrangement (two surface regions), not this direct-wave scheme.']
+  C03:
+    relabel: 'SECTION\_READ (author accepted manuscript, White Rose eprint 127795; L5 section 2.5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/C03.json; B3)'
+    relabel_keep: 'label before B3 pass 2'
+  P08:
+    relabel: 'METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P08.json; B3) +ABSTRACT(PubMed) (L5 section 2.2)'
+    relabel_keep: 'label before B3 pass 2'
+  P09:
+    relabel: 'METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P09.json; B3) +ABSTRACT(PubMed) (L5 section 2.2)'
+    relabel_keep: 'label before B3 pass 2'
+  P31:
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P31.json; B3) +ABSTRACT(PubMed) (L5 section 2.6)'
+    relabel_keep: 'label before B3 pass 2'
+  HYTCH10:
+    relabel: 'SECTION\_READ (HAL hal-01742031 full text; L5 section 2.6) + METADATA\_VERIFIED (route: Crossref API record, cached as docs/agent\_reports/crossref\_cache/HYTCH10.json; B3)'
+    relabel_keep: 'label before B3 pass 2'
+  SCHOWALTER26A:
+    relabel: 'SECTION\_READ (arXiv v1 in full; L5 section 4) + METADATA\_VERIFIED (route: arXiv API record, cached as docs/agent\_reports/crossref\_cache/SCHOWALTER26A.arxiv.xml; B3)'
+    relabel_keep: 'label before B3 pass 2'
+  S01:
+    relabel: 'SECTION\_READ (rendered documentation, README and v0.0.1 docstrings; L2 section B) + METADATA\_VERIFIED (route: DataCite record of the Zenodo concept DOI and CITATION.cff; B3)'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['UNRESOLVED AND FLAGGED BY INSTRUCTION SECTIONS S01/9.6: the repository pins prismatique==0.0.1 and the VERSION-MATCHED API FOR 0.0.1 HAS STILL NOT BEEN CHECKED (the documentation page is now reachable; checking it is reading-plan step 2).', 'B3 pass 2: CITATION.cff (raw.githubusercontent.com/mrfitzpa/prismatique/main/CITATION.cff, HTTP 200) gives the author as given-names "Matthew R. C.", family-names "Fitzpatrick" (University of Victoria, ORCID 0000-0001-5347-0629), matching the author field; licence GPL-3.0 per L2 (B22). The version-matched 0.0.1 check is reported in L2 section B.3 (rendered docs exist only for v0.0.4; 0.0.1 read from the tagged code).']
+  S02:
+    relabel: 'SECTION\_READ (project pages and repository README; L2 section C) + METADATA\_VERIFIED (route: project pages https://prism-em.com/ and https://prism-em.github.io/about-cite/, HTTP 200; B3)'
+    relabel_keep: 'label before B3 pass 2'
+    note_replace:
+      - ['Advanced Structural and Chemical Imaging 3 (2017) (NOT in this file; add it after a Crossref check); and Rangel DaCosta et al. 2021 ([P05]).', 'Advanced Structural and Chemical Imaging 3 (2017) (= [PRYOR17], added in B3 pass 2 after a strict Crossref check); and Rangel DaCosta et al. 2021 ([P05]). All three must be cited when Prismatic is used, without a GPU condition (L2, C3). LICENCE: GNU GPL version 3 (the repository LICENSE, fetched in B3 pass 2 at raw.githubusercontent.com/prism-em/prismatic/master/LICENSE, begins "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007"; L2 C4).']
+  B06:
+    note_replace:
+      - ['UNRESOLVED: the table of contents was never obtained', 'B3 pass 2 (L2 section H): the Crossref record gives issued 2020 and carries no edition number; the prismatique literature page pairs this DOI with the year 2010, which is wrong (L2, B21). UNRESOLVED: the table of contents was never obtained']
+  B07:
+    note_replace:
+      - ['B3: DOI copied from the Crossref record (published-print 2004-12-13', 'CHAPTER NOTE (B3 pass 2, from L5 section 4 item M15): chapter 11, "Fourier components of the crystal potential", pages 154-160, is the book''s definition of the crystal potential and V0; its Crossref chapter record (10.1017/cbo9780511735097.012, cached as docs/agent\_reports/crossref\_cache/B07.ch11.json) confirms title, pages and parent book. Not read. B3: DOI copied from the Crossref record (published-print 2004-12-13']
+  U03:
+    note_replace:
+      - ['THE POLICY ID OF THIS RECORD IS [PAT02] -- the cite key stays U03 so that keys do not change.', 'B\_literature.md gave this record the policy ID [PAT02]; IN B3 PASS 2 THE COORDINATOR ASSIGNED KEY PAT02 TO US 5,192,867 (see [PAT02]), so this record is referred to by its key U03 only.']
+
+accepted_residual:
+  HARADA05:
+    'author-count': 'Crossref lists only K. Harada; [P07] ref. 65 lists five authors; kept as "Harada, K. and others" (disputed, see note)'
+  CHEN95:
+    'author[3].family': 'Crossref deposits "Op de Beeck" as family "de Beeck", given "M. Op"; the usual form is used (as in L2 and in the Crossref chapter records of [U05])'
+    'author[3].given': 'see author[3].family'
+  TANISHIRO2003:
+    'author[1].family': 'Crossref deposits the family name in capitals ("TANISHIRO"); case normalised'
+    title: 'record title array also carries the Japanese title; only the English title is used'
+  OKEEFFE94:
+    title: 'LaTeX transcription of the record title (Greek capital Sigma)'
+  HANADA94:
+    title: 'LaTeX transcription of the record title (7 x 7 with a times sign)'
+
+manual_routes:
+  PAT02:
+    verified: true
+    route: 'USPTO printed patent, front page read as an image'
+    url: 'https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/5192867'
+    http: 'USPTO 200 (PDF, 14 pages, image only); Google Patents 503 (twice) and WebFetch 503'
+    result: 'US 5,192,867 A, Electron optical measurement apparatus; inventors Osakabe, Endo, Tonomura, Tomita, Furutsu; Hitachi, Ltd.; Appl. 697,576 filed 1991-05-09; CIP of 663,472 (1991-03-04), continuation of 462,769 (Pat. 4,998,788); priorities JP 1-004999 (1989-01-13), JP 2-117544 (1990-05-09); patent 1993-03-09.'

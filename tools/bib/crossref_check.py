@@ -390,7 +390,10 @@ def evaluate_candidate(key, e, c):
         if key == "U05":
             t = t.split(" (proceedings")[0]
         ct = cr_title(c)
-        r = difflib.SequenceMatcher(None, bt.fold(t), bt.fold(ct)).ratio()
+        # Crossref may list alternate-language titles as further array elements (e.g. the
+        # Japanese title of Hyomen Kagaku papers): compare with each variant, keep the best
+        variants = [ct] + [re.sub(r"<[^>]+>", "", html.unescape(x)).strip() for x in (c.get("title") or [])]
+        r, ct = max((difflib.SequenceMatcher(None, bt.fold(t), bt.fold(v)).ratio(), v) for v in variants)
         main = bt.fold(t.split(":")[0]) if ":" in t else None
         if r >= 0.90:
             res["T"] = "match"
@@ -420,7 +423,7 @@ def evaluate_candidate(key, e, c):
             res["C"] = "mismatch"
     else:
         res["C"] = "untestable"
-    if e.get("year"):
+    if e.get("year") and cr_years(c):
         yrs = {v.split("-")[0] for v in cr_years(c).values()}
         res["Y"] = "match" if u(e, "year") in yrs else "mismatch"
     else:
@@ -649,10 +652,14 @@ def cmd_fetch(args):
         if pi.exists():
             items = items + json.loads(pi.read_text())["message"]["items"]
         best = None
+        want = (new_all.get(key) or {}).get("candidate", 1)   # n-th accepted candidate (duplicate DOIs)
+        n_acc = 0
         for c in items:
             ev = evaluate_candidate(key, e, c)
             if ev["verdict"].startswith("ACCEPT") and best is None:
-                best = (c["DOI"], ev)
+                n_acc += 1
+                if n_acc == want:
+                    best = (c["DOI"], ev)
         if best:
             st, _ = cached_get(f"{key}.json", works_url(best[0]), idx, args.refresh)
             print(f"[{key}] accepted {best[0]} {best[1]['verdict']} -> /works {st}")
@@ -687,6 +694,9 @@ def value_from_record(field, rec, e):
     if field == "pages":
         a, b = cr_pages(rec)
         return f"{a}--{b}" if b else a
+    if field == "year:auto":
+        y = cr_years(rec)
+        return (y.get("published-print") or y.get("issued")).split("-")[0]
     if field == "year:print":
         return cr_years(rec)["published-print"].split("-")[0]
     if field == "year:online":
@@ -747,6 +757,10 @@ def new_entry_verdict(key, d, strict=False, rec=None):
     return ok_t and ok_a and ok_y, f"arXiv: title {'match' if ok_t else 'MISMATCH'}, first author {'match' if ok_a else 'MISMATCH'}, year {'match' if ok_y else 'MISMATCH'}"
 
 
+REPORT_FILES = {"L1": "L1\\_holography\\_open\\_sources.md", "L2": "L2\\_computational\\_open\\_sources.md",
+                "L4": "L4\\_citation\\_search.md", "L5": "L5\\_open\\_access\\_check.md"}
+
+
 def insert_unverified(text, block):
     m = re.search(r"\n\n%% ===== END OF UNVERIFIED CANDIDATES", text)
     return text[:m.start()] + "\n\n" + block + text[m.start():]
@@ -772,9 +786,31 @@ def add_new_entries(text, spec, touched):
                 print(f"{key}: NOT added ({why})")
             continue
         fields = {}
-        rec = load_rec(key) if d.get("search", True) else None
-        for fld in d.get("from_crossref", []) or []:
-            fields[fld.split(":")[0]] = value_from_record(fld, rec, None)
+        rec = load_rec(key) if (d.get("search", True) and not d.get("manual")) else None
+        default = (["author", "title", "booktitle", "publisher", "pages", "year:auto", "doi"]
+                   if d.get("type") == "incollection" else
+                   ["author", "title", "journal", "volume", "number", "pages", "year:auto", "doi"])
+        flds = d.get("from_crossref") or (default if (rec is not None and spec.get("strict_new_entries")) else [])
+        for fld in flds:
+            name = fld.split(":")[0]
+            if name == "number" and not (rec.get("issue") or rec.get("article-number")):
+                continue
+            if name == "number" and not rec.get("issue") and cr_pages(rec)[0] == str(rec.get("article-number")):
+                continue                                  # article number already in pages
+            if name == "volume" and not rec.get("volume"):
+                continue
+            if name == "pages" and not cr_pages(rec)[0]:
+                continue
+            fields[name] = value_from_record(fld, rec, None)
+        if "auto_note" in d and rec is not None:
+            ev = evaluate_candidate(key, claimed_entry(key, d), rec)
+            fields["note"] = (
+                "evidence: METADATA\\_VERIFIED (route: Crossref API record found by bibliographic search with the "
+                f"citation claimed in {d['source']}, accepted on the strict five-field rule "
+                f"(first author, title, container, year, volume all match), cached as "
+                f"docs/agent\\_reports/crossref\\_cache/{key}.json; B3 pass 2, 2026-09-22); provenance: proposed by "
+                f"docs/agent\\_reports/{REPORT_FILES[d['source'][:2]]} ({d['source']}); fields copied from the Crossref "
+                "record. Not read in B3." + ((" " + d["auto_note"].strip()) if d["auto_note"] else ""))
         for name, val in (d.get("set") or {}).items():
             fields[name] = str(val).strip()
         width = max(len(n) for n in fields)
@@ -1089,7 +1125,7 @@ def check_dois_backed(cur):
         d = e.get("doi")
         if not d:
             continue
-        rec = load_rec(key)
+        rec = load_claim_rec(key) or load_rec(key)
         if rec is not None and rec.get("DOI", "").lower() == d.lower():
             continue
         dp = CACHE / f"{key}.datacite.json"
@@ -1177,6 +1213,151 @@ def write_log(counts, blocks, corrections, stats, errs, doi_bad, spec):
     LOG.write_text(text)
 
 
+def cmd_report2(args):
+    """Pass 2: compare the state after pass 1 with the current file, test every pass-2 claim."""
+    spec1, spec2 = load_spec(CORR), load_spec(CORR2)
+    idx = load_index()
+    base_t, cur_t = state_after(1), BIB.read_text()
+    if cur_t != state_after(2):
+        raise SystemExit("references.bib is not baseline + pass 1 + pass 2: run `apply` first")
+    base, cur = entries_by_key(base_t), entries_by_key(cur_t)
+    build_parent_isbns(entries_by_key(read_baseline()))
+    acc = {}
+    for sp in (spec1, spec2):
+        for k, v in (sp.get("accepted_residual") or {}).items():
+            acc.setdefault(k, {}).update(v or {})
+    manual = spec2.get("manual_routes") or {}
+    keys2 = set(spec2.get("entries") or {}) | set(spec2.get("new_entries") or {})
+    c = dict(entries_before=len(base), entries_after=len(cur),
+             verified_before=sum(e.section == "verified" for e in base.values()),
+             verified_after=sum(e.section == "verified" for e in cur.values()),
+             unverified_before=sum(e.section == "unverified" for e in base.values()),
+             unverified_after=sum(e.section == "unverified" for e in cur.values()),
+             doi_before=sum(bool(e.get("doi")) for e in base.values()),
+             doi_after=sum(bool(e.get("doi")) for e in cur.values()),
+             existing_ops=0, existing_fields_changed=0, labels_changed=0, moved_to_verified=0,
+             new_proposed=0, new_verified_crossref=0, new_verified_other=0, new_unverified=0,
+             claims_tested=0, claims_accepted_5field=0, http_failures=0, residual_entries=0)
+    for name, r in idx.items():
+        if name.split(".")[0] in keys2 and (r["status"] is None or r["status"] >= 500 or r["status"] == 429):
+            c["http_failures"] += 1
+    rows, blocks, corrections, labels = [], [], [], []
+    for key, ops in (spec2.get("entries") or {}).items():
+        c["existing_ops"] += 1
+        e0, e1 = base[key], cur[key]
+        diff = [(n, e0.get(n), e1.get(n)) for n in dict.fromkeys([f.name for f in e0.fields] + [f.name for f in e1.fields])
+                if n != "note" and e0.get(n) != e1.get(n)]
+        if e0.etype != e1.etype:
+            diff.append(("@type", e0.etype, e1.etype))
+        corrections += [(key,) + d for d in diff]
+        if diff:
+            c["existing_fields_changed"] += 1
+        if label_of(e0) != label_of(e1):
+            c["labels_changed"] += 1
+            labels.append((key, label_of(e0), label_of(e1)))
+        if e0.section != e1.section:
+            c["moved_to_verified"] += 1
+        rec = load_claim_rec(key) or load_rec(key)
+        why = ""
+        if ops.get("claimed"):
+            c["claims_tested"] += 1
+            ok, why = new_entry_verdict(key, {"claimed": ops["claimed"], "type": e0.etype, "source": ""}, strict=True,
+                                        rec=load_claim_rec(key) or {})
+            c["claims_accepted_5field"] += ok
+        disc = compare(key, e1, rec)[1] if (rec is not None and e1.get("doi")) else []
+        resid = [d for d in disc if d[0] not in acc.get(key, {})]
+        rows.append([key, e1.get("doi") or "", "existing", "; ".join(f"{n}: {a!r} -> {b!r}" for n, a, b in diff) or "note only",
+                     why or "-", "; ".join(f"{d[0]}: {d[1]!r} vs {d[2]!r}" for d in resid) or "none", label_of(e0), label_of(e1)])
+        blocks.append((key, "existing entry", why, diff, resid, None))
+    for key, d in (spec2.get("new_entries") or {}).items():
+        c["new_proposed"] += 1
+        e1 = cur.get(key)
+        ok, why = new_entry_verdict(key, d, strict=True)
+        if d.get("manual"):
+            c["new_verified_other"] += ok
+            url, rec = manual.get(key, {}).get("url", ""), None
+        else:
+            c["claims_tested"] += 1
+            c["claims_accepted_5field"] += ok
+            url = idx.get(f"{key}.search.json", {}).get("url", "")
+            rec = load_rec(key)
+            if ok:
+                c["new_verified_crossref"] += 1
+        if e1 is not None and e1.section == "unverified":
+            c["new_unverified"] += 1
+        disc = compare(key, e1, rec)[1] if (rec is not None and e1 is not None and e1.get("doi")) else []
+        resid = [x for x in disc if x[0] not in acc.get(key, {})]
+        status = ("ADDED-VERIFIED" if e1 is not None and e1.section == "verified" else
+                  "ADDED-UNVERIFIED" if e1 is not None else "NOT-ADDED")
+        rows.append([key, (e1.get("doi") if e1 else "") or "", status, d["source"], why,
+                     "; ".join(f"{x[0]}: {x[1]!r} vs {x[2]!r}" for x in resid) or "none", "(new)", label_of(e1) if e1 else ""])
+        blocks.append((key, status, why, [], resid, url))
+    # residual check over every current entry with a doi
+    resid_all = []
+    for key, e in cur.items():
+        if not e.get("doi"):
+            continue
+        rec = load_claim_rec(key) or load_rec(key)
+        if rec is None:
+            continue
+        ph = key in PLACEHOLDER_TITLE and e.get("title") == entries_by_key(read_baseline()).get(key, e).get("title")
+        r = [x for x in compare(key, e, rec, placeholder=ph)[1] if x[0] not in acc.get(key, {})]
+        if r:
+            resid_all.append((key, r))
+    c["residual_entries"] = len(resid_all)
+    with TSV2.open("w") as fh:
+        fh.write("\t".join(["key", "doi", "status", "change_or_source", "verdict", "residual_vs_record", "label_before", "label_after"]) + "\n")
+        for r in rows:
+            fh.write("\t".join(str(x).replace("\t", " ").replace("\n", " ") for x in r) + "\n")
+    errs, warns, stats = bt.validate(cur_t)
+    bad = check_dois_backed(cur)
+    L = ["### Counts (produced by `tools/bib/crossref_check.py report`)\n", "| Quantity | Count |", "|---|---|"]
+    lab = {"entries_before": "entries before pass 2", "entries_after": "entries after pass 2",
+           "verified_before": "verified section before", "verified_after": "verified section after",
+           "unverified_before": "UNVERIFIED section before", "unverified_after": "UNVERIFIED section after",
+           "doi_before": "entries with a doi field before", "doi_after": "entries with a doi field after",
+           "existing_ops": "existing entries touched by pass 2", "existing_fields_changed": "... of which with metadata fields changed",
+           "labels_changed": "... of which with the evidence label changed", "moved_to_verified": "... moved out of the UNVERIFIED section",
+           "new_proposed": "new entries proposed", "new_verified_crossref": "... added to the verified section (Crossref, strict five-field)",
+           "new_verified_other": "... added to the verified section (patent-office record)", "new_unverified": "... added to the UNVERIFIED section (gap stated)",
+           "claims_tested": "claimed citations tested against Crossref (new + re-identified)", "claims_accepted_5field": "... accepted on the strict five-field rule",
+           "http_failures": "HTTP failures in pass-2 requests (network error, 429, 5xx)",
+           "residual_entries": "entries with a doi whose fields still differ from their record (not counting kept differences)"}
+    for k, v in lab.items():
+        L.append(f"| {v} | {c[k]} |")
+    L.append("")
+    L.append("Validation: " + json.dumps(stats) + f"; errors: {errs or 'none'}; doi fields not backed by a cached registry record: {bad or 'none'}.\n")
+    L.append("### Metadata changes to existing entries (before -> after; `note` excluded)\n")
+    L.append("| key | field | before | after |\n|---|---|---|---|")
+    for key, n, a, b in corrections:
+        L.append(f"| {key} | {n} | {md(a) if a is not None else '(absent)'} | {md(b) if b is not None else '(removed)'} |")
+    L.append("\n### Evidence-label changes\n")
+    L.append("| key | before | after |\n|---|---|---|")
+    for key, a, b in labels:
+        L.append(f"| {key} | {md(a)} | {md(b)} |")
+    L.append("\n### New entries (claimed citation -> strict test)\n")
+    L.append("| key | status | doi | query / record URL | verdict | residual |\n|---|---|---|---|---|---|")
+    for key, status, why, diff, resid, url in blocks:
+        if status == "existing entry":
+            continue
+        e1 = cur.get(key)
+        L.append(f"| {key} | {status} | {md(e1.get('doi') if e1 and e1.get('doi') else '-')} | <{url}> | {md(why)} | "
+                 f"{md('; '.join(f'{x[0]}' for x in resid)) or 'none'} |")
+    L.append("\n### Re-identified existing entries\n")
+    for key, status, why, diff, resid, url in blocks:
+        if status == "existing entry" and why and why != "-":
+            L.append(f"- {key}: {md(why)}; claim search <{idx.get(f'{key}.claim.search.json', {}).get('url', '')}>")
+    L.append("\n### Residual check over all entries with a doi\n")
+    L.append("none" if not resid_all else "\n".join(f"- {k}: " + "; ".join(f"`{x[0]}` {md(x[1])} vs {md(x[2])}" for x in r) for k, r in resid_all))
+    text = LOG.read_text()
+    a_, z_ = "<!-- BEGIN GENERATED PASS 2 -->", "<!-- END GENERATED PASS 2 -->"
+    text = text[:text.index(a_) + len(a_)] + "\n" + "\n".join(L) + "\n" + text[text.index(z_):]
+    LOG.write_text(text)
+    print(json.dumps(c, indent=1))
+    print("validate:", stats, "errors:", errs, "doi-backing:", bad)
+    return 0
+
+
 def cmd_validate(args):
     text = BIB.read_text()
     errs, warns, stats = bt.validate(text)
@@ -1194,10 +1375,14 @@ def main():
     f.add_argument("keys", nargs="*")
     f.add_argument("--refresh", action="store_true")
     sp.add_parser("apply")
-    sp.add_parser("report")
+    r = sp.add_parser("report")
+    r.add_argument("--pass", dest="pass_no", type=int, default=2,
+                   help="2 (default): pass-2 block and TSV; 1: re-generate the pass-1 block and TSV")
     sp.add_parser("validate")
     a = ap.parse_args()
-    return {"fetch": cmd_fetch, "apply": cmd_apply, "report": cmd_report, "validate": cmd_validate}[a.cmd](a)
+    if a.cmd == "report":
+        return (cmd_report if a.pass_no == 1 else cmd_report2)(a)
+    return {"fetch": cmd_fetch, "apply": cmd_apply, "validate": cmd_validate}[a.cmd](a)
 
 
 if __name__ == "__main__":
