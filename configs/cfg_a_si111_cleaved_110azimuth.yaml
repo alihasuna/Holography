@@ -4,6 +4,8 @@
 # evidence labels; schema reflection_holo.io.config.SCHEMAS["CFG-A"]). The geometry defaults of the
 # inspected repository define this benchmark; they are not laboratory inputs (docs/06), so they are
 # labelled ASSUMPTION with source "inspected repository default" (audit A2 m4), not PROJECT_INPUT.
+# Only the beam energy (docs/06 item 1, supplied) and V0 (item 20, ASSUMPTION B1 registered in
+# reflection_holo/io/assumption_registry.yaml) are docs/06 items in the CFG-A schema (A2b N1).
 # Every parameter states its unit ("none" for a parameter that is not a physical quantity); the
 # loader converts lengths to A and angles to rad through one unit table (audit A2 m5).
 schema_version: 1
@@ -42,7 +44,6 @@ parameters:
     value: 5.4309
     unit: A
     label: ASSUMPTION
-    assumption_id: B2
     source: "model_assumptions B2 (standard room-temperature value); equals reflection_holo.constants.A_SI_A"
   mean_inner_potential_V:
     value: 12.0
@@ -56,14 +57,12 @@ parameters:
     value: [4, -4, 4]
     unit: none
     label: DERIVED_HERE
-    item: 9
-    source: "docs/05 section 2 CFG-A and docs/03 section 4 ('the first recommended condition (4,-4,4)'); allowed (SM02), accessible (SM04, SM06)"
+    source: "benchmark definition (not a laboratory input): docs/05 section 2 CFG-A and docs/03 section 4 ('the first recommended condition (4,-4,4)'); allowed (SM02), accessible (SM04, SM06)"
   recommended_reflections_hkl:
     value: [[4, -4, 4], [5, -5, 5], [7, -7, 7], [8, -8, 8]]
     unit: none
     label: DERIVED_HERE
-    item: 9
-    source: "docs/05 section 2 CFG-A"
+    source: "benchmark definition (not a laboratory input): docs/05 section 2 CFG-A"
   not_recommended_reflections_hkl:
     value: [[3, -3, 3]]
     unit: none

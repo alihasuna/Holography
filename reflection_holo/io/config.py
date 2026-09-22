@@ -17,9 +17,20 @@ and optionally
                         refused otherwise; a PROJECT_INPUT without a docs/06 item fails.
     stands_in_for_item  REQUIRED (equal to item) for an ASSUMPTION value standing in for a docs/06
                         item, together with
-    assumption_id       the row of docs/model_assumptions.md that states the assumption (e.g.
-                        "B1"); verified against that file. Optional for other ASSUMPTION values.
+    assumption_id       the model_assumptions row that states the assumption (e.g. "B1"); it must be
+                        mapped to that item by the package registry assumption_registry.yaml
+                        (loaded with importlib.resources; A2b N1, N9). Refused on any parameter
+                        without a docs/06 item.
     note
+
+Labels on a parameter whose schema names a docs/06 item (re-audit A2b N1). Only three states:
+  * PROJECT_INPUT, null (the input is missing: listed at placeholder level, fails at run level), or
+    with a value whose source names the supplier and the date, "supplied by <name> <YYYY-MM-DD>";
+  * ASSUMPTION with stands_in_for_item = item and an assumption_id registered for that item;
+  * TEST_ONLY, accepted only from in-memory test fixtures (allow_test_only=True; never from a file,
+    and recorded as test_only).
+Any other label (DERIVED_HERE, SECTION_READ, REPRODUCED, METADATA_VERIFIED, UNVERIFIED) fails.
+Numbers must be finite (A2b N8).
 Unknown keys, unknown parameter names, parameters outside the configuration's schema and duplicate
 YAML keys (anywhere in the file) are refused.
 
@@ -56,9 +67,12 @@ reflection must be on the specular rod, allowed (forbidden-reflection guard, SM0
 from __future__ import annotations
 
 import copy
+import datetime as _dt
 import functools
 import hashlib
+import importlib.resources
 import json
+import math
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -86,7 +100,8 @@ REFERENCE_TRAJECTORIES = ("vacuum_beside_sample", "reflected_flat_area",
                           "transmitted_thin_region")        # docs/06 item 15
 STEP_EDGE_ORIENTATIONS = ("parallel_to_beam", "transverse_to_beam")
 MATERIALS = ("Si", "Pt")                                    # canonical element symbols only
-MODEL_ASSUMPTIONS_PATH = Path(__file__).resolve().parents[2] / "docs" / "model_assumptions.md"
+REGISTRY_RESOURCE = "assumption_registry.yaml"              # package data of reflection_holo.io
+SUPPLIER_DATE_RE = re.compile(r"supplied by (?P<who>[A-Za-z][^,;:()]*?) (?P<date>\d{4}-\d{2}-\d{2})\b")
 
 # The one unit table: unit -> (dimension, factor to the canonical unit of that dimension).
 UNITS: dict[str, tuple[str, float | None]] = {
@@ -131,23 +146,25 @@ PARAMETERS: dict[str, tuple[str, str]] = {
 
 # Per configuration type: the material, the REQUIRED parameters and the optional ones, each with its
 # docs/06 item number (None: not a laboratory input of this configuration). CFG-A is a benchmark
-# defined by docs/05 section 2 (its geometry is the inspected repository's default, not a laboratory
-# input); its imaging inputs are optional (a hologram simulation of CFG-A must declare them, and
-# value() refuses an absent one). CFG-B is Ali's experiment (docs/06). CFG-O reproduces P01; its
-# values come from the literature, not from docs/06.
+# defined by docs/05 section 2: its geometry, target reflection and imaging choices are benchmark
+# definitions, not laboratory inputs; only the beam energy (item 1, supplied) and V0 (item 20) are
+# docs/06 items there. Its imaging inputs are optional (a hologram simulation of CFG-A must declare
+# them, and value() refuses an absent one). CFG-B is Ali's experiment (docs/06). CFG-O reproduces
+# P01; its values come from the literature, not from docs/06. The lattice parameter is no docs/06
+# item in any schema, so model_assumptions B2 is not a PROJECT_INPUT stand-in.
 SCHEMAS: dict[str, dict[str, Any]] = {
     "CFG-A": dict(
         material="Si",
         required={"surface_material": None, "surface_normal_hkl": None, "beam_azimuth_uvw": None,
                   "beam_energy_keV": 1, "lattice_parameter": None, "mean_inner_potential_V": 20,
-                  "target_reflection_hkl": 9, "recommended_reflections_hkl": 9,
+                  "target_reflection_hkl": None, "recommended_reflections_hkl": None,
                   "forbidden_rod_reflections_hkl": None, "step_types": None,
                   "step_translations": None, "step_edge_orientations": None},
-        optional={"second_reflection_hkl": 9, "not_recommended_reflections_hkl": None,
-                  "glancing_angle_ext": 7, "convergence_semi_angle": 3,
-                  "objective_aperture_semi_angle": 4, "image_pixel_size": 5,
-                  "reference_trajectory": 15, "reference_model": None,
-                  "reconstruction_method": 19}),
+        optional={"second_reflection_hkl": None, "not_recommended_reflections_hkl": None,
+                  "glancing_angle_ext": None, "convergence_semi_angle": None,
+                  "objective_aperture_semi_angle": None, "image_pixel_size": None,
+                  "reference_trajectory": None, "reference_model": None,
+                  "reconstruction_method": None}),
     "CFG-B": dict(
         material="Si",
         required={"surface_material": 11, "surface_normal_hkl": 11, "beam_azimuth_uvw": 8,
@@ -286,14 +303,32 @@ def canonical_sha256(data: dict) -> str:
 
 
 @functools.lru_cache(maxsize=1)
-def model_assumption_ids() -> frozenset[str]:
-    """Row identifiers (A1, B1, ...) of the tables in docs/model_assumptions.md."""
+def _registry_cached() -> tuple:
     try:
-        text = MODEL_ASSUMPTIONS_PATH.read_text(encoding="utf-8")
+        text = importlib.resources.files("reflection_holo.io").joinpath(REGISTRY_RESOURCE).read_text(
+            encoding="utf-8")
     except OSError as exc:
-        raise ConfigError(f"cannot verify assumption_id: {MODEL_ASSUMPTIONS_PATH} unreadable "
-                          f"({exc})") from exc
-    return frozenset(re.findall(r"^\|\s*([AB]\d+)\s*\|", text, flags=re.MULTILINE))
+        raise ConfigError(f"assumption registry {REGISTRY_RESOURCE} unreadable ({exc})") from exc
+    data = load_yaml_unique(text)
+    if not isinstance(data, dict) or data.get("schema_version") != 1 \
+            or not isinstance(data.get("stand_ins"), dict) or set(data) != {"schema_version", "stand_ins"}:
+        raise ConfigError(f"{REGISTRY_RESOURCE}: expected {{schema_version: 1, stand_ins: {{...}}}}")
+    out = []
+    for aid, items in data["stand_ins"].items():
+        if not (isinstance(aid, str) and re.fullmatch(r"B\d+", aid)):
+            raise ConfigError(f"{REGISTRY_RESOURCE}: {aid!r} is not a model_assumptions B-row id")
+        if not (isinstance(items, list) and items
+                and all(_is_int(i) and 1 <= i <= N_PROJECT_INPUT_ITEMS for i in items)):
+            raise ConfigError(f"{REGISTRY_RESOURCE}: {aid} must map to docs/06 item numbers")
+        out.append((aid, tuple(items)))
+    return tuple(out)
+
+
+def assumption_registry() -> dict[str, tuple[int, ...]]:
+    """model_assumptions row id -> the docs/06 items it may stand in for (package data
+    reflection_holo/io/assumption_registry.yaml). Source map: no row; evidence label: not
+    applicable (configuration policy, A2b N1)."""
+    return dict(_registry_cached())
 
 
 def _is_int(v) -> bool:
@@ -301,7 +336,8 @@ def _is_int(v) -> bool:
 
 
 def _is_num(v) -> bool:
-    return isinstance(v, (int, float)) and not isinstance(v, bool)
+    """A finite real number (bools excluded; inf and nan refused, A2b N8)."""
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
 
 
 def _check_kind(cid: str, name: str, kind: str, v) -> None:
@@ -328,17 +364,17 @@ def _check_kind(cid: str, name: str, kind: str, v) -> None:
             bad("a non-empty list of strings")
     elif kind == "positive":
         if not (_is_num(v) and v > 0):
-            bad("a positive number")
+            bad("a finite positive number")
     elif kind == "nonnegative":
         if not (_is_num(v) and v >= 0):
-            bad("a number >= 0")
+            bad("a finite number >= 0")
     elif kind == "mapping":
         if not (isinstance(v, dict) and v):
             bad("a non-empty mapping")
     elif kind == "pixel_size":
         if not (isinstance(v, dict) and set(v) == {"along_beam", "perpendicular"}
                 and all(_is_num(x) and x > 0 for x in v.values())):
-            bad("a mapping {along_beam: >0, perpendicular: >0} (both axes stated)")
+            bad("a mapping {along_beam: >0, perpendicular: >0} of finite numbers (both axes stated)")
     elif kind == "reference_trajectory":
         if v not in REFERENCE_TRAJECTORIES:
             bad(f"one of {REFERENCE_TRAJECTORIES}")
@@ -430,30 +466,54 @@ def _parse_parameter(cid: str, name: str, spec, allow_test_only: bool) -> Parame
 
     sfi = spec.get("stands_in_for_item")
     aid = spec.get("assumption_id")
-    if label == "ASSUMPTION" and schema_item is not None:
-        if sfi is None:
-            raise ConfigError(
-                f"{cid}: ASSUMPTION {name} stands in for PROJECT_INPUT item {schema_item}: it must "
-                f"carry 'stands_in_for_item: {schema_item}' and 'assumption_id' (a row of "
-                f"docs/model_assumptions.md)")
-        if sfi != schema_item:
-            raise ConfigError(f"{cid}: parameter {name}: stands_in_for_item {sfi!r} must equal its "
-                              f"docs/06 item {schema_item}")
-        if aid is None:
-            raise ConfigError(f"{cid}: ASSUMPTION {name} stands in for PROJECT_INPUT item "
-                              f"{schema_item}: it must name its assumption_id (a row of "
-                              f"docs/model_assumptions.md)")
-    elif sfi is not None:
-        raise ConfigError(f"{cid}: parameter {name}: stands_in_for_item is only for an ASSUMPTION "
-                          f"standing in for a docs/06 item")
-    if aid is not None:
-        if label != "ASSUMPTION":
-            raise ConfigError(f"{cid}: parameter {name}: assumption_id is only for ASSUMPTION values")
-        if not isinstance(aid, str) or aid not in model_assumption_ids():
-            raise ConfigError(f"{cid}: parameter {name}: assumption_id {aid!r} is not a row of "
-                              f"docs/model_assumptions.md")
-
     value = spec["value"]
+    if schema_item is not None:
+        if label == "PROJECT_INPUT":
+            if value is not None:
+                m = SUPPLIER_DATE_RE.search(source)
+                ok = m is not None
+                if ok:
+                    try:
+                        _dt.date.fromisoformat(m.group("date"))
+                    except ValueError:
+                        ok = False
+                if not ok:
+                    raise ConfigError(
+                        f"{cid}: PROJECT_INPUT {name} (docs/06 item {schema_item}) has a value, so its "
+                        f"source must name the supplier and the date, 'supplied by <name> "
+                        f"<YYYY-MM-DD>'; got {source!r} (A2b N1)")
+        elif label == "ASSUMPTION":
+            if sfi is None:
+                raise ConfigError(
+                    f"{cid}: ASSUMPTION {name} stands in for PROJECT_INPUT item {schema_item}: it "
+                    f"must carry 'stands_in_for_item: {schema_item}' and an 'assumption_id' that the "
+                    f"registry {REGISTRY_RESOURCE} maps to item {schema_item}")
+            if sfi != schema_item:
+                raise ConfigError(f"{cid}: parameter {name}: stands_in_for_item {sfi!r} must equal "
+                                  f"its docs/06 item {schema_item}")
+            if aid is None:
+                raise ConfigError(f"{cid}: ASSUMPTION {name} stands in for PROJECT_INPUT item "
+                                  f"{schema_item}: it must name its assumption_id (registered in "
+                                  f"{REGISTRY_RESOURCE})")
+            if not isinstance(aid, str) or schema_item not in assumption_registry().get(aid, ()):
+                raise ConfigError(
+                    f"{cid}: parameter {name}: assumption_id {aid!r} is not mapped to PROJECT_INPUT "
+                    f"item {schema_item} by the registry {REGISTRY_RESOURCE} (A2b N1)")
+        elif label != TEST_ONLY_LABEL:
+            raise ConfigError(
+                f"{cid}: parameter {name} is PROJECT_INPUT item {schema_item}: label {label} is not "
+                f"accepted. Use PROJECT_INPUT (null, or a value whose source names the supplier and "
+                f"the date), an ASSUMPTION registered for item {schema_item}, or TEST_ONLY in "
+                f"in-memory fixtures (A2b N1)")
+    else:
+        if sfi is not None:
+            raise ConfigError(f"{cid}: parameter {name}: stands_in_for_item is only for an "
+                              f"ASSUMPTION standing in for a docs/06 item")
+        if aid is not None:
+            raise ConfigError(f"{cid}: parameter {name} has no docs/06 item in the {cid} schema: "
+                              f"assumption_id is only for an ASSUMPTION standing in for a docs/06 "
+                              f"item (cite the model_assumptions row in the source)")
+
     if value is None:
         if label not in ("PROJECT_INPUT", "UNVERIFIED"):
             raise ConfigError(f"{cid}: parameter {name} is null with label {label}; only a "

@@ -20,11 +20,19 @@ Statistical tolerances (stated before the runs, never tuned):
   |mean error| <= 4 sigma_h / sqrt(K).
 Trials: 2000 per regime; one generator, seed 20260922 (the auditor's seed), regimes in the order
 listed.
+
+Round 2 (re-audit A2b N2): h and sigma_h now come from the slope of the free fit, so the height no
+longer depends on the branch n. "Wrong branch" is therefore judged on the absolute phase branches
+returned with the result (branch_indices m_i, Delta_phi_i = wrapped_i + 2 pi m_i) against the true
+ones; the bounds above are unchanged. The uniform grids used here trigger the aliasing warning
+(A2b N4), which is filtered in this module.
 """
 import math
 
 import numpy as np
 import pytest
+
+pytestmark = pytest.mark.filterwarnings("ignore:aliasing above h_max:RuntimeWarning")
 
 from reflection_holo.constants import BEAM_ENERGY_SUPPLIED_KEV as E
 from reflection_holo.geometry.specular import specular_step_phase, wrap_to_pi
@@ -63,7 +71,9 @@ def run_regime(rng, th, sigma, h_true, h_max):
     ok, wrong, refused_branch, refused_guard = [], [], 0, 0
     sig = np.full(th.size, sigma)
     for _ in range(TRIALS):
-        w = wrap_to_pi(specular_step_phase(h_true, th, LAM) + rng.normal(0.0, sigma, th.size))
+        phi = specular_step_phase(h_true, th, LAM) + rng.normal(0.0, sigma, th.size)
+        w = wrap_to_pi(phi)
+        m_true = np.rint((phi - w) / (2 * np.pi)).astype(int)
         try:
             r = resolve_rocking_series(th, th, w, sigma_phi_rad=sig, wavelength_A=LAM, h_max_A=h_max)
         except BranchAmbiguityError as exc:
@@ -73,7 +83,7 @@ def run_regime(rng, th, sigma, h_true, h_max):
         except TiltStepTooLargeError:
             refused_guard += 1
             continue
-        (ok if abs(r.h_A - h_true) < 0.5 * r.wrap_periods_A.min() else wrong).append(r)
+        (ok if np.array_equal(r.branch_indices, m_true) else wrong).append(r)
     return ok, wrong, refused_branch, refused_guard
 
 
@@ -138,8 +148,8 @@ def test_accepted_results_meet_the_3_sigma_branch_criterion_and_sigma_h(regime):
     assert r.sigma_intercept_rad == pytest.approx(se, rel=1e-9)
     assert 0.0 < r.wrong_branch_probability_bound < P3
     assert 0.0 < r.branch_probability <= 1.0
-    lo_h, hi_h = r.alternative_branch_heights_A
-    assert lo_h < r.h_A < hi_h
+    assert r.sigma_offset_residual_rad == pytest.approx(se, rel=1e-9)
+    assert abs(r.offset_residual_rad) <= 3 * r.sigma_offset_residual_rad
 
 
 def test_unwrap_guard_includes_the_noise_per_increment():

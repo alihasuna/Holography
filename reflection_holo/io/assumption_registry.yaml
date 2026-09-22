@@ -1,0 +1,17 @@
+# Registry of ASSUMPTION stand-ins for PROJECT_INPUT items (docs/06_project_inputs_required.md).
+# Each docs/model_assumptions.md row that may stand in for a laboratory input is mapped to the
+# docs/06 item numbers it stands in for; reflection_holo.io.config accepts an ASSUMPTION value for a
+# parameter with a docs/06 item only if its assumption_id is listed here FOR THAT ITEM (re-audit
+# A2b N1). Package data, loaded with importlib.resources (not from docs/).
+# Not listed, hence refused as stand-ins:
+#   A1-A8  assumptions inherited from the inspected repository (A3, "(6,-6,6) is usable", is false);
+#   B2     the lattice parameter: no docs/06 item names it and no schema gives lattice_parameter a
+#          docs/06 item, so B2 stands in for nothing (the configurations cite B2 in the source text);
+#   B3-B16 not values of any configuration parameter with a docs/06 item.
+# tests/io/test_io_config_stand_ins.py checks that every ID below is a row of
+# docs/model_assumptions.md (skipped where docs/ is absent).
+schema_version: 1
+stand_ins:
+  B1: [20]     # Si mean inner potential V0 = 12.0 V; docs/06 item 20
+  B17: [9]     # CFG-B working reflection (0,0,8), second condition (0,0,12); docs/06 item 9
+  B18: [14]    # CFG-B observables: a/4 and a/2 steps, patterned mesas and trenches; docs/06 item 14

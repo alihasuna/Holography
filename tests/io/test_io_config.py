@@ -22,6 +22,7 @@ def P(value, label, unit, source="TEST_ONLY fixture", **kw):
 
 
 V0_B1 = dict(item=20, stands_in_for_item=20, assumption_id="B1")   # traceable ASSUMPTION (A2 M2)
+ALI = "supplied by Ali 2026-09-22 (copy of the shipped value, test fixture)"   # PROJECT_INPUT source
 STEP_TRANSLATIONS = {"double_layer": {"vector_cubic_a_units": [0.5, 0.0, 0.5]}}
 
 
@@ -31,17 +32,20 @@ def cfg_b_complete():
         schema_version=1, config_id="CFG-B", name="si001_patterned", status="experiment",
         description="TEST_ONLY in-memory fixture",
         parameters=dict(
-            surface_material=P("Si", "PROJECT_INPUT", "none", item=11),
-            surface_normal_hkl=P([0, 0, 1], "PROJECT_INPUT", "none", item=11),
+            surface_material=P("Si", "PROJECT_INPUT", "none", source=ALI, item=11),
+            surface_normal_hkl=P([0, 0, 1], "PROJECT_INPUT", "none", source=ALI, item=11),
             beam_azimuth_uvw=P([1, 1, 0], "TEST_ONLY", "none", item=8),
-            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", item=1),
+            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", source=ALI, item=1),
             lattice_parameter=P(5.4309, "ASSUMPTION", "A"),
             mean_inner_potential_V=P(12.0, "ASSUMPTION", "V", **V0_B1),
-            target_reflection_hkl=P([0, 0, 8], "DERIVED_HERE", "none", item=9),
-            second_reflection_hkl=P([0, 0, 12], "DERIVED_HERE", "none", item=9),
+            target_reflection_hkl=P([0, 0, 8], "ASSUMPTION", "none", item=9,
+                                    stands_in_for_item=9, assumption_id="B17"),
+            second_reflection_hkl=P([0, 0, 12], "ASSUMPTION", "none", item=9,
+                                    stands_in_for_item=9, assumption_id="B17"),
             forbidden_rod_reflections_hkl=P([[0, 0, 2], [0, 0, 6], [0, 0, 10]], "DERIVED_HERE",
                                             "none"),
-            step_types=P(["double_layer_a2_translation"], "DERIVED_HERE", "none", item=14),
+            step_types=P(["double_layer_a2_translation"], "ASSUMPTION", "none", item=14,
+                         stands_in_for_item=14, assumption_id="B18"),
             step_translations=P(STEP_TRANSLATIONS, "DERIVED_HERE", "none"),
             glancing_angle_ext=P(16.5, "TEST_ONLY", "mrad", item=7),
             convergence_semi_angle=P(0.01, "TEST_ONLY", "mrad", item=3),
@@ -50,7 +54,7 @@ def cfg_b_complete():
                                item=5),
             reference_trajectory=P("vacuum_beside_sample", "TEST_ONLY", "none", item=15),
             pattern_geometry=P({"mesa_height_nm": 10.0}, "TEST_ONLY", "none", item=13),
-            surface_preparation_method=P("ion-milled", "PROJECT_INPUT", "none", item=12),
+            surface_preparation_method=P("ion-milled", "PROJECT_INPUT", "none", source=ALI, item=12),
             surface_preparation_details=P({"oxide": "TEST_ONLY"}, "TEST_ONLY", "none", item=12),
         ))
 
@@ -63,11 +67,11 @@ def cfg_a_fixture():
             surface_material=P("Si", "ASSUMPTION", "none"),
             surface_normal_hkl=P([1, -1, 1], "ASSUMPTION", "none"),
             beam_azimuth_uvw=P([1, 1, 0], "ASSUMPTION", "none"),
-            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", item=1),
+            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", source=ALI, item=1),
             lattice_parameter=P(5.4309, "ASSUMPTION", "A"),
             mean_inner_potential_V=P(12.0, "ASSUMPTION", "V", **V0_B1),
-            target_reflection_hkl=P([4, -4, 4], "DERIVED_HERE", "none", item=9),
-            recommended_reflections_hkl=P([[4, -4, 4]], "DERIVED_HERE", "none", item=9),
+            target_reflection_hkl=P([4, -4, 4], "DERIVED_HERE", "none"),
+            recommended_reflections_hkl=P([[4, -4, 4]], "DERIVED_HERE", "none"),
             forbidden_rod_reflections_hkl=P([[2, -2, 2], [6, -6, 6], [10, -10, 10]],
                                             "DERIVED_HERE", "none"),
             step_types=P(["lattice_translation_bilayer"], "DERIVED_HERE", "none"),

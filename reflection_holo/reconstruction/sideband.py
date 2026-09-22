@@ -36,16 +36,25 @@ Procedure
    exp(i(phi_o - phi_r)) with numpy's normalisation. No zero padding, no real-space window.
 5. Reference correction (declared): "none", or "divide_empty": w_obj / w_empty with the same carrier
    and mask applied to the empty hologram (removes the residual carrier, the reference's residual
-   phase and the mask's own transfer). Validity (audit A2 m1): with "divide_empty" the caller
-   declares ``empty_amplitude_threshold`` t (0 <= t < 1); where |w_empty| <= t x median(|w_empty|)
-   (exact zeros always) the corrected phase and amplitude are NaN and ``valid_mask`` is False, with
-   a RuntimeWarning; with "none", exact zeros of |w_obj| are treated the same way. The reference's
-   own validity (the R2 ``valid_mask`` of the hologram metadata) is ANDed into ``valid_mask``; those
+   phase and the mask's own transfer). Validity (audit A2 m1, re-audit A2b N6): with "divide_empty"
+   the caller declares ``empty_min_visibility`` V_min (0 < V_min <= 1, REQUIRED); the local fringe
+   visibility of the EMPTY hologram is V = 2 |w_empty| / D, D the empty intensity low-passed by the
+   same mask centred on q = 0 (for I = A + B cos(...), w = B/2 and D = A, so V = B/A). Where
+   V < V_min (or D <= 0) the corrected phase and amplitude are NaN and ``valid_mask`` is False, with
+   a RuntimeWarning. The criterion is absolute: it does not depend on how much of the field has
+   fringes. With "none", exact zeros of |w_obj| are treated the same way. The reference's own
+   validity (the R2 ``valid_mask`` of the hologram metadata) is ANDed into ``valid_mask``; those
    values are kept but flagged.
-6. Unwrapping (declared): "none" or "itoh_raster": 1-D Itoh unwrapping down column 0 from its first
-   valid pixel, then along each row from its unwrapped first pixel; a pixel whose path meets an
-   invalid (NaN or masked) pixel is NaN. Path-following, NOT residue-aware: it fails at phase
-   singularities and in low-amplitude or noisy regions. The raw wrapped phase is always kept.
+6. Unwrapping (declared): "none" or "itoh_raster" (Itoh path integration; re-audit A2b N5). The
+   valid pixels (``valid_mask`` and finite) are split into rows of maximal valid runs; runs in
+   adjacent rows that share a column are connected (4-connectivity). Each connected region is
+   unwrapped from its own seed, its first valid pixel in raster order (value = its wrapped phase):
+   every run is unwrapped along its row (numpy.unwrap), and a run is joined to an already
+   unwrapped run in the adjacent row through their leftmost shared column (breadth-first over the
+   runs). Regions carry INDEPENDENT 2 pi offsets and are labelled (``SidebandResult.unwrap_regions``,
+   ``parameters["unwrapping_regions"]``); invalid pixels are NaN. For an all-valid field this is
+   exactly the raster path (column 0, then each row). Path-following, NOT residue-aware: at phase
+   singularities the result depends on the path. The raw wrapped phase is always kept.
 7. NO ramp or plane is removed by the reconstruction. ``fit_phase_plane`` / ``subtract_phase_plane``
    are separate, explicit calls with a declared fitting region; their inputs are never modified.
 
@@ -300,7 +309,12 @@ def sideband_mask(grid: Grid, centre_cycles_per_A, spec: MaskSpec) -> np.ndarray
     if abs(c[0]) + R >= nyq[0] or abs(c[1]) + R >= nyq[1]:
         raise ValueError(f"mask (centre {c}, radius {R}) crosses the Nyquist band {nyq}: the fringes are "
                          f"undersampled for this mask")
+    return _mask_values(grid, c, spec)
+
+
+def _mask_values(grid: Grid, c, spec: MaskSpec) -> np.ndarray:
     q0, q1 = grid.frequencies_cycles_per_A()
+    R = spec.radius_cycles_per_A
     r = np.hypot(q0 - c[0], q1 - c[1])
     if spec.apodisation == "hann":
         W = np.where(r < R, 0.5 * (1.0 + np.cos(np.pi * r / R)), 0.0)
@@ -327,13 +341,20 @@ def _demodulate(intensity: np.ndarray, grid: Grid, qs: tuple[float, float], W: n
 # unwrapping and explicit ramp fitting
 # ------------------------------------------------------------------------------------------------
 
-def unwrap_itoh_raster(phase: np.ndarray, valid: np.ndarray | None = None) -> np.ndarray:
-    """1-D Itoh unwrapping down column 0, then along every row (see module docstring, step 6).
+def _runs(row_ok: np.ndarray) -> list[tuple[int, int]]:
+    """Maximal runs [a, b) of True in a 1-D boolean array."""
+    d = np.diff(np.concatenate([[0], row_ok.astype(np.int8), [0]]))
+    return list(zip(np.flatnonzero(d == 1).tolist(), np.flatnonzero(d == -1).tolist()))
 
-    ``valid`` (default: the finite pixels) marks the pixels the path may use. The path starts at the
-    first valid pixel of column 0; a pixel is unwrapped only if its path (down column 0 from the
-    start, then along its row) meets no invalid pixel; every other pixel is NaN (no value is
-    invented). For an all-valid input this is exactly the plain raster unwrap."""
+
+def unwrap_itoh_raster(phase: np.ndarray, valid: np.ndarray | None = None, *,
+                       return_regions: bool = False):
+    """Itoh unwrapping within each connected valid region (module docstring, step 6; A2b N5).
+
+    ``valid`` (default: the finite pixels) marks the pixels that may be used. Returns the unwrapped
+    phase (NaN outside the valid pixels) and, with return_regions=True, also an int array of region
+    labels (0 = invalid, 1..K = connected valid regions in raster order of their seeds; each region
+    has its own 2 pi offset). For an all-valid input this is exactly the plain raster unwrap."""
     p = np.asarray(phase, dtype=float)
     ok = np.isfinite(p) if valid is None else (np.asarray(valid, dtype=bool) & np.isfinite(p))
     if ok.shape != p.shape:
@@ -341,19 +362,40 @@ def unwrap_itoh_raster(phase: np.ndarray, valid: np.ndarray | None = None) -> np
     if ok.all():
         col0 = np.unwrap(p[:, 0])
         rows = np.unwrap(p, axis=1)
-        return rows + (col0 - p[:, 0])[:, None]
+        un = rows + (col0 - p[:, 0])[:, None]
+        return (un, np.ones(p.shape, dtype=np.int32)) if return_regions else un
     out = np.full(p.shape, np.nan)
-    start = np.flatnonzero(ok[:, 0])
-    if start.size == 0:
-        return out
-    s = int(start[0])
-    stop = s + (int(np.argmin(ok[s:, 0])) if not ok[s:, 0].all() else ok.shape[0] - s)
-    col0 = np.unwrap(p[s:stop, 0])
-    for k, i in enumerate(range(s, stop)):
-        row_ok = ok[i]
-        end = int(np.argmin(row_ok)) if not row_ok.all() else row_ok.size
-        out[i, :end] = np.unwrap(p[i, :end]) + (col0[k] - p[i, 0])
-    return out
+    labels = np.zeros(p.shape, dtype=np.int32)
+    runs = [_runs(ok[i]) for i in range(p.shape[0])]
+    local = [[np.unwrap(p[i, a:b]) for a, b in runs[i]] for i in range(p.shape[0])]
+    done = [[False] * len(r) for r in runs]
+    region = 0
+    for i0 in range(p.shape[0]):
+        for k0 in range(len(runs[i0])):
+            if done[i0][k0]:
+                continue
+            region += 1                                   # seed: first valid pixel of a new region
+            a, b = runs[i0][k0]
+            out[i0, a:b] = local[i0][k0]
+            labels[i0, a:b] = region
+            done[i0][k0] = True
+            queue = [(i0, k0)]
+            while queue:
+                i, k = queue.pop(0)
+                a, b = runs[i][k]
+                for j in (i - 1, i + 1):
+                    if not 0 <= j < p.shape[0]:
+                        continue
+                    for m, (c, e) in enumerate(runs[j]):
+                        if done[j][m] or c >= b or e <= a:
+                            continue
+                        col = max(a, c)                   # leftmost shared column
+                        target = out[i, col] + wrap_to_pi(p[j, col] - p[i, col])
+                        out[j, c:e] = local[j][m] + (target - local[j][m][col - c])
+                        labels[j, c:e] = region
+                        done[j][m] = True
+                        queue.append((j, m))
+    return (out, labels) if return_regions else out
 
 
 @dataclass(frozen=True, eq=False)
@@ -459,10 +501,12 @@ class SidebandResult:
     grid: Grid
     valid_mask: np.ndarray
     parameters: dict[str, Any] = field(default_factory=dict)
+    unwrap_regions: np.ndarray | None = None   # region labels of the unwrapping (0 = invalid)
 
     def __post_init__(self):
         for name in ("wrapped_phase_raw", "wrapped_phase", "unwrapped_phase", "amplitude",
-                     "amplitude_raw", "object_sideband", "empty_sideband", "mask", "valid_mask"):
+                     "amplitude_raw", "object_sideband", "empty_sideband", "mask", "valid_mask",
+                     "unwrap_regions"):
             a = getattr(self, name)
             if a is not None:
                 a.setflags(write=False)
@@ -482,7 +526,7 @@ def _sign_check(hologram: Hologram, qs: tuple[float, float]) -> str:
 
 def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation, mask: MaskSpec,
                          empty_hologram: Hologram | None, reference_correction: str,
-                         unwrapping: str, empty_amplitude_threshold: float | None = None,
+                         unwrapping: str, empty_min_visibility: float | None = None,
                          trap_demonstration: bool = False) -> SidebandResult:
     """Sideband reconstruction with every processing choice declared (module docstring).
 
@@ -490,8 +534,9 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
     pixel sizes, axes and plane (a crop of different shape is allowed; the sideband centre is
     transferred in cycles/A). Returns phases only; heights belong to quantification/.
 
-    ``empty_amplitude_threshold`` (0 <= t < 1, relative to the median |empty sideband|) must be
-    declared with reference_correction="divide_empty" and must not be given otherwise (step 5).
+    ``empty_min_visibility`` (0 < V_min <= 1, the minimum local fringe visibility of the EMPTY
+    hologram) must be declared with reference_correction="divide_empty" and must not be given
+    otherwise (step 5; A2b N6).
 
     Refused (ValueError): a carrier located on an OBJECT hologram (the brightest-bin trap, audit
     A2 m7) and, for simulated holograms that record their reference carrier, a sideband that is the
@@ -521,17 +566,17 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
         grid.assert_same(empty_hologram.grid, "object and empty holograms")
         if empty_hologram.content == "object":
             raise ValueError("the reference-correction hologram must be empty or flat_region")
-        if empty_amplitude_threshold is None:
+        if empty_min_visibility is None:
             raise ValueError("reference_correction='divide_empty' requires a declared "
-                             "empty_amplitude_threshold (relative to the median |empty sideband|; "
-                             "PROJECT_INPUT item 19)")
-        thr = float(empty_amplitude_threshold)
-        if not (np.isfinite(thr) and 0.0 <= thr < 1.0):
-            raise ValueError(f"empty_amplitude_threshold must lie in [0, 1); got {empty_amplitude_threshold!r}")
+                             "empty_min_visibility (minimum local fringe visibility of the empty "
+                             "hologram; PROJECT_INPUT item 19)")
+        vmin = float(empty_min_visibility)
+        if not (np.isfinite(vmin) and 0.0 < vmin <= 1.0):
+            raise ValueError(f"empty_min_visibility must lie in (0, 1]; got {empty_min_visibility!r}")
     elif empty_hologram is not None:
         raise ValueError("empty_hologram given but reference_correction='none': declare the correction")
-    elif empty_amplitude_threshold is not None:
-        raise ValueError("empty_amplitude_threshold applies only to reference_correction='divide_empty'")
+    elif empty_min_visibility is not None:
+        raise ValueError("empty_min_visibility applies only to reference_correction='divide_empty'")
 
     qs = carrier.sideband_centre_cycles_per_A
     sign_check = _sign_check(object_hologram, qs)
@@ -554,15 +599,21 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
                 raise ValueError(f"{name} hologram valid_mask is not on the grid")
             valid &= vm
             reference_masks.append(f"{name} hologram reference valid_mask ({int((~vm).sum())} px)")
+    vis_median = None
     if reference_correction == "divide_empty":
         w_emp = _demodulate(empty_hologram.intensity, grid, qs, W)
-        amp_emp = np.abs(w_emp)
-        cut = thr * float(np.median(amp_emp))
-        undefined = amp_emp <= cut
+        W_dc = _mask_values(grid, (0.0, 0.0), mask)            # the same mask centred on q = 0
+        dc = np.real(np.fft.ifft2(np.fft.fft2(empty_hologram.intensity) * W_dc))
+        vis = np.zeros(grid.shape)
+        pos = dc > 0.0
+        vis[pos] = 2.0 * np.abs(w_emp[pos]) / dc[pos]
+        undefined = ~(vis >= vmin) | (amp_raw == 0.0)
         w = np.full(grid.shape, np.nan + 1j * np.nan)
         w[~undefined] = w_obj[~undefined] / w_emp[~undefined]
-        what = (f"empty-hologram sideband amplitude at or below {thr:g} x its median "
-                f"({cut:.4g})")
+        what = (f"an empty-hologram sideband visibility 2|w_empty|/D below the declared minimum "
+                f"{vmin:g} (or a zero object sideband)")
+        if (~undefined).any():
+            vis_median = float(np.median(vis[~undefined]))
     else:
         undefined = amp_raw == 0.0
         w = np.where(undefined, np.nan + 1j * np.nan, w_obj)
@@ -575,7 +626,11 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
     valid &= ~undefined
     phase = np.angle(w)
     amp = np.abs(w)
-    unwrapped = unwrap_itoh_raster(phase, valid) if unwrapping == "itoh_raster" else None
+    regions = None
+    if unwrapping == "itoh_raster":
+        unwrapped, regions = unwrap_itoh_raster(phase, valid, return_regions=True)
+    else:
+        unwrapped = None
     R = mask.radius_cycles_per_A
     qmag = float(np.hypot(*qs))
     params = {"carrier": carrier.as_record(), "mask": mask.as_record(),
@@ -589,14 +644,16 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
               "grid": grid.as_record(), "mask_radius_over_carrier": R / qmag,
               "centre_band_clearance_cycles_per_A": qmag - R,
               "resolution_definition": "1/R (SM12: about three fringe spacings for R = |q_c|/3)",
-              "validity": {"empty_amplitude_threshold_relative": (thr if reference_correction
-                                                                  == "divide_empty" else None),
+              "validity": {"empty_min_visibility": (vmin if reference_correction == "divide_empty"
+                                                    else None),
+                           "visibility_median_valid": vis_median,
                            "n_invalid_amplitude": n_undef, "reference_masks": reference_masks,
                            "n_invalid_total": int((~valid).sum())},
+              "unwrapping_regions": int(regions.max()) if regions is not None else None,
               "numpy_version": np.__version__}
     return SidebandResult(phase_raw, phase, unwrapped, amp, amp_raw, w_obj, w_emp, W, carrier, mask,
                           reference_correction, unwrapping, 1.0 / R, qmag / R,
-                          sign_check, grid, valid, params)
+                          sign_check, grid, valid, params, regions)
 
 
 # ------------------------------------------------------------------------------------------------

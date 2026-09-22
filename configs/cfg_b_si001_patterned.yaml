@@ -4,9 +4,11 @@
 # reflection_holo.io.config.SCHEMAS["CFG-B"]). Every blocking input that has not been supplied is
 # null with its docs/06 item number: a run-level load FAILS and names items 3, 4, 5, 7, 8, 12, 13
 # and 15. Deleting one of these entries does not help: an absent required parameter fails exactly
-# like a null one (audit A2 M2). An ASSUMPTION standing in for a docs/06 item must carry
-# stands_in_for_item and assumption_id (a docs/model_assumptions.md row). No default replaces an
-# input. Every parameter states its unit ("none" if it is not a physical quantity).
+# like a null one (audit A2 M2). A parameter with a docs/06 item takes only PROJECT_INPUT (null, or a
+# value whose source says "supplied by <name> <YYYY-MM-DD>") or an ASSUMPTION with stands_in_for_item
+# and an assumption_id that reflection_holo/io/assumption_registry.yaml maps to that item (B1 -> 20,
+# B17 -> 9, B18 -> 14); any other label fails (A2b N1). No default replaces an input. Every parameter
+# states its unit ("none" if it is not a physical quantity).
 schema_version: 1
 config_id: CFG-B
 name: si001_patterned
@@ -48,7 +50,6 @@ parameters:
     value: 5.4309
     unit: A
     label: ASSUMPTION
-    assumption_id: B2
     source: "model_assumptions B2 (standard room-temperature value); equals reflection_holo.constants.A_SI_A"
   mean_inner_potential_V:
     value: 12.0

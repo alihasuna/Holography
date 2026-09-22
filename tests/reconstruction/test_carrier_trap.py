@@ -19,7 +19,7 @@ own search.
 import numpy as np
 import pytest
 
-from holo_cases import (EMPTY_THRESHOLD, T24_TOL_RAD, calculator, calculator_T24_reference, calculator_mask,
+from holo_cases import (EMPTY_MIN_VISIBILITY, T24_TOL_RAD, calculator, calculator_T24_reference, calculator_mask,
                         calculator_measure, calculator_search, calculator_setup_holograms)
 from reflection_holo.reconstruction import CarrierSearch, locate_carrier, reconstruct_sideband
 
@@ -33,7 +33,7 @@ def _step(H_obj, carrier, H_emp, correction, trap=False):
     res = reconstruct_sideband(H_obj, carrier=carrier, mask=calculator_mask(carrier),
                                empty_hologram=H_emp if correction == "divide_empty" else None,
                                reference_correction=correction, unwrapping="none",
-                               empty_amplitude_threshold=EMPTY_THRESHOLD if correction == "divide_empty"
+                               empty_min_visibility=EMPTY_MIN_VISIBILITY if correction == "divide_empty"
                                else None, trap_demonstration=trap)
     return calculator_measure(res.wrapped_phase, res.resolution_A, 512)[0], res
 

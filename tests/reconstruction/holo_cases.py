@@ -27,10 +27,11 @@ T25_TOL_RAD = 5e-3
 TEST_PIXEL_A = 1.0          # TEST_ONLY (stands in for PROJECT_INPUT item 5)
 # the phi_o - phi_r sideband of a simulated hologram is at -q_ref of its declared reference
 SIM_SIDEBAND = "simulation: -q_ref of the declared reference (phi_o - phi_r sideband)"
-# TEST_ONLY declared validity threshold for reference-hologram division (processing choice,
-# PROJECT_INPUT item 19): pixels whose empty sideband is at or below 0.1 x its median are NaN.
-# None of the synthetic empty holograms here comes near it, so results are unchanged bit for bit.
-EMPTY_THRESHOLD = 0.1
+# TEST_ONLY declared minimum fringe visibility of the empty hologram for reference-hologram
+# division (processing choice, PROJECT_INPUT item 19; re-audit A2b N6): pixels whose empty-hologram
+# visibility 2|w_empty|/D is below 0.5 are NaN. The synthetic empty holograms here have visibility
+# 1 (0.99 at 1e4 e/px), so results are unchanged bit for bit.
+EMPTY_MIN_VISIBILITY = 0.5
 NO_ARTEFACTS = ArtefactOptions(biprism_fresnel_fringes=None, drift=None, charging_phase_rad=None)
 
 _calc = None
@@ -130,7 +131,7 @@ def roundtrip(dphi_rad: float, *, n: int = 512, fringe_px: float = 8.0, dose_per
     carrier = locate_carrier(H_emp, calculator_search(q_ref, subpixel))
     res = reconstruct_sideband(H_obj, carrier=carrier, mask=calculator_mask(carrier), empty_hologram=H_emp,
                                reference_correction="divide_empty", unwrapping="none",
-                               empty_amplitude_threshold=EMPTY_THRESHOLD)
+                               empty_min_visibility=EMPTY_MIN_VISIBILITY)
     recovered, sigma = calculator_measure(res.wrapped_phase, res.resolution_A / TEST_PIXEL_A, n)
     return {"recovered": recovered, "sigma": sigma, "res_px": res.resolution_A / TEST_PIXEL_A,
             "result": res, "carrier": carrier}

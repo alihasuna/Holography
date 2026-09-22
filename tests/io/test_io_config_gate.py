@@ -113,12 +113,13 @@ def test_duplicate_yaml_keys_fail(tmp_path):
 
 def test_three_parameter_cfg_a_fails_at_run_level():
     """(d) The manifest test's former CFG-A fixture (three parameters) loaded at run level."""
-    P = lambda v, lab, **kw: dict(value=v, label=lab, source="TEST_ONLY fixture", **kw)  # noqa: E731
+    P = lambda v, lab, **kw: dict(value=v, label=lab, **{"source": "TEST_ONLY fixture", **kw})  # noqa: E731
     d = dict(schema_version=1, config_id="CFG-A", name="si111_cleaved_110azimuth",
              status="benchmark", description="TEST_ONLY fixture",
              parameters=dict(surface_material=P("Si", "ASSUMPTION", unit="none"),
                              surface_normal_hkl=P([1, -1, 1], "ASSUMPTION", unit="none"),
-                             beam_energy_keV=P(200.0, "PROJECT_INPUT", unit="keV", item=1)))
+                             beam_energy_keV=P(200.0, "PROJECT_INPUT", unit="keV", item=1,
+                                               source="supplied by Ali 2026-09-22 (fixture)")))
     with pytest.raises((MissingRequiredParameterError, MissingProjectInputError)):
         load_config_dict(copy.deepcopy(d), level="run", allow_test_only=True)
     cfg = load_config_dict(d, level="placeholder", allow_test_only=True)

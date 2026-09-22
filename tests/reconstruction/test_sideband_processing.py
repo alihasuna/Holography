@@ -7,7 +7,7 @@ Tolerances stated per test. Where a flat-control tolerance is needed, T25's 5e-3
 import numpy as np
 import pytest
 
-from holo_cases import (EMPTY_THRESHOLD, NO_ARTEFACTS, SIM_SIDEBAND, T24_TOL_RAD, T25_TOL_RAD, calculator_T24_reference,
+from holo_cases import (EMPTY_MIN_VISIBILITY, NO_ARTEFACTS, SIM_SIDEBAND, T24_TOL_RAD, T25_TOL_RAD, calculator_T24_reference,
                         calculator_mask, calculator_measure, calculator_search, calculator_setup_holograms,
                         make_grid, r1_reference)
 from reflection_holo.optics import (Grid, Hologram, Wave, hologram_intensity, reference_r3_curved_tilted,
@@ -114,7 +114,7 @@ def test_r3_residual_is_entangled_without_correction_and_removed_with_empty_holo
     assert np.ptp((raw.unwrapped_phase)[sl]) > 0.1                 # the residual is really there
     corr = reconstruct_sideband(H, carrier=c, mask=_hann_third(c), empty_hologram=H_e,
                                 reference_correction="divide_empty", unwrapping="none",
-                                empty_amplitude_threshold=EMPTY_THRESHOLD)
+                                empty_min_visibility=EMPTY_MIN_VISIBILITY)
     assert np.max(np.abs(corr.wrapped_phase[sl])) <= T25_TOL_RAD
     assert np.array_equal(corr.wrapped_phase_raw, raw.wrapped_phase_raw)   # raw kept, uncorrected
 
@@ -138,7 +138,7 @@ def test_no_implicit_detrend_and_explicit_plane_fit():
     c = locate_carrier(H_e, _search(q, "none"))
     res = reconstruct_sideband(H, carrier=c, mask=_hann_third(c), empty_hologram=H_e,
                                reference_correction="divide_empty", unwrapping="itoh_raster",
-                               empty_amplitude_threshold=EMPTY_THRESHOLD)
+                               empty_min_visibility=EMPTY_MIN_VISIBILITY)
     raw_before = res.wrapped_phase_raw.copy()
     region = np.zeros(grid.shape, bool)
     region[80:176, 80:176] = True

@@ -7,11 +7,11 @@ carrier (0, 1/8) cycles/A (TEST_ONLY):
 * rows 0..15 outside the biprism overlap (no fringes) give a near-zero empty sideband (median about
   0.09 of the overlap value) and finite garbage phases that the raster unwrapper walked through;
 * the R2 valid_mask was dropped by ensemble_hologram_intensity and never reached SidebandResult.
-Now: pixels whose empty-hologram sideband amplitude is at or below the DECLARED relative threshold
-(empty_amplitude_threshold x median over the field; exact zeros always) get NaN phase and amplitude,
-valid_mask False, and a RuntimeWarning; the R2 mask is ANDed into valid_mask; the Itoh raster
-unwrapper starts at the first valid pixel of column 0 and returns NaN where its path meets an
-invalid pixel; fit_phase_plane refuses invalid pixels in its region.
+Now: pixels whose empty-hologram fringe visibility 2|w_empty|/D is below the DECLARED minimum
+(empty_min_visibility; round 2, re-audit A2b N6, replaced the round-1 threshold relative to the
+median) get NaN phase and amplitude, valid_mask False, and a RuntimeWarning; the R2 mask is ANDed
+into valid_mask; the unwrapper works within connected valid regions (round 2, A2b N5) and returns
+NaN at invalid pixels; fit_phase_plane refuses invalid pixels in its region.
 Tolerance for recovered phases far from invalid regions: T25's 5e-3 rad.
 """
 import numpy as np
@@ -52,7 +52,7 @@ def test_fringe_free_empty_hologram_gives_nan_mask_and_warning():
     with pytest.warns(RuntimeWarning, match="empty-hologram sideband"):
         res = reconstruct_sideband(H, carrier=c, mask=MaskSpec(0.125 / 3, "disc", "none"),
                                    empty_hologram=Ez, reference_correction="divide_empty",
-                                   unwrapping="itoh_raster", empty_amplitude_threshold=0.0)
+                                   unwrapping="itoh_raster", empty_min_visibility=0.01)
     assert np.max(np.abs(res.empty_sideband)) == 0.0
     assert not res.valid_mask.any()
     assert np.all(np.isnan(res.wrapped_phase)) and np.all(np.isnan(res.amplitude))
@@ -69,10 +69,14 @@ def test_rows_outside_the_overlap_are_flagged_and_not_unwrapped_through():
     Hi[:16, :] = 1.0
     E2 = Hologram(Ei, g, "empty", {}, None)
     H2 = Hologram(Hi, g, "object", {}, None)
+    # declared minimum visibility 0.6 (TEST_ONLY; round 2 replaced the relative-amplitude threshold
+    # 0.5 by a visibility): the fringe-free rows 0-15 have V from 0.58 (row 0, which borders the
+    # fringe rows through the periodic FFT) down to 0.01, so they are invalid; rows 16 and 127, one
+    # row from the band, have V = 0.68 and the overlap rows V = 1
     with pytest.warns(RuntimeWarning, match="empty-hologram sideband"):
         res = reconstruct_sideband(H2, carrier=c, mask=MaskSpec(0.125 / 3, "disc", "none"),
                                    empty_hologram=E2, reference_correction="divide_empty",
-                                   unwrapping="itoh_raster", empty_amplitude_threshold=0.5)
+                                   unwrapping="itoh_raster", empty_min_visibility=0.6)
     assert not res.valid_mask[:8].any() and res.valid_mask[40:].all()
     assert np.all(np.isnan(res.wrapped_phase[~res.valid_mask]))
     assert np.max(np.abs(res.wrapped_phase[40:-8, 8:-8] - 0.3)) <= T25_TOL_RAD
@@ -127,18 +131,18 @@ def test_unwrapper_unchanged_for_valid_input_and_starts_at_first_valid_pixel():
 def test_threshold_is_declared_when_dividing():
     g, E, H, c = pair(64)
     mask = MaskSpec(0.04, "disc", "none")
-    with pytest.raises(ValueError, match="empty_amplitude_threshold"):
+    with pytest.raises(ValueError, match="empty_min_visibility"):
         reconstruct_sideband(H, carrier=c, mask=mask, empty_hologram=E,
                              reference_correction="divide_empty", unwrapping="none")
-    with pytest.raises(ValueError, match="empty_amplitude_threshold"):
+    with pytest.raises(ValueError, match="empty_min_visibility"):
         reconstruct_sideband(H, carrier=c, mask=mask, empty_hologram=None,
                              reference_correction="none", unwrapping="none",
-                             empty_amplitude_threshold=0.1)
-    for bad in (-0.1, 1.0, np.nan):
-        with pytest.raises(ValueError, match="empty_amplitude_threshold"):
+                             empty_min_visibility=0.1)
+    for bad in (0.0, -0.1, 1.5, np.nan):          # domain (0, 1] of a visibility (round 2, N6)
+        with pytest.raises(ValueError, match="empty_min_visibility"):
             reconstruct_sideband(H, carrier=c, mask=mask, empty_hologram=E,
                                  reference_correction="divide_empty", unwrapping="none",
-                                 empty_amplitude_threshold=bad)
+                                 empty_min_visibility=bad)
 
 
 def test_zero_object_sideband_without_correction_is_nan():
