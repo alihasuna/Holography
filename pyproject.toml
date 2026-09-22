@@ -18,3 +18,6 @@ include = ["reflection_holo*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.setuptools.package-data]
+"reflection_holo.io" = ["assumption_registry.yaml"]
