@@ -1,7 +1,9 @@
 # Specification: what the final theoretical simulation repository must look like
 
 Status: 2026-09-21, version 0.2 (orchestrator synthesis of reports A to D, independent checks, and
-the corrections required by the adversarial review `docs/agent_reports/E_review.md`).
+the corrections required by the adversarial review `docs/agent_reports/E_review.md`); version 0.3,
+2026-09-22 (Phase 1 literature pass with network access: reports B3 and L1 to L5 under
+`docs/agent_reports/`).
 Purpose: define the repository that will produce simulated observables to be contrasted with the
 real reflection-mode dark-field electron holography experiment on silicon surfaces (Osakabe-type
 measurement), starting from the inspected repository `hussienba/si110-reflection-holography`
@@ -29,8 +31,9 @@ The repository is final when all of the following hold:
 3. A monatomic-step benchmark on the configuration Ali specifies (CFG-A or CFG-B) reproduces the
    refraction-corrected geometric phase versus glancing angle with a dynamical residual below a
    threshold recorded in `configs/benchmarks.yaml` (proposed initial value 0.1 rad, ASSUMPTION).
-   Comparison with Osakabe 1988 is deferred until P01 is read; its surface and conditions are
-   currently UNVERIFIED.
+   Comparison with Osakabe 1988 is deferred until the body of P01 is read. Its abstract (read on the
+   publisher page) gives a Pt(111) surface, so CFG-O is not a silicon benchmark; its energy,
+   reflection, glancing angle and measured values are still UNVERIFIED.
 4. Every physical claim, material parameter and algorithm has a `docs/source_map.tsv` record with an
    evidence label, and every run writes a provenance manifest.
 5. No result depends on a default silently substituted for a missing PROJECT_INPUT; such runs fail.
@@ -53,7 +56,7 @@ in `docs/01_repository_audit.md` and the agent reports under `docs/agent_reports
 |---|---|---|---|---|---|
 | CFG-A | `si111_cleaved_110azimuth` | (1,-1,1) surface, beam azimuth [110] | lattice-translation bilayer steps `h = m d_111`, `R = m (a/2)[1,0,1]` (stacking-correct in-plane shift); step edges parallel or transverse to the beam (transverse edges shadow 230 A per bilayer at (4,-4,4), 102 A at (8,-8,8)) | (4,-4,4), (5,-5,5), (7,-7,7), (8,-8,8); (3,-3,3) is allowed but exits at 8.6 mrad, barely above `theta_c`, with 116x foreshortening, so it is not recommended; never (6,-6,6) or (2,-2,2) | benchmark inherited from the inspected repository; geometry consistent (normal.beam = 0) |
 | CFG-B | `si001_patterned` | (001) surface, 200 keV (PROJECT_INPUT, supplied), azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces, dynamical difference expected), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad and 733 nm at the (4,-4,4) angle), optional oxide/amorphous overlayer (item 12) | (008) as the working condition (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); (0,0,12) as the second condition; (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface; (002), (006), (0,0,10) forbidden | Ali's experiment; remaining unknowns listed in `docs/06_project_inputs_required.md` |
-| CFG-O | `osakabe_1988_reproduction` | UNVERIFIED (P01 not readable here) | monatomic steps | UNVERIFIED | placeholder until P01 (and P08, Osakabe 1992) are read |
+| CFG-O | `osakabe_1988_reproduction` | Pt(111) at glancing incidence (P01 abstract, sentence 2, `+ABSTRACT(publisher)`; not silicon, so no Si structure, `V0` or structure factor may be reused); azimuth UNVERIFIED | monatomic-height steps, sensitivity of the order of 0.01 nm (P01 abstract, sentence 4) | energy, reflection order and glancing angle UNVERIFIED; reference: two regions of the reflection image overlapped by an electron biprism, i.e. a self-reference of type R2 (the R2 reading is DERIVED_HERE); optical reconstruction (abstract, sentence 3) | placeholder: every field not listed here fails on load until the body of P01 (upload 1) and P08 (upload 2) are read; source map SM22 |
 
 Each configuration is a versioned YAML/JSON file with every parameter labelled by evidence level.
 
@@ -169,8 +172,15 @@ unmaintained since January 2026).
 A surface-parallel-slicing dynamical RHEED solver (Ichimiya-type; the open-source `sim-trhepd-rheed`
 implements it) or a Bragg-case Bloch-wave solver provides rocking curves `|A(theta)|^2` for the flat
 surface of each configuration: peak positions calibrate refraction and the angle scale; widths and
-resonance features test absorption and boundary handling. Whether `sim-trhepd-rheed` exposes complex
-amplitudes is UNVERIFIED (only its README was readable).
+resonance features test absorption and boundary handling. `sim-trhepd-rheed`, as vendored for the P49
+benchmark, and its P49 fork `trhepd-opt` (GPL-3.0) compute the complex reflection amplitudes but write
+only intensities (SECTION_READ of the code, L2 rows D19, D19b; the current upstream release was not
+checked); exposing `arg A` is a small output change. P49 (Kudo, Yamamoto and Hoshi) recasts the
+boundary-value problem as a matrix initial-value problem for the full (non-paraxial) Schroedinger
+equation and returns the complex amplitude `rho(0)` (preprint Eq. (36)); it validates intensities
+only, and its notation implies an `exp(+i omega t)` time factor, so its phases must be conjugated
+before comparison with this repository's convention (DERIVED_HERE, UNVERIFIED until rung 1 below is
+run). Source map SM19.
 
 Because the measurand is a phase, intensity agreement is not sufficient. The reflection PHASE of the
 multislice engine is validated by a ladder that needs no new reading:
@@ -205,7 +215,16 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 3. Reference-wave models R1, R2, R3 selectable by name; the intrinsic inclination `2 theta_ext` between a
    vacuum reference and the specular object beam and its compensation are explicit inputs derived from
    the measured carrier fringe spacing and overlap width (PROJECT_INPUT item 16). A freely adjustable
-   relative phase is a simulation parameter, not evidence of hardware phase control.
+   relative phase is a simulation parameter, not evidence of hardware phase control. Published
+   arrangements (source map SM21, SM22): R1 is the Hitachi patent arrangement US 4,998,788 (a direct
+   wave that does not illuminate the specimen, compensated either by objective over-focus with one
+   diverging image-side biprism and a two-hole aperture, with image offset `d = Cs alpha^3 -
+   Delta f alpha`, or by a condenser-side biprism that pre-tilts the reference by the sum of the
+   incidence and reflection angles); R2 is the arrangement of the P01 abstract (two regions of the
+   reflection image overlapped by a biprism). An R1 reference must pass the dark-field objective
+   aperture: the model must declare whether it uses a second aperture hole, a condenser-biprism
+   pre-tilt of `2 theta_ext`, or no aperture, because an aperture centred on `k_out` blocks an
+   untilted vacuum reference (DERIVED_HERE, L1 inference I6).
 4. Partial coherence by intensity averaging over source-size, illumination-convergence, energy-spread
    (defocus) and phonon ensembles with the object and reference branches sharing each realisation; never
    averaging complex waves. The convergence semi-angle is a first-order contrast limit for tall features
@@ -310,10 +329,13 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 
 ## 11. What this specification does not settle
 
-* The content of Osakabe 1988 and of the Hitachi reflection-holography patent (reference-wave arrangement).
+* The body of Osakabe 1988 (energy, reflection, glancing angle, phase relation and sign, measured
+  values); the patent is now read (SM21) and the P01 abstract gives the surface and the self-reference
+  arrangement (SM22).
 * The exact relativistic refraction and Bragg-case expressions as printed in B07/B08 (derived here, not read).
 * Whether abTEM accepts a complex (absorptive) potential and tilts of 24 to 48 mrad with adequate accuracy
   (its docstring recommends below one degree; UNVERIFIED; tested in M2).
-* Which quantities `sim-trhepd-rheed` exposes (phase of the reflected beams or intensities only).
+* Whether the current upstream `sim-trhepd-rheed` release writes complex amplitudes (the vendored copy
+  and the P49 fork compute them and write intensities only), and the sign convention of P49's phases.
 * The dynamical residual threshold of acceptance criterion 3 (0.1 rad proposed, ASSUMPTION).
 * All PROJECT_INPUT items in `docs/06_project_inputs_required.md`.

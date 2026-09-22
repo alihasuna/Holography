@@ -41,6 +41,6 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 ## F. Material and specimen-state parameters to be sourced or measured
 
-20. Silicon mean inner potential `V0` with a citable measured or calculated value and uncertainty. The value 12.0 V used in this repository is an ASSUMPTION; a change of 1 V shifts the single-bilayer step phase at the (4,-4,4) condition by about 0.34 rad, and a height inferred from a fixed measured phase is biased by about +0.05 A per volt by which `V0` is underestimated.
+20. Silicon mean inner potential `V0` with a citable measured or calculated value and uncertainty. The value 12.0 V used in this repository is an ASSUMPTION; a change of 1 V shifts the single-bilayer step phase at the (4,-4,4) condition by about 0.34 rad, and a height inferred from a fixed measured phase is too small by about 0.049 A per volt by which `V0` is underestimated (`tools/phase1_numbers.py`; the sign of the earlier wording is corrected in revision 3).
 21. Absorptive (imaginary) potential parameters for Si at the working energy, from a named parameterisation, for the dynamical reflection calculations.
 22. Specimen charging: evidence (phase drift versus dose or time on a flat region) that the oxide-covered surface does not charge under the grazing-incidence illumination footprint, or the measured drift if it does.
