@@ -3,7 +3,8 @@
 Status: 2026-09-21, version 0.2 (orchestrator synthesis of reports A to D, independent checks, and
 the corrections required by the adversarial review `docs/agent_reports/E_review.md`); version 0.3,
 2026-09-22 (Phase 1 literature pass with network access: reports B3 and L1 to L5 under
-`docs/agent_reports/`).
+`docs/agent_reports/`); version 0.4, 2026-09-22 (Phase 2 build: section 9.1, reports S1a to S3,
+C2, A2, A2b, E4).
 Purpose: define the repository that will produce simulated observables to be contrasted with the
 real reflection-mode dark-field electron holography experiment on silicon surfaces (Osakabe-type
 measurement), starting from the inspected repository `hussienba/si110-reflection-holography`
@@ -319,31 +320,47 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 
 ### 9.1 Implementation status (Phase 2, 2026-09-22)
 
-Implemented in `reflection_holo/` and tested (full suite `venv/bin/pytest -q`: 527 passed at commit
-bd654c2; build reports S1a, S1b, S1c, S2, S3 and audit A2 under `docs/agent_reports/`):
+Implemented in `reflection_holo/` with tests (full suite `venv/bin/pytest -q`: 580 passed at commit
+9d7a087; build reports S1a, S1b, S1c, S2 and S3 under `docs/agent_reports/`). Verification record:
+code audit A2 (state 7874c85), re-audit A2b (state d35b751) and the round-2 fixes of S3, verified by
+A2c; documents reviewed in E4.
 
 * M1: `geometry/` (wavelength, structure factor and forbidden-target guard, refraction with the exact
-  relativistic Delta, specular condition, accessibility guard, projection, shadow and blocked-view
-  strips, sampling ceilings, plate-cell fractions) and `quantification/` (signed height with
-  refusal below the propagated uncertainty, wrap period and branch, rocking-series branch criterion
-  B16, invisibility, noise, no-step control, shadow masks); tests T1 to T25 with the calculator's
-  reference values and tolerances, and the shadow-length tests.
+  relativistic Delta, specular condition, accessibility guard, projection, illumination-shadow and
+  blocked-view strips, sampling ceilings, plate-cell fractions) and `quantification/` (signed height
+  with refusal below the propagated uncertainty, wrap period and branch, rocking-series inversion with
+  the branch criterion B16 and the aliasing flag, invisibility, noise, no-step control, shadow masks);
+  tests T1 to T25 with the calculator's reference values and tolerances, and the shadow-length tests.
 * Section 4.2 for Si(001): `structure/` builds terraces as truncations of one diamond lattice with
   assertions (a) to (g) (lattice sites, no duplicate boundary plane, bulk nearest-neighbour distance,
-  exact a/4 and a/2 heights, periodic staircase continuity, screw or translation relation found on
-  the built atoms, right-handed frame); the 2x1 reconstruction raises NotImplementedError (no source
-  read); overlayer and pattern geometry are required PROJECT_INPUT arguments.
-* Section 5, synthetic data only: `optics/` (hologram intensity, R1/R2/R3 references, ensemble
-  average after squaring, Poisson noise with seed) and `reconstruction/` (carrier located on an empty
-  hologram inside a declared one-sideband region, declared mask and apodisation, raw and unwrapped
-  phase, validity mask, no implicit detrend), with the no-step control (T25) and the
-  carrier-location test.
-* `io/` (schema-gated configuration loader: a missing or null PROJECT_INPUT fails at run level) and
-  `provenance/` (manifest with versions, git commit and diff hash, seeds, precision, hashes).
+  exact a/4 and a/2 heights, periodic staircase continuity, screw, glide or translation relation found
+  on the built atoms, right-handed frame) and records per a/4 step whether B4 applies (SM26); patterned
+  mesas and trenches as height profiles with both strips. The 2x1 reconstruction raises
+  NotImplementedError (no source read); overlayer and pattern geometry are required PROJECT_INPUT
+  arguments; atomistic mesas, trenches and overlayer are not built.
+* Section 5, synthetic data only: `optics/` (hologram intensity, R1/R2/R3 references, ensemble average
+  after squaring, Poisson noise with seed) and `reconstruction/` (carrier located on an empty or
+  flat-region hologram inside a declared one-sideband search region, declared mask and apodisation,
+  raw and region-wise unwrapped phase, validity mask from a required minimum empty-hologram
+  visibility, no implicit detrend), with the no-step control (T25) and the carrier-location test.
+* `io/` (schema-gated configuration loader: a missing or null PROJECT_INPUT fails at run level; a
+  PROJECT_INPUT item accepts only a supplied value naming the supplier and date or an ASSUMPTION mapped
+  to that item in `reflection_holo/io/assumption_registry.yaml`; duplicate YAML keys and non-finite
+  values fail; explicit units) and `provenance/` (manifest with versions, git commit and diff hash,
+  seeds, precision, hashes).
 
-Not implemented yet: the reflection forward model (M2), biprism Fresnel fringes, drift, detector
-MTF, partial-coherence generators, the R1 `2 theta_ext` compensation model, an experimental data
-loader, and configuration fields for PROJECT_INPUT items 2, 6, 10, 16, 17, 19, 21 and 22.
+Open after the fixes: the noise-declaration sensitivity of B16 (A2b N3: the phase uncertainties must be
+measured, not guessed); the R1/R3 aperture passage is recorded but has no effect; the thread count is
+recorded, not enforced.
+
+Not implemented yet: the reflection forward model (M2) and the geometric-phase model of section 4.5 (no
+`forward/` package exists); dark-field aperture selection, projection along `k_out`, magnification and
+pixel mapping, and lens transfer (section 5 items 1 and 2); biprism Fresnel fringes, drift, detector
+MTF and gain other than 1, partial-coherence generators and the convergence phase spread; the R1
+`2 theta_ext` compensation model; zero padding, real-space windows, residue-aware unwrapping and
+sub-pixel R2 shifts; terrace segmentation with uncertainties and the height sensitivity to
+convergence and `V0` (section 8); an experimental data loader; and configuration fields for
+PROJECT_INPUT items 2, 6, 10, 11 (miscut, terrace widths, terrace types), 16, 17, 19, 21 and 22.
 
 ## 10. Literature position (revision 3: `docs/02_literature_position.md`)
 
