@@ -259,7 +259,8 @@ def half_crystal_ops(ops, N_src: int, N_dst: int):
     both directions on a patch (S(P_src) inside H_dst and S^-1(P_dst) inside H_src).
     """
     P_src, P_dst = patch(N_src), patch(N_dst)
-    p0 = P_src[(P_src[:, 2] == N_src)][0]
+    top = P_src[(P_src[:, 2] == N_src)]
+    p0 = top[np.lexsort((top[:, 1], top[:, 0], np.abs(top).sum(axis=1)))][0]   # atom nearest the axis
     win = sites_box([-W_WIN, -W_WIN, N_dst - D_WIN], [W_WIN, W_WIN, N_dst])
     found = []
     n_tested = 0
@@ -344,6 +345,13 @@ def mirror_normal(M: np.ndarray) -> np.ndarray:
     return V[:, np.argmin(w)]
 
 
+def _plane_line(u: np.ndarray) -> np.ndarray:
+    """In-plane direction of a vertical mirror plane with normal u, oriented along a positive axis."""
+    line = np.cross([0.0, 0.0, 1.0], u)
+    nz = line[np.abs(line) > 1e-12]
+    return -line if nz.size and nz[0] < 0 else line
+
+
 def section_D(results):
     rule("D. CLASSIFICATION OF THE OPERATIONS MAPPING THE LOWER TERRACE H_0 ONTO THE UPPER H_1 "
          "(origin on a top-layer atom of H_0)")
@@ -362,7 +370,7 @@ def section_D(results):
             axes = set()
             for tt in ts:
                 ax = np.linalg.solve(np.eye(2) - M2, tt[:2].astype(float)) / 4.0   # units of a
-                axes.add((round(ax[0] % 0.5, 6), round(ax[1] % 0.5, 6)))
+                axes.add((float(round(ax[0] % 0.5, 6)), float(round(ax[1] % 0.5, 6))))
             print(f"   {name}: {kind}; axis parallel to [001] through (x, y) = "
                   f"{(axis / 4).tolist()} a  (all axis positions modulo a/2: {sorted(axes)}); "
                   f"translation along the axis = a/4 = {t[2] * QA:.6f} A")
@@ -377,10 +385,10 @@ def section_D(results):
                 g = tf - float(tf @ u) * u                   # glide vector parallel to the plane
                 inpl = g.copy()
                 inpl[2] = 0.0
-                along = float(np.dot(inpl, np.cross([0, 0, 1.0], u)))   # component along the
+                along = float(np.dot(inpl, _plane_line(u)))   # along the in-plane line of the plane
                 rows.add((round((d / 4) % 0.5, 6), round(((along / 4) + 0.5) % 1.0 - 0.5, 6),
                           round(g[2] / 4, 6)))
-            line = np.cross([0, 0, 1.0], u)
+            line = _plane_line(u)
             print(f"   {name}: glide reflection (no pure mirror exists: every glide vector has an "
                   f"in-plane component). Plane normal {np.round(u, 6).tolist()}, the plane contains "
                   f"[001] and {np.round(line, 6).tolist()}.")
@@ -463,6 +471,25 @@ def section_E(results):
         else:
             check("E7 (008) at [110]: the (010) glide moves k_in by more than 1 rad/A (not preserved)",
                   dev > 1.0, f"{dev:.3f} rad/A")
+    # rods other than (00): the relation is rod-by-rod only for rods in the incidence plane
+    tcls = [m[1] for k_, v_ in up.items() if describe_op(np.array(k_[0]).reshape(3, 3)) == "m(0,1,0)"
+            for m in v_]
+    ok8 = True
+    for p in (1, 2, 3):
+        G = np.array([4.0 * np.pi / A * p, 0.0, 0.0])            # reciprocal net vector along [100]
+        ph = np.array([np.exp(-1j * float(G @ (tt.astype(float) * QA))) for tt in tcls])
+        spread = float(np.max(np.abs(ph - ph[0])))
+        print(f"   [100], (010) glide, rod G_par = {p} x (4 pi/a)[100] (in the incidence plane): "
+              f"exp(-i G.t_par) = {ph[0].real:+.12f} {ph[0].imag:+.12f} i  (spread over "
+              f"{len(tcls)} class representatives {spread:.1e})")
+        ok8 &= bool(abs(ph[0] - (-1.0) ** p) < 1e-12 and spread < 1e-12)
+    Gp = np.array([0.0, 4.0 * np.pi / A, 0.0])
+    Mg = Ms["m(0,1,0)"].astype(float)
+    print(f"   [100], (010) glide, zeroth-Laue-zone rod G_par = (4 pi/a)[010] (perpendicular to the beam) is "
+          f"mapped to M G = {np.round(Mg @ Gp, 6).tolist()} rad/A: it relates rod +G on one terrace to "
+          f"rod -G on the other")
+    check("E8 in-plane rods G = p (4 pi/a)[100] at [100] carry the extra factor (-1)^p, the same for "
+          "every representative of the glide class", ok8)
     return verdict
 
 
@@ -750,26 +777,41 @@ def section_J():
     E, V0 = 200.0, 12.0
     lam = float(calc.wavelength_A(E))
     k = 2 * np.pi / lam
-    T = E * 1e3
-    delta = V0 * (1 + T / calc.M_E_C2_EV) / (T * (1 + T / (2 * calc.M_E_C2_EV)))
-    print(f"   lambda = {lam:.8f} A, k = {k:.4f} rad/A, Delta = {delta:.4e} "
-          "(physics_conventions refraction formula)")
+    T, U, E0 = E * 1e3, V0, calc.M_E_C2_EV
+    # exact: k_int^2/k^2 - 1 = [(T+U)(T+U+2E0) - T(T+2E0)] / (T(T+2E0)) = U(2T+U+2E0)/(T(T+2E0))
+    delta = U * (2 * T + U + 2 * E0) / (T * (T + 2 * E0))
+    # docs/physics_conventions.md form: V0 (1 + T/E0) / (T (1 + T/(2 E0))) = U(2T+2E0)/(T(T+2E0))
+    delta_conv = V0 * (1 + T / E0) / (T * (1 + T / (2 * E0)))
+    print(f"   lambda = {lam:.8f} A, k = {k:.4f} rad/A;  Delta exact = {delta:.6e};  "
+          f"Delta (physics_conventions form, first order in V0) = {delta_conv:.6e};  "
+          f"relative difference = {(delta - delta_conv) / delta:.3e} (= U/(2T+U+2E0) = "
+          f"{U / (2 * T + U + 2 * E0):.3e})")
     print(f"   {'(00L)':>9} {'th_ext mrad':>12} {'dphi = -2 K_ext a/4':>20} {'wrapped':>9} "
           f"{'h_2pi (A)':>10} {'dh per 0.1 rad of residual (A)':>31}")
     worst = 0.0
+    worst_conv = 0.0
+    worst_conv_phase = 0.0
     rows = {}
     for L in (4, 8, 12, 16):
         sc = calc.SpecularCondition(A / 4.0, L // 4, E, V0)
         K_ext_indep = np.sqrt((np.pi * L / A) ** 2 - k ** 2 * delta)
+        K_ext_conv = np.sqrt((np.pi * L / A) ** 2 - k ** 2 * delta_conv)
         worst = max(worst, abs(K_ext_indep - sc.K_ext) / sc.K_ext)
+        worst_conv = max(worst_conv, abs(K_ext_conv - sc.K_ext) / sc.K_ext)
+        worst_conv_phase = max(worst_conv_phase, 2.0 * QA * abs(K_ext_conv - sc.K_ext))
         dphi = -2.0 * sc.K_ext * QA
         wr = float(calc.wrap_to_pi(dphi))
         dh = 0.1 / (2.0 * sc.K_ext)
         rows[L] = (sc.theta_ext * 1e3, dphi, wr, sc.h_2pi_A, dh)
         print(f"   {str((0, 0, L)):>9} {sc.theta_ext * 1e3:12.4f} {dphi:20.4f} {wr:9.4f} "
               f"{sc.h_2pi_A:10.4f} {dh:31.4f}")
-    check("J1 K_ext from the conventions formula equals the calculator's to 1e-9 (relative)",
-          worst < 1e-9, f"{worst:.1e}")
+    check("J1 K_ext recomputed from the exact refraction relation equals the calculator's to "
+          "1e-12 (relative)", worst < 1e-12, f"{worst:.1e}")
+    print(f"   With the physics_conventions (first-order) Delta instead: max relative K_ext difference "
+          f"{worst_conv:.2e} (at (004)); max change of the a/4 step phase {worst_conv_phase:.2e} rad")
+    check("J1b the first-order Delta of physics_conventions.md changes K_ext by < 1e-4 and the a/4 "
+          "step phase by < 1e-4 rad (negligible, but not exact)",
+          worst_conv < 1e-4 and worst_conv_phase < 1e-4, f"{worst_conv:.2e}, {worst_conv_phase:.2e} rad")
     check_close("J2 (008) wrapped a/4 step phase equals the calculator section 4b value 1.3593",
                 rows[8][2], 1.3593, 5e-5, "rad")
     return rows
