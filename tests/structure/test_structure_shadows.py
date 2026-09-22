@@ -226,6 +226,29 @@ def test_raytrace_primitives():
         periodic_shadowed_intervals([(1, 0), (2, 0)], 2.0, t)
 
 
+@pytest.mark.parametrize("period_A", [0.2, 0.3, 0.7, P110, 2 * P110, 3 * P110, 25 * P110, 100.1])
+def test_periodic_ray_trace_inexact_periods_regression(period_A):
+    """Regression (S2 follow-up 2): unrolling with pts + k*period made period joins non-monotone
+    by one ulp for periods such as 0.2 A or 1-2 x P110 ("profile z coordinates must be
+    non-decreasing"). Profile: a riser falling by Q at half the period, rising again at the cell
+    edge; the shadow is [period/2, min(period/2 + Q/tan(theta), period)) exactly."""
+    t = math.tan(THETA_22P5_MRAD)
+    a = 0.5 * period_A
+    iv = periodic_shadowed_intervals([(0.0, Q), (a, Q), (a, 0.0), (period_A, 0.0)], period_A, t)
+    assert flat(iv) == pytest.approx([a, min(a + Q / t, period_A)], abs=1e-9)
+
+
+def test_periodic_ray_trace_end_point_within_accepted_tolerance_regression():
+    """Regression (S2 follow-up 2): an end point accepted by the existing 1e-9 A end check but
+    lying above the period (here by 5e-10 A) made the unrolled profile decrease at every join."""
+    t = math.tan(THETA_22P5_MRAD)
+    iv = periodic_shadowed_intervals([(0.0, Q), (50.0, Q), (50.0, 0.0), (100.0 + 5e-10, 0.0)],
+                                     100.0, t)
+    assert flat(iv) == pytest.approx([50.0, 100.0], abs=1e-9)
+    with pytest.raises(ValueError, match="end at z = period"):
+        periodic_shadowed_intervals([(0.0, Q), (50.0, 0.0), (100.0 + 2e-9, 0.0)], 100.0, t)
+
+
 # --- patterned features (PROJECT_INPUT item 13; TEST_ONLY values) ----------------------------------
 def _feature(kind="mesa", h=100.0, dims=(5000.0, 3000.0), at="top", orient=0.0,
              edge=EdgeProfile("vertical", None), center=(0.0, 0.0)):
@@ -234,40 +257,48 @@ def _feature(kind="mesa", h=100.0, dims=(5000.0, 3000.0), at="top", orient=0.0,
                             label=FEATURE_LABEL)
 
 
+SPECULAR_EXIT = dict(theta_out_ext_rad=THETA_22P5_MRAD, theta_out_label=THETA_LABEL)
+
+
+def specular_feature(f, y_A=None):
+    """feature_shadow_intervals for the specular beam, theta_out = theta_in (TEST_ONLY angle)."""
+    return feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL, y_A, **SPECULAR_EXIT)
+
+
 def test_mesa_10nm_vertical_shadow_444nm():
     f = _feature()
-    (z0, z1), = feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL)
+    (z0, z1), = specular_feature(f).illumination_intervals_A
     assert z0 == pytest.approx(2500.0, abs=1e-9)                 # downstream top edge
     assert abs((z1 - z0) / 10.0 - 444.0) <= 0.5                  # docs/03: 444 nm
 
 
 def test_mesa_orientation_swaps_along_beam_dimension():
     f = _feature(orient=90.0)
-    (z0, _), = feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL)
+    (z0, _), = specular_feature(f).illumination_intervals_A
     assert z0 == pytest.approx(1500.0, abs=1e-9)
 
 
 def test_mesa_sloped_sidewall_steeper_than_beam():
     f = _feature(edge=EdgeProfile("linear", 0.3))
-    (z0, z1), = feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL)
+    (z0, z1), = specular_feature(f).illumination_intervals_A
     assert z0 == pytest.approx(2500.0, abs=1e-6)                 # from the top edge
     assert z1 - z0 == pytest.approx(100.0 / math.tan(THETA_22P5_MRAD), abs=1e-6)
 
 
 def test_mesa_sidewall_gentler_than_beam_is_lit():
     f = _feature(edge=EdgeProfile("linear", 0.01))               # 10 mrad < 22.5 mrad
-    assert feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL) == []
+    assert specular_feature(f).illumination_intervals_A == ()
 
 
 def test_trench_narrower_than_shadow_floor_fully_shadowed():
     f = _feature(kind="trench", dims=(2000.0, 3000.0))
-    (z0, z1), = feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL)
+    (z0, z1), = specular_feature(f).illumination_intervals_A
     assert (z0, z1) == pytest.approx((-1000.0, 1000.0), abs=1e-9)
 
 
 def test_trench_wider_than_shadow():
     f = _feature(kind="trench", dims=(10000.0, 3000.0))
-    (z0, z1), = feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL)
+    (z0, z1), = specular_feature(f).illumination_intervals_A
     assert z0 == pytest.approx(-5000.0, abs=1e-9)
     assert abs((z1 - z0) / 10.0 - 444.0) <= 0.5
 
@@ -276,8 +307,8 @@ def test_feature_mask_2d():
     f = _feature(edge=EdgeProfile("linear", 0.3), at="top")
     y = np.array([0.0, 1400.0, 1500.0 + 100.0 / math.tan(0.3) * 0.5, 5000.0])
     z = np.linspace(-6000.0, 12000.0, 1801)
-    m = feature_shadow_mask(f, THETA_22P5_MRAD, THETA_LABEL, y, z)
-    lens = m.sum(axis=1) * (z[1] - z[0])
+    m = feature_shadow_mask(f, THETA_22P5_MRAD, THETA_LABEL, y, z, **SPECULAR_EXIT)
+    lens = m.illumination_mask.sum(axis=1) * (z[1] - z[0])
     assert lens[0] == pytest.approx(lens[1], abs=20.0)           # on the top face: full height
     assert 0 < lens[2] < lens[1]                                 # on the side slope: lower
     assert lens[3] == 0                                          # outside the feature
@@ -289,23 +320,24 @@ def test_feature_inputs_required_and_checked():
                          dimensions_at="top", orientation_deg=0.0, center_A=(0, 0),
                          label=FEATURE_LABEL)
     with pytest.raises(NotImplementedError):
-        feature_shadow_intervals(_feature(orient=45.0), THETA_22P5_MRAD, THETA_LABEL)
+        feature_shadow_intervals(_feature(orient=45.0), THETA_22P5_MRAD, THETA_LABEL,
+                                 **SPECULAR_EXIT)
     with pytest.raises(NotImplementedError):
         feature_shadow_intervals(_feature(edge=EdgeProfile("gaussian", 0.2)), THETA_22P5_MRAD,
-                                 THETA_LABEL)
+                                 THETA_LABEL, **SPECULAR_EXIT)
     with pytest.raises(ValueError, match="linear edge profile"):
         feature_shadow_intervals(_feature(edge=EdgeProfile("linear", None)), THETA_22P5_MRAD,
-                                 THETA_LABEL)
+                                 THETA_LABEL, **SPECULAR_EXIT)
     with pytest.raises(ValueError, match="consume"):
         feature_shadow_intervals(_feature(dims=(100.0, 100.0), at="base",
                                           edge=EdgeProfile("linear", 0.3)),
-                                 THETA_22P5_MRAD, THETA_LABEL)
+                                 THETA_22P5_MRAD, THETA_LABEL, **SPECULAR_EXIT)
     bad = PatternedFeature(kind="mesa", height_A=100.0, lateral_dimensions_A=(1.0, 1.0),
                            dimensions_at="top", orientation_deg=0.0,
                            edge_profile=EdgeProfile("vertical", None), center_A=(0, 0),
                            label="from memory")
     with pytest.raises(ValueError, match="label"):
-        feature_shadow_intervals(bad, THETA_22P5_MRAD, THETA_LABEL)
+        feature_shadow_intervals(bad, THETA_22P5_MRAD, THETA_LABEL, **SPECULAR_EXIT)
 
 
 def test_structure_shadow_lengths_use_geometry_module(monkeypatch):
@@ -336,3 +368,112 @@ def test_structure_shadow_lengths_use_geometry_module(monkeypatch):
     down = [p for p in sh.per_step if p["upper_terrace_upstream"]]
     assert len(down) == 1 and (Q, THETA_22P5_MRAD) in calls
     assert down[0]["nominal_shadow_length_A"] == canonical(Q, THETA_22P5_MRAD)
+
+
+# --- patterned features: both strips per edge (S2 follow-up 2) ------------------------------------
+def _qshadow_reference(kind, half, h, z, th_in, th_out):
+    """Independent reference for vertical edges: quantification.shadow.shadow_masks."""
+    from reflection_holo.quantification.shadow import shadow_masks
+    top = h if kind == "mesa" else -h
+    return shadow_masks(z, edges_A=[-half, half], h_start_A=0.0, heights_after_A=[top, 0.0],
+                        theta_in_ext_rad=th_in, theta_out_ext_rad=th_out)
+
+
+@pytest.mark.parametrize("orient", [0.0, 90.0])
+@pytest.mark.parametrize("kind", ["mesa", "trench"])
+def test_feature_both_strips_per_edge_mesa_and_trench(kind, orient):
+    """Vertical edges, h = 10 nm, (d1, d2) = (1000 nm, 300 nm) at the top; theta_in = 22.5 mrad,
+    theta_out = 30 mrad (TEST_ONLY, non-specular so the two strips differ in length)."""
+    h = 100.0
+    f = _feature(kind=kind, h=h, dims=(10000.0, 3000.0), orient=orient)
+    half = 0.5 * (10000.0 if orient == 0.0 else 3000.0)          # half-length along the beam
+    l_in = h / math.tan(THETA_22P5_MRAD)                         # 4443.7 A
+    l_out = h / math.tan(THETA_OUT_30MRAD)                       # 3332.3 A
+    exit_30 = dict(theta_out_ext_rad=THETA_OUT_30MRAD, theta_out_label=THETA_OUT_LABEL)
+    sh = feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL, **exit_30)
+    up, down = sh.per_step
+    assert (up["edge"], down["edge"]) == ("upstream", "downstream")
+    if kind == "mesa":
+        # front edge rises (upper side downstream): blocked view in front; back edge: shadow behind
+        want_blk, want_ill = [-half - l_out, -half], [half, half + l_in]
+        assert (up["strip"], down["strip"]) == ("blocked_view", "illumination_shadow")
+    else:
+        # front wall falls (upper side upstream): shadow on the floor behind it; back wall rises:
+        # blocked view on the floor in front of it; each cut by the other wall on a short floor
+        want_ill, want_blk = [-half, min(-half + l_in, half)], [max(half - l_out, -half), half]
+        assert (up["strip"], down["strip"]) == ("illumination_shadow", "blocked_view")
+    assert flat(sh.illumination_intervals_A) == pytest.approx(want_ill, abs=1e-9)
+    assert flat(sh.blocked_view_intervals_A) == pytest.approx(want_blk, abs=1e-9)
+    assert up["upper_terrace_upstream"] is (kind == "trench")
+    assert down["upper_terrace_upstream"] is (kind == "mesa")
+    for rec in (up, down):
+        want_len = l_out if rec["strip"] == "blocked_view" else l_in
+        assert rec["casts_strip"] and rec["nominal_length_A"] == pytest.approx(want_len, abs=1e-9)
+        assert rec["sidewall_run_A"] == 0.0 and not rec["sidewall_in_strip"]
+    # independent reference for vertical edges (quantification.shadow), away from strip ends
+    z = np.linspace(-half - l_out - 500.0, half + l_in + 500.0, 4001)
+    ends = np.array(flat(sh.illumination_intervals_A) + flat(sh.blocked_view_intervals_A))
+    keep = np.min(np.abs(z[:, None] - ends[None, :]), axis=1) > 1e-6
+    ref = _qshadow_reference(kind, half, h, z, THETA_22P5_MRAD, THETA_OUT_30MRAD)
+    assert np.array_equal(sh.illumination_mask(z)[keep], ~ref.illuminated[keep])
+    assert np.array_equal(sh.blocked_view_mask(z)[keep], ~ref.visible[keep])
+    # the 2-D mask carries each strip alone and their union; a line outside the feature is clear
+    m = feature_shadow_mask(f, THETA_22P5_MRAD, THETA_LABEL, [0.0, 10000.0], z, **exit_30)
+    assert np.array_equal(m.illumination_mask[0], sh.illumination_mask(z))
+    assert np.array_equal(m.blocked_view_mask[0], sh.blocked_view_mask(z))
+    assert np.array_equal(m.mask, m.illumination_mask | m.blocked_view_mask)
+    assert not m.mask[1].any()
+
+
+def test_feature_sloped_edges_compared_with_their_own_ray_angle():
+    """DERIVED_HERE rule for linear edges (module docstring): a wall steeper than the ray that meets
+    it lies inside its strip, measured from the top edge; a wall at a lower angle casts none.
+    theta_in = 22.5 mrad, theta_out = 30 mrad (TEST_ONLY)."""
+    h = 100.0
+    l_in = h / math.tan(THETA_22P5_MRAD)
+    l_out = h / math.tan(THETA_OUT_30MRAD)
+    kw = dict(theta_out_ext_rad=THETA_OUT_30MRAD, theta_out_label=THETA_OUT_LABEL)
+    # alpha = 0.3 rad, steeper than both rays: the front wall [-2500 - run, -2500) lies inside the
+    # blocked-view strip [-2500 - l_out, -2500); the back wall inside the shadow [2500, 2500 + l_in)
+    run = h / math.tan(0.3)
+    sh = feature_shadow_intervals(_feature(edge=EdgeProfile("linear", 0.3)), THETA_22P5_MRAD,
+                                  THETA_LABEL, **kw)
+    assert flat(sh.blocked_view_intervals_A) == pytest.approx([-2500.0 - l_out, -2500.0], abs=1e-6)
+    assert flat(sh.illumination_intervals_A) == pytest.approx([2500.0, 2500.0 + l_in], abs=1e-6)
+    up, down = sh.per_step
+    assert up["sidewall_in_strip"] and down["sidewall_in_strip"]
+    assert up["foot_A"] == pytest.approx(-2500.0 - run, abs=1e-9)
+    assert up["nominal_strip_A"] == pytest.approx((-2500.0 - l_out, -2500.0), abs=1e-9)
+    # alpha = 26 mrad: steeper than theta_in (the back wall shadows, 598 A beyond its foot) but
+    # gentler than theta_out (the front wall blocks nothing)
+    run = h / math.tan(0.026)
+    sh = feature_shadow_intervals(_feature(edge=EdgeProfile("linear", 0.026)), THETA_22P5_MRAD,
+                                  THETA_LABEL, **kw)
+    assert sh.blocked_view_intervals_A == ()
+    assert flat(sh.illumination_intervals_A) == pytest.approx([2500.0, 2500.0 + l_in], abs=1e-6)
+    assert 2500.0 + l_in - (2500.0 + run) == pytest.approx(598.4, abs=0.05)
+    up, down = sh.per_step
+    assert not up["casts_strip"] and up["nominal_strip_A"] is None
+    assert up["nominal_length_A"] == 0.0
+    assert down["casts_strip"] and down["sidewall_in_strip"]
+    # a trench with the same walls at the specular angle: the falling front wall (22.5 mrad ray)
+    # shadows, the rising back wall (22.5 mrad ray) blocks as well
+    sh = specular_feature(_feature(kind="trench", dims=(20000.0, 10000.0),
+                                   edge=EdgeProfile("linear", 0.026)))
+    assert flat(sh.illumination_intervals_A) == pytest.approx([-10000.0, -10000.0 + l_in],
+                                                              abs=1e-6)
+    assert flat(sh.blocked_view_intervals_A) == pytest.approx([10000.0 - l_in, 10000.0], abs=1e-6)
+
+
+def test_feature_exit_angle_required_labelled_and_checked():
+    f = _feature()
+    with pytest.raises(TypeError, match="theta_out"):
+        feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL)
+    with pytest.raises(TypeError, match="theta_out"):
+        feature_shadow_mask(f, THETA_22P5_MRAD, THETA_LABEL, [0.0], [0.0])
+    with pytest.raises(ValueError, match="label"):
+        feature_shadow_intervals(f, THETA_22P5_MRAD, THETA_LABEL, theta_out_ext_rad=0.03,
+                                 theta_out_label="same as incidence")
+    with pytest.raises(ValueError, match="theta_out_ext_rad"):
+        feature_shadow_mask(f, THETA_22P5_MRAD, THETA_LABEL, [0.0], [0.0], theta_out_ext_rad=0.0,
+                            theta_out_label=THETA_OUT_LABEL)

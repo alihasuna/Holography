@@ -388,3 +388,157 @@ Still open:
   features. Staircase strips are computed by `quantification/shadow.py`.
 
 NOT RUN: no simulation, engine or manifest-writing run. Not committed.
+
+## Follow-up 2
+
+Coordinator request (the orchestrator decided the API): (1) patterned mesas and trenches get the same
+API as terraces: `theta_out_ext_rad` and `theta_out_label` required with no default, both strips per
+edge, and a field for each strip alone. Tests for a mesa and a trench at 0 and 90 degrees; sloped
+edges handled as the geometry dictates and labelled DERIVED_HERE. (2) Fix the pre-existing failure
+of `periodic_shadowed_intervals` for inexact periods, with a regression test that fails before the
+fix. "Before" line numbers refer to commit f5a2a00; "after" line numbers to the working tree.
+`tools/physics_checks/q1_si001_quarter_step_symmetry.py` shows as modified in the working tree; it
+belongs to another agent and was not touched here.
+
+### (2) `periodic_shadowed_intervals` for inexact periods
+
+Cause: the unrolled profile was built as `pts + k*period`. For many periods, `fl(k*period) + period`
+exceeds `fl((k+1)*period)` by one ulp, so the unrolled z decreased at a period join and
+`shadowed_intervals` raised "profile z coordinates must be non-decreasing". Examples: 0.2, 0.3 and
+0.7 A, and 1 and 2 x P110 (a Si(001) cell of one or two [110] rows). A second trigger: an end point
+accepted by the existing check |z_end - period| <= 1e-9 A but lying above the period made every join
+decrease.
+
+Fix, `reflection_holo/structure/shadows.py` (old `:106-127`, new `:123-160`):
+* Offsets are accumulated, o_(k+1) = o_k + period. The end of period k, fl(period + o_k), is then
+  bit-identical to the start of period k + 1, fl(0 + o_(k+1)). Rounding is monotone, so the unrolled
+  z is non-decreasing by construction. No tolerance is involved.
+* The end point, already accepted by the existing 1e-9 A check (`_F_TOL_A`, unchanged), is placed
+  exactly at the period, and so is any point in that accepted band above the period
+  (`np.minimum(z, period)`). No new tolerance is introduced. A z sequence that decreases is now
+  refused explicitly, before unrolling, with the same message as before.
+* Interval ends at the cell edges are returned as exactly 0 and period, instead of
+  `end - last` (which could differ from the period by rounding).
+
+Regression tests, `tests/structure/test_structure_shadows.py`:
+* `:229-238` `test_periodic_ray_trace_inexact_periods_regression`, parametrised over periods 0.2,
+  0.3, 0.7, P110, 2 x P110, 3 x P110, 25 x P110 and 100.1 A. The profile falls by Q at half the
+  period and rises again at the cell edge; the expected shadow is
+  [period/2, min(period/2 + Q/tan theta, period)) (abs 1e-9, the file's existing tolerance for
+  exact interval ends).
+* `:241-250` `test_periodic_ray_trace_end_point_within_accepted_tolerance_regression`. The end point
+  is 5e-10 A above the period, inside the accepted band, and gives the correct [50, 100). An end
+  point 2e-9 A above, outside the band, is still refused.
+* Before the fix (same tests on the unfixed code), verbatim tail:
+  ```
+  =========================== short test summary info ============================
+  FAILED tests/structure/test_structure_shadows.py::test_periodic_ray_trace_inexact_periods_regression[0.2]
+  FAILED tests/structure/test_structure_shadows.py::test_periodic_ray_trace_inexact_periods_regression[0.3]
+  FAILED tests/structure/test_structure_shadows.py::test_periodic_ray_trace_inexact_periods_regression[0.7]
+  FAILED tests/structure/test_structure_shadows.py::test_periodic_ray_trace_inexact_periods_regression[3.8402262179460207]
+  FAILED tests/structure/test_structure_shadows.py::test_periodic_ray_trace_inexact_periods_regression[7.680452435892041]
+  FAILED tests/structure/test_structure_shadows.py::test_periodic_ray_trace_end_point_within_accepted_tolerance_regression
+  6 failed, 3 passed, 24 deselected in 0.13s
+  ```
+  After the fix: `10 passed, 23 deselected in 0.03s` (regression and primitive tests).
+* Wider check, not a test: 3400 periods (0.1 to 300 A in steps of 0.1 A, and 1 to 400 x P110) with
+  the same profile against the analytic interval gave `max endpoint error (A):
+  4.547473508864641e-13`, with no failure.
+
+### (1) Patterned features: both strips per edge
+
+Changes to `reflection_holo/structure/shadows.py`:
+* Module docstring: new `:10-13` (definition of the blocked-view condition and of the mirror
+  z -> -z) and new `:24-36`, which replace old `:19-20` ("Patterned features ... return the
+  illumination shadow only; their blocked-view strip is NOT IMPLEMENTED"). The new text states the
+  feature API, why features are ray-traced here rather than delegated (their sidewalls are sloped,
+  and `quantification.shadow.shadow_masks` handles vertical risers only), and the sloped-edge rule
+  as DERIVED_HERE.
+* `:56` `_EXIT_ANGLE_WHAT`, the label context for the exit angle, now shared by
+  `terrace_shadow_strips` (`:304`) and the feature functions (`:496`, `:540`).
+* New primitive `blocked_view_intervals(points, tan_theta_out)` (`:163-177`, DERIVED_HERE): a point is
+  blocked when a downstream surface point lies above the outgoing ray. By the mirror z -> -z this is
+  `shadowed_intervals` of the mirrored profile at tan(theta_out), mapped back. It is exact for
+  piecewise-linear profiles. The blocked set is open at both ends and is reported half-open like the
+  illumination intervals; the difference has measure zero.
+* `ShadowStrips` docstring (`:207-209`): `per_step` holds one record per step (staircases) or per
+  transverse edge on the line (features); `period_A` is None for features.
+* New `_feature_edge_records` (`:451-479`). One record per edge ("upstream", "downstream"):
+  `rising_along_beam`, `upper_terrace_upstream`, `strip` ("blocked_view" for a rising edge,
+  "illumination_shadow" for a falling edge), `strip_side`, `strip_angle`, `height_A` (local),
+  `top_edge_A`, `foot_A`, `sidewall_run_A`, `casts_strip`, `sidewall_in_strip`,
+  `nominal_strip_A` (measured from the top edge, None when no strip) and `nominal_length_A`.
+* `feature_shadow_intervals` (old `:399-406`, new `:482-512`) now takes `theta_out_ext_rad` and
+  `theta_out_label` as required keywords and returns a `ShadowStrips` with period_A None:
+  `illumination_intervals_A` (sweep at tan theta_in, as before), `blocked_view_intervals_A` (mirrored
+  sweep at tan theta_out), `intervals_A` (their union), the mask methods and `per_step` (the edge
+  records). The flat margin of the profile is now max(h/tan theta_in, h/tan theta_out) + length + 1 A.
+  The margin only extends the flat surroundings; the illumination results are unchanged.
+* New `FeatureShadowMasks` (`:514-530`) and `feature_shadow_mask` (old `:409-418`, new `:533-552`):
+  the exit angle is required, and the result has fields `mask` (union), `illumination_mask` and
+  `blocked_view_mask`, each (ny, nz), plus the grids, angles and labels.
+* `reflection_holo/structure/__init__.py:8-10, 15-16` export `FeatureShadowMasks`.
+
+Sloped (linear) edges, DERIVED_HERE from the exact ray trace. Each wall is compared with the ray
+that meets it: theta_in for a wall falling along the beam (mesa back, trench front), theta_out for
+a wall rising along the beam (mesa front, trench back).
+* A wall steeper than that ray (alpha > theta) lies inside its strip. The strip is measured from the
+  top edge of the wall with length h/tan(theta), i.e. h/tan(theta) - h/tan(alpha) beyond the foot.
+* A wall at or below that angle casts no strip (grazing counts as lit or visible, as in the existing
+  sweep).
+* On a line crossing a sloped side wall parallel to the beam, the local height is reduced, and the
+  strips follow from the local profile.
+
+Existing feature tests, updated for the API; values and tolerances are unchanged. `:260-265` adds
+`SPECULAR_EXIT` and the helper `specular_feature(f)` (theta_out = theta_in, TEST_ONLY label).
+Illumination assertions now read `.illumination_intervals_A` at old `:239, 246, 252, 264, 270`.
+Old `:259` `== []` becomes `.illumination_intervals_A == ()`. Old `:279-280`: the mask call passes
+the exit angle and reads `m.illumination_mask`. In `test_feature_inputs_required_and_checked` (old
+`:292-308`) every call passes the exit angle. Without it these calls would raise TypeError before
+reaching the error each one is meant to test.
+
+New feature tests (`:374-479`):
+* `test_feature_both_strips_per_edge_mesa_and_trench[kind, orient]` (`:374-425`), 4 cases: mesa and
+  trench at 0 and 90 degrees. Vertical edges, h = 10 nm, (1000 nm, 300 nm), theta_in = 22.5 mrad,
+  theta_out = 30 mrad (TEST_ONLY).
+  - Mesa: blocked view [-L/2 - h/tan theta_out, -L/2) and shadow [L/2, L/2 + h/tan theta_in).
+  - Trench: shadow on the floor behind the front wall and blocked view in front of the back wall,
+    each cut by the other wall at 90 degrees, where the 300 nm floor is shorter than both strips.
+  - Also checked: the edge records, and an independent comparison with
+    `quantification.shadow.shadow_masks` on 4001 points (points within 1e-6 A of a strip end are
+    excluded; that exclusion only avoids sampling exactly at an end). The 2-D mask fields (each strip
+    alone, their union) are checked too, and a line outside the feature is clear.
+* `test_feature_sloped_edges_compared_with_their_own_ray_angle` (`:428-465`).
+  - alpha = 0.3 rad: both walls lie inside their strips, measured from the top edges.
+  - alpha = 26 mrad, between theta_in and theta_out: the back wall shadows (598.4 A beyond its
+    foot), and the front wall blocks nothing.
+  - A trench with 26 mrad walls at the specular angle: both strips appear, measured from the
+    opening edges.
+  - Interval tolerance is abs 1e-6 A for sloped profiles: the sweep interpolates along the slope,
+    whereas vertical risers are exact to 1e-9. This is a test tolerance, stated here; no code
+    tolerance changed.
+* `test_feature_exit_angle_required_labelled_and_checked` (`:468-479`): a missing exit angle gives
+  TypeError for both functions, an unlabelled one ValueError "label", and 0 ValueError
+  "theta_out_ext_rad".
+* Mutation check: with the feature blocked view temporarily computed at theta_in, 4 tests failed
+  (`4 failed, 35 passed`); trench at 90 degrees cannot see the difference, since both strips cover
+  its whole floor. File restored (`cmp` identical).
+
+### `venv/bin/pytest -q` (verbatim)
+
+```
+........................................................................ [ 19%]
+........................................................................ [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+374 passed in 6.56s
+```
+
+Count: 359 before and 374 after, +15 new: 8 + 1 periodic regression, 4 mesa/trench, 1 sloped edges,
+1 exit angle. No test was removed and no tolerance was changed.
+
+Open: trench and mesa orientations other than 0 and 90 degrees, and edge profiles other than
+vertical and linear, remain NOT IMPLEMENTED, as before. NOT RUN: no simulation, engine or manifest
+run. Not committed.

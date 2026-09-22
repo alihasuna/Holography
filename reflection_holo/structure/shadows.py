@@ -7,6 +7,10 @@ it, i.e. when ``H(z') - (z - z') tan(theta_ext) > H(z)``. A step transverse to t
 terrace is upstream (a step descending along the beam; SM07 and B9 call it an up-step, seen from the
 shadowed terrace) therefore shadows a strip of length ``h / tan(theta_ext)`` behind it, unless the
 next rise cuts the strip short. Step edges parallel to the beam cast no shadow along the beam.
+The reflected beam leaves at the EXTERNAL exit angle theta_out; a surface point is in the
+blocked-view strip when a downstream surface point (z', H(z')), z' > z, lies above the outgoing ray
+through it, ``H(z') - (z' - z) tan(theta_out) > H(z)``. By the mirror z -> -z this is the
+illumination condition of the mirrored profile (DERIVED_HERE; ``blocked_view_intervals``).
 
 Terrace staircases (``terrace_shadow_strips``) return both strips of docs/03 section 4: the
 illumination shadow ``h / tan(theta_in)`` behind (downstream of) a riser whose upper terrace is
@@ -16,8 +20,20 @@ riser. For the specular beam (theta_out = theta_in) the two lengths are equal. T
 are delegated to ``reflection_holo.quantification.shadow.shadow_masks``. That function is
 evaluated between exact strip ends, so the intervals are exact. The exit angle is a required,
 labelled argument.
-Patterned features (``feature_shadow_*``) return the illumination shadow only; their blocked-view
-strip is NOT IMPLEMENTED (open issue).
+
+Patterned features (``feature_shadow_intervals``, ``feature_shadow_mask``) have the same API: the
+exit angle is required, and both strips are returned per transverse edge, with a field for each
+strip alone. An edge whose upper side is downstream (mesa front, trench back wall) gets a
+blocked-view strip in front of it; an edge whose upper side is upstream (mesa back, trench front
+wall) gets an illumination shadow behind it. Their profiles have sloped sidewalls, which
+``quantification.shadow.shadow_masks`` (vertical risers only) does not handle, so they are
+ray-traced here, exactly for the piecewise-linear profile. Sloped (linear) edges, DERIVED_HERE
+from that ray trace: a sidewall steeper than the ray that meets it (alpha > theta_in for a wall
+falling along the beam, alpha > theta_out for a wall rising along the beam) lies inside its strip,
+and the strip is measured from the TOP edge of the wall, length h / tan(theta), i.e.
+h / tan(theta) - h / tan(alpha) beyond the foot. A sidewall at or below that angle casts no
+strip (grazing counts as lit or visible). The two walls of one feature are compared with
+different angles when theta_out != theta_in.
 
 The features part implements the patterned mesas and trenches of PROJECT_INPUT item 13 as a height
 profile with every geometric parameter REQUIRED; their atomistic realisation is NOT IMPLEMENTED.
@@ -37,6 +53,7 @@ from .si001 import LABEL_PREFIXES
 
 _F_TOL_A = 1e-9          # tolerance on H + z tan(theta) when deciding shadowing (angstrom)
 _BREAK_TOL_A = 1e-6      # candidate strip ends closer than this are merged (degenerate cases only)
+_EXIT_ANGLE_WHAT = "external exit angle theta_out (item 7 for the specular beam)"
 
 
 def _check_theta(theta_ext_rad: float, theta_label: str, *, name: str = "theta_ext_rad",
@@ -110,21 +127,54 @@ def periodic_shadowed_intervals(points_one_period, period_A: float, tan_theta: f
     height mismatch between the last and first points is a riser at the cell edge. The profile is
     unrolled over enough periods for the longest possible shadow; intervals are returned in
     [0, period], an interval crossing the cell edge appearing as [a, period) and [0, b).
+
+    Floating point: the period offsets are accumulated, o_(k+1) = o_k + period. The end of period
+    k, fl(period + o_k), is then bit-identical to the start of period k + 1, fl(0 + o_(k+1)), and
+    since rounding is monotone the unrolled z is non-decreasing for any period. The earlier
+    ``pts + k * period`` could break this by one ulp (e.g. period 0.2 A or 1-2 x P110). The end
+    point, accepted by the existing check |z_end - period| <= _F_TOL_A (1e-9 A, unchanged), is
+    placed exactly at the period, and so is any point in that accepted band above it. No new
+    tolerance is introduced.
     """
     pts = np.asarray(points_one_period, dtype=float)
     Lp = float(period_A)
     if pts[0, 0] != 0.0 or abs(pts[-1, 0] - Lp) > _F_TOL_A:
         raise ValueError("points_one_period must start at z = 0 and end at z = period")
+    if np.any(np.diff(pts[:, 0]) < 0):
+        raise ValueError("profile z coordinates must be non-decreasing")
+    z = np.minimum(pts[:, 0], Lp)
+    z[-1] = Lp
     span = float(pts[:, 1].max() - pts[:, 1].min())
     reps = int(np.ceil(span / tan_theta / Lp)) + 2
-    unrolled = np.concatenate([pts + np.array([k * Lp, 0.0]) for k in range(reps)])
-    last = (reps - 1) * Lp
+    offsets = [0.0]
+    for _ in range(reps - 1):
+        offsets.append(offsets[-1] + Lp)
+    unrolled = np.concatenate([np.column_stack([z + o, pts[:, 1]]) for o in offsets])
+    last = offsets[-1]
+    end = last + Lp                        # bit-identical to the final unrolled z
     out = []
     for a, b in shadowed_intervals(unrolled, tan_theta):
-        lo, hi = max(a, last), min(b, last + Lp)
+        lo, hi = max(a, last), min(b, end)
         if hi > lo:
-            out.append((lo - last, hi - last))
+            out.append((0.0 if lo == last else lo - last, Lp if hi == end else hi - last))
     return _merge(out)
+
+
+def blocked_view_intervals(points, tan_theta_out: float):
+    """Blocked-view surface intervals [z0, z1) of a piecewise-linear height profile (DERIVED_HERE).
+
+    A surface point is blocked when a downstream surface point lies above the outgoing ray (rising
+    along +z at theta_out) through it. The mirror z -> -z turns this into the illumination
+    condition of the mirrored profile, so the result is ``shadowed_intervals`` of the mirrored
+    profile at tan(theta_out), mirrored back. Nothing downstream of the last point may be higher
+    than it. Exact for the profile. The blocked set is open at both ends; like the illumination
+    intervals it is reported half-open, a difference of measure zero.
+    """
+    pts = np.asarray(points, dtype=float)
+    if pts.ndim != 2 or pts.shape[1] != 2 or len(pts) < 2:
+        raise ValueError("points must be a sequence of at least two (z, H) pairs")
+    mirrored = np.column_stack([-pts[::-1, 0], pts[::-1, 1]])
+    return _merge([(-b, -a) for a, b in shadowed_intervals(mirrored, tan_theta_out)])
 
 
 def intervals_to_mask(intervals, coords_A, period_A: float | None = None) -> np.ndarray:
@@ -154,7 +204,9 @@ class ShadowStrips:
     intervals_A               the union of the two: every strip to mask
     theta_ext_rad, theta_label          incidence angle theta_in and its evidence label
     theta_out_ext_rad, theta_out_label  exit angle theta_out and its evidence label
-    per_step                  one record per step: which strip applies, its side and nominal extent
+    per_step                  one record per step (staircases) or per transverse edge on the line
+                              (patterned features): which strip applies, its side, nominal extent
+    period_A                  the cell period (staircases) or None (features, not periodic)
     """
     axis: str
     intervals_A: tuple
@@ -249,7 +301,7 @@ def terrace_shadow_strips(structure, theta_ext_rad: float, theta_label: str, *,
     """
     th = _check_theta(theta_ext_rad, theta_label)
     th_out = _check_theta(theta_out_ext_rad, theta_out_label, name="theta_out_ext_rad",
-                          what="external exit angle theta_out (item 7 for the specular beam)")
+                          what=_EXIT_ANGLE_WHAT)
     md = structure.metadata
     st = md["staircase"]
     Lz = float(structure.cell_A[2, 2])
@@ -396,23 +448,105 @@ def feature_profile_along_beam(feature: PatternedFeature, y_A: float, margin_A: 
             (zc + zb, 0.0), (zc + zb + margin_A, 0.0)]
 
 
+def _feature_edge_records(profile, th_in: float, th_out: float) -> tuple:
+    """Per-edge records of the transverse edges on one feature profile line (DERIVED_HERE; see the
+    module docstring for the sloped-edge rule). Empty when the line misses the feature."""
+    if len(profile) != 6:
+        return ()
+    recs = []
+    for name, (za, Ha), (zb, Hb) in (("upstream", profile[1], profile[2]),
+                                     ("downstream", profile[3], profile[4])):
+        rising = Hb > Ha                                 # height increases along the beam
+        hy = abs(Hb - Ha)
+        z_top, z_foot = (zb, za) if rising else (za, zb)
+        run = abs(zb - za)
+        if rising:                                       # upper side downstream: blocked view
+            th, strip, side, angle = (th_out, "blocked_view",
+                                      "upstream of the edge (in front of it)", "theta_out")
+        else:                                            # upper side upstream: illumination
+            th, strip, side, angle = (th_in, "illumination_shadow",
+                                      "downstream of the edge (behind it)", "theta_in")
+        length = projection.shadow_length_A(hy, th)
+        casts = run < length                             # tan(alpha) = hy/run > tan(theta)
+        nominal = None
+        if casts:
+            nominal = (z_top - length, z_top) if rising else (z_top, z_top + length)
+        recs.append(dict(edge=name, rising_along_beam=rising, upper_terrace_upstream=not rising,
+                         strip=strip, strip_side=side, strip_angle=angle, height_A=hy,
+                         top_edge_A=z_top, foot_A=z_foot, sidewall_run_A=run,
+                         casts_strip=casts, sidewall_in_strip=bool(casts and run > 0.0),
+                         nominal_strip_A=nominal, nominal_length_A=length if casts else 0.0))
+    return tuple(recs)
+
+
 def feature_shadow_intervals(feature: PatternedFeature, theta_ext_rad: float, theta_label: str,
-                             y_A: float | None = None):
-    """Shadowed z-intervals on the line y = y_A (default: the feature's centre line)."""
+                             y_A: float | None = None, *, theta_out_ext_rad: float,
+                             theta_out_label: str) -> ShadowStrips:
+    """Illumination shadow and blocked-view strips on the line y = y_A (default: the feature's
+    centre line), as a :class:`ShadowStrips` with period_A None.
+
+    theta_ext_rad, theta_label          external glancing angle of incidence (PROJECT_INPUT item 7)
+    theta_out_ext_rad, theta_out_label  external exit angle (item 7: equal to the incidence angle
+                                        for the specular beam); required, no default
+    ``per_step`` holds one record per transverse edge crossed by the line (see the module docstring
+    for the sloped-edge rule, DERIVED_HERE).
+    """
     th = _check_theta(theta_ext_rad, theta_label)
+    th_out = _check_theta(theta_out_ext_rad, theta_out_label, name="theta_out_ext_rad",
+                          what=_EXIT_ANGLE_WHAT)
     g = _feature_geometry(feature)
-    margin = projection.shadow_length_A(g["h"], th) + g["big"][0] + 1.0
+    margin = (max(projection.shadow_length_A(g["h"], th),
+                  projection.shadow_length_A(g["h"], th_out)) + g["big"][0] + 1.0)
     y = g["yc"] if y_A is None else float(y_A)
-    return shadowed_intervals(feature_profile_along_beam(feature, y, margin), math.tan(th))
+    prof = feature_profile_along_beam(feature, y, margin)
+    ill = shadowed_intervals(prof, math.tan(th))
+    blk = blocked_view_intervals(prof, math.tan(th_out))
+    return ShadowStrips(axis="z", intervals_A=tuple(_merge(ill + blk)),
+                        illumination_intervals_A=tuple(ill), blocked_view_intervals_A=tuple(blk),
+                        period_A=None, theta_ext_rad=th, theta_label=theta_label,
+                        theta_out_ext_rad=th_out, theta_out_label=theta_out_label,
+                        per_step=_feature_edge_records(prof, th, th_out),
+                        note="patterned feature: illumination shadow (theta_in) and blocked-view "
+                             "strip (theta_out) on one line along the beam; exact ray trace of "
+                             "the piecewise-linear profile (DERIVED_HERE)")
+
+
+@dataclass(frozen=True, eq=False)
+class FeatureShadowMasks:
+    """Masks of a patterned feature on the grid (y_A[i], z_A[j]) of the slab frame, shape (ny, nz).
+
+    mask               every strip to mask (union)
+    illumination_mask  illumination shadow alone (theta_in)
+    blocked_view_mask  blocked-view strip alone (theta_out)
+    """
+    mask: np.ndarray
+    illumination_mask: np.ndarray
+    blocked_view_mask: np.ndarray
+    y_A: np.ndarray
+    z_A: np.ndarray
+    theta_ext_rad: float
+    theta_label: str
+    theta_out_ext_rad: float
+    theta_out_label: str
 
 
 def feature_shadow_mask(feature: PatternedFeature, theta_ext_rad: float, theta_label: str,
-                        y_A, z_A) -> np.ndarray:
-    """Boolean shadow mask on the grid (y_A[i], z_A[j]) of the slab frame, shape (ny, nz)."""
+                        y_A, z_A, *, theta_out_ext_rad: float,
+                        theta_out_label: str) -> FeatureShadowMasks:
+    """Illumination-shadow and blocked-view masks on the grid (y_A[i], z_A[j]), shape (ny, nz),
+    one ray-traced line per y (``feature_shadow_intervals``). Exit angle required, no default."""
     th = _check_theta(theta_ext_rad, theta_label)
+    th_out = _check_theta(theta_out_ext_rad, theta_out_label, name="theta_out_ext_rad",
+                          what=_EXIT_ANGLE_WHAT)
     y = np.asarray(y_A, float)
     z = np.asarray(z_A, float)
-    out = np.zeros((y.size, z.size), dtype=bool)
+    ill = np.zeros((y.size, z.size), dtype=bool)
+    blk = np.zeros((y.size, z.size), dtype=bool)
     for i, yi in enumerate(y):
-        out[i] = intervals_to_mask(feature_shadow_intervals(feature, th, theta_label, yi), z)
-    return out
+        sh = feature_shadow_intervals(feature, th, theta_label, yi, theta_out_ext_rad=th_out,
+                                      theta_out_label=theta_out_label)
+        ill[i] = sh.illumination_mask(z)
+        blk[i] = sh.blocked_view_mask(z)
+    return FeatureShadowMasks(mask=ill | blk, illumination_mask=ill, blocked_view_mask=blk,
+                              y_A=y, z_A=z, theta_ext_rad=th, theta_label=theta_label,
+                              theta_out_ext_rad=th_out, theta_out_label=theta_out_label)
