@@ -79,7 +79,7 @@ def http_get(url, accept="application/json", tries=4):
                 return r.status, r.read()
         except urllib.error.HTTPError as exc:
             last = (exc.code, exc.read())
-            if exc.code not in (429, 500, 502, 503, 504):
+            if exc.code not in (406, 429, 500, 502, 503, 504):   # arXiv gives transient 406s
                 return last
         except Exception as exc:  # network error
             last = (None, str(exc).encode())
@@ -258,7 +258,7 @@ def compare(key, e, rec, placeholder=None):
                     disc.append((f"{role}[{i+1}].given", "(none)", cn["given"], "given-missing"))
     # ---- title
     if placeholder is None:
-        placeholder = key in PLACEHOLDER_TITLE
+        placeholder = key in PLACEHOLDER_TITLE or not e.get("title")
     if not placeholder:
         checked.append("title")
         bt_ = u(e, "title")
@@ -378,7 +378,7 @@ def evaluate_candidate(key, e, c):
         parent = PARENT_ISBNS.get(bt.fold(u(e, "booktitle") or ""))
         if parent is not None:
             res["I"] = "match" if parent & cisbn else "mismatch"
-    if key in PLACEHOLDER_TITLE:
+    if key in PLACEHOLDER_TITLE or not e.get("title"):
         res["T"] = "untestable"
     else:
         t = u(e, "title")
@@ -449,6 +449,20 @@ def evaluate_candidate(key, e, c):
     return res
 
 
+# ======================================================================= new entries (claimed citations)
+def load_spec():
+    import yaml
+    return (yaml.safe_load(CORR.read_text()) or {}) if CORR.exists() else {}
+
+
+def claimed_entry(key, d):
+    """Build an Entry from the citation another report CLAIMS (tested, never trusted)."""
+    fields = ",\n".join(f"  {k} = {{{v}}}" for k, v in d["claimed"].items())
+    txt = (f"@{d['type']}{{{key},\n{fields},\n  note = {{evidence: claimed; provenance: "
+           f"{d['source']}}}\n}}\n")
+    return bt.parse(txt)[0]
+
+
 # ======================================================================= fetch
 def route_of(key, e):
     if key in ("PAT01", "U03"):
@@ -508,7 +522,9 @@ def cmd_fetch(args):
     cur = entries_by_key(BIB.read_text())
     keys = args.keys or list(base)
     for key in keys:
-        e = base.get(key) or cur[key]
+        e = base.get(key) or cur.get(key)
+        if e is None:
+            continue                       # claimed new entry, handled below
         r = route_of(key, e)
         print(f"[{key}] route={r}", flush=True)
         if r == "doi":
@@ -565,6 +581,24 @@ def cmd_fetch(args):
                 if st != 200:
                     st, _ = cached_get(f"{key}.patent.html", f"https://patents.google.com/patent/{pn}B2/en", idx, args.refresh, accept="text/html", where=SCRATCH)
                 print(f"   patent {pn} -> {st}")
+    # claimed new entries (coordinator requests), tested like the baseline entries
+    for key, d in (load_spec().get("new_entries") or {}).items():
+        if args.keys and key not in args.keys:
+            continue
+        e = claimed_entry(key, d)
+        print(f"[{key}] new entry (claimed by {d['source']})", flush=True)
+        if d.get("search", True):
+            q = query_string(key, e)
+            url = CROSSREF + "?" + urllib.parse.urlencode({"query.bibliographic": q, "rows": 5})
+            st, _ = cached_get(f"{key}.search.json", url, idx, args.refresh)
+            print(f"   search -> {st}  q={q[:90]!r}")
+        if e.get("eprint"):
+            url = "https://export.arxiv.org/api/query?id_list=" + e.get("eprint")
+            st, _ = cached_get(f"{key}.arxiv.xml", url, idx, args.refresh, accept="*/*")
+            print(f"   arXiv -> {st}")
+        base[key] = e
+        if key not in keys:
+            keys.append(key)
     # evaluate search candidates and fetch accepted DOIs
     build_parent_isbns(base)
     for key in keys:
@@ -644,6 +678,57 @@ def render_entry(text, e):
         lines.append(f"  {f.raw_name.ljust(width)} = {{{f.value}}},")
     lines[-1] = lines[-1].rstrip(",")
     return "\n".join(lines) + "\n}"
+
+
+def arxiv_fields(key):
+    t = (CACHE / f"{key}.arxiv.xml").read_text()
+    entry = t[t.index("<entry>"):]
+    grab = lambda tag: [re.sub(r"\s+", " ", x).strip() for x in re.findall(rf"<{tag}[^>]*>(.*?)</{tag}>", entry, re.S)]
+    return {"title": grab("title")[0], "names": grab("name"), "published": grab("published")[0],
+            "id": grab("id")[0]}
+
+
+def new_entry_verdict(key, d):
+    """Re-test the claimed citation against the cached record; return (ok, verdict text)."""
+    claimed = claimed_entry(key, d)
+    if d.get("search", True):
+        rec = load_rec(key)
+        if rec is None:
+            return False, "no accepted Crossref record"
+        ev = evaluate_candidate(key, claimed, rec)
+        return ev["verdict"].startswith("ACCEPT"), ev["verdict"] + " " + json.dumps({k: v for k, v in ev.items() if k != "verdict"})
+    a = arxiv_fields(key)
+    ok_t = bt.fold(a["title"]) == bt.fold(u(claimed, "title"))
+    fam = bt.parse_name(bt.split_names(claimed.get("author"))[0])["family"]
+    ok_a = bool(a["names"]) and bt.fold(a["names"][0].split()[-1]) == bt.fold(fam)
+    ok_y = a["published"][:4] == u(claimed, "year")
+    return ok_t and ok_a and ok_y, f"arXiv: title {'match' if ok_t else 'MISMATCH'}, first author {'match' if ok_a else 'MISMATCH'}, year {'match' if ok_y else 'MISMATCH'}"
+
+
+def add_new_entries(text, spec, touched):
+    items = (spec.get("new_entries") or {}).items()
+    anchor = "%% --- 4k. Records added by B3 at the coordinator's request (claimed in L5, verified here) ---"
+    for key, d in items:
+        ok, why = new_entry_verdict(key, d)
+        if not ok:
+            print(f"{key}: NOT added ({why})")
+            continue
+        fields = {}
+        rec = load_rec(key) if d.get("search", True) else None
+        for fld in d.get("from_crossref", []) or []:
+            fields[fld.split(":")[0]] = value_from_record(fld, rec, None)
+        for name, val in (d.get("set") or {}).items():
+            fields[name] = str(val).strip()
+        width = max(len(n) for n in fields)
+        body = ",\n".join(f"  {n.ljust(width)} = {{{v}}}" for n, v in fields.items())
+        block = f"@{d['type']}{{{key},\n{body}\n}}"
+        if anchor not in text:
+            m = re.search(r"\n\n%% =+\n%% PART 5\n", text)
+            text = text[:m.start()] + "\n\n" + anchor + text[m.start():]
+        m = re.search(r"\n\n%% =+\n%% PART 5\n", text)
+        text = text[:m.start()] + "\n\n" + block + text[m.start():]
+        touched.append(key)
+    return text
 
 
 def cmd_apply(args):
@@ -728,7 +813,7 @@ def cmd_apply(args):
             anchor = "%% --- 4j. Records moved from the UNVERIFIED section by the B3 Crossref pass"
             if anchor not in text:
                 m = re.search(r"\n\n%% =+\n%% PART 5\n", text)
-                text = text[:m.start()] + "\n\n" + anchor + " ---\n" + text[m.start():]
+                text = text[:m.start()] + "\n\n" + anchor + " ---" + text[m.start():]
             m = re.search(r"\n\n%% =+\n%% PART 5\n", text)
             text = text[:m.start()] + "\n\n" + block + text[m.start():]
             if e.etype != ops.get("type", e.etype):
@@ -737,6 +822,7 @@ def cmd_apply(args):
             ents = entries_by_key(text)
             e = ents[key]
             text = text[:e.start] + "@" + ops["type"] + text[e.start + 1 + len(e.etype):]
+    text = add_new_entries(text, spec, touched)
     for key in touched:
         e = entries_by_key(text)[key]
         text = text[:e.start] + render_entry(text, e) + text[e.end:]
@@ -887,6 +973,25 @@ def cmd_report(args):
                            b_disc=b_disc_mat, c_disc=c_disc, acc=acc_keys, info=c_info or b_info,
                            cand=search_note, fdiff=fdiff, lab0=label_of(e0), lab1=label_of(e1) if e1 else "",
                            manual=manual.get(key), partial=partial.get(key)))
+    # ---- claimed new entries
+    counts["added"] = 0
+    for key, d in (spec.get("new_entries") or {}).items():
+        e1 = cur.get(key)
+        ok, why = new_entry_verdict(key, d)
+        rec = load_rec(key) if d.get("search", True) else None
+        sidx = idx.get(f"{key}.search.json" if d.get("search", True) else f"{key}.arxiv.xml", {})
+        c_chk, c_disc, c_info = compare(key, e1, rec) if (rec is not None and e1) else ([], [], {})
+        resid = [x for x in c_disc if x[0] not in (accepted_res.get(key) or {})]
+        status = "ADDED-VERIFIED" if (ok and e1 is not None and not resid) else ("NOT-ADDED" if e1 is None else "ADDED-RESIDUAL")
+        if status == "ADDED-VERIFIED":
+            counts["added"] += 1
+        rows.append([key, (e1.get("doi") if e1 else "") or "", f"{'search' if d.get('search', True) else 'arXiv'} {sidx.get('status')}",
+                     ",".join(c_chk) or "title,author,year (arXiv)", why, status + "; new entry (claimed in " + d["source"].replace("\\_", "_") + ")",
+                     "(not in baseline)", label_of(e1) if e1 else ""])
+        blocks.append(dict(key=key, route=(f"Crossref API /works/{rec['DOI']}" if rec else "arXiv API"), url=sidx.get("url", ""),
+                           http=sidx.get("status"), status=status, b_disc=[], c_disc=c_disc, acc=accepted_res.get(key, {}) or {},
+                           info=c_info, cand=[], fdiff=[], lab0="(new entry)", lab1=label_of(e1) if e1 else "",
+                           manual={"result": "claimed citation tested: " + why}, partial=None))
     # ---- TSV
     with TSV.open("w") as fh:
         fh.write("\t".join(["key", "doi", "http_status", "fields_checked", "discrepancies", "action", "label_before", "label_after"]) + "\n")
@@ -938,7 +1043,8 @@ def write_log(counts, blocks, corrections, stats, errs, doi_bad, spec):
                    ("new_doi", "newly found DOIs (copied from Crossref, never constructed)"),
                    ("moved_to_verified", "entries moved out of the UNVERIFIED section"),
                    ("still_unverified", "still unverified (no accepted record, or residual discrepancy)"),
-                   ("http_failures", "HTTP failures (network error, 429 or 5xx after retries)")]:
+                   ("http_failures", "HTTP failures (network error, 429 or 5xx after retries)"),
+                   ("added", "NEW entries added at the coordinator's request (claimed elsewhere, verified here)")]:
         L.append(f"| {lab} | {counts[k]} |")
     L.append("")
     L.append("Syntax validation of the current `references.bib`: " + json.dumps(stats) +

@@ -81,6 +81,31 @@ directory only (not committed). No e-mail address was sent; the User-Agent was
    **Confirmed**; U07 corrected and moved to the verified section (acceptance by identifier substitution,
    see Method 3, because the entry had no author to test).
 
+## Coordinator's second request: L5 section 6.3 proposals and two new items
+
+Source: `docs/agent_reports/L5_open_access_check.md` section 6.3. Each proposal was tested against
+Crossref (or the named registry) independently; only what the record supports was applied.
+Label or content upgrades that rest on L5's READING (SECTION_READ, +ABSTRACT(publisher/PubMed)) cannot
+be checked against a metadata registry and were NOT applied; they are left to the orchestrator.
+
+| L5 proposal | Registry check | Applied? |
+|---|---|---|
+| P01: first page confirmed, "last page still unverified"; abstract (Pt(111)) as +ABSTRACT(publisher) | <https://api.crossref.org/works/10.1143/JJAP.27.L1772> (200) gives pages **L1772-L1774** and issue 9A: the last page IS verified | pages/issue already applied; abstract label not applied (content) |
+| P02E: authors confirmed; content SECTION_READ; drop the "re-check every number" warning | <https://api.crossref.org/works/10.1103/PhysRevLett.63.584.3> (200): same five authors, 63(5), 584 | author confirmation applied (note); SECTION_READ and warning removal not applied (content) |
+| P03: DOI confirmed | <https://api.crossref.org/works/10.1016/0304-3991(93)90123-F> (200) | already applied |
+| P05: full author list; "open access, CC BY 4.0" | <https://api.crossref.org/works/10.1016/j.micron.2021.103141> (200): eleven authors; `license` of the version of record = http://creativecommons.org/licenses/by/4.0/ from 2021-08-25 | applied (authors earlier; licence sentence added to the note) |
+| P08, P09: journal MRT, P09 pages 450-456; labels to +ABSTRACT(PubMed) | Crossref as in the per-entry records | metadata already applied; label change not applied (content) |
+| P31: `doi = {10.1016/j.ultramic.2011.04.008}` | found independently by <https://api.crossref.org/works?query.bibliographic=H%C3%BFtch+Houdellier+H%C3%BCe+Dark-field+electron+holography+for+the+measurement+of+geometric+phase+Ultramicroscopy+111+2011+1328&rows=5>, five-field accept; `/works` 200 | already applied; identical DOI |
+| C03: AM at White Rose eprint 127795 | <https://eprints.whiterose.ac.uk/id/eprint/127795/> (200): book section "Ptychography", Rodenburg, J.M. and Maiden, A.M., Springer Handbook of Microscopy, 2019, full text public, "Accepted Version" | availability note added; SECTION_READ not applied (content) |
+| New: Hÿtch et al. 2010, J. Phys.: Conf. Ser. 241, 012027 | <https://api.crossref.org/works?query.bibliographic=H%C3%BFtch+Houdellier+H%C3%BCe+Journal+of+Physics%3A+Conference+Series+241+2010+012027&rows=5>; accepted (first author, journal, volume 241, year 2010 match; article number 012027 stands in for the title L5 did not state); <https://api.crossref.org/works/10.1088/1742-6596/241/1/012027> (200): "Dark-field electron holography for the mapping of strain in nanostructures: correcting artefacts and aberrations", four authors as P31, published-print 2010-07-01 | **added as HYTCH10** (METADATA_VERIFIED; L5's SECTION_READ not transferred) |
+| New: Schowalter, Kruse, Rosenauer, arXiv:2607.05948v1 | <https://export.arxiv.org/api/query?id_list=2607.05948> (200): title "Modelling the mean inner potential of alloyed and strained materials", authors Marco Schowalter, Peer Kruse, Andreas Rosenauer, v1 2026-07-07, cond-mat.mtrl-sci, no DOI or journal_ref | **added as SCHOWALTER26A** (METADATA_VERIFIED, preprint) |
+| New: Schowalter, Kruse, Rosenauer, Micron 207 (2026) 104079 | <https://api.crossref.org/works?query.bibliographic=Schowalter+Kruse+Rosenauer+Estimating+the+strain+and+composition+dependence+of+the+mean+inner+potential+of+alloyed+semiconductors+Micron+207+2026+104079&rows=5>; five-field accept; <https://api.crossref.org/works/10.1016/j.micron.2026.104079> (200): published-print 2026-11, CC BY 4.0 | **added as SCHOWALTER26M**; that it is the same work as the preprint (titles differ, no cross-link in either record) is L5's inference and is flagged as such |
+| New: candidates M3-M15 (METADATA_VERIFIED only) | not requested by the coordinator | not added |
+
+The three new entries sit in the verified section under "4k"; the file now has 99 entries (93
+verified, 6 unverified). The counts table below keeps the 96 baseline entries separate from the
+three additions (row "NEW entries added").
+
 ## Findings that change what the summary documents say (docs/00-07 not edited here)
 
 | File:line | Current statement | What the records show |
@@ -157,8 +182,9 @@ Mag. Lett. 71 (1995) multislice paper, first author Chen, but the entry has no a
 | entries moved out of the UNVERIFIED section | 12 |
 | still unverified (no accepted record, or residual discrepancy) | 6 |
 | HTTP failures (network error, 429 or 5xx after retries) | 0 |
+| NEW entries added at the coordinator's request (claimed elsewhere, verified here) | 3 |
 
-Syntax validation of the current `references.bib`: {"entries": 96, "unique_keys": 96, "verified_section": 90, "unverified_section": 6, "with_doi": 80}; errors: none; entries whose doi is not backed by a cached registry record: none.
+Syntax validation of the current `references.bib`: {"entries": 99, "unique_keys": 99, "verified_section": 93, "unverified_section": 6, "with_doi": 82}; errors: none; entries whose doi is not backed by a cached registry record: none.
 
 Entries changed, by field (baseline -> current; `note` excluded): author: 9; author (added): 7; doi (added): 35; editor: 3; howpublished: 8; isbn (added): 1; number (added): 24; pages: 3; pages (added): 9; publisher (added): 1; title: 9; url: 1; url (added): 1; version (added): 1; volume (added): 5; year: 1; year (added): 4.
 
@@ -1521,5 +1547,32 @@ Discrepancy kinds: `family`/`diacritics`/`given`/`count`/`incomplete` (names), `
   - `10.1016/j.cpc.2005.04.005` score 54.3 **REJECT(T)** {'A': 'untestable', 'T': 'mismatch', 'T_ratio': 0.615, 'C': 'untestable', 'Y': 'untestable', 'V': 'untestable'} -- Daniluk; 2005; Computer Physics Communications; vol 170; "Kinematical calculations of RHEED intensity oscillations during the growth of th"
   - `10.1007/bfb0109551` score 51.3 **REJECT(T)** {'A': 'untestable', 'T': 'mismatch', 'T_ratio': 0.474, 'C': 'untestable', 'Y': 'untestable', 'V': 'untestable'} -- -; ; Springer Tracts in Modern Physics; vol ; "RHEED oscillations"
 - Label: `METADATA_VERIFIED(index, single) for existence` -> `METADATA_VERIFIED(index, single) for existence`
+
+### HYTCH10 -- ADDED-VERIFIED
+
+- Route: Crossref API /works/10.1088/1742-6596/241/1/012027
+- Query URL: <https://api.crossref.org/works?query.bibliographic=H%C3%BFtch+Houdellier+H%C3%BCe+Journal+of+Physics%3A+Conference+Series+241+2010+012027&rows=5>  (HTTP: 200)
+- Crossref dates: {'published-print': '2010-7-1', 'published-online': '2010-8-9', 'issued': '2010-7-1', 'published': '2010-7-1'}; bib year matches: ['published-print', 'published-online', 'issued', 'published']
+- type: journal-article
+- Discrepancies (baseline vs record): none
+- Publisher-page / registry result: claimed citation tested: ACCEPT-SUBSTITUTED(T<-P) {"A": "match", "T": "untestable", "C": "match", "Y": "match", "V": "match", "P": "match"}
+- Label: `(new entry)` -> `METADATA_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the article number standing in for the title that the claim did not state -- first author, journal, volume 241 and year 2010 match -- cached as docs/agent_reports/crossref_cache/HYTCH10.json; B3, 2026-09-22)`
+
+### SCHOWALTER26A -- ADDED-VERIFIED
+
+- Route: arXiv API
+- Query URL: <https://export.arxiv.org/api/query?id_list=2607.05948>  (HTTP: 200)
+- Publisher-page / registry result: claimed citation tested: arXiv: title match, first author match, year match
+- Label: `(new entry)` -> `METADATA_VERIFIED (route: arXiv API record of 2607.05948, cached as docs/agent_reports/crossref_cache/SCHOWALTER26A.arxiv.xml; B3, 2026-09-22) -- preprint`
+
+### SCHOWALTER26M -- ADDED-VERIFIED
+
+- Route: Crossref API /works/10.1016/j.micron.2026.104079
+- Query URL: <https://api.crossref.org/works?query.bibliographic=Schowalter+Kruse+Rosenauer+Estimating+the+strain+and+composition+dependence+of+the+mean+inner+potential+of+alloyed+semiconductors+Micron+207+2026+104079&rows=5>  (HTTP: 200)
+- Crossref dates: {'published-print': '2026-11', 'issued': '2026-11', 'published': '2026-11'}; bib year matches: ['published-print', 'issued', 'published']
+- type: journal-article
+- Discrepancies (baseline vs record): none
+- Publisher-page / registry result: claimed citation tested: ACCEPT-5FIELD {"A": "match", "T": "match", "T_ratio": 1.0, "C": "match", "Y": "match", "V": "match", "P": "match"}
+- Label: `(new entry)` -> `METADATA_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent_reports/crossref_cache/SCHOWALTER26M.json; B3, 2026-09-22)`
 
 <!-- END GENERATED -->

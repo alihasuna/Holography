@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/3LKwzdRLeua/TVneWN4GEvjNWtc</id>
+  <title>arXiv Query: search_query=&amp;id_list=2607.05948&amp;start=0&amp;max_results=10</title>
+  <updated>2026-09-22T18:58:33Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=10&amp;id_list=2607.05948" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2607.05948v1</id>
+    <title>Modelling the mean inner potential of alloyed and strained materials</title>
+    <updated>2026-07-07T07:47:35Z</updated>
+    <link href="https://arxiv.org/abs/2607.05948v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.05948v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In this publication, we study the influence of strain and alloying on the mean inner potential (MIP) using density functional theory (DFT) within an augmented plane waves plus local orbitals basis set. Two major effects have been identified allowing to model the influence of strain and alloying on the mean inner potential with a reasonable accuracy. First, alloying for constant volume results in a linear relationship between the MIP and the concentration. Second, the MIP scales with changes in volume as we already pointed out in an earlier publication (M. Schowalter, D. Lamoen, A. Rosenauer, P. Kruse, and D. Gerthsen, Appl. Phys. Lett. 85, 4938-4940 (2004)). Specifically, a linear relationship between MIP and concentration x was found for AlGaAs (nearly no change in lattice parameter), whereas InGaP and GeSi (volume changes with concentration x) exhibits a clear bowing. The bowing can be modeled by taking the rescaling of the MIP with the varying volume additionally into account. The rescaling could be also used to model the dependence of the MIP on strained binary cells and the density dependence of e.g. amorphous materials.</summary>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-07T07:47:35Z</published>
+    <arxiv:primary_category term="cond-mat.mtrl-sci"/>
+    <author>
+      <name>Marco Schowalter</name>
+    </author>
+    <author>
+      <name>Peer Kruse</name>
+    </author>
+    <author>
+      <name>Andreas Rosenauer</name>
+    </author>
+  </entry>
+</feed>

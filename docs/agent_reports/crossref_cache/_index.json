@@ -227,6 +227,18 @@
   "stored": "docs/agent_reports/crossref_cache/HANADA95.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Hanada+Daimon+Ino+Physical+Review+B+51+1995+13320&rows=5"
  },
+ "HYTCH10.json": {
+  "fetched_utc": "2026-09-22T18:58:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HYTCH10.json",
+  "url": "https://api.crossref.org/works/10.1088/1742-6596/241/1/012027"
+ },
+ "HYTCH10.search.json": {
+  "fetched_utc": "2026-09-22T18:58:13Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HYTCH10.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=H%C3%BFtch+Houdellier+H%C3%BCe+Journal+of+Physics%3A+Conference+Series+241+2010+012027&rows=5"
+ },
  "P01.json": {
   "fetched_utc": "2026-09-22T18:33:17Z",
   "status": 200,
@@ -724,6 +736,24 @@
   "status": 200,
   "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/S02.publisher.html",
   "url": "https://prism-em.github.io/about-cite/"
+ },
+ "SCHOWALTER26A.arxiv.xml": {
+  "fetched_utc": "2026-09-22T18:58:41Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SCHOWALTER26A.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2607.05948"
+ },
+ "SCHOWALTER26M.json": {
+  "fetched_utc": "2026-09-22T18:58:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SCHOWALTER26M.json",
+  "url": "https://api.crossref.org/works/10.1016/j.micron.2026.104079"
+ },
+ "SCHOWALTER26M.search.json": {
+  "fetched_utc": "2026-09-22T18:58:15Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SCHOWALTER26M.search.json",
+  "url": "https://api.crossref.org/works?query.bibliographic=Schowalter+Kruse+Rosenauer+Estimating+the+strain+and+composition+dependence+of+the+mean+inner+potential+of+alloyed+semiconductors+Micron+207+2026+104079&rows=5"
  },
  "SIMTRHEPD-CPC.json": {
   "fetched_utc": "2026-09-22T18:36:12Z",

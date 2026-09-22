@@ -122,6 +122,8 @@ entries:
     relabel: crossref
   C03:
     relabel: crossref
+    note_replace:
+      - ['Instruction file carries the key warning:', 'B3: an author accepted manuscript is openly available as White Rose eprint 127795 (https://eprints.whiterose.ac.uk/id/eprint/127795/, HTTP 200: book section "Ptychography", Rodenburg, J.M. and Maiden, A.M., Springer Handbook of Microscopy, 2019, full text public, "Accepted Version"); docs/agent\_reports/L5\_open\_access\_check.md reports reading it -- that reading was not re-checked in B3 and does not change the label here. Instruction file carries the key warning:']
   B13:
     relabel: 'METADATA\_VERIFIED except authors (route: Crossref API /works record, cached as docs/agent\_reports/crossref\_cache/B13.json; B3, 2026-09-22)'
     note_replace:
@@ -158,7 +160,7 @@ entries:
     from_crossref: [author]
     relabel: crossref
     note_replace:
-      - ['AUTHOR LIST INCOMPLETE: the instruction file writes "Luis Rangel DaCosta et al."; the full author list was never obtained, hence the "and others".', 'B3: FULL AUTHOR LIST (eleven names) copied from the Crossref record, replacing "and others".']
+      - ['AUTHOR LIST INCOMPLETE: the instruction file writes "Luis Rangel DaCosta et al."; the full author list was never obtained, hence the "and others".', 'B3: FULL AUTHOR LIST (eleven names) copied from the Crossref record, replacing "and others". The Crossref record gives the licence of the version of record as CC BY 4.0 (http://creativecommons.org/licenses/by/4.0/, from 2021-08-25), i.e. the article is open access, as docs/agent\_reports/L5\_open\_access\_check.md reports.']
   P06:
     relabel: crossref
   P07:
@@ -491,6 +493,54 @@ entries:
   U18:
     note_replace:
       - ['THE README WAS NOT READ and the accompanying SoftwareX paper was never located, so no author, year or DOI is established.', 'THE README WAS NOT READ (B3: raw.githubusercontent.com returned 404 for README.md on main and master; github.com is blocked for this session). B3: a Crossref search returned a SoftwareX record, volume 12 (2020), first author Daniluk, titled "rheed++: A C++ framework to simulation of RHEED intensity oscillations during the ..."; it was NOT accepted because the title here is descriptive and the entry has no author, year or volume. Candidate DOI in the B3 log only; no author, year or DOI is established in this file.']
+
+# Citations CLAIMED by another report and requested by the coordinator. `claimed` is what the
+# report states; it is tested against the registry exactly like a baseline entry, and the entry
+# is written (from the record, not from the claim) only if it passes.
+new_entries:
+  HYTCH10:
+    type: article
+    source: 'docs/agent\_reports/L5\_open\_access\_check.md rows 48 and 221 (claimed citation; no title claimed)'
+    claimed:
+      author: 'H{\"y}tch, M. J. and Houdellier, F. and H{\"u}e, F. and Snoeck, E.'
+      journal: 'Journal of Physics: Conference Series'
+      volume: '241'
+      pages: '012027'
+      year: '2010'
+    from_crossref: [author, title, journal, volume, pages, 'year:print', doi]
+    set:
+      url: 'https://hal.science/hal-01742031'
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the article number standing in for the title that the claim did not state -- first author, journal, volume 241 and year 2010 match -- cached as docs/agent\_reports/crossref\_cache/HYTCH10.json; B3, 2026-09-22); provenance: added at the coordinator''s request from docs/agent\_reports/L5\_open\_access\_check.md, which proposes it as SECTION\_READ (HAL hal-01742031); that reading was NOT re-checked in B3, so the label here is metadata only. Crossref: J. Phys.: Conf. Ser. 241, article 012027, published-print 2010-07-01 (online 2010-08-09), four authors as for [P31]. The DOI equals the one L5 quotes "per HAL", but it was taken from the Crossref record. Companion paper to [P31]; L5 uses its Eqs. (1) and (4) for the geometric-phase sign convention.'
+  SCHOWALTER26A:
+    type: misc
+    search: false
+    source: 'docs/agent\_reports/L5\_open\_access\_check.md rows 49 and M1 (claimed citation)'
+    claimed:
+      author: 'Schowalter, M. and Kruse, P. and Rosenauer, A.'
+      title: 'Modelling the mean inner potential of alloyed and strained materials'
+      year: '2026'
+      eprint: '2607.05948'
+    set:
+      author: 'Schowalter, Marco and Kruse, Peer and Rosenauer, Andreas'
+      title: 'Modelling the mean inner potential of alloyed and strained materials'
+      year: '2026'
+      eprint: '2607.05948'
+      archivePrefix: 'arXiv'
+      howpublished: 'arXiv preprint arXiv:2607.05948v1 [cond-mat.mtrl-sci], submitted 7 July 2026'
+      note: 'evidence: METADATA\_VERIFIED (route: arXiv API record of 2607.05948, cached as docs/agent\_reports/crossref\_cache/SCHOWALTER26A.arxiv.xml; B3, 2026-09-22) -- preprint; provenance: added at the coordinator''s request from docs/agent\_reports/L5\_open\_access\_check.md (candidate M1), which proposes it as SECTION\_READ; that reading was NOT re-checked in B3. The arXiv record gives this title, authors Marco Schowalter, Peer Kruse and Andreas Rosenauer, v1 submitted 2026-07-07, primary category cond-mat.mtrl-sci, and NO DOI or journal reference. L5 infers that [SCHOWALTER26M] is the version of record of the same work (the abstracts are nearly identical); the two titles differ and neither record links to the other, so that identity is L5''s inference, not verified here. L5 takes a DFT Si mean inner potential of 12.53 V (Fig. 2c) from it; not checked in B3.'
+  SCHOWALTER26M:
+    type: article
+    source: 'docs/agent\_reports/L5\_open\_access\_check.md row M1prime (claimed citation)'
+    claimed:
+      author: 'Schowalter, M. and Kruse, P. and Rosenauer, A.'
+      title: 'Estimating the strain and composition dependence of the mean inner potential of alloyed semiconductors'
+      journal: 'Micron'
+      volume: '207'
+      pages: '104079'
+      year: '2026'
+    from_crossref: [author, title, journal, volume, pages, 'year:print', doi]
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/SCHOWALTER26M.json; B3, 2026-09-22); provenance: added from docs/agent\_reports/L5\_open\_access\_check.md (candidate M1prime), which lists it with the arXiv preprint [SCHOWALTER26A]. Crossref: Micron 207, article 104079, published-print 2026-11, authors Marco Schowalter, Peer Kruse, Andreas Rosenauer; version-of-record licence CC BY 4.0. Whether it is the same work as the preprint (different title) is L5''s inference, not verified here. Not read in B3.'
 
 accepted_residual:
   B03:

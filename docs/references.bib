@@ -259,7 +259,7 @@
   year      = {2019},
   doi       = {10.1007/978-3-030-00069-1_17},
   url       = {https://doi.org/10.1007/978-3-030-00069-1_17},
-  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/C03.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C03]), author list, pages, DOI and URL copied verbatim. Instruction file carries the key warning: "An algorithm derived for a multiplicative object is not automatically valid for dynamical reflection scattering."}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/C03.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C03]), author list, pages, DOI and URL copied verbatim. B3: an author accepted manuscript is openly available as White Rose eprint 127795 (https://eprints.whiterose.ac.uk/id/eprint/127795/, HTTP 200: book section "Ptychography", Rodenburg, J.M. and Maiden, A.M., Springer Handbook of Microscopy, 2019, full text public, "Accepted Version"); docs/agent\_reports/L5\_open\_access\_check.md reports reading it -- that reading was not re-checked in B3 and does not change the label here. Instruction file carries the key warning: "An algorithm derived for a multiplicative object is not automatically valid for dynamical reflection scattering."}
 }
 
 @book{B13,
@@ -373,7 +373,7 @@
   year    = {2021},
   doi     = {10.1016/j.micron.2021.103141},
   url     = {https://doi.org/10.1016/j.micron.2021.103141},
-  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P05.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 7, [P05], "Metadata verified"), DOI, article number and URL copied verbatim. B3: FULL AUTHOR LIST (eleven names) copied from the Crossref record, replacing "and others". Instruction file warns: this does not establish that the repository's reflection geometry, output interpretation or reconstruction is correct.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P05.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 7, [P05], "Metadata verified"), DOI, article number and URL copied verbatim. B3: FULL AUTHOR LIST (eleven names) copied from the Crossref record, replacing "and others". The Crossref record gives the licence of the version of record as CC BY 4.0 (http://creativecommons.org/licenses/by/4.0/, from 2021-08-25), i.e. the article is open access, as docs/agent\_reports/L5\_open\_access\_check.md reports. Instruction file warns: this does not establish that the repository's reflection geometry, output interpretation or reconstruction is correct.}
 }
 
 @article{P06,
@@ -1070,7 +1070,6 @@
 
 %% --- 4j. Records moved from the UNVERIFIED section by the B3 Crossref pass ---
 
-
 @article{U01,
   author  = {McCoy, J. M. and Maksym, P. A.},
   title   = {Simulation of high-resolution REM images},
@@ -1192,6 +1191,41 @@
   title        = {PyRHEED},
   howpublished = {\url{https://github.com/yux1991/PyRHEED}},
   note         = {evidence: METADATA\_VERIFIED for existence (route: README fetched at raw.githubusercontent.com/yux1991/PyRHEED/master/README.md, HTTP 200; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5; B3 fetched the README for its title and one-line description only ("This project is used for reflection high energy electron diffraction (RHEED) data analysis and theoretical simulation"); this is not a reading of the code. Title set to the README heading "PyRHEED" (the old subtitle was descriptive, not the project's). No author, version, licence or citation form established. Python; described as analysis plus simulation.}
+}
+
+%% --- 4k. Records added by B3 at the coordinator's request (claimed in L5, verified here) ---
+
+@article{HYTCH10,
+  author  = {H{\"y}tch, M J and Houdellier, F and H{\"u}e, F and Snoeck, E},
+  title   = {Dark-field electron holography for the mapping of strain in nanostructures: correcting artefacts and aberrations},
+  journal = {Journal of Physics: Conference Series},
+  volume  = {241},
+  pages   = {012027},
+  year    = {2010},
+  doi     = {10.1088/1742-6596/241/1/012027},
+  url     = {https://hal.science/hal-01742031},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the article number standing in for the title that the claim did not state -- first author, journal, volume 241 and year 2010 match -- cached as docs/agent\_reports/crossref\_cache/HYTCH10.json; B3, 2026-09-22); provenance: added at the coordinator's request from docs/agent\_reports/L5\_open\_access\_check.md, which proposes it as SECTION\_READ (HAL hal-01742031); that reading was NOT re-checked in B3, so the label here is metadata only. Crossref: J. Phys.: Conf. Ser. 241, article 012027, published-print 2010-07-01 (online 2010-08-09), four authors as for [P31]. The DOI equals the one L5 quotes "per HAL", but it was taken from the Crossref record. Companion paper to [P31]; L5 uses its Eqs. (1) and (4) for the geometric-phase sign convention.}
+}
+
+@misc{SCHOWALTER26A,
+  author        = {Schowalter, Marco and Kruse, Peer and Rosenauer, Andreas},
+  title         = {Modelling the mean inner potential of alloyed and strained materials},
+  year          = {2026},
+  eprint        = {2607.05948},
+  archivePrefix = {arXiv},
+  howpublished  = {arXiv preprint arXiv:2607.05948v1 [cond-mat.mtrl-sci], submitted 7 July 2026},
+  note          = {evidence: METADATA\_VERIFIED (route: arXiv API record of 2607.05948, cached as docs/agent\_reports/crossref\_cache/SCHOWALTER26A.arxiv.xml; B3, 2026-09-22) -- preprint; provenance: added at the coordinator's request from docs/agent\_reports/L5\_open\_access\_check.md (candidate M1), which proposes it as SECTION\_READ; that reading was NOT re-checked in B3. The arXiv record gives this title, authors Marco Schowalter, Peer Kruse and Andreas Rosenauer, v1 submitted 2026-07-07, primary category cond-mat.mtrl-sci, and NO DOI or journal reference. L5 infers that [SCHOWALTER26M] is the version of record of the same work (the abstracts are nearly identical); the two titles differ and neither record links to the other, so that identity is L5's inference, not verified here. L5 takes a DFT Si mean inner potential of 12.53 V (Fig. 2c) from it; not checked in B3.}
+}
+
+@article{SCHOWALTER26M,
+  author  = {Schowalter, Marco and Kruse, Peer and Rosenauer, Andreas},
+  title   = {Estimating the strain and composition dependence of the mean inner potential of alloyed semiconductors},
+  journal = {Micron},
+  volume  = {207},
+  pages   = {104079},
+  year    = {2026},
+  doi     = {10.1016/j.micron.2026.104079},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/SCHOWALTER26M.json; B3, 2026-09-22); provenance: added from docs/agent\_reports/L5\_open\_access\_check.md (candidate M1prime), which lists it with the arXiv preprint [SCHOWALTER26A]. Crossref: Micron 207, article 104079, published-print 2026-11, authors Marco Schowalter, Peer Kruse, Andreas Rosenauer; version-of-record licence CC BY 4.0. Whether it is the same work as the preprint (different title) is L5's inference, not verified here. Not read in B3.}
 }
 
 %% =====================================================================
