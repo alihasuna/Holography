@@ -321,9 +321,9 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 ### 9.1 Implementation status (Phase 2, 2026-09-22)
 
 Implemented in `reflection_holo/` with tests (full suite `venv/bin/pytest -q`: 580 passed at commit
-9d7a087; build reports S1a, S1b, S1c, S2 and S3 under `docs/agent_reports/`). Verification record:
-code audit A2 (state 7874c85), re-audit A2b (state d35b751) and the round-2 fixes of S3, verified by
-A2c; documents reviewed in E4.
+017761d; build reports S1a, S1b, S1c, S2 and S3 under `docs/agent_reports/`). Verification record:
+code audit A2 (state 7874c85), re-audit A2b (state d35b751), verification A2c of the round-2 fixes
+(state 017761d); documents reviewed in E4 and E4b.
 
 * M1: `geometry/` (wavelength, structure factor and forbidden-target guard, refraction with the exact
   relativistic Delta, specular condition, accessibility guard, projection, illumination-shadow and
@@ -349,12 +349,16 @@ A2c; documents reviewed in E4.
   values fail; explicit units) and `provenance/` (manifest with versions, git commit and diff hash,
   seeds, precision, hashes).
 
-Open after the fixes: the noise-declaration sensitivity of B16 (A2b N3: the phase uncertainties must be
-measured, not guessed); the R1/R3 aperture passage is recorded but has no effect; the thread count is
-recorded, not enforced.
+Open after the fixes (A2c): G1 (Major) a run whose surface and azimuth are those of CFG-B can be
+declared as CFG-A and so skip the CFG-B gate; G2 the PROJECT_INPUT source rule is a text match; G3
+TEST_ONLY passes at run level when a caller sets `allow_test_only`; with `reference_correction="none"`
+no visibility check is made; on uniform tilt grids aliases above `h_max` are flagged, not refused; the
+noise-declaration sensitivity of B16 (the phase uncertainties must be measured, not guessed); the
+R1/R3 aperture passage is recorded but has no effect; the thread count is recorded, not enforced.
+These are scheduled for the Phase 3 fix round.
 
-Not implemented yet: the reflection forward model (M2) and the geometric-phase model of section 4.5 (no
-`forward/` package exists); dark-field aperture selection, projection along `k_out`, magnification and
+Not implemented at 017761d: the reflection forward model (M2) and the geometric-phase model of section
+4.5 (both are being built in Phase 3 under `reflection_holo/forward/`); dark-field aperture selection, projection along `k_out`, magnification and
 pixel mapping, and lens transfer (section 5 items 1 and 2); biprism Fresnel fringes, drift, detector
 MTF and gain other than 1, partial-coherence generators and the convergence phase spread; the R1
 `2 theta_ext` compensation model; zero padding, real-space windows, residue-aware unwrapping and

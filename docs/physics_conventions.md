@@ -64,9 +64,8 @@ identical `d` and `|F|`, but only `(n,-n,n)` is specular for this surface; `(4,4
 * Shadow length of a step of height `h` transverse to the beam: `h / tan(theta_ext)` on the surface.
 * Reflection accessibility: a bulk reflection `G` can connect two vacuum-propagating beams only if
   `G.n_hat >= 2 dK` (equal to `2 k sin(theta_c)` to 3.5e-5 relative).
-  At equality the exit is exactly grazing (`theta_out` = 0) and the beam is not usable; the guard keeps
-  `>=` as written here, and any usable reflection lies strictly inside the bound (the A2 nit on `>` versus
-  `>=` is declined for this reason).
+  At equality both the incident and the exit beams are exactly grazing and unusable; any usable
+  reflection lies strictly inside the bound (A2 nit, A2c, E4b).
 
 ## Units of stored quantities
 
