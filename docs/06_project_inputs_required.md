@@ -7,7 +7,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 ## A. Microscope and beam
 
-1. (blocking) Accelerating voltage used for the reflection holograms and its stability.
+1. SUPPLIED (PROJECT_INPUT, Ali, 2026-09-22): the accelerating voltage is 200 keV for all reflection holography work; 300 keV is never used. Its stability (drift during a hologram series) is still to be supplied.
 2. Energy spread (FWHM, eV) and effective source size or measured spatial-coherence width at the specimen. (Energy spread is a minor effect: below 0.004 rad of step phase over the whole allowed rod, even for a 10 nm step at 0.7 eV.)
 3. (blocking) Illumination convergence semi-angle at the specimen (mrad) for holography and for REM imaging. The step phase changes by `(4 pi h/lambda) cos(theta)` per radian of incidence angle, so the convergence produces an irreducible phase spread: 1 rad of spread at 0.64 mrad for a 3.1 A bilayer, 0.20 mrad for a 1 nm step, 0.020 mrad for a 10 nm step (200 keV). This decides whether nanometre-scale features can show any phase contrast at all.
 4. (blocking) Objective-aperture semi-angle (mrad) and which reflected beam it selects: the specular (00) rod at which Bragg order, a surface-resonance condition, or a non-specular rod/bulk reflection.
