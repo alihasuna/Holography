@@ -1,0 +1,177 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22electron+holography%22+%2B+reflection+%2B+surface+%2B+step&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 6,
+ "token": null,
+ "data": [
+  {
+   "paperId": "60580a68f474896784b636d98c890bb53e90f51e",
+   "externalIds": {
+    "MAG": "2324230789",
+    "DOI": "10.1021/am508527s",
+    "CorpusId": 32177547,
+    "PubMed": "25642817"
+   },
+   "title": "Insights into size-dominant magnetic microwave absorption properties of CoNi microflowers via off-axis electron holography.",
+   "venue": "ACS Applied Materials and Interfaces",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "2136406929",
+     "name": "Qinghe Liu"
+    },
+    {
+     "authorId": "49654119",
+     "name": "Q. Cao"
+    },
+    {
+     "authorId": "50062202",
+     "name": "Xue-Mei Zhao"
+    },
+    {
+     "authorId": "12943181",
+     "name": "Han Bi"
+    },
+    {
+     "authorId": "2144448657",
+     "name": "Chao Wang"
+    },
+    {
+     "authorId": "2118208974",
+     "name": "David S. Wu"
+    },
+    {
+     "authorId": "144603506",
+     "name": "Renchao Che"
+    }
+   ]
+  },
+  {
+   "paperId": "98a0457da2f8a1413e19081a631945626c5400c1",
+   "externalIds": {
+    "MAG": "2018753685",
+    "DOI": "10.1016/0304-3991(93)90124-G",
+    "CorpusId": 120579501
+   },
+   "title": "Reflection electron holographic observation of surface displacement field",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  },
+  {
+   "paperId": "a0ff861a12b8e1ce3c30f94b116c0ba1a88877ce",
+   "externalIds": {
+    "MAG": "1954243266",
+    "DOI": "10.1093/OXFORDJOURNALS.JMICRO.A050815",
+    "CorpusId": 135765868
+   },
+   "title": "Observation of GaAs(110) Surface Defect by Reflection Electron Holography",
+   "venue": "",
+   "year": 1990,
+   "authors": [
+    {
+     "authorId": "5613608",
+     "name": "M. Takeguchi"
+    },
+    {
+     "authorId": "48636772",
+     "name": "K. Harada"
+    },
+    {
+     "authorId": "145192663",
+     "name": "R. Shimizu"
+    }
+   ]
+  },
+  {
+   "paperId": "b3b85849bb7745b5e225653a209fe65dc1090ac4",
+   "externalIds": {
+    "MAG": "2149717545",
+    "DOI": "10.1039/c4nr05547k",
+    "CorpusId": 22385376,
+    "PubMed": "25515025"
+   },
+   "title": "Dependency of magnetic microwave absorption on surface architecture of Co20Ni80 hierarchical structures studied by electron holography.",
+   "venue": "Nanoscale",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "2136406929",
+     "name": "Qinghe Liu"
+    },
+    {
+     "authorId": "102902840",
+     "name": "Xianhui Xu"
+    },
+    {
+     "authorId": "38284184",
+     "name": "W. Xia"
+    },
+    {
+     "authorId": "144603506",
+     "name": "Renchao Che"
+    },
+    {
+     "authorId": "2127380362",
+     "name": "Chen Chen"
+    },
+    {
+     "authorId": "49654119",
+     "name": "Q. Cao"
+    },
+    {
+     "authorId": "49264351",
+     "name": "Jingang He"
+    }
+   ]
+  },
+  {
+   "paperId": "dace843bf5ef27df1fe53c11f033070303af03cc",
+   "externalIds": {
+    "MAG": "1989898237",
+    "DOI": "10.1002/jemt.1070200415",
+    "CorpusId": 20523610,
+    "PubMed": "1498359"
+   },
+   "title": "Observation of surfaces by reflection electron holography",
+   "venue": "Microscopy research and technique (Print)",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    }
+   ]
+  },
+  {
+   "paperId": "e2583a042abe25cfbdfba6633f6336052d1f2c40",
+   "externalIds": {
+    "MAG": "2051355906",
+    "DOI": "10.1107/S0108767306099004",
+    "CorpusId": 97017575
+   },
+   "title": "Cs-Correction and Electron Holography: Exciting TEM-Methods for Solving Nanoquestions",
+   "venue": "",
+   "year": 2006,
+   "authors": [
+    {
+     "authorId": "50584226",
+     "name": "M. Lehmann"
+    }
+   ]
+  }
+ ]
+}

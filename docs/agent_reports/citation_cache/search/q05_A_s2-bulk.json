@@ -1,0 +1,33 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22reflection+electron+holographic%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 1,
+ "token": null,
+ "data": [
+  {
+   "paperId": "98a0457da2f8a1413e19081a631945626c5400c1",
+   "externalIds": {
+    "MAG": "2018753685",
+    "DOI": "10.1016/0304-3991(93)90124-G",
+    "CorpusId": 120579501
+   },
+   "title": "Reflection electron holographic observation of surface displacement field",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  }
+ ]
+}

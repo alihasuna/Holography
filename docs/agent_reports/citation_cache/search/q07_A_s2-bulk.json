@@ -1,0 +1,73 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22electron+holography%22+%2B+%28RHEED+%7C+%22reflection+high+energy+electron%22%29&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 4,
+ "token": null,
+ "data": [
+  {
+   "paperId": "3057385aeaa04196e35fcbe193ef91b53e847983",
+   "externalIds": {
+    "DOI": "10.1088/0034-4885/56/8/002",
+    "CorpusId": 250819868
+   },
+   "title": "Electron reflection, diffraction and imaging of bulk crystal surfaces in TEM and STEM",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "2461570932",
+     "name": "Z. Wang"
+    }
+   ]
+  },
+  {
+   "paperId": "665d514c7ae7a1daab2291cd587c89e8e3a9e9e6",
+   "externalIds": {
+    "MAG": "2905000151",
+    "DOI": "10.2172/10158434",
+    "CorpusId": 139824440
+   },
+   "title": "Surfaces and interfaces of ceramics and metals. [Final] report, July 1988--November 1992",
+   "venue": "",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "66284939",
+     "name": "Washington Dc Usdoe"
+    }
+   ]
+  },
+  {
+   "paperId": "d31f2b778ae28b1307324d84021d6c3a32564d8c",
+   "externalIds": {
+    "CorpusId": 211851944
+   },
+   "title": "New Display-Type Analyzer for the Energy and the Angular Distribution of Charged Particles \"",
+   "venue": "",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "2482649190",
+     "name": "Á. Szöke"
+    }
+   ]
+  },
+  {
+   "paperId": "dc74261793a112218e6bae35ca9238701eac73c7",
+   "externalIds": {
+    "MAG": "2021786678",
+    "DOI": "10.1088/0034-4885/56/8/002",
+    "CorpusId": 121056503
+   },
+   "title": "Electron reflection, diffraction and imaging of bulk crystal surfaces in TEM and STEM",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "2462333071",
+     "name": "Zhong-Lin Wang"
+    }
+   ]
+  }
+ ]
+}

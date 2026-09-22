@@ -641,46 +641,76 @@ def oa_abstract(inv: dict | None) -> str | None:
     return " ".join(w for _, w in sorted(pos))
 
 
+def http_post_json(url: str, payload: dict, tries: int = 8) -> tuple[int, bytes]:
+    delay = 3.0
+    for attempt in range(tries):
+        req = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
+                                     headers={"User-Agent": USER_AGENT,
+                                              "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                return resp.status, resp.read()
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503, 504):
+                time.sleep(delay)
+                delay = min(delay * 2, 60)
+                continue
+            raise
+    raise RuntimeError(f"POST failed after {tries} tries: {url}")
+
+
 def cmd_abstracts(args) -> None:
+    """Abstracts for manual classification, written (incrementally, resumable) to --out only."""
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
+    jl = out / "abstracts.jsonl"
+    done = set()
+    if jl.exists():
+        done = {json.loads(line)["key"] for line in jl.read_text().splitlines() if line.strip()}
     records, _, _, _ = build_records()
-    res = []
-    for r in records.values():
-        entry = {"key": r["key"], "doi": r["doi"], "title": r["meta"].get("title"),
-                 "year": r["meta"].get("year"), "venue": r["meta"].get("venue"), "abstracts": []}
-        if r.get("openalex_id"):
-            url = f"https://api.openalex.org/works/{r['openalex_id']}?select=id,abstract_inverted_index"
-            try:
+    todo = [r for r in records.values() if r["key"] not in done]
+    # Semantic Scholar: one batch request for all records
+    s2_abs = {}
+    ids = [r.get("s2_id") or f"DOI:{r['doi']}" for r in todo if r.get("s2_id") or r["doi"]]
+    if ids:
+        url = "https://api.semanticscholar.org/graph/v1/paper/batch?fields=abstract,externalIds"
+        st, body = http_post_json(url, {"ids": ids})
+        for i, rec in zip(ids, json.loads(body)):
+            if rec and rec.get("abstract"):
+                s2_abs[i] = (f"https://api.semanticscholar.org/graph/v1/paper/"
+                             f"{rec.get('paperId')}?fields=abstract", rec["abstract"])
+    with jl.open("a") as fh:
+        for r in todo:
+            entry = {"key": r["key"], "doi": r["doi"], "title": r["meta"].get("title"),
+                     "year": r["meta"].get("year"), "venue": r["meta"].get("venue"),
+                     "abstracts": []}
+            if r.get("openalex_id"):
+                url = (f"https://api.openalex.org/works/{r['openalex_id']}"
+                       "?select=id,abstract_inverted_index")
+                try:
+                    st, body = http_get(url)
+                    if st == 200:
+                        a = oa_abstract(json.loads(body).get("abstract_inverted_index"))
+                        if a:
+                            entry["abstracts"].append({"url": url, "text": a})
+                except RateLimited:
+                    entry["abstracts"].append({"url": url, "text": None, "note": "429"})
+            sid = r.get("s2_id") or (f"DOI:{r['doi']}" if r["doi"] else None)
+            if sid in s2_abs:
+                entry["abstracts"].append({"url": s2_abs[sid][0], "text": s2_abs[sid][1]})
+            if r["doi"]:
+                url = f"https://api.crossref.org/works/{doi_path(r['doi'])}"
                 st, body = http_get(url)
                 if st == 200:
-                    a = oa_abstract(json.loads(body).get("abstract_inverted_index"))
+                    a = json.loads(body)["message"].get("abstract")
                     if a:
-                        entry["abstracts"].append({"url": url, "text": a})
-            except RateLimited:
-                pass
-        s2id = r.get("s2_id") or (f"DOI:{r['doi']}" if r["doi"] else None)
-        if s2id:
-            url = f"https://api.semanticscholar.org/graph/v1/paper/{doi_path(s2id)}?fields=abstract"
-            st, body = http_get(url)
-            if st == 200:
-                a = json.loads(body).get("abstract")
-                if a:
-                    entry["abstracts"].append({"url": url, "text": a})
-            time.sleep(1.1)
-        if r["doi"]:
-            url = f"https://api.crossref.org/works/{doi_path(r['doi'])}"
-            st, body = http_get(url)
-            if st == 200:
-                a = json.loads(body)["message"].get("abstract")
-                if a:
-                    entry["abstracts"].append({"url": url, "text": re.sub(r"\s+", " ",
-                                                                          re.sub(r"<[^>]+>", " ", a))})
-        res.append(entry)
-        print(f"{r['key'][:70]:70s} abstracts={len(entry['abstracts'])}", flush=True)
-    (out / "abstracts.json").write_text(json.dumps(res, indent=1, ensure_ascii=False))
-    print(f"wrote {len(res)} entries to {out / 'abstracts.json'}; "
-          f"{sum(1 for e in res if e['abstracts'])} have at least one abstract")
+                        entry["abstracts"].append({"url": url, "text": re.sub(
+                            r"\s+", " ", re.sub(r"<[^>]+>", " ", a))})
+            fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            fh.flush()
+            print(f"{r['key'][:70]:70s} abstracts={len([a for a in entry['abstracts'] if a['text']])}",
+                  flush=True)
+    print(f"done; {jl}")
 
 
 # ----------------------------------------------------------------------------------- search --
@@ -817,7 +847,11 @@ def run_search(i: int, topic: str, engine: str, query: str, refresh: bool) -> di
 def cmd_search(args) -> None:
     results = []
     for i, (topic, engine, query) in enumerate(SEARCHES, 1):
-        r = run_search(i, topic, engine, query, args.refresh)
+        try:
+            r = run_search(i, topic, engine, query, args.refresh)
+        except (RuntimeError, urllib.error.HTTPError) as e:   # e.g. S2 429 after all retries
+            r = {"i": i, "topic": topic, "engine": engine, "query": query, "url": None,
+                 "total": None, "items": [], "status": f"NOT RUN: {str(e)[-60:]}"}
         results.append(r)
         print(f"q{i:02d} [{topic}] {engine:24s} total={r['total']!s:>8s} returned={len(r['items']):4d}  "
               f"{query}   [{r['status']}]", flush=True)

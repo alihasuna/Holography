@@ -1,0 +1,297 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22reflection+electron+holography%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 11,
+ "token": null,
+ "data": [
+  {
+   "paperId": "1238381a85139fd1c334a0a0b8f609c2d3977e7b",
+   "externalIds": {
+    "MAG": "2054923936",
+    "DOI": "10.1143/JJAP.27.L1772",
+    "CorpusId": 117105988
+   },
+   "title": "Observation of Atomic Steps by Reflection Electron Holography",
+   "venue": "",
+   "year": 1988,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "17617771",
+     "name": "J. Endo"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  },
+  {
+   "paperId": "231c14ae038c71a2ec2abe50dd122b4b8d3bbd34",
+   "externalIds": {
+    "MAG": "2001540499",
+    "DOI": "10.1016/0304-3991(93)90123-F",
+    "CorpusId": 120582026
+   },
+   "title": "Reflection electron holography",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "11524200",
+     "name": "H. Banzhof"
+    },
+    {
+     "authorId": "153473215",
+     "name": "K. Herrmann"
+    }
+   ]
+  },
+  {
+   "paperId": "5e0194d7bda5d6d15b03460e16861474a4b4c0eb",
+   "externalIds": {
+    "MAG": "3036073074",
+    "DOI": "10.1017/s0424820100154652",
+    "CorpusId": 237068828
+   },
+   "title": "Observation of surface morphology by reflection electron holography",
+   "venue": "",
+   "year": 1989,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  },
+  {
+   "paperId": "60f5ae05bcb620685c272b965c223f89cbabb308",
+   "externalIds": {
+    "MAG": "2333848401",
+    "DOI": "10.1557/PROC-332-405",
+    "CorpusId": 101682770
+   },
+   "title": "Low Voltage Point Projection Microscopy and Time of Flight Stm - Two New Microscopies",
+   "venue": "",
+   "year": 1994,
+   "authors": [
+    {
+     "authorId": "145189952",
+     "name": "J. Spence"
+    },
+    {
+     "authorId": "46958242",
+     "name": "W. Qian"
+    },
+    {
+     "authorId": "143920933",
+     "name": "W. Lo"
+    },
+    {
+     "authorId": "2066123498",
+     "name": "S. Mo"
+    },
+    {
+     "authorId": "8013288",
+     "name": "U. Knipping"
+    },
+    {
+     "authorId": "91995435",
+     "name": "X. Zhang"
+    }
+   ]
+  },
+  {
+   "paperId": "6813b2f6a3705e70020ad9d8123ca47047a66be0",
+   "externalIds": {
+    "MAG": "1990705543",
+    "DOI": "10.1103/PHYSREVLETT.62.2969",
+    "CorpusId": 37450560,
+    "PubMed": "10040140"
+   },
+   "title": "Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography.",
+   "venue": "Physical Review Letters",
+   "year": 1989,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "17617771",
+     "name": "J. Endo"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "2252434889",
+     "name": "Akira Tonomura"
+    },
+    {
+     "authorId": null,
+     "name": "Akira Fukuhara"
+    }
+   ]
+  },
+  {
+   "paperId": "829e549805d3c1cebbe2efba123782e9b72fbbff",
+   "externalIds": {
+    "MAG": "2062510886",
+    "DOI": "10.1016/0039-6028(93)90047-N",
+    "CorpusId": 97262396
+   },
+   "title": "Application of electron holography to surface topography observation",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    }
+   ]
+  },
+  {
+   "paperId": "98a0457da2f8a1413e19081a631945626c5400c1",
+   "externalIds": {
+    "MAG": "2018753685",
+    "DOI": "10.1016/0304-3991(93)90124-G",
+    "CorpusId": 120579501
+   },
+   "title": "Reflection electron holographic observation of surface displacement field",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  },
+  {
+   "paperId": "a0ff861a12b8e1ce3c30f94b116c0ba1a88877ce",
+   "externalIds": {
+    "MAG": "1954243266",
+    "DOI": "10.1093/OXFORDJOURNALS.JMICRO.A050815",
+    "CorpusId": 135765868
+   },
+   "title": "Observation of GaAs(110) Surface Defect by Reflection Electron Holography",
+   "venue": "",
+   "year": 1990,
+   "authors": [
+    {
+     "authorId": "5613608",
+     "name": "M. Takeguchi"
+    },
+    {
+     "authorId": "48636772",
+     "name": "K. Harada"
+    },
+    {
+     "authorId": "145192663",
+     "name": "R. Shimizu"
+    }
+   ]
+  },
+  {
+   "paperId": "ac2a4a7d878da562fe7113dd27b2ebda74775a44",
+   "externalIds": {
+    "MAG": "3033879513",
+    "DOI": "10.1103/physrevlett.63.584.3",
+    "CorpusId": 230761570
+   },
+   "title": "Erratum: Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography [Phys. Rev. Lett. 62, 2969 (1989)]",
+   "venue": "",
+   "year": 1989,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "17617771",
+     "name": "J. Endo"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    },
+    {
+     "authorId": "92864945",
+     "name": "A. Fukuhara"
+    }
+   ]
+  },
+  {
+   "paperId": "da6e3a3f9bd69bfbc97d63d4b0e934fcfab0109e",
+   "externalIds": {
+    "MAG": "2053513385",
+    "DOI": "10.1063/1.353151",
+    "CorpusId": 120721621
+   },
+   "title": "Aberrations of emission cathodes: Nanometer diameter field-emission electron sources",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "8106889",
+     "name": "M. Scheinfein"
+    },
+    {
+     "authorId": "46958242",
+     "name": "W. Qian"
+    },
+    {
+     "authorId": "145189952",
+     "name": "J. Spence"
+    }
+   ]
+  },
+  {
+   "paperId": "dace843bf5ef27df1fe53c11f033070303af03cc",
+   "externalIds": {
+    "MAG": "1989898237",
+    "DOI": "10.1002/jemt.1070200415",
+    "CorpusId": 20523610,
+    "PubMed": "1498359"
+   },
+   "title": "Observation of surfaces by reflection electron holography",
+   "venue": "Microscopy research and technique (Print)",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    }
+   ]
+  }
+ ]
+}
