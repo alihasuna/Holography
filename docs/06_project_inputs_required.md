@@ -16,7 +16,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 ## B. Reflection geometry, per experiment
 
-7. (blocking) External glancing angle of incidence (mrad) and how it was set and calibrated (RHEED pattern, rocking curve, Kikuchi lines).
+7. (blocking) External glancing angle of incidence (mrad) and how it was set and calibrated (RHEED pattern, rocking curve, Kikuchi lines). The exit angle is not a separate input: for the specular beam it equals the incidence angle, and for a non-specular beam it follows from the reflection selected by the aperture (item 4) and the geometry; the shadow code requires it explicitly (`theta_out_ext_rad`).
 8. (blocking) Beam azimuth relative to the surface net (for Si(001): [110] or [100]; for Si(111): [1-10] or [11-2]).
 9. Which specular Bragg order or resonance condition the hologram was recorded at, and a measured rocking curve (intensity of the selected beam vs glancing angle) if one exists. The rocking curve is also what calibrates the mean inner potential and the angle scale.
 10. Sign conventions: which tilt-coil direction moves the beam toward the surface, which image axis is the beam direction (the foreshortened one), and on which side of a step the shadow appears.
