@@ -38,8 +38,18 @@ applied to simulated and experimental holograms. A Fourier-selected spot of a si
 Premise: the upper-terrace crystal is the lower-terrace crystal translated by a lattice vector `R`
 with `R.n_hat = h` (true for a Si(111) single-bilayer step, `R = (a/2)[1,0,1]`, `h = d_111 = 3.1355 A`,
 whose in-plane part `a/sqrt(6) = 2.217 A` is not a surface-net vector; and for a Si(001) double-layer
-step `h = a/2`; NOT true for a Si(001) single-layer step `h = a/4`, whose terraces are related by the
-diamond `4_1` screw operation and therefore have different complex reflectivities at a general azimuth).
+step `h = a/2`; NOT true for a Si(001) single-layer step `h = a/4`: its terraces are related by the
+`4_1` and `4_3` screws and by the two <100> d-glides of Fd-3m, never by a translation. At an exact
+<100> beam azimuth the d-glide whose plane contains the beam and the normal (plane (010) for [100],
+glide vector `(a/4)[+-1,0,1]`, normal component a/4) leaves `k_in` and `k_out` unchanged, so for
+bulk-terminated terraces the complex reflectivities are equal up to `exp(-i (k_out - k_in).t)` and the
+step phase is exactly `-(4 pi/lambda)(a/4) sin(theta_ext)`. At a <110> azimuth no such operation
+exists: the terraces are the two types with top-layer back-bonds parallel (P) and transverse (T) to the
+beam, and the step phase contains a dynamical residual `delta = phi_R,P - phi_R,T` that vanishes
+kinematically and must be computed; it alternates in sign along a staircase of a/4 steps, and a small
+azimuthal misalignment from <100> produces a residual odd in the misalignment. A 2x1 reconstruction,
+not modelled, can break the <100> result. DERIVED_HERE by exhaustive symmetry search on the truncated
+half crystals, `docs/agent_reports/C2_phase2_physics_checks.md` section 1).
 
 Translation covariance of the scattering problem gives, exactly (not only kinematically):
 
@@ -76,7 +86,7 @@ Conservation of the surface-parallel wavevector with `k_int^2 - k_ext^2 = 2 m_e 
 
 ```
 sin^2(theta_int) = (sin^2(theta_ext) + Delta)/(1 + Delta),
-Delta = V0 (1 + T/(m_e c^2)) / (T (1 + T/(2 m_e c^2))) = 6.98e-5 at 200 keV
+Delta = V0 (1 + T/(m_e c^2)) / (T (1 + T/(2 m_e c^2))) = 6.98e-5 at 200 keV   (first order in V0; see below)
 theta_c = 8.356 mrad
 ```
 
@@ -215,18 +225,29 @@ about 110 wraps at (4,-4,4). Consequences:
   absolute reflected phase including `phi_R`; a vacuum reference beside the specimen is inclined by
   `2 theta_ext` to the specular beam, 17 to 62 mrad over orders 3 to 8, which the optics must
   compensate to obtain a recordable fringe spacing); R2 self-reference from a flat region of the same
-  surface (common-mode phases cancel; a mirrored twin of the reference region appears in the result);
+  surface: with the reference at image point `r` taken from specimen point `r + s`, the reconstruction
+  returns `phi(r) - phi(r + s)`; common-mode phases cancel, and every feature lying in the reference
+  region appears a second time, sign-inverted and translated by `-s` (a translated copy, not a mirror
+  image; a step inside the overlap appears with its twin as a strip of phase `-Delta` whose width is the
+  shift component normal to the step edge; C2 section 3, S1c);
   R3 reference with residual curvature and tilt (long-wavelength topography is entangled with the
   reference phase). The hologram model must also contain the biprism's own Fresnel fringes and finite
   overlap width, specimen drift as a coherent envelope loss, and the possibility of specimen charging
   (an added, drifting phase indistinguishable from topography), each as a declared option.
 * Phase noise of the sideband estimate: `sigma_phi = sqrt(2)/(mu sqrt(N))` with fringe contrast `mu` and
   `N` counts in the reconstruction aperture area.
-* Processing trap verified in the calculator (check T24, section 12 of its output): the brightest Fourier
-  bin of an object hologram with a 50/50 phase step is not the carrier; recentring on it produced a
-  plausible but wrong step (0.78 rad instead of 2.36 rad). The carrier must be located on an empty
-  hologram or on the sideband envelope. The code audit found the same defect in the inspected
-  repository's `find_peak` (A report, C3).
+* Processing trap verified in the calculator (check T24, section 12 of its output) and in the package
+  (S1c, C2 section 2): for a 50/50 phase step of 2.36 rad the brightest off-centre Fourier bin of the
+  object hologram is not the carrier but a first harmonic of the terrace pattern, one bin off the
+  carrier along the step normal (for a sharp 50/50 step this happens whenever
+  `|Delta| > 2 arctan(pi/2) = 2.008 rad`), and it comes as an exactly equal Hermitian pair, one bin in
+  each sideband. The calculator's argmax returned the member in the conjugate sideband, so recentring
+  on it inverted the sign of the step and added a one-bin ramp worth pi between the terrace medians:
+  0.78 rad = -2.36 + pi instead of 2.36 rad (the other member gives -0.78 rad). The carrier must be
+  located on an empty hologram or on the sideband envelope, inside a search region that contains only
+  the `phi_o - phi_r` sideband; which sideband that is for experimental data is a declared input
+  (PROJECT_INPUT items 10, 16, 19). The code audit found the same defect in the inspected repository's
+  `find_peak` (A report, C3).
 
 ## 7. Numbers a corrected repository must reproduce
 
