@@ -93,6 +93,8 @@ current labels: `docs/references.bib` (report B3).
    locators. Printed Contents pages are still needed for B01, B02, B03, B04 and B08.
 4. Citation lists of P01, P02, P02E, P03, P08 and P09 run (L4); the answer on post-1993 reflection
    holography and reflection ptychography is in `docs/02_literature_position.md`.
+5. Adversarial review E3 of revision 3: no blocker; every finding applied (commit 25e0106) except m10,
+   declined because Ali specified tests T1 to T25 for M1 in Phase 2 (T24 and T25 are re-run in M3).
 
 ### Upload list for Ali (step 4, in the plan's order; items now read are removed)
 
