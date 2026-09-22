@@ -1,6 +1,6 @@
 # Laboratory inputs the simulation cannot supply (PROJECT_INPUT list)
 
-Status: revision 2, 2026-09-21. Each item is a quantity that no physics derivation and no repository
+Status: revision 3, 2026-09-22 (items 11 and 12 partly supplied; item 20 wording corrected); revision 2, 2026-09-21. Each item is a quantity that no physics derivation and no repository
 file can provide. Until it is supplied by the laboratory, the corresponding model parameter is an
 ASSUMPTION and every result that depends on it must carry that label (instruction file
 sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison with experiment.
@@ -23,8 +23,8 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 ## C. Sample
 
-11. (blocking) Surface orientation actually used (Si(001) vs Si(111)), miscut angle and direction, typical terrace widths.
-12. (blocking) Surface preparation state: native oxide, HF-last, UHV flash, ion-milling parameters, expected amorphous damage-layer thickness, any annealing. At 20 mrad glancing incidence a 1 nm amorphous overlayer is crossed over about 50 nm of path on the way in and again on the way out (about 100 nm in total), so this dominates the reflected amplitude and must be modelled rather than ignored.
+11. PARTLY SUPPLIED (PROJECT_INPUT, Ali, 2026-09-22): the surface is Si(001). Still to be supplied: miscut angle and direction, typical terrace widths (no longer blocking for the choice of configuration, which is CFG-B).
+12. (blocking) PARTLY SUPPLIED (PROJECT_INPUT, Ali, 2026-09-22): the surface is ion-milled. Still to be supplied: native oxide, HF-last, UHV flash, ion-milling parameters (ion, energy, angle), expected amorphous damage-layer thickness, any annealing. Surface preparation state: native oxide, HF-last, UHV flash, ion-milling parameters, expected amorphous damage-layer thickness, any annealing. At 20 mrad glancing incidence a 1 nm amorphous overlayer is crossed over about 50 nm of path on the way in and again on the way out (about 100 nm in total), so this dominates the reflected amplitude and must be modelled rather than ignored.
 13. Pattern geometry for the patterned samples: lateral dimensions, nominal step or trench heights (nm) from AFM or SEM, edge profile, orientation relative to the beam. A feature of height h transverse to the beam shadows `h/tan(theta)` of surface behind it (444 nm for 10 nm at 22.5 mrad, 733 nm at the (4,-4,4) angle of 13.6 mrad).
 14. Whether the intended observable is atomic steps (heights 1.36 A, 2.72 A or 3.14 A) or nanometre-scale patterned steps. The two regimes need different quantification strategies because the height wrap period is only 0.4 to 1.5 A and because of items 3 and 13.
 

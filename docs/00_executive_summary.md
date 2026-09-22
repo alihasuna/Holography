@@ -1,6 +1,7 @@
 # Executive summary for Ali
 
-Date: 2026-09-21 (revision 2, after two adversarial review passes). Subject: the simulation
+Date: 2026-09-22 (revision 3: Phase 1 literature pass with network access, reports B3 and L1 to L5;
+revision 2 of 2026-09-21 followed two adversarial review passes). Subject: the simulation
 repository `hussienba/si110-reflection-holography` (commit 6694959) and what a final theoretical
 simulation repository must look like to be contrasted with the real reflection-mode dark-field
 electron holography experiment, taking Osakabe's reflection holography as the starting point. Four
@@ -66,48 +67,60 @@ passes 25 self-checks.
 
 ## Osakabe as the starting point
 
-Osakabe's own 1992 summary (P08, abstract-index level) describes the method as the phase shift of a
-Bragg-reflected electron wave measured by holographic interferometry, where geometrical path
+Osakabe's own 1992 summary (P08, abstract read on PubMed) describes the method as the phase shift of
+a Bragg-reflected electron wave measured by holographic interferometry, where geometrical path
 differences of the surface topography are measured in units of the wavelength. That is the kinematic
 translation-covariance phase `Delta_phi = -(k_out - k_in).R` used here, with the external angles and
-the vacuum wavelength. The 1988 paper itself (P01) could not be read in this environment: its surface,
-energy, reflection, reference-wave arrangement and measured values are UNVERIFIED, and the reproduction
-configuration (CFG-O) stays a placeholder until it is read. The Hitachi patent record suggests, at
-second hand, a vacuum ("direct") reference wave passing beside the specimen; this is UNVERIFIED and
-must not be stated as fact.
+the vacuum wavelength. The body of the 1988 paper (P01) is closed here; its abstract, read on the
+publisher's page, gives a Pt(111) surface at glancing incidence, an electron biprism overlapping two
+regions of the reflection image (a self-reference, type R2), optical reconstruction and a sensitivity of
+the order of 0.01 nm on monatomic steps. P01 is therefore a platinum benchmark, not a silicon one; its
+energy, reflection, glancing angle, phase relation and measured values are UNVERIFIED, and CFG-O stays a
+placeholder until the body is read (upload 1). The Hitachi patent US 4,998,788 (Osakabe and Tonomura,
+issued 1991), now read in full, is a different arrangement: a direct (vacuum) reference wave that does
+not illuminate the specimen, compensated either by objective over-focus with an image-side biprism or by
+a condenser-side biprism; it describes the earlier experiments as interference between reflected waves.
+After 1993 the citation graph shows reflection electron holography only by the Tokyo Institute of
+Technology group (Si(111)7x7, 2001 to 2003, both waves reflected), and no electron reflection-mode
+ptychography (`docs/02_literature_position.md`).
 
 ## What is needed from the laboratory
 
-`docs/06_project_inputs_required.md` lists 22 items, nine of them blocking: the accelerating voltage
-(1); the illumination convergence semi-angle (3), which alone decides whether nanometre features can
+`docs/06_project_inputs_required.md` lists 22 items. Supplied by Ali: the accelerating voltage, 200 keV
+(1), the Si(001) surface (11, miscut still open) and ion milling (12, parameters still open). Seven
+remain blocking: the illumination convergence semi-angle (3), which alone decides whether nanometre features can
 show phase contrast (a 10 nm step reaches 1 rad of phase spread at 0.02 mrad); the objective-aperture
 semi-angle and which beam it selects (4); the detector pixel size and magnification (5); the external
-glancing angle and its calibration (7); the beam azimuth (8); the surface orientation (11) and
-preparation state (12), because oxide and ion-milling damage can suppress the Bragg-reflected object
+glancing angle and its calibration (7); the beam azimuth (8); the preparation details (12), because oxide and ion-milling damage can suppress the Bragg-reflected object
 wave entirely; and the reference-wave trajectory (15). The most valuable non-blocking input is a
 measured rocking curve (9), because it fixes the angle scale and the mean inner potential together.
 
 ## Limitations of this analysis
 
-* Every scholarly host was blocked by the analysis environment's network policy; no paper or book
-  chapter was read. Literature evidence is index-level only and is labelled as such. The "no reflection
-  electron holography since 1993" impression is a search failure, not a result.
+* Revision 2 was written with every scholarly host blocked. With network access, every bibliography
+  record is now checked against Crossref or the publisher, the open sources are read in full and the
+  citation graph has been run; the paywalled papers (P01, P02, P03, P08, P31, P06) and all book chapters
+  are still unread and are requested from Ali in `docs/07_reading_plan.md`. The Japanese databases were
+  not searched.
 * No multislice or dynamical reflection simulation was executed; software facts come from reading the
   version-matched source and exercising the Python API without the compiled engine, and each document
   states which facts were reproduced at the API level and which were only read in the source.
 * The physics is derived from stated premises and reproduced numerically; before publication it must
   be checked against the dynamical RHEED chapters of Ichimiya and Cohen (B07) and Peng, Dudarev and
   Whelan (B08), and the mean inner potential of silicon must be sourced (assumed 12.0 V here;
-  a 1 V change moves the bilayer step phase by 0.34 rad at the (4,-4,4) condition).
+  a 1 V change moves the bilayer step phase by 0.34 rad at the (4,-4,4) condition; the one DFT value
+  read, 12.53 V for a (110) slab, is not adopted, and the mean inner potential depends on the surface).
 
 ## Recommended next steps
 
-1. Read P01, P08, P07 (open access) and the B07/B08 chapters; fill CFG-O; upgrade the evidence labels.
+1. Read P01 and P08 (uploads 1 and 2) and the B07/B08 chapters; fill CFG-O; upgrade the evidence labels
+   (P07 and the patent are read: neither gives Osakabe's 1988 parameters).
 2. Supply the PROJECT_INPUT items; record a rocking curve of the selected reflection.
-3. Build milestone M1 (geometry and quantification core, tests T1 to T23) from the calculator.
+3. Build milestone M1 (geometry and quantification core, tests T1 to T25 and the shadow-length test)
+   from the calculator (Phase 2).
 4. Build the reflection cell (M2), validate flat-surface rocking curves against a dynamical solver and
    the reflection phase against the analytic and two-beam rungs of the validation ladder, before any
    step or pattern is simulated.
-5. Only then simulate holograms of Si(111) bilayer steps (the monatomic-step benchmark CFG-A; whether it
-   matches Osakabe's own configuration is UNVERIFIED until P01 is read) and of the Si(001) patterned
+5. Only then simulate holograms of Si(111) bilayer steps (the monatomic-step benchmark CFG-A; it is not
+   Osakabe's configuration, which the P01 abstract gives as Pt(111)) and of the Si(001) patterned
    samples, process them with the experimental reconstruction code, and compare blind.
