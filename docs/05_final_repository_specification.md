@@ -312,6 +312,34 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 | M5 Experimental comparison | Calibration, blind comparison, uncertainty budget, paper figures | M4 and PROJECT_INPUT items 1 to 22 |
 | M6 Reflection ptychography (optional) | Differentiable dynamical forward model; multiplicative-object algorithms explicitly not assumed valid | M2 |
 
+### 9.1 Implementation status (Phase 2, 2026-09-22)
+
+Implemented in `reflection_holo/` and tested (full suite `venv/bin/pytest -q`: 527 passed at commit
+bd654c2; build reports S1a, S1b, S1c, S2, S3 and audit A2 under `docs/agent_reports/`):
+
+* M1: `geometry/` (wavelength, structure factor and forbidden-target guard, refraction with the exact
+  relativistic Delta, specular condition, accessibility guard, projection, shadow and blocked-view
+  strips, sampling ceilings, plate-cell fractions) and `quantification/` (signed height with
+  refusal below the propagated uncertainty, wrap period and branch, rocking-series branch criterion
+  B16, invisibility, noise, no-step control, shadow masks); tests T1 to T25 with the calculator's
+  reference values and tolerances, and the shadow-length tests.
+* Section 4.2 for Si(001): `structure/` builds terraces as truncations of one diamond lattice with
+  assertions (a) to (g) (lattice sites, no duplicate boundary plane, bulk nearest-neighbour distance,
+  exact a/4 and a/2 heights, periodic staircase continuity, screw or translation relation found on
+  the built atoms, right-handed frame); the 2x1 reconstruction raises NotImplementedError (no source
+  read); overlayer and pattern geometry are required PROJECT_INPUT arguments.
+* Section 5, synthetic data only: `optics/` (hologram intensity, R1/R2/R3 references, ensemble
+  average after squaring, Poisson noise with seed) and `reconstruction/` (carrier located on an empty
+  hologram inside a declared one-sideband region, declared mask and apodisation, raw and unwrapped
+  phase, validity mask, no implicit detrend), with the no-step control (T25) and the
+  carrier-location test.
+* `io/` (schema-gated configuration loader: a missing or null PROJECT_INPUT fails at run level) and
+  `provenance/` (manifest with versions, git commit and diff hash, seeds, precision, hashes).
+
+Not implemented yet: the reflection forward model (M2), biprism Fresnel fringes, drift, detector
+MTF, partial-coherence generators, the R1 `2 theta_ext` compensation model, an experimental data
+loader, and configuration fields for PROJECT_INPUT items 2, 6, 10, 16, 17, 19, 21 and 22.
+
 ## 10. Literature position (revision 3: `docs/02_literature_position.md`)
 
 * Starting point: P01 is known from its abstract only (Pt(111), two regions of the reflection image

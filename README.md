@@ -26,6 +26,8 @@ that can be contrasted with the real reflection-mode dark-field holography exper
 | `docs/agent_reports/` (analysis) | The full reports of the delegated audits: A (code), B (literature) with B2 (bibliography verification log), C (physics derivations) with the calculator output, D (software provenance), E and E2 (two adversarial review passes of the summary documents; every finding is applied in revision 2 of the summaries or explicitly declined with a reason), plus the orchestrator's independent sanity numbers. |
 | `tools/reflection_step_phase_calculator.py` | Numpy-only reference calculator reproducing every number in the physics report; 25 self-checks. |
 | `tools/phase1_numbers.py` | The physics numbers added in revision 3 (mean-inner-potential sensitivity at 12.53 V, sign and size of the height bias, shadow lengths); 17 self-checks. |
+| `reflection_holo/`, `tests/`, `configs/` | Phase 2 package: geometry and quantification core (M1), Si(001) structure builder, hologram formation and sideband reconstruction on synthetic data, configuration loader and provenance manifests; status in `docs/05_final_repository_specification.md` section 9.1. |
+| `tools/physics_checks/` | Phase 2 physics checks (a/4 terrace symmetry, carrier trap, R2 twin); report C2. |
 | `tools/provenance_checks/` | Scripts that exercise the prismatique 0.0.1 API exactly as the inspected pipeline does (no simulation run). |
 
 ## Evidence labels
@@ -55,7 +57,8 @@ with the sentence as locator; SECTION_READ of the abstract and of nothing else).
 ## Reproducing the numbers
 
 ```
-python3 -m venv venv && venv/bin/pip install numpy
+python3 -m venv venv && venv/bin/pip install numpy && venv/bin/pip install -e ".[test]"
+venv/bin/pytest -q                                          # Phase 2 package test suite
 venv/bin/python tools/reflection_step_phase_calculator.py   # prints 25/25 checks pass
 venv/bin/python tools/phase1_numbers.py                     # prints 17/17 checks pass
 venv/bin/python tools/lit/citation_lists.py build --list    # citation counts (offline; rewrites L4_citing_works.tsv)
