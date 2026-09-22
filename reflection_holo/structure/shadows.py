@@ -8,9 +8,16 @@ terrace is upstream (a step descending along the beam; SM07 and B9 call it an up
 shadowed terrace) therefore shadows a strip of length ``h / tan(theta_ext)`` behind it, unless the
 next rise cuts the strip short. Step edges parallel to the beam cast no shadow along the beam.
 
-Only the INCIDENT-beam shadow of docs/03 section 4 is computed. The reflected beam leaving a lower
-terrace within ``h / tan(theta_out)`` upstream of a rise is also blocked by that rise; that
-exit-side occlusion is not part of the documented model and is NOT IMPLEMENTED here (open issue).
+Terrace staircases (``terrace_shadow_strips``) return both strips of docs/03 section 4: the
+illumination shadow ``h / tan(theta_in)`` behind (downstream of) a riser whose upper terrace is
+upstream, and the blocked-view strip ``h / tan(theta_out)`` in front of (upstream of) a riser whose
+upper terrace is downstream, where the beam reflected by the lower terrace is intercepted by the
+riser. For the specular beam (theta_out = theta_in) the two lengths are equal. The masking decisions
+are delegated to ``reflection_holo.quantification.shadow.shadow_masks``. That function is
+evaluated between exact strip ends, so the intervals are exact. The exit angle is a required,
+labelled argument.
+Patterned features (``feature_shadow_*``) return the illumination shadow only; their blocked-view
+strip is NOT IMPLEMENTED (open issue).
 
 The features part implements the patterned mesas and trenches of PROJECT_INPUT item 13 as a height
 profile with every geometric parameter REQUIRED; their atomistic realisation is NOT IMPLEMENTED.
@@ -24,18 +31,20 @@ import numpy as np
 
 from reflection_holo.geometry import projection
 from reflection_holo.io.labels import require_evidence_label
+from reflection_holo.quantification import shadow as quantification_shadow
 
 from .si001 import LABEL_PREFIXES
 
 _F_TOL_A = 1e-9          # tolerance on H + z tan(theta) when deciding shadowing (angstrom)
+_BREAK_TOL_A = 1e-6      # candidate strip ends closer than this are merged (degenerate cases only)
 
 
-def _check_theta(theta_ext_rad: float, theta_label: str) -> float:
-    require_evidence_label(theta_label, "external glancing angle (PROJECT_INPUT item 7)",
-                           accepted=LABEL_PREFIXES, qualified=True)
+def _check_theta(theta_ext_rad: float, theta_label: str, *, name: str = "theta_ext_rad",
+                 what: str = "external glancing angle (PROJECT_INPUT item 7)") -> float:
+    require_evidence_label(theta_label, what, accepted=LABEL_PREFIXES, qualified=True)
     th = float(theta_ext_rad)
     if not (np.isfinite(th) and 0.0 < th < 0.5 * np.pi):
-        raise ValueError(f"theta_ext_rad must be in (0, pi/2), got {theta_ext_rad!r}")
+        raise ValueError(f"{name} must be in (0, pi/2), got {theta_ext_rad!r}")
     return th
 
 
@@ -134,52 +143,149 @@ def intervals_to_mask(intervals, coords_A, period_A: float | None = None) -> np.
 # --------------------------------------------------------------------------------------------------
 @dataclass(frozen=True)
 class ShadowStrips:
-    """Shadowed strips on the surface, along the beam coordinate z of the slab frame."""
+    """Strips to mask on the surface, along the beam coordinate z of the slab frame (docs/03
+    section 4). Intervals are half-open [a, b) in [0, period]; an interval crossing the cell edge
+    appears as [a, period) and [0, b).
+
+    illumination_intervals_A  illumination shadow at theta_in, behind (downstream of) a riser whose
+                              upper terrace is upstream
+    blocked_view_intervals_A  blocked-view strip at theta_out, in front of (upstream of) a riser
+                              whose upper terrace is downstream
+    intervals_A               the union of the two: every strip to mask
+    theta_ext_rad, theta_label          incidence angle theta_in and its evidence label
+    theta_out_ext_rad, theta_out_label  exit angle theta_out and its evidence label
+    per_step                  one record per step: which strip applies, its side and nominal extent
+    """
     axis: str
     intervals_A: tuple
+    illumination_intervals_A: tuple
+    blocked_view_intervals_A: tuple
     period_A: float | None
     theta_ext_rad: float
     theta_label: str
+    theta_out_ext_rad: float
+    theta_out_label: str
     per_step: tuple
     note: str
 
     def mask(self, z_A) -> np.ndarray:
+        """Every strip to mask (illumination shadow or blocked view)."""
         return intervals_to_mask(self.intervals_A, z_A, self.period_A)
 
+    def illumination_mask(self, z_A) -> np.ndarray:
+        return intervals_to_mask(self.illumination_intervals_A, z_A, self.period_A)
 
-def terrace_shadow_strips(structure, theta_ext_rad: float, theta_label: str) -> ShadowStrips:
-    """Shadowed strips of a built Si(001) staircase at the external glancing angle theta_ext.
+    def blocked_view_mask(self, z_A) -> np.ndarray:
+        return intervals_to_mask(self.blocked_view_intervals_A, z_A, self.period_A)
 
+
+def _periodic_terrace_strips(starts_A, tops_A, period_A: float, th_in: float, th_out: float):
+    """Exact illumination-shadow and blocked-view intervals in [0, period] of a periodic,
+    piecewise-constant terrace profile with vertical risers. Terrace k starts at starts_A[k] (with
+    starts_A[0] = 0) and has top height tops_A[k].
+
+    The masking decisions are made by ``quantification.shadow.shadow_masks``. The profile is
+    unrolled over enough periods on both sides for the longest strip. The candidate strip ends in
+    [0, period] are every riser and, for each riser corner and each lower terrace level,
+    riser + dh / tan(theta_in) and riser - dh / tan(theta_out)
+    (``geometry.projection.shadow_length_A``). The masks
+    are evaluated at the midpoints between consecutive candidates. They are constant between
+    candidates, so the intervals are exact, except where two candidates lie within _BREAK_TOL_A of
+    each other.
+    """
+    starts = [float(v) for v in starts_A]
+    tops = [float(v) for v in tops_A]
+    Lp = float(period_A)
+    if max(tops) == min(tops):
+        return [], []
+    span = max(tops) - min(tops)
+    reach = max(projection.shadow_length_A(span, th_in), projection.shadow_length_A(span, th_out))
+    reps = int(math.ceil(reach / Lp)) + 1
+    edges, after = [], []
+    for k in range(-reps, reps + 1):
+        for z0, top in zip(starts, tops):
+            edges.append(z0 + k * Lp)
+            after.append(top)
+    before = [tops[-1]] + after[:-1]
+    levels = sorted(set(tops))
+    cand = set()
+    for e, hb, ha in zip(edges, before, after):
+        cand.add(e)
+        corner = max(hb, ha)
+        for lv in levels:
+            if lv < corner:
+                cand.add(e + projection.shadow_length_A(corner - lv, th_in))
+                cand.add(e - projection.shadow_length_A(corner - lv, th_out))
+    pts = [0.0]
+    for z in sorted(c for c in cand if _BREAK_TOL_A < c < Lp - _BREAK_TOL_A):
+        if z - pts[-1] > _BREAK_TOL_A:
+            pts.append(z)
+    pts.append(Lp)
+    mid = 0.5 * (np.asarray(pts[:-1]) + np.asarray(pts[1:]))
+    m = quantification_shadow.shadow_masks(mid, edges_A=edges, h_start_A=tops[-1],
+                                           heights_after_A=after, theta_in_ext_rad=th_in,
+                                           theta_out_ext_rad=th_out)
+
+    def runs(flags):
+        return _merge([(a, b) for a, b, f in zip(pts[:-1], pts[1:], flags) if f])
+
+    return runs(~m.illuminated), runs(~m.visible)
+
+
+def terrace_shadow_strips(structure, theta_ext_rad: float, theta_label: str, *,
+                          theta_out_ext_rad: float, theta_out_label: str) -> ShadowStrips:
+    """Illumination shadow and blocked-view strips of a built Si(001) staircase (docs/03 section 4).
+
+    theta_ext_rad, theta_label          external glancing angle of incidence theta_in (PROJECT_INPUT
+                                        item 7) and its evidence label
+    theta_out_ext_rad, theta_out_label  external exit angle theta_out and its evidence label (equal
+                                        to theta_in for the specular beam; required, no default)
     The step riser is placed at the terrace boundary coordinate of the terrace map (the atomistic
-    riser is one row wide). For edges parallel to the beam the list is empty.
+    riser is one row wide). For edges parallel to the beam all lists are empty. Each per-step record
+    gives the strip that applies: "illumination_shadow" (downstream of the riser, nominal length
+    |h| / tan(theta_in)) when the upper terrace is upstream, "blocked_view" (upstream of the riser,
+    nominal length |h| / tan(theta_out)) when it is downstream. Nominal means before any cut by a
+    neighbouring rise; the intervals include those cuts.
     """
     th = _check_theta(theta_ext_rad, theta_label)
+    th_out = _check_theta(theta_out_ext_rad, theta_out_label, name="theta_out_ext_rad",
+                          what="external exit angle theta_out (item 7 for the specular beam)")
     md = structure.metadata
     st = md["staircase"]
     Lz = float(structure.cell_A[2, 2])
+    common = dict(axis="z", period_A=Lz, theta_ext_rad=th, theta_label=theta_label,
+                  theta_out_ext_rad=th_out, theta_out_label=theta_out_label)
     if st["edges"] == "parallel":
-        return ShadowStrips(axis="z", intervals_A=(), period_A=Lz, theta_ext_rad=th,
-                            theta_label=theta_label, per_step=(),
-                            note="step edges parallel to the beam: no shadow along the beam")
+        return ShadowStrips(intervals_A=(), illumination_intervals_A=(),
+                            blocked_view_intervals_A=(), per_step=(),
+                            note="step edges parallel to the beam: no shadow along the beam",
+                            **common)
     tm = md["terrace_map"]
-    pts = []
-    for k, t in enumerate(tm):
-        z0, z1 = t["s_range_A"]
-        pts.append((z0, t["top_height_A"]))
-        pts.append((z1, t["top_height_A"]))
-    tan_t = math.tan(th)
-    iv = periodic_shadowed_intervals(pts, Lz, tan_t)
+    ill, blk = _periodic_terrace_strips([t["s_range_A"][0] for t in tm],
+                                        [t["top_height_A"] for t in tm], Lz, th, th_out)
     per_step = []
     for s in md["steps"]:
         h = abs(s["height_A"])
-        per_step.append(dict(step=s["index"], position_A=s["position_A"],
-                             upper_terrace_upstream=s["upper_terrace_upstream"],
-                             nominal_shadow_length_A=(projection.shadow_length_A(h, th)
-                                                      if s["upper_terrace_upstream"] else 0.0)))
-    return ShadowStrips(axis="z", intervals_A=tuple(iv), period_A=Lz, theta_ext_rad=th,
-                        theta_label=theta_label, per_step=tuple(per_step),
-                        note="incident-beam shadow only (docs/03 section 4); exit-side occlusion "
-                             "NOT IMPLEMENTED; riser at the terrace boundary coordinate")
+        pos = s["position_A"]
+        if s["upper_terrace_upstream"]:
+            L_in = projection.shadow_length_A(h, th)
+            rec = dict(strip="illumination_shadow", strip_side="downstream of the riser",
+                       strip_angle="theta_in", nominal_strip_A=(pos, pos + L_in),
+                       nominal_shadow_length_A=L_in, nominal_blocked_view_length_A=0.0)
+        else:
+            L_out = projection.shadow_length_A(h, th_out)
+            rec = dict(strip="blocked_view", strip_side="upstream of the riser (in front of it)",
+                       strip_angle="theta_out", nominal_strip_A=(pos - L_out, pos),
+                       nominal_shadow_length_A=0.0, nominal_blocked_view_length_A=L_out)
+        per_step.append(dict(step=s["index"], position_A=pos, height_A=h,
+                             upper_terrace_upstream=s["upper_terrace_upstream"], **rec))
+    return ShadowStrips(intervals_A=tuple(_merge(list(ill) + list(blk))),
+                        illumination_intervals_A=tuple(ill), blocked_view_intervals_A=tuple(blk),
+                        per_step=tuple(per_step),
+                        note="illumination shadow (theta_in) and blocked-view strip (theta_out), "
+                             "docs/03 section 4; masks from quantification.shadow.shadow_masks; "
+                             "riser at the terrace boundary coordinate",
+                        **common)
 
 
 # --------------------------------------------------------------------------------------------------

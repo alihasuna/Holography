@@ -20,6 +20,12 @@ def flat(intervals):
     return [float(v) for iv in intervals for v in iv]
 
 
+def specular_strips(s):
+    """terrace_shadow_strips for the specular beam, theta_out = theta_in (TEST_ONLY angle)."""
+    return terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL,
+                                 theta_out_ext_rad=THETA_22P5_MRAD, theta_out_label=THETA_LABEL)
+
+
 # --- printed numbers of docs/03 section 4 (tolerance = half a unit of the last printed digit) ------
 def test_docs03_60A_per_si001_layer_at_22p5_mrad():
     L = shadow_length_A(Q, THETA_22P5_MRAD, THETA_LABEL)
@@ -50,12 +56,12 @@ def test_built_single_a4_step_shadow_is_60A():
     st = Staircase(edges="transverse", terrace_layers=(0, 1), terrace_widths=(30, 30),
                    boundary_step_layers=-1)
     s = build(st, edge_periods=1, substrate_layers=4)
-    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
+    sh = specular_strips(s)
     # the down-step along the beam is the one at the cell edge (terrace 1 -> terrace 0)
     down = [x for x in s.metadata["steps"] if x["upper_terrace_upstream"]]
     assert len(down) == 1 and down[0]["position_A"] == 0.0
-    assert len(sh.intervals_A) == 1
-    z0, z1 = sh.intervals_A[0]
+    assert len(sh.illumination_intervals_A) == 1
+    z0, z1 = sh.illumination_intervals_A[0]
     assert z0 == pytest.approx(0.0, abs=1e-9)
     assert abs((z1 - z0) - 60.0) <= 0.5                  # docs/03: 60 A per Si(001) layer
     assert z1 - z0 == pytest.approx(Q / math.tan(THETA_22P5_MRAD), abs=1e-9)
@@ -70,8 +76,8 @@ def test_built_a2_step_shadow_is_twice():
     st = Staircase(edges="transverse", terrace_layers=(2, 0), terrace_widths=(10, 40),
                    boundary_step_layers=2)
     s = build(st, edge_periods=1, substrate_layers=4)
-    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
-    (z0, z1), = sh.intervals_A
+    sh = specular_strips(s)
+    (z0, z1), = sh.illumination_intervals_A
     assert z0 == pytest.approx(10 * P110, abs=1e-9)
     assert z1 - z0 == pytest.approx(2 * Q / math.tan(THETA_22P5_MRAD), abs=1e-9)
 
@@ -81,39 +87,127 @@ def test_shadow_cut_short_by_next_rise():
     st = Staircase(edges="transverse", terrace_layers=(1, 0, 1), terrace_widths=(20, 5, 20),
                    boundary_step_layers=0)
     s = build(st, edge_periods=1, substrate_layers=4)
-    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
-    assert flat(sh.intervals_A) == pytest.approx([20 * P110, 25 * P110], abs=1e-9)
+    sh = specular_strips(s)
+    assert flat(sh.illumination_intervals_A) == pytest.approx([20 * P110, 25 * P110], abs=1e-9)
 
 
 def test_shadow_over_two_descending_steps():
     st = Staircase(edges="transverse", terrace_layers=(2, 1, 0), terrace_widths=(10, 10, 10),
                    boundary_step_layers=2)
     s = build(st, edge_periods=1, substrate_layers=4)
-    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
+    sh = specular_strips(s)
     # 60.3 A from the first edge exceeds the 38.4 A terrace, and the line from that edge stays
     # above the lower terraces up to the a/2 rise at the cell edge
-    assert flat(sh.intervals_A) == pytest.approx([10 * P110, 30 * P110], abs=1e-9)
+    assert flat(sh.illumination_intervals_A) == pytest.approx([10 * P110, 30 * P110], abs=1e-9)
 
 
 def test_shadow_wraps_across_the_periodic_boundary():
     st = Staircase(edges="transverse", terrace_layers=(0, 1, 0), terrace_widths=(10, 5, 10),
                    boundary_step_layers=0)
     s = build(st, edge_periods=1, substrate_layers=4)
-    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
+    sh = specular_strips(s)
     L = 25 * P110
     z_edge = 15 * P110
     lsh = Q / math.tan(THETA_22P5_MRAD)
-    assert flat(sh.intervals_A) == pytest.approx([0.0, z_edge + lsh - L, z_edge, L], abs=1e-9)
+    assert flat(sh.illumination_intervals_A) == pytest.approx([0.0, z_edge + lsh - L, z_edge, L],
+                                                           abs=1e-9)
     z = np.array([z_edge - 0.1, z_edge + 0.1, L - 0.1, 0.1, z_edge + lsh - L + 0.1, L + 0.1])
-    assert sh.mask(z).tolist() == [False, True, True, True, False, True]
+    assert sh.illumination_mask(z).tolist() == [False, True, True, True, False, True]
 
 
 def test_parallel_edges_cast_no_shadow_along_the_beam():
     st = Staircase(edges="parallel", terrace_layers=(0, 2), terrace_widths=(5, 5),
                    boundary_step_layers=-2)
     s = build(st, edge_periods=2, substrate_layers=4)
-    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
+    sh = specular_strips(s)
     assert sh.intervals_A == () and "parallel" in sh.note
+
+
+# --- blocked-view strip (docs/03 section 4: reflected beam intercepted by a rise downstream) ------
+THETA_OUT_30MRAD = 30.0e-3      # TEST_ONLY non-specular exit angle (tells theta_out from theta_in)
+THETA_OUT_LABEL = "TEST_ONLY: exit angle of a non-specular test beam (no docs/06 item)"
+
+
+def _single_a4_step():
+    st = Staircase(edges="transverse", terrace_layers=(0, 1), terrace_widths=(30, 30),
+                   boundary_step_layers=-1)
+    s = build(st, edge_periods=1, substrate_layers=4)
+    up = [x for x in s.metadata["steps"] if x["upper_terrace_upstream"] is False]
+    down = [x for x in s.metadata["steps"] if x["upper_terrace_upstream"]]
+    assert len(up) == 1 and len(down) == 1 and down[0]["position_A"] == 0.0
+    return s, up[0], down[0]
+
+
+def test_blocked_view_strip_in_front_of_upper_terrace_downstream_step():
+    s, up, _ = _single_a4_step()
+    z_up = up["position_A"]
+    assert z_up == pytest.approx(30 * P110, abs=1e-9)
+    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL,
+                               theta_out_ext_rad=THETA_OUT_30MRAD, theta_out_label=THETA_OUT_LABEL)
+    l_out = Q / math.tan(THETA_OUT_30MRAD)                      # 45.26 A, not 60.33 A
+    (b0, b1), = sh.blocked_view_intervals_A
+    assert b1 == pytest.approx(z_up, abs=1e-9)                   # ends at the riser
+    assert b1 - b0 == pytest.approx(l_out, abs=1e-9)             # length h / tan(theta_out)
+    (i0, i1), = sh.illumination_intervals_A
+    assert i1 - i0 == pytest.approx(Q / math.tan(THETA_22P5_MRAD), abs=1e-9)
+    assert flat(sh.intervals_A) == pytest.approx([i0, i1, b0, b1], abs=1e-9)
+    z = np.array([z_up - l_out - 0.1, z_up - l_out + 0.1, z_up - 0.1, z_up + 0.1])
+    assert sh.blocked_view_mask(z).tolist() == [False, True, True, False]
+    assert sh.mask(z).tolist() == [False, True, True, False]
+    assert not sh.illumination_mask(z).any()
+    rec, = [p for p in sh.per_step if p["step"] == up["index"]]
+    assert rec["strip"] == "blocked_view" and rec["strip_angle"] == "theta_out"
+    assert rec["nominal_blocked_view_length_A"] == pytest.approx(l_out, abs=1e-12)
+    assert rec["nominal_strip_A"] == pytest.approx((z_up - l_out, z_up), abs=1e-9)
+    assert rec["nominal_shadow_length_A"] == 0.0
+    # specular beam: the blocked-view strip has the illumination-shadow length
+    sp = specular_strips(s)
+    (b0, b1), = sp.blocked_view_intervals_A
+    (i0, i1), = sp.illumination_intervals_A
+    assert b1 - b0 == pytest.approx(i1 - i0, abs=1e-9)
+    assert b1 - b0 == pytest.approx(Q / math.tan(THETA_22P5_MRAD), abs=1e-9)
+
+
+def test_no_blocked_view_in_front_of_upper_terrace_upstream_step():
+    s, up, down = _single_a4_step()
+    L = float(s.cell_A[2, 2])
+    for th_out, label in ((THETA_22P5_MRAD, THETA_LABEL), (THETA_OUT_30MRAD, THETA_OUT_LABEL)):
+        sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL,
+                                   theta_out_ext_rad=th_out, theta_out_label=label)
+        # the down-step riser is at z = 0 = L (cell edge); in front of it lies the upper terrace
+        z_front = np.array([L - 0.1, L - 1.0, L - 30.0, L - 100.0])
+        assert not sh.blocked_view_mask(z_front).any()
+        assert not sh.mask(z_front).any()
+        # the only blocked-view strip is the one ending at the up-step
+        (_, b1), = sh.blocked_view_intervals_A
+        assert b1 == pytest.approx(up["position_A"], abs=1e-9)
+        rec, = [p for p in sh.per_step if p["step"] == down["index"]]
+        assert rec["strip"] == "illumination_shadow" and rec["strip_angle"] == "theta_in"
+        assert rec["nominal_blocked_view_length_A"] == 0.0
+        assert rec["nominal_strip_A"][0] == pytest.approx(0.0, abs=1e-12)
+
+
+def test_blocked_view_cut_short_by_preceding_rise():
+    # mirror of test_shadow_cut_short_by_next_rise: the lower terrace 1 (5 periods, 19.2 A < 60 A)
+    # in front of the up-step at 25 periods is blocked entirely, and nothing on the higher terrace
+    st = Staircase(edges="transverse", terrace_layers=(1, 0, 1), terrace_widths=(20, 5, 20),
+                   boundary_step_layers=0)
+    s = build(st, edge_periods=1, substrate_layers=4)
+    sh = specular_strips(s)
+    assert flat(sh.blocked_view_intervals_A) == pytest.approx([20 * P110, 25 * P110], abs=1e-9)
+
+
+def test_exit_angle_required_labelled_and_checked():
+    s, _, _ = _single_a4_step()
+    with pytest.raises(TypeError, match="theta_out"):
+        terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
+    with pytest.raises(ValueError, match="label"):
+        terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL, theta_out_ext_rad=THETA_OUT_30MRAD,
+                              theta_out_label="same as incidence")
+    for bad in (0.0, -0.01, math.pi / 2):
+        with pytest.raises(ValueError, match="theta_out_ext_rad"):
+            terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL, theta_out_ext_rad=bad,
+                                  theta_out_label=THETA_OUT_LABEL)
 
 
 def test_raytrace_primitives():
@@ -238,7 +332,7 @@ def test_structure_shadow_lengths_use_geometry_module(monkeypatch):
                    boundary_step_layers=-1)
     s = build(st, edge_periods=1, substrate_layers=4)
     calls.clear()
-    sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
+    sh = specular_strips(s)
     down = [p for p in sh.per_step if p["upper_terrace_upstream"]]
-    assert len(down) == 1 and calls == [(Q, THETA_22P5_MRAD)]
+    assert len(down) == 1 and (Q, THETA_22P5_MRAD) in calls
     assert down[0]["nominal_shadow_length_A"] == canonical(Q, THETA_22P5_MRAD)

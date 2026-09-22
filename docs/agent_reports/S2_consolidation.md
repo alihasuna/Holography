@@ -278,3 +278,113 @@ tolerance was changed, and no other test file was edited.
 
 No simulation, engine, configuration validation CLI or manifest-writing run: this pass changed library
 code and one test only. No commit or push.
+
+## Follow-up: blocked-view strip
+
+Coordinator request: `structure/shadows.py` must also return the blocked-view strip (length
+h/tan(theta_out) of the lower terrace in front of a transverse riser whose upper terrace is
+downstream), preferably by delegating to `quantification/shadow.py`, record per step which strip
+applies, update the docstring (old lines 11-13), and add tests. Baseline for this step: 355 passed
+(end of the consolidation above).
+
+Delegation. `quantification/shadow.py` imports only numpy, so importing it from structure raises no
+import problem, and the masking decisions are delegated to it. It returns boolean masks at sample
+points, while `ShadowStrips` returns exact half-open intervals on a periodic cell. The new helper
+therefore samples only at the midpoints between exact candidate strip ends. The candidates are every
+riser and riser +- dh/tan(theta) for each riser corner and each lower terrace level, with dh/tan
+from `geometry.projection.shadow_length_A`. The masks are constant between candidates, so the
+intervals are exact. The illumination shadow of staircases now goes through the same path, so both
+strips of a staircase come from one implementation.
+
+Changes to `reflection_holo/structure/shadows.py` ("before" = commit 36fbe25):
+* Docstring: old `:11-13` ("Only the INCIDENT-beam shadow ... exit-side occlusion ... NOT
+  IMPLEMENTED") is replaced by new `:11-20`. It describes both strips, the delegation and the
+  required exit angle, and says the patterned features still give the illumination shadow only.
+* `:34` `from reflection_holo.quantification import shadow as quantification_shadow`; `:39`
+  `_BREAK_TOL_A = 1e-6` (strip ends closer than this are merged, which matters only in degenerate
+  geometry).
+* `_check_theta` (old `:33`, new `:42`) takes keyword `name`/`what`, so the exit angle gets its own
+  label context and the message `theta_out_ext_rad must be in (0, pi/2)`. The incidence behaviour is
+  unchanged.
+* `ShadowStrips` (old `:136-147`, new `:145-180`) adds `illumination_intervals_A`,
+  `blocked_view_intervals_A`, `theta_out_ext_rad`, `theta_out_label`, `illumination_mask()` and
+  `blocked_view_mask()`. The meaning of `intervals_A` and `mask()` changed from "illumination shadow"
+  to "union of both strips (everything to mask)".
+* New `_periodic_terrace_strips` (`:182-232`): unrolls the periodic profile, collects the candidate
+  strip ends, and calls `quantification_shadow.shadow_masks`; `~illuminated` gives the illumination
+  intervals and `~visible` the blocked-view intervals.
+* `terrace_shadow_strips` (old `:150-182`, new `:235-289`) has new required keyword-only arguments
+  `theta_out_ext_rad` and `theta_out_label`, with no default (they equal theta_in and its label for
+  the specular beam). Each per-step record (`:266-281`) gains `strip` ("illumination_shadow" or
+  "blocked_view"), `strip_side`, `strip_angle` ("theta_in" or "theta_out"), `nominal_strip_A`,
+  `nominal_blocked_view_length_A` and `height_A`. `nominal_shadow_length_A` is kept (0 for a
+  blocked-view step).
+* Unchanged: the feature functions and the `shadowed_intervals` / `periodic_shadowed_intervals`
+  primitives (the features use `shadowed_intervals`).
+
+Changes to `tests/structure/test_structure_shadows.py`:
+* Existing tests, updated for the new API (values and tolerances unchanged). `:23-26` adds the
+  helper `specular_strips(s)` (theta_out = theta_in, TEST_ONLY label), which replaces the 7 calls
+  `terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)` at old `:53, 73, 84, 92, 102, 115, 241`.
+  `sh.intervals_A` becomes `sh.illumination_intervals_A` in the illumination assertions of
+  `test_built_single_a4_step_shadow_is_60A` (`:63-64`), `test_built_a2_step_shadow_is_twice` (`:80`),
+  `test_shadow_cut_short_by_next_rise` (`:91`), `test_shadow_over_two_descending_steps` (`:101`) and
+  `test_shadow_wraps_across_the_periodic_boundary` (`:112-113`). `sh.mask` becomes
+  `sh.illumination_mask` at `:115`, where the old expectation `False` at `z_edge + lsh - L + 0.1` is
+  inside the blocked-view strip of the up-step. In the S2 guard test,
+  `calls == [(Q, theta)]` becomes `(Q, theta) in calls` (`:337`), because
+  `terrace_shadow_strips` now also calls `shadow_length_A` for the strip ends.
+* New tests (`:126-210`):
+  - `test_blocked_view_strip_in_front_of_upper_terrace_downstream_step` (`:141`). Single a/4
+    staircase with theta_out = 30 mrad (TEST_ONLY), so that theta_out and theta_in can be told
+    apart. The strip ends at the up-step riser (30 x P110, abs 1e-9) and has length
+    Q/tan(theta_out) = 45.26 A (abs 1e-9). Checked: masks either side of both ends, the per-step
+    record, and equal lengths for the specular beam.
+  - `test_no_blocked_view_in_front_of_upper_terrace_upstream_step` (`:171`). For specular and
+    non-specular exit angles, nothing is masked in the 100 A in front of the down-step riser at the
+    cell edge. The only blocked-view strip ends at the up-step, and the down-step record says
+    "illumination_shadow" with a zero blocked-view length.
+  - `test_blocked_view_cut_short_by_preceding_rise` (`:190`). The lower 5-period terrace in front
+    of an up-step is blocked exactly over [20, 25] x P110; the strip is cut by the higher terrace
+    upstream.
+  - `test_exit_angle_required_labelled_and_checked` (`:200`). A missing exit angle gives TypeError,
+    an unlabelled one ValueError "label", and 0, -0.01 or pi/2 ValueError "theta_out_ext_rad".
+
+Verification beyond the tests:
+* Mutation: with `shadow_masks` temporarily given theta_in as the exit angle, the new test failed
+  (`1 failed, 23 passed`). File restored (`cmp` identical).
+* Independent cross-check (scratch script, not a test). For 388 random periodic staircases (2-6
+  terraces, integer widths 3-80 A, heights k x 1.25 A, theta_in and theta_out drawn independently
+  in 5-80 mrad), the delegated intervals were compared with structure's own ray trace:
+  `periodic_shadowed_intervals` for the illumination shadow, and the same sweep on the z-mirrored
+  profile for the blocked view. Output: `random periodic staircases compared: 388 | illumination
+  intervals: 625 | blocked-view intervals: 630 | max endpoint difference (A): 2.5579538487363607e-13`.
+* Found while doing this, pre-existing and not fixed: `periodic_shadowed_intervals` unrolls with
+  `pts + k*Lp`. For a period that is not exactly representable, `k*Lp + Lp` can exceed `(k+1)*Lp` by
+  one ulp and raise "profile z coordinates must be non-decreasing". It happened with random float
+  widths in the cross-check. Terrace staircases no longer use it; the built cells tested here
+  (multiples of P110) did not trigger it.
+
+`venv/bin/pytest -q` (verbatim):
+
+```
+........................................................................ [ 20%]
+........................................................................ [ 40%]
+........................................................................ [ 60%]
+........................................................................ [ 80%]
+.......................................................................  [100%]
+359 passed in 6.08s
+```
+
+The count went from 355 to 359: the 4 new tests. No test was removed and no tolerance changed.
+
+Still open:
+* Patterned features (`feature_shadow_intervals`, `feature_shadow_mask`) return the illumination
+  shadow only. Adding their blocked-view strip needs an API decision: an exit-angle argument, and a
+  change to the single interval list those functions return.
+* The exit angle has no docs/06 item; item 7 covers the incidence angle only. For the specular beam
+  it equals the incidence angle.
+* Section 5, item 1 above (shadow masks left duplicated) now applies only to the patterned
+  features. Staircase strips are computed by `quantification/shadow.py`.
+
+NOT RUN: no simulation, engine or manifest-writing run. Not committed.
