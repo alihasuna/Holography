@@ -44,9 +44,9 @@ def _check_theta(theta_ext_rad: float, theta_label: str) -> float:
 def _shadow_length_A(height_A: float, theta_ext_rad: float) -> float:
     """Shadow length ``h / tan(theta_ext)`` of a transverse step of height h (SM07, B9).
 
-    Private duplicate of the geometry-module quantity listed in spec section 4.1 ("shadow length
-    h/tan(theta_ext)"); replace by the reflection_holo.geometry shadow-length function once it
-    exists (orchestrator consolidation).
+    Private duplicate of the geometry-module quantity of spec section 4.1 ("shadow length
+    h/tan(theta_ext)"): replace by ``reflection_holo.geometry.projection.shadow_length_A`` at the
+    orchestrator's consolidation (tests/structure checks that the two agree).
     """
     return float(height_A) / math.tan(float(theta_ext_rad))
 

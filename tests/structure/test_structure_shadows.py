@@ -15,6 +15,11 @@ Q = A_SI_A / 4.0
 P110 = A_SI_A / math.sqrt(2.0)
 
 
+def flat(intervals):
+    """Flatten an interval list for pytest.approx (which refuses nested sequences)."""
+    return [float(v) for iv in intervals for v in iv]
+
+
 # --- printed numbers of docs/03 section 4 (tolerance = half a unit of the last printed digit) ------
 def test_docs03_60A_per_si001_layer_at_22p5_mrad():
     L = shadow_length_A(Q, THETA_22P5_MRAD, THETA_LABEL)
@@ -77,7 +82,7 @@ def test_shadow_cut_short_by_next_rise():
                    boundary_step_layers=0)
     s = build(st, edge_periods=1, substrate_layers=4)
     sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
-    assert sh.intervals_A == pytest.approx(((20 * P110, 25 * P110),), abs=1e-9)
+    assert flat(sh.intervals_A) == pytest.approx([20 * P110, 25 * P110], abs=1e-9)
 
 
 def test_shadow_over_two_descending_steps():
@@ -87,7 +92,7 @@ def test_shadow_over_two_descending_steps():
     sh = terrace_shadow_strips(s, THETA_22P5_MRAD, THETA_LABEL)
     # 60.3 A from the first edge exceeds the 38.4 A terrace, and the line from that edge stays
     # above the lower terraces up to the a/2 rise at the cell edge
-    assert sh.intervals_A == pytest.approx(((10 * P110, 30 * P110),), abs=1e-9)
+    assert flat(sh.intervals_A) == pytest.approx([10 * P110, 30 * P110], abs=1e-9)
 
 
 def test_shadow_wraps_across_the_periodic_boundary():
@@ -98,7 +103,7 @@ def test_shadow_wraps_across_the_periodic_boundary():
     L = 25 * P110
     z_edge = 15 * P110
     lsh = Q / math.tan(THETA_22P5_MRAD)
-    assert sh.intervals_A == pytest.approx(((0.0, z_edge + lsh - L), (z_edge, L)), abs=1e-9)
+    assert flat(sh.intervals_A) == pytest.approx([0.0, z_edge + lsh - L, z_edge, L], abs=1e-9)
     z = np.array([z_edge - 0.1, z_edge + 0.1, L - 0.1, 0.1, z_edge + lsh - L + 0.1, L + 0.1])
     assert sh.mask(z).tolist() == [False, True, True, True, False, True]
 
@@ -114,13 +119,13 @@ def test_parallel_edges_cast_no_shadow_along_the_beam():
 def test_raytrace_primitives():
     t = math.tan(0.02)
     # descending riser of 2 A at z = 0, then flat: shadow 2/tan
-    assert shadowed_intervals([(-10, 2), (0, 2), (0, 0), (500, 0)], t) == pytest.approx(
-        [(0.0, 2 / t)], abs=1e-9)
+    assert flat(shadowed_intervals([(-10, 2), (0, 2), (0, 0), (500, 0)], t)) == pytest.approx(
+        [0.0, 2 / t], abs=1e-9)
     # rising riser: no shadow
     assert shadowed_intervals([(-10, 0), (0, 0), (0, 2), (500, 2)], t) == []
     # slope steeper than the beam (descending): the slope itself is shadowed
     iv = shadowed_intervals([(-10, 2), (0, 2), (1, 0), (500, 0)], t)
-    assert iv == pytest.approx([(0.0, 2 / t)], abs=1e-9)
+    assert flat(iv) == pytest.approx([0.0, 2 / t], abs=1e-9)
     # gentle descending slope (less steep than the beam): lit
     assert shadowed_intervals([(-10, 2), (0, 2), (2 / (0.5 * t), 0), (1e4, 0)], t) == []
     with pytest.raises(ValueError):
@@ -207,3 +212,12 @@ def test_feature_inputs_required_and_checked():
                            label="from memory")
     with pytest.raises(ValueError, match="label"):
         feature_shadow_intervals(bad, THETA_22P5_MRAD, THETA_LABEL)
+
+
+def test_private_shadow_helper_matches_geometry_module():
+    """Consolidation guard: structure's private helper equals geometry.projection.shadow_length_A."""
+    from reflection_holo.geometry.projection import shadow_length_A as geom_shadow
+    from reflection_holo.structure.shadows import _shadow_length_A
+    for h in (Q, 2 * Q, 100.0, 1000.0):
+        for th in (0.0136, THETA_22P5_MRAD, 0.05):
+            assert _shadow_length_A(h, th) == pytest.approx(float(geom_shadow(h, th)), rel=1e-15)

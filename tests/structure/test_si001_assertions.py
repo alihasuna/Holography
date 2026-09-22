@@ -55,7 +55,7 @@ def test_b_closed_window_duplicate_plane_A_M7(mixed_110):
     dup = s.positions_A[at0].copy()
     dup[:, 1] += Ly * (1 - 1e-15)          # floating point lands marginally inside at L
     pos = np.vstack([s.positions_A, dup])
-    with pytest.raises(StructureAssertionError, match=r"\(b\) atom.*outside the half-open"):
+    with pytest.raises(StructureAssertionError, match=r"\(b\) \d+ atom\(s\) outside the half-open"):
         checks.assert_half_open_window(pos[:, 1], Ly, "y")
     with pytest.raises(StructureAssertionError, match=r"\(b\) duplicate atoms"):
         checks.assert_no_duplicates_and_count(pos, _periodic(s), s.n_atoms)
@@ -239,3 +239,30 @@ def test_g_azimuth_out_of_surface_or_not_item8_is_refused():
         build(st, azimuth=(1, 1, 1))
     with pytest.raises(ValueError, match="PROJECT_INPUT item 8"):
         build(st, azimuth=(1, 2, 0))
+
+
+# --- the builder runs the assertions itself --------------------------------------------------------
+def test_builder_refuses_duplicated_sites(monkeypatch):
+    import reflection_holo.structure.si001 as si001
+    orig = si001.diamond_sites_quarter
+    monkeypatch.setattr(si001, "diamond_sites_quarter",
+                        lambda lo, hi, a: np.concatenate([orig(lo, hi, a)] * 2))
+    st = Staircase(edges="transverse", terrace_layers=(0, 1), terrace_widths=(3, 3),
+                   boundary_step_layers=-1)
+    with pytest.raises(StructureAssertionError, match=r"\(b\)"):
+        build(st)
+
+
+def test_builder_refuses_non_site_points(monkeypatch):
+    import reflection_holo.structure.si001 as si001
+    orig = si001.diamond_sites_quarter
+
+    def corrupted(lo, hi, a):
+        n = orig(lo, hi, a).copy()
+        n[::97] += np.array([1, 1, 0])          # a/4 grid points that are not diamond sites
+        return n
+    monkeypatch.setattr(si001, "diamond_sites_quarter", corrupted)
+    st = Staircase(edges="transverse", terrace_layers=(0, 1), terrace_widths=(3, 3),
+                   boundary_step_layers=-1)
+    with pytest.raises(StructureAssertionError, match=r"\(a\)"):
+        build(st)

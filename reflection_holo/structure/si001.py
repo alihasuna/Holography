@@ -583,7 +583,8 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
             crystal_layer_n3=int(tops[k] + c0),
             top_layer_backbond_axis_crystal=list(ax),
             top_layer_backbond_axis_slab=ax_slab.tolist(),
-            backbond_angle_to_beam_deg=float(np.degrees(np.arccos(min(1.0, abs(ax_slab[2]))))),
+            backbond_angle_to_beam_deg=float(np.degrees(np.arctan2(abs(ax_slab[1]),
+                                                                   abs(ax_slab[2])))),
             n_atoms=int(counts[k]),
             continuous_with_terrace_0_across_boundary=bool(
                 k == len(widths) - 1 and len(widths) > 1 and staircase.boundary_step_layers == 0),
