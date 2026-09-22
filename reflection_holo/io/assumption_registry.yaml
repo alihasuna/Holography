@@ -15,3 +15,19 @@ stand_ins:
   B1: [20]     # Si mean inner potential V0 = 12.0 V; docs/06 item 20
   B17: [9]     # CFG-B working reflection (0,0,8), second condition (0,0,12); docs/06 item 9
   B18: [14]    # CFG-B observables: a/4 and a/2 steps, patterned mesas and trenches; docs/06 item 14
+  # Phase 3 demo stand-ins (report docs/agent_reports/P1_pipeline.md; the rows are proposed there and
+  # added to docs/model_assumptions.md by the orchestrator). Used by configs/demo_*.yaml only; a
+  # pipeline run with purpose "comparison" refuses stand-ins for blocking items.
+  B19: [7]     # glancing angle = external angle of the (0,0,8) internal Bragg condition (computed), sigma 0.1 mrad
+  B20: [8]     # beam azimuth exactly [100] (a/4 steps inside the B4 scope)
+  B21: [3]     # plane-wave illumination (convergence semi-angle 0)
+  B22: [4]     # dark-field aperture 3 mrad centred on the specular beam
+  B23: [5]     # detector pitch 15 um, magnification 3.0e5, image pixel 0.05 nm on both axes
+  B24: [6]     # ideal detector: gain 1 count/e, dose 500 e/px, no MTF, no readout noise, no drift
+  B25: [11]    # demo Si(001) staircase (terrace layers, widths, edges transverse, terrace types)
+  B26: [12]    # clean, bulk-terminated surface, no oxide or damage overlayer
+  B27: [13]    # no patterned features in the demo field of view
+  B28: [15, 16]  # R1 vacuum reference beside the sample, condenser-biprism pre-tilt, carrier 2.0 A
+  B29: [19]    # reconstruction and quantification processing choices of the demo
+  B30: [21]    # absorptive potential of the multislice demos (none)
+  B31: [1]     # beam-energy stability: relative wavelength uncertainty 1e-5 (sigma)
