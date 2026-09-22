@@ -1,0 +1,83 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychography+%2B+%22crystal+truncation+rod%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 2,
+ "token": null,
+ "data": [
+  {
+   "paperId": "500c9d8bff9f0a91027c05edd537de3a60c33059",
+   "externalIds": {
+    "MAG": "2893045113",
+    "DOI": "10.1002/tcr.201800083",
+    "CorpusId": 52816655,
+    "PubMed": "30251465"
+   },
+   "title": "X-Ray Scattering and Imaging Studies of Electrode Structure and Dynamics.",
+   "venue": "The chemical record",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "13860931",
+     "name": "H. You"
+    }
+   ]
+  },
+  {
+   "paperId": "dc07a05b686baa07b45b426cb615dcd59003d10a",
+   "externalIds": {
+    "MAG": "2044379745",
+    "DOI": "10.1063/1.4914927",
+    "CorpusId": 121016181
+   },
+   "title": "Ptychographic x-ray imaging of surfaces on crystal truncation rod",
+   "venue": "",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "40124691",
+     "name": "Chenhui Zhu"
+    },
+    {
+     "authorId": "2687561",
+     "name": "R. Harder"
+    },
+    {
+     "authorId": "144395784",
+     "name": "A. Diaz"
+    },
+    {
+     "authorId": "89747961",
+     "name": "V. Komanicky"
+    },
+    {
+     "authorId": "144154397",
+     "name": "A. Barbour"
+    },
+    {
+     "authorId": "48973933",
+     "name": "Ru-Qing Xu"
+    },
+    {
+     "authorId": "47933264",
+     "name": "Xiao-Jing Huang"
+    },
+    {
+     "authorId": "47909617",
+     "name": "Yaohua Liu"
+    },
+    {
+     "authorId": "29265548",
+     "name": "Michael S. Pierce"
+    },
+    {
+     "authorId": "48775586",
+     "name": "A. Menzel"
+    },
+    {
+     "authorId": "13860931",
+     "name": "H. You"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,546 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22reflection+electron%22+%2B+hologra%2A&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 23,
+ "token": null,
+ "data": [
+  {
+   "paperId": "06390f5dfe0ed4257f2d113131c6aa9d7729c694",
+   "externalIds": {
+    "MAG": "2032672364",
+    "DOI": "10.1016/0304-3991(92)90195-P",
+    "CorpusId": 96326544
+   },
+   "title": "Resolution limitation in the electron microscopy of surfaces",
+   "venue": "",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "144303470",
+     "name": "J. Cowley"
+    }
+   ]
+  },
+  {
+   "paperId": "1238381a85139fd1c334a0a0b8f609c2d3977e7b",
+   "externalIds": {
+    "MAG": "2054923936",
+    "DOI": "10.1143/JJAP.27.L1772",
+    "CorpusId": 117105988
+   },
+   "title": "Observation of Atomic Steps by Reflection Electron Holography",
+   "venue": "",
+   "year": 1988,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "17617771",
+     "name": "J. Endo"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  },
+  {
+   "paperId": "14e6f2104493e79f551116629ddba47588119abd",
+   "externalIds": {
+    "CorpusId": 260198468
+   },
+   "title": "Reflection Electron Steps on Gold and Microscopy and Interferometry of Atomic Platinum Single Crystal Surfaces",
+   "venue": "",
+   "year": 2004,
+   "authors": [
+    {
+     "authorId": "11524200",
+     "name": "H. Banzhof"
+    },
+    {
+     "authorId": "153473206",
+     "name": "K. Herrmann"
+    },
+    {
+     "authorId": "3323741",
+     "name": "H. Lichte"
+    }
+   ]
+  },
+  {
+   "paperId": "231c14ae038c71a2ec2abe50dd122b4b8d3bbd34",
+   "externalIds": {
+    "MAG": "2001540499",
+    "DOI": "10.1016/0304-3991(93)90123-F",
+    "CorpusId": 120582026
+   },
+   "title": "Reflection electron holography",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "11524200",
+     "name": "H. Banzhof"
+    },
+    {
+     "authorId": "153473215",
+     "name": "K. Herrmann"
+    }
+   ]
+  },
+  {
+   "paperId": "2d7af9bae9fe5fc408bc92cd998a7abfb423b757",
+   "externalIds": {
+    "MAG": "2463730875",
+    "DOI": "10.1017/s0424820100164295",
+    "CorpusId": 138531935
+   },
+   "title": "On the faceting of polar ceramic surfaces: Microscopy and holography studies of MGO(111) surfaces",
+   "venue": "",
+   "year": 1996,
+   "authors": [
+    {
+     "authorId": "1398412817",
+     "name": "M. Gajdardziska-Josifovska"
+    },
+    {
+     "authorId": "32601595",
+     "name": "B. Frost"
+    },
+    {
+     "authorId": "10173128",
+     "name": "E. Voelkl"
+    },
+    {
+     "authorId": "122543097",
+     "name": "L. Allard"
+    }
+   ]
+  },
+  {
+   "paperId": "3057385aeaa04196e35fcbe193ef91b53e847983",
+   "externalIds": {
+    "DOI": "10.1088/0034-4885/56/8/002",
+    "CorpusId": 250819868
+   },
+   "title": "Electron reflection, diffraction and imaging of bulk crystal surfaces in TEM and STEM",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "2461570932",
+     "name": "Z. Wang"
+    }
+   ]
+  },
+  {
+   "paperId": "56033cc8a90d2303c72875c916d1f8af9850388f",
+   "externalIds": {
+    "MAG": "2120015289",
+    "DOI": "10.1002/sia.1340",
+    "CorpusId": 96558782
+   },
+   "title": "Single‐crystal LiNbO3 surfaces processed in low‐temperature hydrogen plasma: XPS, REELS and AFM study",
+   "venue": "",
+   "year": 2002,
+   "authors": [
+    {
+     "authorId": "12761202",
+     "name": "H. Turčičova"
+    },
+    {
+     "authorId": "92677373",
+     "name": "J. Zemek"
+    },
+    {
+     "authorId": "153582555",
+     "name": "J. Toth"
+    },
+    {
+     "authorId": "91619689",
+     "name": "I. Drbohlav"
+    }
+   ]
+  },
+  {
+   "paperId": "5e0194d7bda5d6d15b03460e16861474a4b4c0eb",
+   "externalIds": {
+    "MAG": "3036073074",
+    "DOI": "10.1017/s0424820100154652",
+    "CorpusId": 237068828
+   },
+   "title": "Observation of surface morphology by reflection electron holography",
+   "venue": "",
+   "year": 1989,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  },
+  {
+   "paperId": "60f5ae05bcb620685c272b965c223f89cbabb308",
+   "externalIds": {
+    "MAG": "2333848401",
+    "DOI": "10.1557/PROC-332-405",
+    "CorpusId": 101682770
+   },
+   "title": "Low Voltage Point Projection Microscopy and Time of Flight Stm - Two New Microscopies",
+   "venue": "",
+   "year": 1994,
+   "authors": [
+    {
+     "authorId": "145189952",
+     "name": "J. Spence"
+    },
+    {
+     "authorId": "46958242",
+     "name": "W. Qian"
+    },
+    {
+     "authorId": "143920933",
+     "name": "W. Lo"
+    },
+    {
+     "authorId": "2066123498",
+     "name": "S. Mo"
+    },
+    {
+     "authorId": "8013288",
+     "name": "U. Knipping"
+    },
+    {
+     "authorId": "91995435",
+     "name": "X. Zhang"
+    }
+   ]
+  },
+  {
+   "paperId": "665d514c7ae7a1daab2291cd587c89e8e3a9e9e6",
+   "externalIds": {
+    "MAG": "2905000151",
+    "DOI": "10.2172/10158434",
+    "CorpusId": 139824440
+   },
+   "title": "Surfaces and interfaces of ceramics and metals. [Final] report, July 1988--November 1992",
+   "venue": "",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "66284939",
+     "name": "Washington Dc Usdoe"
+    }
+   ]
+  },
+  {
+   "paperId": "6813b2f6a3705e70020ad9d8123ca47047a66be0",
+   "externalIds": {
+    "MAG": "1990705543",
+    "DOI": "10.1103/PHYSREVLETT.62.2969",
+    "CorpusId": 37450560,
+    "PubMed": "10040140"
+   },
+   "title": "Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography.",
+   "venue": "Physical Review Letters",
+   "year": 1989,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "17617771",
+     "name": "J. Endo"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "2252434889",
+     "name": "Akira Tonomura"
+    },
+    {
+     "authorId": null,
+     "name": "Akira Fukuhara"
+    }
+   ]
+  },
+  {
+   "paperId": "6eacdbf1b6ea9464a136baaf18fa7838192bbd1e",
+   "externalIds": {
+    "MAG": "2014136372",
+    "DOI": "10.1117/12.260641",
+    "CorpusId": 136908914
+   },
+   "title": "Reflective coatings in optical interferometry for in vitro studies of the eardrum",
+   "venue": "European Conference on Biomedical Optics",
+   "year": 1996,
+   "authors": [
+    {
+     "authorId": "3412973",
+     "name": "J. Dirckx"
+    },
+    {
+     "authorId": "5046784",
+     "name": "W. Decraemer"
+    }
+   ]
+  },
+  {
+   "paperId": "796e64f892e9d8a79d6eca523c09bda79a1b4f9e",
+   "externalIds": {
+    "MAG": "2197199369",
+    "DOI": "10.1007/978-3-662-07766-5_8",
+    "CorpusId": 125003881
+   },
+   "title": "Multi-Method High-Resolution Surface Analysis with Slow Electrons",
+   "venue": "",
+   "year": 2003,
+   "authors": [
+    {
+     "authorId": "116521971",
+     "name": "E. Bauer"
+    },
+    {
+     "authorId": "49300263",
+     "name": "T. Schmidt"
+    }
+   ]
+  },
+  {
+   "paperId": "829e549805d3c1cebbe2efba123782e9b72fbbff",
+   "externalIds": {
+    "MAG": "2062510886",
+    "DOI": "10.1016/0039-6028(93)90047-N",
+    "CorpusId": 97262396
+   },
+   "title": "Application of electron holography to surface topography observation",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    }
+   ]
+  },
+  {
+   "paperId": "88f9ec1a481b88ec54a1da296183ee9b23b7394f",
+   "externalIds": {
+    "MAG": "1994085323",
+    "DOI": "10.1380/JSSSJ.24.166",
+    "CorpusId": 96215369
+   },
+   "title": "Electron Energy Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter.",
+   "venue": "",
+   "year": 2003,
+   "authors": [
+    {
+     "authorId": "13166834",
+     "name": "Y. Tanishiro"
+    }
+   ]
+  },
+  {
+   "paperId": "98a0457da2f8a1413e19081a631945626c5400c1",
+   "externalIds": {
+    "MAG": "2018753685",
+    "DOI": "10.1016/0304-3991(93)90124-G",
+    "CorpusId": 120579501
+   },
+   "title": "Reflection electron holographic observation of surface displacement field",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    }
+   ]
+  },
+  {
+   "paperId": "a0ff861a12b8e1ce3c30f94b116c0ba1a88877ce",
+   "externalIds": {
+    "MAG": "1954243266",
+    "DOI": "10.1093/OXFORDJOURNALS.JMICRO.A050815",
+    "CorpusId": 135765868
+   },
+   "title": "Observation of GaAs(110) Surface Defect by Reflection Electron Holography",
+   "venue": "",
+   "year": 1990,
+   "authors": [
+    {
+     "authorId": "5613608",
+     "name": "M. Takeguchi"
+    },
+    {
+     "authorId": "48636772",
+     "name": "K. Harada"
+    },
+    {
+     "authorId": "145192663",
+     "name": "R. Shimizu"
+    }
+   ]
+  },
+  {
+   "paperId": "ac2a4a7d878da562fe7113dd27b2ebda74775a44",
+   "externalIds": {
+    "MAG": "3033879513",
+    "DOI": "10.1103/physrevlett.63.584.3",
+    "CorpusId": 230761570
+   },
+   "title": "Erratum: Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography [Phys. Rev. Lett. 62, 2969 (1989)]",
+   "venue": "",
+   "year": 1989,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    },
+    {
+     "authorId": "17617771",
+     "name": "J. Endo"
+    },
+    {
+     "authorId": "48975731",
+     "name": "T. Matsuda"
+    },
+    {
+     "authorId": "34900760",
+     "name": "A. Tonomura"
+    },
+    {
+     "authorId": "92864945",
+     "name": "A. Fukuhara"
+    }
+   ]
+  },
+  {
+   "paperId": "da6e3a3f9bd69bfbc97d63d4b0e934fcfab0109e",
+   "externalIds": {
+    "MAG": "2053513385",
+    "DOI": "10.1063/1.353151",
+    "CorpusId": 120721621
+   },
+   "title": "Aberrations of emission cathodes: Nanometer diameter field-emission electron sources",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "8106889",
+     "name": "M. Scheinfein"
+    },
+    {
+     "authorId": "46958242",
+     "name": "W. Qian"
+    },
+    {
+     "authorId": "145189952",
+     "name": "J. Spence"
+    }
+   ]
+  },
+  {
+   "paperId": "dace843bf5ef27df1fe53c11f033070303af03cc",
+   "externalIds": {
+    "MAG": "1989898237",
+    "DOI": "10.1002/jemt.1070200415",
+    "CorpusId": 20523610,
+    "PubMed": "1498359"
+   },
+   "title": "Observation of surfaces by reflection electron holography",
+   "venue": "Microscopy research and technique (Print)",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "46582284",
+     "name": "N. Osakabe"
+    }
+   ]
+  },
+  {
+   "paperId": "dc74261793a112218e6bae35ca9238701eac73c7",
+   "externalIds": {
+    "MAG": "2021786678",
+    "DOI": "10.1088/0034-4885/56/8/002",
+    "CorpusId": 121056503
+   },
+   "title": "Electron reflection, diffraction and imaging of bulk crystal surfaces in TEM and STEM",
+   "venue": "",
+   "year": 1993,
+   "authors": [
+    {
+     "authorId": "2462333071",
+     "name": "Zhong-Lin Wang"
+    }
+   ]
+  },
+  {
+   "paperId": "ec957447b3bb1edd9830d7ed59ba679422804463",
+   "externalIds": {
+    "MAG": "2163735975",
+    "DOI": "10.1002/JEMT.1070200414",
+    "CorpusId": 6236208,
+    "PubMed": "1498358"
+   },
+   "title": "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces",
+   "venue": "Microscopy research and technique (Print)",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "11524200",
+     "name": "H. Banzhof"
+    },
+    {
+     "authorId": "153473206",
+     "name": "K. Herrmann"
+    },
+    {
+     "authorId": "3323741",
+     "name": "H. Lichte"
+    }
+   ]
+  },
+  {
+   "paperId": "f2c4f015f7757d13eb4f37da0d3bc690c1d49a18",
+   "externalIds": {
+    "MAG": "565388797",
+    "CorpusId": 92947098
+   },
+   "title": "In situ electron and tunneling microscopy of dynamic processes : symposium held November 27-30, 1995, Boston, Massachusetts, U.S.A.",
+   "venue": "",
+   "year": 1996,
+   "authors": [
+    {
+     "authorId": "143715073",
+     "name": "Renu Sharma"
+    }
+   ]
+  }
+ ]
+}

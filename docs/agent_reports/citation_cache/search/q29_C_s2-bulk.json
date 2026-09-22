@@ -1,0 +1,622 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22reflection+ptychography%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 14,
+ "token": null,
+ "data": [
+  {
+   "paperId": "05000448f0433d03f9af6b06e61d0d64ddd4cd2f",
+   "externalIds": {
+    "DOI": "10.1117/12.3063334",
+    "CorpusId": 281462592
+   },
+   "title": "Development of long working distance reflection optics for soft x-ray reflection ptychography",
+   "venue": "Advances in X-Ray/EUV Sources, Optics, and Components XX",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "93088365",
+     "name": "Yuichi Nagayama"
+    },
+    {
+     "authorId": "2463332348",
+     "name": "Takeo Yoko"
+    },
+    {
+     "authorId": "97206487",
+     "name": "Kai Sakurai"
+    },
+    {
+     "authorId": "1380921417",
+     "name": "T. Shimamura"
+    },
+    {
+     "authorId": "2324265690",
+     "name": "Jordan T. O'Neal"
+    },
+    {
+     "authorId": "2034363688",
+     "name": "Kyota Yoshinaga"
+    },
+    {
+     "authorId": "2324266254",
+     "name": "Yu Nakata"
+    },
+    {
+     "authorId": "8931533",
+     "name": "Hikaru Kishimoto"
+    },
+    {
+     "authorId": "5741301",
+     "name": "Y. Senba"
+    },
+    {
+     "authorId": "145707609",
+     "name": "M. Yabashi"
+    },
+    {
+     "authorId": "2314370362",
+     "name": "Haruhiko Ohashi"
+    },
+    {
+     "authorId": "2208306304",
+     "name": "Takashi Kimura"
+    }
+   ]
+  },
+  {
+   "paperId": "0f159ed9da06f28f91ac01e2ca7f81185c7a2157",
+   "externalIds": {
+    "DOI": "10.1016/j.optcom.2025.132300",
+    "CorpusId": 280907200
+   },
+   "title": "An adaptation and correction angle algorithm for near-field reflection ptychography",
+   "venue": "Optics Communications",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2377931408",
+     "name": "Shu-Xian Zhao"
+    },
+    {
+     "authorId": "2360056026",
+     "name": "Feiyu Duan"
+    },
+    {
+     "authorId": "2299162528",
+     "name": "Xinyu Zhang"
+    },
+    {
+     "authorId": "2300255180",
+     "name": "Xiaoshuang Shen"
+    },
+    {
+     "authorId": "2289240984",
+     "name": "Zhao-Ke Mi"
+    },
+    {
+     "authorId": "2109463933",
+     "name": "Yu-Si Zhu"
+    },
+    {
+     "authorId": "2312091219",
+     "name": "Yanqi Chen"
+    },
+    {
+     "authorId": "2360154807",
+     "name": "Yunlong Qi"
+    },
+    {
+     "authorId": "2289188158",
+     "name": "Chang-Jun Ke"
+    },
+    {
+     "authorId": "2344893624",
+     "name": "Yi-Shi Shi"
+    }
+   ]
+  },
+  {
+   "paperId": "376acdad5bcd285362a5be1da75c89cc33386b8b",
+   "externalIds": {
+    "PubMedCentral": "11333750",
+    "ArXiv": "2311.14780",
+    "DOI": "10.1038/s41377-024-01558-3",
+    "CorpusId": 265457054,
+    "PubMed": "39160154"
+   },
+   "title": "Wavelength-multiplexed multi-mode EUV reflection ptychography based on automatic differentiation",
+   "venue": "Light: Science & Applications",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2064980236",
+     "name": "Jacob Seifert"
+    },
+    {
+     "authorId": "2251119648",
+     "name": "H. P. Urbach"
+    },
+    {
+     "authorId": "145612996",
+     "name": "A. Mosk"
+    },
+    {
+     "authorId": "2246811301",
+     "name": "W. Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "3950a06631c582545bf4de1eff2675e7a6682df9",
+   "externalIds": {
+    "DOI": "10.1364/cosi.2021.cw6b.4",
+    "CorpusId": 243807867
+   },
+   "title": "aPIE: Angle calibration algorithm for reflection ptychography",
+   "venue": "OSA Imaging and Applied Optics Congress 2021 (3D, COSI, DH, ISA, pcAOP)",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": null,
+     "name": "Anne C. C. De Beurs"
+    },
+    {
+     "authorId": "2389341324",
+     "name": "L. Loetgering"
+    },
+    {
+     "authorId": "2139610380",
+     "name": "Milan Herczog"
+    },
+    {
+     "authorId": "5837792",
+     "name": "K. Eikema"
+    },
+    {
+     "authorId": "123429379",
+     "name": "S. Witte"
+    }
+   ]
+  },
+  {
+   "paperId": "46f43c704c7d26ba8853dba5d600d705b53bb6b9",
+   "externalIds": {
+    "ArXiv": "2409.11251",
+    "DOI": "10.1364/OE.542569",
+    "CorpusId": 272693843
+   },
+   "title": "Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles",
+   "venue": "Optics Express",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2321452909",
+     "name": "Christina Porter"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "4de22bb50925cdf07633fd944bda64cfb2ef6a4a",
+   "externalIds": {
+    "ArXiv": "2604.05989",
+    "DOI": "10.1364/OE.601179",
+    "CorpusId": 287209597,
+    "PubMed": "42596312"
+   },
+   "title": "2D approximation quickly breaks down in reflection ptychography.",
+   "venue": "Optics Express",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2335760950",
+     "name": "Stefan Witte"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "555c62573939af350acb72d40e857841132de4af",
+   "externalIds": {
+    "DOI": "10.1364/euvxray.2022.ew4a.2",
+    "CorpusId": 250096969
+   },
+   "title": "Reflection Ptychography via Auto Differentiation on a High Harmonic EUV beamline",
+   "venue": "Optica High-brightness Sources and Light-driven Interactions Congress 2022",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "46692331",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2064980236",
+     "name": "Jacob Seifert"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "46369895",
+     "name": "W. Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "62ef2681fb31cd2841a90eb784748dd5d671b623",
+   "externalIds": {
+    "DOI": "10.37188/lam.2026.112",
+    "CorpusId": 289772324
+   },
+   "title": "Table-top extreme ultraviolet grazing-reflection ptychography with full-pose self-calibration",
+   "venue": "Light: Advanced Manufacturing",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2312091219",
+     "name": "Yanqi Chen"
+    },
+    {
+     "authorId": "2278643878",
+     "name": "Hao Xu"
+    },
+    {
+     "authorId": "2109238046",
+     "name": "Qingxin Wang"
+    },
+    {
+     "authorId": "2447564237",
+     "name": "Yan-Wei Li"
+    },
+    {
+     "authorId": "2356118797",
+     "name": "Lei Huang"
+    },
+    {
+     "authorId": "2259493869",
+     "name": "Zhengkang Xu"
+    },
+    {
+     "authorId": "2356246953",
+     "name": "Su Li"
+    },
+    {
+     "authorId": "2445253833",
+     "name": "Dongliang Wang"
+    },
+    {
+     "authorId": "2447334496",
+     "name": "Ya-Qi Wu"
+    },
+    {
+     "authorId": "2467825773",
+     "name": "Jian-Jie Li"
+    },
+    {
+     "authorId": "2446888582",
+     "name": "Fei Wang"
+    },
+    {
+     "authorId": "2130044939",
+     "name": "Xiao-Shi Zhang"
+    },
+    {
+     "authorId": "2484857698",
+     "name": "Bo-Wen Liu"
+    },
+    {
+     "authorId": "2446565801",
+     "name": "Guo-Qing Chang"
+    },
+    {
+     "authorId": "2174105768",
+     "name": "Jie Li"
+    },
+    {
+     "authorId": "2253786849",
+     "name": "Chang-Jun Ke"
+    },
+    {
+     "authorId": "2344893624",
+     "name": "Yi-Shi Shi"
+    },
+    {
+     "authorId": "2256971045",
+     "name": "Zhong-Wei Fan"
+    }
+   ]
+  },
+  {
+   "paperId": "7aa6813f05200d07a40ca14cec27a95d030b5d46",
+   "externalIds": {
+    "ArXiv": "2601.20261",
+    "DOI": "10.1364/OE.591755",
+    "CorpusId": 285101477
+   },
+   "title": "Soft X-ray Reflection Ptychography",
+   "venue": "Optics Express",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2407200950",
+     "name": "Damian Guenzing"
+    },
+    {
+     "authorId": "2070398812",
+     "name": "Dayne Y. Sasaki"
+    },
+    {
+     "authorId": "2381599458",
+     "name": "Alexander Ditter"
+    },
+    {
+     "authorId": "2251768521",
+     "name": "Abraham L. Levitan"
+    },
+    {
+     "authorId": "3733826",
+     "name": "E. Gullikson"
+    },
+    {
+     "authorId": "2306512586",
+     "name": "S. Dhuey"
+    },
+    {
+     "authorId": "116848859",
+     "name": "Arian Gashi"
+    },
+    {
+     "authorId": "2249508143",
+     "name": "Hendrik Ohldag"
+    },
+    {
+     "authorId": "2243940914",
+     "name": "Sujoy Roy"
+    },
+    {
+     "authorId": "2311430705",
+     "name": "David A. Shapiro"
+    },
+    {
+     "authorId": "2251774563",
+     "name": "Riccardo Comin"
+    },
+    {
+     "authorId": "2257348309",
+     "name": "Sophie A. Morley"
+    }
+   ]
+  },
+  {
+   "paperId": "96be096d38cfeccb48d068db2a08290a38d9fdf1",
+   "externalIds": {
+    "ArXiv": "2412.11247",
+    "CorpusId": 274777046
+   },
+   "title": "Interface and spectrum multiplexing ptychographic reflection microscopy",
+   "venue": "",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2303847780",
+     "name": "Yun Gao"
+    },
+    {
+     "authorId": "2212297555",
+     "name": "Qijun You"
+    },
+    {
+     "authorId": "2334529689",
+     "name": "Pei-Xiang Lu"
+    },
+    {
+     "authorId": "2304337100",
+     "name": "W. Cao"
+    }
+   ]
+  },
+  {
+   "paperId": "b5642c9b5fb4bbc809ab2bdd978e592b5b3d445e",
+   "externalIds": {
+    "DOI": "10.2139/ssrn.4395456",
+    "CorpusId": 257680658
+   },
+   "title": "Resolution-Enhanced Reflection Ptychography with Axial Distance Calibration",
+   "venue": "Social Science Research Network",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "102574383",
+     "name": "Chuan‐Chung Chen"
+    },
+    {
+     "authorId": "2155165273",
+     "name": "Jiamin Liu"
+    },
+    {
+     "authorId": "72431803",
+     "name": "Jinlong Zhu"
+    },
+    {
+     "authorId": "51139698",
+     "name": "Honggang Gu"
+    },
+    {
+     "authorId": "2131173295",
+     "name": "Shiyuan Liu"
+    }
+   ]
+  },
+  {
+   "paperId": "c1dd97d9e7bcc3bebd70effd51578ec7f94f0b24",
+   "externalIds": {
+    "DOI": "10.1016/j.ultramic.2023.113720",
+    "CorpusId": 257685958,
+    "PubMed": "37004492"
+   },
+   "title": "Characterisation of engineered defects in extreme ultraviolet mirror substrates using lab-scale extreme ultraviolet reflection ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2208642858",
+     "name": "Haoyan Lu"
+    },
+    {
+     "authorId": "12808282",
+     "name": "M. Odstrčil"
+    },
+    {
+     "authorId": "1729265069",
+     "name": "Charles Pooley"
+    },
+    {
+     "authorId": "2086119636",
+     "name": "Jan Biller"
+    },
+    {
+     "authorId": "2101465818",
+     "name": "Mikheil Mebonia"
+    },
+    {
+     "authorId": "82006036",
+     "name": "G. He"
+    },
+    {
+     "authorId": "38772791",
+     "name": "M. Praeger"
+    },
+    {
+     "authorId": "11586252",
+     "name": "L. Juschkin"
+    },
+    {
+     "authorId": "2326366311",
+     "name": "Jeremy G. Frey"
+    },
+    {
+     "authorId": "5448814",
+     "name": "W. Brocklesby"
+    }
+   ]
+  },
+  {
+   "paperId": "dc415fbe8703c3352dc09b5e406cf04b3e8d8a9f",
+   "externalIds": {
+    "DOI": "10.1364/ol.453655",
+    "CorpusId": 247348645,
+    "PubMed": "35427308"
+   },
+   "title": "aPIE: an angle calibration algorithm for reflection ptychography.",
+   "venue": "Optics Letters",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": null,
+     "name": "Anne de Beurs"
+    },
+    {
+     "authorId": "2389341324",
+     "name": "L. Loetgering"
+    },
+    {
+     "authorId": "2139610380",
+     "name": "Milan Herczog"
+    },
+    {
+     "authorId": "2020397152",
+     "name": "Meng-Qi Du"
+    },
+    {
+     "authorId": "5837792",
+     "name": "K. Eikema"
+    },
+    {
+     "authorId": "123429379",
+     "name": "S. Witte"
+    }
+   ]
+  },
+  {
+   "paperId": "ed393ef9013d9b2fcf8838fd5230027ff1f10f10",
+   "externalIds": {
+    "MAG": "2986936229",
+    "DOI": "10.1117/12.2537963",
+    "CorpusId": 209915201
+   },
+   "title": "Topography measurement by normal-incidence reflection ptychography",
+   "venue": "SPIE/COS Photonics Asia",
+   "year": 2019,
+   "authors": [
+    {
+     "authorId": "2118762335",
+     "name": "Chao Tang"
+    },
+    {
+     "authorId": "48798685",
+     "name": "L. Rong"
+    },
+    {
+     "authorId": "67080035",
+     "name": "Fangrui Tan"
+    },
+    {
+     "authorId": "2156073259",
+     "name": "Bing Li"
+    },
+    {
+     "authorId": "150084177",
+     "name": "Da-Yong Wang"
+    },
+    {
+     "authorId": "2110118009",
+     "name": "Jie Zhao"
+    },
+    {
+     "authorId": "3158861",
+     "name": "Yunxin Wang"
+    }
+   ]
+  }
+ ]
+}

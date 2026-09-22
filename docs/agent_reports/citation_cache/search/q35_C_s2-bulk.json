@@ -1,0 +1,1406 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychography+%2B+%28%22extreme+ultraviolet%22+%7C+EUV%29+%2B+reflection&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 34,
+ "token": null,
+ "data": [
+  {
+   "paperId": "01613fc1e5c4bde90ee634b79084c562e8f22a7b",
+   "externalIds": {
+    "MAG": "1985902695",
+    "DOI": "10.1117/12.2046226",
+    "CorpusId": 120591906
+   },
+   "title": "A novel concept for actinic EUV mask review tool using a scanning lensless imaging method at the Swiss Light Source",
+   "venue": "Advanced Lithography",
+   "year": 2014,
+   "authors": [
+    {
+     "authorId": "115935935",
+     "name": "Sangsul Lee"
+    },
+    {
+     "authorId": "1398488114",
+     "name": "M. Guizar-Sicairos"
+    },
+    {
+     "authorId": "48325850",
+     "name": "Y. Ekinci"
+    }
+   ]
+  },
+  {
+   "paperId": "12fc9958622c50939f4d7bdf8071e86ab5f1d634",
+   "externalIds": {
+    "MAG": "2196035214",
+    "DOI": "10.1117/12.2205304",
+    "CorpusId": 138985422
+   },
+   "title": "Phase imaging results of phase defect using micro coherent EUV scatterometry microscope",
+   "venue": "SPIE Photomask Technology",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "49918561",
+     "name": "T. Harada"
+    },
+    {
+     "authorId": "93283794",
+     "name": "Hiraku Hashimoto"
+    },
+    {
+     "authorId": "46234498",
+     "name": "Tsuyoshi Amano"
+    },
+    {
+     "authorId": "49206265",
+     "name": "H. Kinoshita"
+    },
+    {
+     "authorId": "121873607",
+     "name": "Takeo Watanabe"
+    }
+   ]
+  },
+  {
+   "paperId": "2732e17ecbdb2c90a2652098cba25860b60b649b",
+   "externalIds": {
+    "DOI": "10.1117/12.3027947",
+    "CorpusId": 273136313
+   },
+   "title": "Optimization of the tilt angles in reflection-mode ptychographic reconstructions by leveraging the flexibility of automatic differentiation-based modeling",
+   "venue": "NanoScience + Engineering",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2321452909",
+     "name": "Christina Porter"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "2c6cae321de70e971aa918d40c5b5a3904c67aa1",
+   "externalIds": {
+    "DOI": "10.5463/thesis.313",
+    "CorpusId": 264499678
+   },
+   "title": "Lensless imaging with high-harmonic sources",
+   "venue": "",
+   "year": null,
+   "authors": [
+    {
+     "authorId": null,
+     "name": "Anne Christiaan Cornelis de Beurs"
+    }
+   ]
+  },
+  {
+   "paperId": "366659a147e7e2350d1c2a3de6dc541c50bc2220",
+   "externalIds": {
+    "MAG": "2015415211",
+    "DOI": "10.1364/CLEO_SI.2014.STH3O.1",
+    "CorpusId": 31760200
+   },
+   "title": "High fidelity, general reflection-mode coherent diffractive imaging with a tabletop EUV source",
+   "venue": "Conference on Lasers and Electro-Optics",
+   "year": 2014,
+   "authors": [
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    }
+   ]
+  },
+  {
+   "paperId": "376acdad5bcd285362a5be1da75c89cc33386b8b",
+   "externalIds": {
+    "PubMedCentral": "11333750",
+    "ArXiv": "2311.14780",
+    "DOI": "10.1038/s41377-024-01558-3",
+    "CorpusId": 265457054,
+    "PubMed": "39160154"
+   },
+   "title": "Wavelength-multiplexed multi-mode EUV reflection ptychography based on automatic differentiation",
+   "venue": "Light: Science & Applications",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2064980236",
+     "name": "Jacob Seifert"
+    },
+    {
+     "authorId": "2251119648",
+     "name": "H. P. Urbach"
+    },
+    {
+     "authorId": "145612996",
+     "name": "A. Mosk"
+    },
+    {
+     "authorId": "2246811301",
+     "name": "W. Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "46f43c704c7d26ba8853dba5d600d705b53bb6b9",
+   "externalIds": {
+    "ArXiv": "2409.11251",
+    "DOI": "10.1364/OE.542569",
+    "CorpusId": 272693843
+   },
+   "title": "Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles",
+   "venue": "Optics Express",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2321452909",
+     "name": "Christina Porter"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "4de22bb50925cdf07633fd944bda64cfb2ef6a4a",
+   "externalIds": {
+    "ArXiv": "2604.05989",
+    "DOI": "10.1364/OE.601179",
+    "CorpusId": 287209597,
+    "PubMed": "42596312"
+   },
+   "title": "2D approximation quickly breaks down in reflection ptychography.",
+   "venue": "Optics Express",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2335760950",
+     "name": "Stefan Witte"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "555c62573939af350acb72d40e857841132de4af",
+   "externalIds": {
+    "DOI": "10.1364/euvxray.2022.ew4a.2",
+    "CorpusId": 250096969
+   },
+   "title": "Reflection Ptychography via Auto Differentiation on a High Harmonic EUV beamline",
+   "venue": "Optica High-brightness Sources and Light-driven Interactions Congress 2022",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "46692331",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2064980236",
+     "name": "Jacob Seifert"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "46369895",
+     "name": "W. Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "57f464c3b62cd6543bfc78a0983fcae22fba4b24",
+   "externalIds": {
+    "MAG": "2416852725",
+    "DOI": "10.1007/978-3-319-19521-6_28",
+    "CorpusId": 124853502
+   },
+   "title": "Reflection Mode Imaging with Extreme-Ultraviolet Light from a High Harmonic Source",
+   "venue": "",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "2270721949",
+     "name": "J. Rocca"
+    },
+    {
+     "authorId": "5425733",
+     "name": "C. Menoni"
+    },
+    {
+     "authorId": "50538281",
+     "name": "M. Marconi"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "5b1a8bd47613322ddf95acce02e7f1dada3b2407",
+   "externalIds": {
+    "ArXiv": "2402.00783",
+    "CorpusId": 267365306
+   },
+   "title": "Element-specific and high-bandwidth ferromagnetic resonance spectroscopy with a coherent, extreme ultraviolet (EUV) source",
+   "venue": "",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "4144582",
+     "name": "M. Tanksalvala"
+    },
+    {
+     "authorId": "2282138417",
+     "name": "Anthony Kos"
+    },
+    {
+     "authorId": "2282138244",
+     "name": "Jacob Wisser"
+    },
+    {
+     "authorId": "2260108681",
+     "name": "Scott A. Diddams"
+    },
+    {
+     "authorId": "6985718",
+     "name": "H. Nembach"
+    },
+    {
+     "authorId": "2546620",
+     "name": "J. Shaw"
+    }
+   ]
+  },
+  {
+   "paperId": "5bc791406d7b3d233fa09518ba71bcfd3e74128d",
+   "externalIds": {
+    "MAG": "2601070640",
+    "DOI": "10.1117/12.2271386",
+    "CorpusId": 125687202
+   },
+   "title": "Sub-wavelength transmission and reflection mode tabletop imaging with 13nm illumination via ptychography CDI",
+   "venue": "Advanced Lithography",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "4144582",
+     "name": "M. Tanksalvala"
+    },
+    {
+     "authorId": "31776903",
+     "name": "Christina L. Porter"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "38340734",
+     "name": "M. Gerrity"
+    },
+    {
+     "authorId": "21441409",
+     "name": "G. Mancini"
+    },
+    {
+     "authorId": "2108056642",
+     "name": "Xiaoshi Zhang"
+    },
+    {
+     "authorId": "40526895",
+     "name": "Galen P. Miley"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "145836340",
+     "name": "B. Galloway"
+    },
+    {
+     "authorId": "5969662",
+     "name": "Charles S. Bevis"
+    },
+    {
+     "authorId": "33455098",
+     "name": "Robert M. Karl"
+    },
+    {
+     "authorId": "152537531",
+     "name": "Daniel A. Adams"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    }
+   ]
+  },
+  {
+   "paperId": "62ef2681fb31cd2841a90eb784748dd5d671b623",
+   "externalIds": {
+    "DOI": "10.37188/lam.2026.112",
+    "CorpusId": 289772324
+   },
+   "title": "Table-top extreme ultraviolet grazing-reflection ptychography with full-pose self-calibration",
+   "venue": "Light: Advanced Manufacturing",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2312091219",
+     "name": "Yanqi Chen"
+    },
+    {
+     "authorId": "2278643878",
+     "name": "Hao Xu"
+    },
+    {
+     "authorId": "2109238046",
+     "name": "Qingxin Wang"
+    },
+    {
+     "authorId": "2447564237",
+     "name": "Yan-Wei Li"
+    },
+    {
+     "authorId": "2356118797",
+     "name": "Lei Huang"
+    },
+    {
+     "authorId": "2259493869",
+     "name": "Zhengkang Xu"
+    },
+    {
+     "authorId": "2356246953",
+     "name": "Su Li"
+    },
+    {
+     "authorId": "2445253833",
+     "name": "Dongliang Wang"
+    },
+    {
+     "authorId": "2447334496",
+     "name": "Ya-Qi Wu"
+    },
+    {
+     "authorId": "2467825773",
+     "name": "Jian-Jie Li"
+    },
+    {
+     "authorId": "2446888582",
+     "name": "Fei Wang"
+    },
+    {
+     "authorId": "2130044939",
+     "name": "Xiao-Shi Zhang"
+    },
+    {
+     "authorId": "2484857698",
+     "name": "Bo-Wen Liu"
+    },
+    {
+     "authorId": "2446565801",
+     "name": "Guo-Qing Chang"
+    },
+    {
+     "authorId": "2174105768",
+     "name": "Jie Li"
+    },
+    {
+     "authorId": "2253786849",
+     "name": "Chang-Jun Ke"
+    },
+    {
+     "authorId": "2344893624",
+     "name": "Yi-Shi Shi"
+    },
+    {
+     "authorId": "2256971045",
+     "name": "Zhong-Wei Fan"
+    }
+   ]
+  },
+  {
+   "paperId": "6597e0057deba20d591019377fd3795e4952aa9e",
+   "externalIds": {
+    "MAG": "2091815234",
+    "DOI": "10.1364/LS.2014.LW1H.4",
+    "CorpusId": 123170637
+   },
+   "title": "Tabletop Nanometer Extreme Ultraviolet Imaging in an Extended Reflection Geometery",
+   "venue": "",
+   "year": 2014,
+   "authors": [
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    }
+   ]
+  },
+  {
+   "paperId": "6c738442966514dd3dcd23290575c16a129cebc2",
+   "externalIds": {
+    "MAG": "2616832851",
+    "DOI": "10.7567/JJAP.56.06GB01",
+    "CorpusId": 126377107
+   },
+   "title": "Imaging performance improvement of coherent extreme-ultraviolet scatterometry microscope with high-harmonic-generation extreme-ultraviolet source",
+   "venue": "",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "104457314",
+     "name": "Daiki Mamezaki"
+    },
+    {
+     "authorId": "49918561",
+     "name": "T. Harada"
+    },
+    {
+     "authorId": "79816603",
+     "name": "Y. Nagata"
+    },
+    {
+     "authorId": "121873607",
+     "name": "Takeo Watanabe"
+    }
+   ]
+  },
+  {
+   "paperId": "6effff22039c437e44d7293ad24901709aa5e614",
+   "externalIds": {
+    "ArXiv": "1312.2049",
+    "MAG": "2952957294",
+    "DOI": "10.1364/OPTICA.1.000039",
+    "CorpusId": 10577107
+   },
+   "title": "Tabletop nanometer extreme ultraviolet imaging in an extended reflection mode using coherent Fresnel ptychography",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "80ba1c8dda80242b7113aee804d027e5779888dc",
+   "externalIds": {
+    "MAG": "2801715097",
+    "DOI": "10.1364/OE.26.012242",
+    "CorpusId": 13743611,
+    "PubMed": "29716137"
+   },
+   "title": "Beam drift and partial probe coherence effects in EUV reflective-mode coherent diffractive imaging.",
+   "venue": "Optics Express",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "48406094",
+     "name": "P. Helfenstein"
+    },
+    {
+     "authorId": "50519205",
+     "name": "R. Rajeev"
+    },
+    {
+     "authorId": "3684956",
+     "name": "I. Mochi"
+    },
+    {
+     "authorId": "3938038",
+     "name": "A. Kleibert"
+    },
+    {
+     "authorId": "143856401",
+     "name": "C. Vaz"
+    },
+    {
+     "authorId": "48325850",
+     "name": "Y. Ekinci"
+    }
+   ]
+  },
+  {
+   "paperId": "8bba1117cdd0206413dc0f5919396c0d7d92a303",
+   "externalIds": {
+    "MAG": "2295028884",
+    "DOI": "10.1117/12.2220368",
+    "CorpusId": 123849365
+   },
+   "title": "Spectroscopic imaging of buried layers in 2+1D via tabletop ptychography with high-harmonic EUV illumination",
+   "venue": "SPIE Advanced Lithography",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "31776903",
+     "name": "Christina L. Porter"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "21441409",
+     "name": "G. Mancini"
+    },
+    {
+     "authorId": "33455098",
+     "name": "Robert M. Karl"
+    },
+    {
+     "authorId": "4144582",
+     "name": "M. Tanksalvala"
+    },
+    {
+     "authorId": "5969662",
+     "name": "Charles S. Bevis"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "967d3a96efa29186d02b6be6bc9945b9c048569c",
+   "externalIds": {
+    "CorpusId": 20185164
+   },
+   "title": "Ptychographic hyperspectral spectromicroscopy with an extreme ultraviolet high harmonic comb",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "120820002",
+     "name": "Ennis"
+    },
+    {
+     "authorId": "2072468875",
+     "name": "G. F."
+    },
+    {
+     "authorId": "150039072",
+     "name": "Ardner"
+    },
+    {
+     "authorId": "80456109",
+     "name": "Hristina"
+    },
+    {
+     "authorId": "2415879007",
+     "name": "P. L."
+    },
+    {
+     "authorId": "151164080",
+     "name": "Orter"
+    },
+    {
+     "authorId": "74054122",
+     "name": "Hristopher"
+    },
+    {
+     "authorId": "51304256",
+     "name": "M. A."
+    },
+    {
+     "authorId": "2079206157",
+     "name": "Ancuso"
+    },
+    {
+     "authorId": "81010579",
+     "name": "enry"
+    },
+    {
+     "authorId": "107975820",
+     "name": "K. C."
+    },
+    {
+     "authorId": "2079345552",
+     "name": "Apteyn"
+    }
+   ]
+  },
+  {
+   "paperId": "96be096d38cfeccb48d068db2a08290a38d9fdf1",
+   "externalIds": {
+    "ArXiv": "2412.11247",
+    "CorpusId": 274777046
+   },
+   "title": "Interface and spectrum multiplexing ptychographic reflection microscopy",
+   "venue": "",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2303847780",
+     "name": "Yun Gao"
+    },
+    {
+     "authorId": "2212297555",
+     "name": "Qijun You"
+    },
+    {
+     "authorId": "2334529689",
+     "name": "Pei-Xiang Lu"
+    },
+    {
+     "authorId": "2304337100",
+     "name": "W. Cao"
+    }
+   ]
+  },
+  {
+   "paperId": "aa3774a4fbe7b51942bc4f20101dd071d50c72b8",
+   "externalIds": {
+    "MAG": "2280616912",
+    "DOI": "10.1117/1.JMM.15.2.021007",
+    "CorpusId": 124786202
+   },
+   "title": "Phase imaging results of phase defect using micro-coherent extreme ultraviolet scatterometry microscope",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "49918561",
+     "name": "T. Harada"
+    },
+    {
+     "authorId": "93283794",
+     "name": "Hiraku Hashimoto"
+    },
+    {
+     "authorId": "46234498",
+     "name": "Tsuyoshi Amano"
+    },
+    {
+     "authorId": "49206265",
+     "name": "H. Kinoshita"
+    },
+    {
+     "authorId": "121873607",
+     "name": "Takeo Watanabe"
+    }
+   ]
+  },
+  {
+   "paperId": "b1a193dd18599b337a4e2e86ab2b99d43ddb1f37",
+   "externalIds": {
+    "CorpusId": 204751638
+   },
+   "title": "Beam drift and partial probe coherence effects in EUV reflective-mode coherent diffractive imaging",
+   "venue": "",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "79717851",
+     "name": "Atrick"
+    },
+    {
+     "authorId": "2082976972",
+     "name": "Elfenstein"
+    },
+    {
+     "authorId": "2078868865",
+     "name": "Ajendran"
+    },
+    {
+     "authorId": "2078872613",
+     "name": "Ajeev"
+    },
+    {
+     "authorId": "2071287154",
+     "name": "acopo"
+    },
+    {
+     "authorId": "2094033914",
+     "name": "Ochi"
+    },
+    {
+     "authorId": "2099171593",
+     "name": "Rmin"
+    },
+    {
+     "authorId": "2103563582",
+     "name": "Leibert"
+    },
+    {
+     "authorId": "2105256323",
+     "name": "V. C.A.F."
+    },
+    {
+     "authorId": "70401482",
+     "name": "Az"
+    },
+    {
+     "authorId": "104079551",
+     "name": "Asin"
+    },
+    {
+     "authorId": "2103212969",
+     "name": "Kinci"
+    }
+   ]
+  },
+  {
+   "paperId": "b695b0eab9e3fa1525931d7562a8b2b9514263e7",
+   "externalIds": {
+    "CorpusId": 54582859
+   },
+   "title": "Nonlinear ptychographic coherent diffractive imaging",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "2416507925",
+     "name": "O. M."
+    },
+    {
+     "authorId": "2082288668",
+     "name": "DSTRC̆IL"
+    },
+    {
+     "authorId": "2352717667",
+     "name": "B. P."
+    },
+    {
+     "authorId": "2078967838",
+     "name": "Aksh"
+    },
+    {
+     "authorId": "2128842113",
+     "name": "G. C."
+    },
+    {
+     "authorId": "2079764491",
+     "name": "Awith"
+    },
+    {
+     "authorId": "2310830466",
+     "name": "V. R."
+    },
+    {
+     "authorId": "2101324139",
+     "name": "Rcelj"
+    },
+    {
+     "authorId": "2299899065",
+     "name": "G. J"
+    },
+    {
+     "authorId": "2095737242",
+     "name": "Rey"
+    },
+    {
+     "authorId": "121082649",
+     "name": "B. Ws"
+    },
+    {
+     "authorId": "2073273952",
+     "name": "Rocklesby"
+    }
+   ]
+  },
+  {
+   "paperId": "b9688dcd8df6c550da127119065e8404b1ae2714",
+   "externalIds": {
+    "DOI": "10.1364/cosi.2023.cm4b.2",
+    "CorpusId": 265645619
+   },
+   "title": "EUV diffractive imaging in reflection for wafer metrology using HHG source and automatic differentiation based ptychography",
+   "venue": "Optica Imaging Congress (3D, COSI, DH, FLatOptics, IS, pcAOP)",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "c1dd97d9e7bcc3bebd70effd51578ec7f94f0b24",
+   "externalIds": {
+    "DOI": "10.1016/j.ultramic.2023.113720",
+    "CorpusId": 257685958,
+    "PubMed": "37004492"
+   },
+   "title": "Characterisation of engineered defects in extreme ultraviolet mirror substrates using lab-scale extreme ultraviolet reflection ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2208642858",
+     "name": "Haoyan Lu"
+    },
+    {
+     "authorId": "12808282",
+     "name": "M. Odstrčil"
+    },
+    {
+     "authorId": "1729265069",
+     "name": "Charles Pooley"
+    },
+    {
+     "authorId": "2086119636",
+     "name": "Jan Biller"
+    },
+    {
+     "authorId": "2101465818",
+     "name": "Mikheil Mebonia"
+    },
+    {
+     "authorId": "82006036",
+     "name": "G. He"
+    },
+    {
+     "authorId": "38772791",
+     "name": "M. Praeger"
+    },
+    {
+     "authorId": "11586252",
+     "name": "L. Juschkin"
+    },
+    {
+     "authorId": "2326366311",
+     "name": "Jeremy G. Frey"
+    },
+    {
+     "authorId": "5448814",
+     "name": "W. Brocklesby"
+    }
+   ]
+  },
+  {
+   "paperId": "cfe19e1741db05098023debfc8c9b5172cdcd2bc",
+   "externalIds": {
+    "MAG": "3160220075",
+    "DOI": "10.22032/DBT.46898",
+    "CorpusId": 236851762
+   },
+   "title": "Diffraction-based metrology in the extreme ultraviolet",
+   "venue": "",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "69444803",
+     "name": "F. Tuitje"
+    }
+   ]
+  },
+  {
+   "paperId": "d71bbc4a9fab26ec51f5c73e765f85b26cd819f5",
+   "externalIds": {
+    "MAG": "2742998121",
+    "DOI": "10.1017/S1431927617000861",
+    "CorpusId": 34078908
+   },
+   "title": "Wide Field-of-View Reflection-Mode Ptychographic Imaging Microscope with Tabletop 12.7 nm High Harmonic Illumination",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "4144582",
+     "name": "M. Tanksalvala"
+    },
+    {
+     "authorId": "31776903",
+     "name": "Christina L. Porter"
+    },
+    {
+     "authorId": "38340734",
+     "name": "M. Gerrity"
+    },
+    {
+     "authorId": "40526895",
+     "name": "Galen P. Miley"
+    },
+    {
+     "authorId": "2108056642",
+     "name": "Xiaoshi Zhang"
+    },
+    {
+     "authorId": "5969662",
+     "name": "Charles S. Bevis"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "33455098",
+     "name": "Robert M. Karl"
+    },
+    {
+     "authorId": "21441409",
+     "name": "G. Mancini"
+    },
+    {
+     "authorId": "152537531",
+     "name": "Daniel A. Adams"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    }
+   ]
+  },
+  {
+   "paperId": "d7ec8fc45662675df0f083ef60a197016f0cc25b",
+   "externalIds": {
+    "DOI": "10.1117/12.3028711",
+    "CorpusId": 273138076
+   },
+   "title": "EUV imaging of nanostructures without lenses",
+   "venue": "NanoScience + Engineering",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2251119648",
+     "name": "H. P. Urbach"
+    },
+    {
+     "authorId": "2064980236",
+     "name": "Jacob Seifert"
+    },
+    {
+     "authorId": "145612996",
+     "name": "A. Mosk"
+    }
+   ]
+  },
+  {
+   "paperId": "dc415fbe8703c3352dc09b5e406cf04b3e8d8a9f",
+   "externalIds": {
+    "DOI": "10.1364/ol.453655",
+    "CorpusId": 247348645,
+    "PubMed": "35427308"
+   },
+   "title": "aPIE: an angle calibration algorithm for reflection ptychography.",
+   "venue": "Optics Letters",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": null,
+     "name": "Anne de Beurs"
+    },
+    {
+     "authorId": "2389341324",
+     "name": "L. Loetgering"
+    },
+    {
+     "authorId": "2139610380",
+     "name": "Milan Herczog"
+    },
+    {
+     "authorId": "2020397152",
+     "name": "Meng-Qi Du"
+    },
+    {
+     "authorId": "5837792",
+     "name": "K. Eikema"
+    },
+    {
+     "authorId": "123429379",
+     "name": "S. Witte"
+    }
+   ]
+  },
+  {
+   "paperId": "dd3486c0532f0c695b371f9f9f497cf1dbfd2f13",
+   "externalIds": {
+    "MAG": "1870708608",
+    "DOI": "10.1016/j.ultramic.2015.07.006",
+    "CorpusId": 12840510,
+    "PubMed": "26233823"
+   },
+   "title": "High contrast 3D imaging of surfaces near the wavelength limit using tabletop EUV ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "e7105a3821dab7419ab92b951aff5ae19e258d37",
+   "externalIds": {
+    "MAG": "2559873426",
+    "DOI": "10.1364/CLEO_SI.2016.SM3R.5",
+    "CorpusId": 13454492
+   },
+   "title": "Coherent diffraction imaging of buried nanostructures in a reflection geometry with extreme ultraviolet light",
+   "venue": "Conference on Lasers and Electro-Optics",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "31776903",
+     "name": "Christina L. Porter"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "21441409",
+     "name": "G. Mancini"
+    },
+    {
+     "authorId": "33455098",
+     "name": "Robert M. Karl"
+    },
+    {
+     "authorId": "4144582",
+     "name": "M. Tanksalvala"
+    },
+    {
+     "authorId": "5969662",
+     "name": "Charles S. Bevis"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "e88312cbff473f20fd849cc8652f6cd82be97e23",
+   "externalIds": {
+    "MAG": "2610505044",
+    "DOI": "10.1007/978-3-319-19521-6_33",
+    "CorpusId": 136178972
+   },
+   "title": "Keyhole Reflection-Mode Coherent Diffractive Imaging of Nano-Patterned Surfaces Using a Tabletop EUV Source",
+   "venue": "",
+   "year": 2014,
+   "authors": [
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "f32f8b7222cb602cdf0f4233fc728ae986d13804",
+   "externalIds": {
+    "DBLP": "journals/symmetry/ArtyukovPV21",
+    "DOI": "10.3390/sym13081439",
+    "CorpusId": 237550934
+   },
+   "title": "Lensless Reflection Imaging of Obliquely Illuminated Objects I: Choosing a Domain for Phase Retrieval and Ptychography",
+   "venue": "Symmetry",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "34422946",
+     "name": "I. Artyukov"
+    },
+    {
+     "authorId": "49358650",
+     "name": "N. Popov"
+    },
+    {
+     "authorId": "2732634",
+     "name": "A. Vinogradov"
+    }
+   ]
+  },
+  {
+   "paperId": "fa952ce7a70018ec6877cb300ce6bf828c02c743",
+   "externalIds": {
+    "MAG": "2735816849",
+    "DOI": "10.1117/12.2275400",
+    "CorpusId": 136212091
+   },
+   "title": "Observation of EUVL mask using coherent EUV scatterometry microscope with high-harmonic-generation EUV source",
+   "venue": "Photomask Japan",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "104457314",
+     "name": "Daiki Mamezaki"
+    },
+    {
+     "authorId": "49918561",
+     "name": "T. Harada"
+    },
+    {
+     "authorId": "79816603",
+     "name": "Y. Nagata"
+    },
+    {
+     "authorId": "121873607",
+     "name": "Takeo Watanabe"
+    }
+   ]
+  }
+ ]
+}

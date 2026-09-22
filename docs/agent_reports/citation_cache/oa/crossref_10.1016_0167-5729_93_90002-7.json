@@ -1,0 +1,174 @@
+{
+ "_url": "https://api.crossref.org/works/10.1016/0167-5729%2893%2990002-7",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2026,
+     9,
+     20
+    ]
+   ],
+   "date-time": "2026-09-20T04:47:16Z",
+   "timestamp": 1789879636663,
+   "version": "4.0.1"
+  },
+  "reference-count": 171,
+  "publisher": "Elsevier BV",
+  "issue": "6",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       1993,
+       1,
+       1
+      ]
+     ],
+     "date-time": "1993-01-01T00:00:00Z",
+     "timestamp": 725846400000
+    },
+    "content-version": "tdm",
+    "delay-in-days": 0,
+    "URL": "https://www.elsevier.com/tdm/userlicense/1.0/"
+   }
+  ],
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Surface Science Reports"
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1993,
+     1
+    ]
+   ]
+  },
+  "DOI": "10.1016/0167-5729(93)90002-7",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2002,
+     10,
+     18
+    ]
+   ],
+   "date-time": "2002-10-18T16:21:08Z",
+   "timestamp": 1034958068000
+  },
+  "page": "307-362",
+  "source": "Crossref",
+  "is-referenced-by-count": 64,
+  "title": [
+   "Reflection electron microscopy: studies of surface structures and surface dynamic processes"
+  ],
+  "prefix": "10.1016",
+  "volume": "17",
+  "author": [
+   {
+    "given": "Katsumichi",
+    "family": "Yagi",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   }
+  ],
+  "member": "78",
+  "container-title": [
+   "Surface Science Reports"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://api.elsevier.com/content/article/PII:0167572993900027?httpAccept=text/xml",
+    "content-type": "text/xml",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://api.elsevier.com/content/article/PII:0167572993900027?httpAccept=text/plain",
+    "content-type": "text/plain",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2019,
+     4,
+     5
+    ]
+   ],
+   "date-time": "2019-04-05T12:20:54Z",
+   "timestamp": 1554466854000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://linkinghub.elsevier.com/retrieve/pii/0167572993900027"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1993,
+     1
+    ]
+   ]
+  },
+  "references-count": 171,
+  "journal-issue": {
+   "issue": "6",
+   "published-print": {
+    "date-parts": [
+     [
+      1993,
+      1
+     ]
+    ]
+   }
+  },
+  "alternative-id": [
+   "0167572993900027"
+  ],
+  "URL": "https://doi.org/10.1016/0167-5729(93)90002-7",
+  "relation": {},
+  "ISSN": [
+   "0167-5729"
+  ],
+  "issn-type": [
+   {
+    "value": "0167-5729",
+    "type": "print"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1993,
+     1
+    ]
+   ]
+  }
+ }
+}

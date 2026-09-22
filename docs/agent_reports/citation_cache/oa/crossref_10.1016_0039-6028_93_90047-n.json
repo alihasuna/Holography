@@ -1,0 +1,173 @@
+{
+ "_url": "https://api.crossref.org/works/10.1016/0039-6028%2893%2990047-n",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2022,
+     4,
+     3
+    ]
+   ],
+   "date-time": "2022-04-03T02:31:15Z",
+   "timestamp": 1648953075860
+  },
+  "reference-count": 8,
+  "publisher": "Elsevier BV",
+  "issue": "2-3",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       1993,
+       12,
+       1
+      ]
+     ],
+     "date-time": "1993-12-01T00:00:00Z",
+     "timestamp": 754704000000
+    },
+    "content-version": "tdm",
+    "delay-in-days": 0,
+    "URL": "https://www.elsevier.com/tdm/userlicense/1.0/"
+   }
+  ],
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Surface Science"
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1993,
+     12
+    ]
+   ]
+  },
+  "DOI": "10.1016/0039-6028(93)90047-n",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2002,
+     10,
+     18
+    ]
+   ],
+   "date-time": "2002-10-18T12:58:00Z",
+   "timestamp": 1034945880000
+  },
+  "page": "345-350",
+  "source": "Crossref",
+  "is-referenced-by-count": 0,
+  "title": [
+   "Application of electron holography to surface topography observation"
+  ],
+  "prefix": "10.1016",
+  "volume": "298",
+  "author": [
+   {
+    "given": "Nobuyuki",
+    "family": "Osakabe",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   }
+  ],
+  "member": "78",
+  "container-title": [
+   "Surface Science"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://api.elsevier.com/content/article/PII:003960289390047N?httpAccept=text/xml",
+    "content-type": "text/xml",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://api.elsevier.com/content/article/PII:003960289390047N?httpAccept=text/plain",
+    "content-type": "text/plain",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2019,
+     4,
+     5
+    ]
+   ],
+   "date-time": "2019-04-05T19:01:30Z",
+   "timestamp": 1554490890000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://linkinghub.elsevier.com/retrieve/pii/003960289390047N"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1993,
+     12
+    ]
+   ]
+  },
+  "references-count": 8,
+  "journal-issue": {
+   "issue": "2-3",
+   "published-print": {
+    "date-parts": [
+     [
+      1993,
+      12
+     ]
+    ]
+   }
+  },
+  "alternative-id": [
+   "003960289390047N"
+  ],
+  "URL": "https://doi.org/10.1016/0039-6028(93)90047-n",
+  "relation": {},
+  "ISSN": [
+   "0039-6028"
+  ],
+  "issn-type": [
+   {
+    "value": "0039-6028",
+    "type": "print"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1993,
+     12
+    ]
+   ]
+  }
+ }
+}

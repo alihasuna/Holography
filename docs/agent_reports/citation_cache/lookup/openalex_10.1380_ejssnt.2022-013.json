@@ -1,0 +1,265 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1380/ejssnt.2022-013?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W4220985051",
+ "doi": "https://doi.org/10.1380/ejssnt.2022-013",
+ "title": "Correlation between Plasmon Excitations and Wavefields under Reflection High-Energy Electron Diffraction Condition",
+ "display_name": "Correlation between Plasmon Excitations and Wavefields under Reflection High-Energy Electron Diffraction Condition",
+ "publication_year": 2022,
+ "publication_date": "2022-03-23",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5018719816",
+    "display_name": "Yoshimi Horio",
+    "orcid": "https://orcid.org/0000-0002-2662-6672"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I51803142",
+     "display_name": "Daido University",
+     "ror": "https://ror.org/02cntp233",
+     "country_code": "JP",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I51803142"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Yoshimi Horio",
+   "raw_affiliation_strings": [
+    "Department of Electrical and Electronic Engineering, Daido University"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Electrical and Electronic Engineering, Daido University",
+     "institution_ids": [
+      "https://openalex.org/I51803142"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5102074915",
+    "display_name": "Hitoshi Nakahara",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I60134161",
+     "display_name": "Nagoya University",
+     "ror": "https://ror.org/04chrp450",
+     "country_code": "JP",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I60134161"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Hitoshi Nakahara",
+   "raw_affiliation_strings": [
+    "Department of Applied Physics, Nagoya University"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Applied Physics, Nagoya University",
+     "institution_ids": [
+      "https://openalex.org/I60134161"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5073929728",
+    "display_name": "Junji Yuhara",
+    "orcid": "https://orcid.org/0000-0002-9959-7788"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I60134161",
+     "display_name": "Nagoya University",
+     "ror": "https://ror.org/04chrp450",
+     "country_code": "JP",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I60134161"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Junji Yuhara",
+   "raw_affiliation_strings": [
+    "Department of Energy Engineering, Nagoya University"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Department of Energy Engineering, Nagoya University",
+     "institution_ids": [
+      "https://openalex.org/I60134161"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5103812542",
+    "display_name": "Yuji Takakuwa",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I201537933",
+     "display_name": "Tohoku University",
+     "ror": "https://ror.org/01dq60k83",
+     "country_code": "JP",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I201537933"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Yuji Takakuwa",
+   "raw_affiliation_strings": [
+    "<sup> </sup>Micro System Integration Center, Tohoku University",
+    "Micro System Integration Center, Tohoku University"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "<sup> </sup>Micro System Integration Center, Tohoku University",
+     "institution_ids": [
+      "https://openalex.org/I201537933"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Micro System Integration Center, Tohoku University",
+     "institution_ids": [
+      "https://openalex.org/I201537933"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1380/ejssnt.2022-013",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1380/ejssnt.2022-013",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/ejssnt/20/2/20_2022-013/_pdf",
+  "source": {
+   "id": "https://openalex.org/S123993026",
+   "display_name": "e-Journal of Surface Science and Nanotechnology",
+   "issn_l": "1348-0391",
+   "issn": [
+    "1348-0391"
+   ],
+   "is_oa": true,
+   "is_in_doaj": true,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310313460",
+   "host_organization_name": "Japan Society of Vacuum and Surface Science",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310313460"
+   ],
+   "host_organization_lineage_names": [
+    "Japan Society of Vacuum and Surface Science"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "e-Journal of Surface Science and Nanotechnology",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 1,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "gold",
+  "oa_url": "https://www.jstage.jst.go.jp/article/ejssnt/20/2/20_2022-013/_pdf",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1380/ejssnt.2022-013",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1380/ejssnt.2022-013",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/ejssnt/20/2/20_2022-013/_pdf",
+  "source": {
+   "id": "https://openalex.org/S123993026",
+   "display_name": "e-Journal of Surface Science and Nanotechnology",
+   "issn_l": "1348-0391",
+   "issn": [
+    "1348-0391"
+   ],
+   "is_oa": true,
+   "is_in_doaj": true,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310313460",
+   "host_organization_name": "Japan Society of Vacuum and Surface Science",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310313460"
+   ],
+   "host_organization_lineage_names": [
+    "Japan Society of Vacuum and Surface Science"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "e-Journal of Surface Science and Nanotechnology",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1556859117",
+  "https://openalex.org/W1600308401",
+  "https://openalex.org/W1970711747",
+  "https://openalex.org/W1981809832",
+  "https://openalex.org/W1985412540",
+  "https://openalex.org/W1985653315",
+  "https://openalex.org/W1994085323",
+  "https://openalex.org/W1996751208",
+  "https://openalex.org/W1998116183",
+  "https://openalex.org/W2002796843",
+  "https://openalex.org/W2004450703",
+  "https://openalex.org/W2017062950",
+  "https://openalex.org/W2032057573",
+  "https://openalex.org/W2043464588",
+  "https://openalex.org/W2050433590",
+  "https://openalex.org/W2053066435",
+  "https://openalex.org/W2079666049",
+  "https://openalex.org/W2084871610",
+  "https://openalex.org/W2088452035",
+  "https://openalex.org/W2089529147",
+  "https://openalex.org/W2119392342",
+  "https://openalex.org/W2134592605"
+ ]
+}

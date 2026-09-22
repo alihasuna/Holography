@@ -1,0 +1,480 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%224D-STEM%22+%2B+%28reflection+%7C+RHEED+%7C+%22grazing+incidence%22%29&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 13,
+ "token": null,
+ "data": [
+  {
+   "paperId": "0aa903c835a0fd3299001ebb69ab19e6dc86b4a7",
+   "externalIds": {
+    "DOI": "10.1017/S1431927622002562",
+    "CorpusId": 250927039
+   },
+   "title": "Measuring Antiferromagnetism at the Angstrom Scale using 4D-STEM",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "2110064970",
+     "name": "Jeffrey Huang"
+    },
+    {
+     "authorId": "3200815",
+     "name": "K. Nguyen"
+    },
+    {
+     "authorId": "88725825",
+     "name": "Manohar H. Karigerasi"
+    },
+    {
+     "authorId": "13158116",
+     "name": "Kisung Kang"
+    },
+    {
+     "authorId": "48880636",
+     "name": "A. Schleife"
+    },
+    {
+     "authorId": "40072369",
+     "name": "D. Shoemaker"
+    },
+    {
+     "authorId": "108238717",
+     "name": "David Cahill"
+    },
+    {
+     "authorId": "143652076",
+     "name": "J. Zuo"
+    },
+    {
+     "authorId": "2748246",
+     "name": "Pinshane Y. Huang"
+    }
+   ]
+  },
+  {
+   "paperId": "293d6f6fc60ba4e57ae87452698653d321edd77e",
+   "externalIds": {
+    "DOI": "10.1002/adma.202523655",
+    "CorpusId": 287899583,
+    "PubMed": "42046423"
+   },
+   "title": "Functional Indium Vacancies in Indium Phosphors Chalcogenides",
+   "venue": "Advances in Materials",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2357484396",
+     "name": "Ning Li"
+    },
+    {
+     "authorId": "2165822354",
+     "name": "Minzhi Dai"
+    },
+    {
+     "authorId": "2369281723",
+     "name": "Qingduo Wang"
+    },
+    {
+     "authorId": "2388043649",
+     "name": "Shu-Hua Ma"
+    },
+    {
+     "authorId": "2428239899",
+     "name": "Ye Sun"
+    },
+    {
+     "authorId": "2146711242",
+     "name": "Bin Chen"
+    },
+    {
+     "authorId": "2306443361",
+     "name": "Rui-Huan Duan"
+    },
+    {
+     "authorId": "2108467865",
+     "name": "Zijian Wang"
+    },
+    {
+     "authorId": "152220320",
+     "name": "A. Trukhanov"
+    },
+    {
+     "authorId": "2297875176",
+     "name": "Chang-Jian Li"
+    },
+    {
+     "authorId": "2155670746",
+     "name": "Zheng Liu"
+    },
+    {
+     "authorId": "2143584025",
+     "name": "Xin Luo"
+    },
+    {
+     "authorId": "4223179",
+     "name": "Xiaoxu Zhao"
+    }
+   ]
+  },
+  {
+   "paperId": "2946a90b65ab7f23b8e7eddd107f30d8f9cbe592",
+   "externalIds": {
+    "PubMedCentral": "12871282",
+    "DOI": "10.64898/2026.01.16.700027",
+    "CorpusId": 284883884,
+    "PubMed": "41648623"
+   },
+   "title": "Snapshots of Internal Protein Crystal Architecture at the Nanoscale",
+   "venue": "bioRxiv",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2181636989",
+     "name": "Shervin S. Nia"
+    },
+    {
+     "authorId": "32804919",
+     "name": "Ambarneil Saha"
+    },
+    {
+     "authorId": "2461768869",
+     "name": "Cho Jung"
+    },
+    {
+     "authorId": "2247976905",
+     "name": "Hong Z. Zhou"
+    },
+    {
+     "authorId": "2252463494",
+     "name": "Peter Ercius"
+    },
+    {
+     "authorId": "2248578156",
+     "name": "Matthew Mecklenburg"
+    }
+   ]
+  },
+  {
+   "paperId": "2cda20c239e16dc83c449a91b756f4c5f43b17d3",
+   "externalIds": {
+    "DOI": "10.1051/bioconf/202412924017",
+    "CorpusId": 273454232
+   },
+   "title": "Enhancing quantifiability of S/TEM-based composition mappings through correlative techniques",
+   "venue": "BIO Web of Conferences",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2381339982",
+     "name": "Kai-luis Jakob"
+    },
+    {
+     "authorId": "2313130679",
+     "name": "Frederik Otto"
+    },
+    {
+     "authorId": "2287669447",
+     "name": "Dirk Berger"
+    },
+    {
+     "authorId": "40654063",
+     "name": "T. Niermann"
+    },
+    {
+     "authorId": "2253636967",
+     "name": "Michael Lehmann"
+    }
+   ]
+  },
+  {
+   "paperId": "732704e9cd7a9c4cca048567407d598f1763ff0f",
+   "externalIds": {
+    "ArXiv": "2102.09711",
+    "DOI": "10.1017/S1431927621012538",
+    "CorpusId": 232139757
+   },
+   "title": "Automated Crystal Orientation Mapping by Precession Electron Diffraction-Assisted Four-Dimensional Scanning Transmission Electron Microscopy Using a Scintillator-Based CMOS Detector",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "48484812",
+     "name": "Jiwon Jeong"
+    },
+    {
+     "authorId": "66077671",
+     "name": "N. Cautaerts"
+    },
+    {
+     "authorId": "47628696",
+     "name": "G. Dehm"
+    },
+    {
+     "authorId": "5838886",
+     "name": "C. Liebscher"
+    }
+   ]
+  },
+  {
+   "paperId": "92b78d3d370da3960cf9c6ff7952042d40bc9f02",
+   "externalIds": {
+    "DOI": "10.2138/am-2025-9870",
+    "CorpusId": 283939620
+   },
+   "title": "Local low-symmetry structure in iridescent garnet detected via spatially resolved electron diffractometry",
+   "venue": "American Mineralogist",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "94141235",
+     "name": "Y. Igami"
+    },
+    {
+     "authorId": "2266991570",
+     "name": "A. Miyake"
+    },
+    {
+     "authorId": "120586523",
+     "name": "Yuhchyuan Chang"
+    },
+    {
+     "authorId": "13734363",
+     "name": "N. Shimobayashi"
+    }
+   ]
+  },
+  {
+   "paperId": "9a6165f35796abf9c03cb2ef77c8ba3b3ac588ec",
+   "externalIds": {
+    "DOI": "10.1002/smtd.202400801",
+    "CorpusId": 273230816,
+    "PubMed": "39385658"
+   },
+   "title": "Correlation of Processing and Structure in an Ethylene‐Glycol Side‐Chain Modified Polythiophene via Combined X‐Ray Scattering and 4D Scanning Transmission Electron Microscopy",
+   "venue": "Small Methods",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2266157664",
+     "name": "A. Herzing"
+    },
+    {
+     "authorId": "3526484",
+     "name": "L. Flagg"
+    },
+    {
+     "authorId": "2267965903",
+     "name": "Chad R. Snyder"
+    },
+    {
+     "authorId": "2253693580",
+     "name": "L. J. Richter"
+    },
+    {
+     "authorId": "145208587",
+     "name": "J. Onorato"
+    },
+    {
+     "authorId": "4695656",
+     "name": "C. Luscombe"
+    },
+    {
+     "authorId": "35241937",
+     "name": "Rui-Peng Li"
+    }
+   ]
+  },
+  {
+   "paperId": "b041f3c8944d4614ca8163c7f522e44d8b30cd3f",
+   "externalIds": {
+    "DOI": "10.1063/5.0176344",
+    "CorpusId": 268982840
+   },
+   "title": "Improved crystallographic order of ScAlN/GaN heterostructures grown at low temperatures under metal rich surface conditions",
+   "venue": "Journal of Applied Physics",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "46693862",
+     "name": "Keisuke Motoki"
+    },
+    {
+     "authorId": "52131991",
+     "name": "Zachary Engel"
+    },
+    {
+     "authorId": "151442774",
+     "name": "T. M. McCrone"
+    },
+    {
+     "authorId": "2295755304",
+     "name": "Huijin Chung"
+    },
+    {
+     "authorId": "153940263",
+     "name": "C. Matthews"
+    },
+    {
+     "authorId": "2295486378",
+     "name": "Sangho Lee"
+    },
+    {
+     "authorId": "2231842047",
+     "name": "Emily N. Marshall"
+    },
+    {
+     "authorId": "16125777",
+     "name": "A. Ghosh"
+    },
+    {
+     "authorId": "2231843620",
+     "name": "Amanda Tang"
+    },
+    {
+     "authorId": "46943071",
+     "name": "W. Doolittle"
+    }
+   ]
+  },
+  {
+   "paperId": "b1917828e7ec06c89ac5edb663a2fcef733cf11d",
+   "externalIds": {
+    "DOI": "10.1039/d5fd00027k",
+    "CorpusId": 279719205,
+    "PubMed": "40583591"
+   },
+   "title": "The detection efficiency of low-dose cryo-4D STEM for biogenic crystals in frozen-hydrated samples.",
+   "venue": "Faraday discussions",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2251712719",
+     "name": "Lothar Houben"
+    },
+    {
+     "authorId": "2318858642",
+     "name": "Zohar Eyal"
+    },
+    {
+     "authorId": "4991781",
+     "name": "Dvir Gur"
+    }
+   ]
+  },
+  {
+   "paperId": "b2827c9e1cb2e1338b29b66a988e2d5718c836ee",
+   "externalIds": {
+    "PubMedCentral": "11226628",
+    "DOI": "10.1038/s41598-024-66382-6",
+    "CorpusId": 270982918,
+    "PubMed": "38969691"
+   },
+   "title": "Four dimensional-scanning transmission electron microscopy study on relationship between crystallographic orientation and spontaneous polarization in epitaxial BiFeO3",
+   "venue": "Scientific Reports",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2265294224",
+     "name": "In-Tae Bae"
+    },
+    {
+     "authorId": "2265300046",
+     "name": "Brendan J. Foran"
+    },
+    {
+     "authorId": "2265301423",
+     "name": "Hanjong Paik"
+    }
+   ]
+  },
+  {
+   "paperId": "b8d1e306d0ec43b6c468d0506167a9c0daf57267",
+   "externalIds": {
+    "CorpusId": 231979300
+   },
+   "title": "Automated crystal orientation mapping with sub-degree angular resolution using precession electron diffraction assisted 4D scanning transmission electron microscopy",
+   "venue": "",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "48484812",
+     "name": "Jiwon Jeong"
+    },
+    {
+     "authorId": "66077671",
+     "name": "N. Cautaerts"
+    },
+    {
+     "authorId": "47628696",
+     "name": "G. Dehm"
+    },
+    {
+     "authorId": "5838886",
+     "name": "C. Liebscher"
+    }
+   ]
+  },
+  {
+   "paperId": "c366f8a32b2ed34d02bbebd00335bd525e63c35d",
+   "externalIds": {
+    "DOI": "10.1063/5.0313649",
+    "CorpusId": 286438706
+   },
+   "title": "Superlattice reflection signatures of the insulator–metal transition in V3O5 thin films",
+   "venue": "Journal of Applied Physics",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2380508382",
+     "name": "M. Islam"
+    },
+    {
+     "authorId": "2102352",
+     "name": "A. Pofelski"
+    },
+    {
+     "authorId": "2423098722",
+     "name": "Yarimar Rivera-Robles"
+    },
+    {
+     "authorId": "6709886",
+     "name": "K. Kisslinger"
+    },
+    {
+     "authorId": "2330821161",
+     "name": "Fernando Camino"
+    },
+    {
+     "authorId": "2333139252",
+     "name": "Armando Rúa"
+    }
+   ]
+  },
+  {
+   "paperId": "f314f50db96c0f3d811cfdc2fe06c648121f3f34",
+   "externalIds": {
+    "DOI": "10.1016/j.micron.2024.103703",
+    "CorpusId": 271914318,
+    "PubMed": "39163748"
+   },
+   "title": "Characterization of extended defects in 2D materials using aperture-based dark-field STEM in SEM.",
+   "venue": "Micron",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "116010737",
+     "name": "Peter Denninger"
+    },
+    {
+     "authorId": "107903930",
+     "name": "P. Schweizer"
+    },
+    {
+     "authorId": "2282710051",
+     "name": "E. Spiecker"
+    }
+   ]
+  }
+ ]
+}

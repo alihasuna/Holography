@@ -1,0 +1,90 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1016/0304-3991%2893%2990124-g/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "cca2f9fda9eb12f1d516ba0bb45eb62b242925f1",
+    "externalIds": {
+     "MAG": "2033207389",
+     "DOI": "10.1142/S0217979200002326",
+     "CorpusId": 121978832
+    },
+    "title": "ELECTRON STANDING WAVES AT A SURFACE DURING REFLECTION HIGH ENERGY ELECTRON DIFFRACTION AND APPLICATION TO STRUCTURE ANALYSIS",
+    "venue": "",
+    "year": 2000,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "14",
+     "pages": "2171-2222",
+     "name": "International Journal of Modern Physics B"
+    },
+    "authors": [
+     {
+      "authorId": "2256379806",
+      "name": "T. Yamanaka"
+     },
+     {
+      "authorId": "91115657",
+      "name": "S. Ino"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "f1ede422454e1b1d08ecb0d9aab440142a1dca24",
+    "externalIds": {
+     "MAG": "2043535005",
+     "DOI": "10.1016/S0001-8686(97)90026-9",
+     "CorpusId": 96612528
+    },
+    "title": "The possibility of measuring the spin polarization of electrons from the top atom layer of solid surfaces",
+    "venue": "",
+    "year": 1997,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "",
+     "pages": "337-351",
+     "name": "Advances in Colloid and Interface Science"
+    },
+    "authors": [
+     {
+      "authorId": "71530169",
+      "name": "K. Hayakawa"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "829e549805d3c1cebbe2efba123782e9b72fbbff",
+    "externalIds": {
+     "MAG": "2062510886",
+     "DOI": "10.1016/0039-6028(93)90047-N",
+     "CorpusId": 97262396
+    },
+    "title": "Application of electron holography to surface topography observation",
+    "venue": "",
+    "year": 1993,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "298",
+     "pages": "345-350",
+     "name": "Surface Science"
+    },
+    "authors": [
+     {
+      "authorId": "46582284",
+      "name": "N. Osakabe"
+     }
+    ]
+   }
+  }
+ ]
+}

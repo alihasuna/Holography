@@ -1,0 +1,15 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1017/s0424820100136957?select=id,doi,title,publication_year,open_access,best_oa_location",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W3036731550",
+ "doi": "https://doi.org/10.1017/s0424820100136957",
+ "title": "Reflection diffracted beam interferometry (RDBI) applied to the study of surfaces",
+ "publication_year": 1995,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null
+}

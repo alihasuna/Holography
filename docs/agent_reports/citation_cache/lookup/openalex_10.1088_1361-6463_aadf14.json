@@ -1,0 +1,365 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1088/1361-6463/aadf14?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2890069186",
+ "doi": "https://doi.org/10.1088/1361-6463/aadf14",
+ "title": "Total-reflection high-energy positron diffraction (TRHEPD) for structure determination of the topmost and immediate sub-surface atomic layers",
+ "display_name": "Total-reflection high-energy positron diffraction (TRHEPD) for structure determination of the topmost and immediate sub-surface atomic layers",
+ "publication_year": 2018,
+ "publication_date": "2018-09-05",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5004092999",
+    "display_name": "Y. Fukaya",
+    "orcid": "https://orcid.org/0000-0002-4375-9186"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Yuki Fukaya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 2-4 Shirakata, Tokai, Naka, Ibaraki 319-1195, Japan",
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 2-4 Shirakata, Tokai, Naka, Ibaraki, 319-1195, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 2-4 Shirakata, Tokai, Naka, Ibaraki 319-1195, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 2-4 Shirakata, Tokai, Naka, Ibaraki, 319-1195, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5041543188",
+    "display_name": "A. Kawasuso",
+    "orcid": "https://orcid.org/0000-0002-7065-5753"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I4210114217",
+     "display_name": "National Institutes for Quantum Science and Technology",
+     "ror": "https://ror.org/020rbyg91",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I4210114217"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Atsuo Kawasuso",
+   "raw_affiliation_strings": [
+    "National Institutes for Quantum and Radiological Science and Technology, 1233, Watanuki, Takasaki, Gunma, 370-1292, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "National Institutes for Quantum and Radiological Science and Technology, 1233, Watanuki, Takasaki, Gunma, 370-1292, Japan",
+     "institution_ids": [
+      "https://openalex.org/I4210114217"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5112658721",
+    "display_name": "Ayahiko Ichimiya",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I138728355",
+     "display_name": "High Energy Accelerator Research Organization",
+     "ror": "https://ror.org/01g5y5k24",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1319490839",
+      "https://openalex.org/I138728355"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I60134161",
+     "display_name": "Nagoya University",
+     "ror": "https://ror.org/04chrp450",
+     "country_code": "JP",
+     "type": "education",
+     "lineage": [
+      "https://openalex.org/I60134161"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Ayahiko Ichimiya",
+   "raw_affiliation_strings": [
+    "Institute of Materials Structure Science, High Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan",
+    "Nagoya University, Furo-cho, Chikusa-ku, Nagoya 464-8601, Japan",
+    "Institute of Materials Structure Science, High Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan; Nagoya University, Furo-cho, Chikusa-ku, Nagoya 464-8601, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Institute of Materials Structure Science, High Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan",
+     "institution_ids": [
+      "https://openalex.org/I138728355"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Nagoya University, Furo-cho, Chikusa-ku, Nagoya 464-8601, Japan",
+     "institution_ids": [
+      "https://openalex.org/I60134161"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Institute of Materials Structure Science, High Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan; Nagoya University, Furo-cho, Chikusa-ku, Nagoya 464-8601, Japan",
+     "institution_ids": [
+      "https://openalex.org/I138728355",
+      "https://openalex.org/I60134161"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5014821235",
+    "display_name": "Toshio Hyodo",
+    "orcid": "https://orcid.org/0000-0002-1810-732X"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I138728355",
+     "display_name": "High Energy Accelerator Research Organization",
+     "ror": "https://ror.org/01g5y5k24",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1319490839",
+      "https://openalex.org/I138728355"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Toshio Hyodo",
+   "raw_affiliation_strings": [
+    "Institute of Materials Structure Science, High Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan",
+    "Institute of Materials Structure Science, High-Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki, 305-0801, Japan"
+   ],
+   "raw_orcid": "https://orcid.org/0000-0002-1810-732X",
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Institute of Materials Structure Science, High Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan",
+     "institution_ids": [
+      "https://openalex.org/I138728355"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Institute of Materials Structure Science, High-Energy Accelerator Research Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki, 305-0801, Japan",
+     "institution_ids": [
+      "https://openalex.org/I138728355"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1088/1361-6463/aadf14",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1088/1361-6463/aadf14",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S111927887",
+   "display_name": "Journal of Physics D Applied Physics",
+   "issn_l": "0022-3727",
+   "issn": [
+    "0022-3727",
+    "1361-6463"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310311669",
+   "host_organization_name": "Institute of Physics",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310311669"
+   ],
+   "host_organization_lineage_names": [
+    "Institute of Physics"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Journal of Physics D: Applied Physics",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 30,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W28217284",
+  "https://openalex.org/W341191020",
+  "https://openalex.org/W625827176",
+  "https://openalex.org/W1432367947",
+  "https://openalex.org/W1523657185",
+  "https://openalex.org/W1600308401",
+  "https://openalex.org/W1611331029",
+  "https://openalex.org/W1629274499",
+  "https://openalex.org/W1644231149",
+  "https://openalex.org/W1778655209",
+  "https://openalex.org/W1963575597",
+  "https://openalex.org/W1969695378",
+  "https://openalex.org/W1970711747",
+  "https://openalex.org/W1971744462",
+  "https://openalex.org/W1974590978",
+  "https://openalex.org/W1978486867",
+  "https://openalex.org/W1982329631",
+  "https://openalex.org/W1982540675",
+  "https://openalex.org/W1984535384",
+  "https://openalex.org/W1984748172",
+  "https://openalex.org/W1986252415",
+  "https://openalex.org/W1987033696",
+  "https://openalex.org/W1988536001",
+  "https://openalex.org/W1990081464",
+  "https://openalex.org/W1992612766",
+  "https://openalex.org/W1992946361",
+  "https://openalex.org/W1994085323",
+  "https://openalex.org/W1994294377",
+  "https://openalex.org/W1997893677",
+  "https://openalex.org/W1998116183",
+  "https://openalex.org/W1999003456",
+  "https://openalex.org/W1999023892",
+  "https://openalex.org/W1999349831",
+  "https://openalex.org/W2002796843",
+  "https://openalex.org/W2004450703",
+  "https://openalex.org/W2009408103",
+  "https://openalex.org/W2012460201",
+  "https://openalex.org/W2013656542",
+  "https://openalex.org/W2016323352",
+  "https://openalex.org/W2020231715",
+  "https://openalex.org/W2021410049",
+  "https://openalex.org/W2025402098",
+  "https://openalex.org/W2025938739",
+  "https://openalex.org/W2028941886",
+  "https://openalex.org/W2029051740",
+  "https://openalex.org/W2031160540",
+  "https://openalex.org/W2031985211",
+  "https://openalex.org/W2035930650",
+  "https://openalex.org/W2036675135",
+  "https://openalex.org/W2038943317",
+  "https://openalex.org/W2040671051",
+  "https://openalex.org/W2040693631",
+  "https://openalex.org/W2043464588",
+  "https://openalex.org/W2046248294",
+  "https://openalex.org/W2050153057",
+  "https://openalex.org/W2059506543",
+  "https://openalex.org/W2063256299",
+  "https://openalex.org/W2064082507",
+  "https://openalex.org/W2066007813",
+  "https://openalex.org/W2069251984",
+  "https://openalex.org/W2069524558",
+  "https://openalex.org/W2072303253",
+  "https://openalex.org/W2076173295",
+  "https://openalex.org/W2078296551",
+  "https://openalex.org/W2078792724",
+  "https://openalex.org/W2082344584",
+  "https://openalex.org/W2082662255",
+  "https://openalex.org/W2084871610",
+  "https://openalex.org/W2086529087",
+  "https://openalex.org/W2087966151",
+  "https://openalex.org/W2089456932",
+  "https://openalex.org/W2089529147",
+  "https://openalex.org/W2092001226",
+  "https://openalex.org/W2092650499",
+  "https://openalex.org/W2092945297",
+  "https://openalex.org/W2096405147",
+  "https://openalex.org/W2098411406",
+  "https://openalex.org/W2105270435",
+  "https://openalex.org/W2106298613",
+  "https://openalex.org/W2119392342",
+  "https://openalex.org/W2127285980",
+  "https://openalex.org/W2145274462",
+  "https://openalex.org/W2150638697",
+  "https://openalex.org/W2158969620",
+  "https://openalex.org/W2165515931",
+  "https://openalex.org/W2169463502",
+  "https://openalex.org/W2186424928",
+  "https://openalex.org/W2206015623",
+  "https://openalex.org/W2238270328",
+  "https://openalex.org/W2279181049",
+  "https://openalex.org/W2288056673",
+  "https://openalex.org/W2289604417",
+  "https://openalex.org/W2321971933",
+  "https://openalex.org/W2326836092",
+  "https://openalex.org/W2329409109",
+  "https://openalex.org/W2332680363",
+  "https://openalex.org/W2334411941",
+  "https://openalex.org/W2466003724",
+  "https://openalex.org/W2476220872",
+  "https://openalex.org/W2514626066",
+  "https://openalex.org/W2589390844",
+  "https://openalex.org/W2602687833",
+  "https://openalex.org/W2952867324",
+  "https://openalex.org/W2995250329",
+  "https://openalex.org/W3106444299",
+  "https://openalex.org/W3125888418"
+ ]
+}

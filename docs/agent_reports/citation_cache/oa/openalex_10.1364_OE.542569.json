@@ -1,0 +1,47 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1364/OE.542569?select=id,doi,title,publication_year,open_access,best_oa_location",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W4404104231",
+ "doi": "https://doi.org/10.1364/oe.542569",
+ "title": "Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles",
+ "publication_year": 2024,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "gold",
+  "oa_url": "https://doi.org/10.1364/oe.542569",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1364/oe.542569",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1364/oe.542569",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S178776955",
+   "display_name": "Optics Express",
+   "issn_l": "1094-4087",
+   "issn": [
+    "1094-4087"
+   ],
+   "is_oa": true,
+   "is_in_doaj": true,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310315679",
+   "host_organization_name": "Optica Publishing Group",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310315679"
+   ],
+   "host_organization_lineage_names": [
+    "Optica Publishing Group"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Optics Express",
+  "raw_type": "journal-article"
+ }
+}

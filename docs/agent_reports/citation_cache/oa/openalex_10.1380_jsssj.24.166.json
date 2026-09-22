@@ -1,0 +1,49 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1380/jsssj.24.166?select=id,doi,title,publication_year,open_access,best_oa_location",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1994085323",
+ "doi": "https://doi.org/10.1380/jsssj.24.166",
+ "title": "Electron Energy Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter.",
+ "publication_year": 2003,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "diamond",
+  "oa_url": "https://www.jstage.jst.go.jp/article/jsssj/24/3/24_3_166/_pdf",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1380/jsssj.24.166",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1380/jsssj.24.166",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/jsssj/24/3/24_3_166/_pdf",
+  "source": {
+   "id": "https://openalex.org/S4210219936",
+   "display_name": "Hyomen Kagaku",
+   "issn_l": "0388-5321",
+   "issn": [
+    "0388-5321",
+    "1881-4743"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": false,
+   "listed_in": [],
+   "host_organization": "https://openalex.org/P4324113792",
+   "host_organization_name": "Surface Science Society of Japan",
+   "host_organization_lineage": [
+    "https://openalex.org/P4324113792"
+   ],
+   "host_organization_lineage_names": [
+    "Surface Science Society of Japan"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by-nc",
+  "license_id": "https://openalex.org/licenses/cc-by-nc",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Hyomen Kagaku",
+  "raw_type": "journal-article"
+ }
+}

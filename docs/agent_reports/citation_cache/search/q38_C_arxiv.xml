@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/R/Fv2rSDJYZO/Ux4xJYmA1B42J4</id>
+  <title>arXiv Query: search_query=abs:ptychography AND abs:"reflection geometry"&amp;id_list=&amp;start=0&amp;max_results=200</title>
+  <updated>2026-09-22T19:16:04Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=abs:ptychography+AND+abs:%22reflection+geometry%22&amp;start=0&amp;max_results=200&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>200</opensearch:itemsPerPage>
+  <opensearch:totalResults>6</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2601.20261v1</id>
+    <title>Soft X-ray Reflection Ptychography</title>
+    <updated>2026-01-28T05:15:47Z</updated>
+    <link href="https://arxiv.org/abs/2601.20261v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.20261v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cond-mat.mes-hall" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-28T05:15:47Z</published>
+    <arxiv:comment>8 pages, 3 figures</arxiv:comment>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Damian Guenzing</name>
+    </author>
+    <author>
+      <name>Dayne Y. Sasaki</name>
+    </author>
+    <author>
+      <name>Alexander S. Ditter</name>
+    </author>
+    <author>
+      <name>Abraham L. Levitan</name>
+    </author>
+    <author>
+      <name>Eric M. Gullikson</name>
+    </author>
+    <author>
+      <name>Scott Dhuey</name>
+    </author>
+    <author>
+      <name>Arian Gashi</name>
+    </author>
+    <author>
+      <name>Hendrik Ohldag</name>
+    </author>
+    <author>
+      <name>Sujoy Roy</name>
+    </author>
+    <author>
+      <name>David A. Shapiro</name>
+    </author>
+    <author>
+      <name>Riccardo Comin</name>
+    </author>
+    <author>
+      <name>Sophie A. Morley</name>
+    </author>
+    <arxiv:doi>10.1364/OE.591755</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1364/OE.591755" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.05989v1</id>
+    <title>The 2D approximation quickly breaks down in reflection ptychography</title>
+    <updated>2026-04-07T15:16:26Z</updated>
+    <link href="https://arxiv.org/abs/2604.05989v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.05989v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-07T15:16:26Z</published>
+    <arxiv:comment>16 pages, 6 figures</arxiv:comment>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Sander Senhorst</name>
+    </author>
+    <author>
+      <name>Stefan Witte</name>
+    </author>
+    <author>
+      <name>Wim Coene</name>
+    </author>
+    <arxiv:doi>10.1364/OE.601179</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1364/OE.601179" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1312.2049v1</id>
+    <title>Tabletop Nanometer Extreme Ultraviolet Imaging in an Extended Reflection Mode using Coherent Fresnel Ptychography</title>
+    <updated>2013-12-07T01:48:57Z</updated>
+    <link href="https://arxiv.org/abs/1312.2049v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1312.2049v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2013-12-07T01:48:57Z</published>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Matthew D. Seaberg</name>
+    </author>
+    <author>
+      <name>Bosheng Zhang</name>
+    </author>
+    <author>
+      <name>Dennis F. Gardner</name>
+    </author>
+    <author>
+      <name>Elisabeth R. Shanblatt</name>
+    </author>
+    <author>
+      <name>Margaret M. Murnane</name>
+    </author>
+    <author>
+      <name>Henry C. Kapteyn</name>
+    </author>
+    <author>
+      <name>Daniel E. Adams</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2311.14780v1</id>
+    <title>Wavelength-multiplexed Multi-mode EUV Reflection Ptychography based on Automatic-Differentiation</title>
+    <updated>2023-11-24T16:21:36Z</updated>
+    <link href="https://arxiv.org/abs/2311.14780v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2311.14780v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="eess.IV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-11-24T16:21:36Z</published>
+    <arxiv:primary_category term="eess.IV"/>
+    <author>
+      <name>Yifeng Shao</name>
+    </author>
+    <author>
+      <name>Sven Weerdenburg</name>
+    </author>
+    <author>
+      <name>Jacob Seifert</name>
+    </author>
+    <author>
+      <name>H. Paul Urbach</name>
+    </author>
+    <author>
+      <name>Allard P. Mosk</name>
+    </author>
+    <author>
+      <name>Wim Coene</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2409.11251v1</id>
+    <title>Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles</title>
+    <updated>2024-09-17T15:00:03Z</updated>
+    <link href="https://arxiv.org/abs/2409.11251v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2409.11251v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-09-17T15:00:03Z</published>
+    <arxiv:comment>13 pages, 6 figures</arxiv:comment>
+    <arxiv:primary_category term="physics.optics"/>
+    <arxiv:journal_ref>Opt. Express 32, 44017-44030 (2024)</arxiv:journal_ref>
+    <author>
+      <name>Sander Senhorst</name>
+    </author>
+    <author>
+      <name>Yifeng Shao</name>
+    </author>
+    <author>
+      <name>Sven Weerdenburg</name>
+    </author>
+    <author>
+      <name>Roland Horsten</name>
+    </author>
+    <author>
+      <name>Christina Porter</name>
+    </author>
+    <author>
+      <name>Wim Coene</name>
+    </author>
+    <arxiv:doi>10.1364/OE.542569</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1364/OE.542569" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.03640v1</id>
+    <title>Subpixel correction of diffraction pattern shifts in ptychography via automatic differentiation</title>
+    <updated>2025-07-04T15:11:24Z</updated>
+    <link href="https://arxiv.org/abs/2507.03640v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.03640v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.IV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-04T15:11:24Z</published>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Zhengkang Xu</name>
+    </author>
+    <author>
+      <name>Yanqi Chen</name>
+    </author>
+    <author>
+      <name>Hao Xu</name>
+    </author>
+    <author>
+      <name>Qingxin Wang</name>
+    </author>
+    <author>
+      <name>Jin Niu</name>
+    </author>
+    <author>
+      <name>Lei Huang</name>
+    </author>
+    <author>
+      <name>Jiyue Tang</name>
+    </author>
+    <author>
+      <name>Yongjun Ma</name>
+    </author>
+    <author>
+      <name>Yutong Wang</name>
+    </author>
+    <author>
+      <name>Yishi Shi</name>
+    </author>
+    <author>
+      <name>Changjun Ke</name>
+    </author>
+    <author>
+      <name>Jie Li</name>
+    </author>
+    <author>
+      <name>Zhongwei Fan</name>
+    </author>
+  </entry>
+</feed>

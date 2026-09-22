@@ -1,0 +1,61 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22ptychographic+reflectometry%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 1,
+ "token": null,
+ "data": [
+  {
+   "paperId": "8e8fe2f0c5183057626bbae072b69674ad4c6341",
+   "externalIds": {
+    "ArXiv": "2402.06762",
+    "DOI": "10.1063/5.0204240",
+    "CorpusId": 267627810
+   },
+   "title": "Three-dimensional hard X-ray ptychographic reflectometry imaging on extended mesoscopic surface structures",
+   "venue": "APL Photonics",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2142267263",
+     "name": "P. Myint"
+    },
+    {
+     "authorId": "2283849556",
+     "name": "Ashish Tripathi"
+    },
+    {
+     "authorId": "2242893578",
+     "name": "Michael J. Wojcik"
+    },
+    {
+     "authorId": "2280371791",
+     "name": "Junjing Deng"
+    },
+    {
+     "authorId": "2258239866",
+     "name": "M. Cherukara"
+    },
+    {
+     "authorId": "2257284095",
+     "name": "Nicholas Schwarz"
+    },
+    {
+     "authorId": "2256658517",
+     "name": "Suresh Narayanan"
+    },
+    {
+     "authorId": "2284035133",
+     "name": "Jin Wang"
+    },
+    {
+     "authorId": "6798285",
+     "name": "Miaoqi Chu"
+    },
+    {
+     "authorId": "2163376150",
+     "name": "Zhang Jiang"
+    }
+   ]
+  }
+ ]
+}

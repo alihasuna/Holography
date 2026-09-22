@@ -1,0 +1,342 @@
+{
+ "_url": "https://api.crossref.org/works/10.1143/jjap.38.6540",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2025,
+     10,
+     26
+    ]
+   ],
+   "date-time": "2025-10-26T13:53:39Z",
+   "timestamp": 1761486819156,
+   "version": "3.37.3"
+  },
+  "reference-count": 20,
+  "publisher": "IOP Publishing",
+  "issue": "11R",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       1999,
+       11,
+       1
+      ]
+     ],
+     "date-time": "1999-11-01T00:00:00Z",
+     "timestamp": 941414400000
+    },
+    "content-version": "vor",
+    "delay-in-days": 0,
+    "URL": "https://iopscience.iop.org/page/copyright"
+   },
+   {
+    "start": {
+     "date-parts": [
+      [
+       1999,
+       11,
+       1
+      ]
+     ],
+     "date-time": "1999-11-01T00:00:00Z",
+     "timestamp": 941414400000
+    },
+    "content-version": "tdm",
+    "delay-in-days": 0,
+    "URL": "https://iopscience.iop.org/info/page/text-and-data-mining"
+   }
+  ],
+  "content-domain": {
+   "domain": [
+    "iopscience.iop.org"
+   ],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Jpn. J. Appl. Phys."
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1999,
+     11,
+     1
+    ]
+   ]
+  },
+  "DOI": "10.1143/jjap.38.6540",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2002,
+     10,
+     1
+    ]
+   ],
+   "date-time": "2002-10-01T23:04:55Z",
+   "timestamp": 1033513495000
+  },
+  "page": "6540",
+  "update-policy": "https://doi.org/10.1088/crossmark-policy",
+  "source": "Crossref",
+  "is-referenced-by-count": 6,
+  "title": [
+   "Image Conservation in Inelastically Scattered Electrons  in Reflection Electron Microscopy"
+  ],
+  "prefix": "10.35848",
+  "volume": "38",
+  "author": [
+   {
+    "given": "Yasumasa",
+    "family": "Tanishiro",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Kimiharu",
+    "family": "Okamoto",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Takayuki",
+    "family": "Suzuki",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Nami",
+    "family": "Ishiguro",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Hiroki",
+    "family": "Mimoda",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Hidetoshi",
+    "family": "Miura",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Katsumichi",
+    "family": "Yagi",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "Masaki",
+    "family": "Takeguchi",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   }
+  ],
+  "member": "266",
+  "container-title": [
+   "Japanese Journal of Applied Physics"
+  ],
+  "original-title": [],
+  "link": [
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.38.6540",
+    "content-type": "text/html",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.38.6540/pdf",
+    "content-type": "application/pdf",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.38.6540/pdf",
+    "content-type": "application/pdf",
+    "content-version": "vor",
+    "intended-application": "syndication"
+   },
+   {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.38.6540/pdf",
+    "content-type": "application/pdf",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2022,
+     12,
+     14
+    ]
+   ],
+   "date-time": "2022-12-14T16:46:21Z",
+   "timestamp": 1671036381000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://iopscience.iop.org/article/10.1143/JJAP.38.6540"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1999,
+     11,
+     1
+    ]
+   ]
+  },
+  "references-count": 20,
+  "journal-issue": {
+   "issue": "11R",
+   "published-print": {
+    "date-parts": [
+     [
+      1999,
+      11,
+      1
+     ]
+    ]
+   }
+  },
+  "URL": "https://doi.org/10.1143/jjap.38.6540",
+  "relation": {},
+  "ISSN": [
+   "0021-4922",
+   "1347-4065"
+  ],
+  "issn-type": [
+   {
+    "type": "print",
+    "value": "0021-4922"
+   },
+   {
+    "type": "electronic",
+    "value": "1347-4065"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1999,
+     11,
+     1
+    ]
+   ]
+  },
+  "assertion": [
+   {
+    "value": "Image Conservation in Inelastically Scattered Electrons  in Reflection Electron Microscopy",
+    "name": "article_title",
+    "label": "Article Title"
+   },
+   {
+    "value": "Japanese Journal of Applied Physics",
+    "name": "journal_title",
+    "label": "Journal Title"
+   },
+   {
+    "value": "paper",
+    "name": "article_type",
+    "label": "Article Type"
+   },
+   {
+    "value": "Copyright (c) 1999 The Japan Society of Applied Physics",
+    "name": "copyright_information",
+    "label": "Copyright Information"
+   },
+   {
+    "value": "1999-05-20",
+    "name": "date_received",
+    "label": "Date Received",
+    "group": {
+     "name": "publication_dates",
+     "label": "Publication dates"
+    }
+   },
+   {
+    "value": "1999-08-10",
+    "name": "date_accepted",
+    "label": "Date Accepted",
+    "group": {
+     "name": "publication_dates",
+     "label": "Publication dates"
+    }
+   },
+   {
+    "name": "date_epub",
+    "label": "Online publication date",
+    "group": {
+     "name": "publication_dates",
+     "label": "Publication dates"
+    }
+   }
+  ]
+ }
+}

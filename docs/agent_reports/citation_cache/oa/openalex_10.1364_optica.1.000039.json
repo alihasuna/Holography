@@ -1,0 +1,47 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1364/optica.1.000039?select=id,doi,title,publication_year,open_access,best_oa_location",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2112146488",
+ "doi": "https://doi.org/10.1364/optica.1.000039",
+ "title": "Tabletop nanometer extreme ultraviolet imaging in an extended reflection mode using coherent Fresnel ptychography",
+ "publication_year": 2014,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "gold",
+  "oa_url": "https://doi.org/10.1364/optica.1.000039",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1364/optica.1.000039",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1364/optica.1.000039",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4210197940",
+   "display_name": "Optica",
+   "issn_l": "2334-2536",
+   "issn": [
+    "2334-2536"
+   ],
+   "is_oa": true,
+   "is_in_doaj": true,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310315679",
+   "host_organization_name": "Optica Publishing Group",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310315679"
+   ],
+   "host_organization_lineage_names": [
+    "Optica Publishing Group"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Optica",
+  "raw_type": "journal-article"
+ }
+}

@@ -1,0 +1,46 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1093/oxfordjournals.jmicro.a050815/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "6bcda0aaa219f8e2be0bd4c0aaf2844b7b47fe5c",
+    "externalIds": {
+     "MAG": "2072478660",
+     "DOI": "10.1179/sic.2008.53.Supplement-2.75",
+     "CorpusId": 191471311
+    },
+    "title": "Identification of selected vegetable textile fibres",
+    "venue": "",
+    "year": 2008,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "53",
+     "pages": "75 - 87",
+     "name": "Studies in Conservation"
+    },
+    "authors": [
+     {
+      "authorId": "34945719",
+      "name": "D. Carr"
+     },
+     {
+      "authorId": "12006079",
+      "name": "N. Cruthers"
+     },
+     {
+      "authorId": "2110282491",
+      "name": "C. Smith"
+     },
+     {
+      "authorId": "2052238952",
+      "name": "Tom Myers"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1002/jemt.1070200414?select=id,doi,title,publication_year,open_access,best_oa_location",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2163735975",
+ "doi": "https://doi.org/10.1002/jemt.1070200414",
+ "title": "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces",
+ "publication_year": 1992,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null
+}

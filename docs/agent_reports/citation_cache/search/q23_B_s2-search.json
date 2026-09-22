@@ -1,0 +1,3945 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search?query=reflection+electron+ptychography&limit=100&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 48270,
+ "offset": 0,
+ "next": 100,
+ "data": [
+  {
+   "paperId": "acd365986cc90933ca589b0d65670d4073b6f48c",
+   "externalIds": {
+    "DOI": "10.1109/CLEO/Europe-EQEC65582.2025.11110191",
+    "CorpusId": 280664383
+   },
+   "title": "Near-Field Electron Ptychography of Metasurfaces",
+   "venue": "2025 Conference on Lasers and Electro-Optics Europe & European Quantum Electronics Conference (CLEO/Europe-EQEC)",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2320416046",
+     "name": "Tamir Shpiro"
+    },
+    {
+     "authorId": "2006908328",
+     "name": "R. Ruimy"
+    },
+    {
+     "authorId": "30994320",
+     "name": "M. Yannai"
+    },
+    {
+     "authorId": "2097959700",
+     "name": "T. Lenkiewicz"
+    },
+    {
+     "authorId": "2268408194",
+     "name": "A. Kam"
+    },
+    {
+     "authorId": "34806142",
+     "name": "I. Kaminer"
+    }
+   ]
+  },
+  {
+   "paperId": "c1dd97d9e7bcc3bebd70effd51578ec7f94f0b24",
+   "externalIds": {
+    "DOI": "10.1016/j.ultramic.2023.113720",
+    "CorpusId": 257685958,
+    "PubMed": "37004492"
+   },
+   "title": "Characterisation of engineered defects in extreme ultraviolet mirror substrates using lab-scale extreme ultraviolet reflection ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2208642858",
+     "name": "Haoyan Lu"
+    },
+    {
+     "authorId": "12808282",
+     "name": "M. Odstrčil"
+    },
+    {
+     "authorId": "1729265069",
+     "name": "Charles Pooley"
+    },
+    {
+     "authorId": "2086119636",
+     "name": "Jan Biller"
+    },
+    {
+     "authorId": "2101465818",
+     "name": "Mikheil Mebonia"
+    },
+    {
+     "authorId": "82006036",
+     "name": "G. He"
+    },
+    {
+     "authorId": "38772791",
+     "name": "M. Praeger"
+    },
+    {
+     "authorId": "11586252",
+     "name": "L. Juschkin"
+    },
+    {
+     "authorId": "2326366311",
+     "name": "Jeremy G. Frey"
+    },
+    {
+     "authorId": "5448814",
+     "name": "W. Brocklesby"
+    }
+   ]
+  },
+  {
+   "paperId": "74abbb40d12bb2d68f7c041b951151ea7a95e383",
+   "externalIds": {
+    "DOI": "10.1016/j.elspec.2023.147380",
+    "CorpusId": 260234620
+   },
+   "title": "Development of soft X-ray ptychography and fluorescence microscopy system using total-reflection wolter mirror and application to measurement of drug-treated mammalian cells",
+   "venue": "Journal of Electron Spectroscopy and Related Phenomena",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2463332348",
+     "name": "Takeo Yoko"
+    },
+    {
+     "authorId": "97206487",
+     "name": "Kai Sakurai"
+    },
+    {
+     "authorId": "2172091752",
+     "name": "Noboru Furuya"
+    },
+    {
+     "authorId": "2034363688",
+     "name": "Kyota Yoshinaga"
+    },
+    {
+     "authorId": "1380921417",
+     "name": "T. Shimamura"
+    },
+    {
+     "authorId": "49829028",
+     "name": "Satoru Egawa"
+    },
+    {
+     "authorId": "121546310",
+     "name": "H. Kiuchi"
+    },
+    {
+     "authorId": "6845812",
+     "name": "Hidekazu Mimura"
+    },
+    {
+     "authorId": "2370900648",
+     "name": "H. Ohashi"
+    },
+    {
+     "authorId": "2185903956",
+     "name": "Yoshihisa Harada"
+    },
+    {
+     "authorId": "2172266080",
+     "name": "Mari Shimura"
+    },
+    {
+     "authorId": "145338563",
+     "name": "Takashi Kimura"
+    }
+   ]
+  },
+  {
+   "paperId": "737830c2299cd8e54a059ff605acdb0f5d3f857e",
+   "externalIds": {
+    "ArXiv": "2608.30359",
+    "CorpusId": 291541692
+   },
+   "title": "Real-space overlap is not enough: ambiguity in nanobeam iterative ptychography",
+   "venue": "",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "93380018",
+     "name": "S. Ribet"
+    },
+    {
+     "authorId": "2320677201",
+     "name": "M. Danaie"
+    },
+    {
+     "authorId": "2368342919",
+     "name": "Willem P. M. de Kleijne"
+    },
+    {
+     "authorId": "2113930104",
+     "name": "A. McCray"
+    },
+    {
+     "authorId": "2060937060",
+     "name": "Frederick Allars"
+    },
+    {
+     "authorId": "2329197099",
+     "name": "Christopher S. Allen"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "2313174224",
+     "name": "G. Varnavides"
+    }
+   ]
+  },
+  {
+   "paperId": "6effff22039c437e44d7293ad24901709aa5e614",
+   "externalIds": {
+    "ArXiv": "1312.2049",
+    "MAG": "2952957294",
+    "DOI": "10.1364/OPTICA.1.000039",
+    "CorpusId": 10577107
+   },
+   "title": "Tabletop nanometer extreme ultraviolet imaging in an extended reflection mode using coherent Fresnel ptychography",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "dd3486c0532f0c695b371f9f9f497cf1dbfd2f13",
+   "externalIds": {
+    "MAG": "1870708608",
+    "DOI": "10.1016/j.ultramic.2015.07.006",
+    "CorpusId": 12840510,
+    "PubMed": "26233823"
+   },
+   "title": "High contrast 3D imaging of surfaces near the wavelength limit using tabletop EUV ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "e7105a3821dab7419ab92b951aff5ae19e258d37",
+   "externalIds": {
+    "MAG": "2559873426",
+    "DOI": "10.1364/CLEO_SI.2016.SM3R.5",
+    "CorpusId": 13454492
+   },
+   "title": "Coherent diffraction imaging of buried nanostructures in a reflection geometry with extreme ultraviolet light",
+   "venue": "Conference on Lasers and Electro-Optics",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "31776903",
+     "name": "Christina L. Porter"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "21441409",
+     "name": "G. Mancini"
+    },
+    {
+     "authorId": "33455098",
+     "name": "Robert M. Karl"
+    },
+    {
+     "authorId": "4144582",
+     "name": "M. Tanksalvala"
+    },
+    {
+     "authorId": "5969662",
+     "name": "Charles S. Bevis"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "57f464c3b62cd6543bfc78a0983fcae22fba4b24",
+   "externalIds": {
+    "MAG": "2416852725",
+    "DOI": "10.1007/978-3-319-19521-6_28",
+    "CorpusId": 124853502
+   },
+   "title": "Reflection Mode Imaging with Extreme-Ultraviolet Light from a High Harmonic Source",
+   "venue": "",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "2270721949",
+     "name": "J. Rocca"
+    },
+    {
+     "authorId": "5425733",
+     "name": "C. Menoni"
+    },
+    {
+     "authorId": "50538281",
+     "name": "M. Marconi"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "e53ccbdfed797eff8a02945c1b05ae45d1e40a63",
+   "externalIds": {
+    "PubMedCentral": "11750992",
+    "DOI": "10.1038/s41467-025-56215-z",
+    "CorpusId": 271602527,
+    "PubMed": "39837871"
+   },
+   "title": "Atomically resolved imaging of radiation-sensitive metal-organic frameworks via electron ptychography",
+   "venue": "Nature Communications",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2108252844",
+     "name": "Guan-Xing Li"
+    },
+    {
+     "authorId": "2152759725",
+     "name": "Ming Xu"
+    },
+    {
+     "authorId": "2239172251",
+     "name": "Wen-Qi Tang"
+    },
+    {
+     "authorId": "2261968449",
+     "name": "Ying Liu"
+    },
+    {
+     "authorId": "7863886",
+     "name": "Cailing Chen"
+    },
+    {
+     "authorId": "2244781469",
+     "name": "Da-Liang Zhang"
+    },
+    {
+     "authorId": "46457999",
+     "name": "Lingmei Liu"
+    },
+    {
+     "authorId": "2276086007",
+     "name": "Shou-Cong Ning"
+    },
+    {
+     "authorId": "2261350488",
+     "name": "Hui Zhang"
+    },
+    {
+     "authorId": "1759782",
+     "name": "Zhi-Yuan Gu"
+    },
+    {
+     "authorId": "2261088160",
+     "name": "Zhiping Lai"
+    },
+    {
+     "authorId": "2249049000",
+     "name": "D. Muller"
+    },
+    {
+     "authorId": "2243915834",
+     "name": "Yu Han"
+    }
+   ]
+  },
+  {
+   "paperId": "f6db7cb7d8305a94d64abaa0d3d37e441c683066",
+   "externalIds": {
+    "DOI": "10.1126/science.adw7751",
+    "CorpusId": 280031598,
+    "PubMed": "40705895"
+   },
+   "title": "Atom-by-atom imaging of moiré phasons with electron ptychography.",
+   "venue": "Science",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2257656500",
+     "name": "Yichao Zhang"
+    },
+    {
+     "authorId": "116569985",
+     "name": "Ballal Ahammed"
+    },
+    {
+     "authorId": "2314094409",
+     "name": "S. Bae"
+    },
+    {
+     "authorId": "2115642506",
+     "name": "Chia-Hao Lee"
+    },
+    {
+     "authorId": "2359405767",
+     "name": "Jeffrey Huang"
+    },
+    {
+     "authorId": "2359410617",
+     "name": "Mohammad Abir Hossain"
+    },
+    {
+     "authorId": "28271660",
+     "name": "Tawfiqur Rakib"
+    },
+    {
+     "authorId": "5810445",
+     "name": "A. M. van der Zande"
+    },
+    {
+     "authorId": "2336411913",
+     "name": "Elif Ertekin"
+    },
+    {
+     "authorId": "2266356422",
+     "name": "Pinshane Y. Huang"
+    }
+   ]
+  },
+  {
+   "paperId": "80fb7edabe8255a8f7db73cab1794dc3388b43db",
+   "externalIds": {
+    "DOI": "10.1021/acsnano.4c14833",
+    "CorpusId": 275929430,
+    "PubMed": "39871489"
+   },
+   "title": "Insights into Chemical and Structural Order at Planar Defects in Pb2MgWO6 Using Multislice Electron Ptychography.",
+   "venue": "ACS Nano",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2290493234",
+     "name": "Menglin Zhu"
+    },
+    {
+     "authorId": "2142866811",
+     "name": "Michael Xu"
+    },
+    {
+     "authorId": "2290485650",
+     "name": "Yu Yun"
+    },
+    {
+     "authorId": "2244284096",
+     "name": "Li-Yan Wu"
+    },
+    {
+     "authorId": "1478371487",
+     "name": "Or Shafir"
+    },
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2244627447",
+     "name": "Lane W. Martin"
+    },
+    {
+     "authorId": "2244402507",
+     "name": "Ilya Grinberg"
+    },
+    {
+     "authorId": "2255595726",
+     "name": "Jonathan E. Spanier"
+    },
+    {
+     "authorId": "2242646651",
+     "name": "James M. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "9c731014d5c6952e8479a0b8248ace231e2a81db",
+   "externalIds": {
+    "PubMedCentral": "12904782",
+    "ArXiv": "2505.14372",
+    "DOI": "10.1038/s41524-026-01956-8",
+    "CorpusId": 278769473,
+    "PubMed": "41695462"
+   },
+   "title": "phaser: a unified and extensible framework for fast electron ptychography",
+   "venue": "npj Computational Materials",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2290493234",
+     "name": "Menglin Zhu"
+    },
+    {
+     "authorId": "2244217342",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "da9e1a31313cb1b6b611a0e1cf5d0175dd658d8c",
+   "externalIds": {
+    "ArXiv": "2508.11142",
+    "DOI": "10.1021/jacs.5c13741",
+    "CorpusId": 280671049,
+    "PubMed": "41071583"
+   },
+   "title": "Electron Ptychography Images Hydrogen Atom Superlattices and 3D Inhomogeneities in Palladium Hydride Nanoparticles.",
+   "venue": "Journal of the American Chemical Society",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "1838475",
+     "name": "Zixiao Shi"
+    },
+    {
+     "authorId": "2615236",
+     "name": "Qihao Li"
+    },
+    {
+     "authorId": "153281090",
+     "name": "Himani Mishra"
+    },
+    {
+     "authorId": "2363883763",
+     "name": "Desheng Ma"
+    },
+    {
+     "authorId": "2284151989",
+     "name": "Héctor D. Abruña"
+    },
+    {
+     "authorId": "2248136021",
+     "name": "D. A. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "110e772cc2ca4f080dbcbbcfe1acc2ea718f74d8",
+   "externalIds": {
+    "PubMedCentral": "11401879",
+    "DOI": "10.1038/s41467-024-52403-5",
+    "CorpusId": 267682555,
+    "PubMed": "39277607"
+   },
+   "title": "Low-dose cryo-electron ptychography of proteins at sub-nanometer resolution",
+   "venue": "bioRxiv",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": null,
+     "name": "Berk Küçükoğlu"
+    },
+    {
+     "authorId": "2140244749",
+     "name": "Inayathulla Mohammed"
+    },
+    {
+     "authorId": "1399079534",
+     "name": "R. Guerrero-Ferreira"
+    },
+    {
+     "authorId": "2303472912",
+     "name": "Massimo Kube"
+    },
+    {
+     "authorId": "1687746419",
+     "name": "Julika Radecke"
+    },
+    {
+     "authorId": "93380018",
+     "name": "S. Ribet"
+    },
+    {
+     "authorId": "71379254",
+     "name": "Georgios Varnavides"
+    },
+    {
+     "authorId": "2133157084",
+     "name": "Max Leo Leidl"
+    },
+    {
+     "authorId": "1697842152",
+     "name": "K. Lau"
+    },
+    {
+     "authorId": "153516042",
+     "name": "Sergey Nazarov"
+    },
+    {
+     "authorId": "2203784172",
+     "name": "Alexander Myasnikov"
+    },
+    {
+     "authorId": "2242726429",
+     "name": "C. Sachse"
+    },
+    {
+     "authorId": "1398653473",
+     "name": "K. Müller-Caspary"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "2179200084",
+     "name": "Henning Stahlberg"
+    }
+   ]
+  },
+  {
+   "paperId": "07f39808e030da262b6ec4c734cb9cc623b8b0f2",
+   "externalIds": {
+    "ArXiv": "2501.08874",
+    "DOI": "10.1051/epjap/2025018",
+    "CorpusId": 275544229
+   },
+   "title": "Benchmarking analytical electron ptychography methods for the low-dose imaging of beam-sensitive materials",
+   "venue": "European Physical Journal : Applied physics",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2499854022",
+     "name": "Hoelen L. Lalandec Robert"
+    },
+    {
+     "authorId": "2133157084",
+     "name": "Max Leo Leidl"
+    },
+    {
+     "authorId": "1405409533",
+     "name": "K. Muller-Caspary"
+    },
+    {
+     "authorId": "2316486808",
+     "name": "J. Verbeeck"
+    }
+   ]
+  },
+  {
+   "paperId": "575663bf1f0b8c1da9d83eeec2b97bf1acf722a6",
+   "externalIds": {
+    "PubMedCentral": "12523988",
+    "DOI": "10.1111/jmi.70039",
+    "CorpusId": 281839735,
+    "PubMed": "41048187"
+   },
+   "title": "Depth of field of multi‐slice electron ptychography: Investigating energy and convergence angle",
+   "venue": "Journal of Microscopy",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2060937060",
+     "name": "Frederick Allars"
+    },
+    {
+     "authorId": "2265833565",
+     "name": "Andrew M. Maiden"
+    },
+    {
+     "authorId": "2380760121",
+     "name": "Darren J. Batey"
+    },
+    {
+     "authorId": "2257515448",
+     "name": "C. Allen"
+    }
+   ]
+  },
+  {
+   "paperId": "8933caa567668030a507f4f0ccb0c19ff6bb91ce",
+   "externalIds": {
+    "DOI": "10.1021/acsnano.4c14988",
+    "CorpusId": 276213375,
+    "PubMed": "39920041"
+   },
+   "title": "Electron Ptychography for Atom-by-Atom Quantification of 1D Defect Complexes in Monolayer MoS2.",
+   "venue": "ACS Nano",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "152650954",
+     "name": "Leyi Loh"
+    },
+    {
+     "authorId": "2276086007",
+     "name": "Shou-Cong Ning"
+    },
+    {
+     "authorId": "2212279798",
+     "name": "Daria Kieczka"
+    },
+    {
+     "authorId": "2185016339",
+     "name": "Yuan Chen"
+    },
+    {
+     "authorId": "2280045587",
+     "name": "Jianmin Yang"
+    },
+    {
+     "authorId": "2108194601",
+     "name": "Zhe Wang"
+    },
+    {
+     "authorId": "2298585592",
+     "name": "Stephen J Pennycook"
+    },
+    {
+     "authorId": "4572755",
+     "name": "G. Eda"
+    },
+    {
+     "authorId": "2317726062",
+     "name": "A. Shluger"
+    },
+    {
+     "authorId": "5933540",
+     "name": "M. Bosman"
+    }
+   ]
+  },
+  {
+   "paperId": "083a293e004bce5265fc98a5118e41b7a43d5a62",
+   "externalIds": {
+    "ArXiv": "2506.09355",
+    "DOI": "10.1093/mam/ozaf102",
+    "CorpusId": 279306145,
+    "PubMed": "41140087"
+   },
+   "title": "Optimizing Atomic Number Contrast in Multislice Electron Ptychography.",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2313155706",
+     "name": "Bridget R. Denzer"
+    },
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2244217342",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "1d175d7957c8667b36c96c284a20651150456100",
+   "externalIds": {
+    "ArXiv": "2507.07265",
+    "PubMedCentral": "13087028",
+    "DOI": "10.1038/s41467-026-69733-1",
+    "CorpusId": 280262696,
+    "PubMed": "41730876"
+   },
+   "title": "3D atomic-scale metrology of strain relaxation and roughness in Gate-All-Around transistors via electron ptychography",
+   "venue": "Nature Communications",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2313186427",
+     "name": "Shake Karapetyan"
+    },
+    {
+     "authorId": "6039766",
+     "name": "Steven E. Zeltmann"
+    },
+    {
+     "authorId": "2264610289",
+     "name": "G. Wilk"
+    },
+    {
+     "authorId": "2313577501",
+     "name": "Ta-Kun Chen"
+    },
+    {
+     "authorId": "2260727784",
+     "name": "V. Hou"
+    },
+    {
+     "authorId": "2317950437",
+     "name": "David A. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "a2fe1cf59d4d8fd3c0d01cf2c1d1c0565caa51fa",
+   "externalIds": {
+    "ArXiv": "2503.10917",
+    "CorpusId": 277043476
+   },
+   "title": "Electron Ptychography",
+   "venue": "",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2300946673",
+     "name": "L. Clark"
+    },
+    {
+     "authorId": "2178359929",
+     "name": "P. Nellist"
+    }
+   ]
+  },
+  {
+   "paperId": "0c308f92a16787b5776b8cfeea92acbb686192a5",
+   "externalIds": {
+    "ArXiv": "2511.07795",
+    "CorpusId": 282921829
+   },
+   "title": "Deep generative priors for robust and efficient electron ptychography",
+   "venue": "",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2113930104",
+     "name": "A. McCray"
+    },
+    {
+     "authorId": "93380018",
+     "name": "S. Ribet"
+    },
+    {
+     "authorId": "2313174224",
+     "name": "G. Varnavides"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    }
+   ]
+  },
+  {
+   "paperId": "f5430fc9ab27864df071f7488e5064ba308a4e61",
+   "externalIds": {
+    "PubMedCentral": "12881742",
+    "DOI": "10.1016/j.xinn.2025.101043",
+    "CorpusId": 280305128,
+    "PubMed": "41658494"
+   },
+   "title": "Visualizing the atomic structure of nitrogen-vacancy color center in diamond by multislice electron ptychography",
+   "venue": "Innovation (Cambridge (Mass.))",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2255730925",
+     "name": "Yu-Jie Chen"
+    },
+    {
+     "authorId": "2313155920",
+     "name": "Chenglin Pua"
+    },
+    {
+     "authorId": "2240926684",
+     "name": "Xiao-Ran Zhang"
+    },
+    {
+     "authorId": "2267458620",
+     "name": "Ang Gao"
+    },
+    {
+     "authorId": "2255702497",
+     "name": "Yan Fang"
+    },
+    {
+     "authorId": "1470761722",
+     "name": "Beikai Zhao"
+    },
+    {
+     "authorId": "2334608067",
+     "name": "Ting Lin"
+    },
+    {
+     "authorId": "2373145461",
+     "name": "Valentina A. Bocharova"
+    },
+    {
+     "authorId": "2301595145",
+     "name": "Qing-Hua Zhang"
+    },
+    {
+     "authorId": "2373365197",
+     "name": "Han Tang"
+    },
+    {
+     "authorId": "2287089800",
+     "name": "Wen-Wu Zhong"
+    },
+    {
+     "authorId": "2374370142",
+     "name": "Shijie Shen"
+    },
+    {
+     "authorId": "2087211535",
+     "name": "Bin Sun"
+    },
+    {
+     "authorId": "2217898821",
+     "name": "Jian Wang"
+    },
+    {
+     "authorId": "2267985151",
+     "name": "Jie Yang"
+    },
+    {
+     "authorId": "2283449291",
+     "name": "Qian Yu"
+    },
+    {
+     "authorId": "2322995264",
+     "name": "Xiao-Bing Liu"
+    },
+    {
+     "authorId": "2200230274",
+     "name": "Lin Gu"
+    }
+   ]
+  },
+  {
+   "paperId": "bf18cbe646c5f14fdab2e5cff9efb13ab54f5c7d",
+   "externalIds": {
+    "ArXiv": "2504.14217",
+    "DOI": "10.1016/j.ultramic.2025.114305",
+    "CorpusId": 277955389,
+    "PubMed": "41499883"
+   },
+   "title": "Fabrication and characterization of boron-terminated tetravacancies in monolayer hBN using STEM, EELS and electron ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2224542662",
+     "name": "Dana O. Byrne"
+    },
+    {
+     "authorId": "93380018",
+     "name": "S. Ribet"
+    },
+    {
+     "authorId": "145618026",
+     "name": "D. Kepaptsoglou"
+    },
+    {
+     "authorId": "2313177450",
+     "name": "Q. Ramasse"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "2269736183",
+     "name": "Frances I. Allen"
+    }
+   ]
+  },
+  {
+   "paperId": "04bd75773e5e229896d3b8e8c19b74ab0e4119d0",
+   "externalIds": {
+    "DBLP": "journals/corr/abs-2507-17800",
+    "ArXiv": "2507.17800",
+    "DOI": "10.1109/ICCVW69036.2025.00382",
+    "CorpusId": 280017479
+   },
+   "title": "Improving Multislice Electron Ptychography with a Generative Prior",
+   "venue": "2025 IEEE/CVF International Conference on Computer Vision Workshops (ICCVW)",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2310336777",
+     "name": "Christian K. Belardi"
+    },
+    {
+     "authorId": "2350787846",
+     "name": "Chia-Hao Lee"
+    },
+    {
+     "authorId": "2322603767",
+     "name": "Ying-Heng Wang"
+    },
+    {
+     "authorId": "1398104959",
+     "name": "Justin Lovelace"
+    },
+    {
+     "authorId": "7446832",
+     "name": "Kilian Q. Weinberger"
+    },
+    {
+     "authorId": "2317950437",
+     "name": "David A. Muller"
+    },
+    {
+     "authorId": "2310338395",
+     "name": "Carla P. Gomes"
+    }
+   ]
+  },
+  {
+   "paperId": "3ed58dd09c80bb32687b6fadbf7300072eb98423",
+   "externalIds": {
+    "DOI": "10.1364/oe.551986",
+    "CorpusId": 276365396,
+    "PubMed": "40798609"
+   },
+   "title": "LoRePIE: ℓ0 regularized extended ptychographical iterative engine for low-dose and fast electron ptychography.",
+   "venue": "Optics Express",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2433606",
+     "name": "A. Moshtaghpour"
+    },
+    {
+     "authorId": "2178380940",
+     "name": "A. Velazco-torrejon"
+    },
+    {
+     "authorId": "2080563099",
+     "name": "A. Robinson"
+    },
+    {
+     "authorId": "2239928058",
+     "name": "N. D. Browning"
+    },
+    {
+     "authorId": "2167324785",
+     "name": "A. Kirkland"
+    }
+   ]
+  },
+  {
+   "paperId": "8ee5e9975b9795b2f086be528c9e2936e86a299f",
+   "externalIds": {
+    "DOI": "10.1111/jmi.70011",
+    "CorpusId": 280046732,
+    "PubMed": "40716092"
+   },
+   "title": "Stability of electron ptychography at low electron dose",
+   "venue": "Journal of Microscopy",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2326613098",
+     "name": "M. Dearg"
+    },
+    {
+     "authorId": "2326610598",
+     "name": "N. Michaelides"
+    },
+    {
+     "authorId": "2372237877",
+     "name": "J. Gilbert"
+    },
+    {
+     "authorId": "2252337821",
+     "name": "Z. Ding"
+    },
+    {
+     "authorId": "81695333",
+     "name": "Z. Aslam"
+    },
+    {
+     "authorId": "2237922774",
+     "name": "D. Hopkinson"
+    },
+    {
+     "authorId": "2257515448",
+     "name": "C. Allen"
+    },
+    {
+     "authorId": "2372237850",
+     "name": "L. Clark"
+    }
+   ]
+  },
+  {
+   "paperId": "cebc2f1372d9c59a518d875cedbfdad0d18a5e81",
+   "externalIds": {
+    "ArXiv": "2406.04252",
+    "PubMedCentral": "11785980",
+    "DOI": "10.1038/s41467-025-56499-1",
+    "CorpusId": 270286246,
+    "PubMed": "39890786"
+   },
+   "title": "Sub-nanometer depth resolution and single dopant visualization achieved by tilt-coupled multislice electron ptychography",
+   "venue": "Nature Communications",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2243145679",
+     "name": "Ze-Hao Dong"
+    },
+    {
+     "authorId": "2145955834",
+     "name": "Yang Zhang"
+    },
+    {
+     "authorId": "2065562795",
+     "name": "Chun Chiu"
+    },
+    {
+     "authorId": "2129485978",
+     "name": "Sicheng Lu"
+    },
+    {
+     "authorId": "2296273723",
+     "name": "Jian-Bing Zhang"
+    },
+    {
+     "authorId": "2116487463",
+     "name": "Yu-Chen Liu"
+    },
+    {
+     "authorId": "2255402537",
+     "name": "Su-Ya Liu"
+    },
+    {
+     "authorId": "2287354934",
+     "name": "Jan-Chi Yang"
+    },
+    {
+     "authorId": "2293233366",
+     "name": "Pu Yu"
+    },
+    {
+     "authorId": "2109266434",
+     "name": "Yayu Wang"
+    },
+    {
+     "authorId": "2305207707",
+     "name": "Zhen Chen"
+    }
+   ]
+  },
+  {
+   "paperId": "17260356312cef0e6d8f16148b2e5896dde1b3d5",
+   "externalIds": {
+    "DOI": "10.1063/5.0238580",
+    "CorpusId": 276629665
+   },
+   "title": "Aberration measurement by electron ptychography and consistency among different algorithms",
+   "venue": "Applied Physics Letters",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2279523927",
+     "name": "Tizian Lorenzen"
+    },
+    {
+     "authorId": "2310794639",
+     "name": "Benedikt Diederichs"
+    },
+    {
+     "authorId": null,
+     "name": "Charles Otieno Ogolla"
+    },
+    {
+     "authorId": "2284740132",
+     "name": "Benjamin Butz"
+    },
+    {
+     "authorId": "1398653473",
+     "name": "K. Müller-Caspary"
+    }
+   ]
+  },
+  {
+   "paperId": "a3a791f24d00bd42fb7f66220efeb8acbb0f4ec9",
+   "externalIds": {
+    "ArXiv": "2507.18906",
+    "CorpusId": 280045436
+   },
+   "title": "Atomic-Scale Heterogeneity of Hydrogen in Metal Hydrides Revealed by Electron Ptychography",
+   "venue": "",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2276490265",
+     "name": "Pengcheng Li"
+    },
+    {
+     "authorId": "2313155920",
+     "name": "Chenglin Pua"
+    },
+    {
+     "authorId": "2243145679",
+     "name": "Ze-Hao Dong"
+    },
+    {
+     "authorId": "2313470909",
+     "name": "Zhengxiong Su"
+    },
+    {
+     "authorId": "2286558440",
+     "name": "Tao Liu"
+    },
+    {
+     "authorId": "2330156056",
+     "name": "Chao Cai"
+    },
+    {
+     "authorId": "2304890440",
+     "name": "Huahai Shen"
+    },
+    {
+     "authorId": "2251741128",
+     "name": "L. Gu"
+    },
+    {
+     "authorId": "2305207707",
+     "name": "Zhen Chen"
+    }
+   ]
+  },
+  {
+   "paperId": "57e9bad09937467850530a3c1cb761e1be946192",
+   "externalIds": {
+    "PubMedCentral": "13148341",
+    "ArXiv": "2509.07140",
+    "DOI": "10.1126/sciadv.aeb4305",
+    "CorpusId": 281217978,
+    "PubMed": "42090519"
+   },
+   "title": "3D mapping of defects and moiré corrugations via electron ptychography atomic coordinate retrieval",
+   "venue": "Science Advances",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2359405767",
+     "name": "Jeffrey Huang"
+    },
+    {
+     "authorId": "2257656500",
+     "name": "Yichao Zhang"
+    },
+    {
+     "authorId": "2314094409",
+     "name": "S. Bae"
+    },
+    {
+     "authorId": "116569985",
+     "name": "Ballal Ahammed"
+    },
+    {
+     "authorId": "2336411913",
+     "name": "Elif Ertekin"
+    },
+    {
+     "authorId": "2313266839",
+     "name": "P. Huang"
+    }
+   ]
+  },
+  {
+   "paperId": "17806dd07faaf3f91b2565f5866b250e54abe4e7",
+   "externalIds": {
+    "DOI": "10.1021/acs.nanolett.5c00170",
+    "CorpusId": 277818522,
+    "PubMed": "40233408"
+   },
+   "title": "Quantifying Implantation-Induced Damage and Point Defects with Multislice Electron Ptychography.",
+   "venue": "Nano letters (Print)",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2313184083",
+     "name": "Junghwa Kim"
+    },
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2093471351",
+     "name": "Aaditya Bhat"
+    },
+    {
+     "authorId": "2242646651",
+     "name": "James M. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "a496a1779703b627875e985c1641f0580475b90f",
+   "externalIds": {
+    "PubMedCentral": "12672990",
+    "DOI": "10.1186/s42649-025-00119-1",
+    "CorpusId": 283461584,
+    "PubMed": "41331171"
+   },
+   "title": "Development of electron ptychography from algorithms, detectors to its applications",
+   "venue": "Applied Microscopy",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2395796182",
+     "name": "Wonwoo Suh"
+    },
+    {
+     "authorId": "2396313599",
+     "name": "Jeewon B. Choi"
+    },
+    {
+     "authorId": "2395829848",
+     "name": "Keun-Yeol Park"
+    },
+    {
+     "authorId": "145783193",
+     "name": "Celesta S. Chang"
+    }
+   ]
+  },
+  {
+   "paperId": "6c900dfc3416de86c4e32a6b8728fd9a99573c19",
+   "externalIds": {
+    "ArXiv": "2402.10084",
+    "DOI": "10.1063/5.0206814",
+    "CorpusId": 267682339
+   },
+   "title": "Uncovering the three-dimensional structure of upconverting core–shell nanoparticles with multislice electron ptychography",
+   "venue": "Applied Physics Letters",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "93380018",
+     "name": "S. Ribet"
+    },
+    {
+     "authorId": "71379254",
+     "name": "Georgios Varnavides"
+    },
+    {
+     "authorId": "14769956",
+     "name": "C. Pedroso"
+    },
+    {
+     "authorId": "2284223894",
+     "name": "Bruce E. Cohen"
+    },
+    {
+     "authorId": "5206609",
+     "name": "P. Ercius"
+    },
+    {
+     "authorId": "1453648101",
+     "name": "M. Scott"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    }
+   ]
+  },
+  {
+   "paperId": "5b768a3db1b2a0d0a3f014dbdf1fa151f700968d",
+   "externalIds": {
+    "ArXiv": "2408.14795",
+    "DOI": "10.1038/s41563-025-02205-x",
+    "CorpusId": 271962795,
+    "PubMed": "40269146"
+   },
+   "title": "Electron ptychography reveals a ferroelectricity dominated by anion displacements",
+   "venue": "Nature Materials",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2330660323",
+     "name": "Harikrishnan Kp"
+    },
+    {
+     "authorId": "2291080219",
+     "name": "Ruijuan Xu"
+    },
+    {
+     "authorId": "2204472132",
+     "name": "Kinnary Patel"
+    },
+    {
+     "authorId": "104359491",
+     "name": "Kevin J Crust"
+    },
+    {
+     "authorId": "2126176682",
+     "name": "Aarushi Khandelwal"
+    },
+    {
+     "authorId": "2224555519",
+     "name": "Chenyu Zhang"
+    },
+    {
+     "authorId": "2300609727",
+     "name": "Sergey Prosandeev"
+    },
+    {
+     "authorId": "2180799335",
+     "name": "Hua Zhou"
+    },
+    {
+     "authorId": "2314549161",
+     "name": "Yu-Tsun Shao"
+    },
+    {
+     "authorId": "3685205",
+     "name": "L. Bellaiche"
+    },
+    {
+     "authorId": "2313620469",
+     "name": "Harold Y. Hwang"
+    },
+    {
+     "authorId": "2313170970",
+     "name": "David A. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "cc6a4af419f8284bda09700dd24c88646c09e00f",
+   "externalIds": {
+    "DOI": "10.14293/apmc13-2025-0044",
+    "CorpusId": 276201128
+   },
+   "title": "Imaging Point Defects in Bulk Crystals Using Multislice Electron Ptychography",
+   "venue": "Imaging Point Defects in Bulk Crystals Using Multislice Electron Ptychography",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2286491931",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "2243145679",
+     "name": "Ze-Hao Dong"
+    },
+    {
+     "authorId": "2276490265",
+     "name": "Pengcheng Li"
+    },
+    {
+     "authorId": "2346910702",
+     "name": "Huaicheng Yuan"
+    }
+   ]
+  },
+  {
+   "paperId": "5d7fa780cccc1f37ce8ad03a405541c22fb23110",
+   "externalIds": {
+    "ArXiv": "2407.18063",
+    "CorpusId": 271432525
+   },
+   "title": "Imaging interstitial atoms with multislice electron ptychography",
+   "venue": "",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2391305295",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "2314549161",
+     "name": "Yu-Tsun Shao"
+    },
+    {
+     "authorId": "6039766",
+     "name": "Steven E. Zeltmann"
+    },
+    {
+     "authorId": "2312924167",
+     "name": "P. HarikrishnanK."
+    },
+    {
+     "authorId": "145570257",
+     "name": "E. Rosenberg"
+    },
+    {
+     "authorId": "2316234705",
+     "name": "Caroline A. Ross"
+    },
+    {
+     "authorId": "2482783534",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "2246630648",
+     "name": "David A. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "be6252f1f6f0a8e122aa36e8adf6b575b3ae02cd",
+   "externalIds": {
+    "DOI": "10.20517/microstructures.2024.46",
+    "CorpusId": 272886720
+   },
+   "title": "Introduction to electron ptychography for materials scientists",
+   "venue": "Microstructures",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2258844629",
+     "name": "Rong Yu"
+    },
+    {
+     "authorId": "2065853809",
+     "name": "Haozhi Sha"
+    },
+    {
+     "authorId": "2114353122",
+     "name": "Jizhe Cui"
+    },
+    {
+     "authorId": "2157940041",
+     "name": "Wen-Feng Yang"
+    }
+   ]
+  },
+  {
+   "paperId": "8b06fab282d35fd33cdfdae6f5a139a2a4e1208f",
+   "externalIds": {
+    "DOI": "10.1126/science.adl2029",
+    "CorpusId": 267783158,
+    "PubMed": "38386746"
+   },
+   "title": "Achieving sub-0.5-angstrom–resolution ptychography in an uncorrected electron microscope",
+   "venue": "Science",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2285432559",
+     "name": "Kayla X. Nguyen"
+    },
+    {
+     "authorId": "2482783534",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "2115642506",
+     "name": "Chia-Hao Lee"
+    },
+    {
+     "authorId": "152889721",
+     "name": "Priti Kharel"
+    },
+    {
+     "authorId": "2277714880",
+     "name": "Yue Zhang"
+    },
+    {
+     "authorId": "5810445",
+     "name": "A. M. van der Zande"
+    },
+    {
+     "authorId": "2266356422",
+     "name": "Pinshane Y. Huang"
+    }
+   ]
+  },
+  {
+   "paperId": "7c3215fc457b862f38e6e3bb74fc76b6bd7fcc2f",
+   "externalIds": {
+    "ArXiv": "2408.11685",
+    "CorpusId": 271915667
+   },
+   "title": "Bridging experiment and theory of relaxor ferroelectrics at the atomic scale with multislice electron ptychography",
+   "venue": "",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2290493234",
+     "name": "Menglin Zhu"
+    },
+    {
+     "authorId": "2142866811",
+     "name": "Michael Xu"
+    },
+    {
+     "authorId": "30677032",
+     "name": "Yu-Bo Qi"
+    },
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "145782934",
+     "name": "Jieun Kim"
+    },
+    {
+     "authorId": "2238393155",
+     "name": "Jiahao Zhang"
+    },
+    {
+     "authorId": "2313155706",
+     "name": "Bridget R. Denzer"
+    },
+    {
+     "authorId": "2244627447",
+     "name": "Lane W. Martin"
+    },
+    {
+     "authorId": "9221398",
+     "name": "A. Rappe"
+    },
+    {
+     "authorId": "2244217342",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "daa78291c94fd342f4c4912c1efffe541a884b42",
+   "externalIds": {
+    "PubMedCentral": "10761697",
+    "DOI": "10.1038/s41598-023-50784-z",
+    "CorpusId": 266750886,
+    "PubMed": "38167628"
+   },
+   "title": "Direct observation of single-atom defects in monolayer two-dimensional materials by using electron ptychography at 200 kV acceleration voltage",
+   "venue": "Scientific Reports",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2277845881",
+     "name": "Ying Chen"
+    },
+    {
+     "authorId": "2277694859",
+     "name": "Tzu-Chieh Chou"
+    },
+    {
+     "authorId": "2407828954",
+     "name": "Ching-Hsing Fang"
+    },
+    {
+     "authorId": "2254702981",
+     "name": "Cheng Lu"
+    },
+    {
+     "authorId": "2277694934",
+     "name": "Chien-Nan Hsiao"
+    },
+    {
+     "authorId": "2277695730",
+     "name": "Wei-Ting Hsu"
+    },
+    {
+     "authorId": "2208177913",
+     "name": "Chien-Chun Chen"
+    }
+   ]
+  },
+  {
+   "paperId": "5b20752e99dfe4273c3f776fa6c75803e27be88a",
+   "externalIds": {
+    "DOI": "10.1093/mam/ozae018",
+    "CorpusId": 268550778,
+    "PubMed": "38507652"
+   },
+   "title": "An Efficient Electron Ptychography Method for Retrieving the Object Spectrum from Only a Few Iterations.",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2452209684",
+     "name": "Zhong-Bo Li"
+    },
+    {
+     "authorId": "143832569",
+     "name": "J. Biskupek"
+    },
+    {
+     "authorId": "2251260774",
+     "name": "Martin Linck"
+    },
+    {
+     "authorId": "2252390192",
+     "name": "H. Rose"
+    },
+    {
+     "authorId": null,
+     "name": "Pirmin Kükelhan"
+    },
+    {
+     "authorId": "2498481831",
+     "name": "H. Müller"
+    },
+    {
+     "authorId": "2251553109",
+     "name": "Ute Kaiser"
+    }
+   ]
+  },
+  {
+   "paperId": "124fdbbe793aaeb1cb73b69443a3adf07e0e5ca6",
+   "externalIds": {
+    "ArXiv": "2409.07663",
+    "DOI": "10.1016/j.ultramic.2025.114282",
+    "CorpusId": 272599943,
+    "PubMed": "41308422"
+   },
+   "title": "Sensitivity of multislice electron ptychography to point defects: A case study in SiC.",
+   "venue": "Ultramicroscopy",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2093471351",
+     "name": "Aaditya Bhat"
+    },
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2313184083",
+     "name": "Junghwa Kim"
+    },
+    {
+     "authorId": "2142866811",
+     "name": "Michael Xu"
+    },
+    {
+     "authorId": "2290493234",
+     "name": "Menglin Zhu"
+    },
+    {
+     "authorId": "2244217342",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "ccb30ac68f6fa72ae2d99e28d34d5864194c665d",
+   "externalIds": {
+    "DOI": "10.1093/mam/ozae027",
+    "CorpusId": 268927419,
+    "PubMed": "38578297"
+   },
+   "title": "Aberration Correction for Large-Angle Illumination Scanning Transmission Electron Microscopy by Using Iterative Electron Ptychography Algorithms.",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2295509870",
+     "name": "Yinhang Ma"
+    },
+    {
+     "authorId": "2276488426",
+     "name": "Jinan Shi"
+    },
+    {
+     "authorId": "2253821777",
+     "name": "Roger Guzmán"
+    },
+    {
+     "authorId": "2216410856",
+     "name": "Ang Li"
+    },
+    {
+     "authorId": "2295117140",
+     "name": "Wu Zhou"
+    }
+   ]
+  },
+  {
+   "paperId": "f567460c4846c323e76744f3229e736d1f27b6b2",
+   "externalIds": {
+    "ArXiv": "2409.06987",
+    "CorpusId": 272592911
+   },
+   "title": "Quantifying Implantation Induced Damage and Point Defects with Multislice Electron Ptychography",
+   "venue": "",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2313184083",
+     "name": "Junghwa Kim"
+    },
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2093471351",
+     "name": "Aaditya Bhat"
+    },
+    {
+     "authorId": "2244217342",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "18a83228340cbdfd1dddc52c4a27ab0faea28bc4",
+   "externalIds": {
+    "PubMedCentral": "12521724",
+    "DOI": "10.1038/s41467-025-64133-3",
+    "CorpusId": 282099132,
+    "PubMed": "41087341"
+   },
+   "title": "Sub-ångström resolution ptychography in a scanning electron microscope at 20 keV",
+   "venue": "Nature Communications",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2249562471",
+     "name": "Arthur M. Blackburn"
+    },
+    {
+     "authorId": "2272880954",
+     "name": "Cristina Cordoba"
+    },
+    {
+     "authorId": "2313195716",
+     "name": "Matthew R Fitzpatrick"
+    },
+    {
+     "authorId": "2313198815",
+     "name": "Robert McLeod"
+    }
+   ]
+  },
+  {
+   "paperId": "ecec4e38a85455d287aaccc5ba795139a13734d5",
+   "externalIds": {
+    "PubMedCentral": "11781274",
+    "DOI": "10.1093/jmicro/dfae035",
+    "CorpusId": 271460174,
+    "PubMed": "39049512"
+   },
+   "title": "Near-field electron ptychography using full-field structured illumination",
+   "venue": "Microscopy",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2313086628",
+     "name": "Hirokazu Tamaki"
+    },
+    {
+     "authorId": "2205980896",
+     "name": "Koh Saitoh"
+    }
+   ]
+  },
+  {
+   "paperId": "a0c8f6492b75e91f2599f76319fbfa7fbbca0e2f",
+   "externalIds": {
+    "ArXiv": "2406.01141",
+    "DOI": "10.1093/mam/ozae110",
+    "CorpusId": 270211341,
+    "PubMed": "39558540"
+   },
+   "title": "Improved Three-Dimensional Reconstructions in Electron Ptychography through Defocus Series Measurements.",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2104004387",
+     "name": "M. Schloz"
+    },
+    {
+     "authorId": "40487200",
+     "name": "T. Pekin"
+    },
+    {
+     "authorId": "47993757",
+     "name": "H. Brown"
+    },
+    {
+     "authorId": "2224542662",
+     "name": "Dana O. Byrne"
+    },
+    {
+     "authorId": "2304452129",
+     "name": "B. Esser"
+    },
+    {
+     "authorId": "2178383071",
+     "name": "E. Terzoudis-Lumsden"
+    },
+    {
+     "authorId": "2244398057",
+     "name": "T. Taniguchi"
+    },
+    {
+     "authorId": "2244577429",
+     "name": "Kenji Watanabe"
+    },
+    {
+     "authorId": "2251553644",
+     "name": "S. Findlay"
+    },
+    {
+     "authorId": "2243398646",
+     "name": "Benedikt Haas"
+    },
+    {
+     "authorId": "2269735767",
+     "name": "J. Ciston"
+    },
+    {
+     "authorId": "2278849610",
+     "name": "Christoph T Koch"
+    }
+   ]
+  },
+  {
+   "paperId": "535310259384f63f1be8367f095fbf78e16ca123",
+   "externalIds": {
+    "ArXiv": "2509.10726",
+    "CorpusId": 281315327
+   },
+   "title": "Programmable Beam Control for Electron Energy-Loss Spectroscopy and Ptychography",
+   "venue": "",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2380524212",
+     "name": "Mariana Palos"
+    },
+    {
+     "authorId": "2326544784",
+     "name": "Liam Spillane"
+    },
+    {
+     "authorId": "2313205068",
+     "name": "Geri Topore"
+    },
+    {
+     "authorId": "2380568782",
+     "name": "Ya-Qi Li"
+    },
+    {
+     "authorId": "2238041337",
+     "name": "David Pesquera"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "93380018",
+     "name": "S. Ribet"
+    },
+    {
+     "authorId": "2224493729",
+     "name": "M. Conroy"
+    }
+   ]
+  },
+  {
+   "paperId": "7e2d0c469412a8862c3e3cb9a74015fbeaec1981",
+   "externalIds": {
+    "DOI": "10.1093/mam/ozae044.916",
+    "CorpusId": 271485071
+   },
+   "title": "Direct Quantification of Grain Boundary Space Charge Layers using Multislice Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "32082650",
+     "name": "T. Defferriere"
+    },
+    {
+     "authorId": "4685189",
+     "name": "H. Tuller"
+    },
+    {
+     "authorId": "2244217342",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "e3115cdc414ceab135c1e6312229eb17f0da57a4",
+   "externalIds": {
+    "DOI": "10.1093/mam/ozae044.913",
+    "CorpusId": 271482635
+   },
+   "title": "Newcomer’s Guide into Optimal Data Acquisition for Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "29368006",
+     "name": "R. Skoupý"
+    },
+    {
+     "authorId": "2224524803",
+     "name": "Daniel G. Stroppa"
+    },
+    {
+     "authorId": "1398488114",
+     "name": "M. Guizar-Sicairos"
+    },
+    {
+     "authorId": "2224482487",
+     "name": "Elisabeth Mueller"
+    },
+    {
+     "authorId": "3805975",
+     "name": "E. Fabbri"
+    },
+    {
+     "authorId": "24384994",
+     "name": "Emiliya Poghosyan"
+    }
+   ]
+  },
+  {
+   "paperId": "115057bb3dc8cf00bd5b3e9406796ac9d2e9ab4c",
+   "externalIds": {
+    "DOI": "10.1093/mam/ozae044.909",
+    "CorpusId": 271471151
+   },
+   "title": "Visualizing Defects and Amorphous Materials in 3D with Mixed-State Multislice Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2313186427",
+     "name": "Shake Karapetyan"
+    },
+    {
+     "authorId": "6039766",
+     "name": "Steven E. Zeltmann"
+    },
+    {
+     "authorId": "2313577501",
+     "name": "Ta-Kun Chen"
+    },
+    {
+     "authorId": "2260727784",
+     "name": "V. Hou"
+    },
+    {
+     "authorId": "2313170968",
+     "name": "David A Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "c856876aff134a731dbbc18261da5d94bbf86d58",
+   "externalIds": {
+    "DOI": "10.1051/bioconf/202412904007",
+    "CorpusId": 273444016
+   },
+   "title": "Quantitative comparison of HRTEM and electron ptychography",
+   "venue": "BIO Web of Conferences",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2313173637",
+     "name": "Felix Bennemann"
+    },
+    {
+     "authorId": "2326583715",
+     "name": "Peter Nellist"
+    },
+    {
+     "authorId": "2167324785",
+     "name": "A. Kirkland"
+    }
+   ]
+  },
+  {
+   "paperId": "b6a63bbe78e3a2c54838bb5a87e9166bc070543c",
+   "externalIds": {
+    "DOI": "10.1093/mam/ozae044.910",
+    "CorpusId": 271469912
+   },
+   "title": "Information Limit and Dose Efficiency of Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2088457434",
+     "name": "Desheng Ma"
+    },
+    {
+     "authorId": "2313170966",
+     "name": "David Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "7210779c091af0240d04155c00b68b648cf0c266",
+   "externalIds": {
+    "DOI": "10.1126/science.adg3183",
+    "CorpusId": 258618450,
+    "PubMed": "37167385"
+   },
+   "title": "Three-dimensional inhomogeneity of zeolite structure and composition revealed by electron ptychography",
+   "venue": "Science",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2153728919",
+     "name": "Hui Zhang"
+    },
+    {
+     "authorId": "2108252844",
+     "name": "Guan-Xing Li"
+    },
+    {
+     "authorId": "2144129663",
+     "name": "Jiaxing Zhang"
+    },
+    {
+     "authorId": "2127374659",
+     "name": "Da-Liang Zhang"
+    },
+    {
+     "authorId": "48354914",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "2144513827",
+     "name": "Xiao-Na Liu"
+    },
+    {
+     "authorId": "144264365",
+     "name": "Peng Guo"
+    },
+    {
+     "authorId": "2243963990",
+     "name": "Yihan Zhu"
+    },
+    {
+     "authorId": "7863886",
+     "name": "Cailing Chen"
+    },
+    {
+     "authorId": "46457999",
+     "name": "Lingmei Liu"
+    },
+    {
+     "authorId": "35011158",
+     "name": "Xinwen Guo"
+    },
+    {
+     "authorId": "2152494893",
+     "name": "Yu Han"
+    }
+   ]
+  },
+  {
+   "paperId": "bd8b4442b3460af21f4c31a30060d03b1e540e3e",
+   "externalIds": {
+    "DOI": "10.1021/jacs.2c12673",
+    "CorpusId": 257362897,
+    "PubMed": "36877580"
+   },
+   "title": "Atomic-Level Imaging of Zeolite Local Structures Using Electron Ptychography.",
+   "venue": "Journal of the American Chemical Society",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "1596189242",
+     "name": "Zhuo-Ya Dong"
+    },
+    {
+     "authorId": "2210781309",
+     "name": "Enci Zhang"
+    },
+    {
+     "authorId": "14005004",
+     "name": "Yi-Lan Jiang"
+    },
+    {
+     "authorId": "2108056108",
+     "name": "Qing Zhang"
+    },
+    {
+     "authorId": "153887813",
+     "name": "Á. Mayoral"
+    },
+    {
+     "authorId": "47067861",
+     "name": "Huaidong Jiang"
+    },
+    {
+     "authorId": "5567283",
+     "name": "Yanhang Ma"
+    }
+   ]
+  },
+  {
+   "paperId": "9111a29dcfdfd37e046fc79a38479405937b352c",
+   "externalIds": {
+    "ArXiv": "2307.14171",
+    "DOI": "10.1016/j.ultramic.2023.113829",
+    "CorpusId": 260164847,
+    "PubMed": "37633169"
+   },
+   "title": "Reliable phase quantification in focused probe electron ptychography of thin materials.",
+   "venue": "Ultramicroscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "144680162",
+     "name": "C. Hofer"
+    },
+    {
+     "authorId": "3959115",
+     "name": "T. Pennycook"
+    }
+   ]
+  },
+  {
+   "paperId": "ac2d4129fbcbb9fcaf2cdff9adb46e675e1ba622",
+   "externalIds": {
+    "ArXiv": "2309.04881",
+    "DOI": "10.1016/j.sbi.2023.102730",
+    "CorpusId": 261681791,
+    "PubMed": "37992450"
+   },
+   "title": "Cryo-electron ptychography: Applications and potential in biological characterisation.",
+   "venue": "Current Opinion in Structural Biology",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2150607117",
+     "name": "Chen Huang"
+    },
+    {
+     "authorId": "2204305599",
+     "name": "Judy S. Kim"
+    },
+    {
+     "authorId": "4598309",
+     "name": "A. Kirkland"
+    }
+   ]
+  },
+  {
+   "paperId": "46f43c704c7d26ba8853dba5d600d705b53bb6b9",
+   "externalIds": {
+    "ArXiv": "2409.11251",
+    "DOI": "10.1364/OE.542569",
+    "CorpusId": 272693843
+   },
+   "title": "Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles",
+   "venue": "Optics Express",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2321452909",
+     "name": "Christina Porter"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "d06a176cbee896c12e454a4c6fa5c3880e8fdc5c",
+   "externalIds": {
+    "DOI": "10.14293/apmc13-2025-0251",
+    "CorpusId": 276200985
+   },
+   "title": "Full-Field Illumination Ptychography Using a Structured Electron Beam",
+   "venue": "Full-Field Illumination Ptychography Using a Structured Electron Beam",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2313086628",
+     "name": "Hirokazu Tamaki"
+    },
+    {
+     "authorId": "2205980896",
+     "name": "Koh Saitoh"
+    }
+   ]
+  },
+  {
+   "paperId": "fa0ad85e8fdd8249f896d22ebfb631cf8c5f558c",
+   "externalIds": {
+    "DOI": "10.1016/j.polymer.2023.126305",
+    "CorpusId": 261409700
+   },
+   "title": "Atomic-scale imaging of polyvinyl alcohol crystallinity using electron ptychography",
+   "venue": "Polymer",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2054018704",
+     "name": "Botao Hao"
+    },
+    {
+     "authorId": "22513146",
+     "name": "Zhiyuan Ding"
+    },
+    {
+     "authorId": "8366377",
+     "name": "X. Tao"
+    },
+    {
+     "authorId": "5011719",
+     "name": "P. Nellist"
+    },
+    {
+     "authorId": "91479244",
+     "name": "H. Assender"
+    }
+   ]
+  },
+  {
+   "paperId": "45b849867902ad18e29b01cc77c3925d17c9819d",
+   "externalIds": {
+    "ArXiv": "2101.00465",
+    "DOI": "10.1126/science.abg2533",
+    "CorpusId": 230435950,
+    "PubMed": "34016774"
+   },
+   "title": "Electron ptychography achieves atomic-resolution limits set by lattice vibrations",
+   "venue": "Science",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "48354914",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "152771652",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "95329795",
+     "name": "Yu-Tsun Shao"
+    },
+    {
+     "authorId": "48969855",
+     "name": "M. Holtz"
+    },
+    {
+     "authorId": "12808282",
+     "name": "M. Odstrčil"
+    },
+    {
+     "authorId": "1398488114",
+     "name": "M. Guizar-Sicairos"
+    },
+    {
+     "authorId": "120928955",
+     "name": "Isabelle M. Hanke"
+    },
+    {
+     "authorId": "14329193",
+     "name": "S. Ganschow"
+    },
+    {
+     "authorId": "2719075",
+     "name": "D. Schlom"
+    },
+    {
+     "authorId": "3052861",
+     "name": "D. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "cd3cafb057fe85ed96976718d53aa6a07dc546df",
+   "externalIds": {
+    "PubMedCentral": "9822938",
+    "DOI": "10.1038/s41598-023-27452-3",
+    "CorpusId": 255501296,
+    "PubMed": "36609476"
+   },
+   "title": "Direct observation of Cu in high-silica chabazite zeolite by electron ptychography using Wigner distribution deconvolution",
+   "venue": "Scientific Reports",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "4698297",
+     "name": "K. Mitsuishi"
+    },
+    {
+     "authorId": "50632772",
+     "name": "K. Nakazawa"
+    },
+    {
+     "authorId": "1706605",
+     "name": "R. Sagawa"
+    },
+    {
+     "authorId": "2199599867",
+     "name": "Masahiko Shimizu"
+    },
+    {
+     "authorId": "46373960",
+     "name": "H. Matsumoto"
+    },
+    {
+     "authorId": "49468104",
+     "name": "H. Shima"
+    },
+    {
+     "authorId": "38039699",
+     "name": "Takahiko Takewaki"
+    }
+   ]
+  },
+  {
+   "paperId": "5804f211a51c0112d265ee0ba6b65bb92dcb9f3d",
+   "externalIds": {
+    "ArXiv": "2301.04469",
+    "PubMedCentral": "12523977",
+    "DOI": "10.1111/jmi.13404",
+    "CorpusId": 258841828,
+    "PubMed": "40116293"
+   },
+   "title": "Detecting charge transfer at defects in 2D materials with electron ptychography",
+   "venue": "Journal of Microscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "144680162",
+     "name": "C. Hofer"
+    },
+    {
+     "authorId": "143802146",
+     "name": "Jacob Madsen"
+    },
+    {
+     "authorId": "6806281",
+     "name": "T. Susi"
+    },
+    {
+     "authorId": "3959115",
+     "name": "T. Pennycook"
+    }
+   ]
+  },
+  {
+   "paperId": "c4610d1902ffeeafe725b1805fa0864209eaed6b",
+   "externalIds": {
+    "DOI": "10.1063/5.0169788",
+    "CorpusId": 265079928
+   },
+   "title": "Lorentz near-field electron ptychography",
+   "venue": "Applied Physics Letters",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2073587454",
+     "name": "Sheng You"
+    },
+    {
+     "authorId": "2155823898",
+     "name": "Peng-Han Lu"
+    },
+    {
+     "authorId": "3616087",
+     "name": "T. Schachinger"
+    },
+    {
+     "authorId": "2253179674",
+     "name": "A. Kovács"
+    },
+    {
+     "authorId": "2237759126",
+     "name": "R. Dunin-Borkowski"
+    },
+    {
+     "authorId": "2265833565",
+     "name": "Andrew M. Maiden"
+    }
+   ]
+  },
+  {
+   "paperId": "d16f0ffd617e2c25918127680d23afb2c61c5de4",
+   "externalIds": {
+    "ArXiv": "2306.08587",
+    "DOI": "10.1016/j.ultramic.2023.113879",
+    "CorpusId": 259164473,
+    "PubMed": "37944427"
+   },
+   "title": "On central focusing for contrast optimization in direct electron ptychography of thick samples.",
+   "venue": "Ultramicroscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2465892020",
+     "name": "C. Gao"
+    },
+    {
+     "authorId": "144680162",
+     "name": "C. Hofer"
+    },
+    {
+     "authorId": null,
+     "name": "T. J. Pennycook"
+    }
+   ]
+  },
+  {
+   "paperId": "46b4fb960cb467c351752a5ccf274760fc7bc96c",
+   "externalIds": {
+    "PubMedCentral": "13254316",
+    "ArXiv": "2309.12017",
+    "DOI": "10.1038/s41467-026-74135-4",
+    "CorpusId": 262083898,
+    "PubMed": "42270641"
+   },
+   "title": "Electron ptychography reveals correlated lattice vibrations at atomic resolution",
+   "venue": "Nature Communications",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "98701896",
+     "name": "A. Gladyshev"
+    },
+    {
+     "authorId": "2243398646",
+     "name": "Benedikt Haas"
+    },
+    {
+     "authorId": "40487200",
+     "name": "T. Pekin"
+    },
+    {
+     "authorId": "2243413324",
+     "name": "T. M. Boland"
+    },
+    {
+     "authorId": "2104004387",
+     "name": "M. Schloz"
+    },
+    {
+     "authorId": "2243398257",
+     "name": "Peter Rez"
+    },
+    {
+     "authorId": "2243326864",
+     "name": "Christoph T. Koch"
+    }
+   ]
+  },
+  {
+   "paperId": "65d4cae7852d935b8d72a4e328d74b03a8046654",
+   "externalIds": {
+    "CorpusId": 255595830
+   },
+   "title": "Detecting charge transfer in defective 2D WS 2 with electron ptychography",
+   "venue": "",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "144680162",
+     "name": "C. Hofer"
+    },
+    {
+     "authorId": "87086661",
+     "name": "J. Madson"
+    },
+    {
+     "authorId": "6806281",
+     "name": "T. Susi"
+    },
+    {
+     "authorId": "3959115",
+     "name": "T. Pennycook"
+    }
+   ]
+  },
+  {
+   "paperId": "004d829f926b96de981ba98ba5f797e21883f83d",
+   "externalIds": {
+    "PubMedCentral": "9106290",
+    "DOI": "10.1126/sciadv.abn2275",
+    "CorpusId": 248777585,
+    "PubMed": "35559675"
+   },
+   "title": "Deep sub-angstrom resolution imaging by electron ptychography with misorientation correction",
+   "venue": "Science Advances",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "2065853809",
+     "name": "Haozhi Sha"
+    },
+    {
+     "authorId": "2114353122",
+     "name": "Jizhe Cui"
+    },
+    {
+     "authorId": "143791274",
+     "name": "Rong Yu"
+    }
+   ]
+  },
+  {
+   "paperId": "8e351fbb008c9ad5b8686c64765d7119a6307a5c",
+   "externalIds": {
+    "DOI": "10.1063/5.0143684",
+    "CorpusId": 259884020
+   },
+   "title": "Super-resolution electron ptychography of low dimensional materials at 30 keV: Beyond the detector limit",
+   "venue": "Applied Physics Letters",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "39395255",
+     "name": "C. Allen"
+    },
+    {
+     "authorId": "145396058",
+     "name": "M. Danaie"
+    },
+    {
+     "authorId": "2207133656",
+     "name": "J. Warner"
+    },
+    {
+     "authorId": "51059216",
+     "name": "D. Batey"
+    },
+    {
+     "authorId": "2049303732",
+     "name": "A. Kirkland"
+    }
+   ]
+  },
+  {
+   "paperId": "049fe9157e3890846485d8359019e926817780b8",
+   "externalIds": {
+    "DOI": "10.1002/adma.202519613",
+    "CorpusId": 286640633,
+    "PubMed": "41848596"
+   },
+   "title": "Depth-Resolved Imaging of Surfaces and Interfaces in MFI-Type Zeolite Crystals via Multislice Electron Ptychography.",
+   "venue": "Advances in Materials",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2108252844",
+     "name": "Guan-Xing Li"
+    },
+    {
+     "authorId": "1838475",
+     "name": "Zixiao Shi"
+    },
+    {
+     "authorId": "2363883763",
+     "name": "Desheng Ma"
+    },
+    {
+     "authorId": "2273152485",
+     "name": "Jia-Xing Zhang"
+    },
+    {
+     "authorId": "2238156391",
+     "name": "Xinwen Guo"
+    },
+    {
+     "authorId": "2153728919",
+     "name": "Hui Zhang"
+    },
+    {
+     "authorId": "2243915834",
+     "name": "Yu Han"
+    }
+   ]
+  },
+  {
+   "paperId": "1d5c6b3119788cc1a10b7bbc652f8036747606e8",
+   "externalIds": {
+    "DOI": "10.1093/micmic/ozad067.132",
+    "CorpusId": 260106192,
+    "PubMed": "37613139"
+   },
+   "title": "Three-dimensional Analysis of Nanoscale Dislocation Loops with Multislice Electron Ptychography.",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2145308368",
+     "name": "Xi Chen"
+    },
+    {
+     "authorId": "2142866811",
+     "name": "Michael Xu"
+    },
+    {
+     "authorId": "6584990",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "c15bc3ac0f8f8186d171196b75fa225568257099",
+   "externalIds": {
+    "DOI": "10.1093/micmic/ozad067.128",
+    "CorpusId": 260107200,
+    "PubMed": "37613034"
+   },
+   "title": "Simultaneous Electrostatic and Magnetic Vector Potential Phase Retrieval Using Electron Ptychography.",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2313174224",
+     "name": "G. Varnavides"
+    },
+    {
+     "authorId": "93380018",
+     "name": "S. Ribet"
+    },
+    {
+     "authorId": "2290996648",
+     "name": "Reed Yalisove"
+    },
+    {
+     "authorId": "2109008979",
+     "name": "J. Moore"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "1453648101",
+     "name": "M. Scott"
+    }
+   ]
+  },
+  {
+   "paperId": "eee8e2b801d5b482566acdc916035b8c178e5749",
+   "externalIds": {
+    "DOI": "10.1038/s41565-022-01224-y",
+    "CorpusId": 253246036,
+    "PubMed": "36316543"
+   },
+   "title": "Lorentz electron ptychography for imaging magnetic textures beyond the diffraction limit",
+   "venue": "Nature Nanotechnology",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "48354914",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "50249548",
+     "name": "E. Turgut"
+    },
+    {
+     "authorId": "2146418305",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "3200815",
+     "name": "K. Nguyen"
+    },
+    {
+     "authorId": "39701137",
+     "name": "M. Stolt"
+    },
+    {
+     "authorId": "2148369827",
+     "name": "Song Jin"
+    },
+    {
+     "authorId": "2650381",
+     "name": "D. Ralph"
+    },
+    {
+     "authorId": "34950972",
+     "name": "G. Fuchs"
+    },
+    {
+     "authorId": "152379673",
+     "name": "D. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "b2c720ea748dd282cd7eba05efac307a950f21cc",
+   "externalIds": {
+    "DOI": "10.1016/j.micron.2024.103688",
+    "CorpusId": 271111593,
+    "PubMed": "38991624"
+   },
+   "title": "Influence of loss function and electron dose on ptychography of 2D materials using the Wirtinger flow.",
+   "venue": "Micron",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2133157084",
+     "name": "Max Leo Leidl"
+    },
+    {
+     "authorId": "2310794639",
+     "name": "Benedikt Diederichs"
+    },
+    {
+     "authorId": "2310794664",
+     "name": "Carsten Sachse"
+    },
+    {
+     "authorId": "1398653473",
+     "name": "K. Müller-Caspary"
+    }
+   ]
+  },
+  {
+   "paperId": "3dafb2063802ef2639a447056fd556c6de80054c",
+   "externalIds": {
+    "ArXiv": "2204.11815",
+    "PubMedCentral": "9296498",
+    "DOI": "10.1038/s41598-022-16041-5",
+    "CorpusId": 248377141,
+    "PubMed": "35854039"
+   },
+   "title": "Automatic parameter selection for electron ptychography via Bayesian optimization",
+   "venue": "Scientific Reports",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "40066830",
+     "name": "M. Cao"
+    },
+    {
+     "authorId": "48354914",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "152771652",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "4964185",
+     "name": "Yimo Han"
+    }
+   ]
+  },
+  {
+   "paperId": "9e588f998b168441d8cd9c89817ede01d4b6900e",
+   "externalIds": {
+    "PubMedCentral": "9378626",
+    "DOI": "10.1038/s41467-022-32548-x",
+    "CorpusId": 251592089,
+    "PubMed": "35970924"
+   },
+   "title": "Three-dimensional electron ptychography of organic–inorganic hybrid nanostructures",
+   "venue": "Nature Communications",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "22513146",
+     "name": "Zhiyuan Ding"
+    },
+    {
+     "authorId": "152277125",
+     "name": "Si Gao"
+    },
+    {
+     "authorId": "145252101",
+     "name": "Wei-Na Fang"
+    },
+    {
+     "authorId": "2150607117",
+     "name": "Chen Huang"
+    },
+    {
+     "authorId": "13385534",
+     "name": "Liqi Zhou"
+    },
+    {
+     "authorId": "1734771959",
+     "name": "Xudong Pei"
+    },
+    {
+     "authorId": "2109010289",
+     "name": "Xiaoguo Liu"
+    },
+    {
+     "authorId": "48931689",
+     "name": "Xiaoqing Pan"
+    },
+    {
+     "authorId": "2153500909",
+     "name": "Chunhai Fan"
+    },
+    {
+     "authorId": "4598309",
+     "name": "A. Kirkland"
+    },
+    {
+     "authorId": "2155303599",
+     "name": "Peng Wang"
+    }
+   ]
+  },
+  {
+   "paperId": "5cd8629354c519ae767c43bc13a70d6f74e12a56",
+   "externalIds": {
+    "DOI": "10.1093/mam/ozag053.024",
+    "CorpusId": 290685341
+   },
+   "title": "Quantitative Retrieval of the Complex Transmission Function in Multislice Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2313155706",
+     "name": "Bridget R. Denzer"
+    },
+    {
+     "authorId": "2191467636",
+     "name": "C. Gilgenbach"
+    },
+    {
+     "authorId": "2244217342",
+     "name": "J. LeBeau"
+    }
+   ]
+  },
+  {
+   "paperId": "376acdad5bcd285362a5be1da75c89cc33386b8b",
+   "externalIds": {
+    "PubMedCentral": "11333750",
+    "ArXiv": "2311.14780",
+    "DOI": "10.1038/s41377-024-01558-3",
+    "CorpusId": 265457054,
+    "PubMed": "39160154"
+   },
+   "title": "Wavelength-multiplexed multi-mode EUV reflection ptychography based on automatic differentiation",
+   "venue": "Light: Science & Applications",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2064980236",
+     "name": "Jacob Seifert"
+    },
+    {
+     "authorId": "2251119648",
+     "name": "H. P. Urbach"
+    },
+    {
+     "authorId": "145612996",
+     "name": "A. Mosk"
+    },
+    {
+     "authorId": "2246811301",
+     "name": "W. Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "3d474fe727ca0293d60c2ffa872eefc620c46d68",
+   "externalIds": {
+    "PubMedCentral": "7293311",
+    "MAG": "3034352892",
+    "DOI": "10.1038/s41467-020-16688-6",
+    "CorpusId": 219589813,
+    "PubMed": "32533001"
+   },
+   "title": "Mixed-state electron ptychography enables sub-angstrom resolution imaging with picometer precision at low dose",
+   "venue": "Nature Communications",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "48354914",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "12808282",
+     "name": "M. Odstrčil"
+    },
+    {
+     "authorId": "2146418305",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "4964185",
+     "name": "Yimo Han"
+    },
+    {
+     "authorId": "48657004",
+     "name": "Ming-Hui Chiu"
+    },
+    {
+     "authorId": "114684890",
+     "name": "Lain‐Jong Li"
+    },
+    {
+     "authorId": "3052861",
+     "name": "D. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "53f1a8701bacd50eaca8af7b6893a8af0656eb79",
+   "externalIds": {
+    "ArXiv": "2211.03034",
+    "DOI": "10.1016/j.ultramic.2023.113716",
+    "CorpusId": 253384237,
+    "PubMed": "36958156"
+   },
+   "title": "An integrated constrained gradient descent (iCGD) protocol to correct scan-positional errors for electron ptychography with high accuracy and precision.",
+   "venue": "Ultramicroscopy",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "2276086007",
+     "name": "Shou-Cong Ning"
+    },
+    {
+     "authorId": "48721528",
+     "name": "Wen-Hui Xu"
+    },
+    {
+     "authorId": "152650954",
+     "name": "Leyi Loh"
+    },
+    {
+     "authorId": "2200976287",
+     "name": "Zhen Lu"
+    },
+    {
+     "authorId": "5933540",
+     "name": "M. Bosman"
+    },
+    {
+     "authorId": "48702247",
+     "name": "Fu-Cai Zhang"
+    },
+    {
+     "authorId": "2087388439",
+     "name": "Qian He"
+    }
+   ]
+  },
+  {
+   "paperId": "e0cd5b36b7b195f905e9c973eb91c1071ca7123e",
+   "externalIds": {
+    "PubMedCentral": "7265480",
+    "MAG": "3032336952",
+    "DOI": "10.1038/s41467-020-16391-6",
+    "CorpusId": 219175716,
+    "PubMed": "32487987"
+   },
+   "title": "Low-dose phase retrieval of biological specimens using cryo-electron ptychography",
+   "venue": "Nature Communications",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "13385534",
+     "name": "Liqi Zhou"
+    },
+    {
+     "authorId": "8461760",
+     "name": "Jingdong Song"
+    },
+    {
+     "authorId": "2109175194",
+     "name": "Judy S. Kim"
+    },
+    {
+     "authorId": "1734771959",
+     "name": "Xudong Pei"
+    },
+    {
+     "authorId": "2150607117",
+     "name": "Chen Huang"
+    },
+    {
+     "authorId": "46665410",
+     "name": "M. Boyce"
+    },
+    {
+     "authorId": "5194454",
+     "name": "L. Mendonça"
+    },
+    {
+     "authorId": "35691872",
+     "name": "D. Clare"
+    },
+    {
+     "authorId": "1398424067",
+     "name": "A. Siebert"
+    },
+    {
+     "authorId": "39395255",
+     "name": "C. Allen"
+    },
+    {
+     "authorId": "49629298",
+     "name": "E. Liberti"
+    },
+    {
+     "authorId": "2061555321",
+     "name": "David I. Stuart"
+    },
+    {
+     "authorId": "48931689",
+     "name": "Xiaoqing Pan"
+    },
+    {
+     "authorId": "5011719",
+     "name": "P. Nellist"
+    },
+    {
+     "authorId": "48754317",
+     "name": "Peijun Zhang"
+    },
+    {
+     "authorId": "4598309",
+     "name": "A. Kirkland"
+    },
+    {
+     "authorId": "2155300152",
+     "name": "Peng Wang"
+    }
+   ]
+  },
+  {
+   "paperId": "d8c4f9979d23e1282ba850c1eecad5d54af22a7f",
+   "externalIds": {
+    "DOI": "10.1093/micmic/ozac022",
+    "CorpusId": 256173273
+   },
+   "title": "The Effect of Dynamical Scattering on Single-plane Phase Retrieval in Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "2070153315",
+     "name": "Laura Clark"
+    },
+    {
+     "authorId": "144449229",
+     "name": "G. Martinez"
+    },
+    {
+     "authorId": "1405492151",
+     "name": "Colum M. O’Leary"
+    },
+    {
+     "authorId": "2115537458",
+     "name": "Hao Yang"
+    },
+    {
+     "authorId": "22513146",
+     "name": "Zhiyuan Ding"
+    },
+    {
+     "authorId": "49486162",
+     "name": "T. Petersen"
+    },
+    {
+     "authorId": "39775876",
+     "name": "S. Findlay"
+    },
+    {
+     "authorId": "5011719",
+     "name": "P. Nellist"
+    }
+   ]
+  },
+  {
+   "paperId": "161604bb59dc5c3853a6462b4c189eea624ed6d8",
+   "externalIds": {
+    "MAG": "3113348909",
+    "DOI": "10.1016/j.ultramic.2020.113189",
+    "CorpusId": 229694201,
+    "PubMed": "33360480"
+   },
+   "title": "Contrast transfer and noise considerations in focused-probe electron ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "1405492151",
+     "name": "Colum M. O’Leary"
+    },
+    {
+     "authorId": "144449229",
+     "name": "G. Martinez"
+    },
+    {
+     "authorId": "49629298",
+     "name": "E. Liberti"
+    },
+    {
+     "authorId": "35676719",
+     "name": "M. Humphry"
+    },
+    {
+     "authorId": "4598309",
+     "name": "A. Kirkland"
+    },
+    {
+     "authorId": "5011719",
+     "name": "P. Nellist"
+    }
+   ]
+  },
+  {
+   "paperId": "e18d7add8ebb99e2caa461d157827a302fadbe0d",
+   "externalIds": {
+    "DOI": "10.1017/S1431927622002288",
+    "CorpusId": 250926533
+   },
+   "title": "Structured Illumination Electron Ptychography at the Atomic Scale",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "34846383",
+     "name": "Philipp M. Pelz"
+    },
+    {
+     "authorId": "103567724",
+     "name": "Hannah DeVyldere"
+    },
+    {
+     "authorId": "5206609",
+     "name": "P. Ercius"
+    },
+    {
+     "authorId": "1453648101",
+     "name": "M. Scott"
+    }
+   ]
+  },
+  {
+   "paperId": "47271dcdfad7488ceab7bd8d31543dff01f3624b",
+   "externalIds": {
+    "DOI": "10.1016/j.ultramic.2022.113559",
+    "CorpusId": 249027204,
+    "PubMed": "35667150"
+   },
+   "title": "Electron ptychography dose reduction using Moiré sampling on periodic structures.",
+   "venue": "Ultramicroscopy",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "144695999",
+     "name": "Mohammad Taghi Hashemi"
+    },
+    {
+     "authorId": "2102352",
+     "name": "A. Pofelski"
+    },
+    {
+     "authorId": "3637766",
+     "name": "G. Botton"
+    }
+   ]
+  },
+  {
+   "paperId": "c8689a724b8fff9c466de8fad87faf56c840bb23",
+   "externalIds": {
+    "DOI": "10.1016/j.ultramic.2021.113257",
+    "CorpusId": 232407756,
+    "PubMed": "33773842"
+   },
+   "title": "Efficient large field of view electron phase imaging using near-field electron ptychography with a diffuser.",
+   "venue": "Ultramicroscopy",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "2060937060",
+     "name": "Frederick Allars"
+    },
+    {
+     "authorId": "117425844",
+     "name": "P. Lu"
+    },
+    {
+     "authorId": "49114855",
+     "name": "Maximilian Kruth"
+    },
+    {
+     "authorId": "1388408260",
+     "name": "R. Dunin-Borkowski"
+    },
+    {
+     "authorId": "2944577",
+     "name": "J. Rodenburg"
+    },
+    {
+     "authorId": "5331577",
+     "name": "A. Maiden"
+    }
+   ]
+  },
+  {
+   "paperId": "1b6d954bc3881ed412f775b0b4f05fec61cc5d4f",
+   "externalIds": {
+    "MAG": "2835210520",
+    "ArXiv": "1801.04630",
+    "DOI": "10.1038/s41586-018-0298-5",
+    "CorpusId": 49865457,
+    "PubMed": "30022131"
+   },
+   "title": "Electron ptychography of 2D materials to deep sub-ångström resolution",
+   "venue": "Nature",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "2146418305",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "48354914",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "4964185",
+     "name": "Yimo Han"
+    },
+    {
+     "authorId": "12035077",
+     "name": "P. Deb"
+    },
+    {
+     "authorId": "2112620222",
+     "name": "Hui Gao"
+    },
+    {
+     "authorId": "8483572",
+     "name": "Sai-En Xie"
+    },
+    {
+     "authorId": "5257167",
+     "name": "P. Purohit"
+    },
+    {
+     "authorId": "2043774",
+     "name": "M. Tate"
+    },
+    {
+     "authorId": "2115930722",
+     "name": "Jiwoong Park"
+    },
+    {
+     "authorId": "7640222",
+     "name": "S. Gruner"
+    },
+    {
+     "authorId": "3025496",
+     "name": "V. Elser"
+    },
+    {
+     "authorId": "3052861",
+     "name": "D. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "1fb08c995bb41d086523115efde7052d93cff3b0",
+   "externalIds": {
+    "PubMedCentral": "6408533",
+    "MAG": "2919824657",
+    "DOI": "10.1038/s41598-019-40413-z",
+    "CorpusId": 71716918,
+    "PubMed": "30850641"
+   },
+   "title": "Atomic Resolution Defocused Electron Ptychography at Low Dose with a Fast, Direct Electron Detector",
+   "venue": "Scientific Reports",
+   "year": 2019,
+   "authors": [
+    {
+     "authorId": "3000683",
+     "name": "Jiamei Song"
+    },
+    {
+     "authorId": "39395255",
+     "name": "C. Allen"
+    },
+    {
+     "authorId": "152277125",
+     "name": "Si Gao"
+    },
+    {
+     "authorId": "2150607117",
+     "name": "Chen Huang"
+    },
+    {
+     "authorId": "145409681",
+     "name": "H. Sawada"
+    },
+    {
+     "authorId": "48931689",
+     "name": "Xiaoqing Pan"
+    },
+    {
+     "authorId": "3905343",
+     "name": "Jamie H. Warner"
+    },
+    {
+     "authorId": "2155300152",
+     "name": "Peng Wang"
+    },
+    {
+     "authorId": "4598309",
+     "name": "A. Kirkland"
+    }
+   ]
+  },
+  {
+   "paperId": "7f6fa5745ecaa632d58de26f9bed7a62ff0eaacb",
+   "externalIds": {
+    "DOI": "10.1017/S1431927621007741",
+    "CorpusId": 236503620
+   },
+   "title": "Three-dimensional imaging of single dopants inside crystals using multislice electron ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "48354914",
+     "name": "Zhen Chen"
+    },
+    {
+     "authorId": "95329795",
+     "name": "Yu-Tsun Shao"
+    },
+    {
+     "authorId": "152771652",
+     "name": "Yi Jiang"
+    },
+    {
+     "authorId": "152379673",
+     "name": "D. Muller"
+    }
+   ]
+  },
+  {
+   "paperId": "7c0f5b18fa037f6a7a0921cc1d166a34cdb3b56e",
+   "externalIds": {
+    "CorpusId": 259360161
+   },
+   "title": "Hollow Ptychography: Toward Simultaneous 4D Scanning Transmission Electron Microscopy and Electron Energy Loss Spectroscopy",
+   "venue": "",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2111395892",
+     "name": "N. Kim"
+    },
+    {
+     "authorId": "71208100",
+     "name": "S. Cao"
+    },
+    {
+     "authorId": "4125252",
+     "name": "K. More"
+    },
+    {
+     "authorId": "4554640",
+     "name": "A. Lupini"
+    },
+    {
+     "authorId": "2793229",
+     "name": "Jianwei Miao"
+    },
+    {
+     "authorId": "2232765",
+     "name": "M. Chi"
+    }
+   ]
+  },
+  {
+   "paperId": "3dba742ea5d35f4c9c7fa3cd7d09d255d9c32712",
+   "externalIds": {
+    "MAG": "2896960901",
+    "DOI": "10.1016/j.ultramic.2018.10.005",
+    "CorpusId": 53111949,
+    "PubMed": "30366318"
+   },
+   "title": "High dose efficiency atomic resolution imaging via electron ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2019,
+   "authors": [
+    {
+     "authorId": "3959115",
+     "name": "T. Pennycook"
+    },
+    {
+     "authorId": "144449229",
+     "name": "G. Martinez"
+    },
+    {
+     "authorId": "5011719",
+     "name": "P. Nellist"
+    },
+    {
+     "authorId": "3436724",
+     "name": "J. Meyer"
+    }
+   ]
+  },
+  {
+   "paperId": "d87cc696cc5c56554bf34198d9daea14199411f0",
+   "externalIds": {
+    "DOI": "10.1002/sia.7055",
+    "CorpusId": 245978455
+   },
+   "title": "Optical constants of organic insulators in the UV range extracted from reflection electron energy loss spectra",
+   "venue": "Surface and Interface Analysis",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": null,
+     "name": "Olga Yuryevna Ridzel"
+    },
+    {
+     "authorId": "46908103",
+     "name": "Henryk Kalbe"
+    },
+    {
+     "authorId": "96557115",
+     "name": "Vytautas Astašauskas"
+    },
+    {
+     "authorId": "2150134142",
+     "name": "Pavel Kuksa"
+    },
+    {
+     "authorId": "92236003",
+     "name": "A. Bellissimo"
+    },
+    {
+     "authorId": "34876629",
+     "name": "W. Werner"
+    }
+   ]
+  },
+  {
+   "paperId": "0f738e4fd4346dc5d00f3a712f9452b62dce70ba",
+   "externalIds": {
+    "DOI": "10.1017/S1431927621009594",
+    "CorpusId": 236502802
+   },
+   "title": "Direct Imaging of Oxygen Sub-lattice Deformation in Li-rich Cathode Material Using Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "48407235",
+     "name": "Wei-Xin Song"
+    },
+    {
+     "authorId": "121991575",
+     "name": "Miguel Osorio"
+    },
+    {
+     "authorId": "51134251",
+     "name": "John‐Joseph Marie"
+    },
+    {
+     "authorId": "49629298",
+     "name": "E. Liberti"
+    },
+    {
+     "authorId": "2144526793",
+     "name": "Xiaonan Luo"
+    },
+    {
+     "authorId": "1405492151",
+     "name": "Colum M. O’Leary"
+    },
+    {
+     "authorId": "35688551",
+     "name": "R. House"
+    },
+    {
+     "authorId": "2068919670",
+     "name": "P. Bruce"
+    },
+    {
+     "authorId": "5011719",
+     "name": "P. Nellist"
+    }
+   ]
+  },
+  {
+   "paperId": "68d2d7a122bc83bb17ddacb46e2c33e0792c6df7",
+   "externalIds": {
+    "PubMedCentral": "9801507",
+    "DOI": "10.1021/acscentsci.2c01137",
+    "CorpusId": 253821415,
+    "PubMed": "36589892"
+   },
+   "title": "4D-STEM Ptychography for Electron-Beam-Sensitive Materials",
+   "venue": "ACS Central Science",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "2108252844",
+     "name": "Guan-Xing Li"
+    },
+    {
+     "authorId": "2153728919",
+     "name": "Hui Zhang"
+    },
+    {
+     "authorId": "2152494893",
+     "name": "Yu Han"
+    }
+   ]
+  },
+  {
+   "paperId": "f6909cc6166ac9f32906369e351aa6e5200c8870",
+   "externalIds": {
+    "DOI": "10.1039/d1cp02447g",
+    "CorpusId": 243862100,
+    "PubMed": "34749388"
+   },
+   "title": "Optical properties of amorphous carbon determined by reflection electron energy loss spectroscopy spectra.",
+   "venue": "Physical Chemistry, Chemical Physics - PCCP",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "2048530504",
+     "name": "Lihao Yang"
+    },
+    {
+     "authorId": "2112953180",
+     "name": "Jiamin Gong"
+    },
+    {
+     "authorId": null,
+     "name": "Attila Sulyok"
+    },
+    {
+     "authorId": "2315706492",
+     "name": "M. Menyhard"
+    },
+    {
+     "authorId": "4147862",
+     "name": "G. Sáfrán"
+    },
+    {
+     "authorId": "10195231",
+     "name": "K. Tőkési"
+    },
+    {
+     "authorId": "144372415",
+     "name": "B. Da"
+    },
+    {
+     "authorId": "2112355582",
+     "name": "Ze-Jun Ding"
+    }
+   ]
+  },
+  {
+   "paperId": "832316e27e9ff33e79dcb7fa8b91837f0e70159f",
+   "externalIds": {
+    "MAG": "2892466408",
+    "DOI": "10.1021/acs.nanolett.8b02718",
+    "CorpusId": 206749253,
+    "PubMed": "30257093"
+   },
+   "title": "Low-Dose Aberration-Free Imaging of Li-Rich Cathode Materials at Various States of Charge Using Electron Ptychography.",
+   "venue": "Nano letters (Print)",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "31057660",
+     "name": "J. G. Lozano"
+    },
+    {
+     "authorId": "144449229",
+     "name": "G. Martinez"
+    },
+    {
+     "authorId": "9899225",
+     "name": "Liyu Jin"
+    },
+    {
+     "authorId": "5011719",
+     "name": "P. Nellist"
+    },
+    {
+     "authorId": "143951695",
+     "name": "P. Bruce"
+    }
+   ]
+  },
+  {
+   "paperId": "863834dd506704bec71ef5940cba42e01b1ec642",
+   "externalIds": {
+    "MAG": "2591169367",
+    "PubMedCentral": "5575234",
+    "ArXiv": "1702.05732",
+    "DOI": "10.1038/s41598-017-07488-y",
+    "CorpusId": 22761742,
+    "PubMed": "28851880"
+   },
+   "title": "Low-dose cryo electron ptychography via non-convex Bayesian optimization",
+   "venue": "Scientific Reports",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "2313635042",
+     "name": "Philipp M. Pelz"
+    },
+    {
+     "authorId": "2470404299",
+     "name": "Wen-Xuan Qiu"
+    },
+    {
+     "authorId": "47807675",
+     "name": "R. Bücker"
+    },
+    {
+     "authorId": "5624761",
+     "name": "G. Kassier"
+    },
+    {
+     "authorId": "8341040",
+     "name": "R. J. Dwayne Miller"
+    }
+   ]
+  },
+  {
+   "paperId": "ff7781bcd4730764b636e5722ab743df7354d9ce",
+   "externalIds": {
+    "MAG": "3136829265",
+    "DOI": "10.1016/J.APSUSC.2021.149559",
+    "CorpusId": 233569243
+   },
+   "title": "Electronic and optical properties of plutonium metal and oxides from Reflection Electron Energy Loss Spectroscopy",
+   "venue": "Applications of Surface Science",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "145903485",
+     "name": "P. Roussel"
+    },
+    {
+     "authorId": "48350201",
+     "name": "K. Graham"
+    },
+    {
+     "authorId": "11656072",
+     "name": "S. Hernandez"
+    },
+    {
+     "authorId": "35524449",
+     "name": "J. Joyce"
+    },
+    {
+     "authorId": "143752160",
+     "name": "A. Nelson"
+    },
+    {
+     "authorId": "2091936139",
+     "name": "R. Sykes"
+    },
+    {
+     "authorId": "92269398",
+     "name": "T. Venhaus"
+    },
+    {
+     "authorId": "2087924526",
+     "name": "K. White"
+    }
+   ]
+  },
+  {
+   "paperId": "f21838a0c1759627414b9ad537cd234bb0651a12",
+   "externalIds": {
+    "DOI": "10.1016/j.elspec.2022.147206",
+    "CorpusId": 249163359
+   },
+   "title": "Chemical Identification of Lithium Compounds by Reflection Electron Energy Loss Spectroscopy",
+   "venue": "Journal of Electron Spectroscopy and Related Phenomena",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "48952200",
+     "name": "K. Ito"
+    },
+    {
+     "authorId": "145940523",
+     "name": "Yoshitomo Harada"
+    },
+    {
+     "authorId": "145550045",
+     "name": "H. Yoshikawa"
+    },
+    {
+     "authorId": "11059129",
+     "name": "S. Tanuma"
+    }
+   ]
+  },
+  {
+   "paperId": "e8a292e1648a4380c1890d57d047234fa93ec541",
+   "externalIds": {
+    "MAG": "3088143066",
+    "DOI": "10.1093/jmicro/dfaa055",
+    "CorpusId": 222162299,
+    "PubMed": "32986121"
+   },
+   "title": "Practical Implementation of High-Resolution Electron Ptychography and Comparison with Off-Axis Electron Holography.",
+   "venue": "Microscopy",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "31729501",
+     "name": "A. Blackburn"
+    },
+    {
+     "authorId": "71010078",
+     "name": "R. Mcleod"
+    }
+   ]
+  }
+ ]
+}

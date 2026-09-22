@@ -1,0 +1,49 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1038/s41467-025-64133-3?select=id,doi,title,publication_year,open_access,best_oa_location",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W4415143458",
+ "doi": "https://doi.org/10.1038/s41467-025-64133-3",
+ "title": "Sub-ångström resolution ptychography in a scanning electron microscope at 20 keV",
+ "publication_year": 2025,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "gold",
+  "oa_url": "https://www.nature.com/articles/s41467-025-64133-3.pdf",
+  "any_repository_has_fulltext": true
+ },
+ "best_oa_location": {
+  "id": "doi:10.1038/s41467-025-64133-3",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1038/s41467-025-64133-3",
+  "pdf_url": "https://www.nature.com/articles/s41467-025-64133-3.pdf",
+  "source": {
+   "id": "https://openalex.org/S64187185",
+   "display_name": "Nature Communications",
+   "issn_l": "2041-1723",
+   "issn": [
+    "2041-1723"
+   ],
+   "is_oa": true,
+   "is_in_doaj": true,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310319908",
+   "host_organization_name": "Nature Portfolio",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310319908",
+    "https://openalex.org/P4310319965"
+   ],
+   "host_organization_lineage_names": [
+    "Nature Portfolio",
+    "Springer Nature"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Nature Communications",
+  "raw_type": "journal-article"
+ }
+}

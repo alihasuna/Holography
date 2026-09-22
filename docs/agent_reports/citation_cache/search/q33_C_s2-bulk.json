@@ -1,0 +1,1797 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22Bragg+ptychography%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 50,
+ "token": null,
+ "data": [
+  {
+   "paperId": "03a3127c58a0df491bdd6d476192e1f862586955",
+   "externalIds": {
+    "MAG": "2608464585",
+    "CorpusId": 136085706
+   },
+   "title": "Domain structure retrieval of a simulated ferroelectric film via 3D Bragg ptychography",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "31630715",
+     "name": "A. Troian"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "119033560",
+     "name": "S. Matsen"
+    },
+    {
+     "authorId": "80390037",
+     "name": "V. Jacques"
+    },
+    {
+     "authorId": "5913679",
+     "name": "B. Noheda"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    },
+    {
+     "authorId": "123931362",
+     "name": "D. Carbone"
+    }
+   ]
+  },
+  {
+   "paperId": "086ff56dee8d6dba1a014841f78c7b2c17c74095",
+   "externalIds": {
+    "MAG": "2643925866",
+    "CorpusId": 196105943
+   },
+   "title": "X-ray Bragg projection ptychography for nano-materials",
+   "venue": "",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "150244147",
+     "name": "Ngg Burdet"
+    }
+   ]
+  },
+  {
+   "paperId": "09ac983eaa9832a49eea676a3270ef9fffa86358",
+   "externalIds": {
+    "MAG": "2038748286",
+    "DOI": "10.1103/PHYSREVB.84.144109",
+    "CorpusId": 32852345
+   },
+   "title": "Imaging of highly inhomogeneous strain field in nanocrystals using x-ray Bragg ptychography: A numerical study",
+   "venue": "",
+   "year": 2011,
+   "authors": [
+    {
+     "authorId": "2249960823",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "0d497c931090a888b1f37fe1e7a226ee8df0fe45",
+   "externalIds": {
+    "MAG": "2067527455",
+    "DOI": "10.1016/j.bpj.2013.12.016",
+    "CorpusId": 10477470,
+    "PubMed": "24461021"
+   },
+   "title": "Coherent x-ray imaging of collagen fibril distributions within intact tendons.",
+   "venue": "Biophysical Journal",
+   "year": 2014,
+   "authors": [
+    {
+     "authorId": "7684550",
+     "name": "F. Berenguer"
+    },
+    {
+     "authorId": "144125770",
+     "name": "R. Bean"
+    },
+    {
+     "authorId": "3701296",
+     "name": "L. Bozec"
+    },
+    {
+     "authorId": "1411314424",
+     "name": "J. Vila-Comamala"
+    },
+    {
+     "authorId": "48702247",
+     "name": "Fu-Cai Zhang"
+    },
+    {
+     "authorId": "4345567",
+     "name": "C. Kewish"
+    },
+    {
+     "authorId": "1984180",
+     "name": "O. Bunk"
+    },
+    {
+     "authorId": "2944577",
+     "name": "J. Rodenburg"
+    },
+    {
+     "authorId": "48314708",
+     "name": "I. Robinson"
+    }
+   ]
+  },
+  {
+   "paperId": "0e0924f3c727be7a168018f524f43c4c26f99f30",
+   "externalIds": {
+    "DOI": "10.1364/oe.516729",
+    "CorpusId": 270377632,
+    "PubMed": "38859091"
+   },
+   "title": "Imaging extended single crystal lattice distortion fields with multi-peak Bragg ptychography.",
+   "venue": "Optics Express",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "38072909",
+     "name": "S. Kandel"
+    },
+    {
+     "authorId": "2305657898",
+     "name": "Sidharth Maddali"
+    },
+    {
+     "authorId": "2253230830",
+     "name": "Xiaojing Huang"
+    },
+    {
+     "authorId": "2918156",
+     "name": "Y. Nashed"
+    },
+    {
+     "authorId": "2276205566",
+     "name": "Chris Jacobsen"
+    },
+    {
+     "authorId": "2276203171",
+     "name": "Marc Allain"
+    },
+    {
+     "authorId": "9835381",
+     "name": "S. Hruszkewycz"
+    }
+   ]
+  },
+  {
+   "paperId": "1a34dcb1ed2f6af66dd1a9e6bfa9be66ee3667b9",
+   "externalIds": {
+    "PubMedCentral": "10840305",
+    "DOI": "10.1107/S1600576723010403",
+    "CorpusId": 266940250,
+    "PubMed": "38322717"
+   },
+   "title": "Fast nanoscale imaging of strain in a multi-segment heterostructured nanowire with 2D Bragg ptychography",
+   "venue": "Journal of Applied Crystallography",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "4769534",
+     "name": "Susanna Hammarberg"
+    },
+    {
+     "authorId": "4666365",
+     "name": "D. Dzhigaev"
+    },
+    {
+     "authorId": "19318915",
+     "name": "L. A. B. Marçal"
+    },
+    {
+     "authorId": "13801052",
+     "name": "Vilgailė Dagytė"
+    },
+    {
+     "authorId": "5043414",
+     "name": "A. Björling"
+    },
+    {
+     "authorId": "2478609283",
+     "name": "M. Borgström"
+    },
+    {
+     "authorId": "5098682",
+     "name": "J. Wallentin"
+    }
+   ]
+  },
+  {
+   "paperId": "241337042faf8e35902ed40beb38d00a157f85cb",
+   "externalIds": {
+    "MAG": "2734346318",
+    "CorpusId": 125876932
+   },
+   "title": "Non-destructive 3D imaging of crystal strain and rotations in an extended bonded semiconductor heterostructure",
+   "venue": "",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "25911924",
+     "name": "A. Pateras"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "47267872",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "7349129",
+     "name": "L. Largeau"
+    },
+    {
+     "authorId": "3748881",
+     "name": "G. Patriarche"
+    },
+    {
+     "authorId": "3016752",
+     "name": "A. Talneau"
+    },
+    {
+     "authorId": "9130410",
+     "name": "K. Pantzas"
+    },
+    {
+     "authorId": "30147407",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": "14719587",
+     "name": "A. Minkevich"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "2619a01df386aec69396b18763ae747e4ffd55da",
+   "externalIds": {
+    "MAG": "2592081481",
+    "DOI": "10.1021/acsnano.6b08122",
+    "CorpusId": 23642596,
+    "PubMed": "28264155"
+   },
+   "title": "X-ray Bragg Ptychography on a Single InGaN/GaN Core-Shell Nanowire.",
+   "venue": "ACS Nano",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "4666365",
+     "name": "D. Dzhigaev"
+    },
+    {
+     "authorId": "3301589",
+     "name": "Tomaš Stankevič"
+    },
+    {
+     "authorId": "13586987",
+     "name": "Zhao-Xia Bi"
+    },
+    {
+     "authorId": "144244327",
+     "name": "S. Lazarev"
+    },
+    {
+     "authorId": "48119146",
+     "name": "M. Rose"
+    },
+    {
+     "authorId": "46272146",
+     "name": "A. Shabalin"
+    },
+    {
+     "authorId": "50182131",
+     "name": "J. Reinhardt"
+    },
+    {
+     "authorId": "49561312",
+     "name": "A. Mikkelsen"
+    },
+    {
+     "authorId": "145737013",
+     "name": "L. Samuelson"
+    },
+    {
+     "authorId": "5561214",
+     "name": "G. Falkenberg"
+    },
+    {
+     "authorId": "94168257",
+     "name": "R. Feidenhans'l"
+    },
+    {
+     "authorId": "4713892",
+     "name": "I. Vartanyants"
+    }
+   ]
+  },
+  {
+   "paperId": "32bb05c744250329afa0107852a404a61335e242",
+   "externalIds": {
+    "MAG": "2612910598",
+    "CorpusId": 136155490
+   },
+   "title": "Bragg ptychography imaging of phase-ordering Fe-Al alloys",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "47298636",
+     "name": "Chan Kim"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    },
+    {
+     "authorId": "118032673",
+     "name": "T. Roth"
+    },
+    {
+     "authorId": "50243289",
+     "name": "J. Hallmann"
+    },
+    {
+     "authorId": "1877795",
+     "name": "Wei Lu"
+    },
+    {
+     "authorId": null,
+     "name": "U. Bösenberg"
+    },
+    {
+     "authorId": "153310845",
+     "name": "S. W. Lee"
+    },
+    {
+     "authorId": "3273740",
+     "name": "S. Leake"
+    },
+    {
+     "authorId": "11528873",
+     "name": "A. Madsen"
+    }
+   ]
+  },
+  {
+   "paperId": "332b3e448f501f5540174ccf25c2632002771b2b",
+   "externalIds": {
+    "MAG": "2612123403",
+    "CorpusId": 136232885
+   },
+   "title": "Characterization of nanowires by coherent x-ray diffractive imaging and ptychography",
+   "venue": "",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "4666365",
+     "name": "D. Dzhigaev"
+    },
+    {
+     "authorId": "70617412",
+     "name": "I. Vartaniants"
+    },
+    {
+     "authorId": "2018584",
+     "name": "C. Schroer"
+    }
+   ]
+  },
+  {
+   "paperId": "34614b018c85850ea12e9e65a98564997c1e4620",
+   "externalIds": {
+    "ArXiv": "2603.11584",
+    "CorpusId": 286489090
+   },
+   "title": "Quantitative 3D imaging of highly distorted micro-crystals using Bragg ptychography",
+   "venue": "",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2263822558",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "2325151644",
+     "name": "David Yang"
+    },
+    {
+     "authorId": "2241784183",
+     "name": "Christoph Rau"
+    },
+    {
+     "authorId": "2276203171",
+     "name": "Marc Allain"
+    },
+    {
+     "authorId": "2134626055",
+     "name": "Felix Hofmann"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "3a7d48ec03bc1024f033102134270ba2315a71f5",
+   "externalIds": {
+    "DOI": "10.1107/s0108767321096458",
+    "CorpusId": 246800755
+   },
+   "title": "Novel insights on biomineralization using X-rays and optical coherent diffraction-based imaging approaches",
+   "venue": "Acta Crystallographica Section A: Foundations and Advances",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "3c12e36b12e0fbd78119d141e95d708039396dfe",
+   "externalIds": {
+    "MAG": "3031526596",
+    "CorpusId": 226911468
+   },
+   "title": "Characterising the illumination function for Bragg ptychography microscopy",
+   "venue": "",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "2152926651",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "47298636",
+     "name": "Chan Kim"
+    },
+    {
+     "authorId": "11528873",
+     "name": "A. Madsen"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "3e5d20f807d3b67ef389796ac064a3636ffff703",
+   "externalIds": {
+    "MAG": "2622902509",
+    "CorpusId": 136301643
+   },
+   "title": "Bragg Ptychography: When Crystallography Meets Microscopy",
+   "venue": "",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "42f78c9584e90059572eb0d212a0177010a76004",
+   "externalIds": {
+    "MAG": "1921817895",
+    "CorpusId": 120364954
+   },
+   "title": "Domain structure imaging by Bragg geometry X-ray ptychography",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "144125770",
+     "name": "R. Bean"
+    }
+   ]
+  },
+  {
+   "paperId": "4907e18fa780d8088bff949888317c70ec42e99d",
+   "externalIds": {
+    "MAG": "2611902507",
+    "CorpusId": 136312463
+   },
+   "title": "Strain imaging of an InP nanostructured thin film by 3D X-Ray Bragg Ptychography",
+   "venue": "",
+   "year": 2014,
+   "authors": [
+    {
+     "authorId": "25911924",
+     "name": "A. Pateras"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "47267872",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "49760507",
+     "name": "F. Mastropietro"
+    },
+    {
+     "authorId": "7349129",
+     "name": "L. Largeau"
+    },
+    {
+     "authorId": "3748881",
+     "name": "G. Patriarche"
+    },
+    {
+     "authorId": "9130410",
+     "name": "K. Pantzas"
+    },
+    {
+     "authorId": "3016752",
+     "name": "A. Talneau"
+    },
+    {
+     "authorId": "30147407",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": "14719587",
+     "name": "A. Minkevich"
+    },
+    {
+     "authorId": "153275377",
+     "name": "T. Baumbach"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "5032000bc97161c6a8e1c10fdadadf6e5e02c95f",
+   "externalIds": {
+    "PubMedCentral": "4434906",
+    "MAG": "2265675646",
+    "DOI": "10.1038/srep09827",
+    "CorpusId": 4982875,
+    "PubMed": "25984829"
+   },
+   "title": "Strain in a silicon-on-insulator nanostructure revealed by 3D x-ray Bragg ptychography",
+   "venue": "Scientific Reports",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": null,
+     "name": "V. Chamard"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "2249960823",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "3016752",
+     "name": "A. Talneau"
+    },
+    {
+     "authorId": "3748881",
+     "name": "G. Patriarche"
+    },
+    {
+     "authorId": null,
+     "name": "M. Burghammer"
+    }
+   ]
+  },
+  {
+   "paperId": "56ecbadf8e35c650dc6a996069efb6b5626a2636",
+   "externalIds": {
+    "PubMedCentral": "8956681",
+    "DOI": "10.1038/s41377-022-00758-z",
+    "CorpusId": 247713521,
+    "PubMed": "35338112"
+   },
+   "title": "4th generation synchrotron source boosts crystalline imaging at the nanoscale",
+   "venue": "Light: Science & Applications",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "145243620",
+     "name": "Pengcheng Li"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "35475189",
+     "name": "T. Grünewald"
+    },
+    {
+     "authorId": "2067411303",
+     "name": "Marcus Rommel"
+    },
+    {
+     "authorId": "2140536174",
+     "name": "Andrea Campos"
+    },
+    {
+     "authorId": "123931362",
+     "name": "D. Carbone"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "571c704f39d3962c09a684e4a02268f1c0f20740",
+   "externalIds": {
+    "MAG": "2067065919",
+    "DOI": "10.1088/1742-6596/425/18/182005",
+    "CorpusId": 135643174
+   },
+   "title": "Design of the X-ray Nanoprobe Beamline at the Taiwan Photon Source",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "2208067165",
+     "name": "S. H. Chang"
+    },
+    {
+     "authorId": "40183909",
+     "name": "Gung-Chian Yin"
+    },
+    {
+     "authorId": "2136411652",
+     "name": "D.-J. Wang"
+    },
+    {
+     "authorId": "2202261281",
+     "name": "C. S. Chang"
+    },
+    {
+     "authorId": "9335141",
+     "name": "J. Juang"
+    },
+    {
+     "authorId": "2109007468",
+     "name": "L.-J. Huang"
+    },
+    {
+     "authorId": "153904109",
+     "name": "C.-Y. Liu"
+    },
+    {
+     "authorId": "2202260801",
+     "name": "C. F. Chang"
+    },
+    {
+     "authorId": "8677665",
+     "name": "Chia-Hung Chu"
+    },
+    {
+     "authorId": "143894109",
+     "name": "M. Tang"
+    }
+   ]
+  },
+  {
+   "paperId": "6121dfd081173ed2934d89a9699403dcef2babca",
+   "externalIds": {
+    "MAG": "2904812343",
+    "DOI": "10.1103/PhysRevLett.121.256101",
+    "CorpusId": 58642756,
+    "PubMed": "30608794"
+   },
+   "title": "Three-Dimensional Imaging of Phase Ordering in an Fe-Al Alloy by Bragg Ptychography.",
+   "venue": "Physical Review Letters",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "47298636",
+     "name": "Chan Kim"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    },
+    {
+     "authorId": "50243289",
+     "name": "J. Hallmann"
+    },
+    {
+     "authorId": "118032673",
+     "name": "T. Roth"
+    },
+    {
+     "authorId": "143844120",
+     "name": "Wei Lu"
+    },
+    {
+     "authorId": "49157682",
+     "name": "U. Boesenberg"
+    },
+    {
+     "authorId": "40115595",
+     "name": "A. Zozulya"
+    },
+    {
+     "authorId": "3273740",
+     "name": "S. Leake"
+    },
+    {
+     "authorId": "11528873",
+     "name": "A. Madsen"
+    }
+   ]
+  },
+  {
+   "paperId": "65cdc72dd3bec90735265693672fe3d8c353a7fd",
+   "externalIds": {
+    "MAG": "2609539999",
+    "CorpusId": 136315441
+   },
+   "title": "Three-dimensional microscopy of shape, density and strain in a nano-structured crystal using Bragg Ptychography: methodological aspects",
+   "venue": "",
+   "year": 2012,
+   "authors": [
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "47267872",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "3016752",
+     "name": "A. Talneau"
+    },
+    {
+     "authorId": "30147407",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": null,
+     "name": "J. Daillant"
+    }
+   ]
+  },
+  {
+   "paperId": "6d5fd5824fc15d36d7a2cc15f17a6ed8488e3688",
+   "externalIds": {
+    "MAG": "2519702500",
+    "DOI": "10.1107/S1600576716012279",
+    "CorpusId": 99912487
+   },
+   "title": "PyNX.Ptycho: a computing library for X-ray coherent diffraction imaging of nanostructures",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "3694529",
+     "name": "O. Mandula"
+    },
+    {
+     "authorId": "93420201",
+     "name": "M. E. Aizarna"
+    },
+    {
+     "authorId": "46953421",
+     "name": "J. Eymery"
+    },
+    {
+     "authorId": "30147407",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": "1401880729",
+     "name": "V. Favre-Nicolin"
+    }
+   ]
+  },
+  {
+   "paperId": "77d58e306eef261296af8635439020c47c639740",
+   "externalIds": {
+    "MAG": "1973830925",
+    "DOI": "10.1098/rsta.2013.0118",
+    "CorpusId": 19457395,
+    "PubMed": "24470418"
+   },
+   "title": "Coherent Bragg nanodiffraction at the hard X-ray Nanoprobe beamline",
+   "venue": "Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences",
+   "year": 2014,
+   "authors": [
+    {
+     "authorId": "9835381",
+     "name": "S. Hruszkewycz"
+    },
+    {
+     "authorId": "2254214974",
+     "name": "M. Holt"
+    },
+    {
+     "authorId": "2253123565",
+     "name": "J. Maser"
+    },
+    {
+     "authorId": "2563806",
+     "name": "C. Murray"
+    },
+    {
+     "authorId": "4709643",
+     "name": "M. Highland"
+    },
+    {
+     "authorId": "7845032",
+     "name": "C. Folkman"
+    },
+    {
+     "authorId": "4306127",
+     "name": "P. Fuoss"
+    }
+   ]
+  },
+  {
+   "paperId": "7b9bbb62ab9ce7694a79c8d5f25a1667b3d4916a",
+   "externalIds": {
+    "MAG": "3106186981",
+    "DOI": "10.1007/978-981-15-8350-6_9",
+    "CorpusId": 228921031
+   },
+   "title": "Three-Dimensional Visualization of Atomic Ordering by Bragg Ptychography",
+   "venue": "",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "47298636",
+     "name": "Chan Kim"
+    },
+    {
+     "authorId": "11528873",
+     "name": "A. Madsen"
+    }
+   ]
+  },
+  {
+   "paperId": "8318d1777cb9fd5c697403f194382b9a7831424d",
+   "externalIds": {
+    "CorpusId": 269808339
+   },
+   "title": "Next frontiers of Bragg Ptychography at 4 th generation sources",
+   "venue": "",
+   "year": null,
+   "authors": [
+    {
+     "authorId": "2241903030",
+     "name": "Dina Carbone"
+    },
+    {
+     "authorId": "2263822558",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "2241897452",
+     "name": "Dan Mannix"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "87783ab17df4ff854b48f7b3e1bd22c0d1741656",
+   "externalIds": {
+    "MAG": "1919598528",
+    "DOI": "10.70675/668074d7z57f1z4b48z9d8fz2eafed37420a",
+    "CorpusId": 93200356
+   },
+   "title": "Three dimensional X-ray Bragg ptychography of an extended semiconductor heterostructure",
+   "venue": "",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "25911924",
+     "name": "A. Pateras"
+    }
+   ]
+  },
+  {
+   "paperId": "87a0ab64bd3400c4d5dd8b5b35d5e0875aecc55d",
+   "externalIds": {
+    "CorpusId": 261709824
+   },
+   "title": "Measuring Strain at Sharp Interfaces Using 4D-STEM",
+   "venue": "",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2325263699",
+     "name": "Yong-Xiang Zheng"
+    },
+    {
+     "authorId": "6039766",
+     "name": "Steven E. Zeltmann"
+    }
+   ]
+  },
+  {
+   "paperId": "9eb36b3c35eb4e87e512c8ea1bf2fadb841e6ff6",
+   "externalIds": {
+    "MAG": "2735311364",
+    "DOI": "10.1038/nmat4937",
+    "CorpusId": 205415670,
+    "PubMed": "28692039"
+   },
+   "title": "Revealing crystalline domains in a mollusc shell single-crystalline prism.",
+   "venue": "Nature Materials",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "49760507",
+     "name": "F. Mastropietro"
+    },
+    {
+     "authorId": "47267872",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "30147407",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": "6765274",
+     "name": "C. Chevallard"
+    },
+    {
+     "authorId": "3551294",
+     "name": "J. Daillant"
+    },
+    {
+     "authorId": "3993033",
+     "name": "J. Duboisset"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "4544267",
+     "name": "P. Guenoun"
+    },
+    {
+     "authorId": "104213268",
+     "name": "J. Nouet"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "a30c71f6df8830b5f0293271adaedc5c3964d027",
+   "externalIds": {
+    "MAG": "2602825184",
+    "CorpusId": 136375072
+   },
+   "title": "Coherent Diffraction Imaging of Device Nanostructures",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "12736316",
+     "name": "E. Fohtung"
+    },
+    {
+     "authorId": "147178325",
+     "name": "Jong-Ha Woo"
+    },
+    {
+     "authorId": "31833432",
+     "name": "M. Holt"
+    },
+    {
+     "authorId": "9835381",
+     "name": "S. Hruszkewycz"
+    },
+    {
+     "authorId": "1816789",
+     "name": "N. Lei"
+    },
+    {
+     "authorId": "48712320",
+     "name": "D. Ravelosona"
+    },
+    {
+     "authorId": "2687561",
+     "name": "R. Harder"
+    },
+    {
+     "authorId": "34993211",
+     "name": "E. Fullerton"
+    },
+    {
+     "authorId": "47774735",
+     "name": "I. McNulty"
+    },
+    {
+     "authorId": "6509501",
+     "name": "O. Shpyrko"
+    }
+   ]
+  },
+  {
+   "paperId": "a4e688281b68c287f184661abe5f5b1c4572bed8",
+   "externalIds": {
+    "CorpusId": 245003065
+   },
+   "title": "1 Supplementary information for 2 Revealing ‘ invisible ’ defects in implanted material 3 with 3 D Bragg ptychography 4",
+   "venue": "",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "2152926651",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "50674200",
+     "name": "N. Phillips"
+    },
+    {
+     "authorId": "3273740",
+     "name": "S. Leake"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "46660548",
+     "name": "F. Hofmann"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "a577a204b346704b6e79261bb0b1cba0ef7d7244",
+   "externalIds": {
+    "MAG": "3082958628",
+    "CorpusId": 221763863
+   },
+   "title": "Revealing ‘invisible’ defects in implanted material with 3D Bragg ptychography",
+   "venue": "",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "2152926651",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "50674200",
+     "name": "N. Phillips"
+    },
+    {
+     "authorId": "3273740",
+     "name": "S. Leake"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "46660548",
+     "name": "F. Hofmann"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "aceacd377e13aaf0aa47678e813d7cbde66dc4ce",
+   "externalIds": {
+    "MAG": "2563664673",
+    "DOI": "10.1103/PHYSREVB.92.205305",
+    "CorpusId": 42592585
+   },
+   "title": "Nondestructive three-dimensional imaging of crystal strain and rotations in an extended bonded semiconductor heterostructure",
+   "venue": "",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "25911924",
+     "name": "A. Pateras"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "47267872",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "7349129",
+     "name": "L. Largeau"
+    },
+    {
+     "authorId": "3748881",
+     "name": "G. Patriarche"
+    },
+    {
+     "authorId": "3016752",
+     "name": "A. Talneau"
+    },
+    {
+     "authorId": "9130410",
+     "name": "K. Pantzas"
+    },
+    {
+     "authorId": "30147407",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": "14719587",
+     "name": "A. Minkevich"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "add8c5c0af2ff1c158dea1b0118d622b04bf0f9c",
+   "externalIds": {
+    "MAG": "3017324631",
+    "DOI": "10.1364/oe.391282",
+    "CorpusId": 219490164,
+    "PubMed": "32549414"
+   },
+   "title": "Confocal Bragg ptychography for bulk specimens: a numerical demonstration.",
+   "venue": "Optics Express",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "39962037",
+     "name": "A. Pedersen"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    },
+    {
+     "authorId": "32273569",
+     "name": "H. Poulsen"
+    }
+   ]
+  },
+  {
+   "paperId": "b53f59a9a984f6df80f554b0c4f67c965febc8a3",
+   "externalIds": {
+    "MAG": "1737761615",
+    "ArXiv": "1506.01262",
+    "DOI": "10.1038/nmat4798",
+    "CorpusId": 11953371,
+    "PubMed": "27869823"
+   },
+   "title": "High-resolution three-dimensional structural microscopy by single-angle Bragg ptychography.",
+   "venue": "Nature Materials",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "9835381",
+     "name": "S. Hruszkewycz"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "2254214974",
+     "name": "M. Holt"
+    },
+    {
+     "authorId": "2254901183",
+     "name": "Conal E. Murray"
+    },
+    {
+     "authorId": "2254603842",
+     "name": "J. Holt"
+    },
+    {
+     "authorId": "4306127",
+     "name": "P. Fuoss"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "b771b216d672ff1da1228391f9b6103d5ae9a20a",
+   "externalIds": {
+    "MAG": "2952333468",
+    "CorpusId": 197625238
+   },
+   "title": "New advances in X-ray Bragg ptychography",
+   "venue": "",
+   "year": 2019,
+   "authors": [
+    {
+     "authorId": "2421792808",
+     "name": "Peng Li"
+    }
+   ]
+  },
+  {
+   "paperId": "b91ac75671eff3e509aea9dd28fe1e09d950866d",
+   "externalIds": {
+    "MAG": "2610743794",
+    "CorpusId": 136425215
+   },
+   "title": "Biominerals in the light of Bragg coherent x-ray diffraction imaging",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "bc1f6a7f594eacf7fbc854a1963400356a74a465",
+   "externalIds": {
+    "DOI": "10.1109/icip61757.2026.11630305",
+    "CorpusId": 291127251
+   },
+   "title": "Blind X-Ray Bragg Ptychography with Automatic Differentiation",
+   "venue": "International Conference on Information Photonics",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2268497954",
+     "name": "Ting-You Li"
+    },
+    {
+     "authorId": "2372539740",
+     "name": "Ji-Zhou Li"
+    }
+   ]
+  },
+  {
+   "paperId": "bd5f676b527d950b36ac7d8d1087bcc90f9056fc",
+   "externalIds": {
+    "MAG": "2609696782",
+    "CorpusId": 136450795
+   },
+   "title": "Three-dimensional microscopy of extended crystals through X-ray Bragg ptychography",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "47267872",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "153046525",
+     "name": "G. Carbone"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "49760507",
+     "name": "F. Mastropietro"
+    },
+    {
+     "authorId": "2146661396",
+     "name": "Gang Chen"
+    },
+    {
+     "authorId": "144395784",
+     "name": "A. Diaz"
+    },
+    {
+     "authorId": "2073851265",
+     "name": "T. Metzger"
+    },
+    {
+     "authorId": "144754165",
+     "name": "J. Stangl"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "bf02260e9a2a0619f4b6d699e5848bd789408a6d",
+   "externalIds": {
+    "MAG": "2734051198",
+    "CorpusId": 126051026
+   },
+   "title": "3D X-ray Bragg ptychography from methodological developments to applications",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "c9c8faf9a3f1b8a8699d69798302e4bba6ea8857",
+   "externalIds": {
+    "CorpusId": 287071116
+   },
+   "title": "Supplemental for “High resolution three dimensional structural microscopy by single angle Bragg ptychography”",
+   "venue": "",
+   "year": null,
+   "authors": [
+    {
+     "authorId": "9835381",
+     "name": "S. Hruszkewycz"
+    },
+    {
+     "authorId": "152906655",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "2254214974",
+     "name": "M. Holt"
+    },
+    {
+     "authorId": "2397499321",
+     "name": "C. E. Murray"
+    },
+    {
+     "authorId": "2052618052",
+     "name": "J. R. Holt"
+    },
+    {
+     "authorId": "2315811842",
+     "name": "P. Fuoss"
+    },
+    {
+     "authorId": "2249177563",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "ca4c89266df23258f924baf3a4f69a1e097e8909",
+   "externalIds": {
+    "DOI": "10.1039/d5fd00020c",
+    "CorpusId": 279167563,
+    "PubMed": "40476718"
+   },
+   "title": "Crystallisation in biomineral mollusc shell studied by 3D Bragg ptychography.",
+   "venue": "Faraday discussions",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "35475189",
+     "name": "T. Grünewald"
+    },
+    {
+     "authorId": "2274052118",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "2348603825",
+     "name": "J. Duboisset"
+    },
+    {
+     "authorId": "2244382688",
+     "name": "Julius Nouet"
+    },
+    {
+     "authorId": "4424853",
+     "name": "O. Bikondoa"
+    },
+    {
+     "authorId": "1401719717",
+     "name": "J. Vidal-Dupiol"
+    },
+    {
+     "authorId": "2348598316",
+     "name": "Denis Saulnier"
+    },
+    {
+     "authorId": "2249224831",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": "2249177563",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "e1beae865c4bbe47e8e276afd8428bfe6fe78241",
+   "externalIds": {
+    "ArXiv": "2312.14907",
+    "CorpusId": 266521314
+   },
+   "title": "Imaging extended single crystal lattice distortion fields with multi-peak Bragg ptychography",
+   "venue": "",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "38072909",
+     "name": "S. Kandel"
+    },
+    {
+     "authorId": "5874702",
+     "name": "S. Maddali"
+    },
+    {
+     "authorId": "2276203171",
+     "name": "Marc Allain"
+    },
+    {
+     "authorId": "2253230830",
+     "name": "Xiaojing Huang"
+    },
+    {
+     "authorId": "2918156",
+     "name": "Y. Nashed"
+    },
+    {
+     "authorId": "2276205566",
+     "name": "Chris Jacobsen"
+    },
+    {
+     "authorId": "9835381",
+     "name": "S. Hruszkewycz"
+    }
+   ]
+  },
+  {
+   "paperId": "e34fefb7dab505f619b7900262386e3fbc2fefb6",
+   "externalIds": {
+    "PubMedCentral": "8642407",
+    "DOI": "10.1038/s41467-021-27224-5",
+    "CorpusId": 244872385,
+    "PubMed": "34862390"
+   },
+   "title": "Revealing nano-scale lattice distortions in implanted material with 3D Bragg ptychography",
+   "venue": "Nature Communications",
+   "year": 2021,
+   "authors": [
+    {
+     "authorId": "145243620",
+     "name": "Pengcheng Li"
+    },
+    {
+     "authorId": "50674200",
+     "name": "N. Phillips"
+    },
+    {
+     "authorId": "3273740",
+     "name": "S. Leake"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "46660548",
+     "name": "F. Hofmann"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "e44e5fd0dbb1ac3bf27c4a13428ab9569d2ffdeb",
+   "externalIds": {
+    "MAG": "2007068458",
+    "DOI": "10.1364/OL.36.002227",
+    "CorpusId": 16619915,
+    "PubMed": "21685975"
+   },
+   "title": "Framework for three-dimensional coherent diffraction imaging by focused beam x-ray Bragg ptychography.",
+   "venue": "Optics Letters",
+   "year": 2011,
+   "authors": [
+    {
+     "authorId": "9835381",
+     "name": "S. Hruszkewycz"
+    },
+    {
+     "authorId": "31833432",
+     "name": "M. Holt"
+    },
+    {
+     "authorId": "47458615",
+     "name": "A. Tripathi"
+    },
+    {
+     "authorId": "36733304",
+     "name": "J. Maser"
+    },
+    {
+     "authorId": "4306127",
+     "name": "P. Fuoss"
+    }
+   ]
+  },
+  {
+   "paperId": "e5c54d61996e6b5ae2d2bcf6ca6336138690026a",
+   "externalIds": {
+    "MAG": "2754101072",
+    "DOI": "10.1111/jmi.12614",
+    "CorpusId": 46834986,
+    "PubMed": "28758682"
+   },
+   "title": "Ten implementations of ptychography",
+   "venue": "Journal of Microscopy",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "2152926651",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "5331577",
+     "name": "A. Maiden"
+    }
+   ]
+  },
+  {
+   "paperId": "e92ad0b20a45f5ec26dc3f2b979986ed21b154de",
+   "externalIds": {
+    "MAG": "1832583074",
+    "DOI": "10.1117/12.2190416",
+    "CorpusId": 119567850
+   },
+   "title": "Theoretical analysis of the strain mapping in a single core-shell nanowire by x-ray Bragg ptychography",
+   "venue": "SPIE Optical Engineering + Applications",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "4666365",
+     "name": "D. Dzhigaev"
+    },
+    {
+     "authorId": "3301589",
+     "name": "Tomaš Stankevič"
+    },
+    {
+     "authorId": "47109824",
+     "name": "I. Besedin"
+    },
+    {
+     "authorId": "144244327",
+     "name": "S. Lazarev"
+    },
+    {
+     "authorId": "46272146",
+     "name": "A. Shabalin"
+    },
+    {
+     "authorId": "143793782",
+     "name": "M. Strikhanov"
+    },
+    {
+     "authorId": "94168257",
+     "name": "R. Feidenhans'l"
+    },
+    {
+     "authorId": "4713892",
+     "name": "I. Vartanyants"
+    }
+   ]
+  },
+  {
+   "paperId": "ea81ea1f11fc8206b7e8cfdd29b6507678699b5b",
+   "externalIds": {
+    "DOI": "10.1107/s2053273323091210",
+    "CorpusId": 269730143
+   },
+   "title": "Next frontiers of Bragg ptychography at fourth-generation sources",
+   "venue": "Acta Crystallographica Section A: Foundations and Advances",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2241903030",
+     "name": "Dina Carbone"
+    },
+    {
+     "authorId": "2263822558",
+     "name": "Peng Li"
+    },
+    {
+     "authorId": "2241897452",
+     "name": "Dan Mannix"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "eea1489b8d84b7ac4a3c3661d0748014197fc640",
+   "externalIds": {
+    "MAG": "2608338775",
+    "CorpusId": 136193527
+   },
+   "title": "Three-dimensional in operando imaging of a semiconductor heterostructure through X-ray Bragg ptychography",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "25911924",
+     "name": "A. Pateras"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "47267872",
+     "name": "P. Godard"
+    },
+    {
+     "authorId": "7349129",
+     "name": "L. Largeau"
+    },
+    {
+     "authorId": "3748881",
+     "name": "G. Patriarche"
+    },
+    {
+     "authorId": "3016752",
+     "name": "A. Talneau"
+    },
+    {
+     "authorId": "9130410",
+     "name": "K. Pantzas"
+    },
+    {
+     "authorId": "30147407",
+     "name": "M. Burghammer"
+    },
+    {
+     "authorId": "113183743",
+     "name": "A. A. Minkevitch"
+    },
+    {
+     "authorId": "3916765",
+     "name": "V. Chamard"
+    }
+   ]
+  },
+  {
+   "paperId": "f486645c986545a230f0b0d93b2a717507cf1ec9",
+   "externalIds": {
+    "DOI": "10.1080/08940886.2024.2351338",
+    "CorpusId": 270251707
+   },
+   "title": "Bragg Coherent Imaging of Fluctuating Domains",
+   "venue": "Synchrotron Radiation News",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2304673379",
+     "name": "Ian K. Robinson"
+    }
+   ]
+  },
+  {
+   "paperId": "f6a479e69451deff32d47e46f5f0fc76126c4454",
+   "externalIds": {
+    "MAG": "2923178612",
+    "CorpusId": 128294874
+   },
+   "title": "First Reconstruction of the Antiferromagnetic Order Parameter in NdNiO3 from Resonant Soft X-ray Bragg Ptychography.",
+   "venue": "",
+   "year": 2019,
+   "authors": [
+    {
+     "authorId": "38850512",
+     "name": "A. Levitan"
+    },
+    {
+     "authorId": "49298204",
+     "name": "Jiarui Li"
+    },
+    {
+     "authorId": "6181079",
+     "name": "K. Mertes"
+    },
+    {
+     "authorId": "11152663",
+     "name": "M. Allain"
+    },
+    {
+     "authorId": "47458615",
+     "name": "A. Tripathi"
+    },
+    {
+     "authorId": "2108026732",
+     "name": "Wen Hu"
+    },
+    {
+     "authorId": "46424207",
+     "name": "R. Sandberg"
+    },
+    {
+     "authorId": "4354777",
+     "name": "C. Mazzoli"
+    },
+    {
+     "authorId": "47486987",
+     "name": "R. Comin"
+    }
+   ]
+  }
+ ]
+}

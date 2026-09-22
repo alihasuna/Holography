@@ -1,0 +1,3988 @@
+{
+ "_url": "https://api.crossref.org/works?query.bibliographic=reflection+electron+holography+surface+steps&rows=100&select=DOI%2Ctitle%2Cauthor%2Ccontainer-title%2Cissued%2Ctype",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work-list",
+ "message-version": "1.0.0",
+ "message": {
+  "facets": {},
+  "total-results": 2579767,
+  "items": [
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050815",
+    "title": [
+     "Observation of GaAs(110) Surface Defect by Reflection Electron Holography"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1143/jjap.27.l1772",
+    "title": [
+     "Observation of Atomic Steps by Reflection Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Junji",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Japanese Journal of Applied Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988,
+       9,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/s0304-3991(85)80008-5",
+    "title": [
+     "The image contrast of surface steps in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "J.M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Lianmao",
+      "family": "Peng",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1985,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50006-3",
+    "title": [
+     "Observation of atomic surface potential by electron holography"
+    ],
+    "author": [
+     {
+      "given": "Takayoshi",
+      "family": "Tanji",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kazuo",
+      "family": "Ishizuka",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_24",
+    "title": [
+     "Contrast of Surface Steps and Dislocations under Resonance, Non-Resonance, Bragg, and Non-Bragg Conditions"
+    ],
+    "author": [
+     {
+      "given": "Tung",
+      "family": "Hsu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "L.-M.",
+      "family": "Peng",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/s0424820100154652",
+    "title": [
+     "Observation of surface morphology by reflection electron holography"
+    ],
+    "author": [
+     {
+      "given": "N.",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       8,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0039-6028(81)90038-8",
+    "title": [
+     "Image contrast of dislocations and atomic steps on (111) silicon surface in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Osakabe",
+      "family": "Nobuyuki",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tanishiro",
+      "family": "Yasumasa",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yagi",
+      "family": "Katsumichi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Honjo",
+      "family": "Goro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1981,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0167-2584(81)90396-0",
+    "title": [
+     "Image contrast of dislocations and atomic steps on (111) silicon surface in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yasumasa",
+      "family": "Tanishiro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Katsumichi",
+      "family": "Yagi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Goro",
+      "family": "Honjo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1981,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0304-3991(93)90123-f",
+    "title": [
+     "Reflection electron holography"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Banzhof",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.-H.",
+      "family": "Herrmann",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       4
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0739-6260(87)90054-2",
+    "title": [
+     "Diffraction contrast in reflection electron microscopy—II. Surface steps and dislocations under the surface"
+    ],
+    "author": [
+     {
+      "given": "L.-M.",
+      "family": "Peng",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tung",
+      "family": "Hsu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Micron and Microscopica Acta"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1987,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100054728",
+    "title": [
+     "Reflection Electron Microscopy (REM) of Surface Steps &amp; Dislocations on GaP(110) &amp; GaAs(110)"
+    ],
+    "author": [
+     {
+      "given": "Tung",
+      "family": "Hsu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Sumio",
+      "family": "Iijima",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1982,
+       8,
+       13
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_31",
+    "title": [
+     "The Contribution of Atomic Steps to Reflection High Energy Electron Diffraction from Semiconductor Surfaces"
+    ],
+    "author": [
+     {
+      "given": "P. R.",
+      "family": "Pukite",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "P. I.",
+      "family": "Cohen",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "S.",
+      "family": "Batra",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.004",
+    "title": [
+     "Reflection high-energy electron diffraction"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_12",
+    "title": [
+     "Theory of Electron Scattering from Defect: Steps on Surfaces with Non-Equivalent Terraces"
+    ],
+    "author": [
+     {
+      "given": "W.",
+      "family": "Moritz",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.014",
+    "title": [
+     "Novel techniques associated with reflection electron imaging"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1103/physrevlett.62.2969",
+    "title": [
+     "Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Junji",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Fukuhara",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Physical Review Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       6,
+       19
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1103/physrevlett.63.584.3",
+    "title": [
+     "Observation of Surface Undulation Due to Single-Atomic Shear of a Dislocation by Reflection-Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Junji",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Fukuhara",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Physical Review Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       7,
+       31
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100074422",
+    "title": [
+     "Reflection electron microscopy (REM) observation of monatomic steps and &lt;133&gt; steps of GaAs(110) surfaces"
+    ],
+    "author": [
+     {
+      "given": "Tung",
+      "family": "Hsu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1983,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1887/0750309121/b1394c12",
+    "title": [
+     "Transfer reflection holograms"
+    ],
+    "container-title": [
+     "Practical Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0039-6028(93)90047-n",
+    "title": [
+     "Application of electron holography to surface topography observation"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0039-6028(93)90046-m",
+    "title": [
+     "Electron holography and holographic diffraction for surface studies"
+    ],
+    "author": [
+     {
+      "given": "J.M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.5353/th_b3122669",
+    "title": [
+     "Surface structure determination of Ga/Si (111) 3x3-R30 by Kikuchi electron holography"
+    ],
+    "author": [
+     {
+      "given": "Wai-kei",
+      "family": "So",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "dissertation"
+   },
+   {
+    "DOI": "10.1190/1.9781560802020.ch2",
+    "title": [
+     "2. Processing Steps and Associated Pitfalls"
+    ],
+    "container-title": [
+     "Processing Near-Surface Seismic-Reflection Data"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999,
+       1
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1117/3.1002325.ch16",
+    "title": [
+     "Reflection Geometry"
+    ],
+    "container-title": [
+     "Field Guide to Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50004-x",
+    "title": [
+     "Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Hannes",
+      "family": "Lichte",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.1c02524.s001",
+    "title": [
+     "Imaging Nanometer Phonon Softening at Crystal Surface Steps with 4D Ultrafast Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.1c02524.s002",
+    "title": [
+     "Imaging Nanometer Phonon Softening at Crystal Surface Steps with 4D Ultrafast Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1007/978-3-642-76376-2_13",
+    "title": [
+     "Reflection Electron Microscopy and Reflection Electron Diffraction in the Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "J. A.",
+      "family": "Eades",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Proceedings in Physics",
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s0040-6090(97)00096-5",
+    "title": [
+     "UHV reflection electron microscopy investigation of the monoatomic steps on the silicon (111) surface at homo- and heteroepitaxial growth"
+    ],
+    "author": [
+     {
+      "given": "A.V.",
+      "family": "Latyshev",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.B.",
+      "family": "Krasilnikov",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.L.",
+      "family": "Aseev",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Thin Solid Films"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1997,
+       9
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0039-6028(93)90942-d",
+    "title": [
+     "Imaging atoms in surface dimers of by electron-emission holography"
+    ],
+    "author": [
+     {
+      "given": "Li",
+      "family": "Hua",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "S.Y.",
+      "family": "Tong",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       2
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s1431927615010533",
+    "title": [
+     "Low Dose Electron Holography: First Steps"
+    ],
+    "author": [
+     {
+      "given": "Edgar",
+      "family": "Voelkl",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Rodney",
+      "family": "Herring",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Benjamin",
+      "family": "Bammes",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "David",
+      "family": "Hoyle",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2015,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-94-010-0391-9_23",
+    "title": [
+     "Atomic Steps on a Single-Crystal Surface Studied With in Situ Uhv Reflection-Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "A. V.",
+      "family": "Latyshev",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "S. S.",
+      "family": "Kosolobov",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D. A.",
+      "family": "Nasimov",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "V. N.",
+      "family": "Savenko",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A. L.",
+      "family": "Aseev",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Atomistic Aspects of Epitaxial Growth"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2002
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50034-8",
+    "title": [
+     "Amplitude-division electron holography"
+    ],
+    "author": [
+     {
+      "given": "Q.",
+      "family": "Ru",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.003",
+    "title": [
+     "Kinematical electron diffraction"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1142/s0218625x97000535",
+    "title": [
+     "REFLECTION ELECTRON MICROSCOPY OBSERVATION OF THE BEHAVIOR OF MONOATOMIC STEPS ON THE SILICON SURFACES"
+    ],
+    "author": [
+     {
+      "given": "A. L.",
+      "family": "ASEEV",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Institute of Semiconductor Physics, Russian Academy of Sciences, Siberian Branch, 630090 Novosibirsk, Russia"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A. V.",
+      "family": "LATYSHEV",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Institute of Semiconductor Physics, Russian Academy of Sciences, Siberian Branch, 630090 Novosibirsk, Russia"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A. B.",
+      "family": "KRASILNIKOV",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Institute of Semiconductor Physics, Russian Academy of Sciences, Siberian Branch, 630090 Novosibirsk, Russia"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Review and Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1997,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/jemt.1070200415",
+    "title": [
+     "Observation of surfaces by reflection electron holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy Research and Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       2,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1117/3.1002325.ch34",
+    "title": [
+     "Inline Reflection Hologram (Denisyuk)"
+    ],
+    "container-title": [
+     "Field Guide to Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0304-3991(90)90101-q",
+    "title": [
+     "Comparison of surface step images in reflection electron microscopy and scanning reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Banzhof",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.H.",
+      "family": "Herrmann",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.015",
+    "title": [
+     "Physical constants, electron wavelengths and wave numbers"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1002/9783527829712.ch4",
+    "title": [
+     "Principles of Electron Holography"
+    ],
+    "container-title": [
+     "Material Characterization using Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       9,
+       2
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50007-5",
+    "title": [
+     "Phase-shifting techniques in electron holography"
+    ],
+    "author": [
+     {
+      "given": "Q.",
+      "family": "Ru",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_22",
+    "title": [
+     "Application of Reflection Electron Microscopy for Surface Science (Observation of Cleaned Crystal Surfaces of Si, Pt, Au and Ag)"
+    ],
+    "author": [
+     {
+      "given": "Yuji",
+      "family": "Uchida",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0039-6028(94)91104-5",
+    "title": [
+     "Studies of single crystal TiO2 (001) and (100) surfaces by reflection high energy electron diffraction and reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "L.",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1994,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/s0169-4332(98)00512-1",
+    "title": [
+     "Nanolithography and electron holography with ultrasharp field emitters"
+    ],
+    "author": [
+     {
+      "given": "Armin",
+      "family": "Gölzhäuser",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Applied Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999,
+       3
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.016",
+    "title": [
+     "The crystal inner potential and electron scattering factor"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1201/b19323-22",
+    "title": [
+     "Transfer Reflection Image Holograms"
+    ],
+    "container-title": [
+     "Practical Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2015,
+       9,
+       22
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0304-3991(84)90210-9",
+    "title": [
+     "Direct imaging of atomic steps in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Y.",
+      "family": "Uchida",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Jäger",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Lehmpfuhl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1984,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50011-7",
+    "title": [
+     "Practical Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "E.",
+      "family": "Völkl",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "L.F.",
+      "family": "Allard",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "B.",
+      "family": "Frost",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.017",
+    "title": [
+     "Crystallographic structure systems"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.008",
+    "title": [
+     "Contrast mechanisms of reflected electron imaging"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-9537-3_9",
+    "title": [
+     "Reflection Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "John M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface and Interface Characterization by Electron Optical Methods"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0167-2584(93)91081-x",
+    "title": [
+     "Imaging atoms in surface dimers of GaAs(001)-c by electron-emission holography"
+    ],
+    "author": [
+     {
+      "given": "Hua",
+      "family": "Li",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "S.Y.",
+      "family": "Tong",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       2
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_13",
+    "title": [
+     "Electron Holography Using Diffracted Electron Beams (DBH)"
+    ],
+    "author": [
+     {
+      "given": "R. A.",
+      "family": "Herring",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.019",
+    "title": [
+     "Electron diffraction patterns of several types of crystal structures"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1063/1.4766888",
+    "title": [
+     "The reflection of Rayleigh surface waves from single steps and grooves"
+    ],
+    "author": [
+     {
+      "given": "B.",
+      "family": "Graczykowski",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Adam Mickiewicz University Faculty of Physics, , Umultowska 85 Street, 61-614 Poznan, Poland"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Applied Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2012,
+       11,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.001",
+    "title": [
+     "Preface"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s0304-3991(00)00115-7",
+    "title": [
+     "Compositional analysis based on electron holography and a chemically sensitive reflection"
+    ],
+    "author": [
+     {
+      "given": "A",
+      "family": "Rosenauer",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D",
+      "family": "Van Dyck",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M",
+      "family": "Arzberger",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G",
+      "family": "Abstreiter",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2001,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1109/jqe.1986.1073189",
+    "title": [
+     "Multistability in reflection grating real-time holography"
+    ],
+    "author": [
+     {
+      "given": "A.",
+      "family": "Bledowski",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "W.",
+      "family": "Krolikowski",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Kujawski",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "IEEE Journal of Quantum Electronics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986,
+       9
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50023-3",
+    "title": [
+     "Transmission Electron Holography of Polymer Microstructure"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Libera",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Ott",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.C.",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.025",
+    "title": [
+     "References"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.002",
+    "title": [
+     "Introduction"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0039-6028(94)91124-x",
+    "title": [
+     "The theoretical basis of electron emission holography and tomography"
+    ],
+    "author": [
+     {
+      "given": "P.J.",
+      "family": "Rous",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Morton H.",
+      "family": "Rubin",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1994,
+       9
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_1",
+    "title": [
+     "Experimental Overview of Surface Structure Determination by RHEED"
+    ],
+    "author": [
+     {
+      "given": "S.",
+      "family": "Ino",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50005-1",
+    "title": [
+     "Digital recording and processing in electron off-axis holography"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Ade",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050952",
+    "title": [
+     "Study of Defects and Strains on Cleaved GaAs (110) Surface by Reflection Electron Microscopy"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0039-6028(74)90030-2",
+    "title": [
+     "Surface-state parameters from very low energy electron reflection data"
+    ],
+    "author": [
+     {
+      "given": "E.G.",
+      "family": "McRae",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1974,
+       4
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1117/12.951453",
+    "title": [
+     "Color Reflection Holography"
+    ],
+    "author": [
+     {
+      "given": "Paul M.",
+      "family": "Hubel",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "The University of Oxford (U.K)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Andrew A.",
+      "family": "Ward",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "The University of Oxford (U.K)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography III"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       5,
+       25
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50035-x",
+    "title": [
+     "The First International Workshop on Electron Holography - Concluding Remarks -"
+    ],
+    "author": [
+     {
+      "given": "David C.",
+      "family": "Joy",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1364/holography.1986.md2",
+    "title": [
+     "Reflection Holographic Stereograms"
+    ],
+    "author": [
+     {
+      "given": "Stephen A.",
+      "family": "Benton",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Topical Meeting on Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50016-6",
+    "title": [
+     "Electron holography of magnetic and electric microfields"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Matteucci",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Muccini",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.",
+      "family": "Cavalcoli",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_2",
+    "title": [
+     "Surface Structural Determination Using RHEED"
+    ],
+    "author": [
+     {
+      "given": "J. L.",
+      "family": "Beeby",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_4",
+    "title": [
+     "Practical Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "David J.",
+      "family": "Smith",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M. R.",
+      "family": "McCartney",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254",
+    "title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "author": [
+     {
+      "given": "Zhong Lin",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "monograph"
+   },
+   {
+    "DOI": "10.1016/0167-5729(93)90002-7",
+    "title": [
+     "Reflection electron microscopy: studies of surface structures and surface dynamic processes"
+    ],
+    "author": [
+     {
+      "given": "Katsumichi",
+      "family": "Yagi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science Reports"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_12",
+    "title": [
+     "Applications of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Gajdardziska-Josifovska",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A. H.",
+      "family": "Carim",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1364/dh.2022.th2a.2",
+    "title": [
+     "Digital Volume Reflection Holography: Analysis of Diffraction Efficiency"
+    ],
+    "author": [
+     {
+      "given": "Saleha",
+      "family": "Qissi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Partha P.",
+      "family": "Banerjee",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Digital Holography and 3-D Imaging 2022"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/j.susc.2005.09.047",
+    "title": [
+     "Low distortion reflection electron microscopy for surface studies"
+    ],
+    "author": [
+     {
+      "given": "P.",
+      "family": "Müller",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "J.J.",
+      "family": "Métois",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2005,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0039-6028(96)06226-7",
+    "title": [
+     "Studies of surface stress by reflection electron microscopy and transmission electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Tamura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Nishii",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.",
+      "family": "Minoda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Tanishiro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Yagi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0039-6028(90)90805-i",
+    "title": [
+     "Observation of surface crystallography by reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Lehmpfuhl",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Uchida",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       9
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50020-8",
+    "title": [
+     "Electron Holography of Heterogeneous Catalysts"
+    ],
+    "author": [
+     {
+      "given": "A.K.",
+      "family": "Datye",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.S.",
+      "family": "Kalakkad",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "E.",
+      "family": "Völkl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "L.F.",
+      "family": "Allard",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50028-2",
+    "title": [
+     "Coherent electron diffraction and holography"
+    ],
+    "author": [
+     {
+      "given": "J.W.",
+      "family": "Steeds",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "P.A.",
+      "family": "Midgley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "P.",
+      "family": "Spellward",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "R.",
+      "family": "Vincent",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1117/12.939800",
+    "title": [
+     "Pseudo - Color Reflection Holography - An Artist's Perspective"
+    ],
+    "author": [
+     {
+      "given": "M. M.",
+      "family": "Crenshaw",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Consultant (Canada)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography II"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1987,
+       6,
+       4
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1007/978-3-662-13913-4_5",
+    "title": [
+     "Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/9781119997290.ch2",
+    "title": [
+     "Digital Reflection Holography and Applications"
+    ],
+    "author": [
+     {
+      "given": "Vijay Raj",
+      "family": "Singh",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Anand",
+      "family": "Asundi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Digital Holography for MEMS and Microsystem Metrology"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2011,
+       7,
+       5
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_11",
+    "title": [
+     "Focus Variation Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Dirk",
+      "family": "Van Dyck",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Marc",
+      "family": "Op de Beeck",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s0169-4332(03)00057-6",
+    "title": [
+     "Inelastic electron analysis in reflection high-energy electron diffraction condition"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Nakahara",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Hishida",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Ichimiya",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Applied Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2003,
+       5
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/9780470224137.ch16",
+    "title": [
+     "In‐Line “Denisyuk” Reflection Holography"
+    ],
+    "container-title": [
+     "Holographic Imaging"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2007,
+       5,
+       21
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1201/9781003155416-25",
+    "title": [
+     "Electron and Neutron Holography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-2259-2129",
+      "authenticated-orcid": false,
+      "given": "Vincent",
+      "family": "Toal",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       11,
+       9
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0304-3991(87)90226-9",
+    "title": [
+     "Observation of double contours of monoatomic steps on single crystal surfaces in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Y.",
+      "family": "Uchida",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Lehmpfuhl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1987,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-3-540-37204-2_5",
+    "title": [
+     "Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_19",
+    "title": [
+     "Convergent Beam RHEED Calculations using the Surface Parallel Multislice Approach"
+    ],
+    "author": [
+     {
+      "given": "Andrew E.",
+      "family": "Smith",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0039-6028(73)90214-8",
+    "title": [
+     "On the investigation of surface structure by reflection high energy electron diffraction (RHEED)"
+    ],
+    "author": [
+     {
+      "given": "P.E.Højlund",
+      "family": "Nielsen",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1973,
+       3
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0376-4583(81)90119-9",
+    "title": [
+     "A theoretical study of a two-electron transfer mechanism comprising two successive one-electron steps"
+    ],
+    "author": [
+     {
+      "given": "J.P.",
+      "family": "Diard",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "B.",
+      "family": "Le Gorrec",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "C.",
+      "family": "Hecker",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Technology"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1981,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_9",
+    "title": [
+     "High Resolution Off-Axis Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "W. D.",
+      "family": "Rau",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.",
+      "family": "Lichte",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1117/12.961025",
+    "title": [
+     "Color Reflection Holography"
+    ],
+    "author": [
+     {
+      "given": "Ventseslav",
+      "family": "Sainov",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Bulgarian Academy of Sciences (Bulgaria)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Simeon",
+      "family": "Sainov",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Bulgarian Academy of Sciences (Bulgaria)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hans",
+      "family": "Bjelkhagen",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Royal Institute of Technology (Sweden)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986,
+       8,
+       20
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1201/9781420033663.ch12",
+    "title": [
+     "Transfer reflection holograms"
+    ],
+    "container-title": [
+     "Practical Holography, Third Edition"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2003,
+       11,
+       17
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0039-6028(90)90669-y",
+    "title": [
+     "Magnetic constrast in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Z.L.",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.C.H.",
+      "family": "Spence",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.5772/14280",
+    "title": [
+     "Fundamentals and Applications of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Holography, Research and Technologies"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2011,
+       2,
+       28
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s0039-6028(99)00784-0",
+    "title": [
+     "Electron transport processes in reflection electron energy loss spectroscopy (REELS) and X-ray photoelectron spectroscopy (XPS)"
+    ],
+    "author": [
+     {
+      "given": "Martin",
+      "family": "Vicanek",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999,
+       10
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.2116/analsci.26.165",
+    "title": [
+     "Surface Excitations in Surface Electron Spectroscopies Studied by Reflection Electron Energy-Loss Spectroscopy and Elastic Peak Electron Spectroscopy"
+    ],
+    "author": [
+     {
+      "given": "Takaharu",
+      "family": "Nagatomi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Shigeo",
+      "family": "Tanuma",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Analytical Sciences"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2010,
+       2
+      ]
+     ]
+    },
+    "type": "journal-article"
+   }
+  ],
+  "items-per-page": 100,
+  "query": {
+   "start-index": 0,
+   "search-terms": null
+  }
+ }
+}

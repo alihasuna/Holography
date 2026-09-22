@@ -1,0 +1,274 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1380/ejssnt.2010.190?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1996751208",
+ "doi": "https://doi.org/10.1380/ejssnt.2010.190",
+ "title": "Surface Plasmon Excitation at Topmost Surface in Reflection High-Energy Positron Diffraction",
+ "display_name": "Surface Plasmon Excitation at Topmost Surface in Reflection High-Energy Positron Diffraction",
+ "publication_year": 2010,
+ "publication_date": "2010-01-01",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5004092999",
+    "display_name": "Y. Fukaya",
+    "orcid": "https://orcid.org/0000-0002-4375-9186"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Y. Fukaya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, Japan",
+    "Advanced Science Research Center, Japan Atomic Energy Agency, JAPAN"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, JAPAN",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5041543188",
+    "display_name": "A. Kawasuso",
+    "orcid": "https://orcid.org/0000-0002-7065-5753"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A. Kawasuso",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, Japan",
+    "Advanced Science Research Center, Japan Atomic Energy Agency, JAPAN"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, JAPAN",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5112040752",
+    "display_name": "A. Ichimiya",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A. Ichimiya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, Japan",
+    "Advanced Science Research Center, Japan Atomic Energy Agency, JAPAN"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, JAPAN",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1380/ejssnt.2010.190",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1380/ejssnt.2010.190",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/ejssnt/8/0/8_0_190/_pdf",
+  "source": {
+   "id": "https://openalex.org/S123993026",
+   "display_name": "e-Journal of Surface Science and Nanotechnology",
+   "issn_l": "1348-0391",
+   "issn": [
+    "1348-0391"
+   ],
+   "is_oa": true,
+   "is_in_doaj": true,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310313460",
+   "host_organization_name": "Japan Society of Vacuum and Surface Science",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310313460"
+   ],
+   "host_organization_lineage_names": [
+    "Japan Society of Vacuum and Surface Science"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "e-Journal of Surface Science and Nanotechnology",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 1,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "gold",
+  "oa_url": "https://www.jstage.jst.go.jp/article/ejssnt/8/0/8_0_190/_pdf",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1380/ejssnt.2010.190",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1380/ejssnt.2010.190",
+  "pdf_url": "https://www.jstage.jst.go.jp/article/ejssnt/8/0/8_0_190/_pdf",
+  "source": {
+   "id": "https://openalex.org/S123993026",
+   "display_name": "e-Journal of Surface Science and Nanotechnology",
+   "issn_l": "1348-0391",
+   "issn": [
+    "1348-0391"
+   ],
+   "is_oa": true,
+   "is_in_doaj": true,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310313460",
+   "host_organization_name": "Japan Society of Vacuum and Surface Science",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310313460"
+   ],
+   "host_organization_lineage_names": [
+    "Japan Society of Vacuum and Surface Science"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "e-Journal of Surface Science and Nanotechnology",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1644231149",
+  "https://openalex.org/W1994085323",
+  "https://openalex.org/W1998116183",
+  "https://openalex.org/W2004450703",
+  "https://openalex.org/W2017062950",
+  "https://openalex.org/W2020747094",
+  "https://openalex.org/W2033998668",
+  "https://openalex.org/W2034714342",
+  "https://openalex.org/W2051737338",
+  "https://openalex.org/W2056857254",
+  "https://openalex.org/W2063256299",
+  "https://openalex.org/W2084871610",
+  "https://openalex.org/W2092001226",
+  "https://openalex.org/W2119392342",
+  "https://openalex.org/W2326836092"
+ ]
+}

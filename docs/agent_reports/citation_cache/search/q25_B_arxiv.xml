@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/9DAQUGDupL6FWvFSRSWfwC1prio</id>
+  <title>arXiv Query: search_query=abs:ptychography AND abs:electron AND abs:reflection&amp;id_list=&amp;start=0&amp;max_results=200</title>
+  <updated>2026-09-22T19:15:45Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=abs:ptychography+AND+(abs:electron+AND+abs:reflection)&amp;start=0&amp;max_results=200&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>200</opensearch:itemsPerPage>
+  <opensearch:totalResults>7</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2507.19476v2</id>
+    <title>Beyond Contrast Transfer: Spectral SNR as a Dose-Aware Metric for STEM Phase Retrieval</title>
+    <updated>2025-09-01T09:50:04Z</updated>
+    <link href="https://arxiv.org/abs/2507.19476v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.19476v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-25T17:59:05Z</published>
+    <arxiv:comment>9 pages, 5 figures</arxiv:comment>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Georgios Varnavides</name>
+    </author>
+    <author>
+      <name>Julie Marie Bekkevold</name>
+    </author>
+    <author>
+      <name>Stephanie M Ribet</name>
+    </author>
+    <author>
+      <name>Mary C Scott</name>
+    </author>
+    <author>
+      <name>Lewys Jones</name>
+    </author>
+    <author>
+      <name>Colin Ophus</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2402.06762v1</id>
+    <title>Three-dimensional Hard X-ray Ptychographic Reflectometry Imaging on Extended Mesoscopic Surface Structures</title>
+    <updated>2024-02-09T19:50:05Z</updated>
+    <link href="https://arxiv.org/abs/2402.06762v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2402.06762v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-02-09T19:50:05Z</published>
+    <arxiv:comment>43 pages, 11 figures</arxiv:comment>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Peco Myint</name>
+    </author>
+    <author>
+      <name>Ashish Tripathi</name>
+    </author>
+    <author>
+      <name>Michael J. Wojcik</name>
+    </author>
+    <author>
+      <name>Junjing Deng</name>
+    </author>
+    <author>
+      <name>Mathew J. Cherukara</name>
+    </author>
+    <author>
+      <name>Nicholas Schwarz</name>
+    </author>
+    <author>
+      <name>Suresh Narayanan</name>
+    </author>
+    <author>
+      <name>Jin Wang</name>
+    </author>
+    <author>
+      <name>Miaoqi Chu</name>
+    </author>
+    <author>
+      <name>Zhang Jiang</name>
+    </author>
+    <arxiv:doi>10.1063/5.0204240</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1063/5.0204240" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1312.2049v1</id>
+    <title>Tabletop Nanometer Extreme Ultraviolet Imaging in an Extended Reflection Mode using Coherent Fresnel Ptychography</title>
+    <updated>2013-12-07T01:48:57Z</updated>
+    <link href="https://arxiv.org/abs/1312.2049v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1312.2049v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2013-12-07T01:48:57Z</published>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Matthew D. Seaberg</name>
+    </author>
+    <author>
+      <name>Bosheng Zhang</name>
+    </author>
+    <author>
+      <name>Dennis F. Gardner</name>
+    </author>
+    <author>
+      <name>Elisabeth R. Shanblatt</name>
+    </author>
+    <author>
+      <name>Margaret M. Murnane</name>
+    </author>
+    <author>
+      <name>Henry C. Kapteyn</name>
+    </author>
+    <author>
+      <name>Daniel E. Adams</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.30359v1</id>
+    <title>Real-space overlap is not enough: ambiguity in nanobeam iterative ptychography</title>
+    <updated>2026-08-31T07:17:42Z</updated>
+    <link href="https://arxiv.org/abs/2608.30359v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.30359v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-31T07:17:42Z</published>
+    <arxiv:comment>27 pages, 15 figures</arxiv:comment>
+    <arxiv:primary_category term="cond-mat.mtrl-sci"/>
+    <author>
+      <name>Stephanie M. Ribet</name>
+    </author>
+    <author>
+      <name>Mohsen Danaie</name>
+    </author>
+    <author>
+      <name>Willem P. M. de Kleijne</name>
+    </author>
+    <author>
+      <name>Arthur R. C. McCray</name>
+    </author>
+    <author>
+      <name>Frederick Allars</name>
+    </author>
+    <author>
+      <name>Christopher S. Allen</name>
+    </author>
+    <author>
+      <name>Colin Ophus</name>
+    </author>
+    <author>
+      <name>Georgios Varnavides</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.07265v1</id>
+    <title>3D Atomic-Scale Metrology of Strain Relaxation and Roughness in Gate-All-Around (GAA) Transistors via Electron Ptychography</title>
+    <updated>2025-07-09T20:22:06Z</updated>
+    <link href="https://arxiv.org/abs/2507.07265v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.07265v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="physics.app-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-09T20:22:06Z</published>
+    <arxiv:comment>43 pages, 14 figures</arxiv:comment>
+    <arxiv:primary_category term="cond-mat.mtrl-sci"/>
+    <author>
+      <name>Shake Karapetyan</name>
+    </author>
+    <author>
+      <name>Steven E. Zeltmann</name>
+    </author>
+    <author>
+      <name>Glen Wilk</name>
+    </author>
+    <author>
+      <name>Ta-Kun Chen</name>
+    </author>
+    <author>
+      <name>Vincent D. -H. Hou</name>
+    </author>
+    <author>
+      <name>David A. Muller</name>
+    </author>
+    <arxiv:doi>10.1038/s41467-026-69733-1</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1038/s41467-026-69733-1" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.13130v1</id>
+    <title>Sub-8-nm resolution AKB-mirror-based hard X-ray ptychography via generalized Wirtinger projections</title>
+    <updated>2026-06-11T09:53:36Z</updated>
+    <link href="https://arxiv.org/abs/2606.13130v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.13130v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-11T09:53:36Z</published>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Jie Dong</name>
+    </author>
+    <author>
+      <name>Liang Zhou</name>
+    </author>
+    <author>
+      <name>Zhongzhu Zhu</name>
+    </author>
+    <author>
+      <name>Han Xu</name>
+    </author>
+    <author>
+      <name>Aiyu Zhou</name>
+    </author>
+    <author>
+      <name>Xuan Wang</name>
+    </author>
+    <author>
+      <name>Shuo Wang</name>
+    </author>
+    <author>
+      <name>Xiao Li</name>
+    </author>
+    <author>
+      <name>Yuhui Dong</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.21007v1</id>
+    <title>On Transmission Function Amplitude and Phase Recovery in Multislice Electron Ptychography</title>
+    <updated>2026-08-21T11:54:05Z</updated>
+    <link href="https://arxiv.org/abs/2608.21007v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.21007v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="physics.comp-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-21T11:54:05Z</published>
+    <arxiv:primary_category term="cond-mat.mtrl-sci"/>
+    <author>
+      <name>Bridget R. Denzer</name>
+    </author>
+    <author>
+      <name>Colin Gilgenbach</name>
+    </author>
+    <author>
+      <name>James M. LeBeau</name>
+    </author>
+  </entry>
+</feed>

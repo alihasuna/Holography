@@ -1,0 +1,362 @@
+{
+ "_url": "https://api.crossref.org/works/10.1364/oe.601179",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2026,
+     7,
+     30
+    ]
+   ],
+   "date-time": "2026-07-30T12:45:15Z",
+   "timestamp": 1785415515638,
+   "version": "3.56.0"
+  },
+  "reference-count": 33,
+  "publisher": "Optica Publishing Group",
+  "issue": "12",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       2026,
+       6,
+       8
+      ]
+     ],
+     "date-time": "2026-06-08T00:00:00Z",
+     "timestamp": 1780876800000
+    },
+    "content-version": "vor",
+    "delay-in-days": 0,
+    "URL": "https://creativecommons.org/licenses/by/4.0/"
+   },
+   {
+    "start": {
+     "date-parts": [
+      [
+       2026,
+       6,
+       8
+      ]
+     ],
+     "date-time": "2026-06-08T00:00:00Z",
+     "timestamp": 1780876800000
+    },
+    "content-version": "tdm",
+    "delay-in-days": 0,
+    "URL": "https://opg.optica.org/policies/opg-tdm-policy.json"
+   }
+  ],
+  "funder": [
+   {
+    "name": "Holland High Tech",
+    "award": [
+     "22.0220"
+    ],
+    "award-info": [
+     {
+      "award-number": [
+       "22.0220"
+      ]
+     }
+    ],
+    "id": [
+     {
+      "id": "https://ror.org/01s34g445",
+      "id-type": "ROR",
+      "asserted-by": "publisher"
+     }
+    ]
+   }
+  ],
+  "content-domain": {
+   "domain": [
+    "opg.optica.org"
+   ],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Opt. Express"
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     2026,
+     6,
+     15
+    ]
+   ]
+  },
+  "DOI": "10.1364/oe.601179",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2026,
+     5,
+     26
+    ]
+   ],
+   "date-time": "2026-05-26T07:00:06Z",
+   "timestamp": 1779778806000
+  },
+  "page": "22163",
+  "update-policy": "https://doi.org/10.1364/crossmark_policy",
+  "source": "Crossref",
+  "is-referenced-by-count": 0,
+  "title": [
+   "2D approximation quickly breaks down in reflection ptychography"
+  ],
+  "prefix": "10.1364",
+  "volume": "34",
+  "author": [
+   {
+    "ORCID": "https://orcid.org/0009-0005-9069-9584",
+    "authenticated-orcid": true,
+    "given": "Sander",
+    "family": "Senhorst",
+    "sequence": "first",
+    "affiliation": [
+     {
+      "id": [
+       {
+        "id": "https://ror.org/02e2c7k09",
+        "id-type": "ROR",
+        "asserted-by": "publisher"
+       }
+      ]
+     }
+    ],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "ORCID": "https://orcid.org/0000-0002-1899-4395",
+    "authenticated-orcid": true,
+    "given": "Stefan",
+    "family": "Witte",
+    "sequence": "additional",
+    "affiliation": [
+     {
+      "id": [
+       {
+        "id": "https://ror.org/02e2c7k09",
+        "id-type": "ROR",
+        "asserted-by": "publisher"
+       }
+      ]
+     }
+    ],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "given": "Wim",
+    "family": "Coene",
+    "sequence": "additional",
+    "affiliation": [
+     {
+      "id": [
+       {
+        "id": "https://ror.org/02e2c7k09",
+        "id-type": "ROR",
+        "asserted-by": "publisher"
+       }
+      ]
+     },
+     {
+      "name": "ASML Netherlands B.V."
+     }
+    ],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   }
+  ],
+  "member": "285",
+  "published-online": {
+   "date-parts": [
+    [
+     2026,
+     6,
+     8
+    ]
+   ]
+  },
+  "container-title": [
+   "Optics Express"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://opg.optica.org/viewmedia.cfm?URI=oe-34-12-22163&seq=0",
+    "content-type": "unspecified",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2026,
+     6,
+     8
+    ]
+   ],
+   "date-time": "2026-06-08T15:58:07Z",
+   "timestamp": 1780934287000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://opg.optica.org/abstract.cfm?URI=oe-34-12-22163"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     2026,
+     6,
+     8
+    ]
+   ]
+  },
+  "references-count": 33,
+  "journal-issue": {
+   "issue": "12",
+   "published-online": {
+    "date-parts": [
+     [
+      2026
+     ]
+    ]
+   },
+   "published-print": {
+    "date-parts": [
+     [
+      2026
+     ]
+    ]
+   }
+  },
+  "URL": "https://doi.org/10.1364/oe.601179",
+  "relation": {},
+  "ISSN": [
+   "1094-4087"
+  ],
+  "issn-type": [
+   {
+    "value": "1094-4087",
+    "type": "electronic"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     2026,
+     6,
+     8
+    ]
+   ]
+  },
+  "assertion": [
+   {
+    "value": "Optica Publishing Group",
+    "name": "publisher",
+    "label": "This article is maintained by"
+   },
+   {
+    "value": "https://doi.org/10.1364/OE.601179",
+    "name": "articlelink",
+    "label": "Crossref DOI link to publisher maintained version"
+   },
+   {
+    "value": "research-article",
+    "name": "content_type",
+    "label": "Article type"
+   },
+   {
+    "value": "Screened by Similarity Check",
+    "name": "cross_check",
+    "label": "Similarity check"
+   },
+   {
+    "value": "Yes",
+    "order": 0,
+    "name": "peer_reviewed",
+    "label": "Peer reviewed",
+    "group": {
+     "name": "peer_review",
+     "label": "Peer review"
+    }
+   },
+   {
+    "value": "Single blind",
+    "order": 1,
+    "name": "review_process",
+    "label": "Review process",
+    "group": {
+     "name": "peer_review",
+     "label": "Peer review"
+    }
+   },
+   {
+    "value": "8 April 2026",
+    "order": 0,
+    "name": "received",
+    "label": "Received",
+    "group": {
+     "name": "publication_history",
+     "label": "Publication History"
+    }
+   },
+   {
+    "value": "23 May 2026",
+    "order": 1,
+    "name": "accepted",
+    "label": "Accepted",
+    "group": {
+     "name": "publication_history",
+     "label": "Publication History"
+    }
+   },
+   {
+    "value": "8 June 2026",
+    "order": 2,
+    "name": "published",
+    "label": "Published",
+    "group": {
+     "name": "publication_history",
+     "label": "Publication History"
+    }
+   },
+   {
+    "value": "Published by Optica Publishing Group under the terms of the Creative Commons Attribution 4.0 License. Further distribution of this work must maintain attribution to the author(s) and the published article’s title, journal citation, and DOI.",
+    "name": "copyright",
+    "label": "Copyright"
+   }
+  ]
+ }
+}

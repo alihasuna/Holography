@@ -1,0 +1,15 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1016/0167-5729%2893%2990002-7?select=id,doi,title,publication_year,open_access,best_oa_location",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1993975719",
+ "doi": "https://doi.org/10.1016/0167-5729(93)90002-7",
+ "title": "Reflection electron microscopy: studies of surface structures and surface dynamic processes",
+ "publication_year": 1993,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null
+}

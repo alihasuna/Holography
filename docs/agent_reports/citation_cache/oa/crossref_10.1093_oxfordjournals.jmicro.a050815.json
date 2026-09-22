@@ -1,0 +1,116 @@
+{
+ "_url": "https://api.crossref.org/works/10.1093/oxfordjournals.jmicro.a050815",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2022,
+     4,
+     3
+    ]
+   ],
+   "date-time": "2022-04-03T08:19:34Z",
+   "timestamp": 1648973974671
+  },
+  "reference-count": 0,
+  "publisher": "Oxford University Press (OUP)",
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [],
+  "DOI": "10.1093/oxfordjournals.jmicro.a050815",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2017,
+     2,
+     1
+    ]
+   ],
+   "date-time": "2017-02-01T15:23:38Z",
+   "timestamp": 1485962618000
+  },
+  "source": "Crossref",
+  "is-referenced-by-count": 0,
+  "title": [
+   "Observation of GaAs(110) Surface Defect by Reflection Electron Holography"
+  ],
+  "prefix": "10.1093",
+  "member": "286",
+  "published-online": {
+   "date-parts": [
+    [
+     1990,
+     8
+    ]
+   ]
+  },
+  "container-title": [
+   "Journal of Electron Microscopy"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "http://academic.oup.com/jmicro/article-pdf/39/4/269/2518347/39-4-269.pdf",
+    "content-type": "unspecified",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2017,
+     8,
+     23
+    ]
+   ],
+   "date-time": "2017-08-23T14:55:01Z",
+   "timestamp": 1503500101000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://academic.oup.com/jmicro/article/39/4/269/847699/Observation-of-GaAs110-Surface-Defect-by"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1990,
+     8
+    ]
+   ]
+  },
+  "references-count": 0,
+  "URL": "https://doi.org/10.1093/oxfordjournals.jmicro.a050815",
+  "relation": {},
+  "ISSN": [
+   "1477-9986"
+  ],
+  "issn-type": [
+   {
+    "value": "1477-9986",
+    "type": "electronic"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1990,
+     8
+    ]
+   ]
+  }
+ }
+}

@@ -1,0 +1,92 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1143/jjap.40.2527/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "88f9ec1a481b88ec54a1da296183ee9b23b7394f",
+    "externalIds": {
+     "MAG": "1994085323",
+     "DOI": "10.1380/JSSSJ.24.166",
+     "CorpusId": 96215369
+    },
+    "title": "Electron Energy Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter.",
+    "venue": "",
+    "year": 2003,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "24",
+     "pages": "166-173",
+     "name": "Hyomen Kagaku"
+    },
+    "authors": [
+     {
+      "authorId": "13166834",
+      "name": "Y. Tanishiro"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "2b2255575a0e66adb957c99397ffafc8e59d8a88",
+    "externalIds": {
+     "MAG": "2042641222",
+     "DOI": "10.1380/JSSSJ.24.159",
+     "CorpusId": 95730480
+    },
+    "title": "Energy Filtered RHEED Patterns and Electron Energy Loss Spectroscopy under RHEED Conditions.",
+    "venue": "",
+    "year": 2003,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "24",
+     "pages": "159-165",
+     "name": "Hyomen Kagaku"
+    },
+    "authors": [
+     {
+      "authorId": "5076446",
+      "name": "H. Nakahara"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "c4f85b0393fe2e94e3481b0f3185d40d0af52499",
+    "externalIds": {
+     "MAG": "1503525079",
+     "DOI": "10.1007/3-540-45850-6_2",
+     "CorpusId": 137108527
+    },
+    "title": "Spectro-microscopy by TEM-SEM",
+    "venue": "",
+    "year": 2002,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "588",
+     "pages": "11-23",
+     "name": ""
+    },
+    "authors": [
+     {
+      "authorId": "91558442",
+      "name": "K. Yagi"
+     },
+     {
+      "authorId": "13166834",
+      "name": "Y. Tanishiro"
+     },
+     {
+      "authorId": "47248071",
+      "name": "H. Minoda"
+     }
+    ]
+   }
+  }
+ ]
+}

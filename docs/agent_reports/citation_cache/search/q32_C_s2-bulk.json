@@ -1,0 +1,65 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22grazing+incidence+ptychography%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 1,
+ "token": null,
+ "data": [
+  {
+   "paperId": "9ab49f17f48d59965aa79795fd48cadd69a0d50f",
+   "externalIds": {
+    "ArXiv": "2307.01735",
+    "DOI": "10.1364/optica.505478",
+    "CorpusId": 259341822
+   },
+   "title": "Hard X-ray grazing incidence ptychography: Large field-of-view nanostructure imaging with ultra-high surface sensitivity",
+   "venue": "Optica",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2268468746",
+     "name": "P. S. Jørgensen"
+    },
+    {
+     "authorId": "2277926798",
+     "name": "L. Besley"
+    },
+    {
+     "authorId": null,
+     "name": "A. M. Slyamov"
+    },
+    {
+     "authorId": "2386002291",
+     "name": "A. Diaz"
+    },
+    {
+     "authorId": "1398488114",
+     "name": "M. Guizar-Sicairos"
+    },
+    {
+     "authorId": null,
+     "name": "M. Odstrcil"
+    },
+    {
+     "authorId": "2101478",
+     "name": "M. Holler"
+    },
+    {
+     "authorId": "30966014",
+     "name": "C. Silvestre"
+    },
+    {
+     "authorId": "2277879200",
+     "name": "B. Chang"
+    },
+    {
+     "authorId": "2277920646",
+     "name": "C. Detlefs"
+    },
+    {
+     "authorId": "2277921828",
+     "name": "J. W. Andreasen"
+    }
+   ]
+  }
+ ]
+}

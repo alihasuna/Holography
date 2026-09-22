@@ -1,0 +1,239 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22electron+ptychography%22+%2B+reflection&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 5,
+ "token": null,
+ "data": [
+  {
+   "paperId": "0b4ae30d63ba3e3b0d9639bd7cd18ec0767b7c17",
+   "externalIds": {
+    "MAG": "2786560818",
+    "DOI": "10.1063/1.5017537",
+    "CorpusId": 126038562
+   },
+   "title": "Determination of the structural phase and octahedral rotation angle in halide perovskites",
+   "venue": "",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "2478521285",
+     "name": "R. dos Reis"
+    },
+    {
+     "authorId": "2145057344",
+     "name": "Hao Yang"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "5206609",
+     "name": "P. Ercius"
+    },
+    {
+     "authorId": "48474758",
+     "name": "G. Bizarri"
+    },
+    {
+     "authorId": "49124544",
+     "name": "D. Perrodin"
+    },
+    {
+     "authorId": "48929812",
+     "name": "T. Shalapska"
+    },
+    {
+     "authorId": "48046262",
+     "name": "E. Bourret"
+    },
+    {
+     "authorId": "104376441",
+     "name": "J. Ciston"
+    },
+    {
+     "authorId": "32263115",
+     "name": "U. Dahmen"
+    }
+   ]
+  },
+  {
+   "paperId": "77fcb87c00f914301c07af3e657c342fef9d24e4",
+   "externalIds": {
+    "MAG": "2745302181",
+    "DOI": "10.1017/S1431927617008005",
+    "CorpusId": 53640736
+   },
+   "title": "Unraveling the Crystal Structure of All-Inorganic Halide Perovskites using CBED and Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "2478521285",
+     "name": "R. dos Reis"
+    },
+    {
+     "authorId": "2145057344",
+     "name": "Hao Yang"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "48929812",
+     "name": "T. Shalapska"
+    },
+    {
+     "authorId": "48474758",
+     "name": "G. Bizarri"
+    },
+    {
+     "authorId": "49124544",
+     "name": "D. Perrodin"
+    },
+    {
+     "authorId": "5206609",
+     "name": "P. Ercius"
+    },
+    {
+     "authorId": "104376441",
+     "name": "J. Ciston"
+    },
+    {
+     "authorId": "48046262",
+     "name": "E. Bourret"
+    },
+    {
+     "authorId": "32263115",
+     "name": "U. Dahmen"
+    }
+   ]
+  },
+  {
+   "paperId": "79c23a37f4500b86796cb6ad78dad74da43808b5",
+   "externalIds": {
+    "MAG": "2780697411",
+    "DOI": "10.1107/S0108767317097860",
+    "CorpusId": 103511069
+   },
+   "title": "Symmetry group determination and direct imaging of all-inorganic halide perovskites CsPbBr3−xClx",
+   "venue": "",
+   "year": 2017,
+   "authors": [
+    {
+     "authorId": "2478521285",
+     "name": "R. dos Reis"
+    },
+    {
+     "authorId": "2145057344",
+     "name": "Hao Yang"
+    },
+    {
+     "authorId": "50087028",
+     "name": "C. Ophus"
+    },
+    {
+     "authorId": "48929812",
+     "name": "T. Shalapska"
+    },
+    {
+     "authorId": "48474758",
+     "name": "G. Bizarri"
+    },
+    {
+     "authorId": "49124544",
+     "name": "D. Perrodin"
+    },
+    {
+     "authorId": "5206609",
+     "name": "P. Ercius"
+    },
+    {
+     "authorId": "104376441",
+     "name": "J. Ciston"
+    },
+    {
+     "authorId": "48046262",
+     "name": "E. Bourret"
+    },
+    {
+     "authorId": "32263115",
+     "name": "U. Dahmen"
+    }
+   ]
+  },
+  {
+   "paperId": "acd365986cc90933ca589b0d65670d4073b6f48c",
+   "externalIds": {
+    "DOI": "10.1109/CLEO/Europe-EQEC65582.2025.11110191",
+    "CorpusId": 280664383
+   },
+   "title": "Near-Field Electron Ptychography of Metasurfaces",
+   "venue": "2025 Conference on Lasers and Electro-Optics Europe & European Quantum Electronics Conference (CLEO/Europe-EQEC)",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2320416046",
+     "name": "Tamir Shpiro"
+    },
+    {
+     "authorId": "2006908328",
+     "name": "R. Ruimy"
+    },
+    {
+     "authorId": "30994320",
+     "name": "M. Yannai"
+    },
+    {
+     "authorId": "2097959700",
+     "name": "T. Lenkiewicz"
+    },
+    {
+     "authorId": "2268408194",
+     "name": "A. Kam"
+    },
+    {
+     "authorId": "34806142",
+     "name": "I. Kaminer"
+    }
+   ]
+  },
+  {
+   "paperId": "c58905c4c9fc10c4cccb88994543207d20ff3be6",
+   "externalIds": {
+    "DOI": "10.1149/ma2023-015953mtgabs",
+    "CorpusId": 262170749
+   },
+   "title": "Local Structure in Sodium Antiperovskite Ionic Conductors",
+   "venue": "ECS Meeting Abstracts",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2137589554",
+     "name": "Junghwa Kim"
+    },
+    {
+     "authorId": "2163950828",
+     "name": "Dennis S. Kim"
+    },
+    {
+     "authorId": "2242936459",
+     "name": "Duhan Zhang"
+    },
+    {
+     "authorId": "2110506978",
+     "name": "Yiliang Li"
+    },
+    {
+     "authorId": "2242911229",
+     "name": "Yet-Ming Chiang"
+    },
+    {
+     "authorId": "49319462",
+     "name": "James L. Lebeau"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,6 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1017/s0424820100136957/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": []
+}

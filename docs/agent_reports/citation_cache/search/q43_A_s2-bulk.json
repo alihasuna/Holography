@@ -1,0 +1,123 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=biprism+%2B+%28%22reflection+electron+microscopy%22+%7C+RHEED+%7C+%22reflection+high+energy+electron%22%29&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 4,
+ "token": null,
+ "data": [
+  {
+   "paperId": "14e6f2104493e79f551116629ddba47588119abd",
+   "externalIds": {
+    "CorpusId": 260198468
+   },
+   "title": "Reflection Electron Steps on Gold and Microscopy and Interferometry of Atomic Platinum Single Crystal Surfaces",
+   "venue": "",
+   "year": 2004,
+   "authors": [
+    {
+     "authorId": "11524200",
+     "name": "H. Banzhof"
+    },
+    {
+     "authorId": "153473206",
+     "name": "K. Herrmann"
+    },
+    {
+     "authorId": "3323741",
+     "name": "H. Lichte"
+    }
+   ]
+  },
+  {
+   "paperId": "4e9ccb409d57ec819e71c42796e786ec304bbb3d",
+   "externalIds": {
+    "MAG": "1969275388",
+    "DOI": "10.1143/JJAP.40.2527",
+    "CorpusId": 120990835
+   },
+   "title": "Energy-filtered Electron Interferometry in Reflection Electron Microscopy",
+   "venue": "",
+   "year": 2001,
+   "authors": [
+    {
+     "authorId": "47179244",
+     "name": "Takayuki Suzuki"
+    },
+    {
+     "authorId": "13166834",
+     "name": "Y. Tanishiro"
+    },
+    {
+     "authorId": "102332026",
+     "name": "N. Ishiguro"
+    },
+    {
+     "authorId": "47248071",
+     "name": "H. Minoda"
+    },
+    {
+     "authorId": "91558442",
+     "name": "K. Yagi"
+    }
+   ]
+  },
+  {
+   "paperId": "dd0bdd7603716562488da7843ffc8cf0924bda99",
+   "externalIds": {
+    "MAG": "2059388368",
+    "DOI": "10.1142/S0218625X97000511",
+    "CorpusId": 98412106
+   },
+   "title": "Microprobe Rheed/Stm Combined Microscopy",
+   "venue": "",
+   "year": 1997,
+   "authors": [
+    {
+     "authorId": "16465834",
+     "name": "M. Ichikawa"
+    },
+    {
+     "authorId": "91801643",
+     "name": "S. Maruno"
+    },
+    {
+     "authorId": "152618180",
+     "name": "S. Fujita"
+    },
+    {
+     "authorId": "2029098381",
+     "name": "Heiji Watanabe"
+    },
+    {
+     "authorId": "12537973",
+     "name": "Y. Kusumi"
+    }
+   ]
+  },
+  {
+   "paperId": "ec957447b3bb1edd9830d7ed59ba679422804463",
+   "externalIds": {
+    "MAG": "2163735975",
+    "DOI": "10.1002/JEMT.1070200414",
+    "CorpusId": 6236208,
+    "PubMed": "1498358"
+   },
+   "title": "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces",
+   "venue": "Microscopy research and technique (Print)",
+   "year": 1992,
+   "authors": [
+    {
+     "authorId": "11524200",
+     "name": "H. Banzhof"
+    },
+    {
+     "authorId": "153473206",
+     "name": "K. Herrmann"
+    },
+    {
+     "authorId": "3323741",
+     "name": "H. Lichte"
+    }
+   ]
+  }
+ ]
+}

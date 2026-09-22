@@ -1,0 +1,5347 @@
+{
+ "_url": "https://api.crossref.org/works?query.bibliographic=reflection+electron+ptychography&rows=100&select=DOI%2Ctitle%2Cauthor%2Ccontainer-title%2Cissued%2Ctype",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work-list",
+ "message-version": "1.0.0",
+ "message": {
+  "facets": {},
+  "total-results": 1154187,
+  "items": [
+   {
+    "DOI": "10.14293/apmc13-2025-0251",
+    "title": [
+     "Full-Field Illumination Ptychography Using a Structured Electron Beam"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0009-0001-5111-2999",
+      "authenticated-orcid": false,
+      "given": "Hirokazu",
+      "family": "Tamaki",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Koh",
+      "family": "Saitoh",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Full-Field Illumination Ptychography Using a Structured Electron Beam"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.63028/10067/2067770151162165141",
+    "title": [
+     "Exploring electron ptychography for low dose imaging"
+    ],
+    "author": [
+     {
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-6630-8812",
+      "authenticated-orcid": false,
+      "given": "Chuang",
+      "family": "Gao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "dissertation"
+   },
+   {
+    "DOI": "10.14293/apmc13-2025-0044",
+    "title": [
+     "Imaging Point Defects in Bulk Crystals Using Multislice Electron Ptychography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0003-3355-3464",
+      "authenticated-orcid": false,
+      "given": "Zhen",
+      "family": "Chen",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Zehao",
+      "family": "Dong",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Pengcheng",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Huaicheng",
+      "family": "Yuan",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Imaging Point Defects in Bulk Crystals Using Multislice Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.5c00170.s001",
+    "title": [
+     "Quantifying Implantation-Induced Damage and Point Defects with Multislice Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/jacs.2c12673.s001",
+    "title": [
+     "Atomic-Level Imaging of Zeolite Local Structures Using Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.5c00170.s002",
+    "title": [
+     "Quantifying Implantation-Induced Damage and Point Defects with Multislice Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acsnano.6c00722.s001",
+    "title": [
+     "Quantitative Atomic Resolution Electron Ptychography of Thermal Vibrations Under In Situ Heating"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acsami.6c04617.s001",
+    "title": [
+     "Direct Determination of 3C/4H Silicon Carbide Heterophase Interfaces by Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.2139/ssrn.4395456",
+    "title": [
+     "Resolution-Enhanced Reflection Ptychography with Axial Distance Calibration"
+    ],
+    "author": [
+     {
+      "given": "Chuangchuang",
+      "family": "Chen",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "jiamin",
+      "family": "liu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "jinlong",
+      "family": "zhu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Honggang",
+      "family": "Gu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Shiyuan",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023
+      ]
+     ]
+    },
+    "type": "posted-content"
+   },
+   {
+    "DOI": "10.1021/acsami.6c04617.s002",
+    "title": [
+     "Direct Determination of 3C/4H Silicon Carbide Heterophase Interfaces by Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.5c00170.s003",
+    "title": [
+     "Quantifying Implantation-Induced Damage and Point Defects with Multislice Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.35802/226451",
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       5,
+       2
+      ]
+     ]
+    },
+    "type": "grant"
+   },
+   {
+    "DOI": "10.1021/jacs.5c13741.s003",
+    "title": [
+     "Electron Ptychography Images Hydrogen Atom Superlattices and 3D Inhomogeneities in Palladium Hydride Nanoparticles"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/jacs.5c13741.s001",
+    "title": [
+     "Electron Ptychography Images Hydrogen Atom Superlattices and 3D Inhomogeneities in Palladium Hydride Nanoparticles"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/jacs.5c13741.s002",
+    "title": [
+     "Electron Ptychography Images Hydrogen Atom Superlattices and 3D Inhomogeneities in Palladium Hydride Nanoparticles"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acsnano.4c14833.s001",
+    "title": [
+     "Insights into Chemical and Structural Order at Planar Defects in Pb2MgWO6 Using Multislice Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.21203/rs.3.rs-10380882/v1",
+    "title": [
+     "Measuring Coherence of an Electron Microscope via Mixed-Probe Ptychography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-2750-815X",
+      "authenticated-orcid": false,
+      "given": "Anton",
+      "family": "Gladyshev",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Humboldt University of Berlin"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2026,
+       7,
+       17
+      ]
+     ]
+    },
+    "type": "posted-content"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.6c00786.s001",
+    "title": [
+     "Atomic-Scale Imaging of Lithium Vacancies in a Battery Cathode by Multislice Electron Ptychography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acsnano.4c14988.s001",
+    "title": [
+     "Electron Ptychography for Atom-by-Atom Quantification of 1D Defect Complexes in Monolayer MoS2"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1364/oe.601179",
+    "title": [
+     "2D approximation quickly breaks down in reflection ptychography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0009-0005-9069-9584",
+      "authenticated-orcid": true,
+      "given": "Sander",
+      "family": "Senhorst",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-1899-4395",
+      "authenticated-orcid": true,
+      "given": "Stefan",
+      "family": "Witte",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Wim",
+      "family": "Coene",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       },
+       {
+        "name": "ASML Netherlands B.V."
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Optics Express"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2026,
+       6,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s1431927622002422",
+    "title": [
+     "Assisting Phase Unwrapping in Ptychography Through Minimal Phase Accumulation for Low Energy Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Arthur M",
+      "family": "Blackburn",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "University of Victoria , Department of Physics and Astronomy, Victoria, BC, Canada"
+       },
+       {
+        "name": "University of Victoria , Centre for Advanced Materials and Related Technologies, Victoria, BC, Canada"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Matthew",
+      "family": "Fitzpatrick",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "University of Victoria , Department of Physics and Astronomy, Victoria, BC, Canada"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Cristina",
+      "family": "Cordoba",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "University of Victoria , Department of Physics and Astronomy, Victoria, BC, Canada"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       8,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.3030/101279800",
+    "issued": {
+     "date-parts": [
+      [
+       2027,
+       9,
+       1
+      ]
+     ]
+    },
+    "type": "grant"
+   },
+   {
+    "DOI": "10.22443/rms.mmc2023.428",
+    "title": [
+     "Detective quantum efficiency of electron ptychography techniques"
+    ],
+    "container-title": [
+     "Proceedings of the Microscience Microscopy Congress 2023 incorporating EMAG 2023"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       7,
+       6
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.29363/nanoge.matsusspring.2026.111",
+    "title": [
+     "Atomic-Scale 3D Structure of Complex Nanomaterials via Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Philipp",
+      "family": "Pelz",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Friedrich-Alexander Universität Erlangen-Nürnberg"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings of the MATSUS Spring 2026 Conference"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       12,
+       15
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1088/1742-6596/2478/6/062013",
+    "title": [
+     "Sparsely sampled Fourier ptychography in diffuse reflection"
+    ],
+    "author": [
+     {
+      "given": "Sheng",
+      "family": "Li",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Physics: Conference Series"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       6,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.6019/empiar-13137",
+    "title": [
+     "Cryo electron ptychography of the Thermoplasma acidophilum 20S proteasome"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0009-0000-7520-6220",
+      "authenticated-orcid": true,
+      "given": "Li",
+      "family": "T",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-3949-6157",
+      "authenticated-orcid": true,
+      "given": "Li",
+      "family": "S",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0009-0008-1580-6687",
+      "authenticated-orcid": true,
+      "given": "Yan",
+      "family": "Z",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-8451-9947",
+      "authenticated-orcid": true,
+      "given": "Li",
+      "family": "X",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "EMPIAR dataset"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       11,
+       23
+      ]
+     ]
+    },
+    "type": "dataset"
+   },
+   {
+    "DOI": "10.1016/b978-0-323-90800-9.00245-6",
+    "title": [
+     "Electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "Wei",
+      "family": "Mao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Liqi",
+      "family": "Zhou",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Si",
+      "family": "Gao",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Peng",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Encyclopedia of Condensed Matter Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.64898/2026.07.25.736262",
+    "title": [
+     "Electron counting enables cryo-electron ptychography for near-atomic-resolution cryo-electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Shouqing",
+      "family": "Li",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Beijing Frontier Research Center for Biological Structure, Beijing 100084, China"
+       },
+       {
+        "name": "Shenzhen Medical Academy of Research and Translation, Shenzhen 518100, China"
+       },
+       {
+        "name": "Key Laboratory for Protein Sciences of Ministry of Education, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "State Key Laboratory of Membrane Biology, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Tsinghua-Peking Joint Center for Life Sciences, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Bo",
+      "family": "Shen",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Beijing Frontier Research Center for Biological Structure, Beijing 100084, China"
+       },
+       {
+        "name": "Shenzhen Medical Academy of Research and Translation, Shenzhen 518100, China"
+       },
+       {
+        "name": "Key Laboratory for Protein Sciences of Ministry of Education, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "State Key Laboratory of Membrane Biology, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Tsinghua-Peking Joint Center for Life Sciences, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Zhaoyi",
+      "family": "Yan",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Beijing Frontier Research Center for Biological Structure, Beijing 100084, China"
+       },
+       {
+        "name": "State Key Laboratory of Membrane Biology, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Department of Automation, Tsinghua University, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Junjiang",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Key Laboratory of Particle & Radiation Imaging of Ministry of Education, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Department of Engineering Physics, Tsinghua University, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Chenxi",
+      "family": "Tang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Key Laboratory of Particle & Radiation Imaging of Ministry of Education, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Department of Engineering Physics, Tsinghua University, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Zhao",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Beijing Frontier Research Center for Biological Structure, Beijing 100084, China"
+       },
+       {
+        "name": "Shenzhen Medical Academy of Research and Translation, Shenzhen 518100, China"
+       },
+       {
+        "name": "Key Laboratory for Protein Sciences of Ministry of Education, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "State Key Laboratory of Membrane Biology, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Tsinghua-Peking Joint Center for Life Sciences, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Zhi",
+      "family": "Deng",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Key Laboratory of Particle & Radiation Imaging of Ministry of Education, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Department of Engineering Physics, Tsinghua University, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Xueming",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Beijing Frontier Research Center for Biological Structure, Beijing 100084, China"
+       },
+       {
+        "name": "Shenzhen Medical Academy of Research and Translation, Shenzhen 518100, China"
+       },
+       {
+        "name": "Key Laboratory for Protein Sciences of Ministry of Education, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "State Key Laboratory of Membrane Biology, Tsinghua University, Beijing 100084, China"
+       },
+       {
+        "name": "Tsinghua-Peking Joint Center for Life Sciences, Beijing 100084, China"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2026,
+       7,
+       28
+      ]
+     ]
+    },
+    "type": "posted-content"
+   },
+   {
+    "DOI": "10.22443/rms.mmc2023.175",
+    "title": [
+     "Magnetic phase imaging using Lorentz near-field electron ptychography"
+    ],
+    "container-title": [
+     "Proceedings of the Microscience Microscopy Congress 2023 incorporating EMAG 2023"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       7,
+       6
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_25",
+    "title": [
+     "Microprobe Reflection High-Energy Electron Diffraction"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Ichikawa",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Doi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.22443/rms.mmc2021.338",
+    "title": [
+     "Design of electron ptychography experiments through simulations"
+    ],
+    "author": [
+     {
+      "given": "Mohsen",
+      "family": "Danaie",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings of the Microscience Microscopy Congress 2021 incorporating EMAG 2021"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       7,
+       9
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.20517/microstructures.2024.46",
+    "title": [
+     "Introduction to electron ptychography for materials scientists"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0003-1687-3597",
+      "authenticated-orcid": true,
+      "given": "Rong",
+      "family": "Yu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Haozhi",
+      "family": "Sha",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Jizhe",
+      "family": "Cui",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Wenfeng",
+      "family": "Yang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microstructures"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       9,
+       25
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/s1076-5670(07)00003-1",
+    "title": [
+     "Ptychography and Related Diffractive Imaging Methods"
+    ],
+    "author": [
+     {
+      "given": "J.M.",
+      "family": "Rodenburg",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Advances in Imaging and Electron Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2008
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_23",
+    "title": [
+     "Reflection Microscopy in a Scanning Transmission Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "R. H.",
+      "family": "Milne",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.004",
+    "title": [
+     "Reflection high-energy electron diffraction"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/j.elspec.2015.05.013",
+    "title": [
+     "Soft X-ray spectromicroscopy and ptychography"
+    ],
+    "author": [
+     {
+      "given": "Adam P.",
+      "family": "Hitchcock",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Spectroscopy and Related Phenomena"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2015,
+       4
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/mam/ozaf048.028",
+    "title": [
+     "What Electron Ptychography Can and Can’t Do (Yet)"
+    ],
+    "author": [
+     {
+      "given": "David A",
+      "family": "Muller",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/jmicro/dfaa055",
+    "title": [
+     "Practical implementation of high-resolution electron ptychography and comparison with off-axis electron holography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0001-6874-9729",
+      "authenticated-orcid": false,
+      "given": "Arthur M",
+      "family": "Blackburn",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Department of Physics and Astronomy, University of Victoria, Victoria, BC V8W 2Y2, Canada"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Robert A",
+      "family": "McLeod",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Nano Accessories Product Group, Hitachi High Technologies Canada, Inc., Etobicoke, ON M9W 6A4, Canada"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2020,
+       8,
+       27
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/mam/ozae044.910",
+    "title": [
+     "Information Limit and Dose Efficiency of Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Desheng",
+      "family": "Ma",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY , US"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "David",
+      "family": "Muller",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY , US"
+       },
+       {
+        "name": "Kavli Institute at Cornell for Nanoscale Science , Ithaca, NY , United States"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_20",
+    "title": [
+     "Reflection Electron Microscopy in TEM and STEM Instruments"
+    ],
+    "author": [
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.22443/rms.emc2020.66",
+    "title": [
+     "Near-field Electron Ptychography using a Silicon Nitride diffuser"
+    ],
+    "author": [
+     {
+      "name": "University of Sheffield",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Frederick",
+      "family": "Allars",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings of the European Microscopy Congress 2020"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       3,
+       1
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/j.ultramic.2023.113829",
+    "title": [
+     "Reliable phase quantification in focused probe electron ptychography of thin materials"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-0844-8366",
+      "authenticated-orcid": false,
+      "given": "Christoph",
+      "family": "Hofer",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-0008-6516",
+      "authenticated-orcid": false,
+      "given": "Timothy J.",
+      "family": "Pennycook",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.014",
+    "title": [
+     "Novel techniques associated with reflection electron imaging"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.3390/sym13081439",
+    "title": [
+     "Lensless Reflection Imaging of Obliquely Illuminated Objects I: Choosing a Domain for Phase Retrieval and Ptychography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0001-7915-697X",
+      "authenticated-orcid": false,
+      "given": "Igor A.",
+      "family": "Artyukov",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "P.N. Lebedev Physical Institute, Leninsky Prospekt 53, 119991 Moscow, Russia"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Nikolay L.",
+      "family": "Popov",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "P.N. Lebedev Physical Institute, Leninsky Prospekt 53, 119991 Moscow, Russia"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Alexander V.",
+      "family": "Vinogradov",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "P.N. Lebedev Physical Institute, Leninsky Prospekt 53, 119991 Moscow, Russia"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Symmetry"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       8,
+       5
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/mam/ozaf048.038",
+    "title": [
+     "Electron Ptychography via Differentiable Programming"
+    ],
+    "author": [
+     {
+      "given": "Debangshu",
+      "family": "Mukherjee",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Computational Sciences & Engineering Division, Oak Ridge National Laboratory , Oak Ridge, TN ,",
+        "place": [
+         "USA"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Ramanan",
+      "family": "Sankaran",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Computational Sciences & Engineering Division, Oak Ridge National Laboratory , Oak Ridge, TN ,",
+        "place": [
+         "USA"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Matthew J",
+      "family": "Boebinger",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Center for Nanophase Materials Sciences, Oak Ridge National Laboratory , Oak Ridge, TN ,",
+        "place": [
+         "USA"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/j.ultramic.2018.01.006",
+    "title": [
+     "Image feature delocalization in defocused probe electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "S.",
+      "family": "Cao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.M.",
+      "family": "Maiden",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "J.M.",
+      "family": "Rodenburg",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2018,
+       4
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/j.elspec.2023.147380",
+    "title": [
+     "Development of soft X-ray ptychography and fluorescence microscopy system using total-reflection wolter mirror and application to measurement of drug-treated mammalian cells"
+    ],
+    "author": [
+     {
+      "given": "Yoko",
+      "family": "Takeo",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kai",
+      "family": "Sakurai",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Noboru",
+      "family": "Furuya",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kyota",
+      "family": "Yoshinaga",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Takenori",
+      "family": "Shimamura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Satoru",
+      "family": "Egawa",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hisao",
+      "family": "Kiuchi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hidekazu",
+      "family": "Mimura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Haruhiko",
+      "family": "Ohashi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yoshihisa",
+      "family": "Harada",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Mari",
+      "family": "Shimura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0001-7890-7719",
+      "authenticated-orcid": false,
+      "given": "Takashi",
+      "family": "Kimura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Spectroscopy and Related Phenomena"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/jmicro/dfae035",
+    "title": [
+     "Near-field electron ptychography using full-field structured illumination"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0009-0001-5111-2999",
+      "authenticated-orcid": false,
+      "given": "Hirokazu",
+      "family": "Tamaki",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Graduate School of Engineering, Nagoya University , Furo-cho, Chikusa-ku, Nagoya, Aichi 464-8603,",
+        "place": [
+         "Japan"
+        ]
+       },
+       {
+        "name": "Research & Development Group, Hitachi Ltd. , 1-280, Higashi-koigakubo, Kokubunji, Tokyo 185-8601,",
+        "place": [
+         "Japan"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Koh",
+      "family": "Saitoh",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Institute of Materials and Systems for Sustainability, Nagoya University , Furo-cho, Chikusa-ku, Nagoya, Aichi 464-8603,",
+        "place": [
+         "Japan"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       7,
+       25
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.22443/rms.mmc2023.302",
+    "title": [
+     "A Regularised Extended Ptychographical Iterative Engine for Low-dose and Fast Electron Ptychography"
+    ],
+    "container-title": [
+     "Proceedings of the Microscience Microscopy Congress 2023 incorporating EMAG 2023"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       7,
+       6
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_28",
+    "title": [
+     "Low Energy Scanning Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "T.",
+      "family": "Ichinokawa",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/s1431927612004369",
+    "title": [
+     "Electron Ptychography: Applications Of The Electron Wave Phase"
+    ],
+    "author": [
+     {
+      "given": "M.C.",
+      "family": "Sarahan",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "B.",
+      "family": "Kraus",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.J.",
+      "family": "Humphry",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.M.",
+      "family": "Maiden",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.M.",
+      "family": "Rodenburg",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2012,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_27",
+    "title": [
+     "Low Energy Electron Reflection Microscopy (LEEM) and Its Application to the Study of Si Surfaces"
+    ],
+    "author": [
+     {
+      "given": "E.",
+      "family": "Bauer",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "W.",
+      "family": "Telieps",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.22443/rms.emc2020.1076",
+    "title": [
+     "Simultaneous imaging heavy and light atoms in battery materials using electron ptychography"
+    ],
+    "author": [
+     {
+      "name": "University of Oxford",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Weixin",
+      "family": "Song",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings of the European Microscopy Congress 2020"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       3,
+       1
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1364/euvxray.2022.ew4a.2",
+    "title": [
+     "Reflection Ptychography via Auto Differentiation on a High Harmonic EUV beamline"
+    ],
+    "author": [
+     {
+      "given": "Sven",
+      "family": "Weerdenburg",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yifeng",
+      "family": "Shao",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Jacob",
+      "family": "Seifert",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Roland",
+      "family": "Horsten",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Wim",
+      "family": "Coene",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Optica High-brightness Sources and Light-driven Interactions Congress 2022"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.22443/rms.mmc2023.475",
+    "title": [
+     "Can electron ptychography and I survive a dip in the primordial soup of life?"
+    ],
+    "container-title": [
+     "Proceedings of the Microscience Microscopy Congress 2023 incorporating EMAG 2023"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       7,
+       6
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/j.optlaseng.2023.107684",
+    "title": [
+     "Resolution-enhanced reflection ptychography with axial distance calibration"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0001-7153-7129",
+      "authenticated-orcid": false,
+      "given": "Chuangchuang",
+      "family": "Chen",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Jiamin",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Jinlong",
+      "family": "Zhu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Honggang",
+      "family": "Gu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-0756-1439",
+      "authenticated-orcid": false,
+      "given": "Shiyuan",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Optics and Lasers in Engineering"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       10
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-3-642-76376-2_13",
+    "title": [
+     "Reflection Electron Microscopy and Reflection Electron Diffraction in the Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "J. A.",
+      "family": "Eades",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Proceedings in Physics",
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/mam/ozag053.225",
+    "title": [
+     "Multislice Ptychography on an Uncorrected Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "Anna",
+      "family": "Li",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science and Engineering, The Grainger College of Engineering, University of Illinois at Urbana-Champaign , Urbana, IL ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Jeffrey",
+      "family": "Huang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science and Engineering, The Grainger College of Engineering, University of Illinois at Urbana-Champaign , Urbana, IL ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Pinshane",
+      "family": "Huang",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science and Engineering, The Grainger College of Engineering, University of Illinois at Urbana-Champaign , Urbana, IL ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2026,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_21",
+    "title": [
+     "Reflection Electron Microscopy with Use of CTEM: Studies of Au Growth on Pt(111)"
+    ],
+    "author": [
+     {
+      "given": "K.",
+      "family": "Yagi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "S.",
+      "family": "Ogawa",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Tanishiro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_22",
+    "title": [
+     "Application of Reflection Electron Microscopy for Surface Science (Observation of Cleaned Crystal Surfaces of Si, Pt, Au and Ag)"
+    ],
+    "author": [
+     {
+      "given": "Yuji",
+      "family": "Uchida",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/9783527808465.emc2016.6916",
+    "title": [
+     "Defocus and probe‐position coupling in electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "Shaohong",
+      "family": "Cao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Peng",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Andrew",
+      "family": "Maiden",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "John",
+      "family": "Rodenburg",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "European Microscopy Congress 2016: Proceedings"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2016,
+       12,
+       20
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1117/12.2537963",
+    "title": [
+     "Topography measurement by normal-incidence reflection ptychography"
+    ],
+    "author": [
+     {
+      "given": "Chao",
+      "family": "Tang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Lu",
+      "family": "Rong",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Fangrui",
+      "family": "Tan",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Bing",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Dayong",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Jie",
+      "family": "Zhao",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yunxin",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Holography, Diffractive Optics, and Applications IX"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2019,
+       11,
+       18
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1038/s41598-022-16041-5",
+    "title": [
+     "Automatic parameter selection for electron ptychography via Bayesian optimization"
+    ],
+    "author": [
+     {
+      "given": "Michael C.",
+      "family": "Cao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Zhen",
+      "family": "Chen",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Yi",
+      "family": "Jiang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Yimo",
+      "family": "Han",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Scientific Reports"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       7,
+       19
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.31399/asm.edfa.2024-4.p004",
+    "title": [
+     "Four-Dimensional Scanning Transmission Electron Microscopy: Part III, Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Aaron C.",
+      "family": "Johnston-Peck",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "National Institute of Standards and Technology , Gaithersburg, Maryland"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Andrew A.",
+      "family": "Herzing",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "National Institute of Standards and Technology , Gaithersburg, Maryland"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "EDFA Technical Articles"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       11,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/mam/ozag053.023",
+    "title": [
+     "Towards Quantitative and Trustworthy Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Chia-Hao",
+      "family": "Lee",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Noah",
+      "family": "Schnitzer",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Imperial College London, Department of Materials , London ,",
+        "place": [
+         "United Kingdom"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Lopa",
+      "family": "Bhatt",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "David A",
+      "family": "Muller",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY ,",
+        "place": [
+         "United States"
+        ]
+       },
+       {
+        "name": "Kavli Institute at Cornell for Nanoscale Science, Cornell University , Ithaca, NY ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2026,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.22443/rms.mmc2021.119",
+    "title": [
+     "Quantification of light elements in STEM and 4-D STEM electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "Emanuela",
+      "family": "Liberti",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings of the Microscience Microscopy Congress 2021 incorporating EMAG 2021"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       7,
+       9
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/j.ultramic.2022.113559",
+    "title": [
+     "Electron ptychography dose reduction using Moiré sampling on periodic structures"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0001-9254-2402",
+      "authenticated-orcid": false,
+      "given": "Mohammad Taghi",
+      "family": "Hashemi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Alexandre",
+      "family": "Pofelski",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-8746-1146",
+      "authenticated-orcid": false,
+      "given": "Gianluigi A.",
+      "family": "Botton",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       9
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.21203/rs.3.rs-7649135/v1",
+    "title": [
+     "Electron Ptychography Reveals Correlated Lattice Vibrations at Atomic Resolution"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-2750-815X",
+      "authenticated-orcid": false,
+      "given": "Anton",
+      "family": "Gladyshev",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Humboldt-Universit&#x00E4"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Benedikt",
+      "family": "Haas",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Humboldt-Universität zu Berlin"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Thomas",
+      "family": "Pekin",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Humboldt-Universität zu Berlin"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Tara",
+      "family": "Boland",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Arizona State University"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Marcel",
+      "family": "Schloz",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Humboldt-Universität zu Berlin"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-3424-9042",
+      "authenticated-orcid": false,
+      "given": "Peter",
+      "family": "Rez",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Arizona State University"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Christoph",
+      "family": "Koch",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Humboldt-Universität zu Berlin"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       10,
+       17
+      ]
+     ]
+    },
+    "type": "posted-content"
+   },
+   {
+    "DOI": "10.1093/mam/ozaf102",
+    "title": [
+     "Optimizing Atomic Number Contrast in Multislice Electron Ptychography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0003-4054-1584",
+      "authenticated-orcid": false,
+      "given": "Bridget R",
+      "family": "Denzer",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science & Engineering, Massachusetts Institute of Technology , Cambridge, MA 02139 ,",
+        "place": [
+         "USA"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-0847-8319",
+      "authenticated-orcid": false,
+      "given": "Colin",
+      "family": "Gilgenbach",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science & Engineering, Massachusetts Institute of Technology , Cambridge, MA 02139 ,",
+        "place": [
+         "USA"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-7726-3533",
+      "authenticated-orcid": false,
+      "given": "James M",
+      "family": "LeBeau",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science & Engineering, Massachusetts Institute of Technology , Cambridge, MA 02139 ,",
+        "place": [
+         "USA"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       9,
+       3
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/mam/ozae044.495",
+    "title": [
+     "Electron Ptychography and Aberration-Corrected 4D-STEM for Magnetic Imaging"
+    ],
+    "author": [
+     {
+      "given": "David A",
+      "family": "Muller",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY , United States"
+       },
+       {
+        "name": "Kavli Institute at Cornell for Nanoscale Science , Ithaca, NY , United States"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1364/cosi.2021.cw6b.4",
+    "title": [
+     "aPIE: Angle calibration algorithm for reflection ptychography"
+    ],
+    "author": [
+     {
+      "given": "Anne C.C.",
+      "family": "De Beurs",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Lars",
+      "family": "Loetgering",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Milan",
+      "family": "Herczog",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kjeld S.E.",
+      "family": "Eikema",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Stefan",
+      "family": "Witte",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "OSA Imaging and Applied Optics Congress 2021 (3D, COSI, DH, ISA, pcAOP)"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1364/oe.542569",
+    "title": [
+     "Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0009-0005-9069-9584",
+      "authenticated-orcid": true,
+      "given": "Sander",
+      "family": "Senhorst",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-4652-6051",
+      "authenticated-orcid": true,
+      "given": "Yifeng",
+      "family": "Shao",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-8966-9557",
+      "authenticated-orcid": true,
+      "given": "Sven",
+      "family": "Weerdenburg",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       },
+       {
+        "name": "ASML Netherlands B.V."
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Roland",
+      "family": "Horsten",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Christina",
+      "family": "Porter",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "ASML Netherlands B.V."
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Wim",
+      "family": "Coene",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/02e2c7k09",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ]
+       },
+       {
+        "name": "ASML Netherlands B.V."
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Optics Express"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       11,
+       18
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_31",
+    "title": [
+     "The Contribution of Atomic Steps to Reflection High Energy Electron Diffraction from Semiconductor Surfaces"
+    ],
+    "author": [
+     {
+      "given": "P. R.",
+      "family": "Pukite",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "P. I.",
+      "family": "Cohen",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "S.",
+      "family": "Batra",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/j.ultramic.2023.113879",
+    "title": [
+     "On central focusing for contrast optimization in direct electron ptychography of thick samples"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-6630-8812",
+      "authenticated-orcid": false,
+      "given": "C.",
+      "family": "Gao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "C.",
+      "family": "Hofer",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-0008-6516",
+      "authenticated-orcid": false,
+      "given": "T.J.",
+      "family": "Pennycook",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       2
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050264",
+    "title": [
+     "An Improved Reflection Type Electron Microscope"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1954
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_6",
+    "title": [
+     "Excitation of Dielectric Spheres by Electron Beams"
+    ],
+    "author": [
+     {
+      "given": "P. M.",
+      "family": "Echenique",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1364/ol.453655",
+    "title": [
+     "aPIE: an angle calibration algorithm for reflection ptychography"
+    ],
+    "author": [
+     {
+      "given": "Anne",
+      "family": "de Beurs",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Vrije Universiteit"
+       },
+       {
+        "name": "Advanced Research Center for Nanolithography"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0001-8574-8306",
+      "authenticated-orcid": true,
+      "given": "Lars",
+      "family": "Loetgering",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Leibniz Institute of Photonic Technology"
+       },
+       {
+        "name": "Helmholtz-Institute Jena"
+       },
+       {
+        "name": "Friedrich Schiller University Jena"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Milan",
+      "family": "Herczog",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Advanced Research Center for Nanolithography"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-2698-0372",
+      "authenticated-orcid": true,
+      "given": "Mengqi",
+      "family": "Du",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Vrije Universiteit"
+       },
+       {
+        "name": "Advanced Research Center for Nanolithography"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Kjeld S. E.",
+      "family": "Eikema",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Vrije Universiteit"
+       },
+       {
+        "name": "Advanced Research Center for Nanolithography"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-1899-4395",
+      "authenticated-orcid": true,
+      "given": "Stefan",
+      "family": "Witte",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Vrije Universiteit"
+       },
+       {
+        "name": "Advanced Research Center for Nanolithography"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Optics Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       4,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1126/science.aau7620",
+    "title": [
+     "Pushing the limits of electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "Andrew R.",
+      "family": "Lupini",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA."
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Mark P.",
+      "family": "Oxley",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA."
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Sergei V.",
+      "family": "Kalinin",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA."
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2018,
+       10,
+       26
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1038/s41524-026-01956-8",
+    "title": [
+     "phaser: a unified and extensible framework for fast electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "Colin",
+      "family": "Gilgenbach",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Menglin",
+      "family": "Zhu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "James M.",
+      "family": "LeBeau",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "npj Computational Materials"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2026,
+       1,
+       17
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1109/icassp49660.2025.10890606",
+    "title": [
+     "On Overlap Ratio in Defocused Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Amirafshar",
+      "family": "Moshtaghpour",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Rosalind Franklin Institute,Didcot,UK,OX11 0QS"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Angus I.",
+      "family": "Kirkland",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Rosalind Franklin Institute,Didcot,UK,OX11 0QS"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "ICASSP 2025 - 2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       4,
+       6
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1126/sciadv.abn2275",
+    "title": [
+     "Deep sub-angstrom resolution imaging by electron ptychography with misorientation correction"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-9543-923X",
+      "authenticated-orcid": true,
+      "given": "Haozhi",
+      "family": "Sha",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "National Center for Electron Microscopy in Beijing, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "Key Laboratory of Advanced Materials of Ministry of Education of China, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "State Key Laboratory of New Ceramics and Fine Processing, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "School of Materials Science and Engineering, Tsinghua University, Beijing 100084, China."
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-4639-0502",
+      "authenticated-orcid": true,
+      "given": "Jizhe",
+      "family": "Cui",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "National Center for Electron Microscopy in Beijing, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "Key Laboratory of Advanced Materials of Ministry of Education of China, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "State Key Laboratory of New Ceramics and Fine Processing, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "School of Materials Science and Engineering, Tsinghua University, Beijing 100084, China."
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-1687-3597",
+      "authenticated-orcid": true,
+      "given": "Rong",
+      "family": "Yu",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "National Center for Electron Microscopy in Beijing, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "Key Laboratory of Advanced Materials of Ministry of Education of China, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "State Key Laboratory of New Ceramics and Fine Processing, Tsinghua University, Beijing 100084, China."
+       },
+       {
+        "name": "School of Materials Science and Engineering, Tsinghua University, Beijing 100084, China."
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Science Advances"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       5,
+       13
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.59717/j.xinn-mater.2023.100019",
+    "title": [
+     "Unraveling the hidden world of perplexing inhomogeneous zeolite structures by electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "Xiaona",
+      "family": "Liu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Peng",
+      "family": "Guo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "The Innovation Materials"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1051/bioconf/202412904002",
+    "title": [
+     "Alternating-probe electron ptychography"
+    ],
+    "author": [
+     {
+      "given": "Meng",
+      "family": "Zhao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Anton",
+      "family": "Gladyshev",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Christoph",
+      "family": "Koch",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "BIO Web of Conferences"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1364/cosi.2023.cm4b.2",
+    "title": [
+     "EUV diffractive imaging in reflection for wafer metrology using HHG source and automatic differentiation based ptychography"
+    ],
+    "author": [
+     {
+      "given": "Sven",
+      "family": "Weerdenburg",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yifeng",
+      "family": "Shao",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Roland",
+      "family": "Horsten",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Wim",
+      "family": "Coene",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Optica Imaging Congress (3D, COSI, DH, FLatOptics, IS, pcAOP)"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.14293/apmc13-2025-0038",
+    "title": [
+     "Breaking Resolution Limits with Ptychography using Topological Materials"
+    ],
+    "author": [
+     {
+      "given": "Kayla X.",
+      "family": "Nguyen",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Breaking Resolution Limits with Ptychography using Topological Materials"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a049444",
+    "title": [
+     "On the Resulution of Electron Reflection Image"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1964
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511735097.011",
+    "title": [
+     "Kinematic electron diffraction"
+    ],
+    "container-title": [
+     "Reflection High-Energy Electron Diffraction"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2004,
+       12,
+       13
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a051236",
+    "title": [
+     "The Electron Microscope of Large Angle Reflection"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1957
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_13",
+    "title": [
+     "Diffraction from Stepped Surfaces"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Henzler",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/mam/ozaf048.556",
+    "title": [
+     "Investigating the Polar Structure of Functional Complex Oxides in 2.5D with Multislice Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "James M",
+      "family": "LeBeau",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science & Engineering, Massachusetts Institute of Technology , Cambridge, MA ,",
+        "place": [
+         "USA"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0304-3991(90)90101-q",
+    "title": [
+     "Comparison of surface step images in reflection electron microscopy and scanning reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Banzhof",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.H.",
+      "family": "Herrmann",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100148733",
+    "title": [
+     "Energy-filtered reflection electron microscopy and reflection high-energy electron diffraction on Zeiss 912 TEM"
+    ],
+    "author": [
+     {
+      "given": "JINGYUE",
+      "family": "LIU",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       8,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s1431927619000837",
+    "title": [
+     "Electron ptychography using an ultrafast direct electron detector"
+    ],
+    "author": [
+     {
+      "given": "Biying",
+      "family": "Song",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Zhiyuan",
+      "family": "Ding",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Christopher",
+      "family": "Allen",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hidetaka",
+      "family": "Sawada",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Xiaoqing",
+      "family": "Pan",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Angus I.",
+      "family": "Kirkland",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Peng",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2019,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/micmic/ozad067.898",
+    "title": [
+     "Investigating Qubits in Silicon Carbide Using Multislice Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Colin",
+      "family": "Gilgenbach",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science and Engineering, Massachusetts Institute of Technology , Cambridge, MA , United States"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Aaditya",
+      "family": "Bhat",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science and Engineering, Massachusetts Institute of Technology , Cambridge, MA , United States"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "James",
+      "family": "LeBeau",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Department of Materials Science and Engineering, Massachusetts Institute of Technology , Cambridge, MA , United States"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2023,
+       7,
+       22
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1117/12.3063334",
+    "title": [
+     "Development of long working distance reflection optics for soft x-ray reflection ptychography"
+    ],
+    "author": [
+     {
+      "given": "Yuichi",
+      "family": "Nagayama",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yoko",
+      "family": "Takeo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kai",
+      "family": "Sakurai",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Takenori",
+      "family": "Shimamura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Jordan",
+      "family": "O'Neal",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kyota",
+      "family": "Yoshinaga",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yu",
+      "family": "Nakata",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hikaru",
+      "family": "Kishimoto",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yasunori",
+      "family": "Senba",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Makina",
+      "family": "Yabashi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Haruhiko",
+      "family": "Ohashi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Takashi",
+      "family": "Kimura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Advances in X-Ray/EUV Sources, Optics, and Components XX"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       9,
+       19
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1038/s41377-024-01558-3",
+    "title": [
+     "Wavelength-multiplexed multi-mode EUV reflection ptychography based on automatic differentiation"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0003-4652-6051",
+      "authenticated-orcid": false,
+      "given": "Yifeng",
+      "family": "Shao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-8966-9557",
+      "authenticated-orcid": false,
+      "given": "Sven",
+      "family": "Weerdenburg",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Jacob",
+      "family": "Seifert",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "H. Paul",
+      "family": "Urbach",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-1140-6626",
+      "authenticated-orcid": false,
+      "given": "Allard P.",
+      "family": "Mosk",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-4894-6044",
+      "authenticated-orcid": false,
+      "given": "Wim",
+      "family": "Coene",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Light: Science &amp; Applications"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       8,
+       19
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/j.micron.2026.104105",
+    "title": [
+     "Transferring and cleaning suspended WS2 monolayers for electron ptychography characterization"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0009-0000-9535-3279",
+      "authenticated-orcid": false,
+      "given": "Nicholas",
+      "family": "Hagopian",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Yangchen",
+      "family": "He",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-7651-3211",
+      "authenticated-orcid": false,
+      "given": "Daniel A.",
+      "family": "Rhodes",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Paul M.",
+      "family": "Voyles",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Micron"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2027,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.22443/rms.mmc2021.111",
+    "title": [
+     "Direct Imaging of Oxygen Sub-lattice Deformation in Li-rich Cathode Material Using Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Weixin",
+      "family": "Song",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings of the Microscience Microscopy Congress 2021 incorporating EMAG 2021"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       7,
+       9
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1093/mam/ozae044.121",
+    "title": [
+     "Improving Robustness of Electron Ptychography by Bayesian Optimization of Tilt and Thickness"
+    ],
+    "author": [
+     {
+      "given": "Dasol",
+      "family": "Yoon",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY , United States"
+       },
+       {
+        "name": "Department of Materials Science and Engineering, Cornell University , Ithaca, NY , United States"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "David A",
+      "family": "Muller",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "School of Applied and Engineering Physics, Cornell University , Ithaca, NY , United States"
+       },
+       {
+        "name": "Kavli Institute at Cornell for Nanoscale Science, Cornell University , Ithaca, NY , United States"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1051/bioconf/202412904001",
+    "title": [
+     "Vibration-Corrected Electron Ptychography"
+    ],
+    "author": [
+     {
+      "given": "Anton",
+      "family": "Gladyshev",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Johannes",
+      "family": "Müller",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Benedikt",
+      "family": "Haas",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Christoph",
+      "family": "Koch",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "BIO Web of Conferences"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024
+      ]
+     ]
+    },
+    "type": "journal-article"
+   }
+  ],
+  "items-per-page": 100,
+  "query": {
+   "start-index": 0,
+   "search-terms": null
+  }
+ }
+}

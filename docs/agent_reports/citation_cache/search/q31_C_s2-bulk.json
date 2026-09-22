@@ -1,0 +1,309 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22reflective+ptychography%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 8,
+ "token": null,
+ "data": [
+  {
+   "paperId": "050b0a1c19ab1ec5957c68ccbfe94804c4ae39d0",
+   "externalIds": {
+    "DOI": "10.1364/optcon.567017",
+    "CorpusId": 281109150
+   },
+   "title": "Broadband Reflective Ptychography for Artificial Structural Color Characterization and High-Resolution Imaging",
+   "venue": "Optics Continuum",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2325858114",
+     "name": "Xinye Yuan"
+    },
+    {
+     "authorId": "2376019703",
+     "name": "Boyong Wang"
+    },
+    {
+     "authorId": "2108239729",
+     "name": "Jian-Hua Zhang"
+    },
+    {
+     "authorId": "2363725518",
+     "name": "Huaidong Jiang"
+    }
+   ]
+  },
+  {
+   "paperId": "18245e6b7411701cdcd008a611d0993645a76b03",
+   "externalIds": {
+    "DOI": "10.1016/j.optlastec.2025.112419",
+    "CorpusId": 276253561
+   },
+   "title": "Tilt-corrected reflective ptychography based on automatic differentiation",
+   "venue": "Optics &amp; Laser Technology",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2249233273",
+     "name": "Wen Cao"
+    },
+    {
+     "authorId": "2142472928",
+     "name": "Ling Bai"
+    },
+    {
+     "authorId": "2087768224",
+     "name": "Siwei Tao"
+    },
+    {
+     "authorId": "2153087402",
+     "name": "Zonghan Tian"
+    },
+    {
+     "authorId": "9550307",
+     "name": "Yueshu Xu"
+    },
+    {
+     "authorId": "2253447039",
+     "name": "C. Kuang"
+    },
+    {
+     "authorId": "2257110921",
+     "name": "Xu Liu"
+    }
+   ]
+  },
+  {
+   "paperId": "3abffc4cefee329bc55c8c44d311dd2372e29735",
+   "externalIds": {
+    "DOI": "10.1364/ao.560115",
+    "CorpusId": 278464004,
+    "PubMed": "40792792"
+   },
+   "title": "Dual threshold adaptive update algorithm for eliminating probe edge errors in reflective ptychography.",
+   "venue": "Applied Optics",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2275577080",
+     "name": "Yihan Zhao"
+    },
+    {
+     "authorId": "2312091219",
+     "name": "Yanqi Chen"
+    },
+    {
+     "authorId": "2360154807",
+     "name": "Yunlong Qi"
+    },
+    {
+     "authorId": "2356246953",
+     "name": "Su Li"
+    },
+    {
+     "authorId": "2360056026",
+     "name": "Feiyu Duan"
+    },
+    {
+     "authorId": "2344893624",
+     "name": "Yi-Shi Shi"
+    }
+   ]
+  },
+  {
+   "paperId": "96be096d38cfeccb48d068db2a08290a38d9fdf1",
+   "externalIds": {
+    "ArXiv": "2412.11247",
+    "CorpusId": 274777046
+   },
+   "title": "Interface and spectrum multiplexing ptychographic reflection microscopy",
+   "venue": "",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2303847780",
+     "name": "Yun Gao"
+    },
+    {
+     "authorId": "2212297555",
+     "name": "Qijun You"
+    },
+    {
+     "authorId": "2334529689",
+     "name": "Pei-Xiang Lu"
+    },
+    {
+     "authorId": "2304337100",
+     "name": "W. Cao"
+    }
+   ]
+  },
+  {
+   "paperId": "b472458988d32e60c1186cbec306bbb250fc2566",
+   "externalIds": {
+    "DOI": "10.1016/j.optlaseng.2025.109016",
+    "CorpusId": 277905540
+   },
+   "title": "Rapid and high-accuracy oblique-illuminated reflective ptychography without pre-correction",
+   "venue": "Optics and lasers in engineering",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2356118797",
+     "name": "Lei Huang"
+    },
+    {
+     "authorId": "2312091219",
+     "name": "Yanqi Chen"
+    },
+    {
+     "authorId": "2109238046",
+     "name": "Qingxin Wang"
+    },
+    {
+     "authorId": "2356246953",
+     "name": "Su Li"
+    },
+    {
+     "authorId": "2289188158",
+     "name": "Chang-Jun Ke"
+    },
+    {
+     "authorId": "2341390854",
+     "name": "Guang-Yan Guo"
+    },
+    {
+     "authorId": "2337476905",
+     "name": "Lu Rong"
+    },
+    {
+     "authorId": "2278581572",
+     "name": "Yi-Shi Shi"
+    }
+   ]
+  },
+  {
+   "paperId": "c21d58ab3492e23c5deba695f9eae252acb4242c",
+   "externalIds": {
+    "MAG": "3014765034",
+    "DOI": "10.1117/12.2559209",
+    "CorpusId": 216492216
+   },
+   "title": "Terahertz reflective ptychography",
+   "venue": "",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "2118762335",
+     "name": "Chao Tang"
+    },
+    {
+     "authorId": "2154703470",
+     "name": "Yu-Chen Zhao"
+    },
+    {
+     "authorId": "67080035",
+     "name": "Fangrui Tan"
+    },
+    {
+     "authorId": "150084177",
+     "name": "Da-Yong Wang"
+    },
+    {
+     "authorId": "48798685",
+     "name": "L. Rong"
+    },
+    {
+     "authorId": "96051279",
+     "name": "M. Georges"
+    }
+   ]
+  },
+  {
+   "paperId": "e71f8d8f8d097284ac067015cc8751b83de119c9",
+   "externalIds": {
+    "MAG": "3043734874",
+    "DOI": "10.1364/ol.400506",
+    "CorpusId": 225356447,
+    "PubMed": "32796971"
+   },
+   "title": "Continuous-wave terahertz reflective ptychography by oblique illumination.",
+   "venue": "Optics Letters",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "48798685",
+     "name": "L. Rong"
+    },
+    {
+     "authorId": "2118762335",
+     "name": "Chao Tang"
+    },
+    {
+     "authorId": "2154703470",
+     "name": "Yu-Chen Zhao"
+    },
+    {
+     "authorId": "67080035",
+     "name": "Fangrui Tan"
+    },
+    {
+     "authorId": "3158861",
+     "name": "Yunxin Wang"
+    },
+    {
+     "authorId": "2110118009",
+     "name": "Jie Zhao"
+    },
+    {
+     "authorId": "150084177",
+     "name": "Da-Yong Wang"
+    },
+    {
+     "authorId": "96051279",
+     "name": "M. Georges"
+    }
+   ]
+  },
+  {
+   "paperId": "ed393ef9013d9b2fcf8838fd5230027ff1f10f10",
+   "externalIds": {
+    "MAG": "2986936229",
+    "DOI": "10.1117/12.2537963",
+    "CorpusId": 209915201
+   },
+   "title": "Topography measurement by normal-incidence reflection ptychography",
+   "venue": "SPIE/COS Photonics Asia",
+   "year": 2019,
+   "authors": [
+    {
+     "authorId": "2118762335",
+     "name": "Chao Tang"
+    },
+    {
+     "authorId": "48798685",
+     "name": "L. Rong"
+    },
+    {
+     "authorId": "67080035",
+     "name": "Fangrui Tan"
+    },
+    {
+     "authorId": "2156073259",
+     "name": "Bing Li"
+    },
+    {
+     "authorId": "150084177",
+     "name": "Da-Yong Wang"
+    },
+    {
+     "authorId": "2110118009",
+     "name": "Jie Zhao"
+    },
+    {
+     "authorId": "3158861",
+     "name": "Yunxin Wang"
+    }
+   ]
+  }
+ ]
+}

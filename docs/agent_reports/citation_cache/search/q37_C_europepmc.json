@@ -1,0 +1,53 @@
+{
+ "_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28ABSTRACT%3A%22ptychography%22+AND+ABSTRACT%3A%22reflection+geometry%22%29&format=json&pageSize=200&resultType=lite",
+ "_retrieved": "2026-09-22",
+ "version": "6.9",
+ "hitCount": 1,
+ "request": {
+  "queryString": "(ABSTRACT:\"ptychography\" AND ABSTRACT:\"reflection geometry\")",
+  "resultType": "lite",
+  "cursorMark": "*",
+  "pageSize": 200,
+  "sort": "",
+  "synonym": false
+ },
+ "resultList": {
+  "result": [
+   {
+    "id": "39160154",
+    "source": "MED",
+    "pmid": "39160154",
+    "pmcid": "PMC11333750",
+    "fullTextIdList": {
+     "fullTextId": [
+      "PMC11333750"
+     ]
+    },
+    "doi": "10.1038/s41377-024-01558-3",
+    "title": "Wavelength-multiplexed multi-mode EUV reflection ptychography based on automatic differentiation.",
+    "authorString": "Shao Y, Weerdenburg S, Seifert J, Urbach HP, Mosk AP, Coene W.",
+    "journalTitle": "Light Sci Appl",
+    "issue": "1",
+    "journalVolume": "13",
+    "pubYear": "2024",
+    "journalIssn": "2095-5545; 2047-7538; ",
+    "pageInfo": "196",
+    "pubType": "research-article; journal article",
+    "isOpenAccess": "Y",
+    "inEPMC": "Y",
+    "inPMC": "Y",
+    "citedByCount": 13,
+    "hasReferences": "Y",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "Y",
+    "hasBook": "N",
+    "hasSuppl": "Y",
+    "hasLabsLinks": "Y",
+    "hasTMAccessionNumbers": "N",
+    "firstPublicationDate": "2024-08-19",
+    "firstIndexDate": "2024-08-23"
+   }
+  ]
+ }
+}

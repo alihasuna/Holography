@@ -1,0 +1,178 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychography+%2B+electron+%2B+%22grazing+incidence%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 3,
+ "token": null,
+ "data": [
+  {
+   "paperId": "6f416fc070d7935ec28783cba0b429ed95a8e463",
+   "externalIds": {
+    "MAG": "2004494855",
+    "DOI": "10.1080/08940886.2013.832585",
+    "CorpusId": 119760150
+   },
+   "title": "A Precision Grazing-incidence Angle Error Measurement of a Hard X-ray Condenser Mirror Using Single-grating Interferometry",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "2068273748",
+     "name": "Ryosuke Fukui"
+    },
+    {
+     "authorId": "46453847",
+     "name": "Jangwoo Kim"
+    },
+    {
+     "authorId": "46386008",
+     "name": "S. Matsuyama"
+    },
+    {
+     "authorId": "5472126",
+     "name": "H. Yumoto"
+    },
+    {
+     "authorId": "36981916",
+     "name": "Y. Inubushi"
+    },
+    {
+     "authorId": "49408192",
+     "name": "K. Tono"
+    },
+    {
+     "authorId": "3661295",
+     "name": "T. Koyama"
+    },
+    {
+     "authorId": "145338563",
+     "name": "Takashi Kimura"
+    },
+    {
+     "authorId": "6845812",
+     "name": "Hidekazu Mimura"
+    },
+    {
+     "authorId": "2370900648",
+     "name": "H. Ohashi"
+    },
+    {
+     "authorId": "145707609",
+     "name": "M. Yabashi"
+    },
+    {
+     "authorId": "48015199",
+     "name": "T. Ishikawa"
+    },
+    {
+     "authorId": "6260147",
+     "name": "K. Yamauchi"
+    }
+   ]
+  },
+  {
+   "paperId": "9ab49f17f48d59965aa79795fd48cadd69a0d50f",
+   "externalIds": {
+    "ArXiv": "2307.01735",
+    "DOI": "10.1364/optica.505478",
+    "CorpusId": 259341822
+   },
+   "title": "Hard X-ray grazing incidence ptychography: Large field-of-view nanostructure imaging with ultra-high surface sensitivity",
+   "venue": "Optica",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2268468746",
+     "name": "P. S. Jørgensen"
+    },
+    {
+     "authorId": "2277926798",
+     "name": "L. Besley"
+    },
+    {
+     "authorId": null,
+     "name": "A. M. Slyamov"
+    },
+    {
+     "authorId": "2386002291",
+     "name": "A. Diaz"
+    },
+    {
+     "authorId": "1398488114",
+     "name": "M. Guizar-Sicairos"
+    },
+    {
+     "authorId": null,
+     "name": "M. Odstrcil"
+    },
+    {
+     "authorId": "2101478",
+     "name": "M. Holler"
+    },
+    {
+     "authorId": "30966014",
+     "name": "C. Silvestre"
+    },
+    {
+     "authorId": "2277879200",
+     "name": "B. Chang"
+    },
+    {
+     "authorId": "2277920646",
+     "name": "C. Detlefs"
+    },
+    {
+     "authorId": "2277921828",
+     "name": "J. W. Andreasen"
+    }
+   ]
+  },
+  {
+   "paperId": "f5b806de925ce548767ebc0b3f1760956ab2804b",
+   "externalIds": {
+    "DOI": "10.1016/j.elspec.2023.147358",
+    "CorpusId": 259187196
+   },
+   "title": "On the use of soft X-ray STXM for organic-inorganic halide perovskite photovoltaic materials",
+   "venue": "Journal of Electron Spectroscopy and Related Phenomena",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "30873593",
+     "name": "Haeyeon Jun"
+    },
+    {
+     "authorId": "93459572",
+     "name": "Chloé Dindault"
+    },
+    {
+     "authorId": "144719838",
+     "name": "D. Tondelier"
+    },
+    {
+     "authorId": "2699580",
+     "name": "B. Geffroy"
+    },
+    {
+     "authorId": "47137086",
+     "name": "I. Florea"
+    },
+    {
+     "authorId": "91373413",
+     "name": "J. Bourée"
+    },
+    {
+     "authorId": "3444193",
+     "name": "P. Schulz"
+    },
+    {
+     "authorId": "49821645",
+     "name": "Y. Bonnassieux"
+    },
+    {
+     "authorId": "46795613",
+     "name": "S. Swaraj"
+    }
+   ]
+  }
+ ]
+}

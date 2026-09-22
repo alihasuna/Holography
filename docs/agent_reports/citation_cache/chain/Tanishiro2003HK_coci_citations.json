@@ -1,0 +1,60 @@
+{
+ "_url": "https://opencitations.net/index/coci/api/v1/citations/10.1380/jsssj.24.166",
+ "_retrieved": "2026-09-22",
+ "_list": [
+  {
+   "oci": "062401034833-061402851635",
+   "citing": "10.1380/ejssnt.2010.190",
+   "cited": "10.1380/jsssj.24.166",
+   "creation": "2010",
+   "timespan": "P7Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06230482028-061402851635",
+   "citing": "10.1088/1361-6463/aadf14",
+   "cited": "10.1380/jsssj.24.166",
+   "creation": "2018-10-25",
+   "timespan": "P15Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "0610590919-061402851635",
+   "citing": "10.1088/1742-6596/225/1/012009",
+   "cited": "10.1380/jsssj.24.166",
+   "creation": "2010-04-01",
+   "timespan": "P7Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06190629119-061402851635",
+   "citing": "10.1103/physrevb.79.193310",
+   "cited": "10.1380/jsssj.24.166",
+   "creation": "2009-05-26",
+   "timespan": "P6Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "062401034072-061402851635",
+   "citing": "10.1380/ejssnt.2022-013",
+   "cited": "10.1380/jsssj.24.166",
+   "creation": "2022-03-24",
+   "timespan": "P19Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  },
+  {
+   "oci": "06120573751-061402851635",
+   "citing": "10.1088/1742-6596/443/1/012068",
+   "cited": "10.1380/jsssj.24.166",
+   "creation": "2013-06-10",
+   "timespan": "P10Y",
+   "journal_sc": "no",
+   "author_sc": "no"
+  }
+ ]
+}

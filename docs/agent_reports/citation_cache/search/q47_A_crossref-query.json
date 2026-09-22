@@ -1,0 +1,4195 @@
+{
+ "_url": "https://api.crossref.org/works?query.bibliographic=reflection+electron+microscopy+interferometry+biprism&rows=100&select=DOI%2Ctitle%2Cauthor%2Ccontainer-title%2Cissued%2Ctype",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work-list",
+ "message-version": "1.0.0",
+ "message": {
+  "facets": {},
+  "total-results": 1378725,
+  "items": [
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050684",
+    "title": [
+     "Anti-Contamination Electron Biprism for Electron Holography"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050662",
+    "title": [
+     "Asymmetry of Electron Interference Fringes Produced by an Electron Biprism"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988,
+       4
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/9783527808465.emc2016.8311",
+    "title": [
+     "Electron interferometry techniques for strain analysis using a multi‐biprism microscope"
+    ],
+    "author": [
+     {
+      "given": "Thibaud",
+      "family": "Denneulin",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Falk",
+      "family": "Röder",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Florent",
+      "family": "Houdellier",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Christophe",
+      "family": "Gatel",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Etienne",
+      "family": "Snoeck",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Martin",
+      "family": "Hÿtch",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "European Microscopy Congress 2016: Proceedings"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2016,
+       12,
+       20
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/s0424820100151118",
+    "title": [
+     "Convergent beam electron diffraction interferometry using an electron biprism (CBED+EBI)"
+    ],
+    "author": [
+     {
+      "given": "R.A.",
+      "family": "Herring",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Tanji",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       8,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/jmicro/dfh098",
+    "title": [
+     "Optical system for double-biprism electron holography"
+    ],
+    "author": [
+     {
+      "given": "K.",
+      "family": "Harada",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2005,
+       1,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/jmicro/dfr071",
+    "title": [
+     "Twin-electron biprism"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Ikeda",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Sugawara",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Harada",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2011,
+       10,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050556",
+    "title": [
+     "Effect of Fresnel Diffraction on Measurement of Degree of Coherence of Electron Beam with Electron Biprism"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0304-3991(95)00051-2",
+    "title": [
+     "Interferometry using convergent electron diffracted beams plus an electron biprism (CBED + EBI)"
+    ],
+    "author": [
+     {
+      "given": "R.A",
+      "family": "Herring",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T",
+      "family": "Tanji",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a023609",
+    "title": [
+     "Gottfried M llenstedt and his electron biprism: four decades of challenging and exciting electron physics"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Lichte",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1998,
+       1,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1063/1.2198987",
+    "title": [
+     "Triple-biprism electron interferometry"
+    ],
+    "author": [
+     {
+      "given": "Ken",
+      "family": "Harada",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "The Institute of Physical and Chemical Research (RIKEN) Frontier Research System, , Hatoyama, Saitama 350-0395, Japan, and , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       },
+       {
+        "name": "Advanced Research Laboratory Frontier Research System, , Hatoyama, Saitama 350-0395, Japan, and , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "The Institute of Physical and Chemical Research (RIKEN) Frontier Research System, , Hatoyama, Saitama 350-0395, Japan, and , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       },
+       {
+        "name": "Advanced Research Laboratory Frontier Research System, , Hatoyama, Saitama 350-0395, Japan, and , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "The Institute of Physical and Chemical Research (RIKEN) Frontier Research System, , Hatoyama, Saitama 350-0395, Japan, and , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       },
+       {
+        "name": "Advanced Research Laboratory Frontier Research System, , Hatoyama, Saitama 350-0395, Japan, and , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Tetsuya",
+      "family": "Akashi",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Advanced Research Laboratory , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan and , 4-28-8 Yotsuya, Shinjuku-ku, Tokyo 160-0004, Japan"
+       },
+       {
+        "name": "Hitachi Instruments Service Co., Ltd. , Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan and , 4-28-8 Yotsuya, Shinjuku-ku, Tokyo 160-0004, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Yoshihiko",
+      "family": "Togawa",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "The Institute of Physical and Chemical Research (RIKEN) Frontier Research System, , Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Applied Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2006,
+       6,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1063/1.1715155",
+    "title": [
+     "Double-biprism electron interferometry"
+    ],
+    "author": [
+     {
+      "given": "Ken",
+      "family": "Harada",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Frontier Research System, The Institute of Physical and Chemical Research, Hatoyama, Saitama 350-0395, Japan"
+       },
+       {
+        "name": "Advanced Research Laboratory, Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Frontier Research System, The Institute of Physical and Chemical Research, Hatoyama, Saitama 350-0395, Japan"
+       },
+       {
+        "name": "Advanced Research Laboratory, Hitachi, Ltd., Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Yoshihiko",
+      "family": "Togawa",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Frontier Research System, The Institute of Physical and Chemical Research, Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Tetsuya",
+      "family": "Akashi",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Hitachi Instruments Service Co., Ltd., 4-28-8 Yotsuya, Shinjuku-ku, Tokyo 160-0004, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Frontier Research System, The Institute of Physical and Chemical Research, Hatoyama, Saitama 350-0395, Japan"
+       },
+       {
+        "name": "Musashino Laboratory, Hitachi Science Systems, Ltd., Hachiouji, Tokyo 192-0031, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Applied Physics Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2004,
+       4,
+       26
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0304-3991(93)90094-e",
+    "title": [
+     "Realization of a mixed type of interferometry using convergent-beam electron diffraction and an electron biprism"
+    ],
+    "author": [
+     {
+      "given": "R.A.",
+      "family": "Herring",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Tanji",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       5
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/jemt.1070200414",
+    "title": [
+     "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Banzhof",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K. H.",
+      "family": "Herrmann",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.",
+      "family": "Lichte",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy Research and Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       2,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/b978-0-12-029912-6.50005-1",
+    "title": [
+     "The Invention of the Electron Fresnel Interference Biprism* *Translated by T. Mulvey."
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "MÖLLENSTEDT",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Advances in Optical and Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1991
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/bs.aiep.2022.03.007",
+    "title": [
+     "The invention of the electron Fresnel interference biprism,"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Möllenstedt",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-6234-8737",
+      "authenticated-orcid": false,
+      "given": "Peter",
+      "family": "Hawkes",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Advances in Imaging and Electron Physics",
+     "The Beginnings of Electron Microscopy - Part 2"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1143/jjap.40.2527",
+    "title": [
+     "Energy-filtered Electron Interferometry in Reflection Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "Takayuki",
+      "family": "Suzuki",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yasumasa",
+      "family": "Tanishiro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Nami",
+      "family": "Ishiguro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hiroki",
+      "family": "Minoda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Katsumichi",
+      "family": "Yagi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Japanese Journal of Applied Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2001,
+       4,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a051121",
+    "title": [
+     "A New Specimen Holder for UHV-Reflection Electron Microscopy"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1994,
+       10
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100136957",
+    "title": [
+     "Reflection diffracted beam interferometry (RDBI) applied to the study of surfaces"
+    ],
+    "author": [
+     {
+      "given": "Rodney A.",
+      "family": "Herring",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995,
+       8,
+       13
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s1431927603444838",
+    "title": [
+     "A Point Projection Microscope for Electron Interferometry in the Reflection Mode"
+    ],
+    "author": [
+     {
+      "given": "B.G.",
+      "family": "Frost",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Thesen",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.C.",
+      "family": "Joy",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2003,
+       7,
+       16
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100139469",
+    "title": [
+     "Reconstruction of electron holograms recorded in a non-FEG, non-biprism TEM"
+    ],
+    "author": [
+     {
+      "given": "Z.L.",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995,
+       8,
+       13
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s1431927600031020",
+    "title": [
+     "Eliminating effects of biprism drift in electron holography"
+    ],
+    "author": [
+     {
+      "given": "F",
+      "family": "Kahl",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "1 Bethel Valley Rd, Oak Ridge National Laboratory , Oak Ridge, TN 37831"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "E",
+      "family": "Voelkl",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "1 Bethel Valley Rd, Oak Ridge National Laboratory , Oak Ridge, TN 37831"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2001,
+       8,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.004",
+    "title": [
+     "Reflection high-energy electron diffraction"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/9783527808465.emc2016.6291",
+    "title": [
+     "New design of Möllenstedt electrostatic biprism setup for off‐axis electron holography"
+    ],
+    "author": [
+     {
+      "given": "Robin",
+      "family": "Cours",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Cécile",
+      "family": "Marcelot",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Florent",
+      "family": "Houdellier",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "European Microscopy Congress 2016: Proceedings"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2016,
+       12,
+       20
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1016/0304-3991(90)90101-q",
+    "title": [
+     "Comparison of surface step images in reflection electron microscopy and scanning reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Banzhof",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.H.",
+      "family": "Herrmann",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050264",
+    "title": [
+     "An Improved Reflection Type Electron Microscope"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1954
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.014",
+    "title": [
+     "Novel techniques associated with reflection electron imaging"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a023413",
+    "title": [
+     "Interferometry by Coherent Convergent-Beam Electron Diffraction"
+    ],
+    "author": [
+     {
+      "given": "K.",
+      "family": "Tsuda",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Tanaka",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       2,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a049444",
+    "title": [
+     "On the Resulution of Electron Reflection Image"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1964
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a051236",
+    "title": [
+     "The Electron Microscope of Large Angle Reflection"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1957
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050952",
+    "title": [
+     "Study of Defects and Strains on Cleaved GaAs (110) Surface by Reflection Electron Microscopy"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1143/jjap.44.l636",
+    "title": [
+     "Variable Interference Azimuth Angle in Double-Biprism Electron Interferometry"
+    ],
+    "author": [
+     {
+      "given": "Ken",
+      "family": "Harada",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tetsuya",
+      "family": "Akashi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yoshihiko",
+      "family": "Togawa",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Japanese Journal of Applied Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2005,
+       5,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100148733",
+    "title": [
+     "Energy-filtered reflection electron microscopy and reflection high-energy electron diffraction on Zeiss 912 TEM"
+    ],
+    "author": [
+     {
+      "given": "JINGYUE",
+      "family": "LIU",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       8,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/jmicro/dfn027",
+    "title": [
+     "Electron beam coherence measurements using diffracted beam interferometry/holography"
+    ],
+    "author": [
+     {
+      "given": "R. A.",
+      "family": "Herring",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2009,
+       1,
+       13
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_23",
+    "title": [
+     "Reflection Microscopy in a Scanning Transmission Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "R. H.",
+      "family": "Milne",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a023581",
+    "title": [
+     "Reflection electron microscopy of ferroelectric domain walls in BaTiO3"
+    ],
+    "author": [
+     {
+      "given": "N.",
+      "family": "Yamamoto",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Kitajima",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1998,
+       1,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/j.ultramic.2014.02.003",
+    "title": [
+     "Biprism electron interferometry with a single atom tip source"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Schütz",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Rembold",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Pooch",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "S.",
+      "family": "Meier",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "P.",
+      "family": "Schneeweiss",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Rauschenbeutel",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Günther",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "W.T.",
+      "family": "Chang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "I.S.",
+      "family": "Hwang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Stibor",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2014,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/jemt.1070200407",
+    "title": [
+     "Bloch wave treatment of symmetry and multiple beam cases in reflection high energy electron diffraction and reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "L.‐M.",
+      "family": "Peng",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Gjønnes",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Gjønnes",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy Research and Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       2,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_20",
+    "title": [
+     "Reflection Electron Microscopy in TEM and STEM Instruments"
+    ],
+    "author": [
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.003",
+    "title": [
+     "Kinematical electron diffraction"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050815",
+    "title": [
+     "Observation of GaAs(110) Surface Defect by Reflection Electron Holography"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/jmicro/dfs064",
+    "title": [
+     "Leaf surface characterization of the Tabu-No-Ki tree Machilus thunbergii using electron microscopy and white light scanning interferometry"
+    ],
+    "author": [
+     {
+      "given": "K. W.",
+      "family": "Kim",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2012,
+       10,
+       4
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-3-642-76376-2_13",
+    "title": [
+     "Reflection Electron Microscopy and Reflection Electron Diffraction in the Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "J. A.",
+      "family": "Eades",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Proceedings in Physics",
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/s1431927604883612",
+    "title": [
+     "Double-Biprism Electron Holography and Its Applications"
+    ],
+    "author": [
+     {
+      "given": "Ken",
+      "family": "Harada",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yoshihiko",
+      "family": "Togawa",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tetsuya",
+      "family": "Akashi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2004,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_1",
+    "title": [
+     "The History of the Electron Biprism"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Möllenstedt",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/mam/ozag053.777",
+    "title": [
+     "Electron Interferometry and EELS"
+    ],
+    "author": [
+     {
+      "given": "David",
+      "family": "Kordahl",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Centenary College of Louisiana, Department of Physics , Shreveport, LA ,",
+        "place": [
+         "United States"
+        ]
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2026,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.015",
+    "title": [
+     "Physical constants, electron wavelengths and wave numbers"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.22443/rms.emc2020.635",
+    "title": [
+     "Electron-driven photon sources for spectral interferometry with electron microscopes"
+    ],
+    "author": [
+     {
+      "name": "Christian Albrechts Universty",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Nahid",
+      "family": "Talebi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings of the European Microscopy Congress 2020"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2021,
+       3,
+       1
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1017/s1431927619009292",
+    "title": [
+     "Single Electron Interferometry: A Step Toward Quantum Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "Amy",
+      "family": "Turner",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Fehmi",
+      "family": "Yasin",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Cameron",
+      "family": "Johnson",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Benjamin",
+      "family": "McMorran",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2019,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.016",
+    "title": [
+     "The crystal inner potential and electron scattering factor"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.017",
+    "title": [
+     "Crystallographic structure systems"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_27",
+    "title": [
+     "Low Energy Electron Reflection Microscopy (LEEM) and Its Application to the Study of Si Surfaces"
+    ],
+    "author": [
+     {
+      "given": "E.",
+      "family": "Bauer",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "W.",
+      "family": "Telieps",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/jemt.1070200403",
+    "title": [
+     "Technique of reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Tung",
+      "family": "Hsu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy Research and Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       2,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/9783527620647.ch15",
+    "title": [
+     "Reflection Electron Microscopy"
+    ],
+    "container-title": [
+     "Handbook of Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       12,
+       27
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.008",
+    "title": [
+     "Contrast mechanisms of reflected electron imaging"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/jmicro/dfaa033",
+    "title": [
+     "Interference and interferometry in electron holography"
+    ],
+    "author": [
+     {
+      "given": "Ken",
+      "family": "Harada",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "CEMS, RIKEN (The Institute of Physical and Chemical Research), Hatoyama, Saitama 350-0395, Japan"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2020,
+       6,
+       26
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-9537-3_9",
+    "title": [
+     "Reflection Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "John M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface and Interface Characterization by Electron Optical Methods"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.001",
+    "title": [
+     "Preface"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_22",
+    "title": [
+     "Application of Reflection Electron Microscopy for Surface Science (Observation of Cleaned Crystal Surfaces of Si, Pt, Au and Ag)"
+    ],
+    "author": [
+     {
+      "given": "Yuji",
+      "family": "Uchida",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.002",
+    "title": [
+     "Introduction"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_21",
+    "title": [
+     "Reflection Electron Microscopy with Use of CTEM: Studies of Au Growth on Pt(111)"
+    ],
+    "author": [
+     {
+      "given": "K.",
+      "family": "Yagi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "S.",
+      "family": "Ogawa",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Tanishiro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.019",
+    "title": [
+     "Electron diffraction patterns of several types of crystal structures"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.025",
+    "title": [
+     "References"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1364/josa.27.000051",
+    "title": [
+     "A Biprism for Use in Stellar Interferometry"
+    ],
+    "author": [
+     {
+      "given": "Edward M.",
+      "family": "Thorndike",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of the Optical Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1937,
+       1,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100171778",
+    "title": [
+     "Reflection electron microscopy (REM) of NaCl crystals"
+    ],
+    "author": [
+     {
+      "given": "Tung",
+      "family": "Hsu",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1994
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s042482010014350x",
+    "title": [
+     "Reflection electron microscopy of surfaces"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Lehmpfuhl",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Uchida",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-3-540-48995-5_8",
+    "title": [
+     "Energy-Filtered Reflection Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "John C. H.",
+      "family": "Spence",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Energy-Filtering Transmission Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a023801",
+    "title": [
+     "Observation and nucleation control of Genanoislands on Si(111) surfaces using scanning reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Shibata",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A. A.",
+      "family": "Shklyaev",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Ichikawa",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2000,
+       1,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/9783527652167.ch4",
+    "title": [
+     "Formation of Surface Patterns Observed with Reflection Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "Alexander V.",
+      "family": "Latyshev",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "In‐Situ Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2012,
+       4,
+       24
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1002/jemt.1070200413",
+    "title": [
+     "Characterization of the annealed (0001) surface of sapphire (α‐al<sub>2</sub>o<sub>3</sub>) and interaction with silver by reflection electron microscopy and scanning reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Godfrey C.",
+      "family": "Ndubuisi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy Research and Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       2,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100114232",
+    "title": [
+     "Reflection Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "P. E.",
+      "family": "Højlund Nielsen",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1975
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100149970",
+    "title": [
+     "Reflection electron microscopy of triangular quantum wells"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Gajdardziska-Josifovska",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       8,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1117/12.961294",
+    "title": [
+     "Biomedical Applications Of Interference Reflection Microscopy"
+    ],
+    "author": [
+     {
+      "given": "Michal",
+      "family": "Opas",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "University of Toronto (Canada)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Michal",
+      "family": "Opas",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "University of Toronto (Canada)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Interferometry '89"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       4,
+       3
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254",
+    "title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "author": [
+     {
+      "given": "Zhong Lin",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "monograph"
+   },
+   {
+    "DOI": "10.1017/s1431927609092848",
+    "title": [
+     "Fabirication of Fine Electron Biprism Filament by Focused-Ion-Beam Chemical-Vapor-Deposition"
+    ],
+    "author": [
+     {
+      "given": "S",
+      "family": "Matsui",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K-I",
+      "family": "Nakamatsu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K",
+      "family": "Yamamoto",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T",
+      "family": "Hirayama",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2009,
+       7
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1021/ac0624546.s001",
+    "title": [
+     "Spatially Resolved Total Internal Reflection Fluorescence Correlation Microscopy Using an Electron Multiplying Charge-Coupled Device Camera"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1017/s0424820100053577",
+    "title": [
+     "Interference Reflection Microscopy"
+    ],
+    "author": [
+     {
+      "given": "Colin S.",
+      "family": "Izzard",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1982,
+       8,
+       13
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s1431927619005452",
+    "title": [
+     "Double-Slit Electron Interference Experiment with Zero Propagation Distance Using Electron Biprism"
+    ],
+    "author": [
+     {
+      "given": "Ken",
+      "family": "Harada",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tetsuji",
+      "family": "Kodama",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tetsuya",
+      "family": "Akashi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yoshio",
+      "family": "Takahashi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Keiko",
+      "family": "Shimada",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Yoshimasa A.",
+      "family": "Ono",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Daisuke",
+      "family": "Shindo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hiroyuki",
+      "family": "Shinada",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Shigeo",
+      "family": "Mori",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2019,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100170578",
+    "title": [
+     "Reflection electron microscopy of ferroelectric domains"
+    ],
+    "author": [
+     {
+      "given": "Feng",
+      "family": "Tsai",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1994
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/jemt.1070200406",
+    "title": [
+     "Degradation, amorphization, and recrystallization of ion bombarded si(111) surfaces studied by in situ reflection electron microscopy and reflection high energy electron diffraction techniques"
+    ],
+    "author": [
+     {
+      "given": "A.",
+      "family": "Claverie",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Beauvillain",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Fauré",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "C.",
+      "family": "Vieu",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "B.",
+      "family": "Jouffrey",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy Research and Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       2,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/9783527808465.emc2016.6259",
+    "title": [
+     "Fabrication and characterization of a fine electron biprism on a Si‐on‐insulator\n            <scp>MEMS</scp>\n            chip"
+    ],
+    "author": [
+     {
+      "given": "Martial",
+      "family": "Duchamp",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Olivier",
+      "family": "Girard",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Florian",
+      "family": "Winkler",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Rolf",
+      "family": "Speen",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Rafal E.",
+      "family": "Dunin‐Borkowski",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "European Microscopy Congress 2016: Proceedings"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2016,
+       12,
+       20
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/s0424820100105527",
+    "title": [
+     "Surface resonance channelling in scanning reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "J.M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "P.A.",
+      "family": "Crozier",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/jemt.1060170210",
+    "title": [
+     "Imaging friction tracks at diamond surfaces using reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Z. L.",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1991,
+       2
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100180318",
+    "title": [
+     "High-Speed Reflection Electron Microscopy of Laser-Induced Surface Transitions"
+    ],
+    "author": [
+     {
+      "given": "F.",
+      "family": "Heinricht",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       8,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s042482010015085x",
+    "title": [
+     "Contrasts of planar defects in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Feng",
+      "family": "Tsai",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       8,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.012",
+    "title": [
+     "Valence excitation in RHEED"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.011",
+    "title": [
+     "Phonon scattering in RHEED"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.006",
+    "title": [
+     "Resonance reflections in RHEED"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.007",
+    "title": [
+     "Imaging surfaces in TEM"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.024",
+    "title": [
+     "A bibliography of REM, SREM and REELS"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.009",
+    "title": [
+     "Applications of UHV REM"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/0042-207x(89)90943-3",
+    "title": [
+     "Reflection electron microscopy observation of the Si-SiO2 interface"
+    ],
+    "container-title": [
+     "Vacuum"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1017/s0424820100154639",
+    "title": [
+     "Convergence of the incident beam in reflection Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "Nan",
+      "family": "Yao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       8,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-3-540-85156-1_128",
+    "title": [
+     "Electron Holography with Cs-corrected Tecnai F20 — elimination of the incoherent damping introduced by the biprism in conventional electron microscopes"
+    ],
+    "author": [
+     {
+      "given": "D.",
+      "family": "Geiger",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Rother",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Linck",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.",
+      "family": "Lichte",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Lehmann",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Haider",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "B.",
+      "family": "Freitag",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "EMC 2008 14th European Microscopy Congress 1–5 September 2008, Aachen, Germany"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.018",
+    "title": [
+     "A FORTRAN program for calculating crystallographic data"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/cbo9780511525254.005",
+    "title": [
+     "Dynamical theories of RHEED"
+    ],
+    "container-title": [
+     "Reflection Electron Microscopy and Spectroscopy for Surface Analysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       5,
+       23
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/s0424820100180355",
+    "title": [
+     "Study of Tip-Surface Interactions in Scanning Tunneling Microscopy (STM) by Reflection Electron Microscopy (REM)"
+    ],
+    "author": [
+     {
+      "given": "W.",
+      "family": "Lo",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.C.H.",
+      "family": "Spence",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Kuwabara",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       8,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0304-3991(90)90041-j",
+    "title": [
+     "Electron diffraction conditions and surface imaging in reflection electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "Nan",
+      "family": "Yao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       10
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1002/9783527619283.ch15a",
+    "title": [
+     "Reflection Electron Microscopy"
+    ],
+    "container-title": [
+     "Handbook of Microscopy Set"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       12,
+       27
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1017/s0424820100118230",
+    "title": [
+     "Scanning Reflection Electron Microscopy of 2x1 Domain Structure of Si(111) Surface"
+    ],
+    "author": [
+     {
+      "given": "H.-J.",
+      "family": "Ou",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1985,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0039-6028(96)06226-7",
+    "title": [
+     "Studies of surface stress by reflection electron microscopy and transmission electron microscopy"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Tamura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Nishii",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.",
+      "family": "Minoda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.",
+      "family": "Tanishiro",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Yagi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Surface Science"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1996,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   }
+  ],
+  "items-per-page": 100,
+  "query": {
+   "start-index": 0,
+   "search-terms": null
+  }
+ }
+}

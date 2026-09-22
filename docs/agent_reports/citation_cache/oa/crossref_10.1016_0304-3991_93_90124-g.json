@@ -1,0 +1,209 @@
+{
+ "_url": "https://api.crossref.org/works/10.1016/0304-3991%2893%2990124-g",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2023,
+     9,
+     3
+    ]
+   ],
+   "date-time": "2023-09-03T16:42:41Z",
+   "timestamp": 1693759361699
+  },
+  "reference-count": 12,
+  "publisher": "Elsevier BV",
+  "issue": "4",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       1993,
+       4,
+       1
+      ]
+     ],
+     "date-time": "1993-04-01T00:00:00Z",
+     "timestamp": 733622400000
+    },
+    "content-version": "tdm",
+    "delay-in-days": 0,
+    "URL": "https://www.elsevier.com/tdm/userlicense/1.0/"
+   }
+  ],
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Ultramicroscopy"
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1993,
+     4
+    ]
+   ]
+  },
+  "DOI": "10.1016/0304-3991(93)90124-g",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2002,
+     10,
+     18
+    ]
+   ],
+   "date-time": "2002-10-18T19:43:01Z",
+   "timestamp": 1034970181000
+  },
+  "page": "483-488",
+  "source": "Crossref",
+  "is-referenced-by-count": 10,
+  "title": [
+   "Reflection electron holographic observation of surface displacement field"
+  ],
+  "prefix": "10.1016",
+  "volume": "48",
+  "author": [
+   {
+    "given": "N.",
+    "family": "Osakabe",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "T.",
+    "family": "Matsuda",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "J.",
+    "family": "Endo",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "A.",
+    "family": "Tonomura",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   }
+  ],
+  "member": "78",
+  "container-title": [
+   "Ultramicroscopy"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://api.elsevier.com/content/article/PII:030439919390124G?httpAccept=text/xml",
+    "content-type": "text/xml",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   },
+   {
+    "URL": "https://api.elsevier.com/content/article/PII:030439919390124G?httpAccept=text/plain",
+    "content-type": "text/plain",
+    "content-version": "vor",
+    "intended-application": "text-mining"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2019,
+     4,
+     5
+    ]
+   ],
+   "date-time": "2019-04-05T00:56:07Z",
+   "timestamp": 1554425767000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://linkinghub.elsevier.com/retrieve/pii/030439919390124G"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1993,
+     4
+    ]
+   ]
+  },
+  "references-count": 12,
+  "journal-issue": {
+   "issue": "4",
+   "published-print": {
+    "date-parts": [
+     [
+      1993,
+      4
+     ]
+    ]
+   }
+  },
+  "alternative-id": [
+   "030439919390124G"
+  ],
+  "URL": "https://doi.org/10.1016/0304-3991(93)90124-g",
+  "relation": {},
+  "ISSN": [
+   "0304-3991"
+  ],
+  "issn-type": [
+   {
+    "value": "0304-3991",
+    "type": "print"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1993,
+     4
+    ]
+   ]
+  }
+ }
+}

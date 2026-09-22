@@ -1,0 +1,6 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1380/jsssj.24.166?select=id,cited_by_count",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1994085323",
+ "cited_by_count": 6
+}

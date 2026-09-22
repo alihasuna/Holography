@@ -1,0 +1,375 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1088/1742-6596/443/1/012068?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W1999349831",
+ "doi": "https://doi.org/10.1088/1742-6596/443/1/012068",
+ "title": "Reflection high-energy positron diffraction: the past 15 years and the future",
+ "display_name": "Reflection high-energy positron diffraction: the past 15 years and the future",
+ "publication_year": 2013,
+ "publication_date": "2013-06-10",
+ "type": "conference-paper",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5004092999",
+    "display_name": "Y. Fukaya",
+    "orcid": "https://orcid.org/0000-0002-4375-9186"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Y Fukaya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5008315315",
+    "display_name": "M. Maekawa",
+    "orcid": "https://orcid.org/0000-0001-9172-1206"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "M Maekawa",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5006987352",
+    "display_name": "Izumi Mochizuki",
+    "orcid": "https://orcid.org/0000-0001-5686-8245"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "I Mochizuki",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5063414034",
+    "display_name": "Ken Wada",
+    "orcid": "https://orcid.org/0000-0002-8694-1332"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I138728355",
+     "display_name": "High Energy Accelerator Research Organization",
+     "ror": "https://ror.org/01g5y5k24",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1319490839",
+      "https://openalex.org/I138728355"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4389425390",
+     "display_name": "Institute of Materials Structure Science",
+     "ror": "https://ror.org/0327y7e25",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1319490839",
+      "https://openalex.org/I138728355",
+      "https://openalex.org/I4389425390"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "K Wada",
+   "raw_affiliation_strings": [
+    "Institute of Materials Structure Science, High Energy Accelerator Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Institute of Materials Structure Science, High Energy Accelerator Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan",
+     "institution_ids": [
+      "https://openalex.org/I138728355",
+      "https://openalex.org/I4389425390"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5014821235",
+    "display_name": "Toshio Hyodo",
+    "orcid": "https://orcid.org/0000-0002-1810-732X"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I138728355",
+     "display_name": "High Energy Accelerator Research Organization",
+     "ror": "https://ror.org/01g5y5k24",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1319490839",
+      "https://openalex.org/I138728355"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4389425390",
+     "display_name": "Institute of Materials Structure Science",
+     "ror": "https://ror.org/0327y7e25",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I1319490839",
+      "https://openalex.org/I138728355",
+      "https://openalex.org/I4389425390"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "T Hyodo",
+   "raw_affiliation_strings": [
+    "Institute of Materials Structure Science, High Energy Accelerator Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Institute of Materials Structure Science, High Energy Accelerator Organization (KEK), 1-1 Oho, Tsukuba, Ibaraki 305-0801, Japan",
+     "institution_ids": [
+      "https://openalex.org/I138728355",
+      "https://openalex.org/I4389425390"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5041543188",
+    "display_name": "A. Kawasuso",
+    "orcid": "https://orcid.org/0000-0002-7065-5753"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A Kawasuso",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1088/1742-6596/443/1/012068",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1088/1742-6596/443/1/012068",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4210187594",
+   "display_name": "Journal of Physics Conference Series",
+   "issn_l": "1742-6588",
+   "issn": [
+    "1742-6588",
+    "1742-6596"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320083",
+   "host_organization_name": "IOP Publishing",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320083",
+    "https://openalex.org/P4310311669"
+   ],
+   "host_organization_lineage_names": [
+    "IOP Publishing",
+    "Institute of Physics"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Journal of Physics: Conference Series",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 12,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "diamond",
+  "oa_url": "https://doi.org/10.1088/1742-6596/443/1/012068",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1088/1742-6596/443/1/012068",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1088/1742-6596/443/1/012068",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S4210187594",
+   "display_name": "Journal of Physics Conference Series",
+   "issn_l": "1742-6588",
+   "issn": [
+    "1742-6588",
+    "1742-6596"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320083",
+   "host_organization_name": "IOP Publishing",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320083",
+    "https://openalex.org/P4310311669"
+   ],
+   "host_organization_lineage_names": [
+    "IOP Publishing",
+    "Institute of Physics"
+   ],
+   "type": "journal"
+  },
+  "license": "cc-by",
+  "license_id": "https://openalex.org/licenses/cc-by",
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Journal of Physics: Conference Series",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1613754634",
+  "https://openalex.org/W1644231149",
+  "https://openalex.org/W1671123479",
+  "https://openalex.org/W1963575597",
+  "https://openalex.org/W1967618661",
+  "https://openalex.org/W1974590978",
+  "https://openalex.org/W1992946361",
+  "https://openalex.org/W1994085323",
+  "https://openalex.org/W1998728644",
+  "https://openalex.org/W2004450703",
+  "https://openalex.org/W2018114180",
+  "https://openalex.org/W2018399559",
+  "https://openalex.org/W2024035664",
+  "https://openalex.org/W2034714342",
+  "https://openalex.org/W2038902276",
+  "https://openalex.org/W2041702428",
+  "https://openalex.org/W2043464588",
+  "https://openalex.org/W2063256299",
+  "https://openalex.org/W2074195455",
+  "https://openalex.org/W2076618288",
+  "https://openalex.org/W2089529147",
+  "https://openalex.org/W2092001226",
+  "https://openalex.org/W2119392342",
+  "https://openalex.org/W2151266546",
+  "https://openalex.org/W2229990383",
+  "https://openalex.org/W2326836092",
+  "https://openalex.org/W2332680363",
+  "https://openalex.org/W2334005730",
+  "https://openalex.org/W2476220872",
+  "https://openalex.org/W2963729788",
+  "https://openalex.org/W4234007785"
+ ]
+}

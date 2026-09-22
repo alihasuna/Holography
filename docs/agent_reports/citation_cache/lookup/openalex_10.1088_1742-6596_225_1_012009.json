@@ -1,0 +1,261 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1088/1742-6596/225/1/012009?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2021693714",
+ "doi": "https://doi.org/10.1088/1742-6596/225/1/012009",
+ "title": "Surface plasmon excitation at metal surfaces studied by reflection high-energy positron diffraction",
+ "display_name": "Surface plasmon excitation at metal surfaces studied by reflection high-energy positron diffraction",
+ "publication_year": 2010,
+ "publication_date": "2010-04-01",
+ "type": "conference-paper",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5004092999",
+    "display_name": "Y. Fukaya",
+    "orcid": "https://orcid.org/0000-0002-4375-9186"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Y Fukaya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5041543188",
+    "display_name": "A. Kawasuso",
+    "orcid": "https://orcid.org/0000-0002-7065-5753"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A Kawasuso",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5112040752",
+    "display_name": "A. Ichimiya",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A Ichimiya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1088/1742-6596/225/1/012009",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1088/1742-6596/225/1/012009",
+  "pdf_url": "https://iopscience.iop.org/article/10.1088/1742-6596/225/1/012009/pdf",
+  "source": {
+   "id": "https://openalex.org/S4210187594",
+   "display_name": "Journal of Physics Conference Series",
+   "issn_l": "1742-6588",
+   "issn": [
+    "1742-6588",
+    "1742-6596"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320083",
+   "host_organization_name": "IOP Publishing",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320083",
+    "https://openalex.org/P4310311669"
+   ],
+   "host_organization_lineage_names": [
+    "IOP Publishing",
+    "Institute of Physics"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Journal of Physics: Conference Series",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 1,
+ "open_access": {
+  "is_oa": true,
+  "oa_status": "diamond",
+  "oa_url": "https://iopscience.iop.org/article/10.1088/1742-6596/225/1/012009/pdf",
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": {
+  "id": "doi:10.1088/1742-6596/225/1/012009",
+  "is_oa": true,
+  "landing_page_url": "https://doi.org/10.1088/1742-6596/225/1/012009",
+  "pdf_url": "https://iopscience.iop.org/article/10.1088/1742-6596/225/1/012009/pdf",
+  "source": {
+   "id": "https://openalex.org/S4210187594",
+   "display_name": "Journal of Physics Conference Series",
+   "issn_l": "1742-6588",
+   "issn": [
+    "1742-6588",
+    "1742-6596"
+   ],
+   "is_oa": true,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320083",
+   "host_organization_name": "IOP Publishing",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320083",
+    "https://openalex.org/P4310311669"
+   ],
+   "host_organization_lineage_names": [
+    "IOP Publishing",
+    "Institute of Physics"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Journal of Physics: Conference Series",
+  "raw_type": "journal-article"
+ },
+ "referenced_works": [
+  "https://openalex.org/W1644231149",
+  "https://openalex.org/W1971744462",
+  "https://openalex.org/W1974590978",
+  "https://openalex.org/W1994085323",
+  "https://openalex.org/W1998116183",
+  "https://openalex.org/W2004450703",
+  "https://openalex.org/W2017062950",
+  "https://openalex.org/W2033998668",
+  "https://openalex.org/W2034714342",
+  "https://openalex.org/W2037010062",
+  "https://openalex.org/W2051737338",
+  "https://openalex.org/W2056722718",
+  "https://openalex.org/W2056857254",
+  "https://openalex.org/W2063256299",
+  "https://openalex.org/W2084871610",
+  "https://openalex.org/W2089529147",
+  "https://openalex.org/W2092001226",
+  "https://openalex.org/W2119392342",
+  "https://openalex.org/W2326836092",
+  "https://openalex.org/W4229499352"
+ ]
+}

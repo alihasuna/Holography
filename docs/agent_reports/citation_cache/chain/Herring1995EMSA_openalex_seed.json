@@ -1,0 +1,6 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1017/s0424820100136957?select=id,cited_by_count",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W3036731550",
+ "cited_by_count": 0
+}

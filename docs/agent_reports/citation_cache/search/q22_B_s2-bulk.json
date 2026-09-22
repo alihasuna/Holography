@@ -1,0 +1,103 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychography+%2B+%22scanning+electron+microscope%22+%2B+reflection&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 2,
+ "token": null,
+ "data": [
+  {
+   "paperId": "6effff22039c437e44d7293ad24901709aa5e614",
+   "externalIds": {
+    "ArXiv": "1312.2049",
+    "MAG": "2952957294",
+    "DOI": "10.1364/OPTICA.1.000039",
+    "CorpusId": 10577107
+   },
+   "title": "Tabletop nanometer extreme ultraviolet imaging in an extended reflection mode using coherent Fresnel ptychography",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "c1dd97d9e7bcc3bebd70effd51578ec7f94f0b24",
+   "externalIds": {
+    "DOI": "10.1016/j.ultramic.2023.113720",
+    "CorpusId": 257685958,
+    "PubMed": "37004492"
+   },
+   "title": "Characterisation of engineered defects in extreme ultraviolet mirror substrates using lab-scale extreme ultraviolet reflection ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2208642858",
+     "name": "Haoyan Lu"
+    },
+    {
+     "authorId": "12808282",
+     "name": "M. Odstrčil"
+    },
+    {
+     "authorId": "1729265069",
+     "name": "Charles Pooley"
+    },
+    {
+     "authorId": "2086119636",
+     "name": "Jan Biller"
+    },
+    {
+     "authorId": "2101465818",
+     "name": "Mikheil Mebonia"
+    },
+    {
+     "authorId": "82006036",
+     "name": "G. He"
+    },
+    {
+     "authorId": "38772791",
+     "name": "M. Praeger"
+    },
+    {
+     "authorId": "11586252",
+     "name": "L. Juschkin"
+    },
+    {
+     "authorId": "2326366311",
+     "name": "Jeremy G. Frey"
+    },
+    {
+     "authorId": "5448814",
+     "name": "W. Brocklesby"
+    }
+   ]
+  }
+ ]
+}

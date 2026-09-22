@@ -1,0 +1,244 @@
+{
+ "_url": "https://api.openalex.org/works/doi:10.1103/physrevb.79.193310?select=id,doi,title,display_name,publication_year,publication_date,type,authorships,primary_location,cited_by_count,open_access,best_oa_location,referenced_works",
+ "_retrieved": "2026-09-22",
+ "id": "https://openalex.org/W2092001226",
+ "doi": "https://doi.org/10.1103/physrevb.79.193310",
+ "title": "Inelastic scattering processes in reflection high-energy positron diffraction from a Si(111)−7×7 surface",
+ "display_name": "Inelastic scattering processes in reflection high-energy positron diffraction from a Si(111)−7×7 surface",
+ "publication_year": 2009,
+ "publication_date": "2009-05-26",
+ "type": "article",
+ "authorships": [
+  {
+   "author_position": "first",
+   "author": {
+    "id": "https://openalex.org/A5004092999",
+    "display_name": "Y. Fukaya",
+    "orcid": "https://orcid.org/0000-0002-4375-9186"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "Y. Fukaya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "middle",
+   "author": {
+    "id": "https://openalex.org/A5041543188",
+    "display_name": "A. Kawasuso",
+    "orcid": "https://orcid.org/0000-0002-7065-5753"
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A. Kawasuso",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ]
+  },
+  {
+   "author_position": "last",
+   "author": {
+    "id": "https://openalex.org/A5112040752",
+    "display_name": "A. Ichimiya",
+    "orcid": null
+   },
+   "institutions": [
+    {
+     "id": "https://openalex.org/I117197279",
+     "display_name": "Japan Atomic Energy Agency",
+     "ror": "https://ror.org/05nf86y53",
+     "country_code": "JP",
+     "type": "government",
+     "lineage": [
+      "https://openalex.org/I117197279"
+     ]
+    },
+    {
+     "id": "https://openalex.org/I4210151476",
+     "display_name": "Advanced Science Research Center",
+     "ror": "https://ror.org/05xrbcc66",
+     "country_code": "JP",
+     "type": "facility",
+     "lineage": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    }
+   ],
+   "countries": [
+    "JP"
+   ],
+   "is_corresponding": false,
+   "raw_author_name": "A. Ichimiya",
+   "raw_affiliation_strings": [
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+    "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan"
+   ],
+   "raw_orcid": null,
+   "affiliations": [
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki, Takasaki, Gunma 370-1292, Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279",
+      "https://openalex.org/I4210151476"
+     ]
+    },
+    {
+     "raw_affiliation_string": "Advanced Science Research Center, Japan Atomic Energy Agency, 1233 Watanuki,#N#Takasaki, Gunma 370-1292,#N#Japan",
+     "institution_ids": [
+      "https://openalex.org/I117197279"
+     ]
+    }
+   ]
+  }
+ ],
+ "primary_location": {
+  "id": "doi:10.1103/physrevb.79.193310",
+  "is_oa": false,
+  "landing_page_url": "https://doi.org/10.1103/physrevb.79.193310",
+  "pdf_url": null,
+  "source": {
+   "id": "https://openalex.org/S6791298",
+   "display_name": "Physical Review B",
+   "issn_l": "1098-0121",
+   "issn": [
+    "1098-0121",
+    "1538-4489",
+    "1550-235X"
+   ],
+   "is_oa": false,
+   "is_in_doaj": false,
+   "is_core": true,
+   "host_organization": "https://openalex.org/P4310320261",
+   "host_organization_name": "American Physical Society",
+   "host_organization_lineage": [
+    "https://openalex.org/P4310320261"
+   ],
+   "host_organization_lineage_names": [
+    "American Physical Society"
+   ],
+   "type": "journal"
+  },
+  "license": null,
+  "license_id": null,
+  "version": "publishedVersion",
+  "is_accepted": true,
+  "is_published": true,
+  "raw_source_name": "Physical Review B",
+  "raw_type": "journal-article"
+ },
+ "cited_by_count": 14,
+ "open_access": {
+  "is_oa": false,
+  "oa_status": "closed",
+  "oa_url": null,
+  "any_repository_has_fulltext": false
+ },
+ "best_oa_location": null,
+ "referenced_works": [
+  "https://openalex.org/W1974590978",
+  "https://openalex.org/W1988536001",
+  "https://openalex.org/W1991553910",
+  "https://openalex.org/W1992946361",
+  "https://openalex.org/W1994085323",
+  "https://openalex.org/W1998116183",
+  "https://openalex.org/W2002796843",
+  "https://openalex.org/W2004450703",
+  "https://openalex.org/W2032159912",
+  "https://openalex.org/W2034714342",
+  "https://openalex.org/W2043464588",
+  "https://openalex.org/W2051737338",
+  "https://openalex.org/W2063256299",
+  "https://openalex.org/W2089529147",
+  "https://openalex.org/W2119392342",
+  "https://openalex.org/W2326836092",
+  "https://openalex.org/W4230473182",
+  "https://openalex.org/W4231527061"
+ ]
+}

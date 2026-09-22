@@ -1,0 +1,156 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1380/jsssj.24.166/citations?fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors%2CpublicationTypes%2Cjournal&limit=1000",
+ "_retrieved": "2026-09-22",
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "f25f0c2e14502abaa32f076cf72e5dd5f681001e",
+    "externalIds": {
+     "MAG": "2890069186",
+     "DOI": "10.1088/1361-6463/aadf14",
+     "CorpusId": 125653549
+    },
+    "title": "Total-reflection high-energy positron diffraction (TRHEPD) for structure determination of the topmost and immediate sub-surface atomic layers",
+    "venue": "Journal of Physics D: Applied Physics",
+    "year": 2018,
+    "publicationTypes": [
+     "Review"
+    ],
+    "journal": {
+     "volume": "52",
+     "name": "Journal of Physics D: Applied Physics"
+    },
+    "authors": [
+     {
+      "authorId": "91281335",
+      "name": "Y. Fukaya"
+     },
+     {
+      "authorId": "5057618",
+      "name": "A. Kawasuso"
+     },
+     {
+      "authorId": "91386869",
+      "name": "A. Ichimiya"
+     },
+     {
+      "authorId": "47647587",
+      "name": "T. Hyodo"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ace5d1ab16736e1e7eca8b2d72e0b26f395b9430",
+    "externalIds": {
+     "MAG": "1999349831",
+     "DOI": "10.1088/1742-6596/443/1/012068",
+     "CorpusId": 121017837
+    },
+    "title": "Reflection high-energy positron diffraction: the past 15 years and the future",
+    "venue": "",
+    "year": 2013,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "443",
+     "pages": "012068",
+     "name": "Journal of Physics: Conference Series"
+    },
+    "authors": [
+     {
+      "authorId": "2316483348",
+      "name": "Yuki Fukaya"
+     },
+     {
+      "authorId": "48369711",
+      "name": "M. Maekawa"
+     },
+     {
+      "authorId": "48897860",
+      "name": "I. Mochizuki"
+     },
+     {
+      "authorId": "48807794",
+      "name": "K. Wada"
+     },
+     {
+      "authorId": "2258553678",
+      "name": "T. Hyodo"
+     },
+     {
+      "authorId": null,
+      "name": "Atsuo Kawasuso"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "86eab8274a92f76df8e7281c1222282ee2b3b53e",
+    "externalIds": {
+     "MAG": "1996751208",
+     "DOI": "10.1380/EJSSNT.2010.190",
+     "CorpusId": 120232790
+    },
+    "title": "Surface Plasmon Excitation at Topmost Surface in Reflection High-Energy Positron Diffraction",
+    "venue": "",
+    "year": 2010,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "8",
+     "pages": "190-193",
+     "name": "E-journal of Surface Science and Nanotechnology"
+    },
+    "authors": [
+     {
+      "authorId": "91281335",
+      "name": "Y. Fukaya"
+     },
+     {
+      "authorId": "5057618",
+      "name": "A. Kawasuso"
+     },
+     {
+      "authorId": "91386869",
+      "name": "A. Ichimiya"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "500413b6dc3408cd832a9a210ff4d25c827b4e98",
+    "externalIds": {
+     "MAG": "2021693714",
+     "DOI": "10.1088/1742-6596/225/1/012009",
+     "CorpusId": 95613414
+    },
+    "title": "Surface plasmon excitation at metal surfaces studied by reflection high-energy positron diffraction",
+    "venue": "",
+    "year": 2010,
+    "publicationTypes": null,
+    "journal": {
+     "volume": "225",
+     "pages": "012009",
+     "name": "Journal of Physics: Conference Series"
+    },
+    "authors": [
+     {
+      "authorId": "2316483348",
+      "name": "Yuki Fukaya"
+     },
+     {
+      "authorId": null,
+      "name": "Atsuo Kawasuso"
+     },
+     {
+      "authorId": "91386869",
+      "name": "A. Ichimiya"
+     }
+    ]
+   }
+  }
+ ]
+}

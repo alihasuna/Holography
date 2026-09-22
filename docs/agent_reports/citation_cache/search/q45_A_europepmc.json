@@ -1,0 +1,47 @@
+{
+ "_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28ABSTRACT%3A%22biprism%22+AND+%28ABSTRACT%3A%22reflection+electron+microscopy%22+OR+ABSTRACT%3A%22RHEED%22%29%29&format=json&pageSize=200&resultType=lite",
+ "_retrieved": "2026-09-22",
+ "version": "6.9",
+ "hitCount": 1,
+ "request": {
+  "queryString": "(ABSTRACT:\"biprism\" AND (ABSTRACT:\"reflection electron microscopy\" OR ABSTRACT:\"RHEED\"))",
+  "resultType": "lite",
+  "cursorMark": "*",
+  "pageSize": 200,
+  "sort": "",
+  "synonym": false
+ },
+ "resultList": {
+  "result": [
+   {
+    "id": "1498358",
+    "source": "MED",
+    "pmid": "1498358",
+    "doi": "10.1002/jemt.1070200414",
+    "title": "Reflection electron microscopy and interferometry of atomic steps on gold and platinum single crystal surfaces.",
+    "authorString": "Banzhof H, Herrmann KH, Lichte H.",
+    "journalTitle": "Microsc Res Tech",
+    "issue": "4",
+    "journalVolume": "20",
+    "pubYear": "1992",
+    "journalIssn": "1059-910x; 1097-0029; ",
+    "pageInfo": "450-456",
+    "pubType": "journal article",
+    "isOpenAccess": "N",
+    "inEPMC": "N",
+    "inPMC": "N",
+    "citedByCount": 0,
+    "hasReferences": "Y",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "N",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "N",
+    "hasTMAccessionNumbers": "N",
+    "firstPublicationDate": "1992-02-01",
+    "firstIndexDate": "2008-01-29"
+   }
+  ]
+ }
+}

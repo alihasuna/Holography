@@ -1,0 +1,361 @@
+{
+ "_url": "https://api.crossref.org/works/10.1364/optica.1.000039",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2026,
+     8,
+     28
+    ]
+   ],
+   "date-time": "2026-08-28T08:08:29Z",
+   "timestamp": 1787904509451,
+   "version": "build-2784847793"
+  },
+  "reference-count": 30,
+  "publisher": "Optica Publishing Group",
+  "issue": "1",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       2014,
+       7,
+       22
+      ]
+     ],
+     "date-time": "2014-07-22T00:00:00Z",
+     "timestamp": 1405987200000
+    },
+    "content-version": "vor",
+    "delay-in-days": 0,
+    "URL": "https://doi.org/10.1364/OA_License_v1#VOR-OA"
+   },
+   {
+    "start": {
+     "date-parts": [
+      [
+       2014,
+       7,
+       22
+      ]
+     ],
+     "date-time": "2014-07-22T00:00:00Z",
+     "timestamp": 1405987200000
+    },
+    "content-version": "tdm",
+    "delay-in-days": 0,
+    "URL": "https://opg.optica.org/policies/opg-tdm-policy.json"
+   }
+  ],
+  "funder": [
+   {
+    "DOI": "10.13039/100000185",
+    "name": "Defense Advanced Research Projects Agency (DARPA)",
+    "doi-asserted-by": "publisher",
+    "award": [
+     "DARPA-BAA-12-63"
+    ],
+    "award-info": [
+     {
+      "award-number": [
+       "DARPA-BAA-12-63"
+      ]
+     }
+    ],
+    "id": [
+     {
+      "id": "10.13039/100000185",
+      "id-type": "DOI",
+      "asserted-by": "publisher"
+     }
+    ]
+   },
+   {
+    "DOI": "10.13039/100000001",
+    "name": "National Science Foundation (NSF)",
+    "doi-asserted-by": "publisher",
+    "award": [
+     "COSI IGERT"
+    ],
+    "award-info": [
+     {
+      "award-number": [
+       "COSI IGERT"
+      ]
+     }
+    ],
+    "id": [
+     {
+      "id": "10.13039/100000001",
+      "id-type": "DOI",
+      "asserted-by": "publisher"
+     }
+    ]
+   },
+   {
+    "DOI": "10.13039/100000001",
+    "name": "National Science Foundation (NSF)",
+    "doi-asserted-by": "publisher",
+    "award": [
+     "ERC in EUV Science and Technology"
+    ],
+    "award-info": [
+     {
+      "award-number": [
+       "ERC in EUV Science and Technology"
+      ]
+     }
+    ],
+    "id": [
+     {
+      "id": "10.13039/100000001",
+      "id-type": "DOI",
+      "asserted-by": "publisher"
+     }
+    ]
+   },
+   {
+    "DOI": "10.13039/100000028",
+    "name": "Semiconductor Research Corporation (SRC)",
+    "doi-asserted-by": "publisher",
+    "award": [
+     "2013-OJ-2443"
+    ],
+    "award-info": [
+     {
+      "award-number": [
+       "2013-OJ-2443"
+      ]
+     }
+    ],
+    "id": [
+     {
+      "id": "10.13039/100000028",
+      "id-type": "DOI",
+      "asserted-by": "publisher"
+     }
+    ]
+   }
+  ],
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Optica"
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     2014,
+     7,
+     22
+    ]
+   ]
+  },
+  "DOI": "10.1364/optica.1.000039",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2014,
+     7,
+     22
+    ]
+   ],
+   "date-time": "2014-07-22T15:56:42Z",
+   "timestamp": 1406044602000
+  },
+  "page": "39",
+  "source": "Crossref",
+  "is-referenced-by-count": 180,
+  "title": [
+   "Tabletop nanometer extreme ultraviolet imaging in an extended reflection mode using coherent Fresnel ptychography"
+  ],
+  "prefix": "10.1364",
+  "volume": "1",
+  "author": [
+   {
+    "given": "Matthew D.",
+    "family": "Seaberg",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "given": "Bosheng",
+    "family": "Zhang",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "given": "Dennis F.",
+    "family": "Gardner",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "given": "Elisabeth R.",
+    "family": "Shanblatt",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "given": "Margaret M.",
+    "family": "Murnane",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "given": "Henry C.",
+    "family": "Kapteyn",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   },
+   {
+    "given": "Daniel E.",
+    "family": "Adams",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "vocabulary": "crossref",
+      "role": "author"
+     }
+    ]
+   }
+  ],
+  "member": "285",
+  "published-online": {
+   "date-parts": [
+    [
+     2014,
+     7,
+     22
+    ]
+   ]
+  },
+  "container-title": [
+   "Optica"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://www.osapublishing.org/viewmedia.cfm?URI=optica-1-1-39&seq=0",
+    "content-type": "unspecified",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2024,
+     8,
+     1
+    ]
+   ],
+   "date-time": "2024-08-01T20:44:14Z",
+   "timestamp": 1722545054000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://opg.optica.org/abstract.cfm?URI=optica-1-1-39"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     2014,
+     7,
+     22
+    ]
+   ]
+  },
+  "references-count": 30,
+  "journal-issue": {
+   "issue": "1",
+   "published-online": {
+    "date-parts": [
+     [
+      2014
+     ]
+    ]
+   },
+   "published-print": {
+    "date-parts": [
+     [
+      2014
+     ]
+    ]
+   }
+  },
+  "URL": "https://doi.org/10.1364/optica.1.000039",
+  "relation": {},
+  "ISSN": [
+   "2334-2536"
+  ],
+  "issn-type": [
+   {
+    "value": "2334-2536",
+    "type": "electronic"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     2014,
+     7,
+     22
+    ]
+   ]
+  }
+ }
+}

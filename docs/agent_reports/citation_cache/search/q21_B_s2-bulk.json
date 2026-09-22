@@ -1,0 +1,7 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychography+%2B+%28%22backscattered+electron%22+%7C+%22backscattered+electrons%22%29&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 0,
+ "token": null,
+ "data": []
+}

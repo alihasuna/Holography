@@ -1,0 +1,172 @@
+{
+ "_url": "https://api.crossref.org/works/10.1017/s0424820100136957",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2022,
+     4,
+     4
+    ]
+   ],
+   "date-time": "2022-04-04T11:39:36Z",
+   "timestamp": 1649072376974
+  },
+  "reference-count": 9,
+  "publisher": "Cambridge University Press (CUP)",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       2020,
+       6,
+       18
+      ]
+     ],
+     "date-time": "2020-06-18T00:00:00Z",
+     "timestamp": 1592438400000
+    },
+    "content-version": "unspecified",
+    "delay-in-days": 9076,
+    "URL": "https://www.cambridge.org/core/terms"
+   }
+  ],
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Proc. annu. meet. Electron Microsc. Soc. Am."
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1995,
+     8,
+     13
+    ]
+   ]
+  },
+  "DOI": "10.1017/s0424820100136957",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2020,
+     6,
+     18
+    ]
+   ],
+   "date-time": "2020-06-18T09:51:31Z",
+   "timestamp": 1592473891000
+  },
+  "page": "116-117",
+  "source": "Crossref",
+  "is-referenced-by-count": 0,
+  "title": [
+   "Reflection diffracted beam interferometry (RDBI) applied to the study of surfaces"
+  ],
+  "prefix": "10.1017",
+  "volume": "53",
+  "author": [
+   {
+    "given": "Rodney A.",
+    "family": "Herring",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   }
+  ],
+  "member": "56",
+  "published-online": {
+   "date-parts": [
+    [
+     2020,
+     6,
+     18
+    ]
+   ]
+  },
+  "container-title": [
+   "Proceedings, annual meeting, Electron Microscopy Society of America"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/S0424820100136957",
+    "content-type": "unspecified",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2020,
+     6,
+     18
+    ]
+   ],
+   "date-time": "2020-06-18T09:54:55Z",
+   "timestamp": 1592474095000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://www.cambridge.org/core/product/identifier/S0424820100136957/type/journal_article"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1995,
+     8,
+     13
+    ]
+   ]
+  },
+  "references-count": 9,
+  "alternative-id": [
+   "S0424820100136957"
+  ],
+  "URL": "https://doi.org/10.1017/s0424820100136957",
+  "relation": {},
+  "ISSN": [
+   "0424-8201",
+   "2690-1315"
+  ],
+  "issn-type": [
+   {
+    "value": "0424-8201",
+    "type": "print"
+   },
+   {
+    "value": "2690-1315",
+    "type": "electronic"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1995,
+     8,
+     13
+    ]
+   ]
+  }
+ }
+}

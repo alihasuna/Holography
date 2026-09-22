@@ -1,0 +1,308 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychograph%2A+%2B+electron+%2B+%28reflected+%7C+reflection%29+%2B+surface&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 8,
+ "token": null,
+ "data": [
+  {
+   "paperId": "6effff22039c437e44d7293ad24901709aa5e614",
+   "externalIds": {
+    "ArXiv": "1312.2049",
+    "MAG": "2952957294",
+    "DOI": "10.1364/OPTICA.1.000039",
+    "CorpusId": 10577107
+   },
+   "title": "Tabletop nanometer extreme ultraviolet imaging in an extended reflection mode using coherent Fresnel ptychography",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "6f416fc070d7935ec28783cba0b429ed95a8e463",
+   "externalIds": {
+    "MAG": "2004494855",
+    "DOI": "10.1080/08940886.2013.832585",
+    "CorpusId": 119760150
+   },
+   "title": "A Precision Grazing-incidence Angle Error Measurement of a Hard X-ray Condenser Mirror Using Single-grating Interferometry",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "2068273748",
+     "name": "Ryosuke Fukui"
+    },
+    {
+     "authorId": "46453847",
+     "name": "Jangwoo Kim"
+    },
+    {
+     "authorId": "46386008",
+     "name": "S. Matsuyama"
+    },
+    {
+     "authorId": "5472126",
+     "name": "H. Yumoto"
+    },
+    {
+     "authorId": "36981916",
+     "name": "Y. Inubushi"
+    },
+    {
+     "authorId": "49408192",
+     "name": "K. Tono"
+    },
+    {
+     "authorId": "3661295",
+     "name": "T. Koyama"
+    },
+    {
+     "authorId": "145338563",
+     "name": "Takashi Kimura"
+    },
+    {
+     "authorId": "6845812",
+     "name": "Hidekazu Mimura"
+    },
+    {
+     "authorId": "2370900648",
+     "name": "H. Ohashi"
+    },
+    {
+     "authorId": "145707609",
+     "name": "M. Yabashi"
+    },
+    {
+     "authorId": "48015199",
+     "name": "T. Ishikawa"
+    },
+    {
+     "authorId": "6260147",
+     "name": "K. Yamauchi"
+    }
+   ]
+  },
+  {
+   "paperId": "86d83934585f8bf1c539e84e350f028c1fe2ff0d",
+   "externalIds": {
+    "CorpusId": 215744592
+   },
+   "title": "Three-dimensional observation of magnetic domain structure by scanning hard X-ray microtomography",
+   "venue": "",
+   "year": 2019,
+   "authors": []
+  },
+  {
+   "paperId": "b1a193dd18599b337a4e2e86ab2b99d43ddb1f37",
+   "externalIds": {
+    "CorpusId": 204751638
+   },
+   "title": "Beam drift and partial probe coherence effects in EUV reflective-mode coherent diffractive imaging",
+   "venue": "",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "79717851",
+     "name": "Atrick"
+    },
+    {
+     "authorId": "2082976972",
+     "name": "Elfenstein"
+    },
+    {
+     "authorId": "2078868865",
+     "name": "Ajendran"
+    },
+    {
+     "authorId": "2078872613",
+     "name": "Ajeev"
+    },
+    {
+     "authorId": "2071287154",
+     "name": "acopo"
+    },
+    {
+     "authorId": "2094033914",
+     "name": "Ochi"
+    },
+    {
+     "authorId": "2099171593",
+     "name": "Rmin"
+    },
+    {
+     "authorId": "2103563582",
+     "name": "Leibert"
+    },
+    {
+     "authorId": "2105256323",
+     "name": "V. C.A.F."
+    },
+    {
+     "authorId": "70401482",
+     "name": "Az"
+    },
+    {
+     "authorId": "104079551",
+     "name": "Asin"
+    },
+    {
+     "authorId": "2103212969",
+     "name": "Kinci"
+    }
+   ]
+  },
+  {
+   "paperId": "b3b260ed7dffd2491bf42c992434f840a2a54506",
+   "externalIds": {
+    "CorpusId": 210691152
+   },
+   "title": "Crystal Channeling Experiments in the USA",
+   "venue": "",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "13555484",
+     "name": "U. Wienands"
+    },
+    {
+     "authorId": null,
+     "name": "Miroshnichenko"
+    }
+   ]
+  },
+  {
+   "paperId": "c1dd97d9e7bcc3bebd70effd51578ec7f94f0b24",
+   "externalIds": {
+    "DOI": "10.1016/j.ultramic.2023.113720",
+    "CorpusId": 257685958,
+    "PubMed": "37004492"
+   },
+   "title": "Characterisation of engineered defects in extreme ultraviolet mirror substrates using lab-scale extreme ultraviolet reflection ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2208642858",
+     "name": "Haoyan Lu"
+    },
+    {
+     "authorId": "12808282",
+     "name": "M. Odstrčil"
+    },
+    {
+     "authorId": "1729265069",
+     "name": "Charles Pooley"
+    },
+    {
+     "authorId": "2086119636",
+     "name": "Jan Biller"
+    },
+    {
+     "authorId": "2101465818",
+     "name": "Mikheil Mebonia"
+    },
+    {
+     "authorId": "82006036",
+     "name": "G. He"
+    },
+    {
+     "authorId": "38772791",
+     "name": "M. Praeger"
+    },
+    {
+     "authorId": "11586252",
+     "name": "L. Juschkin"
+    },
+    {
+     "authorId": "2326366311",
+     "name": "Jeremy G. Frey"
+    },
+    {
+     "authorId": "5448814",
+     "name": "W. Brocklesby"
+    }
+   ]
+  },
+  {
+   "paperId": "dd3486c0532f0c695b371f9f9f497cf1dbfd2f13",
+   "externalIds": {
+    "MAG": "1870708608",
+    "DOI": "10.1016/j.ultramic.2015.07.006",
+    "CorpusId": 12840510,
+    "PubMed": "26233823"
+   },
+   "title": "High contrast 3D imaging of surfaces near the wavelength limit using tabletop EUV ptychography.",
+   "venue": "Ultramicroscopy",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "f5d435049c50e0d5a4a8b6ad4a9d03dfc119cbd1",
+   "externalIds": {
+    "CorpusId": 221188471
+   },
+   "title": "Application of Laboratory Based Cone Beam X-ray CT Techniques to Metallurgical Study",
+   "venue": "",
+   "year": 2017,
+   "authors": []
+  }
+ ]
+}

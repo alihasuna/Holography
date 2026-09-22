@@ -40,6 +40,7 @@ Usage (from the repository root):
   python3 tools/lit/citation_lists.py abstracts --out /some/scratch/dir
   python3 tools/lit/citation_lists.py search [--refresh] [--list]
   python3 tools/lit/citation_lists.py oa [DOI ...]
+  python3 tools/lit/citation_lists.py chain      # works citing the later REH papers (topic A)
 """
 
 from __future__ import annotations
@@ -97,7 +98,146 @@ CLASSES = [
 # missing from this table are written as class "UNCLASSIFIED".
 # ---------------------------------------------------------------------------------------------
 CLASSIFICATION: dict[str, tuple[str, str]] = {
+    'doi:10.1002/pssa.2211160113': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W1964912842?select=id,abstract_inverted_index; time-resolved REM of laser-induced surface processes; no holography'),
+    'doi:10.1017/s0424820100154652': ('REH-method/theory',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1017/s0424820100154652; REH described as REM optics measuring the phase of reflected electrons; abstract text covers the sensitivity argument (geometrical path difference, ~0.01 A) but no specific measurement'),
+    'doi:10.1103/physrevlett.62.2969': ('REH-experiment',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W1990705543?select=id,abstract_inverted_index; = P02; screw dislocation on GaAs(110) observed by measuring the phase of reflected electrons'),
+    'doi:10.1557/proc-209-629': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1557/proc-209-629; REM and variants with forward-scattered high-energy electrons'),
+    'doi:10.1103/physrevlett.65.1607': ('other',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2036111952?select=id,abstract_inverted_index; STM of a dislocation on Cu(111)'),
+    'doi:10.2320/matertrans1989.31.551': ('review/history',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W1993895665?select=id,abstract_inverted_index; review of electron-holography applications (transmission set-up described; lists surface morphology among applications)'),
+    'doi:10.1063/1.881230': ('review/history',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1063/1.881230; one-sentence abstract: holography with coherent field-emission beams (general article)'),
+    'doi:10.1017/s0424820100086714': ('other',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1017/s0424820100086714; resolution limits of surface imaging; abstract discusses transmission and profile imaging, no holography'),
+    'doi:10.1002/jemt.1070200415': ('REH-experiment',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1002/jemt.1070200415; = P08; phase of a Bragg-reflected wave measured with FEG + biprism; monoatomic-step phase and dislocation displacement field observed (whether the observations are new is not stated)'),
+    'doi:10.1002/jemt.1070200414': ('REH-experiment',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1002/jemt.1070200414; = P09; biprism at the selected-area-diaphragm position; pi (Au(111)) and 0.9 pi (Pt(111)) step phases measured'),
+    'doi:10.1080/00018739200101473': ('review/history',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W1992093684?select=id,abstract_inverted_index; review of electron-holographic interference microscopy, beams transmitted through or reflected from an object'),
+    'doi:10.1557/proc-295-271': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1557/proc-295-271; RHEED, REM, SREM and REELS of oxide surfaces'),
+    'doi:10.1017/s0424820100129322': ('transmission holography',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1017/s0424820100129322; low-voltage field-emission point-projection (in-line) interferograms in transmission'),
+    'doi:10.1002/jemt.1070200409': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2119419090?select=id,abstract_inverted_index; review of REELS and REM in (S)TEM; phase-contrast REM with FEG, no holography'),
+    'doi:10.1017/s0424820100150642': ('other',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1017/s0424820100150642; survey of SEM, glancing-incidence (S)TEM reflection modes and AFM for ceramic surfaces; no holography'),
+    'doi:10.1088/0034-4885/56/8/002': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2021786678?select=id,abstract_inverted_index; review of REM/RHEED/REELS; lists electron holography among techniques used with REM'),
+    'doi:10.1017/s0424820100136957': ('REH-method/theory',
+        "SECTION_READ (abstract only) https://api.crossref.org/works/10.1017/s0424820100136957; diffracted-beam interferometry with a biprism; abstract states DBI 'has been applied only to transmission' and argues it should apply to RHEED/RLEED/BSED; no reflection measurement in the abstract text"),
+    'doi:10.1002/9783527620647.ch15': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2218635183?select=id,abstract_inverted_index; handbook chapter; section titles only (RHEED patterns, step contrast, RHEED/REM theory)'),
+    'doi:10.1002/9783527619283.ch15a': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W3143095438?select=id,abstract_inverted_index; same content as doi:10.1002/9783527620647.ch15 (Crossref pp. 407-424 for both); section titles only'),
+    'doi:10.1002/9783527620647.ch21': ('transmission holography',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W4233407748?select=id,abstract_inverted_index; handbook chapter; section titles only (conventional TEM, off-axis image-plane holography)'),
+    'doi:10.1002/9783527619283.ch21a': ('transmission holography',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2482034483?select=id,abstract_inverted_index; same content as doi:10.1002/9783527620647.ch21 (Crossref pp. 515-536 for both); section titles only'),
+    'doi:10.1002/9783527614561.ch1': ('review/history',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W4211075259?select=id,abstract_inverted_index; handbook chapter; section titles only (TEM, REM, EELS, ..., electron holography methods)'),
+    'doi:10.1238/physica.topical.076a00016': ('transmission holography',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2044893665?select=id,abstract_inverted_index; phase of a beam transmitted through an object; superconducting vortices'),
+    'doi:10.1142/s0217979200002326': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1142/s0217979200002326; review: electron standing waves and X-ray emission under RHEED conditions; no holography'),
+    'doi:10.1103/physrevlett.84.4389': ('REM/RHEED imaging',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2022894019?select=id,abstract_inverted_index; X-ray yields under RHEED surface-wave resonance, Si(111)-sqrt3-In; no holography'),
+    'doi:10.1143/jjap.40.2527': ('REH-experiment',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1143/jjap.40.2527; energy-filtered electron interferometry in REM geometry, UHV-EM with FEG, Moellenstedt biprism and omega filter, Si(111) 7x7; carrier-fringe visibility and lateral coherence length (~45 nm one-plasmon, ~90 nm no-loss) measured'),
+    'doi:10.1380/jsssj.24.166': ('REH-experiment',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W1994085323?select=id,abstract_inverted_index; energy filtering of REM, RHEED and REH on clean Si surfaces with an omega filter in a UHV FEG microscope; contrast of REM images and holograms improved'),
+    'doi:10.1039/9781847557926-00138': ('transmission holography',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2344883807?select=id,abstract_inverted_index; review chapter; hologram formed in the TEM (abstract truncated in the record)'),
+    'doi:10.1117/1.jmm.14.4.041304': ('other',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W1085130950?select=id,abstract_inverted_index; compression of optical digital holograms of wafer surfaces'),
+    'doi:10.1039/9781782621867-00158': ('transmission holography',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1039/9781782621867-00158; review chapter on off-axis holography of thin samples in the TEM'),
+    'doi:10.1021/acs.cgd.9b00339': ('other',
+        'SECTION_READ (abstract only) https://api.openalex.org/works/W2969661582?select=id,abstract_inverted_index; elastic properties of cubic GaN in v-grooved Si(001); no holography'),
+    'doi:10.1093/jmicro/dfaa033': ('review/history',
+        'SECTION_READ (abstract only) https://api.crossref.org/works/10.1093/jmicro/dfaa033; review of the basics of electron holography and interferometry (special-issue introduction)'),
+    'doi:10.1016/0039-6028(90)90669-y': ('REM/RHEED imaging',
+        'UNVERIFIED classification (title only); title: magnetic contrast in REM'),
+    'doi:10.1016/0304-3991(91)90076-i': ('REH-method/theory',
+        'UNVERIFIED classification (title only); title: contrast simulation of high-resolution electron holography on surface structures; the title does not say whether the geometry is reflection or profile transmission'),
+    'doi:10.1016/0304-3991(92)90195-p': ('other',
+        'UNVERIFIED classification (title only); title: resolution limitation in the electron microscopy of surfaces (companion EMSA abstract doi:10.1017/s0424820100086714 read: transmission/profile imaging)'),
+    'doi:10.1016/0039-6028(92)91219-2': ('other',
+        'UNVERIFIED classification (title only); title: diffuse LEED pattern as a hologram (LEED direct methods, not off-axis electron holography)'),
+    'doi:10.1016/0168-9002(92)90973-8': ('transmission holography',
+        'UNVERIFIED classification (title only); title: electron holography and the Aharonov-Bohm effect'),
+    'doi:10.1007/978-3-642-84482-9_4': ('review/history',
+        'UNVERIFIED classification (title only); title: electron holography and its applications to surface observation (book chapter)'),
+    'doi:10.1016/0039-6028(93)90047-n': ('REH-experiment',
+        'UNVERIFIED classification (title only); title: application of electron holography to surface topography observation (Osakabe); the title does not state the geometry'),
+    'doi:10.1007/978-3-662-13913-4_7': ('review/history',
+        "UNVERIFIED classification (title only); title: book chapter 'Electron-Holographic Interferometry' (1993 edition)"),
+    'doi:10.1016/0039-6028(93)90046-m': ('review/history',
+        'UNVERIFIED classification (title only); title: electron holography and holographic diffraction for surface studies (Cowley); whether reflection holography is treated is not determinable'),
+    'doi:10.1016/0304-3991(93)90124-g': ('REH-experiment',
+        'UNVERIFIED classification (title only); title: reflection electron holographic observation of surface displacement field (Osakabe 1993)'),
+    'doi:10.1016/0304-3991(93)90123-f': ('REH-method/theory',
+        "UNVERIFIED classification (title only); = P03; title 'Reflection electron holography' only; whether it reports new measurements is unknown"),
+    'doi:10.1016/0167-5729(93)90002-7': ('REM/RHEED imaging',
+        'UNVERIFIED classification (title only); title: REM studies of surface structures and dynamic processes (review)'),
+    'doi:10.1007/978-3-642-79232-8_1': ('review/history',
+        'UNVERIFIED classification (title only); title: electron holography and its applications (book chapter)'),
+    'doi:10.1016/b978-0-12-333354-4.50031-8': ('review/history',
+        "UNVERIFIED classification (title only); bibliography section; Crossref container title 'Principles of Electron Optics' (1994)"),
+    'doi:10.1016/0167-5729(94)90005-1': ('review/history',
+        'UNVERIFIED classification (title only); title: recent advances in electron phase microscopy (review)'),
+    'doi:10.1007/978-3-540-48995-5_8': ('REM/RHEED imaging',
+        'UNVERIFIED classification (title only); title: energy-filtered reflection electron microscopy (book chapter)'),
+    'doi:10.1111/j.1749-6632.1995.tb38969.x': ('review/history',
+        'UNVERIFIED classification (title only); title: recent advances in electron interferometry'),
+    'doi:10.1016/s1076-5670(08)70068-5': ('review/history',
+        'UNVERIFIED classification (title only); title: electron microscopes and microscopy in Japan (history; Crossref pp. 685-722)'),
+    'doi:10.1016/s1076-5670(08)70063-6': ('review/history',
+        'UNVERIFIED classification (title only); title: electron microscopes and microscopy in Japan (history; Crossref pp. 653-657)'),
+    'doi:10.1016/b978-012333340-7/50264-7': ('review/history',
+        "UNVERIFIED classification (title only); bibliography section; Crossref container 'Principles of Electron Optics' (1996; same pages as the 1994 record +1)"),
+    'doi:10.1007/978-3-662-14824-2_6': ('other',
+        'UNVERIFIED classification (title only); title: scattering and phase contrast for amorphous specimens (TEM textbook chapter)'),
+    'doi:10.1016/s0001-8686(97)90026-9': ('other',
+        'UNVERIFIED classification (title only); title: possibility of measuring the spin polarization of electrons from the top atomic layer'),
+    'doi:10.1016/s0168-9002(97)01067-x': ('transmission holography',
+        'UNVERIFIED classification (title only); title: observation of quantized vortices in superconductors by electron waves (NIM A version)'),
+    'doi:10.1007/978-3-540-37204-2_7': ('review/history',
+        "UNVERIFIED classification (title only); title: book chapter 'Electron-Holographic Interferometry' (1999 edition)"),
+    'doi:10.1007/s00419-013-0803-0': ('other',
+        'UNVERIFIED classification (title only); title: continuum mechanics of a screw dislocation near a free surface'),
+    'doi:10.1081/e-escs3-120028068': ('REM/RHEED imaging',
+        "UNVERIFIED classification (title only); title: encyclopedia entry 'Electron Microscopy: Surface Diffraction'"),
+    'doi:10.1007/978-3-030-00069-1_16': ('review/history',
+        "UNVERIFIED classification (title only); title: handbook chapter 'Electron Holography'"),
+    'doi:10.1016/b978-0-12-818979-5.00101-7': ('review/history',
+        "UNVERIFIED classification (title only); bibliography section; Crossref container 'Principles of Electron Optics, Volume 3' (2022)"),
 }
+
+# Hand-verified aliases: records that the DOI / title+year rule cannot merge but that are the same
+# work. Merged into the canonical key before the TSV is written.
+#   S2 paperId 14e6f2104493e79f551116629ddba47588119abd: no DOI, year 2004, authors H. Banzhof,
+#   K. Herrmann, H. Lichte, title "Reflection Electron Steps on Gold and Microscopy and
+#   Interferometry of Atomic Platinum Single Crystal Surfaces" = P09's title words reordered.
+ALIASES = {
+    "ty:reflection electron steps on gold and microscopy and interferometry of atomic platinum "
+    "single crystal surfaces|2004": "doi:10.1002/jemt.1070200414",
+}
+
+# Same content registered under two DOIs (Crossref: same title, same page range, same year; or
+# pages differing by one for the Hawkes-Kasper printings). Kept as separate TSV rows (different
+# DOIs) but counted once in the "distinct works" totals printed by `build`.
+SAME_CONTENT = [
+    ("doi:10.1002/9783527620647.ch15", "doi:10.1002/9783527619283.ch15a"),
+    ("doi:10.1002/9783527620647.ch21", "doi:10.1002/9783527619283.ch21a"),
+    ("doi:10.1016/b978-0-12-333354-4.50031-8", "doi:10.1016/b978-012333340-7/50264-7"),
+]
 
 
 # ----------------------------------------------------------------------------- HTTP helpers --
@@ -492,6 +632,13 @@ def build_records():
                     r["meta"] = {**crossref_to_meta(cr["message"]), "_db": "crossref-single"}
                 else:
                     r["meta"] = {"doi": r["doi"], "_db": "none"}
+    for alias, canon in ALIASES.items():                # 4) hand-verified aliases
+        if alias in records and canon in records:
+            a = records.pop(alias)
+            for sd in SEEDS:
+                records[canon]["cites"][sd] |= a["cites"][sd]
+            records[canon]["found"] |= a["found"]
+            records[canon].setdefault("aliases", []).append(alias)
     return records, raw_counts, lists, single
 
 
@@ -543,8 +690,14 @@ def cmd_build(args) -> None:
     supp_only = [r for r in records.values()
                  if not any(r["cites"][s] for s in SEEDS_PRIMARY)
                  and any(r["cites"][s] for s in SEEDS_SUPPLEMENT)]
-    print(f"\n== Unique citing works overall: {len(records)}  (citing at least one of P01/P02/P02E/P03:"
-          f" {len(prim)};  citing only P08 and/or P09: {len(supp_only)})")
+    n_alias = sum(len(r.get("aliases", [])) for r in records.values())
+    dup_keys = {b for a, b in SAME_CONTENT if a in records and b in records}
+    print(f"\n== Unique citing records overall: {len(records)} after merging {n_alias} hand-verified "
+          f"alias record(s)  (citing at least one of P01/P02/P02E/P03: {len(prim)};  citing only P08"
+          f" and/or P09: {len(supp_only)})")
+    print(f"   distinct works after counting {len(dup_keys)} same-content DOI pair(s) once: "
+          f"{len(records) - len(dup_keys)}  (citing P01/P02/P02E/P03: "
+          f"{len(prim) - sum(1 for r in prim if r['key'] in dup_keys)})")
     print(f"   with DOI: {sum(1 for r in records.values() if r['doi'])};"
           f"  without DOI (title+year key): {sum(1 for r in records.values() if not r['doi'])}")
     for db in LINK_DBS:
@@ -606,14 +759,24 @@ def cmd_build(args) -> None:
     if unused:
         print(f"   WARNING: {len(unused)} CLASSIFICATION keys match no record: {sorted(unused)}")
 
-    print("\n== Class counts (all | citing P01/P02/P02E/P03 | citing only P08/P09)")
+    print("\n== Class counts over TSV rows (all | citing P01/P02/P02E/P03 | citing only P08/P09 |"
+          " distinct works | rows published after 1993)")
     for c in CLASSES + ["UNCLASSIFIED"]:
         a = sum(1 for x in rows if x["class"] == c)
         b = sum(1 for x in rows if x["class"] == c and x["_key"] in prim_keys)
-        print(f"   {c:26s} {a:4d} {b:4d} {a - b:4d}")
+        d = a - sum(1 for x in rows if x["class"] == c and x["_key"] in dup_keys)
+        e = sum(1 for x in rows if x["class"] == c and int(x["year"] or 0) > 1993)
+        print(f"   {c:26s} {a:4d} {b:4d} {a - b:4d} {d:4d} {e:4d}")
     n_title = sum(1 for x in rows if x["evidence"].startswith("UNVERIFIED"))
     n_abs = sum(1 for x in rows if x["evidence"].startswith("SECTION_READ"))
     print(f"   classified from an abstract: {n_abs};  from the title only (UNVERIFIED): {n_title}")
+
+    print("\n== Rows published after 2003, by class: " + ", ".join(
+        f"{c}={sum(1 for x in rows if x['class'] == c and int(x['year'] or 0) > 2003)}"
+        for c in CLASSES) + f"  (total {sum(1 for x in rows if int(x['year'] or 0) > 2003)})")
+    for x in rows:
+        if int(x["year"] or 0) > 2003:
+            print(f"   {x['year']}  {x['class']:24s} {x['first_author']}  {x['title'][:70]}")
 
     print("\n== Citing works published after 1993 in classes REH-experiment / REH-method/theory")
     for x in rows:
@@ -761,7 +924,33 @@ SEARCHES = [
     ("C", "arxiv", 'abs:"Bragg ptychography"'),
     ("C", "arxiv", 'abs:ptychography AND abs:"grazing incidence"'),
     ("C", "arxiv", 'abs:ptychography AND abs:"crystal truncation rod"'),
+    # appended after the first run (indices of the queries above are fixed by the cache names)
+    ("A", "s2-bulk", '"electron interferometry" + "reflection electron microscopy"'),
+    ("A", "s2-bulk", 'biprism + ("reflection electron microscopy" | RHEED | "reflection high energy electron")'),
+    ("A", "s2-bulk", '"reflection electron" + hologra*'),
+    ("A", "europepmc", '(ABSTRACT:"biprism" AND (ABSTRACT:"reflection electron microscopy" OR ABSTRACT:"RHEED"))'),
+    ("A", "arxiv", 'abs:biprism AND abs:reflection'),
+    ("A", "crossref-query", "reflection electron microscopy interferometry biprism"),
+    ("B", "s2-bulk", 'ptychograph* + ("low energy electron" | LEEM | LEED)'),
+    ("B", "s2-bulk", 'ptychograph* + electron + (reflected | reflection) + surface'),
+    ("B", "s2-bulk", '"4D-STEM" + (reflection | RHEED | "grazing incidence")'),
+    ("B", "europepmc", '(ABSTRACT:"ptychography" AND (ABSTRACT:"RHEED" OR ABSTRACT:"reflection electron microscopy" OR ABSTRACT:"grazing incidence"))'),
+    ("B", "arxiv", 'abs:ptychography AND abs:"low energy electron"'),
+    ("B", "crossref-query", "reflection electron ptychography"),
 ]
+
+# Forward chaining for topic A: works citing the post-1988 reflection-electron-holography /
+# reflection-interferometry papers located by the citation lists and searches (their DOIs were
+# returned by the APIs; see the report).
+CHAIN_SEEDS = {
+    "Osakabe1989EMSA": "10.1017/s0424820100154652",
+    "Takeguchi1990JEM": "10.1093/oxfordjournals.jmicro.a050815",
+    "Osakabe1993SS": "10.1016/0039-6028(93)90047-n",
+    "Osakabe1993UM": "10.1016/0304-3991(93)90124-g",
+    "Herring1995EMSA": "10.1017/s0424820100136957",
+    "Suzuki2001JJAP": "10.1143/jjap.40.2527",
+    "Tanishiro2003HK": "10.1380/jsssj.24.166",
+}
 
 
 def run_search(i: int, topic: str, engine: str, query: str, refresh: bool) -> dict:
@@ -819,7 +1008,11 @@ def run_search(i: int, topic: str, engine: str, query: str, refresh: bool) -> di
         if xml_path.exists() and not refresh:
             body = xml_path.read_bytes()
         else:
-            _, body = http_get(url, accept="application/atom+xml")
+            # export.arxiv.org answers HTTP 406 to Python's urllib in this environment (it
+            # answers 200 to curl with the same headers), so arXiv is fetched with curl.
+            import subprocess
+            body = subprocess.run(["curl", "-sS", "-f", "-m", "90", "-A", USER_AGENT, url],
+                                  check=True, capture_output=True).stdout
             sdir.mkdir(parents=True, exist_ok=True)
             # keep bibliographic fields only: drop <summary> (abstract) before caching
             body = re.sub(rb"<summary>.*?</summary>", b"<summary/>", body, flags=re.S)
@@ -861,6 +1054,53 @@ def cmd_search(args) -> None:
             for it in sorted(r["items"], key=lambda x: str(x.get("year"))):
                 print(f"   {it.get('year')} | {it.get('first_author')} | {it.get('title')} | "
                       f"{it.get('venue')} | {it.get('doi')}")
+
+
+def cmd_chain(args) -> None:
+    """Citing works (S2 + COCI + OpenAlex single-record reverse check) of CHAIN_SEEDS."""
+    main_records, _, _, _ = build_records()
+    known = set(main_records)
+    union: dict[str, dict] = {}
+    for name, doi in CHAIN_SEEDS.items():
+        cdir = CACHE / "chain"
+        oa = cached_json(cdir / f"{name}_openalex_seed.json",
+                         f"https://api.openalex.org/works/doi:{doi_path(doi)}?select=id,cited_by_count",
+                         False)
+        wid = oa.get("id")
+        s2 = cached_json(cdir / f"{name}_s2_citations.json",
+                         f"https://api.semanticscholar.org/graph/v1/paper/DOI:{doi_path(doi)}/citations?"
+                         + urllib.parse.urlencode({"fields": S2_CITATION_FIELDS, "limit": "1000"}),
+                         False)
+        time.sleep(1.1)
+        co = cached_json(cdir / f"{name}_coci_citations.json",
+                         f"https://opencitations.net/index/coci/api/v1/citations/{doi_path(doi)}", False)
+        s2_items = [x["citingPaper"] for x in s2.get("data", []) if x.get("citingPaper")]
+        coci = [clean_doi(r["citing"]) for r in co.get("_list", [])]
+        links = {}
+        for p in s2_items:
+            m = s2_to_meta(p)
+            k = "doi:" + m["doi"] if m["doi"] else "ty:" + norm_title(m["title"]) + "|" + str(m["year"])
+            links.setdefault(k, {"meta": m, "src": set()})["src"].add("S2")
+        for d in coci:
+            links.setdefault("doi:" + d, {"meta": {"doi": d}, "src": set()})["src"].add("COCI")
+        for k, v in links.items():
+            if v["meta"].get("doi"):
+                rec = openalex_single(v["meta"]["doi"])
+                if rec.get("_http_status") != 404:
+                    if wid and wid in (rec.get("referenced_works") or []):
+                        v["src"].add("OAref")
+                    if not v["meta"].get("title"):
+                        v["meta"] = oa_to_meta(rec)
+        print(f"\n--- {name} {doi}: OpenAlex cited_by_count={oa.get('cited_by_count')} "
+              f"S2={len(s2_items)} COCI={len(coci)} union={len(links)}")
+        for k, v in sorted(links.items(), key=lambda kv: str(kv[1]['meta'].get('year'))):
+            m = v["meta"]
+            flag = "" if k in known else "  [NEW: not in the P01-P09 citing set]"
+            print(f"   {m.get('year')} | {m.get('first_author')} | {m.get('title')} | {m.get('venue')} | "
+                  f"{m.get('doi')} | {'+'.join(sorted(v['src']))}{flag}")
+            union.setdefault(k, v)
+    new = [k for k in union if k not in known]
+    print(f"\n== chain union: {len(union)} citing records; not in the P01-P09 citing set: {len(new)}")
 
 
 # --------------------------------------------------------------------------------------- oa --
@@ -909,6 +1149,7 @@ def main(argv=None) -> None:
     p = sub.add_parser("search"); p.add_argument("--refresh", action="store_true")
     p.add_argument("--list", action="store_true"); p.set_defaults(f=cmd_search)
     p = sub.add_parser("oa"); p.add_argument("dois", nargs="*"); p.set_defaults(f=cmd_oa)
+    p = sub.add_parser("chain"); p.set_defaults(f=cmd_chain)
     args = ap.parse_args(argv)
     args.f(args)
 

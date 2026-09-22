@@ -1,0 +1,142 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychograph%2A+%2B+%28%22low+energy+electron%22+%7C+LEEM+%7C+LEED%29&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 5,
+ "token": null,
+ "data": [
+  {
+   "paperId": "18a83228340cbdfd1dddc52c4a27ab0faea28bc4",
+   "externalIds": {
+    "PubMedCentral": "12521724",
+    "DOI": "10.1038/s41467-025-64133-3",
+    "CorpusId": 282099132,
+    "PubMed": "41087341"
+   },
+   "title": "Sub-ångström resolution ptychography in a scanning electron microscope at 20 keV",
+   "venue": "Nature Communications",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2249562471",
+     "name": "Arthur M. Blackburn"
+    },
+    {
+     "authorId": "2272880954",
+     "name": "Cristina Cordoba"
+    },
+    {
+     "authorId": "2313195716",
+     "name": "Matthew R Fitzpatrick"
+    },
+    {
+     "authorId": "2313198815",
+     "name": "Robert McLeod"
+    }
+   ]
+  },
+  {
+   "paperId": "6d6dfdec32936cc81a1e312b76d62c3e462251f5",
+   "externalIds": {
+    "PubMedCentral": "3316878",
+    "MAG": "2140412562",
+    "DOI": "10.1038/ncomms1733",
+    "CorpusId": 16557666,
+    "PubMed": "22395621"
+   },
+   "title": "Ptychographic electron microscopy using high-angle dark-field scattering for sub-nanometre resolution imaging",
+   "venue": "Nature Communications",
+   "year": 2012,
+   "authors": [
+    {
+     "authorId": "35676719",
+     "name": "M. Humphry"
+    },
+    {
+     "authorId": "39494177",
+     "name": "B. Kraus"
+    },
+    {
+     "authorId": "2060807819",
+     "name": "A. Hurst"
+    },
+    {
+     "authorId": "5331577",
+     "name": "A. Maiden"
+    },
+    {
+     "authorId": "2944577",
+     "name": "J. Rodenburg"
+    }
+   ]
+  },
+  {
+   "paperId": "b3b260ed7dffd2491bf42c992434f840a2a54506",
+   "externalIds": {
+    "CorpusId": 210691152
+   },
+   "title": "Crystal Channeling Experiments in the USA",
+   "venue": "",
+   "year": 2018,
+   "authors": [
+    {
+     "authorId": "13555484",
+     "name": "U. Wienands"
+    },
+    {
+     "authorId": null,
+     "name": "Miroshnichenko"
+    }
+   ]
+  },
+  {
+   "paperId": "bfc72d05c6ffbe860dc0920ee4e006d724d7acd0",
+   "externalIds": {
+    "MAG": "2128986954",
+    "DOI": "10.1093/jmicro/dfu109",
+    "CorpusId": 9075656,
+    "PubMed": "25543180"
+   },
+   "title": "Possibility of high-resolution ptychographic iterative imaging with low energy electrons: dynamical calculations.",
+   "venue": "Microscopy",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "2151979060",
+     "name": "Ling Wang"
+    },
+    {
+     "authorId": "2155881302",
+     "name": "Cheng Liu"
+    },
+    {
+     "authorId": "2944577",
+     "name": "J. Rodenburg"
+    }
+   ]
+  },
+  {
+   "paperId": "fdb3aaaa4c13ee65ed521991af4667511062d2dc",
+   "externalIds": {
+    "DOI": "10.1017/S1431927622002422",
+    "CorpusId": 250926669
+   },
+   "title": "Assisting Phase Unwrapping in Ptychography Through Minimal Phase Accumulation for Low Energy Electron Ptychography",
+   "venue": "Microscopy and Microanalysis",
+   "year": 2022,
+   "authors": [
+    {
+     "authorId": "31729501",
+     "name": "A. Blackburn"
+    },
+    {
+     "authorId": "152197581",
+     "name": "M. Fitzpatrick"
+    },
+    {
+     "authorId": "2070417409",
+     "name": "C. Cordoba"
+    }
+   ]
+  }
+ ]
+}

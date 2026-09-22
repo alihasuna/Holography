@@ -1,0 +1,4230 @@
+{
+ "_url": "https://api.crossref.org/works?query.bibliographic=reflection+electron+holography&rows=100&select=DOI%2Ctitle%2Cauthor%2Ccontainer-title%2Cissued%2Ctype",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work-list",
+ "message-version": "1.0.0",
+ "message": {
+  "facets": {},
+  "total-results": 1174916,
+  "items": [
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050815",
+    "title": [
+     "Observation of GaAs(110) Surface Defect by Reflection Electron Holography"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/0304-3991(93)90123-f",
+    "title": [
+     "Reflection electron holography"
+    ],
+    "author": [
+     {
+      "given": "H.",
+      "family": "Banzhof",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.-H.",
+      "family": "Herrmann",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993,
+       4
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1887/0750309121/b1394c12",
+    "title": [
+     "Transfer reflection holograms"
+    ],
+    "container-title": [
+     "Practical Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1117/3.1002325.ch16",
+    "title": [
+     "Reflection Geometry"
+    ],
+    "container-title": [
+     "Field Guide to Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50004-x",
+    "title": [
+     "Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Hannes",
+      "family": "Lichte",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50034-8",
+    "title": [
+     "Amplitude-division electron holography"
+    ],
+    "author": [
+     {
+      "given": "Q.",
+      "family": "Ru",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/jemt.1070200415",
+    "title": [
+     "Observation of surfaces by reflection electron holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy Research and Technique"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1992,
+       2,
+       15
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1117/3.1002325.ch34",
+    "title": [
+     "Inline Reflection Hologram (Denisyuk)"
+    ],
+    "container-title": [
+     "Field Guide to Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/9783527829712.ch4",
+    "title": [
+     "Principles of Electron Holography"
+    ],
+    "container-title": [
+     "Material Characterization using Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       9,
+       2
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50007-5",
+    "title": [
+     "Phase-shifting techniques in electron holography"
+    ],
+    "author": [
+     {
+      "given": "Q.",
+      "family": "Ru",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1017/s0424820100154652",
+    "title": [
+     "Observation of surface morphology by reflection electron holography"
+    ],
+    "author": [
+     {
+      "given": "N.",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Proceedings, annual meeting, Electron Microscopy Society of America"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       8,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1201/b19323-22",
+    "title": [
+     "Transfer Reflection Image Holograms"
+    ],
+    "container-title": [
+     "Practical Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2015,
+       9,
+       22
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50011-7",
+    "title": [
+     "Practical Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "E.",
+      "family": "Völkl",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "L.F.",
+      "family": "Allard",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "B.",
+      "family": "Frost",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_13",
+    "title": [
+     "Electron Holography Using Diffracted Electron Beams (DBH)"
+    ],
+    "author": [
+     {
+      "given": "R. A.",
+      "family": "Herring",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s0304-3991(00)00115-7",
+    "title": [
+     "Compositional analysis based on electron holography and a chemically sensitive reflection"
+    ],
+    "author": [
+     {
+      "given": "A",
+      "family": "Rosenauer",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D",
+      "family": "Van Dyck",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M",
+      "family": "Arzberger",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G",
+      "family": "Abstreiter",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Ultramicroscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2001,
+       6
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1109/jqe.1986.1073189",
+    "title": [
+     "Multistability in reflection grating real-time holography"
+    ],
+    "author": [
+     {
+      "given": "A.",
+      "family": "Bledowski",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "W.",
+      "family": "Krolikowski",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Kujawski",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "IEEE Journal of Quantum Electronics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986,
+       9
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50023-3",
+    "title": [
+     "Transmission Electron Holography of Polymer Microstructure"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Libera",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Ott",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Y.C.",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50005-1",
+    "title": [
+     "Digital recording and processing in electron off-axis holography"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Ade",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50035-x",
+    "title": [
+     "The First International Workshop on Electron Holography - Concluding Remarks -"
+    ],
+    "author": [
+     {
+      "given": "David C.",
+      "family": "Joy",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1117/12.951453",
+    "title": [
+     "Color Reflection Holography"
+    ],
+    "author": [
+     {
+      "given": "Paul M.",
+      "family": "Hubel",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "The University of Oxford (U.K)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Andrew A.",
+      "family": "Ward",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "The University of Oxford (U.K)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography III"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       5,
+       25
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1364/holography.1986.md2",
+    "title": [
+     "Reflection Holographic Stereograms"
+    ],
+    "author": [
+     {
+      "given": "Stephen A.",
+      "family": "Benton",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Topical Meeting on Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50016-6",
+    "title": [
+     "Electron holography of magnetic and electric microfields"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Matteucci",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Muccini",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.",
+      "family": "Cavalcoli",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_4",
+    "title": [
+     "Practical Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "David J.",
+      "family": "Smith",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M. R.",
+      "family": "McCartney",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50006-3",
+    "title": [
+     "Observation of atomic surface potential by electron holography"
+    ],
+    "author": [
+     {
+      "given": "Takayoshi",
+      "family": "Tanji",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kazuo",
+      "family": "Ishizuka",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_12",
+    "title": [
+     "Applications of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Gajdardziska-Josifovska",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A. H.",
+      "family": "Carim",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1364/dh.2022.th2a.2",
+    "title": [
+     "Digital Volume Reflection Holography: Analysis of Diffraction Efficiency"
+    ],
+    "author": [
+     {
+      "given": "Saleha",
+      "family": "Qissi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Partha P.",
+      "family": "Banerjee",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Digital Holography and 3-D Imaging 2022"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50020-8",
+    "title": [
+     "Electron Holography of Heterogeneous Catalysts"
+    ],
+    "author": [
+     {
+      "given": "A.K.",
+      "family": "Datye",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.S.",
+      "family": "Kalakkad",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "E.",
+      "family": "Völkl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "L.F.",
+      "family": "Allard",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50028-2",
+    "title": [
+     "Coherent electron diffraction and holography"
+    ],
+    "author": [
+     {
+      "given": "J.W.",
+      "family": "Steeds",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "P.A.",
+      "family": "Midgley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "P.",
+      "family": "Spellward",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "R.",
+      "family": "Vincent",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1117/12.939800",
+    "title": [
+     "Pseudo - Color Reflection Holography - An Artist's Perspective"
+    ],
+    "author": [
+     {
+      "given": "M. M.",
+      "family": "Crenshaw",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Consultant (Canada)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography II"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1987,
+       6,
+       4
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1002/9781119997290.ch2",
+    "title": [
+     "Digital Reflection Holography and Applications"
+    ],
+    "author": [
+     {
+      "given": "Vijay Raj",
+      "family": "Singh",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Anand",
+      "family": "Asundi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Digital Holography for MEMS and Microsystem Metrology"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2011,
+       7,
+       5
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1007/978-3-662-13913-4_5",
+    "title": [
+     "Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_11",
+    "title": [
+     "Focus Variation Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Dirk",
+      "family": "Van Dyck",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Marc",
+      "family": "Op de Beeck",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1201/9781003155416-25",
+    "title": [
+     "Electron and Neutron Holography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0002-2259-2129",
+      "authenticated-orcid": false,
+      "given": "Vincent",
+      "family": "Toal",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       11,
+       9
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/9780470224137.ch16",
+    "title": [
+     "In‐Line “Denisyuk” Reflection Holography"
+    ],
+    "container-title": [
+     "Holographic Imaging"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2007,
+       5,
+       21
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1007/978-3-540-37204-2_5",
+    "title": [
+     "Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_9",
+    "title": [
+     "High Resolution Off-Axis Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "W. D.",
+      "family": "Rau",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.",
+      "family": "Lichte",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1117/12.961025",
+    "title": [
+     "Color Reflection Holography"
+    ],
+    "author": [
+     {
+      "given": "Ventseslav",
+      "family": "Sainov",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Bulgarian Academy of Sciences (Bulgaria)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Simeon",
+      "family": "Sainov",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Bulgarian Academy of Sciences (Bulgaria)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hans",
+      "family": "Bjelkhagen",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Royal Institute of Technology (Sweden)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986,
+       8,
+       20
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1201/9781420033663.ch12",
+    "title": [
+     "Transfer reflection holograms"
+    ],
+    "container-title": [
+     "Practical Holography, Third Edition"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2003,
+       11,
+       17
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.5772/14280",
+    "title": [
+     "Fundamentals and Applications of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Holography, Research and Technologies"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2011,
+       2,
+       28
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_14",
+    "title": [
+     "Electron Holography at Low Energy"
+    ],
+    "author": [
+     {
+      "given": "J. C. H.",
+      "family": "Spence",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_3",
+    "title": [
+     "Optical Characteristics of an Holography Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "L. F.",
+      "family": "Allard",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "E.",
+      "family": "Völkl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_7",
+    "title": [
+     "Electron Holography of Electromagnetic Fields"
+    ],
+    "author": [
+     {
+      "given": "J. E.",
+      "family": "Bonevich",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1143/jjap.27.l1772",
+    "title": [
+     "Observation of Atomic Steps by Reflection Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Junji",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Japanese Journal of Applied Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988,
+       9,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1117/12.961022",
+    "title": [
+     "Processing for Reflection Holography"
+    ],
+    "author": [
+     {
+      "given": "L.",
+      "family": "Joly",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Agfa-Gevaert N.V. (Belgium)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "R.",
+      "family": "Phefan",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Agfa-Gevaert N.V. (Belgium)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Redzikowski",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Agfa-Gevaert Inc, (United States)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1986,
+       8,
+       20
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1002/9780470224137.ch17",
+    "title": [
+     "Off‐Axis Reflection Holography"
+    ],
+    "author": [
+     {
+      "given": "Michael",
+      "family": "Halle",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Holographic Imaging"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2007,
+       5,
+       21
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50025-7",
+    "title": [
+     "Fraunhofer in-line electron holography of small weak-phase objects"
+    ],
+    "author": [
+     {
+      "given": "T.",
+      "family": "Matsumoto",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Tanji",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_2",
+    "title": [
+     "Principles and Theory of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "J. M.",
+      "family": "Cowley",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. C. H.",
+      "family": "Spence",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50021-x",
+    "title": [
+     "Electron Holography in Materials Science"
+    ],
+    "author": [
+     {
+      "given": "Xiwei",
+      "family": "Lin",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "V.",
+      "family": "Ravikumar",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "R.",
+      "family": "Rodrigues",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "N.",
+      "family": "Wilcox",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Vinayak P.",
+      "family": "Dravid",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50032-4",
+    "title": [
+     "High-resolution tilted single-sideband holography"
+    ],
+    "author": [
+     {
+      "given": "Kazuo",
+      "family": "Ishizuka",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-3-662-13913-4_4",
+    "title": [
+     "Historical Development of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.5772/53416",
+    "title": [
+     "Microscopic Interferometry by Reflection Holography with Photorefractive Sillenite Crystals"
+    ],
+    "author": [
+     {
+      "given": "Eduardo",
+      "family": "Acedo",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Danilo Mariano",
+      "family": "da Silva",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Merilyn Santos",
+      "family": "Ferreir",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Holography - Basic Principles and Contemporary Applications"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2013,
+       5,
+       29
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-3-540-37204-2_4",
+    "title": [
+     "Historical Development of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50022-1",
+    "title": [
+     "Electron Holography Applied to the Study of Fullerene Materials"
+    ],
+    "author": [
+     {
+      "given": "L.F.",
+      "family": "Allard",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "E.",
+      "family": "Völkl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "S.",
+      "family": "Subramoney",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "R.S.",
+      "family": "Ruoff",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50026-9",
+    "title": [
+     "State of the Art of Low-Energy Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Hans-Werner",
+      "family": "Fink",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hans Juergen",
+      "family": "Kreuzer",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Heinz",
+      "family": "Schmid",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1364/dh.2015.dw2a.5",
+    "title": [
+     "Multicolor reflection holography using time-scheduling recording method in photopolymer"
+    ],
+    "author": [
+     {
+      "given": "Mei-Lan",
+      "family": "Piao",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Kwon-Yeon",
+      "family": "Lee",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Nam",
+      "family": "Kim",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Digital Holography &amp; 3-D Imaging Meeting"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2015
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1117/12.939809",
+    "title": [
+     "Multiplexed Restricted Aperture Reflection Holograms For Display Holography"
+    ],
+    "author": [
+     {
+      "given": "A. K.",
+      "family": "Aggarwal",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "name": "Holography Lab. (India)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Sushil K.",
+      "family": "Kaura",
+      "sequence": "additional",
+      "affiliation": [
+       {
+        "name": "Holography Lab. (India)"
+       }
+      ],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "SPIE Proceedings",
+     "Practical Holography II"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1987,
+       6,
+       4
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050684",
+    "title": [
+     "Anti-Contamination Electron Biprism for Electron Holography"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50001-4",
+    "title": [
+     "Photo"
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.14293/apmc13-2025-0025",
+    "title": [
+     "Nanoscale Mapping of Magnetic Textures in 2D and 3D Using Electron Holography and Electron Tomography"
+    ],
+    "author": [
+     {
+      "ORCID": "https://orcid.org/0000-0001-5000-8578",
+      "authenticated-orcid": false,
+      "given": "Daniel",
+      "family": "Wolf",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Axel",
+      "family": "Lubk",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Nanoscale Mapping of Magnetic Textures in 2D and 3D Using Electron Holography and Electron Tomography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50002-6",
+    "title": [
+     "Committees"
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s1076-5670(02)80053-2",
+    "title": [
+     "Electron holography of long-range electrostatic fields"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Matteucci",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "G.F.",
+      "family": "Missiroli",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Advances in Imaging and Electron Physics",
+     "Electron Microscopy and Holography II"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2002
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_5",
+    "title": [
+     "Quantitative Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "D. J.",
+      "family": "Smith",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "W. J.",
+      "family": "de Ruijter",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J. K.",
+      "family": "Weiss",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M. R.",
+      "family": "McCartney",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50019-1",
+    "title": [
+     "Electron holography of p-n junctions"
+    ],
+    "author": [
+     {
+      "given": "M.R.",
+      "family": "McCartney",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "B.",
+      "family": "Frost",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "R.",
+      "family": "Hull",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.R.",
+      "family": "Scheinfein",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "David J.",
+      "family": "Smith",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "E.",
+      "family": "Voelkl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.5772/22366",
+    "title": [
+     "Electron Holography of Magnetic Materials"
+    ],
+    "author": [
+     {
+      "given": "Takeshi",
+      "family": "Kasama",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Rafal",
+      "family": "E.",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     },
+     {
+      "given": "Marco",
+      "family": "Beleggi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Holography - Different Fields of Application"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2011,
+       9,
+       12
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50037-3",
+    "title": [
+     "Author index"
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50018-x",
+    "title": [
+     "Quantitative applications of off-axis electron holography"
+    ],
+    "author": [
+     {
+      "given": "David J.",
+      "family": "Smith",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "W.J.",
+      "family": "de Ruijter",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.",
+      "family": "Gajdardziska-Josifovska",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "M.R.",
+      "family": "McCartney",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.K.",
+      "family": "Weiss",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1364/dh.2015.dw5a.5",
+    "title": [
+     "Reflection Image-plane Conical Multiplex Holography using Optical System with Curved Object-Plane"
+    ],
+    "author": [
+     {
+      "given": "Yih-Shyang",
+      "family": "Cheng",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Sye-Yen",
+      "family": "Lin",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Digital Holography &amp; 3-D Imaging Meeting"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2015
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.70675/9d2e6f55z844dz4087zbdc3z9c29652ec260",
+    "title": [
+     "Spin waves imaging by electron holography"
+    ],
+    "author": [
+     {
+      "given": "Marine",
+      "family": "Resano",
+      "sequence": "first",
+      "affiliation": [
+       {
+        "id": [
+         {
+          "id": "https://ror.org/01ahyrz84",
+          "id-type": "ROR",
+          "asserted-by": "publisher"
+         }
+        ],
+        "name": "Université de Toulouse (EPE ; 2025-...)"
+       }
+      ],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "dissertation"
+   },
+   {
+    "DOI": "10.1007/978-1-4615-4817-1_10",
+    "title": [
+     "Off-Axis Stem Holography"
+    ],
+    "author": [
+     {
+      "given": "M. A.",
+      "family": "Gribelyuk",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "J.",
+      "family": "Sum",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Introduction to Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50017-8",
+    "title": [
+     "Holography of electrostatic fields"
+    ],
+    "author": [
+     {
+      "given": "B.G.",
+      "family": "Frost",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "L.F.",
+      "family": "Allard",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "E.",
+      "family": "Völkl",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.C.",
+      "family": "Joy",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50009-9",
+    "title": [
+     "Real-time electron holography using a liquid-crystal panel"
+    ],
+    "author": [
+     {
+      "given": "J.",
+      "family": "Chen",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Hirayama",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Lai",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Tanji",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Ishizuka",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050444",
+    "title": [
+     "Applications of Electron Holography Using a Field-Emission Electron Microscope"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1984
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.14293/apmc13-2025-0045",
+    "title": [
+     "Operando observation of electrochemical reaction in all-solid-state batteries by electron holography"
+    ],
+    "author": [
+     {
+      "given": "Kazuo",
+      "family": "Yamamoto",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Operando observation of electrochemical reaction in all-solid-state batteries by electron holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1017/s143192760210136x",
+    "title": [
+     "Low Voltage Electron Holography - High Voltage Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "B.G.",
+      "family": "Frost",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Thesen",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "D.C.",
+      "family": "Joy",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Microscopy and Microanalysis"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2002,
+       8
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.14293/apmc13-2025-0379",
+    "title": [
+     "Study of Phase Analysis by Electron Holography in ETEM"
+    ],
+    "author": [
+     {
+      "given": "Hiroki",
+      "family": "Sano",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-1599-2300",
+      "authenticated-orcid": false,
+      "given": "Ryotaro",
+      "family": "Aso",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-3506-1527",
+      "authenticated-orcid": false,
+      "given": "Takehiro",
+      "family": "Tamaoka",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0002-4195-3225",
+      "authenticated-orcid": false,
+      "given": "Hideto",
+      "family": "Yoshida",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "ORCID": "https://orcid.org/0000-0003-0735-5405",
+      "authenticated-orcid": false,
+      "given": "Yasukazu",
+      "family": "Murakami",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Study of Phase Analysis by Electron Holography in ETEM"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1016/0368-2048(90)80140-6",
+    "title": [
+     "Photoelectron holography = holography + photoelectron diffraction"
+    ],
+    "author": [
+     {
+      "given": "John J.",
+      "family": "Barton",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Journal of Electron Spectroscopy and Related Phenomena"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       1
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1103/physrevlett.62.2969",
+    "title": [
+     "Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Junji",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Fukuhara",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Physical Review Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       6,
+       19
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1103/physrevlett.63.584.3",
+    "title": [
+     "Observation of Surface Undulation Due to Single-Atomic Shear of a Dislocation by Reflection-Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Nobuyuki",
+      "family": "Osakabe",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Junji",
+      "family": "Endo",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Tsuyoshi",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Akira",
+      "family": "Fukuhara",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Physical Review Letters"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1989,
+       7,
+       31
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a051201",
+    "title": [
+     "Recent Developments in Electron Holography for Phase Microscopy"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-981-97-3537-2_2",
+    "title": [
+     "Principles and Practice of Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Daisuke",
+      "family": "Shindo",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Zentaro",
+      "family": "Akase",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Materials Science",
+     "Electron Holography for Electromagnetic Materials"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2024
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1201/9781482289510-126",
+    "title": [
+     "Electron holography of biased semiconductor junctions"
+    ],
+    "container-title": [
+     "Electron Microscopy and Analysis 2001"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2001,
+       12,
+       1
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-3-319-26651-0_8",
+    "title": [
+     "Electron Holography"
+    ],
+    "author": [
+     {
+      "given": "Michael",
+      "family": "Lehmann",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Hannes",
+      "family": "Lichte",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Transmission Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2016
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50003-8",
+    "title": [
+     "Progress in Holographic Interference Electron Microscopy"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1142/9789812817426_0004",
+    "title": [
+     "ELECTRON HOLOGRAPHY"
+    ],
+    "container-title": [
+     "The Quantum World Unveiled by Electron Waves"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1998,
+       8
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50014-2",
+    "title": [
+     "Magnetic field observation of vortices in superconductors by electron holography"
+    ],
+    "author": [
+     {
+      "given": "J.E.",
+      "family": "Bonevich",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "K.",
+      "family": "Harada",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "H.",
+      "family": "Kasai",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Matsuda",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Yoshida",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "A.",
+      "family": "Tonomura",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.21236/ada392886",
+    "title": [
+     "Quantitative Electron Holography of Macromolecular Structure"
+    ],
+    "author": [
+     {
+      "given": "Matthew R.",
+      "family": "Libera",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2001,
+       3,
+       20
+      ]
+     ]
+    },
+    "type": "report"
+   },
+   {
+    "DOI": "10.1016/b978-044482051-8/50036-1",
+    "title": [
+     "List of participants"
+    ],
+    "container-title": [
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1995
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s1076-5670(02)80021-0",
+    "title": [
+     "Contributors"
+    ],
+    "container-title": [
+     "Advances in Imaging and Electron Physics",
+     "Electron Microscopy and Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2002
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s1076-5670(02)80064-7",
+    "title": [
+     "Electron holography of long-range electromagnetic fields: A tutorial"
+    ],
+    "author": [
+     {
+      "given": "G.",
+      "family": "Pozzi",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "vocabulary": "crossref",
+        "role": "author"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Advances in Imaging and Electron Physics",
+     "Microscopy, Spectroscopy, Holography and Crystallography with Electrons"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2002
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1016/s1076-5670(02)x8048-3",
+    "title": [
+     "Electron Microscopy and Holography II"
+    ],
+    "container-title": [
+     "Advances in Imaging and Electron Physics"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2002
+      ]
+     ]
+    },
+    "type": "book"
+   },
+   {
+    "DOI": "10.1364/cota.2008.ctua4",
+    "title": [
+     "Digital Holography of Total Internal Reflection"
+    ],
+    "author": [
+     {
+      "given": "William M.",
+      "family": "Ash",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "Myung K.",
+      "family": "Kim",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Coherent Optical Technologies and Applications"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2008
+      ]
+     ]
+    },
+    "type": "proceedings-article"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_25",
+    "title": [
+     "Microprobe Reflection High-Energy Electron Diffraction"
+    ],
+    "author": [
+     {
+      "given": "M.",
+      "family": "Ichikawa",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     },
+     {
+      "given": "T.",
+      "family": "Doi",
+      "sequence": "additional",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.7b04791.s002",
+    "title": [
+     "Air-Stable Anisotropic Monocrystalline Nickel Nanowires Characterized Using Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1021/acs.nanolett.7b04791.s001",
+    "title": [
+     "Air-Stable Anisotropic Monocrystalline Nickel Nanowires Characterized Using Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       null
+      ]
+     ]
+    },
+    "type": "component"
+   },
+   {
+    "DOI": "10.1007/978-3-540-37204-2_2",
+    "title": [
+     "Principles of Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1999
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1002/9783527829712.ch3",
+    "title": [
+     "Basis of Transmission Electron Microscopy"
+    ],
+    "container-title": [
+     "Material Characterization using Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2022,
+       9,
+       2
+      ]
+     ]
+    },
+    "type": "other"
+   },
+   {
+    "DOI": "10.21236/ada344467",
+    "title": [
+     "Transmission Electron Holography of Polymer Microstructure"
+    ],
+    "author": [
+     {
+      "given": "Matthew R.",
+      "family": "Libera",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1998,
+       4,
+       24
+      ]
+     ]
+    },
+    "type": "report"
+   },
+   {
+    "DOI": "10.1093/oxfordjournals.jmicro.a050839",
+    "title": [
+     "Aberration Correction by Electron Holography Using Numerical Reconstruction Method"
+    ],
+    "container-title": [
+     "Journal of Electron Microscopy"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1990,
+       12
+      ]
+     ]
+    },
+    "type": "journal-article"
+   },
+   {
+    "DOI": "10.1007/978-3-662-13913-4_2",
+    "title": [
+     "Principles of Holography"
+    ],
+    "author": [
+     {
+      "given": "Akira",
+      "family": "Tonomura",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "Springer Series in Optical Sciences",
+     "Electron Holography"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1993
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   },
+   {
+    "DOI": "10.1007/978-1-4684-5580-9_23",
+    "title": [
+     "Reflection Microscopy in a Scanning Transmission Electron Microscope"
+    ],
+    "author": [
+     {
+      "given": "R. H.",
+      "family": "Milne",
+      "sequence": "first",
+      "affiliation": [],
+      "role": [
+       {
+        "role": "author",
+        "vocabulary": "crossref"
+       }
+      ]
+     }
+    ],
+    "container-title": [
+     "NATO ASI Series",
+     "Reflection High-Energy Electron Diffraction and Reflection Electron Imaging of Surfaces"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       1988
+      ]
+     ]
+    },
+    "type": "book-chapter"
+   }
+  ],
+  "items-per-page": 100,
+  "query": {
+   "start-index": 0,
+   "search-terms": null
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28ABSTRACT%3A%22ptychography%22+AND+%28ABSTRACT%3A%22RHEED%22+OR+ABSTRACT%3A%22reflection+electron+microscopy%22+OR+ABSTRACT%3A%22grazing+incidence%22%29%29&format=json&pageSize=200&resultType=lite",
+ "_retrieved": "2026-09-22",
+ "version": "6.9",
+ "hitCount": 1,
+ "request": {
+  "queryString": "(ABSTRACT:\"ptychography\" AND (ABSTRACT:\"RHEED\" OR ABSTRACT:\"reflection electron microscopy\" OR ABSTRACT:\"grazing incidence\"))",
+  "resultType": "lite",
+  "cursorMark": "*",
+  "pageSize": 200,
+  "sort": "",
+  "synonym": false
+ },
+ "resultList": {
+  "result": [
+   {
+    "id": "35427308",
+    "source": "MED",
+    "pmid": "35427308",
+    "doi": "10.1364/ol.453655",
+    "title": "aPIE: an angle calibration algorithm for reflection ptychography.",
+    "authorString": "de Beurs A, Loetgering L, Herczog M, Du M, Eikema KSE, Witte S.",
+    "journalTitle": "Opt Lett",
+    "issue": "8",
+    "journalVolume": "47",
+    "pubYear": "2022",
+    "journalIssn": "0146-9592; 1539-4794; ",
+    "pageInfo": "1949-1952",
+    "pubType": "journal article",
+    "isOpenAccess": "N",
+    "inEPMC": "N",
+    "inPMC": "N",
+    "citedByCount": 7,
+    "hasReferences": "Y",
+    "hasTextMinedTerms": "Y",
+    "hasDbCrossReferences": "N",
+    "hasPDF": "N",
+    "hasBook": "N",
+    "hasSuppl": "N",
+    "hasLabsLinks": "N",
+    "hasTMAccessionNumbers": "N",
+    "firstPublicationDate": "2022-04-01",
+    "firstIndexDate": "2022-04-16"
+   }
+  ]
+ }
+}

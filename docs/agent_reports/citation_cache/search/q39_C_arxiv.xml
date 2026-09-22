@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/NylMzUcukrZFVz2suVqlHbh28UI</id>
+  <title>arXiv Query: search_query=abs:"Bragg ptychography"&amp;id_list=&amp;start=0&amp;max_results=200</title>
+  <updated>2026-09-22T19:16:08Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=abs:%22Bragg+ptychography%22&amp;start=0&amp;max_results=200&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>200</opensearch:itemsPerPage>
+  <opensearch:totalResults>2</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2312.14907v1</id>
+    <title>Imaging extended single crystal lattice distortion fields with multi-peak Bragg ptychography</title>
+    <updated>2023-12-22T18:34:49Z</updated>
+    <link href="https://arxiv.org/abs/2312.14907v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2312.14907v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-12-22T18:34:49Z</published>
+    <arxiv:primary_category term="cond-mat.mtrl-sci"/>
+    <author>
+      <name>Saugat Kandel</name>
+    </author>
+    <author>
+      <name>Siddharth Maddali</name>
+    </author>
+    <author>
+      <name>Marc Allain</name>
+    </author>
+    <author>
+      <name>Xiaojing Huang</name>
+    </author>
+    <author>
+      <name>Youssef S. G. Nashed</name>
+    </author>
+    <author>
+      <name>Chris Jacobsen</name>
+    </author>
+    <author>
+      <name>Stephan Hruszkewycz</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.11584v1</id>
+    <title>Quantitative 3D imaging of highly distorted micro-crystals using Bragg ptychography</title>
+    <updated>2026-03-12T06:17:56Z</updated>
+    <link href="https://arxiv.org/abs/2603.11584v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.11584v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary/>
+    <category term="physics.optics" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cond-mat.mtrl-sci" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-12T06:17:56Z</published>
+    <arxiv:comment>4 figures</arxiv:comment>
+    <arxiv:primary_category term="physics.optics"/>
+    <author>
+      <name>Peng Li</name>
+    </author>
+    <author>
+      <name>David Yang</name>
+    </author>
+    <author>
+      <name>Christoph Rau</name>
+    </author>
+    <author>
+      <name>Marc Allain</name>
+    </author>
+    <author>
+      <name>Felix Hofmann</name>
+    </author>
+    <author>
+      <name>Virginie Chamard</name>
+    </author>
+  </entry>
+</feed>

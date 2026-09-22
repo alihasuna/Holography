@@ -1,0 +1,208 @@
+{
+ "_url": "https://api.crossref.org/works/10.1017/s0424820100154652",
+ "_retrieved": "2026-09-22",
+ "status": "ok",
+ "message-type": "work",
+ "message-version": "1.0.0",
+ "message": {
+  "indexed": {
+   "date-parts": [
+    [
+     2022,
+     4,
+     1
+    ]
+   ],
+   "date-time": "2022-04-01T22:37:30Z",
+   "timestamp": 1648852650065
+  },
+  "reference-count": 5,
+  "publisher": "Cambridge University Press (CUP)",
+  "license": [
+   {
+    "start": {
+     "date-parts": [
+      [
+       2020,
+       6,
+       18
+      ]
+     ],
+     "date-time": "2020-06-18T00:00:00Z",
+     "timestamp": 1592438400000
+    },
+    "content-version": "unspecified",
+    "delay-in-days": 11274,
+    "URL": "https://www.cambridge.org/core/terms"
+   }
+  ],
+  "content-domain": {
+   "domain": [],
+   "crossmark-restriction": false
+  },
+  "short-container-title": [
+   "Proc. annu. meet. Electron Microsc. Soc. Am."
+  ],
+  "published-print": {
+   "date-parts": [
+    [
+     1989,
+     8,
+     6
+    ]
+   ]
+  },
+  "DOI": "10.1017/s0424820100154652",
+  "type": "journal-article",
+  "created": {
+   "date-parts": [
+    [
+     2020,
+     6,
+     18
+    ]
+   ],
+   "date-time": "2020-06-18T11:12:59Z",
+   "timestamp": 1592478779000
+  },
+  "page": "536-537",
+  "source": "Crossref",
+  "is-referenced-by-count": 0,
+  "title": [
+   "Observation of surface morphology by reflection electron holography"
+  ],
+  "prefix": "10.1017",
+  "volume": "47",
+  "author": [
+   {
+    "given": "N.",
+    "family": "Osakabe",
+    "sequence": "first",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "J.",
+    "family": "Endo",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "T.",
+    "family": "Matsuda",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   },
+   {
+    "given": "A.",
+    "family": "Tonomura",
+    "sequence": "additional",
+    "affiliation": [],
+    "role": [
+     {
+      "role": "author",
+      "vocabulary": "crossref"
+     }
+    ]
+   }
+  ],
+  "member": "56",
+  "published-online": {
+   "date-parts": [
+    [
+     2020,
+     6,
+     18
+    ]
+   ]
+  },
+  "container-title": [
+   "Proceedings, annual meeting, Electron Microscopy Society of America"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+   {
+    "URL": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/S0424820100154652",
+    "content-type": "unspecified",
+    "content-version": "vor",
+    "intended-application": "similarity-checking"
+   }
+  ],
+  "deposited": {
+   "date-parts": [
+    [
+     2020,
+     6,
+     18
+    ]
+   ],
+   "date-time": "2020-06-18T11:29:54Z",
+   "timestamp": 1592479794000
+  },
+  "score": 1,
+  "resource": {
+   "primary": {
+    "URL": "https://www.cambridge.org/core/product/identifier/S0424820100154652/type/journal_article"
+   }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+   "date-parts": [
+    [
+     1989,
+     8,
+     6
+    ]
+   ]
+  },
+  "references-count": 5,
+  "alternative-id": [
+   "S0424820100154652"
+  ],
+  "URL": "https://doi.org/10.1017/s0424820100154652",
+  "relation": {},
+  "ISSN": [
+   "0424-8201",
+   "2690-1315"
+  ],
+  "issn-type": [
+   {
+    "value": "0424-8201",
+    "type": "print"
+   },
+   {
+    "value": "2690-1315",
+    "type": "electronic"
+   }
+  ],
+  "subject": [],
+  "published": {
+   "date-parts": [
+    [
+     1989,
+     8,
+     6
+    ]
+   ]
+  }
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=%22electron+interferometry%22+%2B+%22reflection+electron+microscopy%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 1,
+ "token": null,
+ "data": [
+  {
+   "paperId": "4e9ccb409d57ec819e71c42796e786ec304bbb3d",
+   "externalIds": {
+    "MAG": "1969275388",
+    "DOI": "10.1143/JJAP.40.2527",
+    "CorpusId": 120990835
+   },
+   "title": "Energy-filtered Electron Interferometry in Reflection Electron Microscopy",
+   "venue": "",
+   "year": 2001,
+   "authors": [
+    {
+     "authorId": "47179244",
+     "name": "Takayuki Suzuki"
+    },
+    {
+     "authorId": "13166834",
+     "name": "Y. Tanishiro"
+    },
+    {
+     "authorId": "102332026",
+     "name": "N. Ishiguro"
+    },
+    {
+     "authorId": "47248071",
+     "name": "H. Minoda"
+    },
+    {
+     "authorId": "91558442",
+     "name": "K. Yagi"
+    }
+   ]
+  }
+ ]
+}

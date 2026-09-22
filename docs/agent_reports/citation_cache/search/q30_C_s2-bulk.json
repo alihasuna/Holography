@@ -1,0 +1,475 @@
+{
+ "_url": "https://api.semanticscholar.org/graph/v1/paper/search/bulk?query=ptychography+%2B+%22reflection+geometry%22&fields=title%2Cyear%2Cvenue%2CexternalIds%2Cauthors",
+ "_retrieved": "2026-09-22",
+ "total": 13,
+ "token": null,
+ "data": [
+  {
+   "paperId": "2732e17ecbdb2c90a2652098cba25860b60b649b",
+   "externalIds": {
+    "DOI": "10.1117/12.3027947",
+    "CorpusId": 273136313
+   },
+   "title": "Optimization of the tilt angles in reflection-mode ptychographic reconstructions by leveraging the flexibility of automatic differentiation-based modeling",
+   "venue": "NanoScience + Engineering",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2321452909",
+     "name": "Christina Porter"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "376acdad5bcd285362a5be1da75c89cc33386b8b",
+   "externalIds": {
+    "PubMedCentral": "11333750",
+    "ArXiv": "2311.14780",
+    "DOI": "10.1038/s41377-024-01558-3",
+    "CorpusId": 265457054,
+    "PubMed": "39160154"
+   },
+   "title": "Wavelength-multiplexed multi-mode EUV reflection ptychography based on automatic differentiation",
+   "venue": "Light: Science & Applications",
+   "year": 2023,
+   "authors": [
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2064980236",
+     "name": "Jacob Seifert"
+    },
+    {
+     "authorId": "2251119648",
+     "name": "H. P. Urbach"
+    },
+    {
+     "authorId": "145612996",
+     "name": "A. Mosk"
+    },
+    {
+     "authorId": "2246811301",
+     "name": "W. Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "3f067a484259132a7b3838309c985a30fcb8519a",
+   "externalIds": {
+    "DBLP": "journals/tim/LiuLGZGL24",
+    "DOI": "10.1109/TIM.2024.3363788",
+    "CorpusId": 267613597
+   },
+   "title": "Resolution-Enhanced Lensless Ptychographic Microscope Based on Maximum-Likelihood High-Dynamic-Range Image Fusion",
+   "venue": "IEEE Transactions on Instrumentation and Measurement",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2283765535",
+     "name": "Li Liu"
+    },
+    {
+     "authorId": "2108954244",
+     "name": "Wen-jiang Li"
+    },
+    {
+     "authorId": "2283589942",
+     "name": "Ming Gong"
+    },
+    {
+     "authorId": "2283645189",
+     "name": "Lei Zhong"
+    },
+    {
+     "authorId": "51139698",
+     "name": "Honggang Gu"
+    },
+    {
+     "authorId": "2238955352",
+     "name": "Shiyuan Liu"
+    }
+   ]
+  },
+  {
+   "paperId": "42f78c9584e90059572eb0d212a0177010a76004",
+   "externalIds": {
+    "MAG": "1921817895",
+    "CorpusId": 120364954
+   },
+   "title": "Domain structure imaging by Bragg geometry X-ray ptychography",
+   "venue": "",
+   "year": 2013,
+   "authors": [
+    {
+     "authorId": "144125770",
+     "name": "R. Bean"
+    }
+   ]
+  },
+  {
+   "paperId": "46508fd7aefa66ae7ff492a5447178e15cc3a5cf",
+   "externalIds": {
+    "MAG": "2337048120",
+    "DOI": "10.17815/JLSRF-2-81",
+    "CorpusId": 57638474
+   },
+   "title": "CXS: Coherent X-ray scattering at the UE49-SGM at BESSY II",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "48425411",
+     "name": "D. Engel"
+    },
+    {
+     "authorId": "2082316217",
+     "name": "D. Mishra"
+    },
+    {
+     "authorId": "2086656",
+     "name": "S. Eisebitt"
+    }
+   ]
+  },
+  {
+   "paperId": "46f43c704c7d26ba8853dba5d600d705b53bb6b9",
+   "externalIds": {
+    "ArXiv": "2409.11251",
+    "DOI": "10.1364/OE.542569",
+    "CorpusId": 272693843
+   },
+   "title": "Mitigating tilt-induced artifacts in reflection ptychography via optimization of the tilt angles",
+   "venue": "Optics Express",
+   "year": 2024,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2266711896",
+     "name": "Yifeng Shao"
+    },
+    {
+     "authorId": "2092538574",
+     "name": "Sven Weerdenburg"
+    },
+    {
+     "authorId": "2269653096",
+     "name": "Roland C. Horsten"
+    },
+    {
+     "authorId": "2321452909",
+     "name": "Christina Porter"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "4de22bb50925cdf07633fd944bda64cfb2ef6a4a",
+   "externalIds": {
+    "ArXiv": "2604.05989",
+    "DOI": "10.1364/OE.601179",
+    "CorpusId": 287209597,
+    "PubMed": "42596312"
+   },
+   "title": "2D approximation quickly breaks down in reflection ptychography.",
+   "venue": "Optics Express",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2321452455",
+     "name": "Sander Senhorst"
+    },
+    {
+     "authorId": "2335760950",
+     "name": "Stefan Witte"
+    },
+    {
+     "authorId": "2267993444",
+     "name": "Wim Coene"
+    }
+   ]
+  },
+  {
+   "paperId": "57f464c3b62cd6543bfc78a0983fcae22fba4b24",
+   "externalIds": {
+    "MAG": "2416852725",
+    "DOI": "10.1007/978-3-319-19521-6_28",
+    "CorpusId": 124853502
+   },
+   "title": "Reflection Mode Imaging with Extreme-Ultraviolet Light from a High Harmonic Source",
+   "venue": "",
+   "year": 2015,
+   "authors": [
+    {
+     "authorId": "2270721949",
+     "name": "J. Rocca"
+    },
+    {
+     "authorId": "5425733",
+     "name": "C. Menoni"
+    },
+    {
+     "authorId": "50538281",
+     "name": "M. Marconi"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "5160719",
+     "name": "Bo-Sheng Zhang"
+    },
+    {
+     "authorId": "3671472",
+     "name": "M. Seaberg"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "7aa6813f05200d07a40ca14cec27a95d030b5d46",
+   "externalIds": {
+    "ArXiv": "2601.20261",
+    "DOI": "10.1364/OE.591755",
+    "CorpusId": 285101477
+   },
+   "title": "Soft X-ray Reflection Ptychography",
+   "venue": "Optics Express",
+   "year": 2026,
+   "authors": [
+    {
+     "authorId": "2407200950",
+     "name": "Damian Guenzing"
+    },
+    {
+     "authorId": "2070398812",
+     "name": "Dayne Y. Sasaki"
+    },
+    {
+     "authorId": "2381599458",
+     "name": "Alexander Ditter"
+    },
+    {
+     "authorId": "2251768521",
+     "name": "Abraham L. Levitan"
+    },
+    {
+     "authorId": "3733826",
+     "name": "E. Gullikson"
+    },
+    {
+     "authorId": "2306512586",
+     "name": "S. Dhuey"
+    },
+    {
+     "authorId": "116848859",
+     "name": "Arian Gashi"
+    },
+    {
+     "authorId": "2249508143",
+     "name": "Hendrik Ohldag"
+    },
+    {
+     "authorId": "2243940914",
+     "name": "Sujoy Roy"
+    },
+    {
+     "authorId": "2311430705",
+     "name": "David A. Shapiro"
+    },
+    {
+     "authorId": "2251774563",
+     "name": "Riccardo Comin"
+    },
+    {
+     "authorId": "2257348309",
+     "name": "Sophie A. Morley"
+    }
+   ]
+  },
+  {
+   "paperId": "9e50b1d5ce194e9f2401a1c5b2835e6dea6827ec",
+   "externalIds": {
+    "DOI": "10.1117/12.3063903",
+    "CorpusId": 281469072
+   },
+   "title": "Automatic differentiation for x-ray grazing-incidence surface imaging using ptychography",
+   "venue": "Optical Engineering + Applications",
+   "year": 2025,
+   "authors": [
+    {
+     "authorId": "2269574865",
+     "name": "Jangwoon Sung"
+    },
+    {
+     "authorId": "2381378420",
+     "name": "Yuan Gao"
+    },
+    {
+     "authorId": "2381193049",
+     "name": "Jack Griffiths"
+    },
+    {
+     "authorId": "2331138875",
+     "name": "Zi-Rui Gao"
+    },
+    {
+     "authorId": "2267265663",
+     "name": "Xiao-Jing Huang"
+    },
+    {
+     "authorId": "2255438685",
+     "name": "Garth J. Williams"
+    },
+    {
+     "authorId": "2253953247",
+     "name": "Yong S. Chu"
+    }
+   ]
+  },
+  {
+   "paperId": "cfe19e1741db05098023debfc8c9b5172cdcd2bc",
+   "externalIds": {
+    "MAG": "3160220075",
+    "DOI": "10.22032/DBT.46898",
+    "CorpusId": 236851762
+   },
+   "title": "Diffraction-based metrology in the extreme ultraviolet",
+   "venue": "",
+   "year": 2020,
+   "authors": [
+    {
+     "authorId": "69444803",
+     "name": "F. Tuitje"
+    }
+   ]
+  },
+  {
+   "paperId": "e7105a3821dab7419ab92b951aff5ae19e258d37",
+   "externalIds": {
+    "MAG": "2559873426",
+    "DOI": "10.1364/CLEO_SI.2016.SM3R.5",
+    "CorpusId": 13454492
+   },
+   "title": "Coherent diffraction imaging of buried nanostructures in a reflection geometry with extreme ultraviolet light",
+   "venue": "Conference on Lasers and Electro-Optics",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "31776903",
+     "name": "Christina L. Porter"
+    },
+    {
+     "authorId": "6187641",
+     "name": "E. Shanblatt"
+    },
+    {
+     "authorId": "32077015",
+     "name": "D. Gardner"
+    },
+    {
+     "authorId": "21441409",
+     "name": "G. Mancini"
+    },
+    {
+     "authorId": "33455098",
+     "name": "Robert M. Karl"
+    },
+    {
+     "authorId": "4144582",
+     "name": "M. Tanksalvala"
+    },
+    {
+     "authorId": "5969662",
+     "name": "Charles S. Bevis"
+    },
+    {
+     "authorId": "30697504",
+     "name": "H. Kapteyn"
+    },
+    {
+     "authorId": "5286177",
+     "name": "M. Murnane"
+    },
+    {
+     "authorId": "4235701",
+     "name": "D. Adams"
+    }
+   ]
+  },
+  {
+   "paperId": "f2595cdda386432318a90eb3d45fd00a81f28ec7",
+   "externalIds": {
+    "CorpusId": 263503035
+   },
+   "title": "Single-View Phase Retrieval of an Extended Sample by Exploiting Edge Feature Detection and Sparsity 1",
+   "venue": "",
+   "year": 2016,
+   "authors": [
+    {
+     "authorId": "2251106271",
+     "name": "Ashish Tripathi"
+    },
+    {
+     "authorId": "47774735",
+     "name": "I. McNulty"
+    },
+    {
+     "authorId": "2238746265",
+     "name": "T. Munson"
+    },
+    {
+     "authorId": "2256583602",
+     "name": "S. M. Wild"
+    }
+   ]
+  }
+ ]
+}
