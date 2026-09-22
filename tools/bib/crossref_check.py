@@ -212,7 +212,7 @@ def names_of(rec, role):
     return out
 
 
-def compare(key, e, rec):
+def compare(key, e, rec, placeholder=None):
     """Compare a bib entry with a Crossref /works message. Returns (checked, discrepancies, info)."""
     checked, disc, info = [], [], {}
     # ---- authors / editors
@@ -245,7 +245,9 @@ def compare(key, e, rec):
                 elif not bi and ci:
                     disc.append((f"{role}[{i+1}].given", "(none)", cn["given"], "given-missing"))
     # ---- title
-    if key not in PLACEHOLDER_TITLE:
+    if placeholder is None:
+        placeholder = key in PLACEHOLDER_TITLE
+    if not placeholder:
         checked.append("title")
         bt_ = u(e, "title")
         ct = cr_title(rec)
@@ -637,6 +639,16 @@ def cmd_apply(args):
             if old not in note:
                 raise SystemExit(f"{key}: note_replace text not found: {old[:60]!r}")
             new["note"] = note.replace(old, rep.strip())
+        if "relabel" in ops:
+            note = new.get("note", e.get("note"))
+            m = re.match(r"evidence:\s*(.*?);\s*provenance:", note, re.S)
+            if not m:
+                raise SystemExit(f"{key}: note has no 'evidence: ...; provenance:' head")
+            lab = ops["relabel"].strip()
+            if lab == "crossref":
+                lab = ("METADATA\\_VERIFIED (route: Crossref API /works record of the doi field, cached as "
+                       f"docs/agent\\_reports/crossref\\_cache/{key}.json; B3, 2026-09-22)")
+            new["note"] = f"evidence: {lab}; label before B3: {m.group(1).strip()}; provenance:" + note[m.end():]
         if "note_prefix" in ops:
             note = new.get("note", e.get("note"))
             m = re.match(r"evidence:.*?; provenance:", note, re.S)
@@ -696,6 +708,7 @@ def label_of(e):
     note = e.get("note") or ""
     m = re.match(r"evidence:\s*(.*?);\s*provenance:", note, re.S)
     lab = m.group(1) if m else "?"
+    lab = lab.split("; label before B3")[0]
     return re.sub(r"\s+", " ", lab.replace("\\_", "_"))
 
 
@@ -712,6 +725,7 @@ def cmd_report(args):
     import yaml
     spec = yaml.safe_load(CORR.read_text()) if CORR.exists() else {}
     manual = (spec or {}).get("manual_routes") or {}
+    partial = (spec or {}).get("partial") or {}
     accepted_res = load_accept(spec)
     idx = load_index()
     base_t, cur_t = read_baseline(), BIB.read_text()
@@ -721,7 +735,7 @@ def cmd_report(args):
     counts = dict(checked=0, verified_unchanged=0, verified_corrected=0, new_doi=0,
                   still_unverified=0, http_failures=0, moved_to_verified=0,
                   doi_resolved=0, doi_total=0, search_run=0, search_accept_strict=0,
-                  search_accept_subst=0)
+                  search_accept_subst=0, verified_partial=0)
     for name, rec in idx.items():
         if rec["status"] != 200 and not name.endswith((".ra.json", ".datacite.json")):
             if rec["status"] is None or rec["status"] >= 500 or rec["status"] == 429:
@@ -778,7 +792,8 @@ def cmd_report(args):
             qurl = qurl or manual[key].get("url", "")
         # --- compare
         b_chk, b_disc, b_info = compare(key, e0, recs) if recs is not None else ([], [], {})
-        c_chk, c_disc, c_info = compare(key, e1, recs) if (recs is not None and e1) else ([], [], {})
+        ph1 = key in PLACEHOLDER_TITLE and e1 is not None and e1.get("title") == e0.get("title")
+        c_chk, c_disc, c_info = compare(key, e1, recs, placeholder=ph1) if (recs is not None and e1) else ([], [], {})
         acc_keys = accepted_res.get(key, {}) or {}
         c_disc_resid = [d for d in c_disc if d[0] not in acc_keys and d[3] not in ("placeholder",)]
         b_disc_mat = [d for d in b_disc if d[3] not in ("placeholder",)]
@@ -805,7 +820,10 @@ def cmd_report(args):
             actions.append(f"type @{e0.etype}->@{e1.etype}")
         if e1 and (e0.get("note") != e1.get("note")):
             actions.append("note updated")
-        if route_ok and not c_disc_resid:
+        if route_ok and not c_disc_resid and key in partial:
+            counts["verified_partial"] += 1
+            status = "VERIFIED-PARTIAL" + ("-CORRECTED" if fdiff else "")
+        elif route_ok and not c_disc_resid:
             if not fdiff and not (not base_doi and cur_doi):
                 counts["verified_unchanged"] += 1
                 status = "VERIFIED-UNCHANGED"
@@ -825,7 +843,7 @@ def cmd_report(args):
         blocks.append(dict(key=key, route=route_desc or r, url=qurl, http=http_status, status=status,
                            b_disc=b_disc_mat, c_disc=c_disc, acc=acc_keys, info=c_info or b_info,
                            cand=search_note, fdiff=fdiff, lab0=label_of(e0), lab1=label_of(e1) if e1 else "",
-                           manual=manual.get(key)))
+                           manual=manual.get(key), partial=partial.get(key)))
     # ---- TSV
     with TSV.open("w") as fh:
         fh.write("\t".join(["key", "doi", "http_status", "fields_checked", "discrepancies", "action", "label_before", "label_after"]) + "\n")
@@ -873,6 +891,7 @@ def write_log(counts, blocks, corrections, stats, errs, doi_bad, spec):
                    ("search_accept_subst", "... candidate accepted with identifier substitution"),
                    ("verified_unchanged", "VERIFIED, record unchanged"),
                    ("verified_corrected", "VERIFIED, record corrected (fields and/or doi added)"),
+                   ("verified_partial", "VERIFIED except for a field no reachable record carries (listed per entry)"),
                    ("new_doi", "newly found DOIs (copied from Crossref, never constructed)"),
                    ("moved_to_verified", "entries moved out of the UNVERIFIED section"),
                    ("still_unverified", "still unverified (no accepted record, or residual discrepancy)"),
@@ -915,7 +934,9 @@ def write_log(counts, blocks, corrections, stats, errs, doi_bad, spec):
             L.append("- Remaining differences (current vs record): " + "; ".join(
                 f"`{d[0]}` '{md(d[1])}' vs '{md(d[2])}'" + (f" -- kept: {md(b['acc'][d[0]])}" if d[0] in b["acc"] else "") for d in b["c_disc"]))
         if b["manual"]:
-            L.append(f"- Publisher-page result: {md(b['manual'].get('result', ''))}")
+            L.append(f"- Publisher-page / registry result: {md(b['manual'].get('result', ''))}")
+        if b.get("partial"):
+            L.append(f"- NOT verifiable in this pass: {md(b['partial'])}")
         L.append(f"- Label: `{md(b['lab0'])}` -> `{md(b['lab1'])}`\n")
     gen = "\n".join(L)
     text = LOG.read_text()
