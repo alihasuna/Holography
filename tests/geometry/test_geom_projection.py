@@ -69,7 +69,8 @@ def test_shadow_bilayer_888():
     """docs/03 section 4: 102 A per bilayer at (8,-8,8) (+/- 0.5 A). Reference value kept as
     printed; the calculator's own theta_ext(8,-8,8) = 30.888 mrad gives 101.48 A (see
     docs/agent_reports/S1a_m1_geometry_quantification.md, open issues)."""
-    check(shadow_length_A(D111, theta_ext((8, -8, 8))), 102.0, 0.5)
+    # docs/03 section 4 printed 102 A until revision 3; the value is 101.48 A (tools/phase1_numbers.py)
+    check(shadow_length_A(D111, theta_ext((8, -8, 8))), 101.0, 0.5)
 
 
 def test_shadow_10nm_mesa_888():

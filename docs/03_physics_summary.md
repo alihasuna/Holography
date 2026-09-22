@@ -144,7 +144,8 @@ about 110 wraps at (4,-4,4). Consequences:
   length `h/tan(theta_ext)` on the surface behind it. At 22.5 mrad (a round illustrative angle; it is
   the external angle of the forbidden (6,-6,6) condition) that is 139 A per Si(111) bilayer, 60 A per
   Si(001) layer and 444 nm for a 10 nm mesa; at the first recommended condition (4,-4,4), 13.6 mrad,
-  it is 230 A per bilayer and 733 nm for a 10 nm mesa; at (8,-8,8), 102 A and 324 nm. Shadow masks
+  it is 230 A per bilayer and 733 nm for a 10 nm mesa; at (8,-8,8), 101 A and 324 nm (revision 3 corrects 102 A;
+  shadow lengths printed by `tools/phase1_numbers.py`). Shadow masks
   must be computed at the actual operating angle, never hard-coded. Inside the shadow there is no object wave and the
   reconstructed phase is meaningless; in the foreshortened image the shadow is `1/sin(theta)` times
   narrower than on the surface but still much wider than the riser. The shadow direction distinguishes

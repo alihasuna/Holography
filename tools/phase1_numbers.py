@@ -81,6 +81,24 @@ def main() -> None:
     r008 = phase_block("Si(001) (0,0,8), double-layer step h = a/2", A / 4.0, 2, A / 2.0)
     r0012 = phase_block("Si(001) (0,0,12), double-layer step h = a/2", A / 4.0, 3, A / 2.0)
 
+    # Shadow lengths h / tan(theta_ext) quoted in docs/03 section 4, docs/05 section 2 and
+    # model_assumptions B9 (SM07). 22.5 mrad is the round illustrative angle of docs/03; the other
+    # angles are the external angles of the internal Bragg conditions at V0 = 12.0 V (ASSUMPTION B1).
+    print("Shadow lengths h/tan(theta_ext) (SM07)")
+    th444 = calc.SpecularCondition(D111, 4, E_KEV, V0_ASSUMED).theta_ext
+    th888 = calc.SpecularCondition(D111, 8, E_KEV, V0_ASSUMED).theta_ext
+    sh = {
+        "bilayer, 22.5 mrad [A]": D111 / np.tan(22.5e-3),
+        "Si(001) a/4 layer, 22.5 mrad [A]": (A / 4.0) / np.tan(22.5e-3),
+        "10 nm, 22.5 mrad [nm]": 100.0 / np.tan(22.5e-3) / 10.0,
+        "bilayer, (4,-4,4) [A]": D111 / np.tan(th444),
+        "10 nm, (4,-4,4) [nm]": 100.0 / np.tan(th444) / 10.0,
+        "bilayer, (8,-8,8) [A]": D111 / np.tan(th888),
+        "10 nm, (8,-8,8) [nm]": 100.0 / np.tan(th888) / 10.0,
+    }
+    for k, v in sh.items():
+        print(f"   {k:34s} {v:9.2f}")
+
     # Self-checks: the (4,-4,4) 12.0 V values must agree with the calculator table in docs/03.
     checks = [
         ("theta_ext (4,-4,4) at 12.0 V [mrad]", r444["th_ext_lo"], 13.64, 5e-3),
@@ -94,6 +112,14 @@ def main() -> None:
         ("dh/dV0 (0,0,8) [% of h per V]", r008["dh_dv_pct"], 1.07, 5e-3),
         ("change of |dphi| (4,-4,4), 12.0 -> 12.53 V [rad]", r444["dphi"], -0.178, 1e-3),
         ("change of |dphi| (0,0,8), 12.0 -> 12.53 V [rad]", r008["dphi"], -0.128, 1e-3),
+        # shadow lengths as printed (tolerance: half a unit of the last printed digit)
+        ("shadow bilayer 22.5 mrad [A]", sh["bilayer, 22.5 mrad [A]"], 139.0, 0.5),
+        ("shadow a/4 layer 22.5 mrad [A]", sh["Si(001) a/4 layer, 22.5 mrad [A]"], 60.0, 0.5),
+        ("shadow 10 nm 22.5 mrad [nm]", sh["10 nm, 22.5 mrad [nm]"], 444.0, 0.5),
+        ("shadow bilayer (4,-4,4) [A]", sh["bilayer, (4,-4,4) [A]"], 230.0, 0.5),
+        ("shadow 10 nm (4,-4,4) [nm]", sh["10 nm, (4,-4,4) [nm]"], 733.0, 0.5),
+        ("shadow bilayer (8,-8,8) [A]", sh["bilayer, (8,-8,8) [A]"], 101.0, 0.5),
+        ("shadow 10 nm (8,-8,8) [nm]", sh["10 nm, (8,-8,8) [nm]"], 324.0, 0.5),
     ]
     npass = 0
     print("-" * 96)

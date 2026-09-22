@@ -25,7 +25,7 @@ that can be contrasted with the real reflection-mode dark-field holography exper
 | `docs/agent_reports/` (Phase 1) | B3 (Crossref verification of every bibliography record, with `crossref_cache/` and `tools/bib/`), L1 (P07 and the Hitachi patent read in full), L2 (P04 and the P49 preprint read in full; prismatique docs, Prismatic pages and the P49 code in part), L3 (publisher tables of contents of B01-B15), L4 (citation lists of P01-P03, P08, P09, with `citation_cache/` and `tools/lit/citation_lists.py`), L5 (open-access check, P02E, C03 manuscript, Hÿtch 2010, a Si mean-inner-potential preprint), E3 (adversarial review of revision 3). |
 | `docs/agent_reports/` (analysis) | The full reports of the delegated audits: A (code), B (literature) with B2 (bibliography verification log), C (physics derivations) with the calculator output, D (software provenance), E and E2 (two adversarial review passes of the summary documents; every finding is applied in revision 2 of the summaries or explicitly declined with a reason), plus the orchestrator's independent sanity numbers. |
 | `tools/reflection_step_phase_calculator.py` | Numpy-only reference calculator reproducing every number in the physics report; 25 self-checks. |
-| `tools/phase1_numbers.py` | The physics numbers added in revision 3 (mean-inner-potential sensitivity at 12.53 V, sign and size of the height bias); 10 self-checks. |
+| `tools/phase1_numbers.py` | The physics numbers added in revision 3 (mean-inner-potential sensitivity at 12.53 V, sign and size of the height bias, shadow lengths); 17 self-checks. |
 | `tools/provenance_checks/` | Scripts that exercise the prismatique 0.0.1 API exactly as the inspected pipeline does (no simulation run). |
 
 ## Evidence labels
@@ -57,7 +57,7 @@ with the sentence as locator; SECTION_READ of the abstract and of nothing else).
 ```
 python3 -m venv venv && venv/bin/pip install numpy
 venv/bin/python tools/reflection_step_phase_calculator.py   # prints 25/25 checks pass
-venv/bin/python tools/phase1_numbers.py                     # prints 10/10 checks pass
+venv/bin/python tools/phase1_numbers.py                     # prints 17/17 checks pass
 venv/bin/python tools/lit/citation_lists.py build --list    # citation counts (offline; rewrites L4_citing_works.tsv)
 venv/bin/python tools/bib/crossref_check.py report          # bibliography counts (rewrites generated blocks
                                                             # under docs/agent_reports/; the --pass 1 form also
