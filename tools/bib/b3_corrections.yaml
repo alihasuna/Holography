@@ -1,0 +1,579 @@
+# B3 corrections to docs/references.bib, applied by `crossref_check.py apply`.
+#
+# from_crossref : fields copied from the cached Crossref /works record of the entry
+#                 (docs/agent_reports/crossref_cache/<KEY>.json). `doi` is ONLY ever
+#                 written this way -- no DOI in this file is typed by hand.
+#                 year:print = published-print year.
+# set           : values transcribed by hand from a cached record or publisher page
+#                 (the source of each is named in the entry's new note and in the log).
+# note_replace  : [old, new] pairs; `old` must occur verbatim in the current note.
+# relabel       : new evidence label ("crossref" = standard Crossref-route label);
+#                 the previous label is kept in the note as "label before B3".
+# remove        : fields deleted.   move_to_verified : leave the UNVERIFIED section.
+# type          : new entry type.
+#
+# accepted_residual : differences from the record that are kept on purpose (reason given).
+# partial           : entries verified except for a field no reachable record carries.
+# manual_routes     : entries verified on a publisher page / registry other than Crossref.
+
+header_replace:
+  - - |-
+      %% ACCESS CONDITIONS: every scholarly host (doi.org, Crossref, OpenAlex,
+      %% Semantic Scholar, PMC, arXiv, and every publisher) is BLOCKED by the
+      %% egress proxy. NOTHING in this file was resolved against Crossref or any
+      %% DOI resolver, and NO article, chapter, book or patent was read. The only
+      %% documents read in the whole project are five GitHub README files.
+    - |-
+      %% ACCESS CONDITIONS OF B2 (2026-09-21): every scholarly host was blocked,
+      %% so B2 resolved nothing against Crossref or any DOI resolver.
+      %%
+      %% B3 UPDATE (2026-09-22, Full network access): EVERY entry was checked
+      %% against its Crossref /works record, or -- where Crossref has none --
+      %% against DataCite, the arXiv API, Google Patents or the publisher page,
+      %% by tools/bib/crossref_check.py (corrections in tools/bib/b3_corrections.yaml;
+      %% log docs/agent_reports/B3_crossref_verification_log.md; per-entry table
+      %% docs/agent_reports/B3_crossref_results.tsv; raw Crossref JSON in
+      %% docs/agent_reports/crossref_cache/). Each note now starts with the B3
+      %% label and keeps the previous one as "label before B3". B3 READ NOTHING:
+      %% no label was raised to SECTION_READ by it, and the older notes' statements
+      %% about blocked hosts describe B2's conditions, not the current ones.
+  - - |-
+      %% leads, never here). Likewise for pages and years: a field that could not
+      %% be resolved is omitted and the `note` says so.
+    - |-
+      %% leads, never here). Likewise for pages and years: a field that could not
+      %% be resolved is omitted and the `note` says so.
+      %% B3: every DOI added in B3 was COPIED from a Crossref /works record that
+      %% was accepted on the five-field rule (first author, title, journal or
+      %% publisher, year, volume) or, where the entry lacked some of those fields,
+      %% by a logged identifier substitution (PII, ISBN or first page). No DOI was
+      %% typed, constructed or pattern-completed; the validator checks that every
+      %% doi field is backed by a cached registry record carrying that DOI.
+  - - |-
+      %% CLOSING NOTE -- the route back to a citable bibliography, in order
+      %% (from B_literature.md section 12, unchanged by this pass):
+    - |-
+      %% CLOSING NOTE -- the route back to a citable bibliography, in order
+      %% (from B_literature.md section 12). B3 STATUS: step 6 is DONE (Crossref
+      %% check, see the B3 log); step 8 is DONE ([U01] = McCoy and Maksym,
+      %% Surface Science 298 (1993) 468-472, now in the verified section);
+      %% steps 1-5 and 7 are reading tasks and remain open:
+
+entries:
+
+  # ------------------------------------------------------------------ Part 1: books
+  B01:
+    relabel: crossref
+    note_replace:
+      - ['Not re-verified in this session; publisher hosts blocked. ', '']
+  B02:
+    relabel: crossref
+    note_replace:
+      - ['Not re-verified. ', '']
+  B03:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API edited-book record matched by ISBN, cached as docs/agent\_reports/crossref\_cache/B03.json, plus the Elsevier page in the url field; B3, 2026-09-22)'
+    note_replace:
+      - ['No DOI is given by the instruction file, so none appears here.', 'B3: the book DOI is copied from the Crossref edited-book record whose ISBN equals the isbn field; that record carries no author list and no subtitle, so the subtitle "Fundamental Wave Optics", the authors Peter W. Hawkes and Erwin Kasper, the 2nd edition, the imprint Academic Press and the release date 2022-02-18 were confirmed on the Elsevier page in the url field (HTTP 200).']
+  B04:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API edited-book record matched by ISBN, cached as docs/agent\_reports/crossref\_cache/B04.json, plus the Elsevier page in the url field; B3, 2026-09-22)'
+    note_replace:
+      - ['No DOI given, so none appears here.', 'B3: the book DOI is copied from the Crossref edited-book record whose ISBN equals the isbn field; that record carries no author list and no subtitle, so the subtitle "Advanced Wave Optics", the authors Peter W. Hawkes and Erwin Kasper, the 2nd edition, the imprint Academic Press and the release date 2022-05-10 were confirmed on the Elsevier page in the url field (HTTP 200).']
+  B05:
+    from_crossref: ['year:print']
+    relabel: crossref
+    note_replace:
+      - ['YEAR FLAG: the instruction file states "Springer, 2013 publication; publisher copyright is 2012" -- 2013 is used here on that authority.', 'YEAR CORRECTED IN B3 FROM 2013 TO 2012: the Crossref record (Springer Berlin Heidelberg, series Springer Series in Optical Sciences) gives published-print 2012 and no 2013 date; the instruction file''s "2013 publication" is not supported by the publisher''s deposit. The Springer book page could not be read (JavaScript challenge).']
+  B06:
+    relabel: crossref
+  B07:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API monograph record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/B07.json; B3, 2026-09-22)'
+    note_replace:
+      - ['No DOI is given by the instruction file, so none appears here.', 'B3: DOI copied from the Crossref record (published-print 2004-12-13, published-online 2010-07-06; the bib year is the print year).']
+  B08:
+    relabel: crossref
+    note_replace:
+      - ['YEAR CONFLICT, UNRESOLVED: the instruction file says 2004 "following the publisher''s publication record" and 2004 is used here; an IUCr book-review page found in this pass is titled "... Pp. 544. Oxford University Press, 2003. Price GBP 69.95. ISBN 0-19-850074-2" (https://journals.iucr.org/a/issues/2004/04/00/ht5049/index.html). Resolve before citing a year.', 'YEAR RESOLVED IN B3 IN FAVOUR OF 2004: the Crossref record (Oxford University Press deposit) gives published-print 2004-01-08, authors Peng, Dudarev, Whelan in this order; the "2003" in the heading of the IUCr book review (https://journals.iucr.org/a/issues/2004/04/00/ht5049/index.html) is not the publisher''s date.']
+  B09:
+    set:
+      editor: 'V{\"o}lkl, Edgar and Allard, Lawrence F. and Joy, David C.'
+    relabel: crossref
+    note_replace:
+      - ['its authors and pages were never obtained (see the UNVERIFIED section, key U07)', 'B3: its Crossref chapter record gives authors R. A. Herring and G. Pozzi and pages 295-310 (key U07, now in the verified section)']
+  C01:
+    set:
+      author: 'V{\"o}lkl, Edgar and Lehmann, Michael'
+      editor: 'V{\"o}lkl, Edgar and Allard, Lawrence F. and Joy, David C.'
+    relabel: crossref
+    note_replace:
+      - ['This is chapter 6 of [B09].', 'This is chapter 6 of [B09]. B3: FIRST NAME CORRECTED from Ernst to Edgar (author and editor fields): the Crossref record of [B09] gives "Edgar V{\"o}lkl" and this chapter''s record gives "E. V{\"o}lkl" and "M. Lehmann".']
+  B10:
+    relabel: crossref
+  B11:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API monograph record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/B11.json; B3, 2026-09-22)'
+    note_replace:
+      - ['Chapter DOIs glimpsed in the index (B report section 7):', 'B3: DOI copied from the Crossref record (authors Shindo, Tomita in this order; published-online 2022-09-02, published-print 2022-11-14; registrant "Wiley", imprint kept as Wiley-VCH); the Crossref ISBN listing confirms the two chapter titles below. Chapter DOIs glimpsed in the index (B report section 7):']
+  B12:
+    relabel: crossref
+  C02:
+    relabel: crossref
+  C03:
+    relabel: crossref
+  B13:
+    relabel: 'METADATA\_VERIFIED except authors (route: Crossref API /works record, cached as docs/agent\_reports/crossref\_cache/B13.json; B3, 2026-09-22)'
+    note_replace:
+      - [' Not re-verified.', ' B3: the Crossref record confirms title and subtitle ("Transmission Electron Microscopy: Physics of Image Formation"), publisher Springer New York, series Springer Series in Optical Sciences and year 2008, but it carries NO author list, nor do its twelve chapter records, and the Springer page is behind a JavaScript challenge. THE AUTHOR NAMES AND THEIR ORDER (Kohl, Reimer) ARE STILL ONLY THE INSTRUCTION FILE''S -- check them on the title page.']
+  B14:
+    relabel: 'METADATA\_VERIFIED except subtitle (route: Crossref API /works record, cached as docs/agent\_reports/crossref\_cache/B14.json; B3, 2026-09-22)'
+    note_replace:
+      - [' Not re-verified.', ' B3: the Crossref record confirms authors Williams, David B. and Carter, C. Barry (in this order), publisher Springer US and year 2009; its title is "Transmission Electron Microscopy" with NO subtitle, and the Springer page is behind a JavaScript challenge, so the subtitle "A Textbook for Materials Science" is still only the instruction file''s.']
+  B15:
+    relabel: crossref
+
+  # ------------------------------------------------------------------ Part 2: instruction-file papers
+  P01:
+    from_crossref: [number]
+    relabel: crossref
+    note_replace:
+      - ['THREE QUERIES IN THIS PASS FAILED TO PRODUCE ANY URL FOR THIS PAPER, including an exact-DOI query; the DOI''s provenance therefore remains the instruction file alone. PAGE FORM UNVERIFIED at the digit level: the search index repeatedly reports "27, 1772-1774" without the Letters L prefix; the instruction file''s L-form is kept.', 'B3: the DOI resolves in Crossref to this record -- authors Osakabe, Matsuda, Endo, Tonomura in this order, JJAP volume 27, issue 9A, pages L1772-L1774, 1988 -- so the L-prefixed page form is confirmed; the reference list of patent US 4,998,788 (Google Patents) cites it the same way.']
+  P02:
+    from_crossref: [number]
+    relabel: crossref
+  P02E:
+    from_crossref: [number]
+    relabel: 'existence METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P02E.json; B3, 2026-09-22); CONTENT UNVERIFIED'
+    note_replace:
+      - ['The author list above is reconstructed from [P02] for convenience and was NOT confirmed for the erratum.', 'B3: the Crossref record of the erratum lists the same five authors in the same order, volume 63, issue 5, page 584, published 1989-07-31. Crossref deposits it under the ORIGINAL article title; the "Erratum:" prefix is kept here only to tell the two entries apart.']
+  P03:
+    from_crossref: [number]
+    relabel: crossref
+    note_replace:
+      - ['DOI PROVENANCE IS WEAK AND FLAGGED: 10.1016/0304-3991(93)90123-F does NOT appear in the instruction file; it appears in B\_literature.md attributed to the search summariser, and the summariser restated it in this pass -- but NO URL EVER CARRIED IT. It is consistent with the instruction file''s PII 030439919390123F. RESOLVE BEFORE PUBLICATION.', 'B3: the DOI is now confirmed by its Crossref record, which matches authors (Banzhof, Herrmann), title, journal, volume 48, issue 4, pages 475-481 and year 1993.']
+  P04:
+    relabel: 'SECTION\_READ (instruction file) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P04.json; B3, 2026-09-22)'
+  P05:
+    from_crossref: [author]
+    relabel: crossref
+    note_replace:
+      - ['AUTHOR LIST INCOMPLETE: the instruction file writes "Luis Rangel DaCosta et al."; the full author list was never obtained, hence the "and others".', 'B3: FULL AUTHOR LIST (eleven names) copied from the Crossref record, replacing "and others".']
+  P06:
+    relabel: crossref
+  P07:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P07.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD: the instruction file does not state a DOI for [P07]; B\_literature.md quotes 10.1093/jmicro/dfaa033 but from the search summariser only, so under this file''s DOI policy it is omitted.', 'B3: DOI copied from the Crossref record accepted on the five-field rule (published online 2020-06-26, print 2021-02-01; the bib year is the print year).']
+
+  # ------------------------------------------------------------------ Part 3: software
+  S01:
+    set:
+      author: 'Fitzpatrick, Matthew R. C.'
+    relabel: 'METADATA\_VERIFIED (route: DataCite record of the Zenodo DOI printed in the README, cached as docs/agent\_reports/crossref\_cache/S01.datacite.json, plus the documentation page https://mrfitzpa.github.io/prismatique/; B3, 2026-09-22) + SECTION\_READ (GitHub README only, B\_literature.md)'
+    note_replace:
+      - ['AUTHOR INFERRED FROM THE GITHUB ACCOUNT NAME mrfitzpa AND IS NOT A VERIFIED PERSONAL NAME -- check before citing.', 'B3: AUTHOR CORRECTED to the creator name of the DataCite record of 10.5281/zenodo.18296081, "Fitzpatrick, Matthew R. C." (that record is version 0.0.4, 2026, and is not the pinned 0.0.1, so no doi field is set here). github.com itself is blocked for this session (HTTP 403); the README was re-fetched at raw.githubusercontent.com and the documentation page is reachable (HTTP 200).']
+      - ['but mrfitzpa.github.io is blocked, so the VERSION-MATCHED API FOR 0.0.1 WAS NEVER CHECKED', 'and the VERSION-MATCHED API FOR 0.0.1 HAS STILL NOT BEEN CHECKED (the documentation page is now reachable; checking it is reading-plan step 2)']
+  S02:
+    relabel: 'METADATA\_VERIFIED (route: project pages https://prism-em.com/ and https://prism-em.github.io/about-cite/, HTTP 200; B3, 2026-09-22) + SECTION\_READ (GitHub README only, B\_literature.md)'
+    note_replace:
+      - ['No author field: the citation instructions page was not reachable, so the project''s requested citation form is unknown -- see [P04] and [P05] for the algorithm and engine papers.', 'No author field. B3: the citation page is now reachable and asks users to cite three papers: Ophus 2017 ([P04]); A. Pryor Jr, C. Ophus and J. Miao, "A streaming multi-GPU implementation of image simulation algorithms for scanning transmission electron microscopy", Advanced Structural and Chemical Imaging 3 (2017) (NOT in this file; add it after a Crossref check); and Rangel DaCosta et al. 2021 ([P05]).']
+
+  # ------------------------------------------------------------------ Part 4
+  P08:
+    relabel: crossref
+    note_replace:
+      - ['JOURNAL NAME IS THE ONE FIELD THAT REMAINS UNRESOLVED: the Wiley DOI stem is "jemt" (Journal of Electron Microscopy Technique) while the search summariser stated "Microscopy Research and Technique, volume 20, pages 457-462, 1992" and explicitly corrected the query''s older title; that is SUMMARISER PROSE and NO URL displayed a masthead. Volume, issue, pages and year likewise rest on summariser prose. CHECK THE MASTHEAD OF VOLUME 20 (1992) BEFORE CITING.', 'B3: the Crossref record gives journal "Microscopy Research and Technique", volume 20, issue 4, pages 457-462, published-print 1992-02-15 (online 2005-02-04), single author Osakabe. Crossref stores the journal title at journal level, so this does not by itself display the printed 1992 masthead; the DOI stem "jemt" is the older title''s.']
+  P09:
+    relabel: crossref
+    note_replace:
+      - ['PAGE CONFLICT FOUND IN THIS PASS: 450-456 (B report, two queries; this pass, one query) versus 450-466 (this pass, one query, from the query "Banzhof Herrmann Lichte electron holography reflection gold platinum surfaces Ultramicroscopy 1992 1993 publications list"). 450-456 is kept on the 2:1 majority; VERIFY.', 'B3: PAGES 450-456 CONFIRMED by the Crossref record (volume 20, issue 4, published-print 1992-02-15; authors Banzhof, Herrmann, Lichte in this order); the 450-466 index report was wrong.']
+  PAT01:
+    set:
+      author: 'Osakabe, Nobuyuki and Tonomura, Akira'
+      year: '1991'
+      howpublished: 'US Patent 4,998,788 A, ``Reflection electron holography apparatus''''; application US 07/462,769 filed 10 January 1990, Japanese priority 13 January 1989; issued 12 March 1991; assignee Hitachi Ltd. Family member EP 0 378 237 B1. Record: \url{https://patents.google.com/patent/US4998788A/en}'
+      url: 'https://patents.google.com/patent/US4998788A/en'
+      note: 'evidence: METADATA\_VERIFIED (route: Google Patents record https://patents.google.com/patent/US4998788A/en, HTTP 200; B3, 2026-09-22); DESCRIPTION NOT READ; label before B3: identity METADATA\_VERIFIED(index); INVENTORS, ASSIGNEE, ALL DATES AND THE ENTIRE DESCRIPTION UNVERIFIED; provenance: B\_literature.md section 1.5 and B2; B3 checked the patent record. INVENTORS CORRECTED IN B3: the record names TWO inventors, Nobuyuki Osakabe and Akira Tonomura; the five-name list carried before (Osakabe, Endo, Tonomura, Tomita, Furutsu) was second-hand and is WRONG. Assignee Hitachi Ltd; US application 07/462,769 filed 1990-01-10; priority JP 1-4999 of 1989-01-13; issued 1991-03-12; status "Expired - Fee Related". The B report''s dates ("filed 9 May 1991, granted 9 March 1993") were wrong, as B2 suspected. The record''s reference list cites [P01] as "Jpn. J. Appl. Phys. vol. 27, No. 9, (1988/9), pp. L1772-L1774". ABSTRACT AS DISPLAYED ON THE RECORD (metadata, not a reading of the description): "An apparatus forming a reflection electron hologram, wherein a fraction of an electron wave from an electron source illuminate a specimen and caused to be reflected thereat, the remaining electron wave does not illuminate the specimen, but passes aside, the specimen, and the electron wave reflected from the specimen and the electron wave not illuminating, but passes aside, the specimen, are superimposed one upon the other." This confirms, at abstract level, statement (i) of the earlier note: the Hitachi reference wave is a wave that PASSES BESIDE THE SPECIMEN, not a second reflected beam. Statement (ii) (focal distance and biprism potential chosen for a recordable fringe interval, single-stage biprism) is still unverified: the description and claims were not read.'
+  P14:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P14.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- no DOI for this paper appears in either source document.', 'B3: DOI and issue copied from the Crossref record accepted on the five-field rule.']
+  P15:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P15.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI and issue copied from the Crossref record accepted on the five-field rule.']
+  P16:
+    relabel: crossref
+  P27:
+    from_crossref: [number]
+    relabel: crossref
+  P28:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P28.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI and issue copied from the Crossref record accepted on the five-field rule.']
+  P17:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P17.json; B3, 2026-09-22) + SECTION\_READ (of the secondary citation in the sim-trhepd-rheed README only)'
+    note_replace:
+      - ['NO DOI FIELD: the search summariser offered 10.1143/JJAP.22.176 as prose, but that string appears in NEITHER source document and NO URL carried it, so under this file''s DOI policy it is omitted (it is recorded in B2\_bib\_verification\_log.md as an unadmitted lead).', 'B3: DOI and issue (Crossref form "1R") copied from the Crossref record accepted on the five-field rule; it equals the string B2 had refused as summariser prose, now verified.']
+  P18:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P18.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD, DELIBERATELY: B\_literature.md records 10.1107/S0108767386098756 but tags it "DOI UNVERIFIED" because its only source is a summariser sentence; a dedicated query in this pass ("Peng Cowley \"Dynamical diffraction calculations for RHEED and REM\" Acta Crystallographica A42 545 1986") again produced NO URL for this paper and no page carrying that DOI. The candidate string is kept in B2\_bib\_verification\_log.md, not here.', 'B3: DOI and issue 6 copied from the Crossref record accepted on the five-field rule; the DOI equals the string B\_literature.md had tagged "DOI UNVERIFIED", now verified.']
+  P19:
+    relabel: crossref
+  P20:
+    from_crossref: [number, pages, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P20.json; B3, 2026-09-22)'
+    note_replace:
+      - ['PAGE RANGE UNVERIFIED; ', '']
+      - ['NO pages FIELD, DELIBERATELY: the index has reported 174-182 (B report once, this pass once) and 182-187 (B report once); no URL ever displayed a page range. DO NOT SUPPLY A PAGE NUMBER WITHOUT CHECKING THE IUCr RECORD.', 'B3: PAGES 174-182 AND ISSUE 2 copied from the Crossref record; the 182-187 index report was wrong.']
+      - ['NO DOI FIELD: only an IUCr PAPER CODE (S0108767388010888) is attested; turning a paper code into a DOI would be pattern-completion, so the IUCr URL carrying the code is given instead.', 'B3: DOI copied from the Crossref record accepted on the five-field rule (it contains the IUCr paper code, but it was read from Crossref, not derived from the code).']
+  P21:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P21.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD: the summariser offered 10.1107/S0108767389009141 as prose only, and that string is in neither source document, so it is omitted under this file''s DOI policy. Pages 11-32 remain summariser-level but are consistent with Part 1 of volume 46.', 'B3: DOI and issue 1 copied from the Crossref record accepted on the five-field rule, which also confirms pages 11-32.']
+  P22:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P22.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI and issue copied from the Crossref record accepted on the five-field rule.']
+  P13:
+    relabel: crossref
+  P12:
+    relabel: crossref
+  P10:
+    relabel: crossref
+  P11:
+    relabel: crossref
+  P23:
+    relabel: crossref
+  P24:
+    from_crossref: [author, number, pages, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P24.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: CORRECTED from the Crossref record accepted on the five-field rule -- first author Y. Uchida (was N.), second author J. J{\"a}ger (was W.), pages 325-327 (was 325-328); DOI and issue 3 added.']
+  P25:
+    from_crossref: [author, number, pages, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P25.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: CORRECTED from the Crossref record accepted on the five-field rule -- first author Y. Uchida (was N.), pages 53-59 (was 53-60); DOI and issue 1 added.']
+  P26:
+    from_crossref: [number, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P26.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- no DOI appears in either source document; the PII URL is given instead.', 'B3: DOI and issue 4 copied from the Crossref record accepted on the five-field rule; the PII URL is kept.']
+  ZLWANG96:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API monograph record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/ZLWANG96.json; B3, 2026-09-22)'
+    note_replace:
+      - ['Year 1996 and that structure remain summariser-level.', 'B3: DOI copied from the Crossref record, which confirms author, title, publisher, both ISBNs and published-print 1996-05-23 (online 2010-01-18); the three-part structure remains summariser-level.']
+  P30:
+    relabel: crossref
+  P31:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P31.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD: NO DOI FOR THIS PAPER WAS OBTAINED IN ANY SESSION, and B\_literature.md section 12 explicitly instructs reaching it via the PII rather than reconstructing a DOI. Volume 111, issue 8, pages 1328-37 and the July 2011 date are summariser-level.', 'B3: DOI copied from the Crossref record accepted on the five-field rule, which confirms volume 111, issue 8, pages 1328-1337 and published-print 2011-07.']
+  P32:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P32.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI copied from the Crossref record accepted on the five-field rule.']
+  P33:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P33.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI copied from the Crossref record accepted on the five-field rule (article number 112844).']
+  P34:
+    from_crossref: [author, number, pages]
+    relabel: crossref
+    note_replace:
+      - ['NO pages FIELD -- B\_literature.md states "page numbers not obtained"; do not supply one without checking. AUTHOR LIST INCOMPLETE ("S. Roy et al." in the source), hence "and others".', 'B3: FULL AUTHOR LIST (nine names), issue 4 and pages 243-245 copied from the Crossref record.']
+  P35:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P35.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI copied from the Crossref record accepted on the five-field rule (article number 568).']
+  P36:
+    relabel: crossref
+  P37:
+    from_crossref: [number]
+    relabel: crossref
+  P38:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P38.json, plus the arXiv API record; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document; the arXiv id 2307.01735 is given instead (arxiv.org is blocked, so it too was not opened).', 'B3: DOI copied from the Crossref record accepted on the five-field rule; the arXiv API record of 2307.01735 lists the same eleven authors under the preprint title "Hard X-ray grazing incidence ptychography: Large field-of-view nanostructure imaging with ultra-high surface sensitivity".']
+  P39:
+    relabel: 'METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P39.json, plus the arXiv API record, which carries the same DOI; B3, 2026-09-22)'
+  P40:
+    relabel: crossref
+  P41:
+    from_crossref: [author]
+    relabel: crossref
+    note_replace:
+      - ['AUTHOR LIST INCOMPLETE in the source ("R. Wang, Q. Zhao, L. Loetgering et al."), hence "and others" -- complete it before citing.', 'B3: FULL AUTHOR LIST (ten names) copied from the Crossref record (published online 2025-10-30; issue 1, article number 68).']
+  P47:
+    relabel: crossref
+  P45:
+    relabel: crossref
+  P46:
+    relabel: crossref
+  P42:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P42.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI copied from the Crossref record accepted on the five-field rule.']
+  P43:
+    relabel: crossref
+  P44:
+    from_crossref: [pages, doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P44.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document. NO COMPLETE pages FIELD: B\_literature.md gives the first page as 297 and marks the end page as not obtained; supply it only after checking.', 'B3: DOI and pages 297-301 copied from the Crossref record accepted on the five-field rule (published online 2020-12-02, print 2021-06-06; the bib year is the print year). Crossref gives the author as "Rodney Herring".']
+  P51:
+    from_crossref: [number, doi]
+    set:
+      title: 'Electron holographic mapping of structural reconstruction at mono- and bilayer steps of {h-BN}'
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P51.json, plus the arXiv API record; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD: no DOI is stated in either source document, so none is asserted here -- note that the publisher URL itself embeds the article identifier, and a DOI should be read off the APS record rather than reconstructed.', 'B3: DOI and issue 3 copied from the Crossref record accepted on the five-field rule (article number 033137, published 2023-08-28). TITLE CORRECTED IN B3 to the published form "... mapping of structural reconstruction ..." (transcribed from the record, whose h-BN is MathML); the arXiv preprint 2210.04027 is titled "Electron Holographic Mapping of Structural and Electronic Reconstruction at Mono- and Bilayer Steps of h-BN", which is where the old title came from.']
+      - ['AUTHOR NAMES CAUTION: the first author is given in the source only as "Subakti" (mononym as printed) and given names were not obtained for most co-authors -- check the byline before submission.', 'B3: the Crossref byline confirms all ten authors in this order; the first author is a mononym, which the record repeats as given and family name ("Subakti Subakti").']
+  P49:
+    set:
+      author: 'Kudo, Shuhei and Yamamoto, Yusaku and Hoshi, Takeo'
+    relabel: 'METADATA\_VERIFIED (route: arXiv API record of 2306.00271, cached as docs/agent\_reports/crossref\_cache/P49.arxiv.xml; B3, 2026-09-22) -- preprint'
+    note_replace:
+      - ['TITLE OF THE JOURNAL VERSION UNVERIFIED; ', '']
+      - ['AUTHOR LIST INCOMPLETE ("S. Kudo et al.").', 'B3: AUTHOR LIST COMPLETED from the arXiv API record (Shuhei Kudo, Yusaku Yamamoto, Takeo Hoshi; submitted 2023-06-01; title as above). JOURNAL VERSION: a Crossref search returned a Computer Physics Communications record (volume 296, 2024) whose PII equals S0010465523003740 and whose title is "A fast and efficient computation method for reflective diffraction simulations"; it was NOT merged here because the five-field rule fails on the year (this entry''s 2023 is the preprint''s). Its DOI is in the B3 log only; cite the journal version after the orchestrator decides.']
+  SIMTRHEPD:
+    relabel: 'SECTION\_READ (of the README only, B\_literature.md) + METADATA\_VERIFIED (route: README re-fetched at raw.githubusercontent.com, HTTP 200; B3, 2026-09-22)'
+    note_replace:
+      - ['NO AUTHOR FIELD: the README gives no citation byline for the code itself;', 'NO AUTHOR FIELD: the README gives no citation byline for the code itself (B3: it states that the software was written originally by Takashi Hanada and is maintained by Takeo Hoshi);']
+  SIMTRHEPD-CPC:
+    from_crossref: [title]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/SIMTRHEPD-CPC.json; B3, 2026-09-22) + SECTION\_READ (of the citing README)'
+    note_replace:
+      - ['TITLE FIELD IS A PLACEHOLDER, NOT THE ARTICLE TITLE: the README printed the citation as authors/journal/volume/pages/year/DOI only and the article title was never obtained. SUPPLY THE REAL TITLE BEFORE CITING.', 'B3: TITLE REPLACED by the article title from the Crossref record (the old title field was a placeholder); authors, journal, volume 277, article number 108371 and year 2022 (published-print 2022-08) match.']
+  HANADA95:
+    from_crossref: [number, doi]
+    set:
+      title: 'Rocking-curve analysis of reflection high-energy electron diffraction from the {Si(111)-($\sqrt{3}\times\sqrt{3}$)$R30^\circ$-Al}, -{Ga}, and -{In} surfaces'
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the first page standing in for the placeholder title, cached as docs/agent\_reports/crossref\_cache/HANADA95.json; B3, 2026-09-22) + SECTION\_READ (of the citing README)'
+    note_replace:
+      - ['TITLE FIELD IS A PLACEHOLDER: the README printed no article title and none was obtained. NO DOI FIELD -- the README gave none. SUPPLY TITLE AND DOI BEFORE CITING.', 'B3: TITLE (LaTeX transcription of the Crossref title) and DOI and issue 19 from the Crossref record; authors, journal, volume 51, pages 13320-13325 and year 1995 (published 1995-05-15) match the README citation.']
+  ABTEM:
+    relabel: 'SECTION\_READ (of the citing README) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ABTEM.json; B3, 2026-09-22)'
+  RHEEDIUM:
+    set:
+      title: '{dxm447/rheedium: Basic Unit Cell Operations}'
+      version: '2025.01.24'
+      publisher: 'Zenodo'
+    relabel: 'SECTION\_READ (of the README only, B\_literature.md) + METADATA\_VERIFIED (route: DataCite record of the doi field -- Crossref /works returns 404 because the registration agency is DataCite -- cached as docs/agent\_reports/crossref\_cache/RHEEDIUM.datacite.json; B3, 2026-09-22)'
+    note_replace:
+      - ['provenance: the README was read verbatim and cites itself in exactly this form, DOI included (B\_literature.md sections 0 and 6.5).', 'provenance: the README was read verbatim and cites itself with this DOI (B\_literature.md sections 0 and 6.5). B3: the DataCite record of the DOI gives creator Debangshu Mukherjee, title "dxm447/rheedium: Basic Unit Cell Operations", publisher Zenodo, year 2025, version 2025.01.24, and relates it to https://github.com/dxm447/rheedium (tag 2025.01.24) -- a different GitHub account from the one in howpublished; the DOI is a version DOI of an early release, not of the README the project read. Title, version and publisher were set from that record.']
+  PYMULTISLICE:
+    relabel: 'SECTION\_READ (of the README only, B\_literature.md) + METADATA\_VERIFIED (route: README re-fetched at raw.githubusercontent.com, HTTP 200; B3, 2026-09-22)'
+  BLACKBURN14:
+    from_crossref: [doi]
+    relabel: 'METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/BLACKBURN14.json; B3, 2026-09-22)'
+    note_replace:
+      - ['NO DOI FIELD -- none appears in either source document.', 'B3: DOI copied from the Crossref record accepted on the five-field rule.']
+
+  # ------------------------------------------------------------------ Part 5: quarantined entries
+  U01:
+    type: article
+    from_crossref: [title, volume, number, pages, 'year:print', doi]
+    remove: [howpublished]
+    move_to_verified: true
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- the ScienceDirect PII 003960289390062O recorded in B2 equals the record''s PII, standing in for the year and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U01.json; B3, 2026-09-22); label before B3: UNVERIFIED; provenance: requested by the caller of B2 as "McCoy \& Maksym Surface Science 1994"; B2 queries 16-18; B3 Crossref search. RESOLVED IN B3: authors J. M. McCoy and P. A. Maksym, "Simulation of high-resolution REM images", Surface Science 298(2-3), 468-472, published-print 1993-12. THE YEAR IS 1993 (not 1994 as the caller''s brief said, nor 1997). The second McCoy/Maksym title seen by B2 in a Semantic Scholar slug ("... application to high-resolution imaging of the Si(001)2x1 surface") is a DIFFERENT item and is not this entry. LEADS FROM THE SAME CROSSREF SEARCH (not added to this file; the orchestrator decides): McCoy and Maksym, "Multiple scattering calculations of step contrast in REM images of the Si(001) surface", Surface Science 310(1-3), 217-225 (1994) -- probably the "1994" paper the caller''s brief meant, and the one most directly on this project''s Si(001) step observable; McCoy and Maksym, "Simulation of reflection electron microscopy images: application to high-resolution imaging of the Si(001)2 x 1 surface", Surface Science 297(2), 113-126 (1993) -- the Semantic Scholar slug item; DOIs in the B3 log. Relevance as B2 stated: REM image simulation of steps is close to this project''s target observable; read before the forward model is fixed.'
+  U02:
+    type: article
+    from_crossref: [author, volume, number, pages, 'year:print', doi]
+    remove: [howpublished]
+    move_to_verified: true
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- the ScienceDirect PII 003960289390043J recorded in B2 equals the record''s PII, standing in for the author, year and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U02.json; B3, 2026-09-22); label before B3: UNVERIFIED; provenance: returned by B2 query 16 while searching for [U01]; B3 Crossref search. RESOLVED IN B3: single author J. L. Beeby, Surface Science 298(2-3), 307-315, published-print 1993-12 -- NOT McCoy and Maksym, with whom the search summariser had loosely associated it. Directly on topic (dynamical RHEED from STEPPED surfaces); read alongside [U01].'
+  U03:
+    set:
+      author: 'Huang, Weijie'
+      year: '2020'
+      howpublished: 'US Patent 10,755,892 B2; application US 16/412,505 filed 15 May 2019, priority US provisional 62/675,645 of 23 May 2018; issued 25 August 2020; original assignee KLA Tencor Corp (current assignee KLA Corp). Record: \url{https://patents.google.com/patent/US10755892B2/en}'
+      url: 'https://patents.google.com/patent/US10755892B2/en'
+      note: 'evidence: METADATA\_VERIFIED (route: Google Patents record https://patents.google.com/patent/US10755892B2/en, HTTP 200; B3, 2026-09-22); DESCRIPTION NOT READ; label before B3: UNVERIFIED; provenance: B\_literature.md section 5.2 (search summariser only); B3 checked the patent record. THE POLICY ID OF THIS RECORD IS [PAT02] -- the cite key stays U03 so that keys do not change. RESOLVED IN B3: kind code B2; single inventor Weijie Huang; original assignee KLA Tencor Corp (a semiconductor-metrology company, as B\_literature.md guessed; current assignee KLA Corp); filed 2019-05-15, issued 2020-08-25; status Active. Abstract as displayed on the record (first sentence): "A particle-beam inspection system may include a reflective particle-beam imaging system providing an image of a selected portion of a sample and a diffraction pattern of the selected portion of the sample and a controller communicatively coupled to the reflective particle-beam imaging system." CONTEXT unchanged: this remains the only concrete reflection-mode electron ptychography item located, and that absence is a search failure, not evidence of absence.'
+    move_to_verified: true
+  U04:
+    type: article
+    from_crossref: [number, pages, doi]
+    set:
+      title: 'Invariant-embedding {$R$}-matrix scheme for reflection high-energy electron diffraction'
+    remove: [howpublished]
+    move_to_verified: true
+    note_replace:
+      - ['evidence: METADATA\_VERIFIED(index, single) for the citation string; TITLE UNVERIFIED; provenance:', 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the first page standing in for the placeholder title, cached as docs/agent\_reports/crossref\_cache/U04.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for the citation string; TITLE UNVERIFIED; provenance:']
+      - ['THE CITE KEY IS U04 ONLY BECAUSE THE ENTRY SITS IN THE UNVERIFIED SECTION; the policy ID is [P29]. The title field above is a deliberate placeholder and MUST NOT be typeset. NO DOI FIELD.', 'THE CITE KEY STAYS U04 (keys are not changed); the policy ID is [P29]. B3: TITLE (transcribed from the Crossref record, whose R is italic), DOI, issue 2 and pages 1172-1182 from the Crossref record (published 1988-07-15). The title the summariser once offered ("Accurate Dynamical Theory of RHEED Rocking-curve Intensity Spectra") was WRONG.']
+  U05:
+    set:
+      title: 'Electron Holography'
+      isbn: '9780444820518'
+    move_to_verified: true
+    note_replace:
+      - ['evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 1.8, one search-index hit. NO DOI or ISBN FIELD -- none obtained. Editor initials and the exact title form were not confirmed against a publisher record.', 'evidence: METADATA\_VERIFIED (route: Crossref API chapter records of ISBN 9780444820518, cached as docs/agent\_reports/crossref\_cache/U05.isbn.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 1.8; B3 Crossref search and ISBN listing. RESOLVED IN B3: Crossref holds 38 chapter-level records (Preface to Author index) of the Elsevier volume "Electron Holography", 1995, ISBN 9780444820518 (copied from those records); its Preface is authored by Tonomura, Allard, Pozzi, Joy and Ono, in the editor order above. There is no book-level DOI, so no doi field. The last chapter is titled "The First International Workshop on Electron Holography - Concluding Remarks -"; the Knoxville venue and the 29-31 August 1994 dates are NOT in the record and remain unverified, so they were removed from the title field.']
+      - ['See [U06] for the reason this volume matters and why the reason is unverified.', 'See [U06]: the Crossref contents list of this volume contains NO chapter by Osakabe and none on reflection holography.']
+  U06:
+    note_replace:
+      - ['evidence: UNVERIFIED -- DO NOT CITE; provenance:', 'evidence: UNVERIFIED -- DO NOT CITE (B3: contradicted by the Crossref contents list of [U05]); provenance:']
+      - ['THERE IS NO EVIDENCE THAT THIS CHAPTER EXISTS.', 'THERE IS NO EVIDENCE THAT THIS CHAPTER EXISTS, AND B3 FOUND EVIDENCE THAT IT DOES NOT: Crossref lists all 38 items of [U05] (ISBN 9780444820518, Preface to Author index, cached as docs/agent\_reports/crossref\_cache/U05.isbn.json) and none is by Osakabe or on reflection holography; an ISBN-filtered author query for Osakabe returned 0 items (U06.isbn-osakabe.json).']
+  U07:
+    from_crossref: [author, pages, doi]
+    move_to_verified: true
+    set:
+      editor: 'V{\"o}lkl, Edgar and Allard, Lawrence F. and Joy, David C.'
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API book-chapter record found by bibliographic search, accepted by identifier substitution -- the chapter record carries the ISBNs of the verified parent book [B09] and its exact title, standing in for the author the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U07.json; B3, 2026-09-22); label before B3: chapter TITLE and NUMBER METADATA\_VERIFIED(index); AUTHORS AND PAGES UNVERIFIED; provenance: B\_literature.md sections 1.8 and 7 (chapter 13 of [B09]); B3 Crossref search. RESOLVED IN B3: authors R. A. Herring and G. Pozzi, pages 295-310, Springer US 1999. NOTE FOR THE PROJECT: the dark-field / diffracted-beam holography chapter of the standard holography textbook is by R. A. Herring, the author of [P43] and [P44] (University of Victoria). The instruction file requires citing the responsible chapter authors; they are now established. [B09] still has no reflection-geometry chapter. Editor first name corrected from Ernst to Edgar V{\"o}lkl (Crossref record of [B09]).'
+  U08:
+    type: article
+    from_crossref: [author, volume, pages, doi]
+    remove: [howpublished]
+    move_to_verified: true
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- ScienceDirect PII S0304399114001211 recorded in B\_literature.md equals the record''s PII, standing in for the authors and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U08.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4, "additional located but unverified" list; B3 Crossref search. RESOLVED IN B3: eight authors (Javon, Lubk, Cours, Reboh, Cherkashin, Houdellier, Gatel, H{\"y}tch), Ultramicroscopy 147, 70-85, published-print 2014-12. Relevance: dynamical effects on the DFEH geometric phase (companion to [P32]).'
+  U09:
+    type: article
+    from_crossref: [author, volume, pages, doi]
+    remove: [howpublished]
+    move_to_verified: true
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- ScienceDirect PII S0304399115300413 recorded in B\_literature.md equals the record''s PII, standing in for the authors and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U09.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4 and B2 query 11 (PubMed record PMID 26476802); B3 Crossref search. RESOLVED IN B3: authors Thibaud Denneulin, Florent Houdellier and Martin H{\"y}tch, Ultramicroscopy 160, 98-109, published-print 2016-01 (the PII''s "15" is the acceptance year; the bib year 2016 is the print year).'
+  U10:
+    type: article
+    from_crossref: [author, title, volume, pages, doi]
+    remove: [howpublished]
+    move_to_verified: true
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- ScienceDirect PII S030439912500021X recorded in B\_literature.md equals the record''s PII, standing in for the authors and volume the entry lacked; the title matched at similarity 0.89 because the old title abbreviated "scanning convergent electron beam diffraction" as "scanning CBED" -- cached as docs/agent\_reports/crossref\_cache/U10.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4 (PII and PMID 40068240); B3 Crossref search. RESOLVED IN B3: authors L. Niermann, T. Niermann and M. Lehmann, Ultramicroscopy 271, article 114122, published-print 2025-05; title replaced by the record''s full form. Topically the most recent statement on dynamical effects in DFEH; B\_literature.md section 11.9 argues the DFEH geometric-phase machinery does NOT transfer to reflection.'
+  U11:
+    note_replace:
+      - ['NOTHING but the title is established. NO DOI FIELD.', 'NOTHING but the title is established. NO DOI FIELD. B3: a Crossref search returned one record with this exact title (Journal of Physics D: Applied Physics 49, 2016, first author Denneulin); it was NOT accepted because the entry carries no author, journal, year or volume to match against the five-field rule. Candidate DOI in the B3 log only.']
+  U12:
+    move_to_verified: true
+    note_replace:
+      - ['evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 4, plus the vendor URL returned by query 11 of this pass.', 'evidence: METADATA\_VERIFIED for existence (route: vendor page https://www.hremresearch.com/holodark/, HTTP 200, titled "HoloDark for DigitalMicrograph -- HREM Research Inc."; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 4, plus the vendor URL returned by query 11 of B2.']
+  U13:
+    note_replace:
+      - ['NO DOI FIELD. RELEVANCE:', 'NO DOI FIELD. B3: two further Crossref queries found no 1998 Ishizuka multislice paper; they did return K. Ishizuka, "Multislice formula for inclined illumination", Acta Crystallographica A 38 (1982), and K. Ishizuka, "The treatment of inclined illumination on the multislice method", Acta Crystallographica A 37 (1981). Neither matches the year 1998 recorded here, so neither was accepted; both are leads in the B3 log. RELEVANCE:']
+  U14:
+    note_replace:
+      - ['NO DOI FIELD. Same relevance as [U13].', 'NO DOI FIELD. Same relevance as [U13]. B3: a Crossref query for Phil. Mag. Lett. 71 (1995) returned "An improved multislice method for calculating high-energy electron diffraction and imaging" (first author Chen, January 1995); it was NOT accepted because the entry has no author or title to match. Lead in the B3 log only.']
+  U15:
+    note_replace:
+      - ['NO author, volume, article-number OR pages FIELD. NO DOI FIELD.', 'NO author, volume, article-number OR pages FIELD. NO DOI FIELD. B3: a Crossref search returned one record with this exact title (Nature Communications 16, 2025, first author Blackburn); it was NOT accepted because the entry carries no author or volume, which the five-field rule requires. Candidate DOI in the B3 log only.']
+  U16:
+    type: article
+    from_crossref: [author, number, doi]
+    move_to_verified: true
+    set:
+      note: 'evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the first page standing in for the first author the entry lacked -- journal, volume 26, pages 860-863 and year 2020 all match -- cached as docs/agent\_reports/crossref\_cache/U16.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 6.3 lists it "for completeness of the public Blackburn record"; B3 Crossref search. RESOLVED IN B3: eight authors (Reidy, Varnavides, Thomsen, Blackburn, Pham, Kumar, LeBeau, Ross), Microscopy and Microanalysis 26 supplement S2, pages 860-863, published online 2020-07-30. A. Blackburn is the fourth author, not the first.'
+  U17:
+    set:
+      title: 'PyRHEED'
+    move_to_verified: true
+    note_replace:
+      - ['evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5, "located (metadata only, not read)". THE README WAS NOT READ.', 'evidence: METADATA\_VERIFIED for existence (route: README fetched at raw.githubusercontent.com/yux1991/PyRHEED/master/README.md, HTTP 200; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5; B3 fetched the README for its title and one-line description only ("This project is used for reflection high energy electron diffraction (RHEED) data analysis and theoretical simulation"); this is not a reading of the code. Title set to the README heading "PyRHEED" (the old subtitle was descriptive, not the project''s).']
+  U18:
+    note_replace:
+      - ['THE README WAS NOT READ and the accompanying SoftwareX paper was never located, so no author, year or DOI is established.', 'THE README WAS NOT READ (B3: raw.githubusercontent.com returned 404 for README.md on main and master; github.com is blocked for this session). B3: a Crossref search returned a SoftwareX record, volume 12 (2020), first author Daniluk, titled "rheed++: A C++ framework to simulation of RHEED intensity oscillations during the ..."; it was NOT accepted because the title here is descriptive and the entry has no author, year or volume. Candidate DOI in the B3 log only; no author, year or DOI is established in this file.']
+
+accepted_residual:
+  B03:
+    publisher: 'imprint Academic Press (Elsevier page: imprint and copyright holder "Academic Press") vs Crossref registrant Elsevier'
+  B04:
+    publisher: 'imprint Academic Press (Elsevier page: imprint and copyright holder "Academic Press") vs Crossref registrant Elsevier'
+  U04:
+    title: 'the record itself has no space before the italic R ("Invariant-embedding<i>R</i>-matrix"); the bib keeps the space'
+  P02E:
+    title: 'Crossref deposits the erratum under the original title; "Erratum:" prefix kept to distinguish P02E from P02'
+  P51:
+    'author[1].given': 'mononym "Subakti"; the record repeats it as given and family name'
+  HANADA95:
+    title: 'LaTeX transcription of the record title (square roots, times sign and degree sign typeset in math mode)'
+
+partial:
+  B13: 'author names and order: neither the Crossref book record nor its twelve chapter records carry names; link.springer.com serves a JavaScript challenge'
+  B14: 'subtitle "A Textbook for Materials Science": the Crossref record has the main title only; link.springer.com serves a JavaScript challenge'
+
+manual_routes:
+  S01:
+    verified: true
+    route: 'DataCite API record of 10.5281/zenodo.18296081 (the Zenodo DOI in the README) + documentation page'
+    url: 'https://api.datacite.org/dois/10.5281/zenodo.18296081'
+    http: 'datacite 200; docs page 200; README 200 (raw.githubusercontent.com); github.com 403'
+    result: 'DataCite creator "Fitzpatrick, Matthew R. C.", title Prismatique, publisher Zenodo, 2026, version 0.0.4, IsSupplementTo 10.1016/j.micron.2021.103141 and github.com/prism-em/prismatic. Author corrected; no doi field (version differs from the pinned 0.0.1).'
+  S02:
+    verified: true
+    route: 'project pages prism-em.com and prism-em.github.io/about-cite'
+    url: 'https://prism-em.github.io/about-cite/'
+    http: '200 (both pages)'
+    result: 'Citation page asks for Ophus 2017 (P04), Pryor, Ophus and Miao 2017 (ASCI 3; not in references.bib) and Rangel DaCosta et al. 2021 (P05).'
+  SIMTRHEPD:
+    verified: true
+    route: 'README at raw.githubusercontent.com/sim-trhepd-rheed/sim-trhepd-rheed/main/README.md'
+    url: 'https://raw.githubusercontent.com/sim-trhepd-rheed/sim-trhepd-rheed/main/README.md'
+    http: '200'
+    result: 'README names Takashi Hanada (original author) and Takeo Hoshi (maintainer); cites SIMTRHEPD-CPC as ref. [1] with the article title now in the bib.'
+  PYMULTISLICE:
+    verified: true
+    route: 'README at raw.githubusercontent.com/HamishGBrown/py_multislice/master/README.md'
+    url: 'https://raw.githubusercontent.com/HamishGBrown/py_multislice/master/README.md'
+    http: '200'
+    result: 'Repository exists; README carries a Zenodo badge but no citation byline. No field changed.'
+  RHEEDIUM:
+    verified: true
+    route: 'DataCite API (Crossref /works gives 404; doi.org/ra reports DataCite)'
+    url: 'https://api.datacite.org/dois/10.5281/zenodo.14757400'
+    http: 'crossref 404; doi.org/ra 200 (DataCite); datacite 200'
+    result: 'Creator Debangshu Mukherjee; title "dxm447/rheedium: Basic Unit Cell Operations"; Zenodo 2025; version 2025.01.24. Title, version and publisher set from this record.'
+  P49:
+    verified: true
+    route: 'arXiv API record of 2306.00271'
+    url: 'https://export.arxiv.org/api/query?id_list=2306.00271'
+    http: '200'
+    result: 'Title as in the bib; authors Shuhei Kudo, Yusaku Yamamoto, Takeo Hoshi; submitted 2023-06-01; no DOI or journal_ref in the arXiv record. Journal version found in Crossref (CPC 296, 2024; PII match) but not merged (year).'
+  PAT01:
+    verified: true
+    route: 'Google Patents record of US 4,998,788 A'
+    url: 'https://patents.google.com/patent/US4998788A/en'
+    http: '200'
+    result: 'Inventors Nobuyuki Osakabe and Akira Tonomura (two, not five); assignee Hitachi Ltd; application 07/462,769 filed 1990-01-10; priority JP 1989-01-13; issued 1991-03-12. Abstract: reference wave passes beside the specimen.'
+  U03:
+    verified: true
+    route: 'Google Patents record of US 10,755,892 B2'
+    url: 'https://patents.google.com/patent/US10755892B2/en'
+    http: '200 (the A-suffixed URL tried first did not resolve)'
+    result: 'Inventor Weijie Huang; assignee KLA Tencor Corp (now KLA Corp); filed 2019-05-15; issued 2020-08-25.'
+  U05:
+    verified: true
+    route: 'Crossref API chapter records of ISBN 9780444820518 (no book-level record)'
+    url: 'https://api.crossref.org/works?filter=isbn%3A9780444820518&rows=100'
+    http: '200'
+    result: '38 items; Preface by Tonomura, Allard, Pozzi, Joy, Ono; Elsevier 1995; no Osakabe chapter.'
+  U12:
+    verified: true
+    route: 'vendor page'
+    url: 'https://www.hremresearch.com/holodark/'
+    http: '200'
+    result: 'Page titled "HoloDark for DigitalMicrograph - HREM Research Inc." exists; existence only.'
+  U17:
+    verified: true
+    route: 'README at raw.githubusercontent.com/yux1991/PyRHEED/master/README.md'
+    url: 'https://raw.githubusercontent.com/yux1991/PyRHEED/master/README.md'
+    http: '200'
+    result: 'README heading "PyRHEED"; describes RHEED data analysis and simulation. Title corrected to the heading.'

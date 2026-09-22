@@ -212,12 +212,23 @@ def names_of(rec, role):
     return out
 
 
+def given_conflict(bg, cg):
+    bi, ci = bt.initials(bg), bt.initials(cg)
+    if bi and ci and not (bi.startswith(ci) or ci.startswith(bi)):
+        return True
+    btok = [t for t in re.split(r"[\s.\-]+", bt.fold(bg)) if t]
+    ctok = [t for t in re.split(r"[\s.\-]+", bt.fold(cg)) if t]
+    return any(len(x) > 1 and len(y) > 1 and x != y for x, y in zip(btok, ctok))
+
+
 def compare(key, e, rec, placeholder=None):
     """Compare a bib entry with a Crossref /works message. Returns (checked, discrepancies, info)."""
     checked, disc, info = [], [], {}
     # ---- authors / editors
     names, role = bib_names(e)
     artlike = e.etype == "article" or bool(e.get("journal"))
+    if e.etype == "incollection" and role == "editor":
+        names = []          # the book's editors are not compared with the chapter's authors
     if not names and names_of(rec, "author"):
         disc.append(("author", "(absent)", fmt_names(names_of(rec, "author")), "missing"))
     if names:
@@ -233,14 +244,15 @@ def compare(key, e, rec, placeholder=None):
             elif others:
                 disc.append((role + "-count", f"{len(real)} + others", f"{len(crn)} (full list available)", "incomplete"))
             for i, (bn, cn) in enumerate(zip(real, crn)):
-                if bn["family"] != cn["family"]:
+                if bn["family"].replace("\u2019", "'") != cn["family"].replace("\u2019", "'"):
                     kind = "diacritics" if bt.fold(bn["family"]) == bt.fold(cn["family"]) else "family"
                     if kind == "family" and bt.fold(bn["family"]).replace(" ", "") == bt.fold(cn["family"]).replace(" ", ""):
                         kind = "spacing"
                     disc.append((f"{role}[{i+1}].family", bn["family"], cn["family"], kind))
                 bi, ci = bt.initials(bn["given"]), bt.initials(cn["given"])
-                if bi and ci and not (bi.startswith(ci) or ci.startswith(bi)):
-                    # inconsistent initials (a fuller or shorter form of the same initials is not a discrepancy)
+                if given_conflict(bn["given"], cn["given"]):
+                    # inconsistent initials, or two spelled-out given names that differ
+                    # (a fuller or shorter form of the same name is not a discrepancy)
                     disc.append((f"{role}[{i+1}].given", bn["given"], cn["given"], "given"))
                 elif not bi and ci:
                     disc.append((f"{role}[{i+1}].given", "(none)", cn["given"], "given-missing"))
@@ -279,6 +291,8 @@ def compare(key, e, rec, placeholder=None):
         elif artlike:
             disc.append(("volume", "(absent)", str(rec["volume"]), "missing"))
     num = u(e, "number")
+    if num:
+        num = num.replace("\u2013", "-")          # BibTeX range 2--3 == Crossref 2-3
     if num or rec.get("issue"):
         checked.append("issue")
         if num and num != str(rec.get("issue", "")):
@@ -597,7 +611,7 @@ def value_from_record(field, rec, e):
     if field == "volume":
         return str(rec["volume"])
     if field == "number":
-        return str(rec.get("issue") or rec.get("article-number"))
+        return re.sub(r"^(\w+)-(\w+)$", r"\1--\2", str(rec.get("issue") or rec.get("article-number")))
     if field == "pages":
         a, b = cr_pages(rec)
         return f"{a}--{b}" if b else a
@@ -614,11 +628,37 @@ def value_from_record(field, rec, e):
     raise KeyError(field)
 
 
+ORDER = ["author", "editor", "title", "journal", "booktitle", "publisher", "volume", "number", "pages",
+         "year", "edition", "version", "isbn", "doi", "url", "eprint", "archiveprefix", "howpublished", "note"]
+
+
+def render_entry(text, e):
+    """Re-render a touched entry with fields in a canonical order, keeping each raw value
+    and the entry's own label width."""
+    fs = e.fields
+    width = max(len(f.raw_name) for f in fs)
+    rank = {n: i for i, n in enumerate(ORDER)}
+    fs = sorted(fs, key=lambda f: (rank.get(f.name, len(ORDER) - 1.5), fs.index(f)))
+    lines = [f"@{e.etype}{{{e.key},"]
+    for f in fs:
+        lines.append(f"  {f.raw_name.ljust(width)} = {{{f.value}}},")
+    lines[-1] = lines[-1].rstrip(",")
+    return "\n".join(lines) + "\n}"
+
+
 def cmd_apply(args):
     import yaml
     spec = yaml.safe_load(CORR.read_text()) or {}
-    text = BIB.read_text()
+    # Always rebuild from the baseline commit, so that `apply` is idempotent and the
+    # current file is exactly baseline + b3_corrections.yaml.
+    text = read_baseline()
+    for old, rep in spec.get("header_replace") or []:
+        if old not in text:
+            raise SystemExit(f"header_replace text not found: {old[:60]!r}")
+        text = text.replace(old, rep)
+    touched = []
     for key, ops in (spec.get("entries") or {}).items():
+        touched.append(key)
         ents = entries_by_key(text)
         e = ents[key]
         rec = None
@@ -697,6 +737,9 @@ def cmd_apply(args):
             ents = entries_by_key(text)
             e = ents[key]
             text = text[:e.start] + "@" + ops["type"] + text[e.start + 1 + len(e.etype):]
+    for key in touched:
+        e = entries_by_key(text)[key]
+        text = text[:e.start] + render_entry(text, e) + text[e.end:]
     BIB.write_text(text)
     errs, warns, stats = bt.validate(text)
     print("validate:", stats, "errors:", errs)
@@ -900,6 +943,11 @@ def write_log(counts, blocks, corrections, stats, errs, doi_bad, spec):
     L.append("")
     L.append("Syntax validation of the current `references.bib`: " + json.dumps(stats) +
              f"; errors: {errs or 'none'}; entries whose doi is not backed by a cached registry record: {doi_bad or 'none'}.\n")
+    byfield = {}
+    for key, n, a, b in corrections:
+        byfield.setdefault(n if a is not None else n + " (added)", set()).add(key)
+    L.append("Entries changed, by field (baseline -> current; `note` excluded): " + "; ".join(
+        f"{n}: {len(ks)}" for n, ks in sorted(byfield.items())) + ".\n")
     L.append("## Corrections (baseline -> current, every changed field except `note`)\n")
     L.append("| key | field | before | after |\n|---|---|---|---|")
     for key, n, a, b in corrections:

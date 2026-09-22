@@ -14,11 +14,19 @@
 %% plus one fresh WebSearch verification pass, logged query-by-query in
 %% B2_bib_verification_log.md.
 %%
-%% ACCESS CONDITIONS: every scholarly host (doi.org, Crossref, OpenAlex,
-%% Semantic Scholar, PMC, arXiv, and every publisher) is BLOCKED by the
-%% egress proxy. NOTHING in this file was resolved against Crossref or any
-%% DOI resolver, and NO article, chapter, book or patent was read. The only
-%% documents read in the whole project are five GitHub README files.
+%% ACCESS CONDITIONS OF B2 (2026-09-21): every scholarly host was blocked,
+%% so B2 resolved nothing against Crossref or any DOI resolver.
+%%
+%% B3 UPDATE (2026-09-22, Full network access): EVERY entry was checked
+%% against its Crossref /works record, or -- where Crossref has none --
+%% against DataCite, the arXiv API, Google Patents or the publisher page,
+%% by tools/bib/crossref_check.py (corrections in tools/bib/b3_corrections.yaml;
+%% log docs/agent_reports/B3_crossref_verification_log.md; per-entry table
+%% docs/agent_reports/B3_crossref_results.tsv; raw Crossref JSON in
+%% docs/agent_reports/crossref_cache/). Each note now starts with the B3
+%% label and keeps the previous one as "label before B3". B3 READ NOTHING:
+%% no label was raised to SECTION_READ by it, and the older notes' statements
+%% about blocked hosts describe B2's conditions, not the current ones.
 %%
 %% DOI POLICY (strict): a `doi` field appears ONLY when that DOI string is
 %% written in the instruction file, or in B_literature.md with a stated
@@ -28,6 +36,12 @@
 %% as prose (those are recorded in B2_bib_verification_log.md as unadmitted
 %% leads, never here). Likewise for pages and years: a field that could not
 %% be resolved is omitted and the `note` says so.
+%% B3: every DOI added in B3 was COPIED from a Crossref /works record that
+%% was accepted on the five-field rule (first author, title, journal or
+%% publisher, year, volume) or, where the entry lacked some of those fields,
+%% by a logged identifier substitution (PII, ISBN or first page). No DOI was
+%% typed, constructed or pattern-completed; the validator checks that every
+%% doi field is backed by a cached registry record carrying that DOI.
 %%
 %% EVERY entry carries a mandatory `note` of the form
 %%     note = {evidence: <label>; provenance: <one sentence>}
@@ -83,12 +97,12 @@
 @book{B01,
   author    = {Spence, John C. H.},
   title     = {High-Resolution Electron Microscopy},
-  edition   = {4},
   publisher = {Oxford University Press},
   year      = {2013},
+  edition   = {4},
   doi       = {10.1093/acprof:oso/9780199668632.001.0001},
   url       = {https://doi.org/10.1093/acprof:oso/9780199668632.001.0001},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B01]), DOI and URL copied verbatim from it. Not re-verified in this session; publisher hosts blocked. Use: electron wave optics, coherent image formation, diffraction, aberrations.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B01.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B01]), DOI and URL copied verbatim from it. Use: electron wave optics, coherent image formation, diffraction, aberrations.}
 }
 
 @book{B02,
@@ -98,51 +112,53 @@
   year      = {2003},
   doi       = {10.1017/CBO9780511615092},
   url       = {https://doi.org/10.1017/CBO9780511615092},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B02]), DOI and URL copied verbatim from it. Not re-verified. Use: crystallography, reciprocal space, orientation conventions, dynamical diffraction; instruction section 9.2 sends the geometry audit here.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B02.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B02]), DOI and URL copied verbatim from it. Use: crystallography, reciprocal space, orientation conventions, dynamical diffraction; instruction section 9.2 sends the geometry audit here.}
 }
 
 @book{B03,
   author    = {Hawkes, Peter W. and Kasper, Erwin},
   title     = {Principles of Electron Optics, Volume 3: Fundamental Wave Optics},
-  edition   = {2},
   publisher = {Academic Press},
   year      = {2022},
+  edition   = {2},
   isbn      = {9780128189795},
+  doi       = {10.1016/c2018-0-04650-2},
   url       = {https://shop.elsevier.com/books/principles-of-electron-optics-volume-3/hawkes/978-0-12-818979-5},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B03]), ISBN and URL copied verbatim from it. No DOI is given by the instruction file, so none appears here. Instruction file warns: check chapter numbering in the edition actually used.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API edited-book record matched by ISBN, cached as docs/agent\_reports/crossref\_cache/B03.json, plus the Elsevier page in the url field; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B03]), ISBN and URL copied verbatim from it. B3: the book DOI is copied from the Crossref edited-book record whose ISBN equals the isbn field; that record carries no author list and no subtitle, so the subtitle "Fundamental Wave Optics", the authors Peter W. Hawkes and Erwin Kasper, the 2nd edition, the imprint Academic Press and the release date 2022-02-18 were confirmed on the Elsevier page in the url field (HTTP 200). Instruction file warns: check chapter numbering in the edition actually used.}
 }
 
 @book{B04,
   author    = {Hawkes, Peter W. and Kasper, Erwin},
   title     = {Principles of Electron Optics, Volume 4: Advanced Wave Optics},
-  edition   = {2},
   publisher = {Academic Press},
   year      = {2022},
+  edition   = {2},
   isbn      = {9780323916462},
+  doi       = {10.1016/c2021-0-01238-4},
   url       = {https://shop.elsevier.com/books/principles-of-electron-optics-volume-4/hawkes/978-0-323-91646-2},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B04]), ISBN and URL copied verbatim from it. No DOI given, so none appears here. Instruction file warns: this is not a general quantum-field-theory textbook; do not use its breadth to justify an unrelated model.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API edited-book record matched by ISBN, cached as docs/agent\_reports/crossref\_cache/B04.json, plus the Elsevier page in the url field; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B04]), ISBN and URL copied verbatim from it. B3: the book DOI is copied from the Crossref edited-book record whose ISBN equals the isbn field; that record carries no author list and no subtitle, so the subtitle "Advanced Wave Optics", the authors Peter W. Hawkes and Erwin Kasper, the 2nd edition, the imprint Academic Press and the release date 2022-05-10 were confirmed on the Elsevier page in the url field (HTTP 200). Instruction file warns: this is not a general quantum-field-theory textbook; do not use its breadth to justify an unrelated model.}
 }
 
 @book{B05,
   author    = {Rose, Harald},
   title     = {Geometrical Charged-Particle Optics},
-  edition   = {2},
   publisher = {Springer},
-  year      = {2013},
+  year      = {2012},
+  edition   = {2},
   doi       = {10.1007/978-3-642-32119-1},
   url       = {https://doi.org/10.1007/978-3-642-32119-1},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B05]), DOI and URL copied verbatim from it. YEAR FLAG: the instruction file states "Springer, 2013 publication; publisher copyright is 2012" -- 2013 is used here on that authority. Instruction file warns it cannot supply the custom biprism's parameters.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B05.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 3, [B05]), DOI and URL copied verbatim from it. YEAR CORRECTED IN B3 FROM 2013 TO 2012: the Crossref record (Springer Berlin Heidelberg, series Springer Series in Optical Sciences) gives published-print 2012 and no 2013 date; the instruction file's "2013 publication" is not supported by the publisher's deposit. The Springer book page could not be read (JavaScript challenge). Instruction file warns it cannot supply the custom biprism's parameters.}
 }
 
 @book{B06,
   author    = {Kirkland, Earl J.},
   title     = {Advanced Computing in Electron Microscopy},
-  edition   = {3},
   publisher = {Springer},
   year      = {2020},
+  edition   = {3},
   doi       = {10.1007/978-3-030-33260-0},
   url       = {https://doi.org/10.1007/978-3-030-33260-0},
-  note      = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index, single) (B report); provenance: instruction-file record (section 4, [B06]); B\_literature.md section 7 adds that the Springer book-DOI page and ISBNs 9783030332594 / 9783030332624 appeared once in the search index. UNRESOLVED: the table of contents was never obtained, so no chapter or equation may be cited to this book yet.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B06.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index, single) (B report); provenance: instruction-file record (section 4, [B06]); B\_literature.md section 7 adds that the Springer book-DOI page and ISBNs 9783030332594 / 9783030332624 appeared once in the search index. UNRESOLVED: the table of contents was never obtained, so no chapter or equation may be cited to this book yet.}
 }
 
 @book{B07,
@@ -150,8 +166,9 @@
   title     = {Reflection High-Energy Electron Diffraction},
   publisher = {Cambridge University Press},
   year      = {2004},
+  doi       = {10.1017/cbo9780511735097},
   url       = {https://www.cambridge.org/core/books/reflection-highenergy-electron-diffraction/162FE7186C89C6A8269619B7EDF5F1E8},
-  note      = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 4, [B07], "2004 print edition", URL copied verbatim); B\_literature.md section 3.4 adds a chapter list read off Cambridge Core chapter pages in the search index. Relevant chapters: "The diffraction conditions"; "Kikuchi and resonance patterns"; "Dynamical theory: transfer matrix method"; "Dynamical theory: embedded R-matrix method"; "Dynamical theory: integral method" (confirmed as ch. 14 by its Cambridge Core URL). No DOI is given by the instruction file, so none appears here. Instruction file warns: the later online-publication date is not a new print edition.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API monograph record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/B07.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 4, [B07], "2004 print edition", URL copied verbatim); B\_literature.md section 3.4 adds a chapter list read off Cambridge Core chapter pages in the search index. Relevant chapters: "The diffraction conditions"; "Kikuchi and resonance patterns"; "Dynamical theory: transfer matrix method"; "Dynamical theory: embedded R-matrix method"; "Dynamical theory: integral method" (confirmed as ch. 14 by its Cambridge Core URL). B3: DOI copied from the Crossref record (published-print 2004-12-13, published-online 2010-07-06; the bib year is the print year). Instruction file warns: the later online-publication date is not a new print edition.}
 }
 
 @book{B08,
@@ -161,41 +178,41 @@
   year      = {2004},
   doi       = {10.1093/oso/9780198500742.001.0001},
   url       = {https://doi.org/10.1093/oso/9780198500742.001.0001},
-  note      = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 4, [B08]; author order preserved as the instruction file demands), DOI and URL copied verbatim. YEAR CONFLICT, UNRESOLVED: the instruction file says 2004 "following the publisher's publication record" and 2004 is used here; an IUCr book-review page found in this pass is titled "... Pp. 544. Oxford University Press, 2003. Price GBP 69.95. ISBN 0-19-850074-2" (https://journals.iucr.org/a/issues/2004/04/00/ht5049/index.html). Resolve before citing a year. This pass also saw OUP product URLs confirming ISBN-13 9780198500742 (hardback) and 9780199602247 (paperback reissue). Relevant: ch. 5 "Dynamical Theory III. Reflection High-Energy Electron Diffraction" (title read literally from the Oxford Academic chapter URL academic.oup.com/book/54675/chapter/422641330), ch. 6 resonance effects, ch. 13 scattering factor and optical potential, and an appendix with a FORTRAN listing of RHEED routines.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B08.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 4, [B08]; author order preserved as the instruction file demands), DOI and URL copied verbatim. YEAR RESOLVED IN B3 IN FAVOUR OF 2004: the Crossref record (Oxford University Press deposit) gives published-print 2004-01-08, authors Peng, Dudarev, Whelan in this order; the "2003" in the heading of the IUCr book review (https://journals.iucr.org/a/issues/2004/04/00/ht5049/index.html) is not the publisher's date. This pass also saw OUP product URLs confirming ISBN-13 9780198500742 (hardback) and 9780199602247 (paperback reissue). Relevant: ch. 5 "Dynamical Theory III. Reflection High-Energy Electron Diffraction" (title read literally from the Oxford Academic chapter URL academic.oup.com/book/54675/chapter/422641330), ch. 6 resonance effects, ch. 13 scattering factor and optical potential, and an appendix with a FORTRAN listing of RHEED routines.}
 }
 
 @book{B09,
-  editor    = {V{\"o}lkl, Ernst and Allard, Lawrence F. and Joy, David C.},
+  editor    = {V{\"o}lkl, Edgar and Allard, Lawrence F. and Joy, David C.},
   title     = {Introduction to Electron Holography},
   publisher = {Springer/Plenum},
   year      = {1999},
   doi       = {10.1007/978-1-4615-4817-1},
   url       = {https://doi.org/10.1007/978-1-4615-4817-1},
-  note      = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 5, [B09]), DOI and URL copied verbatim; B\_literature.md section 7 adds the full chapter-title list from the search index. IMPORTANT NEGATIVE RESULT: the chapter list contains NO reflection-geometry chapter and NO Osakabe chapter. Ch. 13 "Electron Holography using Diffracted Electron Beams (DBH)" is the dark-field/diffracted-beam chapter -- its authors and pages were never obtained (see the UNVERIFIED section, key U07). Ch. 15 "A Plus or Minus Sign in the Fourier Transform?" should be read before fixing the repository's FFT sign convention. Instruction file: cite the responsible chapter authors, not the whole book.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B09.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 5, [B09]), DOI and URL copied verbatim; B\_literature.md section 7 adds the full chapter-title list from the search index. IMPORTANT NEGATIVE RESULT: the chapter list contains NO reflection-geometry chapter and NO Osakabe chapter. Ch. 13 "Electron Holography using Diffracted Electron Beams (DBH)" is the dark-field/diffracted-beam chapter -- B3: its Crossref chapter record gives authors R. A. Herring and G. Pozzi and pages 295-310 (key U07, now in the verified section). Ch. 15 "A Plus or Minus Sign in the Fourier Transform?" should be read before fixing the repository's FFT sign convention. Instruction file: cite the responsible chapter authors, not the whole book.}
 }
 
 @incollection{C01,
-  author    = {V{\"o}lkl, Ernst and Lehmann, Michael},
+  author    = {V{\"o}lkl, Edgar and Lehmann, Michael},
+  editor    = {V{\"o}lkl, Edgar and Allard, Lawrence F. and Joy, David C.},
   title     = {The Reconstruction of Off-Axis Electron Holograms},
   booktitle = {Introduction to Electron Holography},
-  editor    = {V{\"o}lkl, Ernst and Allard, Lawrence F. and Joy, David C.},
   publisher = {Springer/Plenum},
   pages     = {125--151},
   year      = {1999},
   doi       = {10.1007/978-1-4615-4817-1_6},
   url       = {https://doi.org/10.1007/978-1-4615-4817-1_6},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C01]) which states "Chapter identity and page range were checked; exact algorithm/equation locators require the chapter"; DOI, pages and URL copied verbatim. This is chapter 6 of [B09]. Use: reconstruction of an intensity hologram (instruction sections 9.1 and 9.8).}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/C01.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C01]) which states "Chapter identity and page range were checked; exact algorithm/equation locators require the chapter"; DOI, pages and URL copied verbatim. This is chapter 6 of [B09]. B3: FIRST NAME CORRECTED from Ernst to Edgar (author and editor fields): the Crossref record of [B09] gives "Edgar V{\"o}lkl" and this chapter's record gives "E. V{\"o}lkl" and "M. Lehmann". Use: reconstruction of an intensity hologram (instruction sections 9.1 and 9.8).}
 }
 
 @book{B10,
   author    = {Tonomura, Akira},
   title     = {Electron Holography},
-  edition   = {2},
   publisher = {Springer},
   year      = {1999},
+  edition   = {2},
   doi       = {10.1007/978-3-540-37204-2},
   url       = {https://doi.org/10.1007/978-3-540-37204-2},
-  note      = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 5, [B10]), DOI and URL copied verbatim; B\_literature.md section 7 adds chapters located by DOI suffix (1 Introduction, 2 Principles of Holography, 4 Historical Development, 6 Aharonov-Bohm Effect, 7 Electron-Holographic Interferometry, 8 High-Resolution Microscopy), and this pass re-saw the ch.-7 URL https://link.springer.com/chapter/10.1007/978-3-540-37204-2\_7 titled "Electron-Holographic Interferometry". UNRESOLVED: NO evidence that any chapter covers reflection or surface holography; ch. 7 is a guess, not a finding. Instruction file warns: do not mistake a later electronic release for a new edition's year.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B10.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report); provenance: instruction-file record (section 5, [B10]), DOI and URL copied verbatim; B\_literature.md section 7 adds chapters located by DOI suffix (1 Introduction, 2 Principles of Holography, 4 Historical Development, 6 Aharonov-Bohm Effect, 7 Electron-Holographic Interferometry, 8 High-Resolution Microscopy), and this pass re-saw the ch.-7 URL https://link.springer.com/chapter/10.1007/978-3-540-37204-2\_7 titled "Electron-Holographic Interferometry". UNRESOLVED: NO evidence that any chapter covers reflection or surface holography; ch. 7 is a guess, not a finding. Instruction file warns: do not mistake a later electronic release for a new edition's year.}
 }
 
 @book{B11,
@@ -204,8 +221,9 @@
   publisher = {Wiley-VCH},
   year      = {2022},
   isbn      = {9783527348046},
+  doi       = {10.1002/9783527829712},
   url       = {https://www.wiley.com/en-us/material-characterization-using-electron-holography-p-9783527348046},
-  note      = {evidence: METADATA\_VERIFIED / PROJECT\_INPUT; provenance: instruction-file record (section 5, [B11]), ISBN and URL copied verbatim. AUTHOR-ORDER FIX: the repository README cites this as "Tomita \& Shindo (2022)"; the publisher order is Shindo \& Tomita and the instruction file requires it be preserved -- correct the README. Chapter DOIs glimpsed in the index (B report section 7): 10.1002/9783527829712.ch4 "Principles of Electron Holography" and ...ch6 "Related Techniques and Specialized Instrumentation". Instruction file warns this book is not by itself validation of a reflection-specific step-height model.}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API monograph record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/B11.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED / PROJECT\_INPUT; provenance: instruction-file record (section 5, [B11]), ISBN and URL copied verbatim. AUTHOR-ORDER FIX: the repository README cites this as "Tomita \& Shindo (2022)"; the publisher order is Shindo \& Tomita and the instruction file requires it be preserved -- correct the README. B3: DOI copied from the Crossref record (authors Shindo, Tomita in this order; published-online 2022-09-02, published-print 2022-11-14; registrant "Wiley", imprint kept as Wiley-VCH); the Crossref ISBN listing confirms the two chapter titles below. Chapter DOIs glimpsed in the index (B report section 7): 10.1002/9783527829712.ch4 "Principles of Electron Holography" and ...ch6 "Related Techniques and Specialized Instrumentation". Instruction file warns this book is not by itself validation of a reflection-specific step-height model.}
 }
 
 @book{B12,
@@ -215,66 +233,66 @@
   year      = {2019},
   doi       = {10.1007/978-3-030-00069-1},
   url       = {https://doi.org/10.1007/978-3-030-00069-1},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [B12]), DOI and URL copied verbatim. Instruction file: cite the specific chapters [C02]/[C03], not the whole handbook. B report section 7 notes both chapter URLs (...\_16 and ...\_17) appeared in the index consistently with the instruction file, and this pass re-saw https://link.springer.com/chapter/10.1007/978-3-030-00069-1\_16 titled "Electron Holography".}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B12.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [B12]), DOI and URL copied verbatim. Instruction file: cite the specific chapters [C02]/[C03], not the whole handbook. B report section 7 notes both chapter URLs (...\_16 and ...\_17) appeared in the index consistently with the instruction file, and this pass re-saw https://link.springer.com/chapter/10.1007/978-3-030-00069-1\_16 titled "Electron Holography".}
 }
 
 @incollection{C02,
   author    = {Dunin-Borkowski, Rafal E. and Kov{\'a}cs, Andr{\'a}s and Kasama, Takeshi and McCartney, Martha R. and Smith, David J.},
+  editor    = {Hawkes, Peter W. and Spence, John C. H.},
   title     = {Electron Holography},
   booktitle = {Springer Handbook of Microscopy},
-  editor    = {Hawkes, Peter W. and Spence, John C. H.},
   publisher = {Springer},
   pages     = {767--818},
   year      = {2019},
   doi       = {10.1007/978-3-030-00069-1_16},
   url       = {https://doi.org/10.1007/978-3-030-00069-1_16},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C02]), author list, pages, DOI and URL copied verbatim; the chapter URL was re-seen in the search index in this pass with the title "Electron Holography". Use: holographic imaging and quantitative phase measurement (instruction sections 9.1, 9.4, 9.5).}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/C02.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C02]), author list, pages, DOI and URL copied verbatim; the chapter URL was re-seen in the search index in this pass with the title "Electron Holography". Use: holographic imaging and quantitative phase measurement (instruction sections 9.1, 9.4, 9.5).}
 }
 
 @incollection{C03,
   author    = {Rodenburg, John and Maiden, Andrew},
+  editor    = {Hawkes, Peter W. and Spence, John C. H.},
   title     = {Ptychography},
   booktitle = {Springer Handbook of Microscopy},
-  editor    = {Hawkes, Peter W. and Spence, John C. H.},
   publisher = {Springer},
   pages     = {819--904},
   year      = {2019},
   doi       = {10.1007/978-3-030-00069-1_17},
   url       = {https://doi.org/10.1007/978-3-030-00069-1_17},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C03]), author list, pages, DOI and URL copied verbatim. Instruction file carries the key warning: "An algorithm derived for a multiplicative object is not automatically valid for dynamical reflection scattering."}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/C03.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 5, [C03]), author list, pages, DOI and URL copied verbatim. Instruction file carries the key warning: "An algorithm derived for a multiplicative object is not automatically valid for dynamical reflection scattering."}
 }
 
 @book{B13,
   author    = {Kohl, Helmut and Reimer, Ludwig},
   title     = {Transmission Electron Microscopy: Physics of Image Formation},
-  edition   = {5},
   publisher = {Springer},
   year      = {2008},
+  edition   = {5},
   doi       = {10.1007/978-0-387-40093-8},
   url       = {https://doi.org/10.1007/978-0-387-40093-8},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 6, [B13]), DOI and URL copied verbatim. Not re-verified.}
+  note      = {evidence: METADATA\_VERIFIED except authors (route: Crossref API /works record, cached as docs/agent\_reports/crossref\_cache/B13.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 6, [B13]), DOI and URL copied verbatim.B3: the Crossref record confirms title and subtitle ("Transmission Electron Microscopy: Physics of Image Formation"), publisher Springer New York, series Springer Series in Optical Sciences and year 2008, but it carries NO author list, nor do its twelve chapter records, and the Springer page is behind a JavaScript challenge. THE AUTHOR NAMES AND THEIR ORDER (Kohl, Reimer) ARE STILL ONLY THE INSTRUCTION FILE'S -- check them on the title page.}
 }
 
 @book{B14,
   author    = {Williams, David B. and Carter, C. Barry},
   title     = {Transmission Electron Microscopy: A Textbook for Materials Science},
-  edition   = {2},
   publisher = {Springer},
   year      = {2009},
+  edition   = {2},
   doi       = {10.1007/978-0-387-76501-3},
   url       = {https://doi.org/10.1007/978-0-387-76501-3},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 6, [B14]), DOI and URL copied verbatim. Not re-verified.}
+  note      = {evidence: METADATA\_VERIFIED except subtitle (route: Crossref API /works record, cached as docs/agent\_reports/crossref\_cache/B14.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 6, [B14]), DOI and URL copied verbatim.B3: the Crossref record confirms authors Williams, David B. and Carter, C. Barry (in this order), publisher Springer US and year 2009; its title is "Transmission Electron Microscopy" with NO subtitle, and the Springer page is behind a JavaScript challenge, so the subtitle "A Textbook for Materials Science" is still only the instruction file's.}
 }
 
 @book{B15,
   author    = {Egerton, R. F.},
   title     = {Electron Energy-Loss Spectroscopy in the Electron Microscope},
-  edition   = {3},
   publisher = {Springer},
   year      = {2011},
+  edition   = {3},
   doi       = {10.1007/978-1-4419-9583-4},
   url       = {https://doi.org/10.1007/978-1-4419-9583-4},
-  note      = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 6, [B15]), DOI and URL copied verbatim. Instruction file warns: do not introduce an unexplained absorptive potential or dephasing parameter and treat it as a measured material property -- directly relevant to the optical potential a reflection multislice needs (B report section 9.7).}
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B15.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 6, [B15]), DOI and URL copied verbatim. Instruction file warns: do not introduce an unexplained absorptive potential or dephasing parameter and treat it as a measured material property -- directly relevant to the optical potential a reflection multislice needs (B report section 9.7).}
 }
 
 
@@ -287,11 +305,12 @@
   title   = {Observation of Atomic Steps by Reflection Electron Holography},
   journal = {Japanese Journal of Applied Physics},
   volume  = {27},
+  number  = {9A},
   pages   = {L1772--L1774},
   year    = {1988},
   doi     = {10.1143/JJAP.27.L1772},
   url     = {https://doi.org/10.1143/JJAP.27.L1772},
-  note    = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report, authors/title/journal/volume/year only); provenance: instruction-file record (section 7, [P01]), which states identity was cross-checked against the Japanese Society of Applied Physics record (https://www.jsap.or.jp/outstanding-paper-award/recipients11) and the reference list of [P07], and from which the DOI, pages and URL are copied verbatim. THREE QUERIES IN THIS PASS FAILED TO PRODUCE ANY URL FOR THIS PAPER, including an exact-DOI query; the DOI's provenance therefore remains the instruction file alone. PAGE FORM UNVERIFIED at the digit level: the search index repeatedly reports "27, 1772-1774" without the Letters L prefix; the instruction file's L-form is kept. FULL TEXT AND EVEN THE ABSTRACT ARE UNOBTAINED: the surface, electron energy, reflection order, glancing angle, reference-wave arrangement, phase equation, measured phase values and stated limitations of this paper are ALL UNKNOWN to this project -- cite none of them here. DO NOT attribute the pi / 0.9pi Au/Pt step phases to this paper; they are [P09]'s (the search summariser mis-attributed them again in this pass).}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P01.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (B report, authors/title/journal/volume/year only); provenance: instruction-file record (section 7, [P01]), which states identity was cross-checked against the Japanese Society of Applied Physics record (https://www.jsap.or.jp/outstanding-paper-award/recipients11) and the reference list of [P07], and from which the DOI, pages and URL are copied verbatim. B3: the DOI resolves in Crossref to this record -- authors Osakabe, Matsuda, Endo, Tonomura in this order, JJAP volume 27, issue 9A, pages L1772-L1774, 1988 -- so the L-prefixed page form is confirmed; the reference list of patent US 4,998,788 (Google Patents) cites it the same way. FULL TEXT AND EVEN THE ABSTRACT ARE UNOBTAINED: the surface, electron energy, reflection order, glancing angle, reference-wave arrangement, phase equation, measured phase values and stated limitations of this paper are ALL UNKNOWN to this project -- cite none of them here. DO NOT attribute the pi / 0.9pi Au/Pt step phases to this paper; they are [P09]'s (the search summariser mis-attributed them again in this pass).}
 }
 
 @article{P02,
@@ -299,11 +318,12 @@
   title   = {Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography},
   journal = {Physical Review Letters},
   volume  = {62},
+  number  = {25},
   pages   = {2969--2972},
   year    = {1989},
   doi     = {10.1103/PhysRevLett.62.2969},
   url     = {https://doi.org/10.1103/PhysRevLett.62.2969},
-  note    = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) +ABSTRACT(index) (B report, re-confirmed here); provenance: instruction-file record (section 7, [P02], "Publisher identity/abstract checked"), DOI/pages/URL copied verbatim, and in this pass the DOI-bearing APS publisher URL https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.62.2969 was returned carrying the exact title. Abstract-level content (NOT read in full): screw dislocation emerging on a cleaved GaAs(110) surface; spirally deformed surface from single-atomic shear; height precision ~0.01 Angstrom by interferometric phase measurement; asymmetric deformation for an obliquely emerging dislocation, explained by surface stress relaxation; Hitachi Advanced Research Laboratory, Kokubunji; issue date 19 June 1989. NOT OBTAINED: energy, Bragg reflection, glancing angle, biprism position, reference-wave trajectory, the phase-to-height equation or its sign. End page 2972 comes from the instruction file; the index reported only the first page. SEE [P02E] -- re-check every number against the erratum. Instruction file warns: this experiment is GaAs; do not transfer material parameters to silicon.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P02.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) +ABSTRACT(index) (B report, re-confirmed here); provenance: instruction-file record (section 7, [P02], "Publisher identity/abstract checked"), DOI/pages/URL copied verbatim, and in this pass the DOI-bearing APS publisher URL https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.62.2969 was returned carrying the exact title. Abstract-level content (NOT read in full): screw dislocation emerging on a cleaved GaAs(110) surface; spirally deformed surface from single-atomic shear; height precision ~0.01 Angstrom by interferometric phase measurement; asymmetric deformation for an obliquely emerging dislocation, explained by surface stress relaxation; Hitachi Advanced Research Laboratory, Kokubunji; issue date 19 June 1989. NOT OBTAINED: energy, Bragg reflection, glancing angle, biprism position, reference-wave trajectory, the phase-to-height equation or its sign. End page 2972 comes from the instruction file; the index reported only the first page. SEE [P02E] -- re-check every number against the erratum. Instruction file warns: this experiment is GaAs; do not transfer material parameters to silicon.}
 }
 
 @article{P02E,
@@ -311,11 +331,12 @@
   title   = {Erratum: Observation of surface undulation due to single-atomic shear of a dislocation by reflection-electron holography},
   journal = {Physical Review Letters},
   volume  = {63},
+  number  = {5},
   pages   = {584},
   year    = {1989},
   doi     = {10.1103/PhysRevLett.63.584.3},
   url     = {https://doi.org/10.1103/PhysRevLett.63.584.3},
-  note    = {evidence: existence METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (upgraded in this pass from "index, single"); CONTENT UNVERIFIED; provenance: instruction-file record (section 7, [P02E], "Its existence was verified; its corrections were not evaluated here"), DOI/volume/page/URL copied verbatim, plus the APS volume-63 issue-5 table-of-contents URL https://journals.aps.org/prl/issues/63/5 which has now surfaced in the index in two independent sessions. The erratum ITSELF was never displayed and WHAT IT CORRECTS IS UNKNOWN. The author list above is reconstructed from [P02] for convenience and was NOT confirmed for the erratum. ANY QUANTITATIVE NUMBER TAKEN FROM [P02] MUST BE RE-CHECKED AGAINST THIS ERRATUM BEFORE PUBLICATION.}
+  note    = {evidence: existence METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P02E.json; B3, 2026-09-22); CONTENT UNVERIFIED; label before B3: existence METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) (upgraded in this pass from "index, single"); CONTENT UNVERIFIED; provenance: instruction-file record (section 7, [P02E], "Its existence was verified; its corrections were not evaluated here"), DOI/volume/page/URL copied verbatim, plus the APS volume-63 issue-5 table-of-contents URL https://journals.aps.org/prl/issues/63/5 which has now surfaced in the index in two independent sessions. The erratum ITSELF was never displayed and WHAT IT CORRECTS IS UNKNOWN. B3: the Crossref record of the erratum lists the same five authors in the same order, volume 63, issue 5, page 584, published 1989-07-31. Crossref deposits it under the ORIGINAL article title; the "Erratum:" prefix is kept here only to tell the two entries apart. ANY QUANTITATIVE NUMBER TAKEN FROM [P02] MUST BE RE-CHECKED AGAINST THIS ERRATUM BEFORE PUBLICATION.}
 }
 
 @article{P03,
@@ -323,11 +344,12 @@
   title   = {Reflection electron holography},
   journal = {Ultramicroscopy},
   volume  = {48},
+  number  = {4},
   pages   = {475--481},
   year    = {1993},
   doi     = {10.1016/0304-3991(93)90123-F},
   url     = {https://www.sciencedirect.com/science/article/pii/030439919390123F},
-  note    = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index, single) (B report); provenance: instruction-file record (section 7, [P03], "Bibliographic identity checked; full text not inspected"), from which the authors, title, journal, volume, pages, year and the ScienceDirect PII URL are copied verbatim. DOI PROVENANCE IS WEAK AND FLAGGED: 10.1016/0304-3991(93)90123-F does NOT appear in the instruction file; it appears in B\_literature.md attributed to the search summariser, and the summariser restated it in this pass -- but NO URL EVER CARRIED IT. It is consistent with the instruction file's PII 030439919390123F. RESOLVE BEFORE PUBLICATION. ABSTRACT NEVER OBTAINED in any session; a dedicated query in this pass returned no URL for this paper at all. DO NOT ATTRIBUTE ANY EQUATION OR NUMBER TO THIS PAPER. Instruction file's correction stands: the 1993 article at this URL is NOT by Osakabe.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P03.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index, single) (B report); provenance: instruction-file record (section 7, [P03], "Bibliographic identity checked; full text not inspected"), from which the authors, title, journal, volume, pages, year and the ScienceDirect PII URL are copied verbatim. B3: the DOI is now confirmed by its Crossref record, which matches authors (Banzhof, Herrmann), title, journal, volume 48, issue 4, pages 475-481 and year 1993. ABSTRACT NEVER OBTAINED in any session; a dedicated query in this pass returned no URL for this paper at all. DO NOT ATTRIBUTE ANY EQUATION OR NUMBER TO THIS PAPER. Instruction file's correction stands: the 1993 article at this URL is NOT by Osakabe.}
 }
 
 @article{P04,
@@ -339,11 +361,11 @@
   year    = {2017},
   doi     = {10.1186/s40679-017-0046-1},
   url     = {https://doi.org/10.1186/s40679-017-0046-1},
-  note    = {evidence: SECTION\_READ; provenance: instruction-file record (section 7, [P04]), which states "The HTML Theory and methods section, including the multislice equations (1)-(5), was inspected. This is SECTION\_READ, not a reproduction of results." DOI, article number and URLs copied verbatim (open-access mirror: https://link.springer.com/article/10.1186/s40679-017-0046-1). This is the ONLY paper in the whole project carrying SECTION\_READ. Use: PRISM and its relation to multislice/Bloch-wave methods. Instruction file warns: check interpolation accuracy rather than assuming a speed-up is error-free.}
+  note    = {evidence: SECTION\_READ (instruction file) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P04.json; B3, 2026-09-22); label before B3: SECTION\_READ; provenance: instruction-file record (section 7, [P04]), which states "The HTML Theory and methods section, including the multislice equations (1)-(5), was inspected. This is SECTION\_READ, not a reproduction of results." DOI, article number and URLs copied verbatim (open-access mirror: https://link.springer.com/article/10.1186/s40679-017-0046-1). This is the ONLY paper in the whole project carrying SECTION\_READ. Use: PRISM and its relation to multislice/Bloch-wave methods. Instruction file warns: check interpolation accuracy rather than assuming a speed-up is error-free.}
 }
 
 @article{P05,
-  author  = {Rangel DaCosta, Luis and others},
+  author  = {{Rangel DaCosta}, Luis and Brown, Hamish G. and Pelz, Philipp M. and Rakowski, Alexander and Barber, Natolya and O'Donovan, Peter and McBean, Patrick and Jones, Lewys and Ciston, Jim and Scott, M.C. and Ophus, Colin},
   title   = {Prismatic 2.0 -- Simulation software for scanning and high resolution transmission electron microscopy (STEM and HRTEM)},
   journal = {Micron},
   volume  = {151},
@@ -351,7 +373,7 @@
   year    = {2021},
   doi     = {10.1016/j.micron.2021.103141},
   url     = {https://doi.org/10.1016/j.micron.2021.103141},
-  note    = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 7, [P05], "Metadata verified"), DOI, article number and URL copied verbatim. AUTHOR LIST INCOMPLETE: the instruction file writes "Luis Rangel DaCosta et al."; the full author list was never obtained, hence the "and others". Instruction file warns: this does not establish that the repository's reflection geometry, output interpretation or reconstruction is correct.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P05.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 7, [P05], "Metadata verified"), DOI, article number and URL copied verbatim. B3: FULL AUTHOR LIST (eleven names) copied from the Crossref record, replacing "and others". Instruction file warns: this does not establish that the repository's reflection geometry, output interpretation or reconstruction is correct.}
 }
 
 @article{P06,
@@ -364,7 +386,7 @@
   year    = {2009},
   doi     = {10.1016/j.ultramic.2009.05.012},
   url     = {https://doi.org/10.1016/j.ultramic.2009.05.012},
-  note    = {evidence: METADATA\_VERIFIED; provenance: instruction-file record (section 7, [P06], "Metadata verified; read the algorithm before implementing"), all fields copied verbatim. Instruction file warns: do not transplant its object update into a different scattering model without deriving the corresponding update or gradient -- the central caution for any reflection-mode ePIE.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P06.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED; provenance: instruction-file record (section 7, [P06], "Metadata verified; read the algorithm before implementing"), all fields copied verbatim. Instruction file warns: do not transplant its object update into a different scattering model without deriving the corresponding update or gradient -- the central caution for any reflection-mode ePIE.}
 }
 
 @article{P07,
@@ -375,8 +397,9 @@
   number  = {1},
   pages   = {3--16},
   year    = {2021},
+  doi     = {10.1093/jmicro/dfaa033},
   url     = {https://academic.oup.com/jmicro/article/70/1/3/5862540},
-  note    = {evidence: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) +ABSTRACT(index) (B report); provenance: instruction-file record (section 7, [P07]), from which author, title, journal, volume, issue, pages, year and both URLs are copied verbatim -- publisher https://academic.oup.com/jmicro/article/70/1/3/5862540 and open-access full text https://pmc.ncbi.nlm.nih.gov/articles/PMC7850541/ (PMC7850541). NO DOI FIELD: the instruction file does not state a DOI for [P07]; B\_literature.md quotes 10.1093/jmicro/dfaa033 but from the search summariser only, so under this file's DOI policy it is omitted. NOT OBTAINED -- THIS IS THE PROJECT'S LARGEST GAP: the task designated [P07] the most reliable accessible secondary source and asked for a full read; every host serving it is blocked. Nothing about Osakabe's experiments, reference-wave arrangements, figure numbers or section locators was extracted from it. It is FREE at PMC7850541 -- open it first when network access returns. Instruction file: cite it as a review, not as the original source of the experiments it summarises. Instruction file also notes the publication year 2021 with online publication in 2020.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P07.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED (instruction file) + METADATA\_VERIFIED(index) +ABSTRACT(index) (B report); provenance: instruction-file record (section 7, [P07]), from which author, title, journal, volume, issue, pages, year and both URLs are copied verbatim -- publisher https://academic.oup.com/jmicro/article/70/1/3/5862540 and open-access full text https://pmc.ncbi.nlm.nih.gov/articles/PMC7850541/ (PMC7850541). B3: DOI copied from the Crossref record accepted on the five-field rule (published online 2020-06-26, print 2021-02-01; the bib year is the print year). NOT OBTAINED -- THIS IS THE PROJECT'S LARGEST GAP: the task designated [P07] the most reliable accessible secondary source and asked for a full read; every host serving it is blocked. Nothing about Osakabe's experiments, reference-wave arrangements, figure numbers or section locators was extracted from it. It is FREE at PMC7850541 -- open it first when network access returns. Instruction file: cite it as a review, not as the original source of the experiments it summarises. Instruction file also notes the publication year 2021 with online publication in 2020.}
 }
 
 
@@ -388,18 +411,18 @@
 %% =====================================================================
 
 @misc{S01,
-  author       = {Fitzpatrick, Matthew R.},
+  author       = {Fitzpatrick, Matthew R. C.},
   title        = {Prismatique: official documentation and source},
-  howpublished = {\url{https://mrfitzpa.github.io/prismatique/} and \url{https://github.com/mrfitzpa/prismatique}},
   url          = {https://github.com/mrfitzpa/prismatique},
-  note         = {evidence: METADATA\_VERIFIED (instruction file, URLs) + SECTION\_READ (GitHub README only); provenance: instruction-file record (section 8, [S01]), both URLs copied verbatim; B\_literature.md section 6.5 reports the GitHub README was read at raw.githubusercontent.com and describes the package as "a wrapper to the Python library pyprismatic, which itself is a thin wrapper to prismatic, a CUDA/C++ package". AUTHOR INFERRED FROM THE GITHUB ACCOUNT NAME mrfitzpa AND IS NOT A VERIFIED PERSONAL NAME -- check before citing. UNRESOLVED AND FLAGGED BY INSTRUCTION SECTIONS S01/9.6: the repository pins prismatique==0.0.1 but mrfitzpa.github.io is blocked, so the VERSION-MATCHED API FOR 0.0.1 WAS NEVER CHECKED. The README gives no citation text and no version number; a Zenodo DOI badge 10.5281/zenodo.18296081 is present in it (read verbatim).}
+  howpublished = {\url{https://mrfitzpa.github.io/prismatique/} and \url{https://github.com/mrfitzpa/prismatique}},
+  note         = {evidence: METADATA\_VERIFIED (route: DataCite record of the Zenodo DOI printed in the README, cached as docs/agent\_reports/crossref\_cache/S01.datacite.json, plus the documentation page https://mrfitzpa.github.io/prismatique/; B3, 2026-09-22) + SECTION\_READ (GitHub README only, B\_literature.md); label before B3: METADATA\_VERIFIED (instruction file, URLs) + SECTION\_READ (GitHub README only); provenance: instruction-file record (section 8, [S01]), both URLs copied verbatim; B\_literature.md section 6.5 reports the GitHub README was read at raw.githubusercontent.com and describes the package as "a wrapper to the Python library pyprismatic, which itself is a thin wrapper to prismatic, a CUDA/C++ package". B3: AUTHOR CORRECTED to the creator name of the DataCite record of 10.5281/zenodo.18296081, "Fitzpatrick, Matthew R. C." (that record is version 0.0.4, 2026, and is not the pinned 0.0.1, so no doi field is set here). github.com itself is blocked for this session (HTTP 403); the README was re-fetched at raw.githubusercontent.com and the documentation page is reachable (HTTP 200). UNRESOLVED AND FLAGGED BY INSTRUCTION SECTIONS S01/9.6: the repository pins prismatique==0.0.1 and the VERSION-MATCHED API FOR 0.0.1 HAS STILL NOT BEEN CHECKED (the documentation page is now reachable; checking it is reading-plan step 2). The README gives no citation text and no version number; a Zenodo DOI badge 10.5281/zenodo.18296081 is present in it (read verbatim).}
 }
 
 @misc{S02,
   title        = {Prismatic: official project and citation instructions},
-  howpublished = {\url{https://prism-em.com/} and \url{https://prism-em.github.io/about-cite/}},
   url          = {https://prism-em.com/},
-  note         = {evidence: METADATA\_VERIFIED (instruction file, URLs) + SECTION\_READ (GitHub README only); provenance: instruction-file record (section 8, [S02]), both URLs copied verbatim; B\_literature.md section 6.5 read the prism-em/prismatic GitHub README, which carries the verbatim notice "Prismatic is no longer actively maintained. We appreciate any future interest or use, but will be less able to troubleshoot issues or push updates to the software in the future." and points users to abTEM. DEPENDENCY RISK for this repository, which pins prismatique==0.0.1 wrapping Prismatic: record it in docs/model\_assumptions.md; do NOT migrate on that basis alone (instruction section 8). No author field: the citation instructions page was not reachable, so the project's requested citation form is unknown -- see [P04] and [P05] for the algorithm and engine papers.}
+  howpublished = {\url{https://prism-em.com/} and \url{https://prism-em.github.io/about-cite/}},
+  note         = {evidence: METADATA\_VERIFIED (route: project pages https://prism-em.com/ and https://prism-em.github.io/about-cite/, HTTP 200; B3, 2026-09-22) + SECTION\_READ (GitHub README only, B\_literature.md); label before B3: METADATA\_VERIFIED (instruction file, URLs) + SECTION\_READ (GitHub README only); provenance: instruction-file record (section 8, [S02]), both URLs copied verbatim; B\_literature.md section 6.5 read the prism-em/prismatic GitHub README, which carries the verbatim notice "Prismatic is no longer actively maintained. We appreciate any future interest or use, but will be less able to troubleshoot issues or push updates to the software in the future." and points users to abTEM. DEPENDENCY RISK for this repository, which pins prismatique==0.0.1 wrapping Prismatic: record it in docs/model\_assumptions.md; do NOT migrate on that basis alone (instruction section 8). No author field. B3: the citation page is now reachable and asks users to cite three papers: Ophus 2017 ([P04]); A. Pryor Jr, C. Ophus and J. Miao, "A streaming multi-GPU implementation of image simulation algorithms for scanning transmission electron microscopy", Advanced Structural and Chemical Imaging 3 (2017) (NOT in this file; add it after a Crossref check); and Rangel DaCosta et al. 2021 ([P05]).}
 }
 
 
@@ -421,7 +444,7 @@
   year    = {1992},
   doi     = {10.1002/jemt.1070200415},
   url     = {https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jemt.1070200415},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.4, strengthened in this pass -- the DOI-bearing Wiley publisher URL above was returned with the exact title by SIX independently phrased queries, and the PubMed record https://pubmed.ncbi.nlm.nih.gov/1498359/ (PMID 1498359) was returned with the exact title as well. howpublished-equivalent search record: query "\"Observation of surfaces by reflection electron holography\" Osakabe \"Journal of Electron Microscopy Technique\" volume 20 1992 pages 457" returned both URLs above. JOURNAL NAME IS THE ONE FIELD THAT REMAINS UNRESOLVED: the Wiley DOI stem is "jemt" (Journal of Electron Microscopy Technique) while the search summariser stated "Microscopy Research and Technique, volume 20, pages 457-462, 1992" and explicitly corrected the query's older title; that is SUMMARISER PROSE and NO URL displayed a masthead. Volume, issue, pages and year likewise rest on summariser prose. CHECK THE MASTHEAD OF VOLUME 20 (1992) BEFORE CITING. Abstract-level content (near-verbatim, three queries): reflection electron holography observes "sub-Angstrom surface morphology"; the "phase shift of a Bragg-reflected electron wave" is measured by holographic interferometry with a field-emission gun and an electron biprism; "a short wavelength of high energy electrons is the essential key ... since geometrical path differences produced by the surface topography are measured in units of wavelengths"; observables were the phase shift at a monoatomic step and the displacement field around a dislocation emerging on the surface. THIS IS THE BEST ACCESSIBLE STATEMENT OF WHAT OSAKABE'S METHOD MEASURES and a better citation target than [P01] for that purpose. Not obtained: surfaces used, energy, glancing angle, reference-wave geometry, figures.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P08.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.4, strengthened in this pass -- the DOI-bearing Wiley publisher URL above was returned with the exact title by SIX independently phrased queries, and the PubMed record https://pubmed.ncbi.nlm.nih.gov/1498359/ (PMID 1498359) was returned with the exact title as well. howpublished-equivalent search record: query "\"Observation of surfaces by reflection electron holography\" Osakabe \"Journal of Electron Microscopy Technique\" volume 20 1992 pages 457" returned both URLs above. B3: the Crossref record gives journal "Microscopy Research and Technique", volume 20, issue 4, pages 457-462, published-print 1992-02-15 (online 2005-02-04), single author Osakabe. Crossref stores the journal title at journal level, so this does not by itself display the printed 1992 masthead; the DOI stem "jemt" is the older title's. Abstract-level content (near-verbatim, three queries): reflection electron holography observes "sub-Angstrom surface morphology"; the "phase shift of a Bragg-reflected electron wave" is measured by holographic interferometry with a field-emission gun and an electron biprism; "a short wavelength of high energy electrons is the essential key ... since geometrical path differences produced by the surface topography are measured in units of wavelengths"; observables were the phase shift at a monoatomic step and the displacement field around a dislocation emerging on the surface. THIS IS THE BEST ACCESSIBLE STATEMENT OF WHAT OSAKABE'S METHOD MEASURES and a better citation target than [P01] for that purpose. Not obtained: surfaces used, energy, glancing angle, reference-wave geometry, figures.}
 }
 
 @article{P09,
@@ -434,15 +457,16 @@
   year    = {1992},
   doi     = {10.1002/jemt.1070200414},
   url     = {https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jemt.1070200414},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.7, re-confirmed here -- the DOI-bearing Wiley publisher URL above was returned with the exact title by six independently phrased queries in this pass alone. PAGE CONFLICT FOUND IN THIS PASS: 450-456 (B report, two queries; this pass, one query) versus 450-466 (this pass, one query, from the query "Banzhof Herrmann Lichte electron holography reflection gold platinum surfaces Ultramicroscopy 1992 1993 publications list"). 450-456 is kept on the 2:1 majority; VERIFY. Journal-name caveat identical to [P08] (DOI stem "jemt"; masthead never displayed). Abstract-level content, returned consistently by several queries: two-beam interference produced with an electrostatic biprism inserted AT THE POSITION OF THE SELECTED-AREA DIAPHRAGM of a commercial electron microscope (i.e. an image-side biprism, not a gun-side one), used "to determine the phase shifts induced by structures on single crystal surfaces"; MEASURED PHASE SHIFTS pi ON A MONATOMIC STEP OF (111)Au AND 0.9 pi ON (111)Pt. THESE pi / 0.9 pi VALUES BELONG TO THIS PAPER, NOT TO [P01] -- the search summariser mis-attributed them to Osakabe 1988 in both the B session and this one.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P09.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.7, re-confirmed here -- the DOI-bearing Wiley publisher URL above was returned with the exact title by six independently phrased queries in this pass alone. B3: PAGES 450-456 CONFIRMED by the Crossref record (volume 20, issue 4, published-print 1992-02-15; authors Banzhof, Herrmann, Lichte in this order); the 450-466 index report was wrong. Journal-name caveat identical to [P08] (DOI stem "jemt"; masthead never displayed). Abstract-level content, returned consistently by several queries: two-beam interference produced with an electrostatic biprism inserted AT THE POSITION OF THE SELECTED-AREA DIAPHRAGM of a commercial electron microscope (i.e. an image-side biprism, not a gun-side one), used "to determine the phase shifts induced by structures on single crystal surfaces"; MEASURED PHASE SHIFTS pi ON A MONATOMIC STEP OF (111)Au AND 0.9 pi ON (111)Pt. THESE pi / 0.9 pi VALUES BELONG TO THIS PAPER, NOT TO [P01] -- the search summariser mis-attributed them to Osakabe 1988 in both the B session and this one.}
 }
 
 @misc{PAT01,
-  author       = {Osakabe, N. and Endo, J. and Tonomura, A. and Tomita, M. and Furutsu, T.},
+  author       = {Osakabe, Nobuyuki and Tonomura, Akira},
   title        = {Reflection electron holography apparatus},
-  howpublished = {United States Patent US 4,998,788 A; assignee reported as Hitachi, Ltd.; US application 07/462,769; European family member EP 0 378 237 B1. Search index showed: USPTO full-text URL \url{https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/4998788} titled "Reflection electron holography apparatus"; \url{https://patents.google.com/patent/US4998788} titled "US4998788A - Reflection electron holography apparatus"; \url{https://patents.google.com/patent/EP0378237B1/en} titled "EP0378237B1 - Reflection electron holography apparatus"; \url{https://data.epo.org/publication-server/rest/v1.2/patents/EP0378237NWA2/document.html}},
-  url          = {https://patents.google.com/patent/US4998788},
-  note         = {evidence: identity METADATA\_VERIFIED(index) (UPGRADED in this pass from "index, single"); INVENTORS, ASSIGNEE, ALL DATES AND THE ENTIRE DESCRIPTION UNVERIFIED; provenance: B\_literature.md section 1.5, plus four patent-office / patent-index URLs from two offices seen incidentally in this pass's queries 1, 2 and 5, which corroborate the patent number, the kind code A and the title only. NO YEAR FIELD: the B report's reported dates ("filed 9 May 1991, granted 9 March 1993") are internally inconsistent with a US patent number in the 4,998,xxx series and MUST NOT BE USED; no date was established. The author list above is the B report's second-hand inventor list and is NOT verified. The patent was NOT read (uspto and google-patents hosts blocked). Two description-level statements circulate, both UNVERIFIED and both from the search summariser: (i) "a fraction of an electron wave from an electron source illuminates a specimen and is caused to be reflected thereat, while the remaining electron wave does not illuminate the specimen but passes aside, and the reflected electron wave and the electron wave not illuminating are superimposed one upon the other"; (ii) a hologram is formed between the reflected wave and a direct wave by controlling the focal distance and electron biprism potential "so as to make the intersecting angle small enough to give a recordable fringe interval", with a single-stage biprism. IF ACCURATE, THE HITACHI REFERENCE WAVE IS A VACUUM ("DIRECT") WAVE PASSING BESIDE THE SPECIMEN, NOT A SECOND REFLECTED BEAM -- the single most important design fact for the forward model, and it is currently only patent-level and second-hand.}
+  year         = {1991},
+  url          = {https://patents.google.com/patent/US4998788A/en},
+  howpublished = {US Patent 4,998,788 A, ``Reflection electron holography apparatus''; application US 07/462,769 filed 10 January 1990, Japanese priority 13 January 1989; issued 12 March 1991; assignee Hitachi Ltd. Family member EP 0 378 237 B1. Record: \url{https://patents.google.com/patent/US4998788A/en}},
+  note         = {evidence: METADATA\_VERIFIED (route: Google Patents record https://patents.google.com/patent/US4998788A/en, HTTP 200; B3, 2026-09-22); DESCRIPTION NOT READ; label before B3: identity METADATA\_VERIFIED(index); INVENTORS, ASSIGNEE, ALL DATES AND THE ENTIRE DESCRIPTION UNVERIFIED; provenance: B\_literature.md section 1.5 and B2; B3 checked the patent record. INVENTORS CORRECTED IN B3: the record names TWO inventors, Nobuyuki Osakabe and Akira Tonomura; the five-name list carried before (Osakabe, Endo, Tonomura, Tomita, Furutsu) was second-hand and is WRONG. Assignee Hitachi Ltd; US application 07/462,769 filed 1990-01-10; priority JP 1-4999 of 1989-01-13; issued 1991-03-12; status "Expired - Fee Related". The B report's dates ("filed 9 May 1991, granted 9 March 1993") were wrong, as B2 suspected. The record's reference list cites [P01] as "Jpn. J. Appl. Phys. vol. 27, No. 9, (1988/9), pp. L1772-L1774". ABSTRACT AS DISPLAYED ON THE RECORD (metadata, not a reading of the description): "An apparatus forming a reflection electron hologram, wherein a fraction of an electron wave from an electron source illuminate a specimen and caused to be reflected thereat, the remaining electron wave does not illuminate the specimen, but passes aside, the specimen, and the electron wave reflected from the specimen and the electron wave not illuminating, but passes aside, the specimen, are superimposed one upon the other." This confirms, at abstract level, statement (i) of the earlier note: the Hitachi reference wave is a wave that PASSES BESIDE THE SPECIMEN, not a second reflected beam. Statement (ii) (focal distance and biprism potential chosen for a recordable fringe interval, single-stage biprism) is still unverified: the description and claims were not read.}
 }
 
 %% --- 4b. Osakabe / Tonomura / Cowley context -------------------------
@@ -452,9 +476,11 @@
   title   = {Reflection electron microscopy of clean and gold deposited (111) silicon surfaces},
   journal = {Surface Science},
   volume  = {97},
+  number  = {2--3},
   pages   = {393--408},
   year    = {1980},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8 (search-index citation string, corroborated across queries). NO DOI FIELD -- no DOI for this paper appears in either source document. Abstract-level content: smooth atomic steps that change shape continually in the high-temperature (1x1) phase, transforming into ZIG-ZAG STEPS in the (7x7) phase. Relevance: establishes Osakabe's REM training in the Yagi/Honjo school ON Si(111) STEPS, i.e. he came to holography already able to image silicon steps in REM.}
+  doi     = {10.1016/0039-6028(80)90675-5},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P14.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8 (search-index citation string, corroborated across queries). B3: DOI and issue copied from the Crossref record accepted on the five-field rule. Abstract-level content: smooth atomic steps that change shape continually in the high-temperature (1x1) phase, transforming into ZIG-ZAG STEPS in the (7x7) phase. Relevance: establishes Osakabe's REM training in the Yagi/Honjo school ON Si(111) STEPS, i.e. he came to holography already able to image silicon steps in REM.}
 }
 
 @article{P15,
@@ -462,9 +488,11 @@
   title   = {Applications of electron holography},
   journal = {Reviews of Modern Physics},
   volume  = {59},
+  number  = {3},
   pages   = {639--669},
   year    = {1987},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8 (search-index citation string). NO DOI FIELD -- none appears in either source document. Review.}
+  doi     = {10.1103/revmodphys.59.639},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P15.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8 (search-index citation string). B3: DOI and issue copied from the Crossref record accepted on the five-field rule. Review.}
 }
 
 @article{P16,
@@ -477,7 +505,7 @@
   year    = {1992},
   doi     = {10.1080/00018739200101473},
   url     = {https://doi.org/10.1080/00018739200101473},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8, which records the DOI with search-index provenance. KEY SENSITIVITY CLAIM used in the project's consistency check: the abstract covers "the phase distribution of an electron beam transmitted through or reflected from an object to within 1/100 of the electron wavelength" (approximately 0.063 rad). That figure is what B\_literature.md section 9.5 checks against the 0.01 Angstrom height precision claimed in [P02]. It is an abstract-level claim, NOT a measurement read from the paper.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P16.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8, which records the DOI with search-index provenance. KEY SENSITIVITY CLAIM used in the project's consistency check: the abstract covers "the phase distribution of an electron beam transmitted through or reflected from an object to within 1/100 of the electron wavelength" (approximately 0.063 rad). That figure is what B\_literature.md section 9.5 checks against the 0.01 Angstrom height precision claimed in [P02]. It is an abstract-level claim, NOT a measurement read from the paper.}
 }
 
 @article{P27,
@@ -485,11 +513,12 @@
   title   = {Twenty forms of electron holography},
   journal = {Ultramicroscopy},
   volume  = {41},
+  number  = {4},
   pages   = {335--348},
   year    = {1992},
   doi     = {10.1016/0304-3991(92)90213-4},
   url     = {https://doi.org/10.1016/0304-3991(92)90213-4},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8, which records the DOI with search-index provenance. Abstract-level content: a taxonomy in which for every TEM mode there is a STEM equivalent, for every in-line mode an off-axis mode, and BRIGHT-FIELD AND DARK-FIELD VARIANTS OF EACH. Cite as the origin of the systematic "dark-field holography" classification this paper's title depends on.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P27.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 1.8, which records the DOI with search-index provenance. Abstract-level content: a taxonomy in which for every TEM mode there is a STEM equivalent, for every in-line mode an off-axis mode, and BRIGHT-FIELD AND DARK-FIELD VARIANTS OF EACH. Cite as the origin of the systematic "dark-field holography" classification this paper's title depends on.}
 }
 
 @article{P28,
@@ -497,23 +526,27 @@
   title   = {Electron holography and holographic diffraction for surface studies},
   journal = {Surface Science},
   volume  = {298},
+  number  = {2--3},
   pages   = {336--344},
   year    = {1993},
+  doi     = {10.1016/0039-6028(93)90046-m},
   url     = {https://www.sciencedirect.com/science/article/abs/pii/003960289390046M},
-  note    = {evidence: METADATA\_VERIFIED(index, single) +ABSTRACT(index); provenance: B\_literature.md section 1.8; this pass additionally saw the ScienceDirect publisher URL above with the exact title (PII 003960289390046M), while searching for [P03]. NO DOI FIELD -- none appears in either source document.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P28.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) +ABSTRACT(index); provenance: B\_literature.md section 1.8; this pass additionally saw the ScienceDirect publisher URL above with the exact title (PII 003960289390046M), while searching for [P03]. B3: DOI and issue copied from the Crossref record accepted on the five-field rule.}
 }
 
 %% --- 4c. REM / RHEED theory for a reflection forward model ------------
 
 @article{P17,
-  author  = {Ichimiya, A.},
-  title   = {Many-beam calculation of reflection high energy electron diffraction (RHEED) intensities by the multi-slice method},
-  journal = {Japanese Journal of Applied Physics},
-  volume  = {22},
-  pages   = {176--180},
-  year    = {1983},
+  author       = {Ichimiya, A.},
+  title        = {Many-beam calculation of reflection high energy electron diffraction (RHEED) intensities by the multi-slice method},
+  journal      = {Japanese Journal of Applied Physics},
+  volume       = {22},
+  number       = {1R},
+  pages        = {176--180},
+  year         = {1983},
+  doi          = {10.1143/jjap.22.176},
   howpublished = {Search index (query "Ichimiya 1983 \"Many-beam calculation of reflection high energy electron diffraction\" multi-slice method Japanese Journal of Applied Physics 22 176") returned the OSTI/ETDEWEB bibliographic record \url{https://www.osti.gov/etdeweb/biblio/6510020} titled with the exact article title},
-  note    = {evidence: METADATA\_VERIFIED(index) + SECTION\_READ (of the secondary citation only); provenance: the citation string was READ VERBATIM in the sim-trhepd-rheed README at raw.githubusercontent.com (B\_literature.md section 6.5, reference [3] of that README) -- i.e. it is a verified secondary citation by the authors of the field's own RHEED code -- and this pass added an independent OSTI bibliographic record carrying the exact title. NO DOI FIELD: the search summariser offered 10.1143/JJAP.22.176 as prose, but that string appears in NEITHER source document and NO URL carried it, so under this file's DOI policy it is omitted (it is recorded in B2\_bib\_verification\_log.md as an unadmitted lead). Method (+ABSTRACT(index)): the crystal is sliced into thin slabs PARALLEL TO THE SURFACE, the potential in each slab is taken constant along the surface normal, and intensities are built from products of matrices from Bethe's dynamical theory. THIS IS THE SURFACE-PARALLEL MULTISLICE FAMILY -- the alternative to a transmission-style, beam-perpendicular multislice, and the one implemented openly in sim-trhepd-rheed.}
+  note         = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P17.json; B3, 2026-09-22) + SECTION\_READ (of the secondary citation in the sim-trhepd-rheed README only); label before B3: METADATA\_VERIFIED(index) + SECTION\_READ (of the secondary citation only); provenance: the citation string was READ VERBATIM in the sim-trhepd-rheed README at raw.githubusercontent.com (B\_literature.md section 6.5, reference [3] of that README) -- i.e. it is a verified secondary citation by the authors of the field's own RHEED code -- and this pass added an independent OSTI bibliographic record carrying the exact title. B3: DOI and issue (Crossref form "1R") copied from the Crossref record accepted on the five-field rule; it equals the string B2 had refused as summariser prose, now verified. Method (+ABSTRACT(index)): the crystal is sliced into thin slabs PARALLEL TO THE SURFACE, the potential in each slab is taken constant along the surface normal, and intensities are built from products of matrices from Bethe's dynamical theory. THIS IS THE SURFACE-PARALLEL MULTISLICE FAMILY -- the alternative to a transmission-style, beam-perpendicular multislice, and the one implemented openly in sim-trhepd-rheed.}
 }
 
 @article{P18,
@@ -521,9 +554,11 @@
   title   = {Dynamical diffraction calculations for RHEED and REM},
   journal = {Acta Crystallographica Section A},
   volume  = {42},
+  number  = {6},
   pages   = {545--552},
   year    = {1986},
-  note    = {evidence: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.1, where volume and pages were corroborated twice and by the Acta Cryst A42 part 6 (Nov 1986) issue table of contents appearing in results. NO DOI FIELD, DELIBERATELY: B\_literature.md records 10.1107/S0108767386098756 but tags it "DOI UNVERIFIED" because its only source is a summariser sentence; a dedicated query in this pass ("Peng Cowley \"Dynamical diffraction calculations for RHEED and REM\" Acta Crystallographica A42 545 1986") again produced NO URL for this paper and no page carrying that DOI. The candidate string is kept in B2\_bib\_verification\_log.md, not here. ABSTRACT NOT OBTAINED -- the text the summariser first offered actually belonged to [P19]. This is the original Acta Cryst A statement of the beam-perpendicular (transmission-type) multislice applied to reflection.}
+  doi     = {10.1107/s0108767386098756},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P18.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.1, where volume and pages were corroborated twice and by the Acta Cryst A42 part 6 (Nov 1986) issue table of contents appearing in results. B3: DOI and issue 6 copied from the Crossref record accepted on the five-field rule; the DOI equals the string B\_literature.md had tagged "DOI UNVERIFIED", now verified. ABSTRACT NOT OBTAINED -- the text the summariser first offered actually belonged to [P19]. This is the original Acta Cryst A statement of the beam-perpendicular (transmission-type) multislice applied to reflection.}
 }
 
 @article{P19,
@@ -536,30 +571,35 @@
   year    = {1988},
   doi     = {10.1016/0039-6028(88)90925-9},
   url     = {https://doi.org/10.1016/0039-6028(88)90925-9},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.1, which records the DOI from the search index and notes the ScienceDirect PII is consistent with it. Abstract returned near-verbatim: "A computing method for the forward dynamical scattering calculations which has been successfully applied to the Bragg case of high energy electron diffraction is described. This method is based on the physical optics theory of dynamical diffraction of Cowley and Moodie and is used for calculations of RHEED diffraction amplitudes and the REM image intensities for the extended surface of a perfect crystal and also for a crystal surface with a defect." THE SINGLE MOST DIRECTLY RELEVANT CITATION FOR "A TRANSMISSION-STYLE MULTISLICE CODE USED IN REFLECTION" -- read it before asserting, per instruction section 9.3, that transmission multislice is valid in the Bragg case.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P19.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.1, which records the DOI from the search index and notes the ScienceDirect PII is consistent with it. Abstract returned near-verbatim: "A computing method for the forward dynamical scattering calculations which has been successfully applied to the Bragg case of high energy electron diffraction is described. This method is based on the physical optics theory of dynamical diffraction of Cowley and Moodie and is used for calculations of RHEED diffraction amplitudes and the REM image intensities for the extended surface of a perfect crystal and also for a crystal surface with a defect." THE SINGLE MOST DIRECTLY RELEVANT CITATION FOR "A TRANSMISSION-STYLE MULTISLICE CODE USED IN REFLECTION" -- read it before asserting, per instruction section 9.3, that transmission multislice is valid in the Bragg case.}
 }
 
 @article{P20,
-  author  = {Ma, Y. and Marks, L. D.},
-  title   = {Bloch-wave solution in the Bragg case},
-  journal = {Acta Crystallographica Section A},
-  volume  = {45},
-  year    = {1989},
-  url     = {http://scripts.iucr.org/cgi-bin/paper?S0108767388010888=},
+  author       = {Ma, Y. and Marks, L. D.},
+  title        = {Bloch-wave solution in the Bragg case},
+  journal      = {Acta Crystallographica Section A},
+  volume       = {45},
+  number       = {2},
+  pages        = {174--182},
+  year         = {1989},
+  doi          = {10.1107/s0108767388010888},
+  url          = {http://scripts.iucr.org/cgi-bin/paper?S0108767388010888=},
   howpublished = {Search index (query "Ma Marks \"Bloch-wave solution in the Bragg case\" Acta Crystallographica A45 1989 pages") returned the IUCr record above titled "(IUCr) Bloch-wave solution in the Bragg case" and carrying the IUCr paper code S0108767388010888, the OSTI record \url{https://www.osti.gov/etdeweb/biblio/6314963} with the exact title, and the issue TOC \url{https://journals.iucr.org/a/issues/1989/02/00/} for Acta Cryst A Volume 45, Part 2, February 1989},
-  note    = {evidence: identity METADATA\_VERIFIED(index) (route UPGRADED in this pass to a publisher-URL route) +ABSTRACT(index); PAGE RANGE UNVERIFIED; provenance: B\_literature.md section 3.2 plus the IUCr and OSTI URLs above found in this pass. NO pages FIELD, DELIBERATELY: the index has reported 174-182 (B report once, this pass once) and 182-187 (B report once); no URL ever displayed a page range. DO NOT SUPPLY A PAGE NUMBER WITHOUT CHECKING THE IUCr RECORD. NO DOI FIELD: only an IUCr PAPER CODE (S0108767388010888) is attested; turning a paper code into a DOI would be pattern-completion, so the IUCr URL carrying the code is given instead. Abstract-level content: develops the Bloch-wave method for reflection diffraction; introduces the CURRENT-FLOW CONCEPT that both explains reflection diffraction and determines which Bloch waves are allowed; results for GaAs near [010]; discusses resonance diffraction and its relation to internal/external reflection, variations in boundary conditions, SPLITTING OF DIFFRACTION SPOTS DUE TO STEPPED SURFACES, and the reflection equivalent of thickness fringes.}
+  note         = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P20.json; B3, 2026-09-22); label before B3: identity METADATA\_VERIFIED(index) (route UPGRADED in this pass to a publisher-URL route) +ABSTRACT(index); provenance: B\_literature.md section 3.2 plus the IUCr and OSTI URLs above found in this pass. B3: PAGES 174-182 AND ISSUE 2 copied from the Crossref record; the 182-187 index report was wrong. B3: DOI copied from the Crossref record accepted on the five-field rule (it contains the IUCr paper code, but it was read from Crossref, not derived from the code). Abstract-level content: develops the Bloch-wave method for reflection diffraction; introduces the CURRENT-FLOW CONCEPT that both explains reflection diffraction and determines which Bloch waves are allowed; results for GaAs near [010]; discusses resonance diffraction and its relation to internal/external reflection, variations in boundary conditions, SPLITTING OF DIFFRACTION SPOTS DUE TO STEPPED SURFACES, and the reflection equivalent of thickness fringes.}
 }
 
 @article{P21,
-  author  = {Ma, Y. and Marks, L. D.},
-  title   = {Bloch waves and multislice in transmission and reflection diffraction},
-  journal = {Acta Crystallographica Section A},
-  volume  = {46},
-  pages   = {11--32},
-  year    = {1990},
-  url     = {https://journals.iucr.org/paper?rc0253=},
+  author       = {Ma, Y. and Marks, L. D.},
+  title        = {Bloch waves and multislice in transmission and reflection diffraction},
+  journal      = {Acta Crystallographica Section A},
+  volume       = {46},
+  number       = {1},
+  pages        = {11--32},
+  year         = {1990},
+  doi          = {10.1107/s0108767389009141},
+  url          = {https://journals.iucr.org/paper?rc0253=},
   howpublished = {Search index (query "Ma Marks \"Bloch waves and multislice in transmission and reflection diffraction\" Acta Crystallographica A46 1990 11-32") returned the IUCr record above titled "(IUCr) Bloch waves and multislice in transmission and reflection diffraction", the issue TOC \url{https://journals.iucr.org/a/issues/1990/01/00/} for Acta Cryst A Volume 46, Part 1, January 1990 (consistent with pp. 11-32), \url{https://www.osti.gov/etdeweb/biblio/6932790}, \url{https://inis.iaea.org/records/m4253-gq981}, and the author group's own PDF at numis.northwestern.edu under /Research/Articles/1990/},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index) (CONFIRMED and strengthened in this pass: title, journal, volume and year now rest on IUCr URLs rather than on prose); provenance: B\_literature.md section 3.2 plus the URLs above. NO DOI FIELD: the summariser offered 10.1107/S0108767389009141 as prose only, and that string is in neither source document, so it is omitted under this file's DOI policy. Pages 11-32 remain summariser-level but are consistent with Part 1 of volume 46. Abstract-level content: investigates CONSISTENCY BETWEEN THE BLOCH-WAVE AND MULTISLICE APPROACHES IN BOTH TRANSMISSION AND REFLECTION, with emphasis on reflection; in transmission the two agree exactly, and in reflection the Bloch-wave approach yields a stationary solution in multislice "except for a small effect from surface truncation". THIS IS THE CORRECT CITATION FOR "IS MY TRANSMISSION MULTISLICE COMPATIBLE WITH THE REFLECTION BLOCH-WAVE ANSWER?" and it is the paper that justifies the cross-validation strategy in B\_literature.md section 11.5.}
+  note         = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P21.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index) (CONFIRMED and strengthened in this pass: title, journal, volume and year now rest on IUCr URLs rather than on prose); provenance: B\_literature.md section 3.2 plus the URLs above. B3: DOI and issue 1 copied from the Crossref record accepted on the five-field rule, which also confirms pages 11-32. Abstract-level content: investigates CONSISTENCY BETWEEN THE BLOCH-WAVE AND MULTISLICE APPROACHES IN BOTH TRANSMISSION AND REFLECTION, with emphasis on reflection; in transmission the two agree exactly, and in reflection the Bloch-wave approach yields a stationary solution in multislice "except for a small effect from surface truncation". THIS IS THE CORRECT CITATION FOR "IS MY TRANSMISSION MULTISLICE COMPATIBLE WITH THE REFLECTION BLOCH-WAVE ANSWER?" and it is the paper that justifies the cross-validation strategy in B\_literature.md section 11.5.}
 }
 
 @article{P22,
@@ -567,9 +607,11 @@
   title   = {Surface phenomena in RHEED and REM},
   journal = {Acta Crystallographica Section A},
   volume  = {46},
+  number  = {7},
   pages   = {594--606},
   year    = {1990},
-  note    = {evidence: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.2, where the volume/page string appears literally in a PDF title returned by the search index. NO DOI FIELD -- none appears in either source document.}
+  doi     = {10.1107/s0108767390002781},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P22.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.2, where the volume/page string appears literally in a PDF title returned by the search index. B3: DOI and issue copied from the Crossref record accepted on the five-field rule.}
 }
 
 @article{P13,
@@ -582,7 +624,7 @@
   year    = {1992},
   doi     = {10.1002/jemt.1070200408},
   url     = {https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jemt.1070200408},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.2 (DOI and PMID 1498352 from the search index); this pass additionally saw the DOI-bearing Wiley URL above with the exact title while searching for [P21]. Review. NOTABLE STATEMENT (abstract level, as of 1992): "a stationary dynamical solution for an arbitrary surface for HEER has not been obtained yet" -- relevant to how much the project may assume about arbitrary stepped surfaces.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P13.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.2 (DOI and PMID 1498352 from the search index); this pass additionally saw the DOI-bearing Wiley URL above with the exact title while searching for [P21]. Review. NOTABLE STATEMENT (abstract level, as of 1992): "a stationary dynamical solution for an arbitrary surface for HEER has not been obtained yet" -- relevant to how much the project may assume about arbitrary stepped surfaces.}
 }
 
 @article{P12,
@@ -595,7 +637,7 @@
   year    = {1992},
   doi     = {10.1002/jemt.1070200407},
   url     = {https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jemt.1070200407},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index) (route UPGRADED in this pass to a DOI-bearing publisher URL); provenance: B\_literature.md section 3.2 (DOI and PMID 1498351 from the search index); in this pass the Wiley URL above was returned twice with the FULL title, which B\_literature.md had abbreviated to "... in RHEED and REM" -- the unabbreviated title is used here. Abstract-level content: derives Bloch-wave equations for multiple-beam RHEED from the integral equation using FORWARD- AND BACK-SCATTERING GREEN-FUNCTION OPERATORS.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P12.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index) (route UPGRADED in this pass to a DOI-bearing publisher URL); provenance: B\_literature.md section 3.2 (DOI and PMID 1498351 from the search index); in this pass the Wiley URL above was returned twice with the FULL title, which B\_literature.md had abbreviated to "... in RHEED and REM" -- the unabbreviated title is used here. Abstract-level content: derives Bloch-wave equations for multiple-beam RHEED from the integral equation using FORWARD- AND BACK-SCATTERING GREEN-FUNCTION OPERATORS.}
 }
 
 @article{P10,
@@ -608,7 +650,7 @@
   year    = {1992},
   doi     = {10.1002/jemt.1070200403},
   url     = {https://doi.org/10.1002/jemt.1070200403},
-  note    = {evidence: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.3, which records the DOI with search-index provenance. Abstract not obtained.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P10.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.3, which records the DOI with search-index provenance. Abstract not obtained.}
 }
 
 @article{P11,
@@ -621,7 +663,7 @@
   year    = {1992},
   doi     = {10.1002/jemt.1070200404},
   url     = {https://doi.org/10.1002/jemt.1070200404},
-  note    = {evidence: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.3, which records the DOI with search-index provenance. Abstract not obtained.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P11.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index); provenance: B\_literature.md section 3.3, which records the DOI with search-index provenance. Abstract not obtained.}
 }
 
 @article{P23,
@@ -634,27 +676,31 @@
   year    = {1987},
   doi     = {10.1107/S0021889887086916},
   url     = {https://doi.org/10.1107/S0021889887086916},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.3, which records the DOI with search-index provenance. Abstract-level content: UHV-REM characterises monolayer-level surface structure -- STEPS, reconstructed domains and their boundaries -- and dynamic processes (phase transitions, adsorption, oxidation, sublimation, sputter-anneal).}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P23.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.3, which records the DOI with search-index provenance. Abstract-level content: UHV-REM characterises monolayer-level surface structure -- STEPS, reconstructed domains and their boundaries -- and dynamic processes (phase transitions, adsorption, oxidation, sublimation, sputter-anneal).}
 }
 
 @article{P24,
-  author  = {Uchida, N. and J{\"a}ger, W. and Lehmpfuhl, G.},
+  author  = {Uchida, Y. and J{\"a}ger, J. and Lehmpfuhl, G.},
   title   = {Direct imaging of atomic steps in reflection electron microscopy},
   journal = {Ultramicroscopy},
   volume  = {13},
-  pages   = {325--328},
+  number  = {3},
+  pages   = {325--327},
   year    = {1984},
-  note    = {evidence: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 3.3 (one search-index citation string only -- weaker than the rest of this section). NO DOI FIELD -- none appears in either source document.}
+  doi     = {10.1016/0304-3991(84)90210-9},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P24.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 3.3 (one search-index citation string only -- weaker than the rest of this section). B3: CORRECTED from the Crossref record accepted on the five-field rule -- first author Y. Uchida (was N.), second author J. J{\"a}ger (was W.), pages 325-327 (was 325-328); DOI and issue 3 added.}
 }
 
 @article{P25,
-  author  = {Uchida, N. and Lehmpfuhl, G.},
+  author  = {Uchida, Y. and Lehmpfuhl, G.},
   title   = {Observation of double contours of monoatomic steps on single crystal surfaces in reflection electron microscopy},
   journal = {Ultramicroscopy},
   volume  = {23},
-  pages   = {53--60},
+  number  = {1},
+  pages   = {53--59},
   year    = {1987},
-  note    = {evidence: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 3.3 (one search-index citation string only). NO DOI FIELD -- none appears in either source document. IMPORTANCE: the "double-contour" step contrast is the canonical REM step-imaging signature that the forward model must reproduce or explain; B\_literature.md section 11.8 proposes it as the acceptance test for the simulation ("does it produce double-contour step contrast at the Bragg-Bragg condition?").}
+  doi     = {10.1016/0304-3991(87)90226-9},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P25.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 3.3 (one search-index citation string only). B3: CORRECTED from the Crossref record accepted on the five-field rule -- first author Y. Uchida (was N.), pages 53-59 (was 53-60); DOI and issue 1 added. IMPORTANCE: the "double-contour" step contrast is the canonical REM step-imaging signature that the forward model must reproduce or explain; B\_literature.md section 11.8 proposes it as the acceptance test for the simulation ("does it produce double-contour step contrast at the Bragg-Bragg condition?").}
 }
 
 @article{P26,
@@ -662,50 +708,54 @@
   title   = {Electron diffraction conditions and surface imaging in reflection electron microscopy},
   journal = {Ultramicroscopy},
   volume  = {33},
+  number  = {4},
   pages   = {237--254},
   year    = {1990},
+  doi     = {10.1016/0304-3991(90)90041-j},
   url     = {https://www.sciencedirect.com/science/article/abs/pii/030439919090041J},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.3 (PII 0304-3991(90)90041-J from the search index); this pass additionally saw the ScienceDirect publisher URL above with the exact title. NO DOI FIELD -- no DOI appears in either source document; the PII URL is given instead. Abstract-level content: TWO DISTINCT RESONANCE CONDITIONS enhance the specular beam, BRAGG-CHANNELLING and BRAGG-BRAGG; the surface image from the Bragg-Bragg condition gives the best topographic contrast; the anomalous DOUBLE-CONTOUR CONTRAST OF A SINGLE-ATOM-HEIGHT STEP IS CLOSELY ASSOCIATED WITH THE BRAGG-BRAGG CONDITION; total reflectivity changes little with diffraction condition, so improved topographic contrast is NOT simply proportional to specular intensity. This is the source for the dynamical reflection phase varying rapidly near resonance, which is why a purely geometric step-phase model is not sufficient.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P26.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 3.3 (PII 0304-3991(90)90041-J from the search index); this pass additionally saw the ScienceDirect publisher URL above with the exact title. B3: DOI and issue 4 copied from the Crossref record accepted on the five-field rule; the PII URL is kept. Abstract-level content: TWO DISTINCT RESONANCE CONDITIONS enhance the specular beam, BRAGG-CHANNELLING and BRAGG-BRAGG; the surface image from the Bragg-Bragg condition gives the best topographic contrast; the anomalous DOUBLE-CONTOUR CONTRAST OF A SINGLE-ATOM-HEIGHT STEP IS CLOSELY ASSOCIATED WITH THE BRAGG-BRAGG CONDITION; total reflectivity changes little with diffraction condition, so improved topographic contrast is NOT simply proportional to specular intensity. This is the source for the dynamical reflection phase varying rapidly near resonance, which is why a purely geometric step-phase model is not sufficient.}
 }
 
 @book{ZLWANG96,
-  author    = {Wang, Zhong Lin},
-  title     = {Reflection Electron Microscopy and Spectroscopy for Surface Analysis},
-  publisher = {Cambridge University Press},
-  year      = {1996},
-  isbn      = {9780521482660},
-  url       = {https://www.cambridge.org/core/books/reflection-electron-microscopy-and-spectroscopy-for-surface-analysis/4F3C18408D2D686F43DDEC9CAF213394},
+  author       = {Wang, Zhong Lin},
+  title        = {Reflection Electron Microscopy and Spectroscopy for Surface Analysis},
+  publisher    = {Cambridge University Press},
+  year         = {1996},
+  isbn         = {9780521482660},
+  doi          = {10.1017/cbo9780511525254},
+  url          = {https://www.cambridge.org/core/books/reflection-electron-microscopy-and-spectroscopy-for-surface-analysis/4F3C18408D2D686F43DDEC9CAF213394},
   howpublished = {Search index (query "\"Reflection Electron Microscopy and Spectroscopy for Surface Analysis\" Z. L. Wang Cambridge University Press 1996 ISBN") returned the Cambridge Core book record above, the Cambridge Core CHAPTER record \url{https://www.cambridge.org/core/books/abs/reflection-electron-microscopy-and-spectroscopy-for-surface-analysis/dynamical-theories-of-rheed/3F7C568D2849A99DFB41DFF34A2A6E52} titled "Dynamical theories of RHEED (Chapter 3)", the CUP subject page, ISBN-bearing retailer URLs /dp/0521482666 and /dp/0521017955, and the author's page \url{https://nanoscience.gatech.edu/zlwang/book/book2.htm}},
-  note      = {evidence: METADATA\_VERIFIED(index) (STRENGTHENED in this pass); provenance: B\_literature.md section 3.4 plus the Cambridge Core book and chapter URLs found in this pass. NOT AN INSTRUCTION-FILE RECORD -- the cite key is deliberately non-ID. NEW IN THIS PASS: B\_literature.md stated "the chapter list could not be retrieved"; ONE CHAPTER IS NOW ATTESTED BY A PUBLISHER URL -- CHAPTER 3 = "Dynamical theories of RHEED". The remainder of the chapter list is STILL NOT OBTAINED, so the step-contrast and imaging chapters remain unidentified and nothing may be attributed to them. Paperback reissue ISBN 9780521017954. Structural statement (+ABSTRACT(index)): the book is "divided into three parts: diffraction, imaging and spectroscopy" and covers REM, RHEED and REELS. Year 1996 and that structure remain summariser-level.}
+  note         = {evidence: METADATA\_VERIFIED (route: Crossref API monograph record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/ZLWANG96.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) (STRENGTHENED in this pass); provenance: B\_literature.md section 3.4 plus the Cambridge Core book and chapter URLs found in this pass. NOT AN INSTRUCTION-FILE RECORD -- the cite key is deliberately non-ID. NEW IN THIS PASS: B\_literature.md stated "the chapter list could not be retrieved"; ONE CHAPTER IS NOW ATTESTED BY A PUBLISHER URL -- CHAPTER 3 = "Dynamical theories of RHEED". The remainder of the chapter list is STILL NOT OBTAINED, so the step-contrast and imaging chapters remain unidentified and nothing may be attributed to them. Paperback reissue ISBN 9780521017954. Structural statement (+ABSTRACT(index)): the book is "divided into three parts: diffraction, imaging and spectroscopy" and covers REM, RHEED and REELS. B3: DOI copied from the Crossref record, which confirms author, title, publisher, both ISBNs and published-print 1996-05-23 (online 2010-01-18); the three-part structure remains summariser-level.}
 }
 
 %% --- 4d. Dark-field electron holography (transmission analogue) -------
 
 @article{P30,
-  author  = {H{\"y}tch, M. J. and Houdellier, F. and H{\"u}e, F. and Snoeck, E.},
-  title   = {Nanoscale holographic interferometry for strain measurements in electronic devices},
-  journal = {Nature},
-  volume  = {453},
-  number  = {7198},
-  pages   = {1086--1089},
-  year    = {2008},
-  doi     = {10.1038/nature07049},
-  url     = {https://doi.org/10.1038/nature07049},
+  author       = {H{\"y}tch, M. J. and Houdellier, F. and H{\"u}e, F. and Snoeck, E.},
+  title        = {Nanoscale holographic interferometry for strain measurements in electronic devices},
+  journal      = {Nature},
+  volume       = {453},
+  number       = {7198},
+  pages        = {1086--1089},
+  year         = {2008},
+  doi          = {10.1038/nature07049},
+  url          = {https://doi.org/10.1038/nature07049},
   howpublished = {Search index (query "Hytch Houdellier Hue Snoeck \"Nanoscale holographic interferometry for strain measurements in electronic devices\" Nature 453 1086 2008 doi 10.1038/nature07049") returned the publisher URL \url{http://www.nature.com/nature/journal/v453/n7198/abs/nature07049.html}, which embeds v453 / n7198 and the article id nature07049, and the PubMed record \url{http://www.ncbi.nlm.nih.gov/pubmed/18563161}},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index) (CONFIRMED and strengthened in this pass); provenance: B\_literature.md section 4 (DOI from the search index), plus the publisher URL above which puts VOLUME 453 AND ISSUE 7198 on a URL rather than on prose, and a PubMed record giving PMID 18563161. Pages 1086-1089 remain summariser-level. TITLE CAUTION: the correct title uses the plural "strain measurements". Abstract-level content: combines moire interferometry with off-axis electron holography to reach high spatial resolution AND precision over a large field of view; motivated by strained-silicon transistors; applicable to relatively thick samples, reducing thin-film relaxation.}
+  note         = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P30.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index) (CONFIRMED and strengthened in this pass); provenance: B\_literature.md section 4 (DOI from the search index), plus the publisher URL above which puts VOLUME 453 AND ISSUE 7198 on a URL rather than on prose, and a PubMed record giving PMID 18563161. Pages 1086-1089 remain summariser-level. TITLE CAUTION: the correct title uses the plural "strain measurements". Abstract-level content: combines moire interferometry with off-axis electron holography to reach high spatial resolution AND precision over a large field of view; motivated by strained-silicon transistors; applicable to relatively thick samples, reducing thin-film relaxation.}
 }
 
 @article{P31,
-  author  = {H{\"y}tch, M. J. and Houdellier, F. and H{\"u}e, F. and Snoeck, E.},
-  title   = {Dark-field electron holography for the measurement of geometric phase},
-  journal = {Ultramicroscopy},
-  volume  = {111},
-  number  = {8},
-  pages   = {1328--1337},
-  year    = {2011},
-  url     = {https://www.sciencedirect.com/science/article/abs/pii/S0304399111001586},
+  author       = {H{\"y}tch, M. J. and Houdellier, F. and H{\"u}e, F. and Snoeck, E.},
+  title        = {Dark-field electron holography for the measurement of geometric phase},
+  journal      = {Ultramicroscopy},
+  volume       = {111},
+  number       = {8},
+  pages        = {1328--1337},
+  year         = {2011},
+  doi          = {10.1016/j.ultramic.2011.04.008},
+  url          = {https://www.sciencedirect.com/science/article/abs/pii/S0304399111001586},
   howpublished = {Search index (query "Hytch Houdellier Hue Snoeck \"Dark-field electron holography for the measurement of geometric phase\" Ultramicroscopy 111 2011 1328-1337") returned the ScienceDirect publisher URL above (PII S0304399111001586) and the OSTI/ETDEWEB bibliographic record \url{https://www.osti.gov/etdeweb/biblio/22204503}, both titled with the exact article title},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index) (CONFIRMED in this pass via a publisher PII URL plus an independent bibliographic record); provenance: B\_literature.md section 4 plus the two URLs above. NO DOI FIELD: NO DOI FOR THIS PAPER WAS OBTAINED IN ANY SESSION, and B\_literature.md section 12 explicitly instructs reaching it via the PII rather than reconstructing a DOI. Volume 111, issue 8, pages 1328-37 and the July 2011 date are summariser-level. Abstract-level content, obtained three times: the paper "places geometric phase within a unified theoretical framework for phase measurements by electron holography, with the total phase described as a sum of four contributions: crystalline, electrostatic, magnetic and geometric"; it presents "the genesis, theoretical basis and practical application" of dark-field holography for strain mapping. CRITICAL GAP: THE GEOMETRIC-PHASE EQUATION, ITS EQUATION NUMBER, ITS SIGN CONVENTION AND ITS STATED VALIDITY CONDITIONS WERE NEVER OBTAINED. The commonly quoted form is phi\_g = -2 pi g.u, but THE SIGN AS STATED BY HYTCH ET AL. IS UNVERIFIED -- do not put a sign in the paper on this project's authority.}
+  note         = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P31.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index) (CONFIRMED in this pass via a publisher PII URL plus an independent bibliographic record); provenance: B\_literature.md section 4 plus the two URLs above. B3: DOI copied from the Crossref record accepted on the five-field rule, which confirms volume 111, issue 8, pages 1328-1337 and published-print 2011-07. Abstract-level content, obtained three times: the paper "places geometric phase within a unified theoretical framework for phase measurements by electron holography, with the total phase described as a sum of four contributions: crystalline, electrostatic, magnetic and geometric"; it presents "the genesis, theoretical basis and practical application" of dark-field holography for strain mapping. CRITICAL GAP: THE GEOMETRIC-PHASE EQUATION, ITS EQUATION NUMBER, ITS SIGN CONVENTION AND ITS STATED VALIDITY CONDITIONS WERE NEVER OBTAINED. The commonly quoted form is phi\_g = -2 pi g.u, but THE SIGN AS STATED BY HYTCH ET AL. IS UNVERIFIED -- do not put a sign in the paper on this project's authority.}
 }
 
 @article{P32,
@@ -715,8 +765,9 @@
   volume  = {136},
   pages   = {42--49},
   year    = {2014},
+  doi     = {10.1016/j.ultramic.2013.07.007},
   url     = {https://www.sciencedirect.com/science/article/abs/pii/S0304399113001939},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index) (publisher URL added in this pass); provenance: B\_literature.md section 4, plus the ScienceDirect URL above (PII S0304399113001939) returned with the exact title while searching for [P31]. NO DOI FIELD -- none appears in either source document. Abstract-level content: a perturbative TWO-BEAM DYNAMICAL THEORY giving analytic LINEAR PROJECTION RULES for 3D strain fields, with a weighting integral depending analytically on DIFFRACTION ORDER, EXCITATION ERROR AND SPECIMEN THICKNESS. Relevance: shows that even in transmission the geometric phase is a weighted projection, not a simple line integral -- the reflection analogue must be derived, not assumed.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P32.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index) (publisher URL added in this pass); provenance: B\_literature.md section 4, plus the ScienceDirect URL above (PII S0304399113001939) returned with the exact title while searching for [P31]. B3: DOI copied from the Crossref record accepted on the five-field rule. Abstract-level content: a perturbative TWO-BEAM DYNAMICAL THEORY giving analytic LINEAR PROJECTION RULES for 3D strain fields, with a weighting integral depending analytically on DIFFRACTION ORDER, EXCITATION ERROR AND SPECIMEN THICKNESS. Relevance: shows that even in transmission the geometric phase is a weighted projection, not a simple line integral -- the reflection analogue must be derived, not assumed.}
 }
 
 @article{P33,
@@ -726,20 +777,23 @@
   volume  = {207},
   number  = {112844},
   year    = {2019},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 4 (search-index citation string). NO DOI FIELD -- none appears in either source document. Abstract-level content: experiment plus theory on InGaAs/GaAs; phase and amplitude of the diffracted beam measured by dark-field electron holography; calculations by numerical propagation with the DARWIN-HOWIE-WHELAN equations; conclusion "a strong dependency on the excitation conditions is found showing that the interplay between dynamical effects and the strain field must be considered in the interpretation of the geometric phase".}
+  doi     = {10.1016/j.ultramic.2019.112844},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P33.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 4 (search-index citation string). B3: DOI copied from the Crossref record accepted on the five-field rule (article number 112844). Abstract-level content: experiment plus theory on InGaAs/GaAs; phase and amplitude of the diffracted beam measured by dark-field electron holography; calculations by numerical propagation with the DARWIN-HOWIE-WHELAN equations; conclusion "a strong dependency on the excitation conditions is found showing that the interplay between dynamical effects and the strain field must be considered in the interpretation of the geometric phase".}
 }
 
 %% --- 4e. Reflection-mode ptychography (X-ray; the transferable method) -
 
 @article{P34,
-  author  = {Roy, S. and others},
+  author  = {Roy, S. and Parks, D. and Seu, K. A. and Su, R. and Turner, J. J. and Chao, W. and Anderson, E. H. and Cabrini, S. and Kevan, S. D.},
   title   = {Lensless X-ray imaging in reflection geometry},
   journal = {Nature Photonics},
   volume  = {5},
+  number  = {4},
+  pages   = {243--245},
   year    = {2011},
   doi     = {10.1038/nphoton.2011.11},
   url     = {https://doi.org/10.1038/nphoton.2011.11},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records the DOI with search-index provenance. NO pages FIELD -- B\_literature.md states "page numbers not obtained"; do not supply one without checking. AUTHOR LIST INCOMPLETE ("S. Roy et al." in the source), hence "and others". Abstract-level content: lensless imaging in BRAGG AND SMALL-ANGLE (REFLECTION) SCATTERING GEOMETRIES, demonstrated on a nanofabricated pseudorandom binary structure in small-angle reflection; works with extended objects, no sample-size restriction, no additional mask. Forward model: multiplicative / CDI-type.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P34.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records the DOI with search-index provenance. B3: FULL AUTHOR LIST (nine names), issue 4 and pages 243-245 copied from the Crossref record. Abstract-level content: lensless imaging in BRAGG AND SMALL-ANGLE (REFLECTION) SCATTERING GEOMETRIES, demonstrated on a nanofabricated pseudorandom binary structure in small-angle reflection; works with extended objects, no sample-size restriction, no additional mask. Forward model: multiplicative / CDI-type.}
 }
 
 @article{P35,
@@ -749,7 +803,8 @@
   volume  = {2},
   number  = {568},
   year    = {2011},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (PMID 22127064 from the search index). NO DOI FIELD -- none appears in either source document. Abstract-level content: ptychography IN THE BRAGG GEOMETRY; a 3-D Bragg-peak intensity map inverted with a Bragg-adapted ptychographic phase-retrieval algorithm. Forward model: multiplicative, Bragg-adapted.}
+  doi     = {10.1038/ncomms1569},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P35.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (PMID 22127064 from the search index). B3: DOI copied from the Crossref record accepted on the five-field rule (article number 568). Abstract-level content: ptychography IN THE BRAGG GEOMETRY; a 3-D Bragg-peak intensity map inverted with a Bragg-adapted ptychographic phase-retrieval algorithm. Forward model: multiplicative, Bragg-adapted.}
 }
 
 @article{P36,
@@ -762,7 +817,7 @@
   year    = {2015},
   doi     = {10.1063/1.4914927},
   url     = {https://doi.org/10.1063/1.4914927},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records the DOI with search-index provenance. Abstract-level content: ptychography used to image ATOMIC STEP STRUCTURES from coherent diffraction recorded ALONG THE CRYSTAL TRUNCATION ROD; proof of concept on Pt(111); reconstructions show features consistent with surface steps; argued to extend to buried interfaces. THIS IS THE CLOSEST PUBLISHED ANALOGUE OF THE TARGET MEASUREMENT, IN X-RAYS. Forward model: CTR / kinematic-multiplicative -- which is exactly the assumption that does not carry over to grazing-incidence electrons (instruction file [C03]).}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P36.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records the DOI with search-index provenance. Abstract-level content: ptychography used to image ATOMIC STEP STRUCTURES from coherent diffraction recorded ALONG THE CRYSTAL TRUNCATION ROD; proof of concept on Pt(111); reconstructions show features consistent with surface steps; argued to extend to buried interfaces. THIS IS THE CLOSEST PUBLISHED ANALOGUE OF THE TARGET MEASUREMENT, IN X-RAYS. Forward model: CTR / kinematic-multiplicative -- which is exactly the assumption that does not carry over to grazing-incidence electrons (instruction file [C03]).}
 }
 
 @article{P37,
@@ -770,39 +825,41 @@
   title   = {High-resolution three-dimensional structural microscopy by single-angle Bragg ptychography},
   journal = {Nature Materials},
   volume  = {16},
+  number  = {2},
   pages   = {244--251},
   year    = {2017},
   doi     = {10.1038/nmat4798},
   url     = {https://doi.org/10.1038/nmat4798},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (DOI and PMID 27869823 from the search index). Abstract-level content: 3-D Bragg projection ptychography (3DBPP) -- 3-D reconstruction from 2-D Bragg patterns at a SINGLE INCIDENT ANGLE. Forward model: multiplicative plus a Bragg projection operator.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P37.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (DOI and PMID 27869823 from the search index). Abstract-level content: 3-D Bragg projection ptychography (3DBPP) -- 3-D reconstruction from 2-D Bragg patterns at a SINGLE INCIDENT ANGLE. Forward model: multiplicative plus a Bragg projection operator.}
 }
 
 @article{P38,
-  author  = {J{\o}rgensen, P. S. and Besley, L. and Slyamov, A. M. and Diaz, A. and Guizar-Sicairos, M. and Odstr{\v{c}}il, M. and Holler, M. and Silvestre, C. and Chang, B. and Detlefs, C. and Andreasen, J. W.},
-  title   = {Hard X-ray grazing-incidence ptychography: large field-of-view nanostructure imaging with ultra-high surface sensitivity},
-  journal = {Optica},
-  volume  = {11},
-  number  = {2},
-  pages   = {197--204},
-  year    = {2024},
-  eprint  = {2307.01735},
+  author        = {J{\o}rgensen, P. S. and Besley, L. and Slyamov, A. M. and Diaz, A. and Guizar-Sicairos, M. and Odstr{\v{c}}il, M. and Holler, M. and Silvestre, C. and Chang, B. and Detlefs, C. and Andreasen, J. W.},
+  title         = {Hard X-ray grazing-incidence ptychography: large field-of-view nanostructure imaging with ultra-high surface sensitivity},
+  journal       = {Optica},
+  volume        = {11},
+  number        = {2},
+  pages         = {197--204},
+  year          = {2024},
+  doi           = {10.1364/optica.505478},
+  eprint        = {2307.01735},
   archivePrefix = {arXiv},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (citation string and arXiv id from the search index). NO DOI FIELD -- none appears in either source document; the arXiv id 2307.01735 is given instead (arxiv.org is blocked, so it too was not opened). Abstract-level content: combines IMAGING + REFLECTOMETRY + GISAXS; high resolution transverse to the beam AND along the surface normal. Forward model: multiplicative plus a reflection-geometry correction.}
+  note          = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P38.json, plus the arXiv API record; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (citation string and arXiv id from the search index). B3: DOI copied from the Crossref record accepted on the five-field rule; the arXiv API record of 2307.01735 lists the same eleven authors under the preprint title "Hard X-ray grazing incidence ptychography: Large field-of-view nanostructure imaging with ultra-high surface sensitivity". Abstract-level content: combines IMAGING + REFLECTOMETRY + GISAXS; high resolution transverse to the beam AND along the surface normal. Forward model: multiplicative plus a reflection-geometry correction.}
 }
 
 @article{P39,
-  author  = {Myint, P. and Tripathi, A. and Wojcik, M. J. and Deng, J. and Cherukara, M. J. and Schwarz, N. and Narayanan, S. and Wang, J. and Chu, M. and Jiang, Z.},
-  title   = {Three-dimensional hard X-ray ptychographic reflectometry imaging on extended mesoscopic surface structures},
-  journal = {APL Photonics},
-  volume  = {9},
-  number  = {6},
-  pages   = {066118},
-  year    = {2024},
-  doi     = {10.1063/5.0204240},
-  url     = {https://doi.org/10.1063/5.0204240},
-  eprint  = {2402.06762},
+  author        = {Myint, P. and Tripathi, A. and Wojcik, M. J. and Deng, J. and Cherukara, M. J. and Schwarz, N. and Narayanan, S. and Wang, J. and Chu, M. and Jiang, Z.},
+  title         = {Three-dimensional hard X-ray ptychographic reflectometry imaging on extended mesoscopic surface structures},
+  journal       = {APL Photonics},
+  volume        = {9},
+  number        = {6},
+  pages         = {066118},
+  year          = {2024},
+  doi           = {10.1063/5.0204240},
+  url           = {https://doi.org/10.1063/5.0204240},
+  eprint        = {2402.06762},
   archivePrefix = {arXiv},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records both the DOI and the arXiv id with search-index provenance. Abstract-level content: merges 2-D ptychography of extended objects with X-RAY REFLECTIVITY DEPTH PROFILING. Forward model: multiplicative plus an XRR depth model.}
+  note          = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P39.json, plus the arXiv API record, which carries the same DOI; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records both the DOI and the arXiv id with search-index provenance. Abstract-level content: merges 2-D ptychography of extended objects with X-RAY REFLECTIVITY DEPTH PROFILING. Forward model: multiplicative plus an XRR depth model.}
 }
 
 @article{P40,
@@ -815,11 +872,11 @@
   year    = {2026},
   doi     = {10.1364/OE.591755},
   url     = {https://doi.org/10.1364/OE.591755},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records the DOI with search-index provenance. Most recent item in that section. Abstract-level content: reflection-geometry soft-X-ray ptychography as a robust imaging mode; Siemens-star and barcode test patterns on a multilayer substrate; approximately 45 nm full-pitch resolution by Fourier-ring correlation. Forward model: multiplicative.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P40.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1, which records the DOI with search-index provenance. Most recent item in that section. Abstract-level content: reflection-geometry soft-X-ray ptychography as a robust imaging mode; Siemens-star and barcode test patterns on a multilayer substrate; approximately 45 nm full-pitch resolution by Fourier-ring correlation. Forward model: multiplicative.}
 }
 
 @article{P41,
-  author  = {Wang, R. and Zhao, Q. and Loetgering, L. and others},
+  author  = {Wang, Ruihai and Zhao, Qianhao and Loetgering, Lars and Allars, Frederick and Hong, Zhixuan and Pennycook, Timothy J. and Horstmeyer, Roarke and Rodenburg, John and Maiden, Andrew and Zheng, Guoan},
   title   = {Ptychography at all wavelengths},
   journal = {Nature Reviews Methods Primers},
   volume  = {5},
@@ -827,7 +884,7 @@
   year    = {2025},
   doi     = {10.1038/s43586-025-00438-3},
   url     = {https://doi.org/10.1038/s43586-025-00438-3},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (DOI and PMID 41909173 from the search index). AUTHOR LIST INCOMPLETE in the source ("R. Wang, Q. Zhao, L. Loetgering et al."), hence "and others" -- complete it before citing. Cite as the current cross-wavelength review.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P41.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 5.1 (DOI and PMID 41909173 from the search index). B3: FULL AUTHOR LIST (ten names) copied from the Crossref record (published online 2025-10-30; issue 1, article number 68). Cite as the current cross-wavelength review.}
 }
 
 %% --- 4f. Biprism architecture and the University of Victoria record ---
@@ -842,7 +899,7 @@
   year    = {2004},
   doi     = {10.1063/1.1715155},
   url     = {https://doi.org/10.1063/1.1715155},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.2, which records the DOI with search-index provenance. Abstract-level content: the upper biprism sits ON THE IMAGE PLANE OF THE OBJECTIVE LENS and the lower one between the crossover and the image plane of the magnifying lens; this DECOUPLES FRINGE SPACING FROM INTERFERENCE-REGION WIDTH, so the two hologram parameters become independently controllable. Demonstrated on a 1 MV FE microscope.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P47.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.2, which records the DOI with search-index provenance. Abstract-level content: the upper biprism sits ON THE IMAGE PLANE OF THE OBJECTIVE LENS and the lower one between the crossover and the image plane of the magnifying lens; this DECOUPLES FRINGE SPACING FROM INTERFERENCE-REGION WIDTH, so the two hologram parameters become independently controllable. Demonstrated on a 1 MV FE microscope.}
 }
 
 @article{P45,
@@ -855,7 +912,7 @@
   year    = {2012},
   doi     = {10.1063/1.4737152},
   url     = {https://doi.org/10.1063/1.4737152},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.2, which records the DOI with search-index provenance. Abstract-level content: ONE BIPRISM IN THE ILLUMINATION SYSTEM AND TWO IN THE IMAGING SYSTEM; a CONDENSER BIPRISM SPLITS THE ILLUMINATING WAVE into two mutually coherent waves, one illuminating an area far from the sample edge and the other passing through vacuum outside the sample, removing the "object must be near a vacuum edge" constraint. THIS IS THE PUBLIC FAMILY TO WHICH A GUN-SIDE/CONDENSER BIPRISM BELONGS. Instruction file section 2 prohibition stands: this establishes NOTHING about the geometry, voltage, conjugate planes or performance of the specific biprism installed at UVic.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P45.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.2, which records the DOI with search-index provenance. Abstract-level content: ONE BIPRISM IN THE ILLUMINATION SYSTEM AND TWO IN THE IMAGING SYSTEM; a CONDENSER BIPRISM SPLITS THE ILLUMINATING WAVE into two mutually coherent waves, one illuminating an area far from the sample edge and the other passing through vacuum outside the sample, removing the "object must be near a vacuum edge" constraint. THIS IS THE PUBLIC FAMILY TO WHICH A GUN-SIDE/CONDENSER BIPRISM BELONGS. Instruction file section 2 prohibition stands: this establishes NOTHING about the geometry, voltage, conjugate planes or performance of the specific biprism installed at UVic.}
 }
 
 @article{P46,
@@ -867,7 +924,7 @@
   year    = {2014},
   doi     = {10.1016/j.ultramic.2013.11.002},
   url     = {https://doi.org/10.1016/j.ultramic.2013.11.002},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.2 (DOI and PMID 24269525 from the search index). Abstract-level content: TWO BIPRISMS IN THE ILLUMINATION SYSTEM AND TWO IN THE IMAGING SYSTEM; a focused image of the upper condenser-biprism filament is formed on the sample plane with all other filaments hidden in its shadow, giving reconstructed object waves FREE OF FRESNEL-FRINGE MODULATION and holograms of objects distant from the reference.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P46.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.2 (DOI and PMID 24269525 from the search index). Abstract-level content: TWO BIPRISMS IN THE ILLUMINATION SYSTEM AND TWO IN THE IMAGING SYSTEM; a focused image of the upper condenser-biprism filament is formed on the sample plane with all other filaments hidden in its shadow, giving reconstructed object waves FREE OF FRESNEL-FRINGE MODULATION and holograms of objects distant from the reference.}
 }
 
 @article{P42,
@@ -878,7 +935,8 @@
   number  = {1},
   pages   = {131--147},
   year    = {2021},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.3 (search-index citation string). NO DOI FIELD -- none appears in either source document. SAME SPECIAL ISSUE AS [P07]. Abstract-level content: ptychography recovers phase WITHOUT A BIPRISM and without needing a minimally-structured region adjacent to the object; the paper gives a practical workflow and compares high-resolution ptychography with holography through experiment and modelling. Directly on-point for the lab's ptychography ambitions and for the supervisor's own public record.}
+  doi     = {10.1093/jmicro/dfaa055},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P42.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.3 (search-index citation string). B3: DOI copied from the Crossref record accepted on the five-field rule. SAME SPECIAL ISSUE AS [P07]. Abstract-level content: ptychography recovers phase WITHOUT A BIPRISM and without needing a minimally-structured region adjacent to the object; the paper gives a practical workflow and compares high-resolution ptychography with holography through experiment and modelling. Directly on-point for the lab's ptychography ambitions and for the supervisor's own public record.}
 }
 
 @article{P43,
@@ -890,7 +948,7 @@
   year    = {2022},
   doi     = {10.1016/j.micron.2022.103317},
   url     = {https://doi.org/10.1016/j.micron.2022.103317},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.3 (DOI and PMID 35753170 from the search index). Affiliation MENG/CAMTEC, University of Victoria. Abstract-level content: an electron biprism interferes TWO SYMMETRICALLY DIFFRACTED BEAMS generated by an Au crystal substrate, which carry the phase of an amorphous overlayer; Bragg diffraction from the substrate explains the strong phase contrast. DIFFRACTED-BEAM INTERFEROMETRY IS THE LOCAL, IN-HOUSE ANCESTOR OF "DARK-FIELD HOLOGRAPHY WITH A BIPRISM" and is distinct from Hytch's DFEH (which interferes one diffracted beam with a diffracted vacuum-side reference).}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/P43.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.3 (DOI and PMID 35753170 from the search index). Affiliation MENG/CAMTEC, University of Victoria. Abstract-level content: an electron biprism interferes TWO SYMMETRICALLY DIFFRACTED BEAMS generated by an Au crystal substrate, which carry the phase of an amorphous overlayer; Bragg diffraction from the substrate explains the strong phase contrast. DIFFRACTED-BEAM INTERFEROMETRY IS THE LOCAL, IN-HOUSE ANCESTOR OF "DARK-FIELD HOLOGRAPHY WITH A BIPRISM" and is distinct from Hytch's DFEH (which interferes one diffracted beam with a diffracted vacuum-side reference).}
 }
 
 @article{P44,
@@ -899,64 +957,70 @@
   journal = {Microscopy},
   volume  = {70},
   number  = {3},
+  pages   = {297--301},
   year    = {2021},
-  note    = {evidence: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 6.3 (one search-index citation string). NO DOI FIELD -- none appears in either source document. NO COMPLETE pages FIELD: B\_literature.md gives the first page as 297 and marks the end page as not obtained; supply it only after checking. Abstract-level content: interference of two symmetrically diffracted beams on the optic axis via a biprism, each carrying half the phase of the dislocation core, recombining to give the full core phase shift.}
+  doi     = {10.1093/jmicro/dfaa066},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P44.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 6.3 (one search-index citation string). B3: DOI and pages 297-301 copied from the Crossref record accepted on the five-field rule (published online 2020-12-02, print 2021-06-06; the bib year is the print year). Crossref gives the author as "Rodney Herring". Abstract-level content: interference of two symmetrically diffracted beams on the optic axis via a biprism, each carrying half the phase of the dislocation core, recombining to give the full core phase shift.}
 }
 
 %% --- 4g. Modern step-phase holography and fast reflection solvers -----
 
 @article{P51,
-  author  = {Subakti and Daqiqshirazi, M. and Wolf, D. and Linck, M. and Kern, F. and Jain, M. and Kretschmer, S. and Krasheninnikov, A. V. and Brumme, T. and Lubk, A.},
-  title   = {Electron holographic mapping of structural and electronic reconstruction at mono- and bilayer steps of h-BN},
-  journal = {Physical Review Research},
-  volume  = {5},
-  pages   = {033137},
-  year    = {2023},
-  eprint  = {2210.04027},
+  author        = {Subakti and Daqiqshirazi, M. and Wolf, D. and Linck, M. and Kern, F. and Jain, M. and Kretschmer, S. and Krasheninnikov, A. V. and Brumme, T. and Lubk, A.},
+  title         = {Electron holographic mapping of structural reconstruction at mono- and bilayer steps of {h-BN}},
+  journal       = {Physical Review Research},
+  volume        = {5},
+  number        = {3},
+  pages         = {033137},
+  year          = {2023},
+  doi           = {10.1103/physrevresearch.5.033137},
+  url           = {https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.033137},
+  eprint        = {2210.04027},
   archivePrefix = {arXiv},
-  url     = {https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.033137},
-  note    = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.4 (citation string and arXiv id from the search index); this pass additionally saw the APS publisher URL above with the article title while searching for [P01]. NO DOI FIELD: no DOI is stated in either source document, so none is asserted here -- note that the publisher URL itself embeds the article identifier, and a DOI should be read off the APS record rather than reconstructed. AUTHOR NAMES CAUTION: the first author is given in the source only as "Subakti" (mononym as printed) and given names were not obtained for most co-authors -- check the byline before submission. Abstract-level content: medium- and high-resolution AUTOCORRECTED OFF-AXIS HOLOGRAPHY probes the electrostatic potential and in/out-of-plane charge delocalisation at edges and STEPS in multilayer h-BN, combined with ab-initio calculations. Transmission, but the closest modern "holographic phase of an atomic step".}
+  note          = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/P51.json, plus the arXiv API record; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.4 (citation string and arXiv id from the search index); this pass additionally saw the APS publisher URL above with the article title while searching for [P01]. B3: DOI and issue 3 copied from the Crossref record accepted on the five-field rule (article number 033137, published 2023-08-28). TITLE CORRECTED IN B3 to the published form "... mapping of structural reconstruction ..." (transcribed from the record, whose h-BN is MathML); the arXiv preprint 2210.04027 is titled "Electron Holographic Mapping of Structural and Electronic Reconstruction at Mono- and Bilayer Steps of h-BN", which is where the old title came from. B3: the Crossref byline confirms all ten authors in this order; the first author is a mononym, which the record repeats as given and family name ("Subakti Subakti"). Abstract-level content: medium- and high-resolution AUTOCORRECTED OFF-AXIS HOLOGRAPHY probes the electrostatic potential and in/out-of-plane charge delocalisation at edges and STEPS in multilayer h-BN, combined with ab-initio calculations. Transmission, but the closest modern "holographic phase of an atomic step".}
 }
 
 @misc{P49,
-  author       = {Kudo, S. and others},
-  title        = {A fast and accurate computation method for reflective diffraction simulations},
-  year         = {2023},
-  eprint       = {2306.00271},
+  author        = {Kudo, Shuhei and Yamamoto, Yusaku and Hoshi, Takeo},
+  title         = {A fast and accurate computation method for reflective diffraction simulations},
+  year          = {2023},
+  eprint        = {2306.00271},
   archivePrefix = {arXiv},
-  howpublished = {arXiv preprint arXiv:2306.00271; a journal version in Computer Physics Communications (reported November 2023) carries ScienceDirect PII S0010465523003740},
-  note         = {evidence: METADATA\_VERIFIED(index) +ABSTRACT(index); TITLE OF THE JOURNAL VERSION UNVERIFIED; provenance: B\_literature.md section 6.5, which records the arXiv id and the PII from the search index. TITLE DISCREPANCY, UNRESOLVED: the preprint title is reported as "A fast and ACCURATE computation method for reflective diffraction simulations" while the journal version was reported as "A fast and EFFICIENT ..."; the preprint form is used here and the entry is @misc for that reason. NO DOI FIELD -- none appears in either source document. AUTHOR LIST INCOMPLETE ("S. Kudo et al."). Abstract-level content: reformulates the RHEED/TRHEPD BOUNDARY-VALUE PROBLEM AS AN INITIAL-VALUE MATRIX ODE, solved with high-order integrators (RK4, splitting methods) plus a generalised recursive-reflection technique; reported up to approximately 2000x speed-up at equal accuracy. Current state of the art for fast dynamical reflection solvers and the natural benchmark partner for a multislice reflection code.}
+  howpublished  = {arXiv preprint arXiv:2306.00271; a journal version in Computer Physics Communications (reported November 2023) carries ScienceDirect PII S0010465523003740},
+  note          = {evidence: METADATA\_VERIFIED (route: arXiv API record of 2306.00271, cached as docs/agent\_reports/crossref\_cache/P49.arxiv.xml; B3, 2026-09-22) -- preprint; label before B3: METADATA\_VERIFIED(index) +ABSTRACT(index); provenance: B\_literature.md section 6.5, which records the arXiv id and the PII from the search index. TITLE DISCREPANCY, UNRESOLVED: the preprint title is reported as "A fast and ACCURATE computation method for reflective diffraction simulations" while the journal version was reported as "A fast and EFFICIENT ..."; the preprint form is used here and the entry is @misc for that reason. NO DOI FIELD -- none appears in either source document. B3: AUTHOR LIST COMPLETED from the arXiv API record (Shuhei Kudo, Yusaku Yamamoto, Takeo Hoshi; submitted 2023-06-01; title as above). JOURNAL VERSION: a Crossref search returned a Computer Physics Communications record (volume 296, 2024) whose PII equals S0010465523003740 and whose title is "A fast and efficient computation method for reflective diffraction simulations"; it was NOT merged here because the five-field rule fails on the year (this entry's 2023 is the preprint's). Its DOI is in the B3 log only; cite the journal version after the orchestrator decides. Abstract-level content: reformulates the RHEED/TRHEPD BOUNDARY-VALUE PROBLEM AS AN INITIAL-VALUE MATRIX ODE, solved with high-order integrators (RK4, splitting methods) plus a generalised recursive-reflection technique; reported up to approximately 2000x speed-up at equal accuracy. Current state of the art for fast dynamical reflection solvers and the natural benchmark partner for a multislice reflection code.}
 }
 
 %% --- 4h. Software actually read (GitHub READMEs, SECTION_READ) --------
 
 @misc{SIMTRHEPD,
   title        = {sim-trhepd-rheed (STR): a Fortran program for TRHEPD/RHEED dynamical diffraction calculation},
-  howpublished = {\url{https://github.com/sim-trhepd-rheed/sim-trhepd-rheed} (GPL). README fetched and read in full at raw.githubusercontent.com},
   url          = {https://github.com/sim-trhepd-rheed/sim-trhepd-rheed},
-  note         = {evidence: SECTION\_READ (of the README only); provenance: B\_literature.md section 6.5 read this README verbatim -- one of only five documents read anywhere in this project. NO AUTHOR FIELD: the README gives no citation byline for the code itself; cite [SIMTRHEPD-CPC] (Hanada et al. 2022) as its paper. Implements ICHIMIYA'S SURFACE-PARALLEL MULTI-SLICE MANY-BEAM RHEED CALCULATION [P17]. Inputs: XYZ atomic positions plus a TRHEPD/RHEED configuration; outputs: diffraction intensities, rocking curves, scattering-potential files, Quantum ESPRESSO inputs. THE ONLY MATURE OPEN-SOURCE DYNAMICAL REFLECTION ENGINE LOCATED, and therefore the right external benchmark for a reflection forward model (B\_literature.md section 11.5).}
+  howpublished = {\url{https://github.com/sim-trhepd-rheed/sim-trhepd-rheed} (GPL). README fetched and read in full at raw.githubusercontent.com},
+  note         = {evidence: SECTION\_READ (of the README only, B\_literature.md) + METADATA\_VERIFIED (route: README re-fetched at raw.githubusercontent.com, HTTP 200; B3, 2026-09-22); label before B3: SECTION\_READ (of the README only); provenance: B\_literature.md section 6.5 read this README verbatim -- one of only five documents read anywhere in this project. NO AUTHOR FIELD: the README gives no citation byline for the code itself (B3: it states that the software was written originally by Takashi Hanada and is maintained by Takeo Hoshi); cite [SIMTRHEPD-CPC] (Hanada et al. 2022) as its paper. Implements ICHIMIYA'S SURFACE-PARALLEL MULTI-SLICE MANY-BEAM RHEED CALCULATION [P17]. Inputs: XYZ atomic positions plus a TRHEPD/RHEED configuration; outputs: diffraction intensities, rocking curves, scattering-potential files, Quantum ESPRESSO inputs. THE ONLY MATURE OPEN-SOURCE DYNAMICAL REFLECTION ENGINE LOCATED, and therefore the right external benchmark for a reflection forward model (B\_literature.md section 11.5).}
 }
 
 @article{SIMTRHEPD-CPC,
   author  = {Hanada, T. and Motoyama, Y. and Yoshimi, K. and Hoshi, T.},
-  title   = {Comput. Phys. Commun. 277, 108371 (2022) -- reference [1] of the sim-trhepd-rheed README},
+  title   = {sim-trhepd-rheed -- Open-source simulator of total-reflection high-energy positron diffraction (TRHEPD) and reflection high-energy electron diffraction (RHEED)},
   journal = {Computer Physics Communications},
   volume  = {277},
   pages   = {108371},
   year    = {2022},
   doi     = {10.1016/j.cpc.2022.108371},
   url     = {https://doi.org/10.1016/j.cpc.2022.108371},
-  note    = {evidence: SECTION\_READ (of the citing README); provenance: this citation string, INCLUDING THE DOI, was READ VERBATIM in the sim-trhepd-rheed README at raw.githubusercontent.com (B\_literature.md section 6.5 and section 0, which lists this as one of only four DOIs read in a file rather than surfaced by a search index). TITLE FIELD IS A PLACEHOLDER, NOT THE ARTICLE TITLE: the README printed the citation as authors/journal/volume/pages/year/DOI only and the article title was never obtained. SUPPLY THE REAL TITLE BEFORE CITING. The README's reference list also gives "108371/1-10" as the page form.}
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/SIMTRHEPD-CPC.json; B3, 2026-09-22) + SECTION\_READ (of the citing README); label before B3: SECTION\_READ (of the citing README); provenance: this citation string, INCLUDING THE DOI, was READ VERBATIM in the sim-trhepd-rheed README at raw.githubusercontent.com (B\_literature.md section 6.5 and section 0, which lists this as one of only four DOIs read in a file rather than surfaced by a search index). B3: TITLE REPLACED by the article title from the Crossref record (the old title field was a placeholder); authors, journal, volume 277, article number 108371 and year 2022 (published-print 2022-08) match. The README's reference list also gives "108371/1-10" as the page form.}
 }
 
 @article{HANADA95,
   author  = {Hanada, T. and Daimon, H. and Ino, S.},
+  title   = {Rocking-curve analysis of reflection high-energy electron diffraction from the {Si(111)-($\sqrt{3}\times\sqrt{3}$)$R30^\circ$-Al}, -{Ga}, and -{In} surfaces},
   journal = {Physical Review B},
-  title   = {Phys. Rev. B 51, 13320 (1995) -- reference [2] of the sim-trhepd-rheed README},
   volume  = {51},
+  number  = {19},
   pages   = {13320--13325},
   year    = {1995},
-  note    = {evidence: SECTION\_READ (of the citing README); provenance: read verbatim as reference [2] of the sim-trhepd-rheed README (B\_literature.md section 6.5). TITLE FIELD IS A PLACEHOLDER: the README printed no article title and none was obtained. NO DOI FIELD -- the README gave none. SUPPLY TITLE AND DOI BEFORE CITING.}
+  doi     = {10.1103/physrevb.51.13320},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the first page standing in for the placeholder title, cached as docs/agent\_reports/crossref\_cache/HANADA95.json; B3, 2026-09-22) + SECTION\_READ (of the citing README); label before B3: SECTION\_READ (of the citing README); provenance: read verbatim as reference [2] of the sim-trhepd-rheed README (B\_literature.md section 6.5). B3: TITLE (LaTeX transcription of the Crossref title) and DOI and issue 19 from the Crossref record; authors, journal, volume 51, pages 13320-13325 and year 1995 (published 1995-05-15) match the README citation.}
 }
 
 @article{ABTEM,
@@ -968,24 +1032,26 @@
   year    = {2021},
   doi     = {10.12688/openreseurope.13015.2},
   url     = {https://doi.org/10.12688/openreseurope.13015.2},
-  note    = {evidence: SECTION\_READ (of the citing README); provenance: this is the citation the abTEM GitHub README requests, read verbatim there (B\_literature.md sections 0 and 6.5). RELEVANCE IS NEGATIVE AND IMPORTANT: the abTEM README CONTAINS NO MENTION OF REFLECTION, RHEED, GRAZING INCIDENCE OR SURFACE REFLECTION GEOMETRY -- transmission multislice/PRISM only. Cite it only as the package Prismatic's own README now points users to, not as a reflection capability.}
+  note    = {evidence: SECTION\_READ (of the citing README) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ABTEM.json; B3, 2026-09-22); label before B3: SECTION\_READ (of the citing README); provenance: this is the citation the abTEM GitHub README requests, read verbatim there (B\_literature.md sections 0 and 6.5). RELEVANCE IS NEGATIVE AND IMPORTANT: the abTEM README CONTAINS NO MENTION OF REFLECTION, RHEED, GRAZING INCIDENCE OR SURFACE REFLECTION GEOMETRY -- transmission multislice/PRISM only. Cite it only as the package Prismatic's own README now points users to, not as a reflection capability.}
 }
 
 @misc{RHEEDIUM,
   author       = {Mukherjee, Debangshu},
-  title        = {Rheedium},
+  title        = {{dxm447/rheedium: Basic Unit Cell Operations}},
+  publisher    = {Zenodo},
   year         = {2025},
-  howpublished = {\url{https://github.com/debangshu-mukherjee/rheedium} (JAX). README fetched and read at raw.githubusercontent.com},
+  version      = {2025.01.24},
   doi          = {10.5281/zenodo.14757400},
   url          = {https://doi.org/10.5281/zenodo.14757400},
-  note         = {evidence: SECTION\_READ (of the README only); provenance: the README was read verbatim and cites itself in exactly this form, DOI included (B\_literature.md sections 0 and 6.5). Content: KINEMATIC diffraction as the primary forward model with OPTIONAL dynamical multislice; every numerical function pure, traceable and jit/grad/vmap-friendly; differentiable through Ewald construction, atomic form factors, Debye-Waller factors, CRYSTAL TRUNCATION RODS, finite-domain broadening, instrument effects and surface models; explicitly aimed at GRADIENT-BASED INVERSE PROBLEMS. CAUTION READ IN THE README ITSELF: a July-2026 internal "red-team audit" found and fixed approximately 60 physics/implementation defects, now guarded by rh.audit.run\_default\_invariants(). TREAT AS PRE-1.0 RESEARCH CODE -- a design reference, NOT a benchmark. The closest existing design reference for a differentiable reflection forward model.}
+  howpublished = {\url{https://github.com/debangshu-mukherjee/rheedium} (JAX). README fetched and read at raw.githubusercontent.com},
+  note         = {evidence: SECTION\_READ (of the README only, B\_literature.md) + METADATA\_VERIFIED (route: DataCite record of the doi field -- Crossref /works returns 404 because the registration agency is DataCite -- cached as docs/agent\_reports/crossref\_cache/RHEEDIUM.datacite.json; B3, 2026-09-22); label before B3: SECTION\_READ (of the README only); provenance: the README was read verbatim and cites itself with this DOI (B\_literature.md sections 0 and 6.5). B3: the DataCite record of the DOI gives creator Debangshu Mukherjee, title "dxm447/rheedium: Basic Unit Cell Operations", publisher Zenodo, year 2025, version 2025.01.24, and relates it to https://github.com/dxm447/rheedium (tag 2025.01.24) -- a different GitHub account from the one in howpublished; the DOI is a version DOI of an early release, not of the README the project read. Title, version and publisher were set from that record. Content: KINEMATIC diffraction as the primary forward model with OPTIONAL dynamical multislice; every numerical function pure, traceable and jit/grad/vmap-friendly; differentiable through Ewald construction, atomic form factors, Debye-Waller factors, CRYSTAL TRUNCATION RODS, finite-domain broadening, instrument effects and surface models; explicitly aimed at GRADIENT-BASED INVERSE PROBLEMS. CAUTION READ IN THE README ITSELF: a July-2026 internal "red-team audit" found and fixed approximately 60 physics/implementation defects, now guarded by rh.audit.run\_default\_invariants(). TREAT AS PRE-1.0 RESEARCH CODE -- a design reference, NOT a benchmark. The closest existing design reference for a differentiable reflection forward model.}
 }
 
 @misc{PYMULTISLICE,
   title        = {py\_multislice},
-  howpublished = {\url{https://github.com/HamishGBrown/py_multislice} (PyTorch/GPU). README fetched and read at raw.githubusercontent.com},
   url          = {https://github.com/HamishGBrown/py_multislice},
-  note         = {evidence: SECTION\_READ (of the README only); provenance: B\_literature.md section 6.5 read this README. NO AUTHOR OR YEAR FIELD -- the README supplied no citation byline and none was obtained; the GitHub account name is HamishGBrown but that is not a verified personal citation form. RELEVANCE IS NEGATIVE: the README makes NO MENTION OF REFLECTION, RHEED OR GRAZING INCIDENCE -- transmission only (STEM-EELS, PRISM).}
+  howpublished = {\url{https://github.com/HamishGBrown/py_multislice} (PyTorch/GPU). README fetched and read at raw.githubusercontent.com},
+  note         = {evidence: SECTION\_READ (of the README only, B\_literature.md) + METADATA\_VERIFIED (route: README re-fetched at raw.githubusercontent.com, HTTP 200; B3, 2026-09-22); label before B3: SECTION\_READ (of the README only); provenance: B\_literature.md section 6.5 read this README. NO AUTHOR OR YEAR FIELD -- the README supplied no citation byline and none was obtained; the GitHub account name is HamishGBrown but that is not a verified personal citation form. RELEVANCE IS NEGATIVE: the README makes NO MENTION OF REFLECTION, RHEED OR GRAZING INCIDENCE -- transmission only (STEM-EELS, PRISM).}
 }
 
 %% --- 4i. Remainder of the public Blackburn record ---------------------
@@ -997,9 +1063,136 @@
   volume  = {136},
   pages   = {127--143},
   year    = {2014},
-  note    = {evidence: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 6.3 lists it from a single search-index citation string, "for completeness of the public Blackburn record". NO DOI FIELD -- none appears in either source document. Not central to the paper's argument; included so the supervisor's public record is complete. NOT AN INSTRUCTION-FILE ID -- non-ID cite key.}
+  doi     = {10.1016/j.ultramic.2013.08.009},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search and accepted on the five-field rule, cached as docs/agent\_reports/crossref\_cache/BLACKBURN14.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); provenance: B\_literature.md section 6.3 lists it from a single search-index citation string, "for completeness of the public Blackburn record". B3: DOI copied from the Crossref record accepted on the five-field rule. Not central to the paper's argument; included so the supervisor's public record is complete. NOT AN INSTRUCTION-FILE ID -- non-ID cite key.}
 }
 
+
+%% --- 4j. Records moved from the UNVERIFIED section by the B3 Crossref pass ---
+
+
+@article{U01,
+  author  = {McCoy, J. M. and Maksym, P. A.},
+  title   = {Simulation of high-resolution REM images},
+  journal = {Surface Science},
+  volume  = {298},
+  number  = {2--3},
+  pages   = {468--472},
+  year    = {1993},
+  doi     = {10.1016/0039-6028(93)90062-o},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- the ScienceDirect PII 003960289390062O recorded in B2 equals the record's PII, standing in for the year and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U01.json; B3, 2026-09-22); label before B3: UNVERIFIED; provenance: requested by the caller of B2 as "McCoy \& Maksym Surface Science 1994"; B2 queries 16-18; B3 Crossref search. RESOLVED IN B3: authors J. M. McCoy and P. A. Maksym, "Simulation of high-resolution REM images", Surface Science 298(2-3), 468-472, published-print 1993-12. THE YEAR IS 1993 (not 1994 as the caller's brief said, nor 1997). The second McCoy/Maksym title seen by B2 in a Semantic Scholar slug ("... application to high-resolution imaging of the Si(001)2x1 surface") is a DIFFERENT item and is not this entry. LEADS FROM THE SAME CROSSREF SEARCH (not added to this file; the orchestrator decides): McCoy and Maksym, "Multiple scattering calculations of step contrast in REM images of the Si(001) surface", Surface Science 310(1-3), 217-225 (1994) -- probably the "1994" paper the caller's brief meant, and the one most directly on this project's Si(001) step observable; McCoy and Maksym, "Simulation of reflection electron microscopy images: application to high-resolution imaging of the Si(001)2 x 1 surface", Surface Science 297(2), 113-126 (1993) -- the Semantic Scholar slug item; DOIs in the B3 log. Relevance as B2 stated: REM image simulation of steps is close to this project's target observable; read before the forward model is fixed.}
+}
+
+@article{U02,
+  author  = {Beeby, J.L.},
+  title   = {Dynamical theory of RHEED from stepped surfaces},
+  journal = {Surface Science},
+  volume  = {298},
+  number  = {2--3},
+  pages   = {307--315},
+  year    = {1993},
+  doi     = {10.1016/0039-6028(93)90043-j},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- the ScienceDirect PII 003960289390043J recorded in B2 equals the record's PII, standing in for the author, year and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U02.json; B3, 2026-09-22); label before B3: UNVERIFIED; provenance: returned by B2 query 16 while searching for [U01]; B3 Crossref search. RESOLVED IN B3: single author J. L. Beeby, Surface Science 298(2-3), 307-315, published-print 1993-12 -- NOT McCoy and Maksym, with whom the search summariser had loosely associated it. Directly on topic (dynamical RHEED from STEPPED surfaces); read alongside [U01].}
+}
+
+@misc{U03,
+  author       = {Huang, Weijie},
+  title        = {Reflection-mode electron-beam inspection using ptychographic imaging},
+  year         = {2020},
+  url          = {https://patents.google.com/patent/US10755892B2/en},
+  howpublished = {US Patent 10,755,892 B2; application US 16/412,505 filed 15 May 2019, priority US provisional 62/675,645 of 23 May 2018; issued 25 August 2020; original assignee KLA Tencor Corp (current assignee KLA Corp). Record: \url{https://patents.google.com/patent/US10755892B2/en}},
+  note         = {evidence: METADATA\_VERIFIED (route: Google Patents record https://patents.google.com/patent/US10755892B2/en, HTTP 200; B3, 2026-09-22); DESCRIPTION NOT READ; label before B3: UNVERIFIED; provenance: B\_literature.md section 5.2 (search summariser only); B3 checked the patent record. THE POLICY ID OF THIS RECORD IS [PAT02] -- the cite key stays U03 so that keys do not change. RESOLVED IN B3: kind code B2; single inventor Weijie Huang; original assignee KLA Tencor Corp (a semiconductor-metrology company, as B\_literature.md guessed; current assignee KLA Corp); filed 2019-05-15, issued 2020-08-25; status Active. Abstract as displayed on the record (first sentence): "A particle-beam inspection system may include a reflective particle-beam imaging system providing an image of a selected portion of a sample and a diffraction pattern of the selected portion of the sample and a controller communicatively coupled to the reflective particle-beam imaging system." CONTEXT unchanged: this remains the only concrete reflection-mode electron ptychography item located, and that absence is a search failure, not evidence of absence.}
+}
+
+@article{U04,
+  author  = {Zhao, T. C. and Poon, H. C. and Tong, S. Y.},
+  title   = {Invariant-embedding {$R$}-matrix scheme for reflection high-energy electron diffraction},
+  journal = {Physical Review B},
+  volume  = {38},
+  number  = {2},
+  pages   = {1172--1182},
+  year    = {1988},
+  doi     = {10.1103/physrevb.38.1172},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the first page standing in for the placeholder title, cached as docs/agent\_reports/crossref\_cache/U04.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for the citation string; TITLE UNVERIFIED; provenance: B\_literature.md section 3.2, where the record carries the project ID [P29] -- THE CITE KEY STAYS U04 (keys are not changed); the policy ID is [P29]. B3: TITLE (transcribed from the Crossref record, whose R is italic), DOI, issue 2 and pages 1172-1182 from the Crossref record (published 1988-07-15). The title the summariser once offered ("Accurate Dynamical Theory of RHEED Rocking-curve Intensity Spectra") was WRONG. Abstract-level content: an INVARIANT-EMBEDDING R-MATRIX scheme for RHEED rocking curves; Ag(001); demonstrates the IMPORTANCE OF EVANESCENT BEAMS -- relevant to the boundary-condition and absorbing-layer design of a reflection multislice (B\_literature.md section 9.7).}
+}
+
+@proceedings{U05,
+  editor    = {Tonomura, A. and Allard, L. F. and Pozzi, G. and Joy, D. C. and Ono, Y. A.},
+  title     = {Electron Holography},
+  publisher = {Elsevier},
+  year      = {1995},
+  isbn      = {9780444820518},
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API chapter records of ISBN 9780444820518, cached as docs/agent\_reports/crossref\_cache/U05.isbn.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 1.8; B3 Crossref search and ISBN listing. RESOLVED IN B3: Crossref holds 38 chapter-level records (Preface to Author index) of the Elsevier volume "Electron Holography", 1995, ISBN 9780444820518 (copied from those records); its Preface is authored by Tonomura, Allard, Pozzi, Joy and Ono, in the editor order above. There is no book-level DOI, so no doi field. The last chapter is titled "The First International Workshop on Electron Holography - Concluding Remarks -"; the Knoxville venue and the 29-31 August 1994 dates are NOT in the record and remain unverified, so they were removed from the title field. See [U06]: the Crossref contents list of this volume contains NO chapter by Osakabe and none on reflection holography.}
+}
+
+@incollection{U07,
+  author    = {Herring, R. A. and Pozzi, G.},
+  editor    = {V{\"o}lkl, Edgar and Allard, Lawrence F. and Joy, David C.},
+  title     = {Electron Holography using Diffracted Electron Beams (DBH)},
+  booktitle = {Introduction to Electron Holography},
+  publisher = {Springer/Plenum},
+  pages     = {295--310},
+  year      = {1999},
+  doi       = {10.1007/978-1-4615-4817-1_13},
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API book-chapter record found by bibliographic search, accepted by identifier substitution -- the chapter record carries the ISBNs of the verified parent book [B09] and its exact title, standing in for the author the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U07.json; B3, 2026-09-22); label before B3: chapter TITLE and NUMBER METADATA\_VERIFIED(index); AUTHORS AND PAGES UNVERIFIED; provenance: B\_literature.md sections 1.8 and 7 (chapter 13 of [B09]); B3 Crossref search. RESOLVED IN B3: authors R. A. Herring and G. Pozzi, pages 295-310, Springer US 1999. NOTE FOR THE PROJECT: the dark-field / diffracted-beam holography chapter of the standard holography textbook is by R. A. Herring, the author of [P43] and [P44] (University of Victoria). The instruction file requires citing the responsible chapter authors; they are now established. [B09] still has no reflection-geometry chapter. Editor first name corrected from Ernst to Edgar V{\"o}lkl (Crossref record of [B09]).}
+}
+
+@article{U08,
+  author  = {Javon, E. and Lubk, A. and Cours, R. and Reboh, S. and Cherkashin, N. and Houdellier, F. and Gatel, C. and H{\"y}tch, M.J.},
+  title   = {Dynamical effects in strain measurements by dark-field electron holography},
+  journal = {Ultramicroscopy},
+  volume  = {147},
+  pages   = {70--85},
+  year    = {2014},
+  doi     = {10.1016/j.ultramic.2014.06.005},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- ScienceDirect PII S0304399114001211 recorded in B\_literature.md equals the record's PII, standing in for the authors and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U08.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4, "additional located but unverified" list; B3 Crossref search. RESOLVED IN B3: eight authors (Javon, Lubk, Cours, Reboh, Cherkashin, Houdellier, Gatel, H{\"y}tch), Ultramicroscopy 147, 70-85, published-print 2014-12. Relevance: dynamical effects on the DFEH geometric phase (companion to [P32]).}
+}
+
+@article{U09,
+  author  = {Denneulin, Thibaud and Houdellier, Florent and H{\"y}tch, Martin},
+  title   = {Differential phase-contrast dark-field electron holography for strain mapping},
+  journal = {Ultramicroscopy},
+  volume  = {160},
+  pages   = {98--109},
+  year    = {2016},
+  doi     = {10.1016/j.ultramic.2015.10.002},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- ScienceDirect PII S0304399115300413 recorded in B\_literature.md equals the record's PII, standing in for the authors and volume the entry lacked -- cached as docs/agent\_reports/crossref\_cache/U09.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4 and B2 query 11 (PubMed record PMID 26476802); B3 Crossref search. RESOLVED IN B3: authors Thibaud Denneulin, Florent Houdellier and Martin H{\"y}tch, Ultramicroscopy 160, 98-109, published-print 2016-01 (the PII's "15" is the acceptance year; the bib year 2016 is the print year).}
+}
+
+@article{U10,
+  author  = {Niermann, L. and Niermann, T. and Lehmann, M.},
+  title   = {Dynamical diffraction effects of inhomogeneous strain fields investigated by scanning convergent electron beam diffraction and dark field electron holography},
+  journal = {Ultramicroscopy},
+  volume  = {271},
+  pages   = {114122},
+  year    = {2025},
+  doi     = {10.1016/j.ultramic.2025.114122},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted by identifier substitution -- ScienceDirect PII S030439912500021X recorded in B\_literature.md equals the record's PII, standing in for the authors and volume the entry lacked; the title matched at similarity 0.89 because the old title abbreviated "scanning convergent electron beam diffraction" as "scanning CBED" -- cached as docs/agent\_reports/crossref\_cache/U10.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4 (PII and PMID 40068240); B3 Crossref search. RESOLVED IN B3: authors L. Niermann, T. Niermann and M. Lehmann, Ultramicroscopy 271, article 114122, published-print 2025-05; title replaced by the record's full form. Topically the most recent statement on dynamical effects in DFEH; B\_literature.md section 11.9 argues the DFEH geometric-phase machinery does NOT transfer to reflection.}
+}
+
+@misc{U12,
+  title        = {HoloDark for DigitalMicrograph},
+  howpublished = {Commercial reconstruction plug-in, HREM Research Inc.; vendor page \url{https://www.hremresearch.com/holodark/} seen in the search index in this pass},
+  note         = {evidence: METADATA\_VERIFIED for existence (route: vendor page https://www.hremresearch.com/holodark/, HTTP 200, titled "HoloDark for DigitalMicrograph -- HREM Research Inc."; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 4, plus the vendor URL returned by query 11 of B2. Software, not a bibliographic record: no author, version or year is established, and nothing about its algorithm was read. Listed because it is the standard commercial DFEH reconstruction route and a comparison point for the repository's own reconstruction.}
+}
+
+@article{U16,
+  author  = {Reidy, Kate and Varnavides, Georgios and Thomsen, Joachim Dahl and Blackburn, Arthur and Pham, Thang and Kumar, Abinash and LeBeau, James and Ross, Frances},
+  title   = {Forbidden reflection moir{\'e} patterns in metal--2D material interfaces},
+  journal = {Microscopy and Microanalysis},
+  volume  = {26},
+  number  = {S2},
+  pages   = {860--863},
+  year    = {2020},
+  doi     = {10.1017/s1431927620016104},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search, accepted with the first page standing in for the first author the entry lacked -- journal, volume 26, pages 860-863 and year 2020 all match -- cached as docs/agent\_reports/crossref\_cache/U16.json; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 6.3 lists it "for completeness of the public Blackburn record"; B3 Crossref search. RESOLVED IN B3: eight authors (Reidy, Varnavides, Thomsen, Blackburn, Pham, Kumar, LeBeau, Ross), Microscopy and Microanalysis 26 supplement S2, pages 860-863, published online 2020-07-30. A. Blackburn is the fourth author, not the first.}
+}
+
+@misc{U17,
+  title        = {PyRHEED},
+  howpublished = {\url{https://github.com/yux1991/PyRHEED}},
+  note         = {evidence: METADATA\_VERIFIED for existence (route: README fetched at raw.githubusercontent.com/yux1991/PyRHEED/master/README.md, HTTP 200; B3, 2026-09-22); label before B3: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5; B3 fetched the README for its title and one-line description only ("This project is used for reflection high energy electron diffraction (RHEED) data analysis and theoretical simulation"); this is not a reading of the code. Title set to the README heading "PyRHEED" (the old subtitle was descriptive, not the project's). No author, version, licence or citation form established. Python; described as analysis plus simulation.}
+}
 
 %% =====================================================================
 %% PART 5
@@ -1013,145 +1206,54 @@
 %% Fields that could not be established are ABSENT rather than guessed.
 %% =====================================================================
 
-@misc{U01,
-  author       = {McCoy, J. M. and Maksym, P. A.},
-  title        = {Simulation of high-resolution REM images (title as displayed in the search index)},
-  journal      = {Surface Science},
-  howpublished = {Search index showed: \url{https://www.sciencedirect.com/science/article/abs/pii/003960289390062O} titled "Simulation of high-resolution REM images"; \url{https://www.semanticscholar.org/paper/Simulation-of-reflection-electron-microscopy-to-of-McCoy-Maksym/e3ceb3ebcf994d4234b2e87a1df7c88192646c0e}, whose slug carries "McCoy-Maksym" and whose displayed title is "application to high-resolution imaging of the Si(001)2 x 1 surface"},
-  note         = {evidence: UNVERIFIED; provenance: THREE dedicated queries in this pass (logged as queries 16-18 in B2\_bib\_verification\_log.md); this record appears in NEITHER source document and was requested by the caller as "McCoy \& Maksym Surface Science 1994". NO year, volume OR pages FIELD -- THE YEAR IS CONTRADICTORY ACROSS THREE SOURCES: the caller's brief says 1994, the ScienceDirect PII string 0039-6028(93)90062-O carries 93 in its year field, and a summariser answer in this pass said 1997. Authorship rests on a Semantic Scholar URL SLUG plus summariser prose; no author line was ever displayed. TWO DISTINCT McCoy/Maksym-attributed titles exist in the index and it is not established whether they are one paper or two. SCIENTIFICALLY THIS IS THE MOST IMPORTANT UNVERIFIED RECORD IN THE FILE -- dynamical RHEED plus REM imaging theory applied to MONOLAYER AND BILAYER STEPS ON BULK-TERMINATED Si(001) is very close to this project's target observable. RESOLVE IT FIRST when network access returns.}
-}
-
-@misc{U02,
-  title        = {Dynamical theory of RHEED from stepped surfaces},
-  journal      = {Surface Science},
-  howpublished = {Search index showed \url{https://www.sciencedirect.com/science/article/abs/pii/003960289390043J} with this title and NO author attribution},
-  note         = {evidence: UNVERIFIED; provenance: returned by query 16 of this pass while searching for [U01]. NO author, year, volume OR pages FIELD -- none was displayed. The summariser associated it loosely with the McCoy/Maksym work but did not attribute it. Directly on topic (dynamical RHEED from STEPPED surfaces); check it alongside [U01].}
-}
-
-@misc{U03,
-  title        = {Reflection-mode electron-beam inspection using ptychographic imaging},
-  howpublished = {United States Patent reported as US 10,755,892 (kind code not established)},
-  note         = {evidence: UNVERIFIED; provenance: B\_literature.md section 5.2 records it from the search summariser only. THE POLICY ID OF THIS RECORD IS [PAT02] -- the cite key is U03 only because the entry sits in the UNVERIFIED section. NO author/inventor, assignee OR year FIELD: B\_literature.md states explicitly that assignee and inventors were NOT obtained and warns "most likely a semiconductor-metrology company; do not state one without checking". Summariser-level abstract: "systems and methods for ptychographic imaging using particle beams for efficient high-resolution inspection in a reflection-mode configuration suitable for inspection of semiconductor devices ... reflective ptychographic imaging generates high-resolution output images by transforming diffraction-plane images using phase information from sample-plane images". CONTEXT: this is the ONLY concrete reflection-mode electron ptychography item located anywhere; six differently-phrased queries found no peer-reviewed electron reflection-mode ptychography or grazing-incidence 4D-STEM paper. That absence is a SEARCH FAILURE, not evidence of absence -- the citation-graph services were blocked.}
-}
-
-@misc{U04,
-  author       = {Zhao, T. C. and Poon, H. C. and Tong, S. Y.},
-  journal      = {Physical Review B},
-  volume       = {38},
-  pages        = {1172},
-  year         = {1988},
-  title        = {TITLE NOT ESTABLISHED},
-  howpublished = {B\_literature.md section 3.2 [P29]: the summariser offered "Accurate Dynamical Theory of RHEED Rocking-curve Intensity Spectra", which B\_literature.md could not corroborate},
-  note         = {evidence: METADATA\_VERIFIED(index, single) for the citation string; TITLE UNVERIFIED; provenance: B\_literature.md section 3.2, where the record carries the project ID [P29] -- THE CITE KEY IS U04 ONLY BECAUSE THE ENTRY SITS IN THE UNVERIFIED SECTION; the policy ID is [P29]. The title field above is a deliberate placeholder and MUST NOT be typeset. NO DOI FIELD. Abstract-level content: an INVARIANT-EMBEDDING R-MATRIX scheme for RHEED rocking curves; Ag(001); demonstrates the IMPORTANCE OF EVANESCENT BEAMS -- relevant to the boundary-condition and absorbing-layer design of a reflection multislice (B\_literature.md section 9.7).}
-}
-
-@proceedings{U05,
-  title        = {Electron Holography (proceedings of the International Workshop on Electron Holography, Knoxville TN, 29--31 August 1994)},
-  editor       = {Tonomura, A. and Allard, L. F. and Pozzi, G. and Joy, D. C. and Ono, Y. A.},
-  publisher    = {Elsevier},
-  year         = {1995},
-  note         = {evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 1.8, one search-index hit. NO DOI or ISBN FIELD -- none obtained. Editor initials and the exact title form were not confirmed against a publisher record. See [U06] for the reason this volume matters and why the reason is unverified.}
-}
-
 @misc{U06,
-  author       = {Osakabe, N.},
-  title        = {ALLEGED contribution on reflection electron holography in the 1995 Elsevier "Electron Holography" workshop proceedings [U05]},
-  year         = {1995},
-  note         = {evidence: UNVERIFIED -- DO NOT CITE; provenance: B\_literature.md section 1.8 records that the search summariser ASSERTED an Osakabe reflection-holography contribution in [U05], but the text it produced in support was actually the [P02] PRL abstract, so B\_literature.md treats the assertion as unverified. THERE IS NO EVIDENCE THAT THIS CHAPTER EXISTS. It is listed here only so that the claim is not silently rediscovered and believed later.}
-}
-
-@incollection{U07,
-  title        = {Electron Holography using Diffracted Electron Beams (DBH)},
-  booktitle    = {Introduction to Electron Holography},
-  editor       = {V{\"o}lkl, Ernst and Allard, Lawrence F. and Joy, David C.},
-  publisher    = {Springer/Plenum},
-  year         = {1999},
-  note         = {evidence: chapter TITLE and NUMBER METADATA\_VERIFIED(index) (it is chapter 13 of [B09], from the chapter-title list B\_literature.md section 7 obtained); AUTHORS AND PAGES UNVERIFIED; provenance: B\_literature.md sections 1.8 and 7, which state explicitly that chapter 13's authorship and page range could NOT be obtained. NO author, pages OR doi FIELD -- do not supply them. WHY IT MATTERS: [B09] contains NO reflection-geometry chapter and NO Osakabe chapter, and this is the volume's DARK-FIELD / DIFFRACTED-BEAM holography chapter, i.e. the closest thing in the standard holography textbook to this paper's method. The instruction file requires citing the responsible chapter authors, so this chapter CANNOT be cited until they are established.}
-}
-
-@misc{U08,
-  title        = {Dynamical effects in strain measurements by dark-field electron holography},
-  journal      = {Ultramicroscopy},
-  year         = {2014},
-  howpublished = {ScienceDirect PII S0304399114001211},
-  note         = {evidence: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4, "additional located but unverified" list. NO author, volume OR pages FIELD -- none obtained. NO DOI FIELD.}
-}
-
-@misc{U09,
-  title        = {Differential phase-contrast dark-field electron holography for strain mapping},
-  journal      = {Ultramicroscopy},
-  year         = {2016},
-  howpublished = {ScienceDirect PII S0304399115300413; PubMed record \url{https://pubmed.ncbi.nlm.nih.gov/26476802/} (PMID 26476802) seen in this pass with this exact title},
-  note         = {evidence: METADATA\_VERIFIED(index, single), strengthened only in that a PubMed record URL carrying the exact title was seen in this pass; AUTHORS UNVERIFIED; provenance: B\_literature.md section 4 plus query 11 of this pass. NO author, volume OR pages FIELD -- none was ever displayed. NO DOI FIELD. The year 2016 comes from B\_literature.md; the PII's year field reads 15. UNRESOLVED.}
-}
-
-@misc{U10,
-  title        = {Dynamical diffraction effects of inhomogeneous strain fields investigated by scanning CBED and dark-field electron holography},
-  journal      = {Ultramicroscopy},
-  year         = {2025},
-  howpublished = {ScienceDirect PII S030439912500021X; PMID 40068240},
-  note         = {evidence: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 4, "additional located but unverified" list. NO author, volume OR pages FIELD. NO DOI FIELD. Topically the most recent statement on dynamical effects in DFEH and worth resolving, since B\_literature.md section 11.9 argues the DFEH geometric-phase machinery does NOT transfer to reflection.}
+  author = {Osakabe, N.},
+  title  = {ALLEGED contribution on reflection electron holography in the 1995 Elsevier "Electron Holography" workshop proceedings [U05]},
+  year   = {1995},
+  note   = {evidence: UNVERIFIED -- DO NOT CITE (B3: contradicted by the Crossref contents list of [U05]); provenance: B\_literature.md section 1.8 records that the search summariser ASSERTED an Osakabe reflection-holography contribution in [U05], but the text it produced in support was actually the [P02] PRL abstract, so B\_literature.md treats the assertion as unverified. THERE IS NO EVIDENCE THAT THIS CHAPTER EXISTS, AND B3 FOUND EVIDENCE THAT IT DOES NOT: Crossref lists all 38 items of [U05] (ISBN 9780444820518, Preface to Author index, cached as docs/agent\_reports/crossref\_cache/U05.isbn.json) and none is by Osakabe or on reflection holography; an ISBN-filtered author query for Osakabe returned 0 items (U06.isbn-osakabe.json). It is listed here only so that the claim is not silently rediscovered and believed later.}
 }
 
 @misc{U11,
-  title        = {Four-wave dark-field electron holography for imaging strain fields},
-  note         = {evidence: METADATA\_VERIFIED(index, single); AUTHORS, JOURNAL, YEAR, VOLUME AND PAGES ALL UNVERIFIED; provenance: B\_literature.md section 4 lists the title alone. NOTHING but the title is established. NO DOI FIELD.}
-}
-
-@misc{U12,
-  title        = {HoloDark for DigitalMicrograph},
-  howpublished = {Commercial reconstruction plug-in, HREM Research Inc.; vendor page \url{https://www.hremresearch.com/holodark/} seen in the search index in this pass},
-  note         = {evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 4, plus the vendor URL returned by query 11 of this pass. Software, not a bibliographic record: no author, version or year is established, and nothing about its algorithm was read. Listed because it is the standard commercial DFEH reconstruction route and a comparison point for the repository's own reconstruction.}
+  title = {Four-wave dark-field electron holography for imaging strain fields},
+  note  = {evidence: METADATA\_VERIFIED(index, single); AUTHORS, JOURNAL, YEAR, VOLUME AND PAGES ALL UNVERIFIED; provenance: B\_literature.md section 4 lists the title alone. NOTHING but the title is established. NO DOI FIELD. B3: a Crossref search returned one record with this exact title (Journal of Physics D: Applied Physics 49, 2016, first author Denneulin); it was NOT accepted because the entry carries no author, journal, year or volume to match against the five-field rule. Candidate DOI in the B3 log only.}
 }
 
 @misc{U13,
-  author       = {Ishizuka, K.},
-  title        = {Inclined-illumination multislice formulation (exact title not established)},
-  year         = {1998},
-  note         = {evidence: METADATA\_VERIFIED(index, single); TITLE, JOURNAL, VOLUME AND PAGES UNVERIFIED; provenance: B\_literature.md section 9.7 cites "the inclined-illumination multislice literature, e.g. Ishizuka 1998" as index-single only. The title above is a PLACEHOLDER describing the topic, NOT a real title -- do not typeset it. NO DOI FIELD. RELEVANCE: a reflection multislice needs a tilted-illumination formulation because the beam is not along the slice normal (B\_literature.md section 9.7, item 5).}
+  author = {Ishizuka, K.},
+  title  = {Inclined-illumination multislice formulation (exact title not established)},
+  year   = {1998},
+  note   = {evidence: METADATA\_VERIFIED(index, single); TITLE, JOURNAL, VOLUME AND PAGES UNVERIFIED; provenance: B\_literature.md section 9.7 cites "the inclined-illumination multislice literature, e.g. Ishizuka 1998" as index-single only. The title above is a PLACEHOLDER describing the topic, NOT a real title -- do not typeset it. NO DOI FIELD. B3: two further Crossref queries found no 1998 Ishizuka multislice paper; they did return K. Ishizuka, "Multislice formula for inclined illumination", Acta Crystallographica A 38 (1982), and K. Ishizuka, "The treatment of inclined illumination on the multislice method", Acta Crystallographica A 37 (1981). Neither matches the year 1998 recorded here, so neither was accepted; both are leads in the B3 log. RELEVANCE: a reflection multislice needs a tilted-illumination formulation because the beam is not along the slice normal (B\_literature.md section 9.7, item 5).}
 }
 
 @misc{U14,
-  journal      = {Philosophical Magazine Letters},
-  volume       = {71},
-  number       = {1},
-  year         = {1995},
-  title        = {Inclined-illumination multislice paper, Phil. Mag. Lett. 71(1) 1995 (authors and title not established)},
-  note         = {evidence: METADATA\_VERIFIED(index, single) for the journal/volume/issue/year string only; AUTHORS, TITLE AND PAGES UNVERIFIED; provenance: B\_literature.md section 9.7. The title field is a PLACEHOLDER -- do not typeset it. NO DOI FIELD. Same relevance as [U13].}
+  title   = {Inclined-illumination multislice paper, Phil. Mag. Lett. 71(1) 1995 (authors and title not established)},
+  journal = {Philosophical Magazine Letters},
+  volume  = {71},
+  number  = {1},
+  year    = {1995},
+  note    = {evidence: METADATA\_VERIFIED(index, single) for the journal/volume/issue/year string only; AUTHORS, TITLE AND PAGES UNVERIFIED; provenance: B\_literature.md section 9.7. The title field is a PLACEHOLDER -- do not typeset it. NO DOI FIELD. Same relevance as [U13]. B3: a Crossref query for Phil. Mag. Lett. 71 (1995) returned "An improved multislice method for calculating high-energy electron diffraction and imaging" (first author Chen, January 1995); it was NOT accepted because the entry has no author or title to match. Lead in the B3 log only.}
 }
 
 @misc{U15,
-  title        = {Sub-{\aa}ngstr{\"o}m resolution ptychography in a scanning electron microscope at 20 keV},
-  journal      = {Nature Communications},
-  year         = {2025},
-  note         = {evidence: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 5.2. NO author, volume, article-number OR pages FIELD. NO DOI FIELD. Transmission-in-SEM; relevant ONLY as a low-energy ptychography precedent, not as reflection work.}
-}
-
-@misc{U16,
-  title        = {Forbidden reflection moir{\'e} patterns in metal--2D material interfaces},
-  journal      = {Microscopy and Microanalysis},
-  volume       = {26},
-  pages        = {860--863},
-  year         = {2020},
-  note         = {evidence: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 6.3 lists it "for completeness of the public Blackburn record" but gives NO author list. NO author FIELD and NO DOI FIELD -- establish the byline before attributing it to anyone.}
-}
-
-@misc{U17,
-  title        = {PyRHEED: RHEED analysis and simulation},
-  howpublished = {\url{https://github.com/yux1991/PyRHEED}},
-  note         = {evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5, "located (metadata only, not read)". THE README WAS NOT READ. No author, version, licence or citation form established. Python; described as analysis plus simulation.}
+  title   = {Sub-{\aa}ngstr{\"o}m resolution ptychography in a scanning electron microscope at 20 keV},
+  journal = {Nature Communications},
+  year    = {2025},
+  note    = {evidence: METADATA\_VERIFIED(index, single); AUTHORS UNVERIFIED; provenance: B\_literature.md section 5.2. NO author, volume, article-number OR pages FIELD. NO DOI FIELD. B3: a Crossref search returned one record with this exact title (Nature Communications 16, 2025, first author Blackburn); it was NOT accepted because the entry carries no author or volume, which the five-field rule requires. Candidate DOI in the B3 log only. Transmission-in-SEM; relevant ONLY as a low-energy ptychography precedent, not as reflection work.}
 }
 
 @misc{U18,
   title        = {rheed++: RHEED intensity oscillations during epitaxial growth},
   howpublished = {\url{https://github.com/ElsevierSoftwareX/SOFTX_2020_278} (C++)},
-  note         = {evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5, "located (metadata only, not read)". THE README WAS NOT READ and the accompanying SoftwareX paper was never located, so no author, year or DOI is established.}
+  note         = {evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5, "located (metadata only, not read)". THE README WAS NOT READ (B3: raw.githubusercontent.com returned 404 for README.md on main and master; github.com is blocked for this session). B3: a Crossref search returned a SoftwareX record, volume 12 (2020), first author Daniluk, titled "rheed++: A C++ framework to simulation of RHEED intensity oscillations during the ..."; it was NOT accepted because the title here is descriptive and the entry has no author, year or volume. Candidate DOI in the B3 log only; no author, year or DOI is established in this file.}
 }
 
 %% ===== END OF UNVERIFIED CANDIDATES =====
 %%
 %% CLOSING NOTE -- the route back to a citable bibliography, in order
-%% (from B_literature.md section 12, unchanged by this pass):
+%% (from B_literature.md section 12). B3 STATUS: step 6 is DONE (Crossref
+%% check, see the B3 log); step 8 is DONE ([U01] = McCoy and Maksym,
+%% Surface Science 298 (1993) 468-472, now in the verified section);
+%% steps 1-5 and 7 are reading tasks and remain open:
 %%   1. PMC7850541 -> read [P07] in full (free).
 %%   2. doi.org/10.1143/JJAP.27.L1772 -> [P01]: surface, energy, reflection,
 %%      glancing angle, reference wave, the phase equation AS WRITTEN,

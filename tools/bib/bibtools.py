@@ -183,7 +183,7 @@ def fold(s: str) -> str:
     s = s.replace("\u00f8", "o").replace("\u00df", "ss").replace("\u0142", "l").replace("\u00e6", "ae")
     s = re.sub(r"<[^>]+>", " ", s)          # JATS/MathML tags in Crossref titles
     s = s.casefold()
-    s = re.sub(r"[\u2010-\u2015\-/]", " ", s)
+    s = re.sub(r"[\u2010-\u2015\u2212\-/]", " ", s)
     s = re.sub(r"[^\w\s]", "", s)
     return re.sub(r"\s+", " ", s).strip()
 
