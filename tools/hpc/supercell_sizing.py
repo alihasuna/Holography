@@ -24,6 +24,8 @@ Modes
   --measure OUT.json      run the engine on flat Si(001) strips: build-up of the specular beam with
                           distance from first contact, depth profile, frozen-phonon fluctuation
                           ratio (about 1 h on 4 shared cores). Results are written after every run.
+                          Options: --only NAME ..., --backend numpy|cupy (cupy for the first GPU
+                          sanity run: compare bu_100_r010 with the stored CPU plateau), --threads N.
 
 Labels: every quantity carries one of METADATA_VERIFIED, SECTION_READ, REPRODUCED, PROJECT_INPUT,
 ASSUMPTION, DERIVED_HERE, UNVERIFIED, TEST_ONLY (stand-in used only for a test run), MEASURED_HERE
@@ -157,7 +159,8 @@ def theta_0008(V0) -> tuple[float, float]:
 # then tiled along z: exact for a flat terrace, which is periodic along the beam)
 # ================================================================================================
 def flat_strip(*, azimuth: str, r: float, L_after_contact_A: float, y_periods: int, clean_A: float,
-               u_rms_A=None, precision="complex64", threads=4, buildup_depth_A=20.0):
+               u_rms_A=None, precision="complex64", threads=4, buildup_depth_A=20.0,
+               backend="numpy"):
     V0 = kirkland_mip()
     th, th_int = theta_0008(V0)
     az = AZ[azimuth]
@@ -212,11 +215,11 @@ def flat_strip(*, azimuth: str, r: float, L_after_contact_A: float, y_periods: i
     nx = fft_friendly(int(np.ceil(cell.extent_x_A / MAX_PIXEL_A)))
     ny = fft_friendly(int(np.ceil(cell.extent_y_A / MAX_PIXEL_A)))
     params = MultisliceParams(energy_keV=E_KEV, nx=nx, ny=ny, dz_A=dz, propagator="exact",
-                              band_limit="2/3", backend="numpy", precision=precision,
+                              band_limit="2/3", backend=backend, precision=precision,
                               threads=threads,
                               absorber=NumericalAbsorber(strength_V=ABSORBER_V, profile="sin2"),
                               theta_out_ext_rad=th, buildup_depth_A=buildup_depth_A)
-    info = dict(azimuth=azimuth, absorption_ratio=r, absorption_label=lab,
+    info = dict(azimuth=azimuth, absorption_ratio=r, absorption_label=lab, backend=backend,
                 L_after_contact_A=L_after_contact_A, y_periods=y_periods, clean_depth_A=clean_A,
                 bulk_absorber_A=BULK_ABSORBER_A, top_absorber_A=TOP_ABSORBER_A,
                 absorber_V=ABSORBER_V, depth_below_A=depth, substrate_layers=sub, periods=periods,
@@ -407,7 +410,7 @@ MEASUREMENTS = [
 ]
 
 
-def measure(out: Path, only=None):
+def measure(out: Path, only=None, backend="numpy", threads=4):
     data = dict(schema="H2/measurements/1", created_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ",
                                                                        time.gmtime()),
                 git=git_state(), nproc=os.cpu_count(), loadavg_start=loadavg(),
@@ -423,7 +426,7 @@ def measure(out: Path, only=None):
         if name in data["runs"]:
             print(f"[measure] {name}: already in {out}, skipped", flush=True)
             continue
-        spec = dict(spec)
+        spec = dict(spec, backend=backend, threads=threads)
         kind = spec.pop("kind")
         res = run_buildup(name, **spec) if kind == "buildup" else run_phonons(name, **spec)
         data["runs"][name] = res
@@ -493,6 +496,10 @@ def main(argv=None):
     ap.add_argument("--calibrate", type=Path, default=None)
     ap.add_argument("--measure", type=Path, default=None)
     ap.add_argument("--only", nargs="*", default=None)
+    ap.add_argument("--backend", choices=("numpy", "cupy"), default="numpy",
+                    help="measure mode only; cupy for the first GPU sanity run (compare "
+                         "bu_100_r010 with the stored CPU plateau)")
+    ap.add_argument("--threads", type=int, default=4, help="measure mode only (FFT workers)")
     ap.add_argument("--calibration-file", type=Path, default=DEFAULT_CAL)
     ap.add_argument("--measurement-file", type=Path, default=DEFAULT_MEAS)
     a = ap.parse_args(argv)
@@ -500,7 +507,7 @@ def main(argv=None):
         calibrate(a.calibrate)
         return 0
     if a.measure:
-        measure(a.measure, only=a.only)
+        measure(a.measure, only=a.only, backend=a.backend, threads=a.threads)
         return 0
     return report(a.calibration_file, a.measurement_file)
 
@@ -774,14 +781,12 @@ def report(cal_path: Path, meas_path: Path) -> int:
           " (k/K and cos(theta) factors)")
     # exact two-beam root at the Bragg condition: [K^2 - (q - G/2)^2][K^2 - (q + G/2)^2] = u^2
     kx = G / 2
-    coeffs = np.polynomial.polynomial.polyfromroots([])
     # expand (kx^2 - (q - G/2)^2)(kx^2 - (q + G/2)^2) - ug^2 in q
     p1 = np.poly1d([-1, G, kx ** 2 - G ** 2 / 4])            # kx^2 - (q - G/2)^2
     p2 = np.poly1d([-1, -G, kx ** 2 - G ** 2 / 4])           # kx^2 - (q + G/2)^2
     roots = (p1 * p2 - ug ** 2).roots
     im = np.max(np.abs(roots.imag))
     check("two_beam_exact_root", abs(im / b - 1) < 1e-3, f"exact |Im q| = {im:.6f} vs b = {b:.6f}")
-    del coeffs
     Delta = refraction_delta(E_KEV, V0)
     dthi = 2 * b / (K * np.cos(th_int))
     dthe = dthi * (1 + Delta) * np.sin(th_int) * np.cos(th_int) / (np.sin(th) * np.cos(th))
@@ -1385,7 +1390,7 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
               f"{min(S['cpu_loads']):.2f} to {max(S['cpu_loads']):.2f} on 4 cores; divided by "
               f"max(1, load/4): {min(S['cpu_ratios_norm']):.2f} to "
               f"{max(S['cpu_ratios_norm']):.2f}. The x1.5 factor of run_study.py (used in every CPU "
-              f"time below) sits at the low end of that range")
+              f"time below) lies inside that range")
     return report_part4(S, cc, t_start)
 
 
@@ -1469,10 +1474,12 @@ def report_part4(S, cc, t_start) -> int:
               f"periods; contact {lay['z_contact']:.0f} + run-in {lay['L_run']:.0f} + field "
               f"{lay['z_fov']:.0f} + exit {lay['L_exit']:.0f})")
         vac_phys = max(GAP_A + lay["H"], lay["Lz"] * tan_e) + EDGE_A
+        ext_phys = lay["ext_x"] - (float(np.ceil(lay["H"] + lay["Lz"] * tan_e + 1.0)) - vac_phys)
         print(f"    vacuum: engine rule (item 2) H + L_z tan(theta) -> {lay['vac']:.0f} A; physical "
               f"need max(gap + H, L_z tan(theta)) + edge = {vac_phys:.0f} A (DERIVED_HERE: incident "
               f"sheet at the entrance, reflected sheet at the exit plane; diffraction spread not "
-              f"included)")
+              f"included); extent_x would be {ext_phys:.0f} A instead of {lay['ext_x']:.0f} A "
+              f"({100 * (ext_phys / lay['ext_x'] - 1):+.0f} %)")
         print(f"    atoms {lay['n_atoms']:,}; grid {lay['nx']} x {lay['ny']} "
               f"(dx {lay['ext_x'] / lay['nx']:.4f}, dy {lay['Ly'] / lay['ny']:.4f} A); slices "
               f"{lay['N']} (non-empty {lay['nonempty']}, atoms per slice max {lay['n_max']}, mean "
@@ -1526,6 +1533,11 @@ def report_part4(S, cc, t_start) -> int:
             f"run-in {d00['L_run']:.0f} A from the {d00['L_run_src']} (two-beam tail "
             f"{d00['L_tb']:.0f} A)")
     # --- (2b) edges transverse to the beam -------------------------------------------------------
+    t_min = (2 * B29_MARGIN_RES + N_MEAS_RES) * ds_res
+    print(f"steps transverse to the beam: each terrace >= {2 * B29_MARGIN_RES + N_MEAS_RES} "
+          f"resolution elements = {t_min:.0f} A along the beam; a vicinal surface gives that only for "
+          f"miscut <= {np.degrees(np.arctan(Q / t_min)):.4f} deg (a/4 steps) or "
+          f"{np.degrees(np.arctan(2 * Q / t_min)):.4f} deg (a/2 steps)")
     for sl, nm in ((2, "a2"), (1, "a4")):
         strip = sl * Q / tan_e
         z_fov = M + meas_len + M + strip + M + meas_len
