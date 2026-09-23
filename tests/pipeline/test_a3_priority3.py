@@ -3,6 +3,7 @@ docs/agent_reports/S4_pipeline_fixes.md). m2 (list-inputs shows the engine's V0)
 test_a3_priority2.py::test_list_inputs_marks_unused_inputs_and_shows_the_engine_v0.
 """
 import importlib
+import importlib.util
 import json
 import math
 import os
@@ -27,15 +28,9 @@ def _ms_ok():
     return ok
 
 
-def _cupy_usable():
-    f = getattr(ENG, "backend_status", None)
-    if f is not None:
-        return f("cupy")[0]
-    try:
-        import cupy  # noqa: F401
-        return True
-    except ImportError:
-        return False
+def _cupy_installed():
+    # find_spec does not import cupy: tests/forward asserts that cupy is imported lazily only
+    return importlib.util.find_spec("cupy") is not None
 
 
 # --------------------------------------------------------------------------------------------------
@@ -117,8 +112,8 @@ def test_smoke_summary_carries_the_sign_degeneracy_note(tmp_path):
 # --------------------------------------------------------------------------------------------------
 # m5: cupy is checked when a cupy variant is requested
 # --------------------------------------------------------------------------------------------------
-needs_no_cupy = pytest.mark.skipif(_cupy_usable() or not _ms_ok(),
-                                   reason="cupy is usable here (or the multislice engine is "
+needs_no_cupy = pytest.mark.skipif(_cupy_installed() or not _ms_ok(),
+                                   reason="cupy is installed here (or the multislice engine is "
                                           "unavailable): the refusal cannot be exercised")
 
 

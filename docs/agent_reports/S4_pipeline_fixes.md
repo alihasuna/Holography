@@ -1,6 +1,6 @@
 # S4: fixes of audit A3 (pipeline) and the A2c residuals G1-G3
 
-Status: IN PROGRESS, 2026-09-23. Agent S4. Written incrementally; nothing committed or pushed.
+Status: COMPLETE (priorities 1, 2 and 3), 2026-09-23. Agent S4. Written incrementally; nothing committed or pushed by S4 (the orchestrator snapshotted work in progress as 1154a3a, 0e57dc0, 8c70fc1).
 Branch `claude/electron-holography-orchestration-nakd7r`, HEAD `fdabd67` ("Fix the SLURM runner's
 random failure under pipefail", A3 M4 already fixed there).
 Scratch directory: `/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/`
@@ -324,3 +324,153 @@ no-step control: PASS {'performed': True, 'delta_rad': -0.0036868859167245027, '
 outputs in /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/s4_smoke_2: summary.json, manifest.json, arrays.npz quicklook_detector.png quicklook_exit_wave.png
 cli exit 0
 ```
+
+## Priority 3: COMPLETE (minors m1-m8; nits n2, n3; n1, n5, n6, n7 not done)
+
+* m1: `arrays.npz` stores `purpose` as a 0-d text array, indexed in `summary.json["arrays"]`. The
+  multislice engine's manifest now records the pipeline configuration path and file hash (`config`,
+  `inputs`) and `extra.caller`: purpose, run name, variant, test_only and config hashes.
+  `forward.multislice.simulate` gains a REQUIRED keyword `caller_record` (a mapping, or None stated
+  explicitly). The engine's own no-defaults contract test holds; its three other callers pass
+  `caller_record=None`.
+* m2: `list-inputs` shows item 20 as `sections.engine.multislice.potential_mip` 13.903 V, "USED",
+  for multislice runs, and the CFG-B V0 as "NOT USED on this path" (see (f)).
+* m3: the detector trace is computed before the references. The empty-object amplitude is the RMS
+  over LIT terrace-top pixels at or above half their maximum; the below-surface field of the
+  multislice exit plane no longer enters it. The summary records
+  `detector.object_amplitude_by_trace_status` (pixel count and mean |obj| per trace status). For
+  the geometric smoke run the value is unchanged (0.9978630959369624 before and after). No
+  real-space mask of the in-crystal field was added; the regions use lit pixels only, as before.
+* m4: `quantification.sign_degeneracy` lists, per n <= n_max, the wrapped separation of +n a/4
+  and -n a/4 against the single-step window, with a note. The CLI prints the note when a pair is
+  degenerate. At B32: n = 2 separation 0.0779 rad, degenerate for a single step. At B19: 0.846 rad,
+  not degenerate. Checked with the new rule: at B32, noise-free +a/2, -a/4, -a/4 (sigma_phi 0.003)
+  are "resolved", assignment [2, -1, -1], bound 1.55e-4; the a/2 step alone is "ambiguous". The A3
+  statement "the HPC demo can never return an a/2 height" therefore no longer holds when both a/4
+  steps are measured.
+* m5: `engines.backend_status` checks that cupy imports and sees at least one GPU. `require_engine`
+  runs at the start of `run()`, before any computation, and raises EngineUnavailableError (exit 4).
+  `dry-run` still runs every geometry check, reports `backend`, and exits 4 with "multislice backend
+  cupy NOT available" (it exited 0 before). SLURM: in submission mode `import cupy` failing is a
+  WARNING (login nodes often lack CUDA); in the job, cupy and a GPU are checked before the first
+  step (exit 4).
+* m6 (SLURM): the script path is made absolute, `REPO` is absolute, and `cd "$REPO"` happens before
+  the configuration check in both modes. In the job, `CPUS` falls back to `SLURM_CPUS_PER_TASK`
+  before 8. A failed dry-run is reported with its status and stops the job before the run.
+* m7 (`scripts/hpc/null_test_study/run_study.py`): the study YAML is read with `load_yaml_unique`
+  (duplicate keys refused). An existing result stops the point BEFORE any computation, and results
+  are written with exclusive creation. Every result and manifest records the purpose "engine null
+  test with TEST_ONLY stand-ins ... not a pipeline run" and `test_only: true`. The shipped
+  `study.yaml` loads (17 points).
+* m8: the CLI maps `OutsideB4ScopeError` to exit 3, a missing git state to 6, and backend or engine
+  unavailability to 4. `BrokenPipeError` ends the command quietly with status 0 (stdout redirected
+  to /dev/null), which also covers A3 M4's `| head` case.
+* n2: the stale docstrings in `optics/__init__.py` and `optics/detector.py` are updated. n3:
+  `arrays.npz` is written with exclusive creation. Not done: n1 (the dark-field angle
+  self-validation; the pipeline checks the angle in `engines.py`), n5 (the builder's boundary step in
+  the multislice summary strips), n6 (the HPC config cites B19 for the 0.1 mrad sigma; the value is
+  B19's, so the citation is correct), n7 (dry-run rebuilds the structure).
+* `scripts/hpc/README_HPC.md` (outside docs/) is updated with the new uncertainties (+-0.0165 and
+  +-0.0082 A), the height verdict, the git and cupy pre-flights, and the B32 sign note.
+
+### Regression tests: `tests/pipeline/test_a3_priority3.py` (13)
+
+m1 x2, m3, m4 x2, m5 x2 (skipped where cupy is installed), m6 x2 (SLURM with a fake sbatch), m7 x2,
+m8 x2 (the closed-pipe test closes the read end before the command writes, so it is
+deterministic). `tests/pipeline/test_pipeline_multislice.py::test_hpc_config_passes_the_gate_and_the_engine_geometry_checks`
+now expects exit 4 with the "NOT available" line where cupy is unusable, and 0 where it is usable,
+after the same geometry assertions (m5 reverses its old expectation of 0).
+
+Before (fdabd67 copy), `13 failed in 93.82s (0:01:33)`. Verbatim final lines
+(`$S/s4/p3_before_line.txt`; the m6 and m8 lines are truncated tracebacks of the old script and CLI):
+```
+$S/before/venv/lib/python3.11/site-packages/numpy/lib/_npyio_impl.py:243: KeyError: 'purpose is not a file in the archive'
+$S/before/tests/pipeline/test_a3_priority3.py:66: KeyError: 'caller'
+$S/before/tests/pipeline/test_a3_priority3.py:82: assert 0.09157143118256607 == 0.09475863770409504 ± 1.0e-12
+$S/before/tests/pipeline/test_a3_priority3.py:103: AttributeError: module 'reflection_holo.pipeline.run' has no attribute '_sign_degeneracy'
+$S/before/tests/pipeline/test_a3_priority3.py:114: KeyError: 'sign_degeneracy'
+$S/before/reflection_holo/forward/multislice/backend.py:65: ModuleNotFoundError: No module named 'cupy'
+$S/before/reflection_holo/forward/multislice/backend.py:65: ModuleNotFoundError: No module named 'cupy'
+$S/before/tests/pipeline/test_a3_priority3.py:163: AssertionError: ('', 'Traceback (most recent call last):
+$S/before/tests/pipeline/test_a3_priority3.py:175: AssertionError: (0, 'attice_constraint", "edge_margin_resolu...
+$S/before/scripts/hpc/null_test_study/run_study.py:89: SystemExit: runtime.backend is required
+$S/before/tests/pipeline/test_a3_priority3.py:212: AssertionError: computation started although the result exists
+$S/before/tests/pipeline/test_a3_priority3.py:226: reflection_holo.forward.geometric.model.OutsideB4ScopeError: TEST: a/4 step outside the B4 scope
+$S/before/tests/pipeline/test_a3_priority3.py:244: AssertionError: Traceback (most recent call last):
+13 failed in 93.82s (0:01:33)
+```
+After: 13 passed, plus the two multislice tests (`15 passed in 56.30s`).
+
+The first full-suite run after priority 3 gave `1 failed, 723 passed`:
+`FAILED tests/forward/test_engine_contract.py::test_no_defaults_anywhere - Ass...`
+(`AssertionError: <function simulate ...>`: my first `caller_record=None` DEFAULT broke the engine's
+no-defaults contract). Fixed by making the keyword required (above); the test was not changed. In the
+same pass, my m5 test's skip condition was changed so that it never imports cupy (`find_spec`).
+Otherwise it would import cupy at collection on a machine with cupy, and
+`test_cupy_is_lazy_and_not_a_fallback` there would fail.
+
+### Priority-3 checkpoint
+
+`venv/bin/pytest -q`: `724 passed, 12 warnings in 228.97s (0:03:48)`.
+
+Smoke CLI (`--out $S/s4_smoke_3`):
+```
+purpose: demo; not comparable to experiment
+engine: geometric model, no dynamical amplitude, B4 scope applies
+heights: 3 of 3 step heights returned (joint lattice branch resolved, chance-acceptance bound 0.000122 <= alpha 0.0027)
+step field terraces 0->1 (translation): h = +2.7156 +- 0.0165 A (branch -4, wrap period 0.7612 A)
+step field terraces 1->2 (screw): h = -1.3576 +- 0.0082 A (branch 2, wrap period 0.7612 A)
+step field terraces 2->0 (screw): h = -1.3580 +- 0.0082 A (branch 2, wrap period 0.7612 A)
+no-step control: PASS {'performed': True, 'delta_rad': -0.0036868859167245027, 'tolerance_rad': 0.012310012257320535, 'n_sigma': 3.0, 'se_correlated_rad': 0.004103337419106845, 'passed': True, 'n_a': 1960, 'n_b': 2016, 'controls_sigma_uncorrelated_rad': 0.0002516205842901576, 'field_terrace': 1}
+outputs in /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/s4_smoke_3: summary.json, manifest.json, arrays.npz quicklook_detector.png quicklook_exit_wave.png
+cli exit 0
+```
+
+Additional checks (fixed tree):
+* A simulated SLURM job (`SLURM_JOB_ID` set, smoke mode, fake account; output in `$S/s4/`) exits 0
+  with and without `PYTHONUNBUFFERED=1`; the output directory holds summary, manifest, arrays,
+  quicklooks and the dry-run text. The runner writes its `reflholo_<job>_dryrun.txt` into the
+  repository root; I deleted the two I produced.
+* `dry-run --config configs/demo_hpc_si001.yaml` (43.5 s): all geometry lines are printed, then
+  `multislice backend cupy NOT available: backend cupy requested but cupy is not installed in this
+  Python environment ...`, exit 4. `list-inputs` of the HPC config: gate PASS; item 20 lists
+  `cfg_b.mean_inner_potential_V` 12.0 "NOT USED on this path" and `potential_mip` 13.903 "USED".
+* HPC geometric variant (`--variant geometric_same_structure`, 12 s; B19 angle): +2.7151 +- 0.0165,
+  -1.3578 +- 0.0083, -1.3573 +- 0.0082 A; joint branch resolved, bound 1.40e-4; control PASS.
+* `tools/physics_checks/q2_carrier_trap.py`: 21/21 self-checks pass;
+  `tools/physics_checks/q3_r2_twin.py`: 7/7 pass.
+
+## What tonight's HPC run will do (not run here)
+
+With cupy on a GPU node the pre-flights pass. If the multislice no-step control fails, as in P1's
+second run (0.441 vs 0.290 rad), the first result line reads `NO HEIGHT: no-step control failed or
+not performed (failed: ...)`. If it passes, the joint chance bound for three steps at the B32 angle
+is 1.0 at sigma_phi = 0.29 rad per step, 0.23 at 0.1 rad and 0.017 at 0.03 rad. All three are
+above alpha = 2.7e-3, so the branch is "not significant" (or "ambiguous" or "inconsistent") and no
+height is returned. With three steps, heights appear only if the step phase uncertainties are
+below about 0.012 rad (bound 2.55e-3 at 0.012 rad, 4.0e-3 at 0.015 rad; the demo level is
+0.003 rad).
+
+## Documents to update (not edited: docs/ is outside my remit)
+
+* docs/model_assumptions.md B29: the branch rule is now the joint lattice constraint over the steps
+  of a run (n != 0, one common eps within 3 sigma_s/s, significance bound <= P(|Z| > 3)).
+  B19-B32: "a run with purpose comparison refuses stand-ins for blocking items" should read "refuses
+  every one of B19-B32 (registry demo_only)".
+* docs/model_assumptions.md B16 is unaffected (rocking series).
+* docs/05 9.1 "Open after the fixes (A2c)": G1, G2, G3 and the reference_correction="none" residual
+  are fixed here (the aliasing flag and the B16 noise-declaration items remain).
+* The P1 report quotes +- 0.0117 / 0.0058 A; the values with the common angle error are +- 0.0165 /
+  0.0082 A.
+
+## NOT RUN
+
+* The HPC multislice run itself (cupy on a GPU or cpu_numpy, 18.8 min on CPU per P1): there is no
+  GPU here. The m5 refusal was exercised only where cupy is absent; the cupy-present path of
+  `backend_status` (`getDeviceCount`) is NOT RUN.
+* A real `sbatch` submission (fake sbatch only); `setup_env.sh`.
+* `scripts/hpc/null_test_study/run_study.py` beyond the duplicate-key and no-overwrite checks (no
+  study point was computed).
+* `tools/phase1_numbers.py` and the calculator (not affected by these changes; not re-run).
+* Frozen-phonon ensembles through the pipeline; a comparison-purpose run end to end (only its gate
+  was tested).

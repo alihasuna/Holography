@@ -26,7 +26,8 @@ def test_smoke_atomistic_a2_step_0008(tmp_path):
     waves, mpath = simulate(S["cell"], potential=S["potential"], beam=S["beam"],
                             params=S["params"], realisations=1, seed=None,
                             outputs_root=tmp_path / "outputs", run_name="m2_smoke_a2_0008",
-                            save_waves=False, config=None, input_paths=[])
+                            save_waves=False, config=None, input_paths=[],
+                            caller_record=None)
     t_total = time.perf_counter() - t0
     ew = waves[0]
     lo, up = terrace_regions(S["cell"], 0.5)

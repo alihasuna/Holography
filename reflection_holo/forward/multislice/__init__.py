@@ -19,7 +19,8 @@ Typical use (every argument required; no default stands in for a PROJECT_INPUT):
                               theta_out_ext_rad=..., buildup_depth_A=...)
     waves, manifest = simulate(cell, potential=pot, beam=beam, params=params, realisations=1,
                                seed=None, outputs_root=".../outputs", run_name="...",
-                               save_waves=True, config=None, input_paths=[])
+                               save_waves=True, config=None, input_paths=[],
+                               caller_record=None)
 """
 from .analysis import (analytic_step_reflection, flat_reflection_coefficient,
                        geometric_step_phase, refracted_frequency, select_beam,

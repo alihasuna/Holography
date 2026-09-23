@@ -258,13 +258,14 @@ def _canonical_hash(obj) -> str:
 def simulate(cell: ReflectionCell, *, potential, beam: SheetBeam, params: MultisliceParams,
              realisations: int, seed: int | None, outputs_root, run_name: str,
              save_waves: bool, config, input_paths,
-             caller_record: dict | None = None) -> tuple[list[ExitWave], Path]:
+             caller_record: dict | None) -> tuple[list[ExitWave], Path]:
     """Production entry point: run ``realisations`` realisations and write the run manifest
     (reflection_holo.provenance.manifest) under outputs_root/manifests; with save_waves the exit
     waves are written as .npz (exitwave_io) under outputs_root/exit_waves and hashed into the
-    manifest. Every argument is required except ``caller_record``: a mapping recorded verbatim in
-    the manifest's extra.caller (e.g. the pipeline's purpose and configuration hashes, audit A3
-    m1); None is recorded as "no caller record". Returns (exit waves, manifest path)."""
+    manifest. Every argument is required; ``caller_record`` is a mapping recorded verbatim in the
+    manifest's extra.caller (e.g. the pipeline's purpose and configuration hashes, audit A3 m1), or
+    None, stated explicitly and recorded as "no caller record". Returns (exit waves, manifest
+    path)."""
     from reflection_holo.provenance.manifest import build_manifest, write_manifest
 
     from .exitwave_io import save_exit_wave

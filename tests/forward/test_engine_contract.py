@@ -96,7 +96,8 @@ def test_simulate_writes_manifest(tmp_path):
     out = tmp_path / "outputs"
     waves, mpath = simulate(cell, potential=pot, beam=beam, params=params, realisations=1,
                             seed=None, outputs_root=out, run_name="m2_manifest_test",
-                            save_waves=True, config=None, input_paths=[])
+                            save_waves=True, config=None, input_paths=[],
+                            caller_record=None)
     m = json.loads(mpath.read_text())
     for key in ("packages", "engines", "precision", "seeds", "threads", "inputs", "repository",
                 "wave_planes", "config"):
@@ -153,7 +154,8 @@ def test_frozen_phonon_realisations_and_seeds(phonon_case, tmp_path):
                         realisation=0, seed=5)
     waves, mpath = simulate(cell, potential=pot, beam=beam, params=params, realisations=2,
                             seed=20260922, outputs_root=tmp_path / "outputs",
-                            run_name="m2_phonons", save_waves=False, config=None, input_paths=[])
+                            run_name="m2_phonons", save_waves=False, config=None, input_paths=[],
+                            caller_record=None)
     a, b = waves
     assert (a.realisation, b.realisation, a.seed, b.seed) == (0, 1, 20260922, 20260922)
     assert not np.array_equal(a.psi, b.psi)

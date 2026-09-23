@@ -18,8 +18,10 @@ venv/bin/pytest -q                                     # optional: the test suit
 abTEM 1.0.10 (GPL-3.0-or-later) is an optional dependency, imported lazily by the multislice
 atomic potential for the Kirkland parameterisation (report D3); no abTEM code is copied.
 
-Without `.git` the manifest is refused; add `--allow-no-git` to `run` only if you accept a
-manifest that cannot identify the code (the failure is then recorded).
+Without `.git` the run is refused BEFORE any computation (exit status 6; the SLURM script refuses
+to submit, status 2). Add `--allow-no-git` to `run` (or export `RH_ALLOW_NO_GIT=1` for the SLURM
+script) only if you accept a manifest without a commit; the failure is then recorded together with
+a SHA-256 of the package source tree (audit A3 M5).
 
 ## 2. Check a configuration before submitting
 
@@ -30,12 +32,18 @@ venv/bin/python -m reflection_holo.pipeline dry-run --config configs/demo_hpc_si
 ```
 
 `list-inputs` prints every PROJECT_INPUT item (1 to 22) with its status (SUPPLIED by whom and when,
-ASSUMPTION stand-in, MISSING, NOT USED) and the run-level gate verdict. A run with a missing input
+from the structured fields `supplied_by`/`supplied_on`; ASSUMPTION stand-in; MISSING; NOT USED; and
+"..., NOT USED on this path" with the reason for an accepted input that the selected engine path
+does not use) and the run-level gate verdict. For the multislice engine item 20 shows the V0 the
+engine actually uses (13.903 V, `potential_mip`). A run with a missing input
 or an unregistered stand-in FAILS (exit status 3); nothing is defaulted. `dry-run` builds the
 structure and the reflection cell, runs every engine assertion (docs/05 4.3 items 1 to 4, band
 limits, mean-inner-potential consistency) without propagating, and prints memory and time
 estimates (GPU time from the engine's labelled ASSUMPTION model, not measured; CPU time measured
-on the node with `--calibrate-cpu`).
+on the node with `--calibrate-cpu`). For a cupy configuration it also checks that cupy imports and
+sees a GPU: without one the checks still run but the dry run exits 4 ("multislice backend cupy NOT
+available"), and a run is refused (exit 4) before computing. On a login node without CUDA this is
+expected; the job checks again on the GPU node before its first step.
 
 ## 3. Submit: smoke test first, then the full run
 
@@ -74,15 +82,26 @@ In the output directory:
 | `quicklook_*.png` | only if matplotlib is importable and `outputs.quicklooks` is true |
 | `outputs/manifests/`, `outputs/exit_waves/` | multislice only: the engine's own manifest and (if `save_exit_waves`) the exit waves |
 
-`python -m reflection_holo.pipeline run` prints the signed heights, e.g. for the smoke demo
-`h = +2.7156 +- 0.0117 A` (a/2 = 2.7155 A) and `h = -1.3576 +- 0.0058 A` (a/4 down-step).
+`python -m reflection_holo.pipeline run` prints a height verdict first, then the signed heights,
+e.g. for the smoke demo `h = +2.7156 +- 0.0165 A` (a/2 = 2.7155 A) and `h = -1.3576 +- 0.0082 A`
+(a/4 down-step). The uncertainties treat the incidence and exit angles of the specular beam as one
+calibration error (audit A3 M3; before, +- 0.0117 and 0.0058 A). Heights are returned only if
+(1) the no-step control PASSED (otherwise every height is withheld and the first line reads
+`NO HEIGHT: no-step control failed or not performed ...`), and (2) the joint lattice constraint over
+the steps of the run is significant: the chance that phases carrying no height information pass it
+must be at most P(|Z| > 3) = 2.7e-3 (a single step never qualifies at a 0.1 mrad angle calibration;
+the three demo steps give 1.2e-4). R2 (self-reference) runs return no height (differential phase,
+not implemented). At the HPC angle (16.1347 mrad) +a/2 and -a/2 differ by only 0.078 rad of
+wrapped phase: one a/2 step alone cannot be signed, which the summary and the CLI state; the joint
+rule can sign it when the two a/4 steps are measured.
 
 What to expect from the multislice demo (measured on CPU here, the same physics as on a GPU): the
 pipeline runs end to end, but the dark-field phase of the UNVALIDATED multislice exit wave is not
 flat along the beam within a terrace; the no-step control FAILS (0.44 rad between the two halves of
-terrace 1 against a 0.29 rad tolerance) and no step height is returned (the a/4 branch is
-"inconsistent" with the lattice constraint; terrace 0 has no usable region). This is reported, not
-hidden: heights from the multislice engine need the validation ladder of docs/05 4.4 first.
+terrace 1 against a 0.29 rad tolerance). With the S4 fixes a failed control withholds every
+height of the run, so expect `NO HEIGHT: no-step control failed or not performed` as the first
+result line. This is reported, not hidden: heights from the multislice engine need the validation
+ladder of docs/05 4.4 first.
 
 ## 5. Runtimes measured on the build machine (4 CPUs, no GPU; 2026-09-22)
 
