@@ -116,7 +116,7 @@ if [ -z "${SLURM_JOB_ID:-}" ]; then
   # submission mode: submit this file with the filled options
   GRES=()
   if [ "$GPU" != "none" ]; then GRES=(--gres="$GPU"); fi
-  exec sbatch --account="$ACCOUNT" --partition="$PARTITION" --time="$TIME_LIMIT" "${GRES[@]}" \
+  exec sbatch --account="$ACCOUNT" --partition="$PARTITION" --time="$TIME_LIMIT" ${GRES[@]+"${GRES[@]}"} \
        --cpus-per-task="$CPUS" --mem="$MEM" \
        --export=ALL,RH_ACCOUNT="$ACCOUNT",RH_PARTITION="$PARTITION",RH_TIME_LIMIT="$TIME_LIMIT",RH_GPU="$GPU",RH_MODE="$MODE",RH_CONFIG="$CONFIG",RH_VARIANT="$VARIANT",RH_REPO="$REPO",RH_CPUS="$CPUS",RH_ALLOW_NO_GIT="${RH_ALLOW_NO_GIT:-0}" \
        "$SCRIPT"
@@ -131,12 +131,12 @@ OUT="${RH_OUT:-outputs/pipeline/${NAME}_${SLURM_JOB_ID}_${STAMP}}"
 echo "job ${SLURM_JOB_ID} on $(hostname): mode=$MODE config=$CONFIG variant=${VARIANT:-none}"
 echo "account=$ACCOUNT partition=$PARTITION time=$TIME_LIMIT gpu=$GPU threads=$THREADS out=$OUT"
 if [ "$GPU" != "none" ] && command -v nvidia-smi >/dev/null 2>&1; then nvidia-smi; fi
-"$PY" -m reflection_holo.pipeline list-inputs --config "$CONFIG" "${VARIANT_ARGS[@]}"
+"$PY" -m reflection_holo.pipeline list-inputs --config "$CONFIG" ${VARIANT_ARGS[@]+"${VARIANT_ARGS[@]}"}
 # dry-run output goes to a file first: piping into head under `set -o pipefail` failed at random
 # (SIGPIPE on the writer; audit A3 M4)
 DRYRUN_TXT="reflholo_${SLURM_JOB_ID}_dryrun.txt"
 set +e
-"$PY" -m reflection_holo.pipeline dry-run --config "$CONFIG" "${VARIANT_ARGS[@]}" > "$DRYRUN_TXT"
+"$PY" -m reflection_holo.pipeline dry-run --config "$CONFIG" ${VARIANT_ARGS[@]+"${VARIANT_ARGS[@]}"} > "$DRYRUN_TXT"
 dstatus=$?
 set -e
 head -n 12 "$DRYRUN_TXT"
@@ -145,7 +145,7 @@ if [ "$dstatus" -ne 0 ]; then
   exit "$dstatus"
 fi
 set +e
-"$PY" -m reflection_holo.pipeline run --config "$CONFIG" "${VARIANT_ARGS[@]}" "${NOGIT_ARGS[@]}" --out "$OUT"
+"$PY" -m reflection_holo.pipeline run --config "$CONFIG" ${VARIANT_ARGS[@]+"${VARIANT_ARGS[@]}"} ${NOGIT_ARGS[@]+"${NOGIT_ARGS[@]}"} --out "$OUT"
 status=$?
 set -e
 if [ -d "$OUT" ]; then cp "$DRYRUN_TXT" "$OUT/" || true; fi

@@ -377,7 +377,11 @@ a failed or missing no-step control now suppresses every height; the lattice-bra
 the steps of a run with an exact chance-acceptance bound (B29); the height uncertainty treats the
 incidence and exit angles of the specular beam as sharing one calibration error (smoke demo a/2 step
 +2.7156 +- 0.0165 A); comparison runs refuse every demo stand-in; unused physical inputs are refused.
-Re-audit of S4: pending.
+Re-audit A3b of S4: no wrong height can be printed; open: N1, the joint branch rule treats the step
+phases of a CLOSED staircase as independent although the closing step is fixed by the others, so the
+printed chance bound is too small (smoke demo: printed 1.22e-4, true rate 2.04e-3; heights themselves are
+right); G2 still accepts placeholder supplier names; the in-crystal field is not masked and the engine's
+band-limit check is inert (m3). Scheduled after the half-torus work.
 
 Not implemented at 017761d: the reflection forward model (M2) and the geometric-phase model of section
 4.5 (both are being built in Phase 3 under `reflection_holo/forward/`); dark-field aperture selection, projection along `k_out`, magnification and
