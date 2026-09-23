@@ -812,7 +812,7 @@ def main_report():
     print(f"DW (u = 0.076 A per axis, ASSUMPTION A7) of (0,0,8): amplitude {dw008:.4f}, intensity {dw008**2:.4f}; "
           f"thermally averaged V_008 = {Vg*dw008:.4f} V")
 
-    hdr("3. Two-beam Bragg case (DERIVED_HERE; premises in the review F1)")
+    hdr("3. Two-beam Bragg case (DERIVED_HERE; premises in the review, A3)")
     ug = 2 * K * SIGMA * Vg
     c0 = ug / G
     print(f"u_g = 2 k sigma V_g = {ug:.5f} rad^2/A^2; c = b = u_g/G = {c0:.6f} rad/A; Lambda = 1/b = {1/c0:.2f} A")
@@ -866,9 +866,10 @@ def main_report():
             T20 = 20.0
             Lsub = np.linspace(T20, T20 + 2 * np.pi, 400) / (c0 * np.tan(th_i))
             Emax = np.max(np.abs(transient_E(Lsub, eta0, c, th_i, X)))
+            Lenv = (np.sqrt(2/np.pi)/1e-2)**(2/3)*Lb
             print(f"         asymptote: max |E| over one period at b s = 20: {Emax:.3e} vs sqrt(2/pi) 20^-1.5 = "
                   f"{np.sqrt(2/np.pi)*20**-1.5:.3e}; envelope sqrt(2/pi)(L/L_b)^-1.5 = 1e-2 at L = "
-                  f"{(np.sqrt(2/np.pi)/1e-2)**(2/3)*Lb:.0f} A")
+                  f"{Lenv:.0f} A; actual last crossing / envelope crossing = {runin[0]/Lenv:.3f}")
     print(f"  slow and fast absorption lengths along the surface: 1/(sigma r (V0 -+ V_g)): r = 0.05: "
           f"{1/(SIGMA*0.05*(V0-Vg)):.0f} / {1/(SIGMA*0.05*(V0+Vg)):.0f} A; r = 0.1: {1/(SIGMA*0.1*(V0-Vg)):.0f} / "
           f"{1/(SIGMA*0.1*(V0+Vg)):.0f} A")
@@ -903,6 +904,13 @@ def main_report():
             tot, car = bethe_missing(rows, fmax)
             print(f"   dx = {dx}: band {fmax:.3f} 1/A: Bethe carried {car:+.5f} of {tot:+.5f} V -> missing "
                   f"{abs(tot-car)/Vg:.2e} V_g")
+        for hm in (16, 20):
+            rows_h = many_beam(az, V0, th_e, hmax=hm)
+            tot_h, _ = bethe_missing(rows_h, np.inf)
+            m13 = bethe_missing(rows_h, 1 / (3 * 0.13))
+            m10 = bethe_missing(rows_h, 1 / (3 * 0.10))
+            print(f"   cut-off |h|,|k|,|l| <= {hm}: {len(rows_h)} beams, |V_g - sum|/V_g = {abs(Vg - tot_h)/Vg:.3f}, missing "
+                  f"at 0.13 A {abs(m13[0]-m13[1])/Vg:.2e} V_g, at 0.10 A {abs(m10[0]-m10[1])/Vg:.2e} V_g")
         if az == (1, 0, 0):
             check("four_beam_100", sorted(r_[0] for r_ in exact) == [(0, -4, 4), (0, 4, 4)],
                   f"exactly excited at [100]: {[r_[0] for r_ in exact]}")
@@ -1000,6 +1008,25 @@ def main_report():
                            ring_V=np.pi ** 2 * 1000 * 400))
     rows.append(layout("V_rocking_flat_strip_r0.10", th=th_e, res_el=re_, L_run=2500, D_clean=55, y_mode=2,
                        field=5 * re_, n_real=1, n_ang=19))
+    for nm in ("3_torus_R1000_r20_r0.10", "3_torus_R1000_r20_r0.05"):
+        t_ = [r_ for r_ in rows if r_["name"] == nm][0]
+        m_flat, _ = engine_memory(t_["nx"], t_["ny"], t_["n_max"], t_["atoms"])
+        m_ring, _ = engine_memory(t_["nx"], t_["ny"], t_["n_max"] + 595, t_["atoms"])
+        print(f"  {nm}: engine memory with the flat-slice n_max {t_['n_max']}: {m_flat/1e9:.3f} GB; with H2's +595 atoms per "
+              f"slice ({t_['n_max']+595}): {m_ring/1e9:.3f} GB (difference {(m_ring-m_flat)/1e9:.3f} GB); ring section bound "
+              f"8765 A^2 x 2/a^2 = {8765*2/a**2:.1f} atoms")
+    # largest section of the half-torus (R = 1000, r = 20; x >= 0) by a plane z = z0 perpendicular to the beam
+    Rr, rr_ = 1000.0, 20.0
+    yy = np.linspace(-Rr - rr_, Rr + rr_, 2_000_001)
+    best = (0.0, 0.0)
+    for z0 in np.concatenate([np.linspace(0, Rr - 60, 50), np.linspace(Rr - 60, Rr + rr_, 1601)]):
+        h_ = np.sqrt(np.clip(rr_ ** 2 - (np.sqrt(yy ** 2 + z0 ** 2) - Rr) ** 2, 0, None))
+        A_ = float(np.sum(h_) * (yy[1] - yy[0]))
+        if A_ > best[0]:
+            best = (A_, float(z0))
+    print(f"  largest half-torus section in a plane z = const: {best[0]:.0f} A^2 at |z - z_c| = {best[1]:.1f} A "
+          f"(tangent plane z = R: {float(np.sum(np.sqrt(np.clip(rr_**2-(np.sqrt(yy**2+Rr**2)-Rr)**2,0,None)))*(yy[1]-yy[0])):.0f} A^2); "
+          f"x 2/a^2 = {best[0]*2/a**2:.0f} atoms (H2: 8765 A^2, 595 atoms)")
     cc = cpu_constants_from_raw()
     print(f"CPU constants fitted here from the RAW calibration entries ({cc['created']}, load {cc['load']}): "
           f"FFT {cc['c_fft']:.3e} s/(px log2 px), element-wise {cc['c_el']:.3e} s/px, exp {cc['c_exp']:.3e} s/element, "
@@ -1076,27 +1103,88 @@ def main_report():
             Rst = np.mean([st[lo] for lo in pl])
             Rmn = np.mean([mean[lo] for lo in pl])
             for lo in sorted(st):
-                print(f"     {lo:6.0f}-{lo+500:6.0f} A: static |R| {abs(st[lo]):.4f} arg {np.angle(st[lo]):+.4f} | mean |R| "
-                      f"{abs(mean[lo]):.4f} arg {np.angle(mean[lo]):+.4f} | |mean|/|static| {abs(mean[lo])/abs(st[lo]):.4f} "
-                      f"arg diff {np.angle(mean[lo]/st[lo]):+.4f} | mean vs its plateau: dphase {np.angle(mean[lo]/Rmn):+.4f} "
-                      f"damp {abs(mean[lo])/abs(Rmn)-1:+.4f}")
+                ph_sd = float(np.std([np.angle(rz[lo] / mean[lo]) for rz in reals], ddof=1))
+                am_sd = float(np.std([abs(rz[lo]) / abs(mean[lo]) for rz in reals], ddof=1))
+                print(f"     {lo:6.0f}-{lo+500:6.0f} A: static |R| {abs(st[lo]):.4f} | mean |R| {abs(mean[lo]):.4f} | "
+                      f"|mean|/|static| {abs(mean[lo])/abs(st[lo]):.4f}, arg(mean/static) {np.angle(mean[lo]/st[lo]):+.4f} | "
+                      f"mean vs its plateau: dphase {np.angle(mean[lo]/Rmn):+.4f}, damp {abs(mean[lo])/abs(Rmn)-1:+.4f} | "
+                      f"static vs its plateau: dphase {np.angle(st[lo]/Rst):+.4f}, damp {abs(st[lo])/abs(Rst)-1:+.4f} | "
+                      f"one realisation: phase sd {ph_sd:.4f}, amp sd {am_sd:.4f} (s.e. of the 8-mean {ph_sd/np.sqrt(8):.4f} rad)")
             print(f"     plateau bins {min(pl):.0f}-{max(pl)+500:.0f} A: static |R| {abs(Rst):.4f}; ensemble mean |R| {abs(Rmn):.4f}; "
-                  f"ratio {abs(Rmn)/abs(Rst):.4f}; arg(mean) - arg(static) {np.angle(Rmn/Rst):+.4f} rad")
+                  f"ratio {abs(Rmn)/abs(Rst):.4f} (1/x = {abs(Rst)/abs(Rmn):.3f}); arg(mean) - arg(static) {np.angle(Rmn/Rst):+.4f} rad; "
+                  f"ratio over the plateau bins {min(abs(mean[l])/abs(st[l]) for l in pl):.4f}-{max(abs(mean[l])/abs(st[l]) for l in pl):.4f}, "
+                  f"phase {min(np.angle(mean[l]/st[l]) for l in pl):+.4f} to {max(np.angle(mean[l]/st[l]) for l in pl):+.4f}")
             bins_m = [(lo, mean[lo]) for lo in sorted(mean)]
             bins_s = [(lo, st[lo]) for lo in sorted(st)]
             for tp, ta in ((1e-2, 3e-2), (1e-2, 1e-2)):
-                print(f"     converged beyond (phase {tp:g} rad / amplitude {ta:g}): static {converged_beyond(bins_s, Rst, d_end, tp, ta)}; "
+                print(f"     converged beyond (phase {tp:g} rad, amplitude {ta:g}): static {converged_beyond(bins_s, Rst, d_end, tp, ta)}; "
                       f"ensemble mean {converged_beyond(bins_m, Rmn, d_end, tp, ta)}")
-            # H2-style region 1500-2252 A: ratio of the ensemble mean to static in the transient region
-            reg = [lo for lo in (1500.0, 2000.0)]
-            print(f"     in H2's region (1500-2500 A bins): |mean|/|static| {abs(np.mean([mean[l] for l in reg]))/abs(np.mean([st[l] for l in reg])):.4f}, "
-                  f"arg diff {np.angle(np.mean([mean[l] for l in reg])/np.mean([st[l] for l in reg])):+.4f} rad")
+            sds = [float(np.std([np.angle(rz[lo] / mean[lo]) for rz in reals], ddof=1)) for lo in sorted(st) if lo >= 1000]
+            scale = np.sqrt((500.0 / 371.884) * (2 * a / 6.0))
+            print(f"     per-bin single-realisation phase sd beyond 1000 A: {min(sds):.4f}-{max(sds):.4f} rad; scaled to one "
+                  f"371.9 A x 6 A element by sqrt({scale**2:.2f}): {min(sds)*scale:.4f}-{max(sds)*scale:.4f} rad -> N for 1e-2 rad "
+                  f"{(min(sds)*scale/1e-2)**2:.1f}-{(max(sds)*scale/1e-2)**2:.1f}")
+            reg = (1500.0, 2000.0)
+            print(f"     in H2's fp region (bins 1500-2500 A): |mean|/|static| {abs(np.mean([mean[l] for l in reg]))/abs(np.mean([st[l] for l in reg])):.4f}, "
+                  f"arg diff {np.angle(np.mean([mean[l] for l in reg])/np.mean([st[l] for l in reg])):+.4f} rad (H2: 0.7213, -0.0457)")
+            rts = ", ".join("%.0f" % x_["run_s"] for x_ in fpr["realisations"])
+            print(f"     run times: static {fpr['static']['run_s']:.0f} s, realisations {rts} s; "
+                  f"{fpr['n_atoms']} atoms, grid {fpr['nx']}x{fpr['ny']}")
     else:
         print("  (no rerun JSON)")
 
 
 
-    hdr("12. Phonons, rocking angles, B16, vacuum rule, tolerance sensitivity (DERIVED_HERE)")
+
+    hdr("10. Memory and timing probes of the engine (REPRODUCED, tracemalloc, numpy backend)")
+    if MEMTIME_JSON.exists():
+        mt = json.load(open(MEMTIME_JSON))
+        hp = mt["host_per_atom"]
+        cellB = hp["cell_arrays_B_per_atom"]
+        print(f"host bytes per atom while realising ({hp['n_atoms']} atoms): realise() peak increment static "
+              f"{hp['static']['peak_B_per_atom']:.0f} B, frozen phonons {hp['frozen']['peak_B_per_atom']:.0f} B; persistent "
+              f"{hp['static']['persistent_B_per_atom']:.0f} / {hp['frozen']['persistent_B_per_atom']:.0f} B; with the cell arrays "
+              f"({cellB:.0f} B): {hp['static']['peak_B_per_atom']+cellB:.0f} / {hp['frozen']['peak_B_per_atom']+cellB:.0f} B; with a "
+              f"48 B/atom structure still referenced: {hp['static']['peak_B_per_atom']+cellB+48:.0f} / "
+              f"{hp['frozen']['peak_B_per_atom']+cellB+48:.0f} B (H2 code reading: 192 / 240 B)")
+        ws = mt["wide_slice"]
+        nx_, ny_, n_ = ws["nx"], ws["ny"], ws["n_max"]
+        npx_ = nx_ * ny_
+        em = ws["estimate_memory"]
+        pred = 32 * ny_ * n_ + 8 * nx_ * n_
+        print(f"wide slice: grid {nx_}x{ny_}, {n_} atoms in the slice: projected() peak {ws['projected_peak_B']:,} B; "
+              f"32 ny n + 8 nx n = {pred:,} B (ratio {ws['projected_peak_B']/pred:.4f}); the engine counts Ex, Ey = "
+              f"{em['structure-factor factors Ex, Ey (largest slice)']:,} B and S = {em['structure-factor sum S']:,} B")
+        pre = 24 * npx_                     # P_full, P_half (complex64), band mask, F (float32), allocated before
+        real_peak = ws["loop_peak_B"] + pre
+        print(f"slice loop: tracemalloc peak above the pre-allocated arrays {ws['loop_peak_B']:,} B; + 24 B/px pre-allocated "
+              f"= {real_peak:,} B; model 48 B/px + max(32 nx n, 8 nx n + 32 ny n) = {48*npx_ + max(32*nx_*n_, pred):,} B; "
+              f"engine estimate total {em['total']:,} B (real/estimate {real_peak/em['total']:.2f})")
+        ec = ws["estimate_cpu"]
+        cc = cpu_constants_from_raw()
+        model_pot = cc["c_exp"] * (nx_ + ny_) * n_ + 8.0 * npx_ * n_ / cc["gemm"]
+        print(f"timing (load {ws['loadavg']}): projected() median {ws['projected_s_median']:.2f} s; engine's own proxy measured "
+              f"in the same process {ec['potential_slice_s']:.2f} s (real/proxy {ws['projected_s_median']/ec['potential_slice_s']:.2f}); "
+              f"H2's calibration (load 0.36) predicts {model_pot:.2f} s; full slice loop {ws['loop_s']:.1f} s for {ws['N']} slices "
+              f"({ws['nonempty']} with atoms) vs the engine's estimate at the same time {ec['seconds_per_realisation']:.1f} s "
+              f"(ratio {ws['loop_s']/ec['seconds_per_realisation']:.2f})")
+        print("device peak per realisation from the measured model (48 B/px + max(32 nx n, 8 nx n + 32 ny n)), excluding atoms,"
+              " against the engine's device part:")
+        for nm, t_ in table.items():
+            nmax = t_["n_max"] + (595 if nm.startswith("3_") else 0)
+            npx2 = t_["nx"] * t_["ny"]
+            dev_real = 48 * npx2 + max(32 * t_["nx"] * nmax, 8 * t_["nx"] * nmax + 32 * t_["ny"] * nmax)
+            dev_est = engine_memory(t_["nx"], t_["ny"], nmax, t_["atoms"])
+            dev_est = dev_est[0] - dev_est[1]
+            host = t_["atoms"] * (hp["frozen"]["peak_B_per_atom"] + cellB + 48)
+            print(f"  {nm:28s} engine device part {dev_est/1e9:6.3f} GB -> measured model {dev_real/1e9:6.3f} GB "
+                  f"(x{dev_real/dev_est:.2f}); host at the measured {hp['frozen']['peak_B_per_atom']+cellB+48:.0f} B/atom "
+                  f"{host/1e9:.1f} GB (H2 240 B/atom: {t_['atoms']*240/1e9:.1f} GB); CPU job (numpy) host peak about "
+                  f"{(dev_real + host)/1e9:.1f} GB")
+    else:
+        print("  (no memtime JSON)")
+
+    hdr("11. Phonons, rocking angles, B16, vacuum rule, tolerance sensitivity, lateral buffer, study depth (DERIVED_HERE)")
     fp = json.load(open(H2_MEAS))["runs"]["fp_100_r010"]
     rho2 = fp["rho2"]
     print(f"H2 stored rho^2 = {rho2:.4e}: N = rho^2/(2 dphi^2) for dphi = 1e-2 rad: {rho2/(2*1e-4):.2f}; "
@@ -1138,6 +1226,13 @@ def main_report():
               f"memory {mem/1e9:.3f} GB, GPU {fmt_t(g)}, CPU x1.5 {fmt_t(1.5*c)}")
 
 
+    print(f"read-out: pass band 0.1 1/A -> 1/(2 x 0.1) = 5 A in x = {5/np.tan(th_e):.0f} A of surface; diffraction "
+          f"sqrt(lambda D)/tan: D = 1000 A {np.sqrt(LAM*1000)/np.tan(th_e):.0f} A, D = 6000 A {np.sqrt(LAM*6000)/np.tan(th_e):.0f} A; "
+          f"internal Bragg wave {np.sin(th_i)/LAM:.4f} 1/A vs f_c {np.sin(th_e)/LAM:.4f} 1/A (offset {np.sin(th_i)/LAM-np.sin(th_e)/LAM:.4f}); "
+          f"500 tan(theta_ext) = {500*np.tan(th_e):.1f} A; 2 A edge over {2/np.tan(th_e):.0f} A")
+    vacs = [t_["vac"] for t_ in table.values()]
+    print(f"vacuum above the highest top layer over all rows: {min(vacs):.0f}-{max(vacs):.0f} A; 2 L_z tan(theta) range "
+          f"{min(2*t_['Lz']*np.tan(th_e) for t_ in table.values()):.0f}-{max(2*t_['Lz']*np.tan(th_e) for t_ in table.values()):.0f} A")
     print("lateral buffer bounds from absorption alone (r = 0.1): ")
     for tag, Vabs in (("mean V0", V0), ("V0 - V_044", V0 - abs(V_h((0, 4, 4))))):
         Ldec = np.log(100) / (SIGMA * 0.1 * Vabs)
@@ -1148,10 +1243,17 @@ def main_report():
         prof = {round(p_["depth_A"]): p_["I"] for p_ in h2m[nm]["depth"]["profile"]}
         print(f"  H2 {nm}: exit-plane intensity at 20 A depth {prof.get(20, float('nan')):.2e} (study cells: clean depth 21 A; "
               f"amplitude {np.sqrt(prof.get(20, float('nan'))):.2f}); plateau |R| {h2m[nm]['buildup']['R_plateau_abs']:.4f}")
+    for nm in ("bu_100_r010", "bu_110_r010"):
+        prof = {round(p_["depth_A"]): p_["I"] for p_ in h2m[nm]["depth"]["profile"]}
+        Rp = h2m[nm]["buildup"]["R_plateau_abs"]
+        for rho_abs in (0.01, 0.03):
+            back = prof[20] * rho_abs
+            print(f"  {nm}: absorber amplitude reflectivity {rho_abs}: returned amplitude I(20 A) x rho = {back:.1e} of the "
+                  f"incident = {back/Rp:.1e} of the reflected amplitude (phase error up to that many rad)")
     print(f"  [100]/[110] plateau amplitude ratio {h2m['bu_100_r010']['buildup']['R_plateau_abs']/h2m['bu_110_r010']['buildup']['R_plateau_abs']:.2f} "
           f"(intensity {(h2m['bu_100_r010']['buildup']['R_plateau_abs']/h2m['bu_110_r010']['buildup']['R_plateau_abs'])**2:.0f})")
 
-    hdr("11. Built cells: engine estimate_resources and geometry assertions vs H2's table (REPRODUCED)")
+    hdr("12. Built cells: engine estimate_resources and geometry assertions vs H2's table (REPRODUCED)")
     study_point_checks()
     # the validation strip (row V) and the narrowest converged terrace (row 2a_a4_Wmin), built for real
     tV = table["V_rocking_flat_strip_r0.10"]
@@ -1173,6 +1275,11 @@ def main_report():
           f"GPU {estW['gpu']['seconds_per_realisation']:.1f} s (H2 48 s)")
     del cellW
 
+    hdr("13. Self-checks")
+    n_ok = sum(ok for _, ok in CHECKS)
+    print(f"{n_ok}/{len(CHECKS)} checks pass; runtime {time.time() - t0:.0f} s")
+    if n_ok != len(CHECKS):
+        print("FAILED: " + ", ".join(nm for nm, ok in CHECKS if not ok))
     return dict(V0=V0, Vg=Vg, th_e=th_e, th_i=th_i, G=G, c0=c0, Lb=Lb, dth_ext=dth_ext, dth_int=dth_int,
                 res_el=res_el, t0=t0, tb=tb)
 
@@ -1190,3 +1297,4 @@ if __name__ == "__main__":
         memtime_mode(args.memtime)
         sys.exit(0)
     ctx = main_report()
+    sys.exit(0 if all(ok for _, ok in CHECKS) else 1)

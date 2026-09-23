@@ -1,0 +1,69 @@
+{
+ "schema": "H5/memtime/1",
+ "created_utc": "2026-09-23T22:38:56Z",
+ "loadavg_start": [
+  1.75244140625,
+  2.85888671875,
+  3.7705078125
+ ],
+ "host_per_atom": {
+  "static": {
+   "n_atoms": 832000,
+   "peak_B_per_atom": 118.45341225961539,
+   "persistent_B_per_atom": 45.265355769230766
+  },
+  "frozen": {
+   "n_atoms": 832000,
+   "peak_B_per_atom": 113.2694639423077,
+   "persistent_B_per_atom": 40.08037860576923
+  },
+  "cell_arrays_B_per_atom": 32.0,
+  "n_atoms": 832000
+ },
+ "wide_slice": {
+  "nx": 1470,
+  "ny": 4032,
+  "n_atoms": 39936,
+  "n_max": 4992,
+  "N": 18,
+  "nonempty": 8,
+  "projected_peak_B": 702919128,
+  "projected_s_median": 3.6884057890001714,
+  "projected_s_all": [
+   3.1397840379995614,
+   3.6884057890001714,
+   3.7653639700001804
+  ],
+  "loop_s": 41.550177446000816,
+  "loop_peak_B": 845168784,
+  "transmission_built": 9,
+  "estimate_memory": {
+   "psi": 47416320,
+   "transmission (band-limited)": 47416320,
+   "propagators P(dz), P(dz/2)": 94832640,
+   "band mask": 23708160,
+   "scattering factor per species": 23708160,
+   "FFT work arrays (x3)": 142248960,
+   "structure-factor factors Ex, Ey (largest slice)": 219727872,
+   "structure-factor sum S": 47416320,
+   "atom positions (float64)": 1916928,
+   "total": 648391680,
+   "note": "per concurrent realisation; exit waves stored: 47416320 B each"
+  },
+  "estimate_cpu": {
+   "measured_on_this_machine": true,
+   "threads": 4,
+   "fft_s": 0.06023416933324673,
+   "elementwise_pass_s": 0.012874095416615697,
+   "potential_slice_s": 3.5931856726668534,
+   "seconds_per_realisation": 33.90442699132352,
+   "seconds_total": 33.90442699132352,
+   "note": "component timings measured here, scaled by slice and atom counts"
+  },
+  "loadavg": [
+   4.16162109375,
+   3.28076171875,
+   3.8427734375
+  ]
+ }
+}

@@ -11,7 +11,10 @@ constants and abTEM's Kirkland table). Modes: report (default), `--rerun` (engin
 `bu_100_r010` strip and a frozen-phonon strip, output `tools/hpc/review_h5_rerun.json`), `--memtime`
 (tracemalloc and timing probes of the engine, output `tools/hpc/review_h5_memtime.json`). H2's tool was
 opened only after my own numbers existed, to locate the cause of a disagreement; where that happened it
-is said.
+is said. Final run: `venv/bin/python tools/hpc/review_h5_recompute.py` -> 13/13 checks, exit status 0.
+SHA-256 at the final run: review_h5_recompute.py 42930e21...5679f08f, review_h5_rerun.json
+6984a3c1...2104a703f, review_h5_memtime.json 4172669b...57ae1719 (the script prints every number cited
+here; its --rerun modes take about 3 min (static) and 20 min (phonons) on 4 cores).
 
 Labels: DERIVED_HERE (formula recomputed here), REPRODUCED (engine executed here, output saved in the
 JSON named), SECTION_READ (text or code read), UNVERIFIED.
@@ -25,10 +28,15 @@ or inconsistent but without consequence for the runs), NIT.
 - 21:50 UTC: read the H2 report (all), engine (engine, grid, potentials, propagator, illumination,
   backend, physics), forward/cell.py, feature_cell.py, geometry/sampling.py, null_test_cases.py,
   study.yaml, run_study.py, M2 (all), T2 (resolution, torus), T1 (memory), model_assumptions,
-  physics_conventions, docs/03 section 5, docs/05 (sections 2 and 9), docs/06, L2 C14/E17, D3 F16.
-- 22:05 UTC: sections 1-7 of my script (analytic numbers) run: they agree with H2 (F-list below).
-- 22:15 UTC: scenario rows rebuilt from H2's stated rules: they agree with H2's table.
-- 22:20 UTC: engine rerun of `bu_100_r010` started (my own cell construction and read-out).
+  physics_conventions, docs/03 section 5, docs/05 (sections 2, 4.3, 4.4, 9), docs/06, L2 C14/E17, D3 F16.
+- 22:00 UTC: sections 1-8 of my script (analytic numbers, scenario rows) agree with H2 (A1-A8).
+- 22:05-22:08 UTC: engine rerun of `bu_100_r010` (192 s): identical to H2 (A10).
+- 22:09-22:38 UTC: frozen-phonon strip, 6000 A, static + 8 realisations (finding M3). Another agent's
+  test run shared the 4 cores from about 22:27 (load 5-7).
+- 22:38-22:40 UTC: memory and timing probes (finding M4, m8).
+- 22:40-23:00 UTC: built-cell checks against the engine (A9), findings written; script final run
+  13/13 checks, exit status 0 (report mode about 15 s; it reads the two JSON files written by the
+  `--rerun` and `--memtime` modes).
 
 ## A. Recomputed and confirmed (analytic part)
 
@@ -46,7 +54,7 @@ s = 0.74 1/A. The Kirkland table gives f_e = 0.4332 A at q = |g_008| = 1.4731 1/
 low: 1/(sigma 0.84 V) = 1633 A (M2's "~1600 A", xi_g = 5131 A, penetration 30.2 A), against
 1/(sigma 1.0357 V) = 1324.7 A with the engine's static coefficient. For the static lattice that every
 engine measurement here uses, 1325 A is right. A nuance H2 does not state: with the Debye-Waller factor
-of u = 0.076 A (0.7808, ASSUMPTION A7) the coherent coefficient of a frozen-phonon ensemble is 0.8087 V
+of u = 0.076 A (0.7808; u is an unsourced ASSUMPTION, m5) the coherent coefficient of a frozen-phonon ensemble is 0.8087 V
 and the same formula gives 1697 A, close to M2's number by coincidence (see finding M3).
 
 A3. Two-beam Bragg case (DERIVED_HERE, script section 3, my own derivation: z-evolution
@@ -110,9 +118,10 @@ my flat-slice maximum (13 668, 15 503): 10.756 + 0.096 and 14.258 + 0.103 GB. Al
 777.9 A (0.1 deg, a/4), 1555.8 A (a/2), rounded up to 782.0 / 1558.7 A of whole y-periods; strips
 84.1 / 168.3 / 1178.0 / 1262.1 A; dlat 64.2 / 110.4 / 165.8 A; W_min 140.4 / 232.7 / 343.6 A; torus
 gaps 143.2 / 235.5 A; overlayer paths 1240 / 2479 / 3719 A; 8 resolution elements 2975 A; ring volume
-197 167 atoms.
+197 167 atoms; the largest half-torus section in one slice plane is 8765 A^2 (at 987 A from the ring
+centre, not at the tangent plane, 7021 A^2), i.e. 594 atoms (H2: 595).
 
-A9. Built cells against the engine itself (REPRODUCED, script section 11). Three study.yaml points
+A9. Built cells against the engine itself (REPRODUCED, script section 12). Three study.yaml points
 (tfix_bragg_abs0_L0, tfix_off20_abs10_L5k, step_w32_bragg_abs10_L5k) built with the M2 case code: the
 engine's `estimate_resources` gives 3,844,352 / 10,701,408 / 340,405,248 B and 0.314 / 1.722 /
 22.750 GPU-model seconds, equal to my replica and to the M2 printout (grid, slices, atoms). Two H2 rows
@@ -170,7 +179,7 @@ Evidence. The repository's convergence criterion for the same quantity is `|err_
 `|amp_ratio - 1| <= 1e-2` (`scripts/hpc/null_test_study/README.md`, M2 10.4). With 1e-2 on the amplitude,
 H2's own data and my rerun give run-ins of 3000 A (r = 0.1; my rerun: amplitude within 1e-2 beyond
 3000 A), 5000 A (r = 0.05, unchanged: H2 amplitude 1e-2 at 4500 A) and 9000 A (r = 0, H2 amplitude 1e-2
-at 9000 A). Consequence (script section 12): row 2a_a4_miscut0.1_r0.10 becomes z = 6101.6 A instead of
+at 9000 A). Consequence (script section 11): row 2a_a4_miscut0.1_r0.10 becomes z = 6101.6 A instead of
 5602.0 A, 33,899,040 atoms (+8.9 %), grid 2160 x 12096, 4.379 GB, GPU model 15 min, CPU x1.5 19.7 h;
 row r = 0 z = 12 102.8 A (+9.0 % atoms, 8.023 GB); the torus r = 0.1 row z = 9919.5 A, 99,185,647 atoms
 (+6.1 %), 11.140 GB. The 1116 A reconstruction margin after the run-in partly absorbs the difference,
@@ -181,6 +190,85 @@ Required correction. Either adopt the repository's 1e-2 amplitude criterion (run
 reason (for example: the amplitude enters only the B29 amplitude mask and the fringe contrast) and quote
 both run-ins in the brief: "2500 A (phase 1e-2, amplitude 3e-2, ASSUMPTION) or 3000 A (amplitude 1e-2,
 the null-test criterion)".
+
+### M3 (MAJOR). The run-in and the static-versus-phonon numbers are static-lattice or transient-region values; the ensemble mean converges later and differs more
+
+Quoted (brief): "The static lattice overestimates the specular amplitude by 1/0.72 and shifts its phase
+by 0.046 rad, so phonons are needed"; (section 6) "The ensemble-mean specular amplitude is 0.721 of the
+static-lattice one, and its phase differs by -0.0457 rad"; (section 6) "Every production row uses N = 8";
+the run-ins of the production rows (2500 / 5000 A) come from static-lattice strips only (section 2.4).
+
+Evidence. H2's fp run was 3000 A long and its region (1500-2252 A after contact) lies before the
+static amplitude has converged (3e-2 at 2500 A); H2's own per-bin ratio rises from 0.699 (1000-1500 A)
+to 0.741 (2500-3000 A). I ran the same physics on a 6000 A strip (REPRODUCED, `--rerun --which fp`,
+`tools/hpc/review_h5_rerun.json`: [100], r = 0.1 TEST_ONLY, clean depth 60 A, y = 2 periods,
+u = 0.076 A, seed 20260923, 8 realisations plus the static lattice in the same cell; 252 224 atoms,
+2187 x 84; 116-183 s per realisation under a load of 3-7). With my read-out (A10):
+* in H2's region (bins 1500-2500 A) I get |mean|/|static| = 0.7234 and arg(mean/static) = -0.0525 rad,
+  close to H2's 0.7213 / -0.0457 (8 realisations each, different y width and seed stream use);
+* over the reference window (3000-5000 A) the ratio is 0.766 (0.756-0.774, still rising) and the phase
+  difference -0.083 rad (-0.071 to -0.090): 1/0.766 = 1.31, not 1/0.72 = 1.39, and a phase shift
+  almost twice H2's;
+* the ensemble mean converges later than the static lattice in the same cell: phase within 1e-2 rad of
+  its own plateau only beyond 3500 A (static: 2000 A in this cell, 1500 A in H2's), amplitude within
+  3e-2 beyond 3000 A (static 2500 A); with 1e-2 on the amplitude the mean is still drifting inside the
+  reference window (-1.3 % to +1.1 %). The single-realisation phase scatter per 500 A bin is 0.0095-0.0172
+  rad beyond 1000 A, so the standard error of an 8-realisation mean is 0.0033-0.0061 rad: the drift of the
+  mean (+0.069, +0.050, +0.032, +0.021, +0.014 rad in the bins starting at 1000-3000 A) is not noise.
+Physical reading (DERIVED_HERE, consistent with but not proven by these runs): the coherent (ensemble-
+mean) wave sees the Debye-Waller-reduced coefficient 0.8087 V (A2), whose two-beam scale is 1697 A
+instead of 1325 A, plus thermal-diffuse loss; so its build-up is slower than the static lattice's.
+
+Consequence. For r = 0.1 the production layout still happens to work in phase, because the 1116 A
+reconstruction margin follows the run-in: the measured region starts 3616 A after contact, where the
+ensemble mean is within 0.005 rad of its plateau. The run-in itself (2500 A) is not the phonon run-in,
+the r = 0.05 phonon run-in is unknown (the static one is already 5000 A), and the two numbers in the
+brief are not converged values.
+
+Required correction. Brief: "Phonons are needed: in a 6000 A strip at r = 0.1 the ensemble-mean
+specular amplitude is 0.77 of the static one (still rising) and its phase differs by -0.08 rad (8
+realisations, u = 0.076 A ASSUMPTION; H5)". Section 2.6 and the rows: state that the run-ins are
+static-lattice values; for phonon production either add the measured difference (phase: 3500 A instead
+of 1500-2000 A at r = 0.1) or rely explicitly on the margin, and add an 8-realisation strip at r = 0.05
+of at least 9000 A to run order step 4 before any r = 0.05 production row.
+
+### M4 (MAJOR). Memory per realisation: the engine's accounting (replicated by H2) misses the complex128 intermediates; wide rows need 1.4-2.2 times the stated device memory
+
+Quoted (brief table): "engine arrays per realisation | 4.1 GB (7.5 GB host peak, code reading) ...
+5.8 GB (12.2 GB ...) ... 10.9 GB (22.4 GB ...) ... 14.4 GB (32.7 GB ...)"; (section 12) "Memory is the
+engine's own accounting per concurrent realisation (`estimate_resources`, replicated exactly). The GPU
+holds everything except the atom positions"; (section 8) "192 B/atom (static) or 240 B/atom (frozen
+phonons) while realising, from reading the code, not measured".
+
+Evidence (REPRODUCED, `--memtime`, `tools/hpc/review_h5_memtime.json`, numpy backend, tracemalloc;
+script section 10). `_RealisedAtomic.projected` (potentials.py:302-303) forms each structure-factor
+exponential from a float64 argument in complex128 and casts to complex64 afterwards. For one slice of
+4992 atoms on a 1470 x 4032 grid its peak is 702,919,128 B = 32 ny n + 8 nx n (to 2e-4); the engine
+counts 8 (nx + ny) n = 219,727,872 B for Ex and Ey. The whole slice loop peaks at 987 MB (model
+48 B/px + max(32 nx n, 8 nx n + 32 ny n), agreement 1e-4) against the engine's 648 MB. With that
+measured model (extrapolation DERIVED_HERE) the device peak per realisation is: 2a_a4 r = 0.1 4.24 GB
+(engine device part 2.60 GB, x1.63), 2a_a4 r = 0.05 5.10 (3.37, x1.51), 2a_a2 14.23 (6.62, x2.15),
+2a r = 0 5.59 (4.09, x1.37), torus r = 0.1 10.76 (6.37, x1.69), torus r = 0.05 12.96 (7.82, x1.66);
+the narrow rows (2b, W_min, 0.5 deg, V) stay below the estimate (x0.87-0.93). The cupy path runs the
+same statements, plus cuFFT and cuBLAS workspaces and the memory pool, so the GPU peak is at least this
+(UNVERIFIED on a GPU). Host side: `realise()` takes 118 B/atom (static) and 113 B/atom (frozen phonons)
+above the cell's 32 B/atom; with a 48 B/atom builder structure still referenced, 198 / 193 B/atom. H2's
+192 B (static) is right; 240 B (phonons) is 24 % high, so the host column (7.5 / 12.2 / 22.4 / 32.7 GB)
+is conservative (measured value: 6.0 / 9.9 / 18.1 / 26.3 GB). A CPU (numpy) job holds both on the host:
+about 10.3 / 15.0 / 28.8 / 39.3 GB for rows 2a r = 0.1, 2a r = 0.05, torus r = 0.1, torus r = 0.05.
+
+Consequence. The Alliance kit chooses the GPU instance with `--need-gpu-mem-gb <from dry-run>`
+(README_ALLIANCE 4.6), i.e. from this accounting: the 2a_a2 row and both torus rows would be sent to a
+10 GB instance (1g.10gb on Fir/Nibi/Rorqual, 2g.10gb on Narval) and fail with out-of-memory. No wrong
+number would be produced, which is why this is MAJOR and not BLOCKER.
+
+Required correction. In the table, replace "engine arrays per realisation" by "device peak (H5
+measured model)" with the values above and "host (193-198 B/atom, measured)"; say that a CPU job needs
+device + host. Add to section 10 an item N15: "estimate_resources omits the complex128 intermediates
+of the structure-factor exponentials (32 B per element of ny x n_slice); fix in potentials.py (for
+example reduce the float64 phase modulo 2 pi and exponentiate in complex64, chunked over atoms) or
+count them in estimate_resources". Until then the kit must not take `--need-gpu-mem-gb` from the
+dry-run for wide cells (multiply by 2.2 or use the model).
 
 ### m1 (MINOR). Same quantity, different values inside H2 (terrace width, resolution element)
 
@@ -251,14 +339,18 @@ Quoted (brief): "At [110], the M2 study azimuth, the same angle reflects six tim
 Evidence: plateau amplitudes 0.2707 / 0.0432 = 6.3 (intensity 39). Proposed: "the specular amplitude is
 6.3 times smaller (intensity 39 times)".
 
-### m8 (MINOR). The x1.5 CPU factor is not labelled and is untested where the time goes
+### m8 (MINOR). The x1.5 CPU factor is not labelled; it holds for a wide slice only at equal load
 
 Quoted (brief table header): "CPU (4 cores here, x1.5)". Evidence: the factor comes from one M2 smoke
-run (38.6 s against an estimate of 26.6 s, load 6 to 9; M2 section 7) and is supported by H2's five
-strips (1.26-1.89 after dividing by load/4). All six runs have ny = 60 to 480, where FFT and element-wise
-passes dominate; in every production row the model attributes 86-93 % of the CPU time to the potential
-construction (script section 8), which none of those runs exercised. Proposed: label the factor
-ASSUMPTION (empirical, narrow cells only) and see M4 for the measured wide-slice cost.
+run (38.6 s against an estimate of 26.6 s, load 6 to 9; M2 section 7) and H2's five strips (1.26-1.89
+after dividing by load/4), all with ny <= 480, where FFTs dominate; in the production rows the model puts
+86-93 % of the CPU time into the potential construction. My probe of a wide slice (script section 10,
+1470 x 4032, 4992 atoms, load about 4): the real `projected()` takes 3.69 s, 1.03 times the engine's own
+proxy measured in the same process (3.59 s); the whole slice loop takes 1.23 times the engine's estimate
+made at the same moment. So the proxy is sound and x1.5 covers the rest at equal load; but H2's
+calibration (load 0.36) predicts 1.88 s for the same slice, i.e. on a shared node the times double.
+Proposed: "CPU x1.5 (ASSUMPTION: empirical factor, M2 and H2 strips, H5 wide-slice probe; for an
+unloaded node)".
 
 ### m9 (MINOR). The lateral buffer premise may be short
 
@@ -269,6 +361,18 @@ damped only by the proportional absorption falls to 1e-2 in amplitude after ln(1
 lateral travel at 18.47 mrad, dlat 102-113 A and W_min 216-238 A instead of 140 A. Coupling may damp
 it faster; H2 labels the premise and the terrace-width study (run order 5, W = 50-400 A) decides.
 Proposed: quote "W_min about 140-240 A (estimate; run order step 5 decides)".
+
+### Nits
+
+* n1. Brief: "vacuum ... 178-402 A": the 2a_a2 row has 177 A (script section 11: 177-402 A).
+* n2. Section 2.1 P2: "the transmission exp(+i sigma V_p) with the exact propagator reproduces
+  K^2 = k^2 + 2 k sigma V": with the exact propagator the multislice gives kappa0^2 = k^2 sin^2(theta) +
+  2 k sigma V0 cos(theta) - (sigma V0)^2, 1.9e-5 below G/2 in kappa0 (eta shift -8.8e-5 rad/A, 0.2 % of
+  the Darwin half-width; script section 1). No consequence; say "to first order in theta^2".
+* n3. Section 9 row 3: "T2 found the ring's height not measurable at this condition": T2's condition was
+  the geometric model at 16.4743 mrad (V0 = 12 V, B19); say "at the B19 demo condition".
+* n4. N9: T1's 2.4 kB/atom is peak RSS including about 0.8 GB of process overhead (section C).
+* n5. Section 2.2: the [110] list omits (+-2,-+2,8) with admixture 0.184 at 13.06 mrad; no consequence.
 
 ## C. Section 10 of H2 (what the engine lacks), checked in the code (question 9)
 
@@ -285,7 +389,8 @@ accurate. Two qualifications: N9 quotes T1's 2.4 kB/atom, which is peak RSS incl
 process overhead (M2 section 7), so the feature builder's own cost is closer to 1 kB/atom (upper bound
 as stated is fine); and the list omits what finding M4 below measures: the engine's own resource
 accounting leaves out the float64/complex128 intermediates of the structure-factor exponentials
-(potentials.py:302-303) and times a complex64 proxy for them (engine.py:394-402).
+(potentials.py:302-303). (Its CPU timing proxy for them, engine.py:394-402, is sound: within 3 % of
+the real slice cost at equal load, m8.)
 
 ## D. Places in the repository that carry a different value for the same quantity (question 8)
 
@@ -321,11 +426,75 @@ The summary documents must correct or qualify these (none is H2's file; I edited
 8. scripts/hpc/null_test_study/README.md (pass criterion |err| <= 1e-2, |amp - 1| <= 1e-2) with the
    study cells' 21 A clean depth (null_test_cases.py: clean = buildup + 1): H2's stored depth profiles
    put the bulk absorber where the exit-plane intensity is still 1.9e-2 ([100]) and 4.2e-2 ([110]),
-   amplitude 0.14 / 0.20 (script section 12). An absorber reflection of a few percent then enters the
-   specular amplitude at the 1e-3 to 1e-2 level, the size of the pass criterion (DERIVED_HERE estimate;
-   the absorber reflectivity is not measured, UNVERIFIED). H2 says the study "tests the engine, not the
+   amplitude 0.14 / 0.21 (script section 11). An absorber amplitude reflectivity of 1-3 % then returns
+   I(20 A) x rho = 1.9e-4 to 5.8e-4 ([100]) and 4.2e-4 to 1.3e-3 ([110]) of the incident amplitude, i.e.
+   7e-4 to 2e-3 of the reflected amplitude at [100] and 1e-2 to 3e-2 at [110]: at the study azimuth this
+   is the size of the 1e-2 pass criterion (DERIVED_HERE estimate; the absorber reflectivity has never
+   been measured, UNVERIFIED). H2 says the study "tests the engine, not the
    production convergence"; the README should say it too before Ali runs it.
-9. scripts/hpc/alliance/README_ALLIANCE.md section 4.6 chooses the GPU instance with
-   `--need-gpu-mem-gb <from dry-run>`, i.e. from the engine's `estimate_resources`; see M4 for how far
-   below the real device peak that estimate lies for the wide production cells.
+9. scripts/hpc/alliance/README_ALLIANCE.md, "Production-size configurations (agent H2)" (section 4.6
+   at 661762e; 4.7 in the working copy being edited by another agent at 22:50 UTC) chooses the GPU
+   instance with `--need-gpu-mem-gb <from dry-run>`, i.e. from the engine's `estimate_resources`, and
+   quotes H2's "192-240 B per atom": see M4 for how far below the real device peak that estimate lies
+   for the wide production cells, and for the measured 193-198 B/atom.
 
+## E. Not verified by me
+
+* The r = 0.05, r = 0 and [110] strips were not rerun (the method is reproduced on r = 0.1, A10); the
+  r = 0 statement rests on H2's stored run only (m4).
+* rho^2 = 9.37e-4 per pixel was not recomputed (my frozen-phonon run stores y-averaged read-outs only);
+  its arithmetic N = rho^2/(2 dphi^2) = 4.69 -> 5 is confirmed. My per-bin single-realisation phase
+  scatter (0.0095-0.0172 rad per 500 A x 10.9 A bin, beyond 1000 A), scaled to one 371.9 A x 6 A
+  resolution element by sqrt(2.43) for uncorrelated noise, gives N = 2.2-7.2 realisations for 1e-2 rad
+  (script section 9; DERIVED_HERE estimate): consistent with H2's 5 and its floor of 8.
+* Nothing ran on a GPU; the cupy statements are the same as the numpy ones (M4), GPU times remain the
+  engine's ASSUMPTION model (labelled so by H2).
+* The absorbers' reflectivity was not measured by anyone (D.8, H2 run order step 1).
+
+## F. Verdict
+
+No BLOCKER. Four MAJOR findings (M1-M4), nine MINOR (m1-m9), five nits.
+
+| Question | H2 claim | Verdict |
+|---|---|---|
+| 1 | V(0,0,8) = 1.036 V, MIP 13.903 V, two-beam 1325 A, tail 22 572 A, Darwin width; M2's 1600 A from 0.84 V | CONFIRMED (A1-A4); M2's f_e was read 19 % low; the DW-averaged coefficient 0.8087 V gives 1697 A (M3) |
+| 2 | (0,+-4,4) exactly excited with (0,0,8) at exact [100], with refraction; [110] 0.043, +-0.036 rad, "six times weaker" | CONFIRMED (A6; [110] numbers from H2's stored run); "six times" is the amplitude (m7) |
+| 3 | f_max = 1/(3 dx); dx <= a/24 = 0.226 A for (0,0,8); check_band passes to 0.45 A; dx <= 0.13 A; dz = a/4 | CONFIRMED (A7, engine called); Bethe fractions not converged (m2) |
+| 4 | run-in 2500 / 5000 / 8000 A; clean depth 55-65 A; plateau 0.2707, -1.5394 | REPRODUCED for r = 0.1 (A10); run-in depends on an unlabelled 3e-2 amplitude tolerance (M2); static-lattice only (M3); r = 0 caveat (m4); "MEASURED" label (M1) |
+| 5 | absorption lengths; vacuum rule; 3-element margins 1116 A (resolution element); terrace 782 A; gap 143-236 A | CONFIRMED (A5, A8); resolution element 371.9 A at 16.1347 mrad from T2's 6.0 A (T2's 364 A is the B19 angle; m1); 782 A is 777.9 A rounded to periods (m1); lateral premise possibly short (m9) |
+| 6 | atoms, extents, grids, slices, estimate_resources replica, 4.10 / 5.82 / 10.85 / 14.36 GB, 192-240 B/atom, CPU x1.5, GPU model, totals | Arithmetic CONFIRMED to all digits and against the engine on 3 study points and 2 built rows (A8, A9); the engine's accounting itself underestimates wide rows by x1.37-2.15 (M4); 240 B/atom high by 24 % (M4); x1.5 unlabelled (m8) |
+| 7 | u = 0.076 A (A7); rho^2 = 9.4e-4; N = 5; 1/0.72 and 0.046 rad; 19 angles | N = 4.69 -> 5 and 19 angles CONFIRMED; 1/0.72 and 0.046 rad are transient-region values: 0.766 and -0.083 rad at the plateau (M3); A7 is the wrong row (m5) |
+| 8 | consistency with the repository | nine places listed in section D |
+| 9 | section 10 (N1-N14) | ACCURATE (every line reference checked); add N15 (M4) |
+
+## G. Numbers the orchestrator can quote to Ali (recomputed here)
+
+Premises: Si(001), exact [100] azimuth (B20), 200 keV, Kirkland IAM potential (UNVERIFIED
+parameterisation), static lattice unless stated, TEST_ONLY absorption r, UNVALIDATED engine.
+
+* V(0,0,8) = 1.036 V (static lattice); mean inner potential 13.903 V; with u = 0.076 A (ASSUMPTION)
+  the thermally averaged V(0,0,8) = 0.809 V.
+* (0,0,8) at 16.1347 mrad external, 18.4719 mrad internal (with V0 = 12 V: 16.4743 mrad).
+* Two-beam: 1/b = 24.5 A penetration, extinction distance 4162 A, build-up scale 1325 A along the
+  surface (M2's "~1600 A" was the same formula with V_g read 19 % low), Darwin width 0.374 mrad
+  (external); without absorption the two-beam reflected field settles to 1e-2 only after about 22.6 um;
+  with r = 0.05 / 0.1 after 3.7 / 3.2 um.
+* At exact [100] the (0,+-4,4) beams are exactly excited with (0,0,8), travel parallel to the surface
+  inside the crystal at 18.47 mrad sideways and couple more strongly (1.22e-3 rad/A) than (0,0,8)
+  itself (7.55e-4 rad/A): the working condition is a four-beam, surface-resonance-like case.
+* The (0,0,8) coupling needs a pixel <= 0.226 A (a/24); the engine's band check would accept up to
+  0.45 A; 0.13 A is adequate; slices a/4 = 1.358 A.
+* Engine flat strip, r = 0.1: reflected amplitude 0.271; phase settled within 0.01 rad after 1500 A,
+  amplitude within 3 % after 2500 A and within 1 % after 3000 A from the illumination edge; wave field
+  below 1e-4 in intensity deeper than 53 A (reproduced by H5).
+* With frozen phonons (8 realisations, u = 0.076 A, r = 0.1): coherent amplitude 0.77 of the static
+  lattice's and phase shifted by -0.08 rad on a 6000 A strip; the ensemble mean settles later (phase
+  after 3500 A).
+* Cell sizes, atoms, grids and slices of H2's table (A8) are arithmetically right for its stated rules;
+  e.g. single a/4 step, 0.1 deg miscut, r = 0.1: 259 x 1564 x 5602 A, 31.1 million atoms, grid
+  2000 x 12096, 4126 slices; with the null-test amplitude criterion (1 %) z becomes 6102 A and 33.9
+  million atoms.
+* Memory per realisation (device, measured model): 4.2 GB (that row), 5.1 GB (r = 0.05), 14.2 GB (a/2
+  steps), 10.8 / 13.0 GB (half-torus r = 0.1 / 0.05); host about 195 B per atom.
+* GPU times are an ASSUMPTION model (never measured); CPU times (4 cores, x1.5) are for an unloaded
+  node.
