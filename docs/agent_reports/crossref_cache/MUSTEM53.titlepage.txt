@@ -1,0 +1,25 @@
+[page 1 of 30, text extracted with pypdf; PDF metadata CreationDate D:20180924145505+10'00']
+µSTEM
+v5.3
+A transmission electron microscopy simulation suite, in particular
+for scanning transmission electron microscopy.
+Authors of this manual (in alphabetical order):
+L. J. Allen, H. G. Brown, A. J. D’Alfonso, S.D. Findlay, B. D. Forbes
+Les Allen, Adrian D’Alfonso and Scott Findlay originally took the initiative to make
+this code publicly available, with Adrian D’Alfonso taking on the considerable task of
+setting up the GPU code. Hamish Brown and Ben Forbes have subsequently made sub-
+stantial reﬁnements and extensions, with Ben Forbes responsible for several eﬃciency
+improvements. The code was developed mainly at the University of Melbourne. 1
+We would like to acknowledge the contributions of Mark Oxley and Chris Rossouw to
+the theoretical and numerical aspects of collaborative research that underpins µSTEM.
+In particular, the code IONIZER, whose primary author was Mark Oxley, has been used
+to set up the parametrized atomic scattering factors for ionization used in µSTEM. In
+addition, in alphabetical order, Eireann Cosgriﬀ, Torgny Josefsson, Nathan Lugg, Andrew
+Martin, Gary Ruben and Chris Witte have all contributed as members of the group led
+by Prof. Les Allen at the University of Melbourne.
+September 24, 2018
+c© A. J. D’Alfonso, H. G. Brown, S. D. Findlay, B. D. Forbes and L. J. Allen
+1 The µ is derived from the generic symbol used to denote inelastic scattering coeﬃcients (related
+to Fourier coeﬃcients of inelastic scattering potentials) in the papers on which the code is based. In
+addition, the “mu” is short for Melbourne University.
+1

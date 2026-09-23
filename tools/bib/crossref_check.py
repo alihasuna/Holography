@@ -1125,13 +1125,18 @@ def check_dois_backed(cur):
         d = e.get("doi")
         if not d:
             continue
-        rec = load_claim_rec(key) or load_rec(key)
-        if rec is not None and rec.get("DOI", "").lower() == d.lower():
+        recs = [r for r in (load_claim_rec(key), load_rec(key)) if r is not None]
+        if any(r.get("DOI", "").lower() == d.lower() for r in recs):
             continue
         dp = CACHE / f"{key}.datacite.json"
         if dp.exists():
             dd = json.loads(dp.read_text())["data"]["attributes"]["doi"]
             if dd.lower() == d.lower():
+                continue
+        jp = CACHE / f"{key}.jalc.json"          # B4: DOIs registered with JaLC (Crossref /works 404)
+        if jp.exists():
+            jd = json.loads(jp.read_text())
+            if jd.get("status") == "OK" and jd["data"]["doi"].lower() == d.lower():
                 continue
         bad.append(key)
     return bad

@@ -5,6 +5,18 @@
   "stored": "docs/agent_reports/crossref_cache/ABTEM.json",
   "url": "https://api.crossref.org/works/10.12688/openreseurope.13015.2"
  },
+ "ALERHAND1990.json": {
+  "fetched_utc": "2026-09-23T23:22:42Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ALERHAND1990.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevlett.64.2406"
+ },
+ "ALLEN15.json": {
+  "fetched_utc": "2026-09-23T23:20:37Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ALLEN15.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2014.10.011"
+ },
  "AUSLENDER24.json": {
   "fetched_utc": "2026-09-22T19:43:14Z",
   "status": 200,
@@ -16,6 +28,12 @@
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/AUSLENDER24.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Auslender+Pandey+Kohn+Mean+inner+potential+of+elemental+crystals+from+density-functional+theory+calculations%3A+Efficient+computation+and+trends+Ultramicroscopy+255+2024+113862&rows=5"
+ },
+ "AZUMA2007.json": {
+  "fetched_utc": "2026-09-23T23:22:50Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/AZUMA2007.json",
+  "url": "https://api.crossref.org/works/10.14723/tmrsj.32.263"
  },
  "B01.json": {
   "fetched_utc": "2026-09-22T18:33:47Z",
@@ -125,6 +143,24 @@
   "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/B08.publisher.html",
   "url": "https://academic.oup.com/book/54675"
  },
+ "B08CH14.json": {
+  "fetched_utc": "2026-09-23T23:21:07Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B08CH14.json",
+  "url": "https://api.crossref.org/works/10.1093/oso/9780198500742.003.0014"
+ },
+ "B08CH7.json": {
+  "fetched_utc": "2026-09-23T23:21:07Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B08CH7.json",
+  "url": "https://api.crossref.org/works/10.1093/oso/9780198500742.003.0007"
+ },
+ "B08CH8.json": {
+  "fetched_utc": "2026-09-23T23:21:08Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/B08CH8.json",
+  "url": "https://api.crossref.org/works/10.1093/oso/9780198500742.003.0008"
+ },
  "B09.json": {
   "fetched_utc": "2026-09-22T18:34:12Z",
   "status": 200,
@@ -203,6 +239,30 @@
   "stored": "docs/agent_reports/crossref_cache/B15.json",
   "url": "https://api.crossref.org/works/10.1007/978-1-4419-9583-4"
  },
+ "BARNA1998.json": {
+  "fetched_utc": "2026-09-23T23:23:03Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/BARNA1998.json",
+  "url": "https://api.crossref.org/works/10.1016/s0304-3991(97)00120-4"
+ },
+ "BARNA1999.json": {
+  "fetched_utc": "2026-09-23T23:23:04Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/BARNA1999.json",
+  "url": "https://api.crossref.org/works/10.1016/s0968-4328(99)00011-6"
+ },
+ "BARTHEL18.json": {
+  "fetched_utc": "2026-09-23T23:20:37Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/BARTHEL18.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2018.06.003"
+ },
+ "BIRDKING90.json": {
+  "fetched_utc": "2026-09-23T23:20:28Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/BIRDKING90.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767389011906"
+ },
  "BLACKBURN14.json": {
   "fetched_utc": "2026-09-22T18:37:33Z",
   "status": 200,
@@ -233,6 +293,36 @@
   "stored": "docs/agent_reports/crossref_cache/C03.json",
   "url": "https://api.crossref.org/works/10.1007/978-3-030-00069-1_17"
  },
+ "CHADI1987.json": {
+  "fetched_utc": "2026-09-23T23:22:38Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/CHADI1987.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevlett.59.1691"
+ },
+ "CHALISE22A.arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:27:20Z",
+  "status": 406,
+  "stored": "docs/agent_reports/crossref_cache/CHALISE22A.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2203.12554"
+ },
+ "CHALISE22A.arxivdoi.json": {
+  "fetched_utc": "2026-09-23T23:27:21Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/CHALISE22A.arxivdoi.json",
+  "url": "https://api.crossref.org/works/10.1103/PhysRevApplied.18.014076"
+ },
+ "CHALISE22A.oai-arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:22:23Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/CHALISE22A.oai-arxiv.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2203.12554&metadataPrefix=arXiv"
+ },
+ "CHALISE22A.oai-arxivraw.xml": {
+  "fetched_utc": "2026-09-23T23:22:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/CHALISE22A.oai-arxivraw.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2203.12554&metadataPrefix=arXivRaw"
+ },
  "CHEN95.json": {
   "fetched_utc": "2026-09-22T19:42:52Z",
   "status": 200,
@@ -245,6 +335,48 @@
   "stored": "docs/agent_reports/crossref_cache/CHEN95.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Chen+Van+Dyck+Op+de+Beeck+Modification+of+the+multislice+method+for+calculating+coherent+STEM+images+physica+status+solidi+%28a%29+150+1995+13&rows=5"
  },
+ "CLAVERIE1992.json": {
+  "fetched_utc": "2026-09-23T23:22:59Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/CLAVERIE1992.json",
+  "url": "https://api.crossref.org/works/10.1002/jemt.1070200406"
+ },
+ "COLELLA72.json": {
+  "fetched_utc": "2026-09-23T23:21:13Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/COLELLA72.json",
+  "url": "https://api.crossref.org/works/10.1107/s0567739472000038"
+ },
+ "CUSTER1994.json": {
+  "fetched_utc": "2026-09-23T23:23:00Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/CUSTER1994.json",
+  "url": "https://api.crossref.org/works/10.1063/1.111121"
+ },
+ "DUDAREV93.json": {
+  "fetched_utc": "2026-09-23T23:20:36Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/DUDAREV93.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevb.48.13408"
+ },
+ "DUDAREV95.json": {
+  "fetched_utc": "2026-09-23T23:20:36Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/DUDAREV95.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(95)00464-5"
+ },
+ "FELICI1997.json": {
+  "fetched_utc": "2026-09-23T23:22:40Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/FELICI1997.json",
+  "url": "https://api.crossref.org/works/10.1016/s0039-6028(97)80005-2"
+ },
+ "FLENSBURG99.json": {
+  "fetched_utc": "2026-09-23T23:21:05Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/FLENSBURG99.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevb.60.284"
+ },
  "GAJDARDZISKA93.json": {
   "fetched_utc": "2026-09-22T19:43:05Z",
   "status": 200,
@@ -256,6 +388,30 @@
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/GAJDARDZISKA93.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Gajdardziska-Josifovska+McCartney+de+Ruijter+Accurate+measurements+of+mean+inner+potential+of+crystal+wedges+using+digital+electron+holograms+Ultramicroscopy+50+1993+285&rows=5"
+ },
+ "HAJEK26.arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:26:37Z",
+  "status": 406,
+  "stored": "docs/agent_reports/crossref_cache/HAJEK26.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2608.24679"
+ },
+ "HAJEK26.oai-arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:21:37Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HAJEK26.oai-arxiv.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2608.24679&metadataPrefix=arXiv"
+ },
+ "HAJEK26.oai-arxivraw.xml": {
+  "fetched_utc": "2026-09-23T23:21:37Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HAJEK26.oai-arxivraw.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2608.24679&metadataPrefix=arXivRaw"
+ },
+ "HALLHIRSCH65.json": {
+  "fetched_utc": "2026-09-23T23:20:31Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HALLHIRSCH65.json",
+  "url": "https://api.crossref.org/works/10.1098/rspa.1965.0136"
  },
  "HANADA94.json": {
   "fetched_utc": "2026-09-22T19:43:20Z",
@@ -293,6 +449,42 @@
   "stored": "docs/agent_reports/crossref_cache/HARADA05.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Harada+Akashi+Togawa+Optical+system+for+double-biprism+electron+holography+Journal+of+Electron+Microscopy+54+2005+19&rows=5"
  },
+ "HAYAKAWA82.json": {
+  "fetched_utc": "2026-09-23T23:21:15Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HAYAKAWA82.json",
+  "url": "https://api.crossref.org/works/10.1143/jjap.21.l215"
+ },
+ "HAYASHI2006.json": {
+  "fetched_utc": "2026-09-23T23:22:34Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HAYASHI2006.json",
+  "url": "https://api.crossref.org/works/10.1380/ejssnt.2006.510"
+ },
+ "HEACOCK21.arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:26:16Z",
+  "status": 406,
+  "stored": "docs/agent_reports/crossref_cache/HEACOCK21.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2103.05428"
+ },
+ "HEACOCK21.json": {
+  "fetched_utc": "2026-09-23T23:20:42Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HEACOCK21.json",
+  "url": "https://api.crossref.org/works/10.1126/science.abc2794"
+ },
+ "HEACOCK21.oai-arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:21:04Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HEACOCK21.oai-arxiv.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2103.05428&metadataPrefix=arXiv"
+ },
+ "HEACOCK21.oai-arxivraw.xml": {
+  "fetched_utc": "2026-09-23T23:21:04Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HEACOCK21.oai-arxivraw.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2103.05428&metadataPrefix=arXivRaw"
+ },
  "HERRING1995.json": {
   "fetched_utc": "2026-09-22T19:42:57Z",
   "status": 200,
@@ -305,6 +497,48 @@
   "stored": "docs/agent_reports/crossref_cache/HERRING1995.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Herring+Reflection+diffracted+beam+interferometry+%28RDBI%29+applied+to+the+study+of+surfaces+Proceedings%2C+annual+meeting%2C+Electron+Microscopy+Society+of+America+53+1995+116&rows=5"
  },
+ "HHW62.json": {
+  "fetched_utc": "2026-09-23T23:20:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HHW62.json",
+  "url": "https://api.crossref.org/works/10.1098/rspa.1962.0164"
+ },
+ "HORIO14.json": {
+  "fetched_utc": "2026-09-23T23:20:40Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HORIO14.json",
+  "url": "https://api.crossref.org/works/10.1380/ejssnt.2014.380"
+ },
+ "HORIO2014.json": {
+  "fetched_utc": "2026-09-23T23:22:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HORIO2014.json",
+  "url": "https://api.crossref.org/works/10.1380/ejssnt.2014.380"
+ },
+ "HORIO22.json": {
+  "fetched_utc": "2026-09-23T23:20:41Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HORIO22.json",
+  "url": "https://api.crossref.org/works/10.1380/ejssnt.2022-013"
+ },
+ "HORIO83.json": {
+  "fetched_utc": "2026-09-23T23:21:11Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HORIO83.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(83)90009-2"
+ },
+ "HOWIESTERN72.json": {
+  "fetched_utc": "2026-09-23T23:20:39Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HOWIESTERN72.json",
+  "url": "https://api.crossref.org/works/10.1515/zna-1972-0302"
+ },
+ "HUMPHREYS68.json": {
+  "fetched_utc": "2026-09-23T23:20:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/HUMPHREYS68.json",
+  "url": "https://api.crossref.org/works/10.1080/14786436808227313"
+ },
  "HYTCH10.json": {
   "fetched_utc": "2026-09-22T18:58:16Z",
   "status": 200,
@@ -316,6 +550,48 @@
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/HYTCH10.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=H%C3%BFtch+Houdellier+H%C3%BCe+Journal+of+Physics%3A+Conference+Series+241+2010+012027&rows=5"
+ },
+ "ICHIMIYA85.json": {
+  "fetched_utc": "2026-09-23T23:20:34Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ICHIMIYA85.json",
+  "url": "https://api.crossref.org/works/10.1143/jjap.24.1579"
+ },
+ "ICHIMIYALEHMPFUHL78.json": {
+  "fetched_utc": "2026-09-23T23:20:35Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ICHIMIYALEHMPFUHL78.json",
+  "url": "https://api.crossref.org/works/10.1515/zna-1978-0304"
+ },
+ "INOUE1987.json": {
+  "fetched_utc": "2026-09-23T23:22:44Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/INOUE1987.json",
+  "url": "https://api.crossref.org/works/10.1143/jjap.26.l293"
+ },
+ "JOY2004.json": {
+  "fetched_utc": "2026-09-23T23:23:32Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/JOY2004.json",
+  "url": "https://api.crossref.org/works/10.1380/ejssnt.2004.81"
+ },
+ "KAHATA1989.json": {
+  "fetched_utc": "2026-09-23T23:22:44Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/KAHATA1989.json",
+  "url": "https://api.crossref.org/works/10.1143/jjap.28.l858"
+ },
+ "KATO1999.json": {
+  "fetched_utc": "2026-09-23T23:23:01Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/KATO1999.json",
+  "url": "https://api.crossref.org/works/10.1116/1.581795"
+ },
+ "KATO2004.json": {
+  "fetched_utc": "2026-09-23T23:23:02Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/KATO2004.json",
+  "url": "https://api.crossref.org/works/10.1093/jmicro/dfh080"
  },
  "KAWASUSO98.json": {
   "fetched_utc": "2026-09-22T19:43:19Z",
@@ -341,6 +617,12 @@
   "stored": "docs/agent_reports/crossref_cache/KIM98.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Kim+Zuo+Spence+Ab-initio+LDA+Calculations+of+the+Mean+Coulomb+Potential+V0+in+Slabs+of+Crystalline+Si%2C+Ge+and+MgO+physica+status+solidi+%28a%29+166+1998+445&rows=5"
  },
+ "KOROBTSOV2007.json": {
+  "fetched_utc": "2026-09-23T23:22:54Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/KOROBTSOV2007.json",
+  "url": "https://api.crossref.org/works/10.1380/ejssnt.2007.45"
+ },
  "KRUSE06.json": {
   "fetched_utc": "2026-09-22T19:43:05Z",
   "status": 200,
@@ -353,6 +635,18 @@
   "stored": "docs/agent_reports/crossref_cache/KRUSE06.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Kruse+Schowalter+Lamoen+Determination+of+the+mean+inner+potential+in+III-V+semiconductors%2C+Si+and+Ge+by+density+functional+theory+and+electron+holography+Ultramicroscopy+106+2006+105&rows=5"
  },
+ "LAAZIRI1999.json": {
+  "fetched_utc": "2026-09-23T23:23:01Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/LAAZIRI1999.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevb.60.13520"
+ },
+ "LEHMPFUHLDOWELL86.json": {
+  "fetched_utc": "2026-09-23T23:21:14Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/LEHMPFUHLDOWELL86.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767386098720"
+ },
  "LOANE91.json": {
   "fetched_utc": "2026-09-22T19:42:52Z",
   "status": 200,
@@ -364,6 +658,98 @@
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/LOANE91.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Loane+Xu+Silcox+Thermal+vibrations+in+convergent-beam+electron+diffraction+Acta+Crystallographica+Section+A+47+1991+267&rows=5"
+ },
+ "MAYER2007.json": {
+  "fetched_utc": "2026-09-23T23:23:05Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MAYER2007.json",
+  "url": "https://api.crossref.org/works/10.1557/mrs2007.63"
+ },
+ "MCCOY1993.json": {
+  "fetched_utc": "2026-09-23T23:22:46Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MCCOY1993.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(93)90254-h"
+ },
+ "MCCOY1994.json": {
+  "fetched_utc": "2026-09-23T23:22:45Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MCCOY1994.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(94)91386-2"
+ },
+ "MENADUE72.json": {
+  "fetched_utc": "2026-09-23T23:21:12Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MENADUE72.json",
+  "url": "https://api.crossref.org/works/10.1107/s0567739472000014"
+ },
+ "MENDIS19.json": {
+  "fetched_utc": "2026-09-23T23:20:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MENDIS19.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2019.112816"
+ },
+ "MENDIS20C.json": {
+  "fetched_utc": "2026-09-23T23:20:26Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MENDIS20C.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2020.112957"
+ },
+ "MENDIS24.json": {
+  "fetched_utc": "2026-09-23T23:20:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MENDIS24.json",
+  "url": "https://api.crossref.org/works/10.1107/s2053273323010690"
+ },
+ "MINAMI08.json": {
+  "fetched_utc": "2026-09-23T23:20:39Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MINAMI08.json",
+  "url": "https://api.crossref.org/works/10.1380/ejssnt.2008.87"
+ },
+ "MOON72.json": {
+  "fetched_utc": "2026-09-23T23:21:11Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MOON72.json",
+  "url": "https://api.crossref.org/works/10.1515/zna-1972-0303"
+ },
+ "MORITA1990.json": {
+  "fetched_utc": "2026-09-23T23:22:46Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MORITA1990.json",
+  "url": "https://api.crossref.org/works/10.1063/1.347181"
+ },
+ "MUSTEM53.titlepage.txt": {
+  "bytes": 688030,
+  "fetched_utc": "2026-09-23T23:22:24Z",
+  "sha256_of_pdf": "4b8ec3c20fb7a317aa65b5042eae3fb228570303cd1e87817497f59edd5b3a50",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/MUSTEM53.titlepage.txt",
+  "url": "https://raw.githubusercontent.com/HamishGBrown/MuSTEM/master/Manual/muSTEM_manual.pdf"
+ },
+ "NI26.json": {
+  "fetched_utc": "2026-09-23T23:20:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/NI26.json",
+  "url": "https://api.crossref.org/works/10.1107/s1600576726001469"
+ },
+ "OGINO1997.jalc.json": {
+  "fetched_utc": "2026-09-23T23:22:37Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OGINO1997.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11470%2Foubutsu1932.66.1289"
+ },
+ "OGINO1997.json": {
+  "fetched_utc": "2026-09-23T23:22:35Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/OGINO1997.json",
+  "url": "https://api.crossref.org/works/10.11470/oubutsu1932.66.1289"
+ },
+ "OGINO1997.ra.json": {
+  "fetched_utc": "2026-09-23T23:22:35Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OGINO1997.ra.json",
+  "url": "https://doi.org/ra/10.11470/oubutsu1932.66.1289"
  },
  "OKEEFFE94.json": {
   "fetched_utc": "2026-09-22T19:43:15Z",
@@ -389,6 +775,60 @@
   "stored": "docs/agent_reports/crossref_cache/OSAKABE1989EMSA.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Osakabe+Endo+Matsuda+Observation+of+surface+morphology+by+reflection+electron+holography+Proceedings%2C+annual+meeting%2C+Electron+Microscopy+Society+of+America+47+1989+536&rows=5"
  },
+ "OSAKABE1989JPS.jalc.json": {
+  "fetched_utc": "2026-09-23T23:23:11Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1989JPS.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11316%2Fjpsgaiyok.1989.2.0_439_1"
+ },
+ "OSAKABE1989JPS.json": {
+  "fetched_utc": "2026-09-23T23:23:09Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1989JPS.json",
+  "url": "https://api.crossref.org/works/10.11316/jpsgaiyok.1989.2.0_439_1"
+ },
+ "OSAKABE1989JPS.ra.json": {
+  "fetched_utc": "2026-09-23T23:23:10Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1989JPS.ra.json",
+  "url": "https://doi.org/ra/10.11316/jpsgaiyok.1989.2.0_439_1"
+ },
+ "OSAKABE1990JPS.jalc.json": {
+  "fetched_utc": "2026-09-23T23:23:08Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1990JPS.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11316%2Fjpsgaiyod.45.2.0_451"
+ },
+ "OSAKABE1990JPS.json": {
+  "fetched_utc": "2026-09-23T23:23:06Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1990JPS.json",
+  "url": "https://api.crossref.org/works/10.11316/jpsgaiyod.45.2.0_451"
+ },
+ "OSAKABE1990JPS.ra.json": {
+  "fetched_utc": "2026-09-23T23:23:06Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1990JPS.ra.json",
+  "url": "https://doi.org/ra/10.11316/jpsgaiyod.45.2.0_451"
+ },
+ "OSAKABE1990JPSB.jalc.json": {
+  "fetched_utc": "2026-09-23T23:23:15Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1990JPSB.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11316%2Fjpsgaiyok.1990.2.0_515"
+ },
+ "OSAKABE1990JPSB.json": {
+  "fetched_utc": "2026-09-23T23:23:12Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1990JPSB.json",
+  "url": "https://api.crossref.org/works/10.11316/jpsgaiyok.1990.2.0_515"
+ },
+ "OSAKABE1990JPSB.ra.json": {
+  "fetched_utc": "2026-09-23T23:23:13Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1990JPSB.ra.json",
+  "url": "https://doi.org/ra/10.11316/jpsgaiyok.1990.2.0_515"
+ },
  "OSAKABE1993SS.json": {
   "fetched_utc": "2026-09-22T19:42:56Z",
   "status": 200,
@@ -412,6 +852,36 @@
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/OSAKABE1993UM.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Osakabe+Matsuda+Endo+Reflection+electron+holographic+observation+of+surface+displacement+field+Ultramicroscopy+48+1993+483&rows=5"
+ },
+ "OSAKABE1995THESIS.cinii.json": {
+  "fetched_utc": "2026-09-23T23:23:26Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1995THESIS.cinii.json",
+  "url": "https://cir.nii.ac.jp/crid/1920865334626313088.json"
+ },
+ "OSAKABE1995THESIS.jalc.json": {
+  "fetched_utc": "2026-09-23T23:23:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1995THESIS.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11501%2F3104578"
+ },
+ "OSAKABE1995THESIS.json": {
+  "fetched_utc": "2026-09-23T23:23:21Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1995THESIS.json",
+  "url": "https://api.crossref.org/works/10.11501/3104578"
+ },
+ "OSAKABE1995THESIS.ra.json": {
+  "fetched_utc": "2026-09-23T23:23:22Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OSAKABE1995THESIS.ra.json",
+  "url": "https://doi.org/ra/10.11501/3104578"
+ },
+ "OVER1997.json": {
+  "fetched_utc": "2026-09-23T23:22:39Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/OVER1997.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevb.55.4731"
  },
  "P01.json": {
   "fetched_utc": "2026-09-22T18:33:17Z",
@@ -863,6 +1333,12 @@
   "stored": "docs/agent_reports/crossref_cache/P51.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Subakti+Daqiqshirazi+Wolf+Electron+holographic+mapping+of+structural+and+electronic+reconstruction+at+mono-+and+bilayer+steps+of+h-BN+Physical+Review+Research+5+2023+033137&rows=5"
  },
+ "PASTEWKA2009.json": {
+  "fetched_utc": "2026-09-23T23:22:48Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/PASTEWKA2009.json",
+  "url": "https://api.crossref.org/works/10.1016/j.nimb.2009.06.094"
+ },
  "PAT01.patent.html": {
   "fetched_utc": "2026-09-22T18:34:34Z",
   "status": 200,
@@ -874,6 +1350,30 @@
   "status": 503,
   "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/PAT02.patent.html",
   "url": "https://patents.google.com/patent/US5192867A/en"
+ },
+ "PEDERSEN2017.json": {
+  "fetched_utc": "2026-09-23T23:22:48Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/PEDERSEN2017.json",
+  "url": "https://api.crossref.org/works/10.1088/1367-2630/aa732e"
+ },
+ "PEHLKE1991.json": {
+  "fetched_utc": "2026-09-23T23:22:43Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/PEHLKE1991.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevlett.67.1290"
+ },
+ "PENG96DW.json": {
+  "fetched_utc": "2026-09-23T23:20:30Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/PENG96DW.json",
+  "url": "https://api.crossref.org/works/10.1107/s010876739600089x"
+ },
+ "PENG96ROBUST.json": {
+  "fetched_utc": "2026-09-23T23:20:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/PENG96ROBUST.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767395014371"
  },
  "PENNINGTON15.json": {
   "fetched_utc": "2026-09-22T19:43:14Z",
@@ -904,6 +1404,18 @@
   "status": 200,
   "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/PYMULTISLICE.readme.md",
   "url": "https://raw.githubusercontent.com/HamishGBrown/py_multislice/master/README.md"
+ },
+ "RADI70.json": {
+  "fetched_utc": "2026-09-23T23:20:32Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/RADI70.json",
+  "url": "https://api.crossref.org/works/10.1107/s0567739470000050"
+ },
+ "RAMSTAD1995.json": {
+  "fetched_utc": "2026-09-23T23:22:25Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/RAMSTAD1995.json",
+  "url": "https://api.crossref.org/works/10.1103/physrevb.51.14504"
  },
  "REZ94.json": {
   "fetched_utc": "2026-09-22T19:43:17Z",
@@ -1031,6 +1543,12 @@
   "stored": "docs/agent_reports/crossref_cache/SEABERG2014.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Seaberg+Zhang+Gardner+Tabletop+nanometer+extreme+ultraviolet+imaging+in+an+extended+reflection+mode+using+coherent+Fresnel+ptychography+Optica+1+2014+39&rows=5"
  },
+ "SEARS91.json": {
+  "fetched_utc": "2026-09-23T23:21:06Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SEARS91.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767391002970"
+ },
  "SENHORST2024.json": {
   "fetched_utc": "2026-09-22T19:43:04Z",
   "status": 200,
@@ -1055,6 +1573,36 @@
   "stored": "docs/agent_reports/crossref_cache/SENHORST2026.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Senhorst+Witte+Coene+2D+approximation+quickly+breaks+down+in+reflection+ptychography+Optics+Express+34+2026+22163&rows=5"
  },
+ "SHIRASAWA2005HK.json": {
+  "fetched_utc": "2026-09-23T23:22:28Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SHIRASAWA2005HK.json",
+  "url": "https://api.crossref.org/works/10.1380/jsssj.26.480"
+ },
+ "SHIRASAWA2006JPS.jalc.json": {
+  "fetched_utc": "2026-09-23T23:22:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SHIRASAWA2006JPS.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11316%2Fjpsgaiyo.61.1.4.0_865_1"
+ },
+ "SHIRASAWA2006JPS.json": {
+  "fetched_utc": "2026-09-23T23:22:31Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/SHIRASAWA2006JPS.json",
+  "url": "https://api.crossref.org/works/10.11316/jpsgaiyo.61.1.4.0_865_1"
+ },
+ "SHIRASAWA2006JPS.ra.json": {
+  "fetched_utc": "2026-09-23T23:22:31Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SHIRASAWA2006JPS.ra.json",
+  "url": "https://doi.org/ra/10.11316/jpsgaiyo.61.1.4.0_865_1"
+ },
+ "SHIRASAWA2006SS.json": {
+  "fetched_utc": "2026-09-23T23:22:41Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SHIRASAWA2006SS.json",
+  "url": "https://api.crossref.org/works/10.1016/j.susc.2005.11.031"
+ },
  "SIMTRHEPD-CPC.json": {
   "fetched_utc": "2026-09-22T18:36:12Z",
   "status": 200,
@@ -1066,6 +1614,24 @@
   "status": 200,
   "stored": "/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/bib/SIMTRHEPD.readme.md",
   "url": "https://raw.githubusercontent.com/sim-trhepd-rheed/sim-trhepd-rheed/main/README.md"
+ },
+ "SUZUKI2000JPS.jalc.json": {
+  "fetched_utc": "2026-09-23T23:23:18Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SUZUKI2000JPS.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11316%2Fjpsgaiyo.55.1.4.0_747_4"
+ },
+ "SUZUKI2000JPS.json": {
+  "fetched_utc": "2026-09-23T23:23:15Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/SUZUKI2000JPS.json",
+  "url": "https://api.crossref.org/works/10.11316/jpsgaiyo.55.1.4.0_747_4"
+ },
+ "SUZUKI2000JPS.ra.json": {
+  "fetched_utc": "2026-09-23T23:23:16Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/SUZUKI2000JPS.ra.json",
+  "url": "https://doi.org/ra/10.11316/jpsgaiyo.55.1.4.0_747_4"
  },
  "SUZUKI2001.json": {
   "fetched_utc": "2026-09-22T19:42:53Z",
@@ -1079,11 +1645,59 @@
   "stored": "docs/agent_reports/crossref_cache/SUZUKI2001.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Suzuki+Tanishiro+Ishiguro+Energy-filtered+Electron+Interferometry+in+Reflection+Electron+Microscopy+Japanese+Journal+of+Applied+Physics+40+2001+2527&rows=5"
  },
+ "TABATA1987.json": {
+  "fetched_utc": "2026-09-23T23:22:42Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TABATA1987.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(87)90114-2"
+ },
+ "TAKAHASI1995.json": {
+  "fetched_utc": "2026-09-23T23:22:40Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TAKAHASI1995.json",
+  "url": "https://api.crossref.org/works/10.1016/0039-6028(95)00663-x"
+ },
+ "TAKEGUCHI1990.cinii.json": {
+  "fetched_utc": "2026-09-23T23:23:33Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TAKEGUCHI1990.cinii.json",
+  "url": "https://cir.nii.ac.jp/crid/1521417755419074304.json"
+ },
+ "TAKEGUCHI1990.json": {
+  "fetched_utc": "2026-09-23T23:23:32Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TAKEGUCHI1990.json",
+  "url": "https://api.crossref.org/works/10.1093/oxfordjournals.jmicro.a050815"
+ },
  "TAKEGUCHI1990.search.json": {
   "fetched_utc": "2026-09-22T19:41:40Z",
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/TAKEGUCHI1990.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Takeguchi+Harada+Shimizu+Observation+of+GaAs%28110%29+Surface+Defect+by+Reflection+Electron+Holography+Journal+of+Electron+Microscopy+1990&rows=5"
+ },
+ "TAKEGUCHI1993THESIS.cinii.json": {
+  "fetched_utc": "2026-09-23T23:23:31Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TAKEGUCHI1993THESIS.cinii.json",
+  "url": "https://cir.nii.ac.jp/crid/1910865335611167488.json"
+ },
+ "TAKEGUCHI1993THESIS.jalc.json": {
+  "fetched_utc": "2026-09-23T23:23:30Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TAKEGUCHI1993THESIS.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11501%2F3065914"
+ },
+ "TAKEGUCHI1993THESIS.json": {
+  "fetched_utc": "2026-09-23T23:23:27Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/TAKEGUCHI1993THESIS.json",
+  "url": "https://api.crossref.org/works/10.11501/3065914"
+ },
+ "TAKEGUCHI1993THESIS.ra.json": {
+  "fetched_utc": "2026-09-23T23:23:28Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TAKEGUCHI1993THESIS.ra.json",
+  "url": "https://doi.org/ra/10.11501/3065914"
  },
  "TANAKA24.json": {
   "fetched_utc": "2026-09-22T19:43:20Z",
@@ -1121,6 +1735,24 @@
   "stored": "docs/agent_reports/crossref_cache/TANISHIRO1999JJAP.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Tanishiro+Okamoto+Suzuki+Image+Conservation+in+Inelastically+Scattered+Electrons+in+Reflection+Electron+Microscopy+Japanese+Journal+of+Applied+Physics+38+1999+6540&rows=5"
  },
+ "TANISHIRO2001JPS.jalc.json": {
+  "fetched_utc": "2026-09-23T23:23:21Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TANISHIRO2001JPS.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11316%2Fjpsgaiyo.56.1.4.0_852_2"
+ },
+ "TANISHIRO2001JPS.json": {
+  "fetched_utc": "2026-09-23T23:23:18Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/TANISHIRO2001JPS.json",
+  "url": "https://api.crossref.org/works/10.11316/jpsgaiyo.56.1.4.0_852_2"
+ },
+ "TANISHIRO2001JPS.ra.json": {
+  "fetched_utc": "2026-09-23T23:23:19Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TANISHIRO2001JPS.ra.json",
+  "url": "https://doi.org/ra/10.11316/jpsgaiyo.56.1.4.0_852_2"
+ },
  "TANISHIRO2003.json": {
   "fetched_utc": "2026-09-22T19:44:07Z",
   "status": 200,
@@ -1144,6 +1776,30 @@
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/TANJI1991.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Tanji+Ito+Yada+Contrast+simulation+of+high+resolution+electron+holography+on+surface+structures+Ultramicroscopy+35+1991+245&rows=5"
+ },
+ "THOMAS24.json": {
+  "fetched_utc": "2026-09-23T23:20:24Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/THOMAS24.json",
+  "url": "https://api.crossref.org/works/10.1107/s2053273323010963"
+ },
+ "TOKUTAKE2015.jalc.json": {
+  "fetched_utc": "2026-09-23T23:22:53Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TOKUTAKE2015.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.18957%2Frr.3.2.571"
+ },
+ "TOKUTAKE2015.json": {
+  "fetched_utc": "2026-09-23T23:22:51Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/TOKUTAKE2015.json",
+  "url": "https://api.crossref.org/works/10.18957/rr.3.2.571"
+ },
+ "TOKUTAKE2015.ra.json": {
+  "fetched_utc": "2026-09-23T23:22:51Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/TOKUTAKE2015.ra.json",
+  "url": "https://doi.org/ra/10.18957/rr.3.2.571"
  },
  "U01.json": {
   "fetched_utc": "2026-09-22T18:33:29Z",
@@ -1343,6 +1999,18 @@
   "stored": "docs/agent_reports/crossref_cache/U18.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=rheed%2B%2B+RHEED+intensity+oscillations+epitaxial+growth+SoftwareX&rows=5"
  },
+ "UZUHASHI2024.json": {
+  "fetched_utc": "2026-09-23T23:22:47Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/UZUHASHI2024.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2024.113980"
+ },
+ "VOSS80.json": {
+  "fetched_utc": "2026-09-23T23:20:27Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/VOSS80.json",
+  "url": "https://api.crossref.org/works/10.1515/zna-1980-0913"
+ },
  "WANG1993RPP.json": {
   "fetched_utc": "2026-09-22T19:43:00Z",
   "status": 200,
@@ -1367,6 +2035,48 @@
   "stored": "docs/agent_reports/crossref_cache/WANG97.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Wang+Chou+Libera+Transmission+electron+holography+of+silicon+nanospheres+with+surface+oxide+layers+Applied+Physics+Letters+70+1997+1296&rows=5"
  },
+ "WEICKENMEIER91.json": {
+  "fetched_utc": "2026-09-23T23:20:29Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/WEICKENMEIER91.json",
+  "url": "https://api.crossref.org/works/10.1107/s0108767391004804"
+ },
+ "WU04.json": {
+  "fetched_utc": "2026-09-23T23:21:10Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/WU04.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2003.08.006"
+ },
+ "WUSPIECKER17.claim.json": {
+  "fetched_utc": "2026-09-23T23:21:09Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/WUSPIECKER17.claim.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2017.03.029"
+ },
+ "WUSPIECKER17.json": {
+  "fetched_utc": "2026-09-23T23:21:09Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/WUSPIECKER17.json",
+  "url": "https://api.crossref.org/works/10.1016/j.ultramic.2017.01.011"
+ },
+ "YAGI1986.jalc.json": {
+  "fetched_utc": "2026-09-23T23:22:58Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/YAGI1986.jalc.json",
+  "url": "https://api.japanlinkcenter.org/dois/10.11470%2Foubutsu1932.55.1036"
+ },
+ "YAGI1986.json": {
+  "fetched_utc": "2026-09-23T23:22:55Z",
+  "status": 404,
+  "stored": "docs/agent_reports/crossref_cache/YAGI1986.json",
+  "url": "https://api.crossref.org/works/10.11470/oubutsu1932.55.1036"
+ },
+ "YAGI1986.ra.json": {
+  "fetched_utc": "2026-09-23T23:22:56Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/YAGI1986.ra.json",
+  "url": "https://doi.org/ra/10.11470/oubutsu1932.55.1036"
+ },
  "YAGI1993SSR.json": {
   "fetched_utc": "2026-09-22T19:43:03Z",
   "status": 200,
@@ -1378,6 +2088,48 @@
   "status": 200,
   "stored": "docs/agent_reports/crossref_cache/YAGI1993SSR.search.json",
   "url": "https://api.crossref.org/works?query.bibliographic=Yagi+Reflection+electron+microscopy%3A+studies+of+surface+structures+and+surface+dynamic+processes+Surface+Science+Reports+17+1993+307&rows=5"
+ },
+ "YASAKA1991.json": {
+  "fetched_utc": "2026-09-23T23:22:49Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/YASAKA1991.json",
+  "url": "https://api.crossref.org/works/10.5940/jcrsj.33.182"
+ },
+ "ZANDVLIET2000.json": {
+  "fetched_utc": "2026-09-23T23:22:26Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZANDVLIET2000.json",
+  "url": "https://api.crossref.org/works/10.1103/revmodphys.72.593"
+ },
+ "ZANDVLIET2001E.json": {
+  "fetched_utc": "2026-09-23T23:22:26Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZANDVLIET2001E.json",
+  "url": "https://api.crossref.org/works/10.1103/revmodphys.73.247"
+ },
+ "ZHENG26A.arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:26:59Z",
+  "status": 406,
+  "stored": "docs/agent_reports/crossref_cache/ZHENG26A.arxiv.xml",
+  "url": "https://export.arxiv.org/api/query?id_list=2603.10523"
+ },
+ "ZHENG26A.claim.json": {
+  "fetched_utc": "2026-09-23T23:22:01Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZHENG26A.claim.json",
+  "url": "https://api.crossref.org/works/10.15302/frontphys.2026.114201"
+ },
+ "ZHENG26A.oai-arxiv.xml": {
+  "fetched_utc": "2026-09-23T23:22:00Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZHENG26A.oai-arxiv.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2603.10523&metadataPrefix=arXiv"
+ },
+ "ZHENG26A.oai-arxivraw.xml": {
+  "fetched_utc": "2026-09-23T23:22:00Z",
+  "status": 200,
+  "stored": "docs/agent_reports/crossref_cache/ZHENG26A.oai-arxivraw.xml",
+  "url": "https://oaipmh.arxiv.org/oai?verb=GetRecord&identifier=oai:arXiv.org:2603.10523&metadataPrefix=arXivRaw"
  },
  "ZLWANG96.isbn.json": {
   "fetched_utc": "2026-09-22T18:35:31Z",

@@ -28,6 +28,22 @@
 %% no label was raised to SECTION_READ by it, and the older notes' statements
 %% about blocked hosts describe B2's conditions, not the current ones.
 %%
+%% B4 UPDATE (2026-09-23): the proposals of L6 and L7 (docs/agent_reports/
+%% L6_new_refs.bib, L7_new_refs.bib) were checked field by field against
+%% their Crossref, JaLC, arXiv (OAI-PMH), CiNii/NDL or publisher records by
+%% tools/bib/b4_check.py (routes and declared decisions in
+%% tools/bib/b4_routes.yaml; log docs/agent_reports/B4_verification_log.md;
+%% per-entry table docs/agent_reports/B4_results.tsv) and merged under 4n
+%% with the bibliographic fields copied from the record (the few values set
+%% otherwise are named in the entry's note). Every doi in 4n is the DOI of
+%% the cached Crossref or JaLC record it was checked against; none was typed.
+%% Reading labels (SECTION_READ, +ABSTRACT) in 4n are those of L6/L7, NOT
+%% re-checked by B4. [TAKEGUCHI1990] was corrected from the CiNii/NDL record
+%% and moved up from the UNVERIFIED section (its doi by linked records).
+%% ENCODING: two thesis records in 4n ([OSAKABE1995THESIS],
+%% [TAKEGUCHI1993THESIS]) have only a Japanese title in every record, so
+%% their title (and some notes in 4n) are UTF-8; the file is read as UTF-8.
+%%
 %% DOI POLICY (strict): a `doi` field appears ONLY when that DOI string is
 %% written in the instruction file, or in B_literature.md with a stated
 %% provenance. NO DOI IN THIS FILE WAS CONSTRUCTED, GUESSED OR
@@ -1613,6 +1629,1022 @@
   note      = {evidence: METADATA\_VERIFIED (route: Crossref API record found by bibliographic search with the citation claimed in L5 section 4, M14, accepted on the strict five-field rule (first author, title, container, year, volume all match), cached as docs/agent\_reports/crossref\_cache/TANAKA24.json; B3 pass 2, 2026-09-22); provenance: proposed by docs/agent\_reports/L5\_open\_access\_check.md (L5 section 4, M14); fields copied from the Crossref record. Not read in B3.}
 }
 
+%% --- 4n. Records added by B4 (proposals of L6 and L7, each checked against its registry record) ---
+%% L6 (docs/agent_reports/L6_new_refs.bib; report L6_sourced_si_parameters.md)
+
+@article{THOMAS24,
+  author  = {Thomas, M. and Cleverley, A. and Beanland, R.},
+  title   = {Parameterized absorptive electron scattering factors},
+  journal = {Acta Crystallographica Section A Foundations and Advances},
+  volume  = {80},
+  number  = {2},
+  pages   = {146--150},
+  year    = {2024},
+  doi     = {10.1107/s2053273323010963},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/THOMAS24.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ in full (Europe PMC full-text XML of PMC10913675, CC BY; Eqs. (1)-(3) read as images; supplementary code main\_scattering\_function.py read and run by L6, report sec. 1.3, 1.5); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry THOMAS24 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Bird-King TDS absorptive factor f'(s,B) parameterised for 103 elements; used by L6 to compute Si at 200 keV (DERIVED\_HERE).}
+}
+
+@article{MENDIS24,
+  author  = {Mendis, Budhika},
+  title   = {Modelling dynamical 3D electron diffraction intensities. II. The role of inelastic scattering},
+  journal = {Acta Crystallographica Section A Foundations and Advances},
+  volume  = {80},
+  number  = {2},
+  pages   = {178--188},
+  year    = {2024},
+  doi     = {10.1107/s2053273323010690},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MENDIS24.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ in full (PMC10913673, CC BY; report sec. 1.3(b)); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry MENDIS24 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Si [110], 200 kV: plasmon mean free path 1050 A (stated, cited to Mendis 2019), total inelastic ~830 A (Malis formula), phonon mean free path 7724 A (calculated), theta\_E = 0.04 mrad; states u\_rms(Si) = 0.078 A citing Kirkland 2010 with B = 2 pi^2 u^2 convention.}
+}
+
+@article{MENDIS19,
+  author  = {Mendis, B.G.},
+  title   = {An inelastic multislice simulation method incorporating plasmon energy losses},
+  journal = {Ultramicroscopy},
+  volume  = {206},
+  pages   = {112816},
+  year    = {2019},
+  doi     = {10.1016/j.ultramic.2019.112816},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MENDIS19.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry MENDIS19 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (Elsevier closed; Durham repository record 1297319 returned HTTP 403 to curl and WebFetch). Source of the measured Si plasmon mean free path 1050 A at 200 kV as stated in [MENDIS24]; read it before adopting that value. See also the corrigendum [MENDIS20C].}
+}
+
+@article{MENDIS20C,
+  author  = {Mendis, B.G.},
+  title   = {Corrigendum to: ``An inelastic multislice simulation method incorporating plasmon energy losses'' [Ultramicroscopy 206 (2019) 112816]},
+  journal = {Ultramicroscopy},
+  volume  = {212},
+  pages   = {112957},
+  year    = {2020},
+  doi     = {10.1016/j.ultramic.2020.112957},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MENDIS20C.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry MENDIS20C of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): not read. Corrigendum to [MENDIS19]; whether it changes the 1050 A value is UNVERIFIED.}
+}
+
+@article{NI26,
+  author  = {Ni, Hsu-Chih and Busch, Robert and Zuo, Jian-Min},
+  title   = {PyExtal: a Python package for quantitative convergent-beam electron diffraction},
+  journal = {Journal of Applied Crystallography},
+  volume  = {59},
+  number  = {2},
+  pages   = {687--699},
+  year    = {2026},
+  doi     = {10.1107/s1600576726001469},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/NI26.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ of sec. 2.3, 4.1, 4.2, 5, 6.2 and Tables 1-3 (PMC13060613 full-text XML; table-header images efi63/efi82/efi64 read as U111, U'111, U222); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry NI26 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Si 111 at 200 kV (energy-filtered CBED, dataset of Zuo 1998): U111 = 0.04735, U'111 = 0.00079 (PyExtal); 0.04731, 0.00086 (Extal); 300 kV values in Tables 2-3.}
+}
+
+@article{VOSS80,
+  author  = {Voss, R. and Lehmpfuhl, G. and Smith, P. J.},
+  title   = {Influence of Doping on the Crystal Potential of Silicon investigated by the Convergent Beam Electron Diffraction Technique},
+  journal = {Zeitschrift f{\"u}r Naturforschung A},
+  volume  = {35},
+  number  = {9},
+  pages   = {973--984},
+  year    = {1980},
+  doi     = {10.1515/zna-1980-0913},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/VOSS80.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ (CC BY 4.0 digitisation, extracted by HTTP range from the open Edmond archive doi:10.17617/3.GRUJYR; pages read as images; report sec. 1.7); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry VOSS80 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: journal: raw non-ASCII characters (references.bib is LaTeX-encoded); title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Si CBED at 100 keV, room temperature: measured mean absorption potential V'000 = 0.61 V; V'g from Eq. (3) V\_g^im = V\_g^real (B|g| - C g^2) with B = 0.004, C = 0.0003 (Table 5, p. 983); real structure potentials Table 1 (p. 982); uses B(Si) = 0.4613 A^2 at 293.2 K (Table 3 caption).}
+}
+
+@article{BIRDKING90,
+  author  = {Bird, D. M. and King, Q. A.},
+  title   = {Absorptive form factors for high-energy electron diffraction},
+  journal = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume  = {46},
+  number  = {3},
+  pages   = {202--208},
+  year    = {1990},
+  doi     = {10.1107/s0108767389011906},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/BIRDKING90.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry BIRDKING90 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr journals.iucr.org: Cloudflare 403). Its absorptive-factor integral is read only as reproduced in [THOMAS24] Eq. (2).}
+}
+
+@article{WEICKENMEIER91,
+  author  = {Weickenmeier, A. and Kohl, H.},
+  title   = {Computation of absorptive form factors for high-energy electron diffraction},
+  journal = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume  = {47},
+  number  = {5},
+  pages   = {590--597},
+  year    = {1991},
+  doi     = {10.1107/s0108767391004804},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/WEICKENMEIER91.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry WEICKENMEIER91 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). Parameterisation used by Dr. Probe [BARTHEL18] and by Hajek and Rusz [HAJEK26].}
+}
+
+@article{PENG96ROBUST,
+  author  = {Peng, L. M. and Ren, G. and Dudarev, S. L. and Whelan, M. J.},
+  title   = {Robust Parameterization of Elastic and Absorptive Electron Atomic Scattering Factors},
+  journal = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume  = {52},
+  number  = {2},
+  pages   = {257--276},
+  year    = {1996},
+  doi     = {10.1107/s0108767395014371},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PENG96ROBUST.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry PENG96ROBUST of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). Abstract: absorptive factors parameterised for 17 zinc-blende materials, 1-1000 K; program takes Z, Debye-Waller factor and voltage. [THOMAS24] states the Peng et al. 1996 tables are for 100 kV (statement, not verified).}
+}
+
+@article{PENG96DW,
+  author  = {Peng, L.-M. and Ren, G. and Dudarev, S. L. and Whelan, M. J.},
+  title   = {Debye--Waller Factors and Absorptive Scattering Factors of Elemental Crystals},
+  journal = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume  = {52},
+  number  = {3},
+  pages   = {456--470},
+  year    = {1996},
+  doi     = {10.1107/s010876739600089x},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PENG96DW.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry PENG96DW of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). Abstract: Debye-Waller factors and absorptive scattering factors of 44 elemental crystals, 1-1000 K, DW accuracy 2-3 \%. Si values UNVERIFIED.}
+}
+
+@article{HALLHIRSCH65,
+  author  = {Hall, C. R. and Hirsch, Peter Bernhard},
+  title   = {Effect of thermal diffuse scattering on propagation of high energy electrons through crystals},
+  journal = {Proceedings of the Royal Society of London. Series A. Mathematical and Physical Sciences},
+  volume  = {286},
+  number  = {1405},
+  pages   = {158--177},
+  year    = {1965},
+  doi     = {10.1098/rspa.1965.0136},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HALLHIRSCH65.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HALLHIRSCH65 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD. Einstein-model TDS absorption. Note: the Dr. Probe celslc page prints the year as 1957; Crossref gives 1965.}
+}
+
+@article{RADI70,
+  author  = {Radi, G.},
+  title   = {Complex lattice potentials in electron diffraction calculated for a number of crystals},
+  journal = {Acta Crystallographica Section A},
+  volume  = {26},
+  number  = {1},
+  pages   = {41--56},
+  year    = {1970},
+  doi     = {10.1107/s0567739470000050},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/RADI70.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry RADI70 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). 100 keV complex lattice potentials for monatomic crystals Z = 3-90 at 20, 93, 293 K. Its Si values are known here only as quoted in [VOSS80] Table 5 (000 0.70 V, 111 0.1 V, 220 0.11 V, 311 0.07 V, 004 0.09 V).}
+}
+
+@article{HHW62,
+  author  = {Hashimoto, H. and Howie, Archibald and Whelan, Michael John},
+  title   = {Anomalous electron absorption effects in metal foils: theory and comparison with experiment},
+  journal = {Proceedings of the Royal Society of London. Series A. Mathematical and Physical Sciences},
+  volume  = {269},
+  number  = {1336},
+  pages   = {80--103},
+  year    = {1962},
+  doi     = {10.1098/rspa.1962.0164},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HHW62.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HHW62 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): not read. Named by the Dr. Probe celslc page as the origin of the constant proportional absorption parameter ('typical values 0.01 to 0.20').}
+}
+
+@article{HUMPHREYS68,
+  author  = {Humphreys, C. J. and Hirsch, P. B.},
+  title   = {Absorption parameters in electron diffraction theory},
+  journal = {The Philosophical Magazine: A Journal of Theoretical Experimental and Applied Physics},
+  volume  = {18},
+  number  = {151},
+  pages   = {115--122},
+  year    = {1968},
+  doi     = {10.1080/14786436808227313},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HUMPHREYS68.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HUMPHREYS68 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): not read. Cited by [THOMAS24] for the proportional model f' = alpha f with alpha ~ 0.1, and by [VOSS80] (ref. 11) for the relation behind their Eq. (3).}
+}
+
+@article{ICHIMIYA85,
+  author  = {Ichimiya, Ayahiko},
+  title   = {Analytical Formura of Imaginary Crystal Potential for Fast Electrons},
+  journal = {Japanese Journal of Applied Physics},
+  volume  = {24},
+  number  = {11R},
+  pages   = {1579},
+  year    = {1985},
+  doi     = {10.1143/jjap.24.1579},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ICHIMIYA85.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry ICHIMIYA85 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). 'Formura' [sic] is the deposited title spelling and is kept. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IOP, closed per OpenAlex). The Crossref title carries the misspelling 'Formura' as deposited. Cited by [MINAMI08] for the RHEED imaginary potential U(S) = U\_TDS exp(-2BS^2) + U\_el exp(-50 S^2).}
+}
+
+@article{ICHIMIYALEHMPFUHL78,
+  author  = {Ichimiya, A. and Lehmpfuhl, G.},
+  title   = {Axial Channeling in Electron Diffraction},
+  journal = {Zeitschrift f{\"u}r Naturforschung A},
+  volume  = {33},
+  number  = {3},
+  pages   = {269--281},
+  year    = {1978},
+  doi     = {10.1515/zna-1978-0304},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ICHIMIYALEHMPFUHL78.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry ICHIMIYALEHMPFUHL78 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: journal: raw non-ASCII characters (references.bib is LaTeX-encoded); title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): not read (open in the Edmond ZfN archive, not extracted). Ref. 12 of [VOSS80], source of the first B, C absorption constants for Si (Table 5 column 'Ichimiya and Lehmpfuhl (1978)').}
+}
+
+@article{DUDAREV95,
+  author  = {Dudarev, S.L. and Peng, L.-M. and Whelan, M.J.},
+  title   = {On the Doyle-Turner representation of the optical potential for RHEED calculations},
+  journal = {Surface Science},
+  volume  = {330},
+  number  = {1},
+  pages   = {86--100},
+  year    = {1995},
+  doi     = {10.1016/0039-6028(95)00464-5},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/DUDAREV95.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry DUDAREV95 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (Elsevier). Optical potential for RHEED calculations; candidate for the RHEED treatment of absorption.}
+}
+
+@article{DUDAREV93,
+  author  = {Dudarev, S. L. and Peng, L.-M. and Whelan, M. J.},
+  title   = {Correlations in space and time and dynamical diffraction of high-energy electrons by crystals},
+  journal = {Physical Review B},
+  volume  = {48},
+  number  = {18},
+  pages   = {13408--13429},
+  year    = {1993},
+  doi     = {10.1103/physrevb.48.13408},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/DUDAREV93.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry DUDAREV93 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (APS 403). Kinetic-equation treatment of elastic and inelastic scattering at ~100 keV.}
+}
+
+@article{ALLEN15,
+  author  = {Allen, L.J. and D'Alfonso, A.J. and Findlay, S.D.},
+  title   = {Modelling the inelastic scattering of fast electrons},
+  journal = {Ultramicroscopy},
+  volume  = {151},
+  pages   = {11--22},
+  year    = {2015},
+  doi     = {10.1016/j.ultramic.2014.10.011},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ALLEN15.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry ALLEN15 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4 MISMATCHES (proposal -> record; the record value is used unless stated): author[2].family: 'D'Alfonso' -> 'D[U+05F3]Alfonso' [Crossref] (proposal kept: record artefact). Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). Fields set rather than copied: author = 'Allen, L.J. and D'Alfonso, A.J. and Findlay, S.D.' (reason in tools/bib/b4\_routes.yaml). The Crossref record spells the second author with the Hebrew punctuation geresh (U+05F3) in place of the apostrophe of D'Alfonso; the apostrophe form of the proposal is kept. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (Elsevier; Melbourne repository hdl 11343/52385 states 'This item is currently not available from this repository').}
+}
+
+@article{BARTHEL18,
+  author  = {Barthel, J.},
+  title   = {Dr. Probe: A software for high-resolution STEM image simulation},
+  journal = {Ultramicroscopy},
+  volume  = {193},
+  pages   = {1--11},
+  year    = {2018},
+  doi     = {10.1016/j.ultramic.2018.06.003},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/BARTHEL18.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ of the author's preprint (https://er-c.org/barthel/drprobe/drprobe-paper.pdf, 30 pages); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry BARTHEL18 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): p. 9 sec. 2.2 (Weickenmeier-Kohl absorptive factors with Debye-Waller-damped potentials for bright-field; TDS by frozen lattice without DW factors), p. 11 sec. 2.3 (B = 8 pi^2 <u\_s^2>, per-axis Gaussian displacements). Pagination of the version of record not checked.}
+}
+
+@article{HOWIESTERN72,
+  author  = {Howie, A and Stern, R. M.},
+  title   = {The Optical Potential in Electron Diffraction},
+  journal = {Zeitschrift f{\"u}r Naturforschung A},
+  volume  = {27},
+  number  = {3},
+  pages   = {382--389},
+  year    = {1972},
+  doi     = {10.1515/zna-1972-0302},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HOWIESTERN72.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ of the abstract and first page only (CC BY 4.0 digitisation via Edmond); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HOWIESTERN72 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: journal: raw non-ASCII characters (references.bib is LaTeX-encoded); title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Optical potential and mean free path 20 eV-100 keV for Al, Cu, Au (no Si).}
+}
+
+@article{MINAMI08,
+  author  = {Minami, Tomoko and Yamagata, Yuki and Nakahara, Hitoshi and Ichimiya, Ayahiko},
+  title   = {Structural Analysis of Crystal Surfaces by Reflection High-Energy Electron Diffraction Patterns: The Si(111)7*7 Surface},
+  journal = {e-Journal of Surface Science and Nanotechnology},
+  volume  = {6},
+  pages   = {87--90},
+  year    = {2008},
+  doi     = {10.1380/ejssnt.2008.87},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MINAMI08.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ (J-STAGE open PDF; report sec. 1.6); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry MINAMI08 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Si(111)7x7, 10 kV energy-filtered RHEED; Eq. (1) two-term imaginary potential; Table I bulk U\_TDS = 0.37 V, B = 0.38 A^2, U\_el = 0.01 or 1.28 V.}
+}
+
+@article{HORIO14,
+  author  = {Horio, Yoshimi and Takakuwa, Yuji and Ogawa, Schuichi},
+  title   = {Dimer Configuration of Si(001)2$\times$1 Surface by Projected Potential Approach of Reflection High-Energy Electron Diffraction},
+  journal = {e-Journal of Surface Science and Nanotechnology},
+  volume  = {12},
+  pages   = {380--386},
+  year    = {2014},
+  doi     = {10.1380/ejssnt.2014.380},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HORIO14.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ (J-STAGE open PDF; report sec. 1.6, 4); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HORIO14 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: number = {0}: J-STAGE's placeholder issue for journals without issues; title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). J-STAGE deposits issue '0' for this journal (no issues): no number field. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Si(001)2x1 many-beam rocking curves at 10 kV, [1-10]; 10 \% proportional imaginary potential; Si MIP 12 eV used; Fig. 5 experimental vs calculated rocking curves at RT. B4 DUPLICATE MERGED HERE: L7 proposed the same DOI as HORIO2014; its label was 'SECTION\_READ (secs. I-V, Table I, p. 381-385; J-STAGE open) + METADATA\_VERIFIED' and its note reads (verbatim, not re-checked in B4): L7 R3: RT buckling 0.71 A and 18.1 deg by many-beam RHEED with a flip-flop-averaged projected potential; r\_AB and back bonds fixed, one parameter fitted. Registry: Crossref /works/10.1380/ejssnt.2014.380 read 2026-09-23 (type journal-article).}
+}
+
+@article{HORIO22,
+  author  = {Horio, Yoshimi and Nakahara, Hitoshi and Yuhara, Junji and Takakuwa, Yuji},
+  title   = {Correlation between Plasmon Excitations and Wavefields under Reflection High-Energy Electron Diffraction Condition},
+  journal = {e-Journal of Surface Science and Nanotechnology},
+  volume  = {20},
+  number  = {2},
+  pages   = {76--84},
+  year    = {2022},
+  doi     = {10.1380/ejssnt.2022-013},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HORIO22.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ (J-STAGE open PDF; report sec. 1.6, 3); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HORIO22 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Si(111)7x7, 10 keV; surface-plasmon excitation number ~70 \% of Lucas' value (Eq. 1, beta = 0.66, 0.71); Doyle-Turner V000 = 13.9 eV 'corrected to a more realistic value of 12 eV' citing [HORIO83]; 10 \% proportional absorption.}
+}
+
+@article{HEACOCK21,
+  author        = {Heacock, Benjamin and Fujiie, Takuhiro and Haun, Robert W. and Henins, Albert and Hirota, Katsuya and Hosobata, Takuya and Huber, Michael G. and Kitaguchi, Masaaki and Pushin, Dmitry A. and Shimizu, Hirohiko and Takeda, Masahiro and Valdillez, Robert and Yamagata, Yutaka and Young, Albert R.},
+  title         = {Pendell{\"o}sung interferometry probes the neutron charge radius, lattice dynamics, and fifth forces},
+  journal       = {Science},
+  volume        = {373},
+  number        = {6560},
+  pages         = {1239--1243},
+  year          = {2021},
+  doi           = {10.1126/science.abc2794},
+  eprint        = {2103.05428},
+  archiveprefix = {arXiv},
+  note          = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HEACOCK21.json, plus the arXiv OAI-PMH records of 2103.05428 (HEACOCK21.oai-arxiv.xml); B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ of arXiv:2103.05428v3 (the arXiv abstract page links doi:10.1126/science.abc2794) (19 Aug 2021; main text and supplementary text, 45 PDF pages), NOT of the Science pagination; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HEACOCK21 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, version v3, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). The arXiv record 2103.05428 links the same DOI; its title differs only in capitalisation. arXiv record: versions v1 2021-03-09, v2 2021-07-08, v3 2021-08-19; categories nucl-ex; DOI 10.1126/science.abc2794. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): B(Si) = 0.4761(17) A^2 at 295.5 K (neutron Pendelloesung, PDF p. 6); 0.4767(6) A^2 with the charge radius constrained (p. 33); BvK value of [FLENSBURG99] scaled to 295.5 K: 0.4725(17) A^2 (p. 6, 32); dB/dT = 0.0014 A^2/K (p. 25); <u^2> = B/(8 pi^2) (p. 3).}
+}
+
+@article{FLENSBURG99,
+  author  = {Flensburg, Claus and Stewart, Robert F.},
+  title   = {Lattice dynamical Debye-Waller factor for silicon},
+  journal = {Physical Review B},
+  volume  = {60},
+  number  = {1},
+  pages   = {284--291},
+  year    = {1999},
+  doi     = {10.1103/physrevb.60.284},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/FLENSBURG99.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry FLENSBURG99 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (APS 403; Copenhagen portal has no file). Abstract: <u\_LD^2> = 0.005941 +- 0.000021 A^2 for Si at 293 K (Born-von Karman fit to inelastic neutron data). Consistent (DERIVED\_HERE) with the 0.4725(17) A^2 at 295.5 K that [HEACOCK21] attributes to it.}
+}
+
+@article{SEARS91,
+  author  = {Sears, V. F. and Shelley, S. A.},
+  title   = {Debye--Waller factor for elemental crystals},
+  journal = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume  = {47},
+  number  = {4},
+  pages   = {441--446},
+  year    = {1991},
+  doi     = {10.1107/s0108767391002970},
+  note    = {evidence: +ABSTRACT(OpenAlex) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/SEARS91.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(OpenAlex); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry SEARS91 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). Debye-Waller model coefficients for 43 elements (f.c.c., b.c.c., h.c.p., diamond); Si value UNVERIFIED.}
+}
+
+@incollection{B08CH14,
+  author    = {Peng, L.-M. and Dudarev, S. L. and Whelan, M. J.},
+  title     = {Temperature-Dependent Debye--Waller Factors},
+  booktitle = {High-Energy Electron Diffraction And Microscopy},
+  publisher = {Oxford University Press},
+  pages     = {454--469},
+  year      = {2004},
+  doi       = {10.1093/oso/9780198500742.003.0014},
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B08CH14.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED (Crossref chapter record); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry B08CH14 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, publisher, title, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). Fields set rather than copied: author = 'Peng, L.-M. and Dudarev, S. L. and Whelan, M. J.'; publisher = 'Oxford University Press' (reason in tools/bib/b4\_routes.yaml). Chapter record of [B08]: the same ISBNs 9780198500742 (print) and 9781383019926 (electronic) as the book record; pages 454-469. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): not read (OUP). Chapter 'Temperature-Dependent Debye-Waller Factors' of [B08] (Peng, Dudarev, Whelan 2004), pp. 454-469; not in the reading plan's B08 locators.}
+}
+
+@incollection{B08CH7,
+  author    = {Peng, L.-M. and Dudarev, S. L. and Whelan, M. J.},
+  title     = {Diffuse And Inelastic Scattering -- Elementary Processes},
+  booktitle = {High-Energy Electron Diffraction And Microscopy},
+  publisher = {Oxford University Press},
+  pages     = {228--263},
+  year      = {2004},
+  doi       = {10.1093/oso/9780198500742.003.0007},
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B08CH7.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED (Crossref chapter record); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry B08CH7 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, publisher, title, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). Fields set rather than copied: author = 'Peng, L.-M. and Dudarev, S. L. and Whelan, M. J.'; publisher = 'Oxford University Press' (reason in tools/bib/b4\_routes.yaml). Chapter record of [B08]: the same ISBNs 9780198500742 (print) and 9781383019926 (electronic) as the book record; pages 228-263. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): not read (OUP). Chapter 'Diffuse and Inelastic Scattering - Elementary Processes' of [B08], pp. 228-263.}
+}
+
+@incollection{B08CH8,
+  author    = {Peng, L.-M. and Dudarev, S. L. and Whelan, M. J.},
+  title     = {Diffuse And Inelastic Scattering -- Multiple Scattering Effects},
+  booktitle = {High-Energy Electron Diffraction And Microscopy},
+  publisher = {Oxford University Press},
+  pages     = {264--310},
+  year      = {2004},
+  doi       = {10.1093/oso/9780198500742.003.0008},
+  note      = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/B08CH8.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED (Crossref chapter record); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry B08CH8 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, publisher, title, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). Fields set rather than copied: author = 'Peng, L.-M. and Dudarev, S. L. and Whelan, M. J.'; publisher = 'Oxford University Press' (reason in tools/bib/b4\_routes.yaml). Chapter record of [B08]: the same ISBNs 9780198500742 (print) and 9781383019926 (electronic) as the book record; pages 264-310. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): not read (OUP). Chapter 'Diffuse and Inelastic Scattering - Multiple Scattering Effects' of [B08], pp. 264-310.}
+}
+
+@article{WUSPIECKER17,
+  author  = {Wu, Mingjian and Spiecker, Erdmann},
+  title   = {Correlative micro-diffraction and differential phase contrast study of mean inner potential and subtle beam-specimen interaction},
+  journal = {Ultramicroscopy},
+  volume  = {176},
+  pages   = {233--245},
+  year    = {2017},
+  doi     = {10.1016/j.ultramic.2017.03.029},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the DOI that L6's report names for this work, accepted with the first page standing in for the title the claim does not state (ACCEPT-SUBSTITUTED(T<-P)), cached as docs/agent\_reports/crossref\_cache/WUSPIECKER17.claim.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(PubMed) (Europe PMC record of PMID 28366352); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry WUSPIECKER17 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4 MISMATCHES (proposal -> record; the record value is used unless stated): author: '(absent)' -> 'Wu, Mingjian and Spiecker, Erdmann' [Crossref(claimed DOI)]; title: 'Publisher's note' -> 'Correlative micro-diffraction and differential phase contrast study of mean inner potential and subtle beam-specimen interaction' [Crossref(claimed DOI)]; volume: '177' -> '176' [Crossref(claimed DOI)]; pages: '1--13' -> '233-245' [Crossref(claimed DOI)]; doi: '10.1016/j.ultramic.2017.01.011' -> '10.1016/j.ultramic.2017.03.029' [Crossref(claimed DOI)]. Formatting of the proposal fixed by rendering from the record: empty author field; title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). L6's entry carried the DOI, title ('Publisher's note'), volume 177 and pages 1-13 of a DIFFERENT Crossref record, 10.1016/j.ultramic.2017.01.011, a Publisher's note without authors; L6's own report (section 3.1, 'Record discrepancy', and section 6, 'Not accepted') names 10.1016/j.ultramic.2017.03.029 as the article. That record was fetched and every field now comes from it (authors Mingjian Wu and Erdmann Spiecker, Ultramicroscopy 176, 233-245, published-print 2017-05). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (Elsevier, closed). Abstract: MIP of Si = 12.48 +- 0.22 V from beam refraction at a wedge edge in STEM micro-diffraction; DPC similar. Crossref also holds 10.1016/j.ultramic.2017.01.011, a 'Publisher's note' in vol. 177 pp. 1-13 without authors, and PubMed carries the same abstract under PMID 28189911 (vol. 177); this record (vol. 176) is the article.}
+}
+
+@article{WU04,
+  author  = {Wu, L and Schofield, M.A and Zhu, Y and Tafto, J},
+  title   = {A unique determination of boundary condition in quantitative electron diffraction: Application to accurate measurements of mean inner potentials},
+  journal = {Ultramicroscopy},
+  volume  = {98},
+  number  = {2--4},
+  pages   = {135--143},
+  year    = {2004},
+  doi     = {10.1016/j.ultramic.2003.08.006},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L6) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/WU04.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED +ABSTRACT(PubMed) (PMID 15046792); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry WU04 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD. Abstract says Si was measured (off-axis holography + shadow imaging); no number in the abstract.}
+}
+
+@article{HORIO83,
+  author  = {Horio, Yoshimi and Ichimiya, Ayahiko},
+  title   = {Rheed intensity analysis of Si(111)7 $\times$ 7 and $\sqrt{3}$ $\times$ $\sqrt{3}$-Ag surfaces},
+  journal = {Surface Science},
+  volume  = {133},
+  number  = {2--3},
+  pages   = {393--400},
+  year    = {1983},
+  doi     = {10.1016/0039-6028(83)90009-2},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HORIO83.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HORIO83 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling); title: raw non-ASCII characters (references.bib is LaTeX-encoded). Record title symbols transcribed: the multiplication sign as $\times$, the square root as $\sqrt{3}$. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (Elsevier). Cited by [HORIO22] for the Si inner potential 12 eV used in RHEED calculations.}
+}
+
+@article{MOON72,
+  author  = {Moon, A.R.},
+  title   = {Calculation of Reflected Intensities for Medium and High Energy Electron Diffraction},
+  journal = {Zeitschrift f{\"u}r Naturforschung A},
+  volume  = {27},
+  number  = {3},
+  pages   = {390--395},
+  year    = {1972},
+  doi     = {10.1515/zna-1972-0303},
+  note    = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MOON72.json; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ (CC BY 4.0 digitisation via Edmond; report sec. 4); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry MOON72 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: journal: raw non-ASCII characters (references.bib is LaTeX-encoded); title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): Fig. 1 p. 393, Si(111) specular intensity vs incident angle at 40 keV, calculation vs Menadue's experimental values; V0 = 12 V and V\_im = V\_real/8 give the best 555 peak (p. 394).}
+}
+
+@article{MENADUE72,
+  author  = {Menadue, J. F.},
+  title   = {Si(111) surface structures by glancing-incidence high-energy electron diffraction},
+  journal = {Acta Crystallographica Section A},
+  volume  = {28},
+  number  = {1},
+  pages   = {1--11},
+  year    = {1972},
+  doi     = {10.1107/s0567739472000014},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MENADUE72.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry MENADUE72 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). Identity with Moon's ref. 13 ('J. F. Menadue, Acta Cryst., to be published') is DERIVED\_HERE from author, journal, year and subject.}
+}
+
+@article{COLELLA72,
+  author  = {Colella, R. and Menadue, F. J.},
+  title   = {Comparison of experimental and $n$-beam calculated intensities for glancing incidence high-energy electron diffraction},
+  journal = {Acta Crystallographica Section A},
+  volume  = {28},
+  number  = {1},
+  pages   = {16--22},
+  year    = {1972},
+  doi     = {10.1107/s0567739472000038},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/COLELLA72.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry COLELLA72 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). The record title carries italic markup on the n of 'n-beam', with no space before it; transcribed as 'and $n$-beam'. The record gives the second author as 'Menadue, F. J.', whereas [MENADUE72] is 'Menadue, J. F.' (both as deposited; not resolved here). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). The Crossref record gives the second author as 'Menadue, F. J.' (as deposited).}
+}
+
+@article{LEHMPFUHLDOWELL86,
+  author  = {Lehmpfuhl, G. and Dowell, W. C. T.},
+  title   = {Convergent-beam reflection high-energy electron diffraction (RHEED) observations from an Si(111) surface},
+  journal = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume  = {42},
+  number  = {6},
+  pages   = {569--577},
+  year    = {1986},
+  doi     = {10.1107/s0108767386098720},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/LEHMPFUHLDOWELL86.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry LEHMPFUHLDOWELL86 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IUCr 403). Convergent-beam RHEED of Si(111); beam energy UNVERIFIED. Best candidate for a high-energy Si rocking-curve benchmark.}
+}
+
+@article{HAYAKAWA82,
+  author  = {Hayakawa, Kazunobu and Aizawa, Noriyuki},
+  title   = {Geometrical Surface Wave Resonance at a Silicon (111) Surface in Reflection High-Energy Electron Diffraction},
+  journal = {Japanese Journal of Applied Physics},
+  volume  = {21},
+  number  = {4A},
+  pages   = {L215},
+  year    = {1982},
+  doi     = {10.1143/jjap.21.l215},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HAYAKAWA82.json; B4, 2026-09-23); label before B4 (L6 proposal): METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HAYAKAWA82 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): body UNREAD (IOP). Si(111) RHEED surface-wave resonance; energy UNVERIFIED.}
+}
+
+@misc{HAJEK26,
+  author        = {H{\'a}jek, Martin and Rusz, J{\'a}n},
+  title         = {Thermal diffuse scattering in TEM: complex absorptive potentials compared to the frozen phonon model},
+  year          = {2026},
+  eprint        = {2608.24679},
+  archiveprefix = {arXiv},
+  howpublished  = {arXiv preprint arXiv:2608.24679v1 [cond-mat.mtrl-sci], v1 submitted 25 August 2026},
+  note          = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: arXiv OAI-PMH records (formats arXiv and arXivRaw) of 2608.24679, cached as docs/agent\_reports/crossref\_cache/HAJEK26.oai-arxiv.xml and HAJEK26.oai-arxivraw.xml; the arXiv query API answered HTTP 406; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ in full (arXiv v1 PDF, 11 pages, sha256 126a4c01...; report sec. 1.2); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry HAJEK26 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, date 2026-08-25, primary category, title, version v1, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). arXiv record: versions v1 2026-08-25; categories cond-mat.mtrl-sci. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): frozen-phonon potentials have no imaginary part and absorption arises after averaging (p. 2, sec. II.A); elastic channel = coherent average, Eqs. (4)-(6); Einstein FPM and CAP both need the Debye-Waller factor (p. 2, sec. II.B); diamond and SrTiO3 at 300 kV in transmission. No DOI or journal reference on the arXiv abstract page as retrieved.}
+}
+
+@misc{ZHENG26A,
+  author        = {Zheng, Jin-Cheng},
+  title         = {First-Principles Electronegativity Scale from the Atomic Mean Inner Potential},
+  year          = {2026},
+  eprint        = {2603.10523},
+  archiveprefix = {arXiv},
+  howpublished  = {arXiv preprint arXiv:2603.10523v2 [cond-mat.mtrl-sci], v1 submitted 11 March 2026, v2 16 April 2026},
+  note          = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: arXiv OAI-PMH records (formats arXiv and arXivRaw) of 2603.10523, cached as docs/agent\_reports/crossref\_cache/ZHENG26A.oai-arxiv.xml and ZHENG26A.oai-arxivraw.xml; the arXiv query API answered HTTP 406; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ of PDF p. 30 only (sha256 48c4a7ee...); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry ZHENG26A of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, date 2026-04-16, primary category, title, version v2, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). The arXiv record gives journal-ref 'Frontiers of Physics, 21(11), 114201 (2026)' and DOI 10.15302/frontphys.2026.114201; the Crossref record of that DOI (cached as ZHENG26A.claim.json) carries the title, Frontiers of Physics 21(11), article 114201, 2026, but NO authors, as L6 reported, so no doi field is given. arXiv record: versions v1 2026-03-11, v2 2026-04-16; categories cond-mat.mtrl-sci physics.chem-ph quant-ph; journal-ref 'Frontiers of Physics, 21(11), 114201 (2026)'; DOI 10.15302/frontphys.2026.114201. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): secondary statement that holography MIP values for crystalline Si lie between about 11.5 and 12.5 V (refs. Wang 1997, Wu 2004, Kruse 2006), an early value 9.26 +- 0.08 V attributed to Gajdardziska-Josifovska 1993 (UNVERIFIED, suspicious), pro-crystal DFT 13.70 V. The preprint prints 'J.-C. Zheng, Frontiers of Physics, 21(11), 114201 (2026)' with doi 10.15302/frontphys.2026.114201; the Crossref record of that DOI has NO authors, so it fails the five-field rule and no doi field is given here.}
+}
+
+@misc{CHALISE22A,
+  author        = {Chalise, Darshan and Kenesei, Peter and Shastri, Sarvjit D. and Cahill, David G.},
+  title         = {Temperature mapping of stacked silicon dies from x-ray diffraction intensities},
+  year          = {2022},
+  eprint        = {2203.12554},
+  archiveprefix = {arXiv},
+  howpublished  = {arXiv preprint arXiv:2203.12554v2 [physics.app-ph], v1 submitted 23 March 2022, v2 29 March 2022},
+  note          = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: arXiv OAI-PMH records (formats arXiv and arXivRaw) of 2203.12554, cached as docs/agent\_reports/crossref\_cache/CHALISE22A.oai-arxiv.xml and CHALISE22A.oai-arxivraw.xml; the arXiv query API answered HTTP 406; B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ of PDF p. 3 only (latest arXiv version at retrieval, v2 listed; sha256 75db1c41...); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry CHALISE22A of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, title, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). The arXiv record names a journal version, Phys. Rev. Applied 18, 014076 (2022), DOI 10.1103/PhysRevApplied.18.014076; its Crossref record (cached as CHALISE22A.arxivdoi.json) gives the same four authors, the title 'Temperature Mapping of Stacked Silicon Dies from X-Ray-Diffraction Intensities', issue 1, article 014076, published 2022-07-29. This entry stays the preprint L6 read; cite the journal version only after checking it. arXiv record: versions v1 2022-03-23, v2 2022-03-29; categories physics.app-ph cond-mat.mtrl-sci; journal-ref 'Phys. Rev. Applied 18, 014076 (2022)1-8)'; DOI 10.1103/PhysRevApplied.18.014076. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): secondary statement of the room-temperature Si mean square displacement 0.0059 A^2 citing Flensburg and Stewart, and a Debye-model estimate 0.0058 A^2. Journal version not checked.}
+}
+
+@manual{MUSTEM53,
+  author       = {Allen, L. J. and Brown, H. G. and D'Alfonso, A. J. and Findlay, S. D. and Forbes, B. D.},
+  title        = {$\mu$STEM v5.3: A transmission electron microscopy simulation suite, in particular for scanning transmission electron microscopy},
+  howpublished = {\url{https://raw.githubusercontent.com/HamishGBrown/MuSTEM/master/Manual/muSTEM_manual.pdf}},
+  note         = {evidence: SECTION\_READ (as labelled by L6; not re-checked in B4) + METADATA\_VERIFIED (route: title page of the manual PDF https://raw.githubusercontent.com/HamishGBrown/MuSTEM/master/Manual/muSTEM\_manual.pdf (HTTP 200; page-1 text cached as docs/agent\_reports/crossref\_cache/MUSTEM53.titlepage.txt, the PDF itself not committed); B4, 2026-09-23); label before B4 (L6 proposal): SECTION\_READ of sec. 1 (p. 5) and sec. 3.8, 3.8.1, 3.8.2 (pp. 15-16) (PDF sha256 4b8ec3c2...); provenance: proposed by docs/agent\_reports/L6\_sourced\_si\_parameters.md (entry MUSTEM53 of L6\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4 MISMATCHES (proposal -> record; the record value is used unless stated): title: 'uSTEM v5.3: A transmission electron microscopy simulation suite, in particular for scanning transmission electron microscopy (manual)' -> 'title page prints no '(manual)'' [PDF title page]. Formatting of the proposal fixed by rendering from the record: title wrapped in a second brace pair (suppresses all case handling). Fields set rather than copied: title = '$\mu$STEM v5.3: A transmission electron microscopy simulation suite, in particular for scanning transmission electron microscopy' (reason in tools/bib/b4\_routes.yaml). No year is printed on the title page; the PDF metadata CreationDate 2018-09-24 is not a printed date, so there is no year field. Title and the five authors (L. J. Allen, H. G. Brown, A. J. D'Alfonso, S.D. Findlay, B. D. Forbes, 'in alphabetical order') read on page 1; L6's descriptor '(manual)' is not part of the printed title and was dropped. L6 note (verbatim apart from LaTeX encoding; not re-checked in B4): absorptive model and QEP model offered as alternatives; QEP uses unsmeared potentials. No year printed on the pages read; retrieved 2026-09-23.}
+}
+
+%% L7 (docs/agent_reports/L7_new_refs.bib; report L7_surface_realism.md)
+
+@article{RAMSTAD1995,
+  author  = {Ramstad, A. and Brocks, G. and Kelly, P. J.},
+  title   = {Theoretical study of the Si(100) surface reconstruction},
+  journal = {Physical Review B},
+  volume  = {51},
+  number  = {20},
+  pages   = {14504--14523},
+  year    = {1995},
+  doi     = {10.1103/physrevb.51.14504},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/RAMSTAD1995.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (sec. II, IV A, IV C, Tables III-IV, Figs. 16 and 18; open copy ris.utwente.nl/ws/files/125986814/PhysRevB.51.14504.pdf) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry RAMSTAD1995 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 R1: LDA coordinates of p(2x1)s, p(2x1)a, p(2x2), c(4x2) transcribed in L7 sec. 1.4; bond lengths REPRODUCED. Registry: Crossref /works/10.1103/physrevb.51.14504 read 2026-09-23 (type journal-article).}
+}
+
+@article{ZANDVLIET2000,
+  author  = {Zandvliet, H. J. W.},
+  title   = {Energetics of Si(001)},
+  journal = {Reviews of Modern Physics},
+  volume  = {72},
+  number  = {2},
+  pages   = {593--602},
+  year    = {2000},
+  doi     = {10.1103/revmodphys.72.593},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ZANDVLIET2000.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (sec. II, IV, V B, Tables I-II, Eqs. (1), (19), Figs. 1, 8; open copy ris.utwente.nl/ws/files/6767412/Zandvliet00energetics.pdf) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry ZANDVLIET2000 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 R2: SA/SB/DB steps, measured step energies, single/double-layer miscut regimes, L = d/tan(theta). An erratum exists (ZANDVLIET2001E), not read. Registry: Crossref /works/10.1103/revmodphys.72.593 read 2026-09-23 (type journal-article).}
+}
+
+@article{ZANDVLIET2001E,
+  author  = {Zandvliet, H. J. W.},
+  title   = {Erratum: Energetics of Si(001) [Rev. Mod. Phys. 72, 593 (2000)]},
+  journal = {Reviews of Modern Physics},
+  volume  = {73},
+  number  = {1},
+  pages   = {247},
+  year    = {2001},
+  doi     = {10.1103/revmodphys.73.247},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ZANDVLIET2001E.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry ZANDVLIET2001E of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Fields set rather than copied: pages = '247' (reason in tools/bib/b4\_routes.yaml). The Crossref record deposits the page range 247-462 (L7 copied it); for a one-item erratum that range is implausible, so only the first page 247 (shared by the record and the DOI) is kept. The APS page answered HTTP 403 to B4; check the last page there. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): erratum to ZANDVLIET2000, content UNVERIFIED (not read). The page range 247--462 is copied as deposited in Crossref. Registry: Crossref /works/10.1103/revmodphys.73.247 read 2026-09-23 (type journal-article).}
+}
+
+@article{SHIRASAWA2005HK,
+  author  = {Shirasawa, Tetsuroh and Mizuno, Seigi and Tochihara, Hiroshi},
+  title   = {Structural Modification of Si(001)-c(4*2) Induced by Electron Beam at Low Temperatures},
+  journal = {Hyomen Kagaku},
+  volume  = {26},
+  number  = {8},
+  pages   = {480--485},
+  year    = {2005},
+  doi     = {10.1380/jsssj.26.480},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/SHIRASAWA2005HK.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (abstract, sec. 1 p. 480, sec. 5; J-STAGE open) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry SHIRASAWA2005HK of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author family name in capitals as deposited: MIZUNO; author family name in capitals as deposited: SHIRASAWA; author family name in capitals as deposited: TOCHIHARA. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 R5: flip-flop at RT, c(4x2) below about 150 K; beam-induced disorder only below about 40 K. Registry: Crossref /works/10.1380/jsssj.26.480 read 2026-09-23 (type journal-article).}
+}
+
+@misc{SHIRASAWA2006JPS,
+  author       = {Shirasawa, Tetsuroh and Mizuno, Seigi and Tochihara, Hiroshi},
+  title        = {27aYB-8 Studies on the c(4$\times$2) structures and critical behaviors of the c(4$\times$2)-p(2$\times$1) transitions of Si(001) and Ge(001) surfaces},
+  volume       = {61.1.4},
+  pages        = {865},
+  year         = {2006},
+  doi          = {10.11316/jpsgaiyo.61.1.4.0_865_1},
+  howpublished = {Meeting Abstracts of the Physical Society of Japan},
+  note         = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/SHIRASAWA2006JPS.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (p. 865, 27aYB-8; J-STAGE open) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry SHIRASAWA2006JPS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 R4: c(4x2)-p(2x1) transition 205 +- 3 K on Si(001); apparent p(2x1) at RT. Japanese title (JaLC): 27aYB-8 Si(001),Ge(001)表面におけるc(4x2)構造の解析とc(4x2)-p(2x1)相転移の臨界現象(27aYB 表面界面構造,領域9(表面・界面,結晶成長)). Registry: JaLC /dois/10.11316/jpsgaiyo.61.1.4.0\_865\_1 read 2026-09-23 (RA JaLC).}
+}
+
+@article{HAYASHI2006,
+  author  = {Hayashi, K. and Kawasuso, A. and Ichimiya, A.},
+  title   = {Adsorption of Oxygen on Si(001) Surfaces Studied by Reflection High-Energy Positron Diffraction},
+  journal = {e-Journal of Surface Science and Nanotechnology},
+  volume  = {4},
+  pages   = {510--513},
+  year    = {2006},
+  doi     = {10.1380/ejssnt.2006.510},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HAYASHI2006.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (Fig. 4 and its tables, p. 512) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry HAYASHI2006 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 R6: RHEPD at 110 K, unoxidised Si(001) dimer model spacings 0.8 and 0.7 A (positron-specific absorption parameters, not transferable). Registry: Crossref /works/10.1380/ejssnt.2006.510 read 2026-09-23 (type journal-article).}
+}
+
+@article{OGINO1997,
+  author  = {Ogino, Toshio and Hibino, Hiroki and Homma, Yoshikazu},
+  title   = {Control of atomic-step arrangement on Si surfaces},
+  journal = {Oyo Buturi},
+  volume  = {66},
+  number  = {12},
+  pages   = {1289--1297},
+  year    = {1997},
+  doi     = {10.11470/oubutsu1932.66.1289},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/OGINO1997.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (p. 1289, sec. 1: step heights 0.136 nm on (001), 0.314 nm on (111)) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry OGINO1997 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author family name in capitals as deposited: HIBINO; author family name in capitals as deposited: HOMMA; author family name in capitals as deposited: OGINO. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 R7. Japanese title (JaLC): シリコン表面の原子ステツプ配列制御\&mdash;ナノ構造の集積化へ向けて\&mdash;. Registry: JaLC /dois/10.11470/oubutsu1932.66.1289 read 2026-09-23 (RA JaLC).}
+}
+
+@article{CHADI1987,
+  author  = {Chadi, D. J.},
+  title   = {Stabilities of single-layer and bilayer steps on Si(001) surfaces},
+  journal = {Physical Review Letters},
+  volume  = {59},
+  number  = {15},
+  pages   = {1691--1694},
+  year    = {1987},
+  doi     = {10.1103/physrevlett.59.1691},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/CHADI1987.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry CHADI1987 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): Its step energies are cited in L7 from ZANDVLIET2000 Table I (second-hand). Registry: Crossref /works/10.1103/physrevlett.59.1691 read 2026-09-23 (type journal-article).}
+}
+
+@article{OVER1997,
+  author  = {Over, H. and Wasserfall, J. and Ranke, W. and Ambiatello, C. and Sawitzki, R. and Wolf, D. and Moritz, W.},
+  title   = {Surface atomic geometry of Si(001)-(2$\times$1): A low-energy electron-diffraction structure analysis},
+  journal = {Physical Review B},
+  volume  = {55},
+  number  = {7},
+  pages   = {4731--4736},
+  year    = {1997},
+  doi     = {10.1103/physrevb.55.4731},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/OVER1997.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed; upload list L7 sec. 7 item 5); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry OVER1997 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): LEED structure of Si(001)-(2x1). Registry: Crossref /works/10.1103/physrevb.55.4731 read 2026-09-23 (type journal-article).}
+}
+
+@article{FELICI1997,
+  author  = {Felici, R. and Robinson, I.K. and Ottaviani, C. and Imperatori, P. and Eng, P. and Perfetti, P.},
+  title   = {Room temperature Si(001)-(2 $\times$ 1) reconstruction solved by X-ray diffraction},
+  journal = {Surface Science},
+  volume  = {375},
+  number  = {1},
+  pages   = {55--62},
+  year    = {1997},
+  doi     = {10.1016/s0039-6028(97)80005-2},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/FELICI1997.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry FELICI1997 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): RT SXRD of Si(001)-(2x1); its c(4x2) parameters are reprinted in HORIO2014 Table I (second-hand). Registry: Crossref /works/10.1016/s0039-6028(97)80005-2 read 2026-09-23 (type journal-article).}
+}
+
+@article{TAKAHASI1995,
+  author  = {Takahasi, M. and Nakatani, S. and Ito, Y. and Takahashi, T. and Zhang, X.W. and Ando, M.},
+  title   = {Surface X-ray diffraction study on the Si(001)2 $\times$ 1 structure},
+  journal = {Surface Science},
+  volume  = {338},
+  number  = {1--3},
+  pages   = {L846--L850},
+  year    = {1995},
+  doi     = {10.1016/0039-6028(95)00663-x},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/TAKAHASI1995.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry TAKAHASI1995 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): RT SXRD of Si(001)2x1; buckling 0.87 A as cited by HORIO2014 p. 385 (second-hand). Registry: Crossref /works/10.1016/0039-6028(95)00663-x read 2026-09-23 (type journal-article).}
+}
+
+@article{SHIRASAWA2006SS,
+  author  = {Shirasawa, Tetsuroh and Mizuno, Seigi and Tochihara, Hiroshi},
+  title   = {Structural analysis of the c(4$\times$2) reconstruction in Si(001) and Ge(001) surfaces by low-energy electron diffraction},
+  journal = {Surface Science},
+  volume  = {600},
+  number  = {4},
+  pages   = {815--819},
+  year    = {2006},
+  doi     = {10.1016/j.susc.2005.11.031},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/SHIRASAWA2006SS.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry SHIRASAWA2006SS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): LEED I-V c(4x2) structure to 8 layers (per SHIRASAWA2006JPS). Registry: Crossref /works/10.1016/j.susc.2005.11.031 read 2026-09-23 (type journal-article).}
+}
+
+@article{TABATA1987,
+  author  = {Tabata, Takeshi and Aruga, Tetsuya and Murata, Yoshitada},
+  title   = {Order-disorder transition on Si(001): c(4 $\times$ 2) to (2 $\times$ 1)},
+  journal = {Surface Science},
+  volume  = {179},
+  number  = {1},
+  pages   = {L63--L70},
+  year    = {1987},
+  doi     = {10.1016/0039-6028(87)90114-2},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/TABATA1987.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry TABATA1987 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): c(4x2) to (2x1) order-disorder transition. Registry: Crossref /works/10.1016/0039-6028(87)90114-2 read 2026-09-23 (type journal-article).}
+}
+
+@article{ALERHAND1990,
+  author  = {Alerhand, O. L. and Berker, A. Nihat and Joannopoulos, J. D. and Vanderbilt, David and Hamers, R. J. and Demuth, J. E.},
+  title   = {Finite-temperature phase diagram of vicinal Si(100) surfaces},
+  journal = {Physical Review Letters},
+  volume  = {64},
+  number  = {20},
+  pages   = {2406--2409},
+  year    = {1990},
+  doi     = {10.1103/physrevlett.64.2406},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ALERHAND1990.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry ALERHAND1990 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): Vicinal Si(100) phase diagram. Registry: Crossref /works/10.1103/physrevlett.64.2406 read 2026-09-23 (type journal-article).}
+}
+
+@article{PEHLKE1991,
+  author  = {Pehlke, E. and Tersoff, J.},
+  title   = {Phase diagram of vicinal Si(001) surfaces},
+  journal = {Physical Review Letters},
+  volume  = {67},
+  number  = {10},
+  pages   = {1290--1293},
+  year    = {1991},
+  doi     = {10.1103/physrevlett.67.1290},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PEHLKE1991.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry PEHLKE1991 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): Phase diagram of vicinal Si(001). Registry: Crossref /works/10.1103/physrevlett.67.1290 read 2026-09-23 (type journal-article).}
+}
+
+@article{INOUE1987,
+  author  = {Inoue, Naohisa and Tanishiro, Yasumasa and Yagi, Katsumichi},
+  title   = {UHV-REM Study of Changes in the Step Structures on Clean (100) Silicon Surfaces by Annealing},
+  journal = {Japanese Journal of Applied Physics},
+  volume  = {26},
+  number  = {4A},
+  pages   = {L293},
+  year    = {1987},
+  doi     = {10.1143/jjap.26.l293},
+  note    = {evidence: +ABSTRACT(publisher) (as labelled by L7) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/INOUE1987.json; B4, 2026-09-23); label before B4 (L7 proposal): +ABSTRACT(publisher) (IOP landing page, 2026-09-23) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry INOUE1987 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): body closed. UHV-REM of Si(100): 2x1/1x2 domain arrays bounded by monolayer steps after quenching from 1200 C. Registry: Crossref /works/10.1143/jjap.26.l293 read 2026-09-23 (type journal-article).}
+}
+
+@article{KAHATA1989,
+  author  = {Kahata, Hisatoshi and Yagi, Katsumichi},
+  title   = {REM Observation on Conversion between Single-Domain Surfaces of Si(001) 2$\times$1 and 1$\times$2 Induced by Specimen Heating Current},
+  journal = {Japanese Journal of Applied Physics},
+  volume  = {28},
+  number  = {5A},
+  pages   = {L858},
+  year    = {1989},
+  doi     = {10.1143/jjap.28.l858},
+  note    = {evidence: +ABSTRACT(publisher) (as labelled by L7) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/KAHATA1989.json; B4, 2026-09-23); label before B4 (L7 proposal): +ABSTRACT(publisher) (IOP landing page) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry KAHATA1989 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): body closed. UHV-REM of current-induced 2x1/1x2 domain conversion above 700 C. Registry: Crossref /works/10.1143/jjap.28.l858 read 2026-09-23 (type journal-article).}
+}
+
+@article{MCCOY1994,
+  author  = {McCoy, J.M. and Maksym, P.A.},
+  title   = {Multiple scattering calculations of step contrast in REM images of the Si(001) surface},
+  journal = {Surface Science},
+  volume  = {310},
+  number  = {1--3},
+  pages   = {217--225},
+  year    = {1994},
+  doi     = {10.1016/0039-6028(94)91386-2},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MCCOY1994.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed; no abstract in Elsevier coredata, OpenAlex or Semantic Scholar); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry MCCOY1994 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): Multiple-scattering step contrast in REM of Si(001). Also listed as a lead in references.bib U01 note. Registry: Crossref /works/10.1016/0039-6028(94)91386-2 read 2026-09-23 (type journal-article).}
+}
+
+@article{MCCOY1993,
+  author  = {McCoy, J.M. and Maksym, P.A.},
+  title   = {Simulation of reflection electron microscopy images: application to high-resolution imaging of the Si(001)2 $\times$ 1 surface},
+  journal = {Surface Science},
+  volume  = {297},
+  number  = {2},
+  pages   = {113--126},
+  year    = {1993},
+  doi     = {10.1016/0039-6028(93)90254-h},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MCCOY1993.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry MCCOY1993 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: title: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): REM image simulation of Si(001)2x1. Registry: Crossref /works/10.1016/0039-6028(93)90254-h read 2026-09-23 (type journal-article).}
+}
+
+@article{MORITA1990,
+  author  = {Morita, M. and Ohmi, T. and Hasegawa, E. and Kawakami, M. and Ohwada, M.},
+  title   = {Growth of native oxide on a silicon surface},
+  journal = {Journal of Applied Physics},
+  volume  = {68},
+  number  = {3},
+  pages   = {1272--1281},
+  year    = {1990},
+  doi     = {10.1063/1.347181},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MORITA1990.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (sec. II, III A, III C, Tables I and III, Figs. 1, 8, 14, Appendix; open copy Tohoku repository tohoku.repo.nii.ac.jp/record/53635/files/JApplPhys\_68\_1272.pdf) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry MORITA1990 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D1: native oxide growth on HF-last Si(100) in air. Registry: Crossref /works/10.1063/1.347181 read 2026-09-23 (type journal-article).}
+}
+
+@article{UZUHASHI2024,
+  author  = {Uzuhashi, Jun and Ohkubo, Tadakatsu},
+  title   = {Systematic study of FIB-induced damage for the high-quality TEM sample preparation},
+  journal = {Ultramicroscopy},
+  volume  = {262},
+  pages   = {113980},
+  year    = {2024},
+  doi     = {10.1016/j.ultramic.2024.113980},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/UZUHASHI2024.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ of the accepted manuscript (CC BY-NC-ND 4.0, NIMS MDR, MDR DOI 10.48505/nims.4497; Methods, Results pp. 4-5, Discussion pp. 6-7, Figs. 1-5) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry UZUHASHI2024 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D2: Ga+ FIB amorphous layer in Si 22/7/4/1 nm at 30/8/5/2 keV plus distortion layer. Registry: Crossref /works/10.1016/j.ultramic.2024.113980 read 2026-09-23 (type journal-article).}
+}
+
+@article{PASTEWKA2009,
+  author  = {Pastewka, Lars and Salzer, Roland and Graff, Andreas and Altmann, Frank and Moseler, Michael},
+  title   = {Surface amorphization, sputter rate, and intrinsic stresses of silicon during low energy Ga+ focused-ion beam milling},
+  journal = {Nuclear Instruments and Methods in Physics Research Section B: Beam Interactions with Materials and Atoms},
+  volume  = {267},
+  number  = {18},
+  pages   = {3072--3075},
+  year    = {2009},
+  doi     = {10.1016/j.nimb.2009.06.094},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PASTEWKA2009.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ of the preprint (Fraunhofer publica; abstract, secs. 3-4, 6, Figs. 2, 4); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry PASTEWKA2009 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): published version not read + METADATA\_VERIFIED. L7 D3: low-energy Ga+ amorphisation linear in energy and in cos(incidence). Registry: Crossref /works/10.1016/j.nimb.2009.06.094 read 2026-09-23 (type journal-article).}
+}
+
+@article{PEDERSEN2017,
+  author  = {Pedersen, Andreas and Pizzagalli, Laurent and J{\'o}nsson, Hannes},
+  title   = {Optimal atomic structure of amorphous silicon obtained from density functional theory calculations},
+  journal = {New Journal of Physics},
+  volume  = {19},
+  number  = {6},
+  pages   = {063018},
+  year    = {2017},
+  doi     = {10.1088/1367-2630/aa732e},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PEDERSEN2017.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (pp. 1-6, Fig. 1, Table 1; CC BY 3.0; copy at opinvisindi.is) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry PEDERSEN2017 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D4: a-Si 1-2 \% less dense than c-Si (as cited); DFT a-Si model in the supplement (not retrieved). Registry: Crossref /works/10.1088/1367-2630/aa732e read 2026-09-23 (type journal-article).}
+}
+
+@article{YASAKA1991,
+  author  = {Yasaka, Tatsuhiro and Miyazaki, Seiichi and Hirose, Masataka},
+  title   = {Native Oxide Formation on Silicon Wafer.},
+  journal = {Nihon Kessho Gakkaishi},
+  volume  = {33},
+  number  = {3},
+  pages   = {182--187},
+  year    = {1991},
+  doi     = {10.5940/jcrsj.33.182},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/YASAKA1991.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (sec. 3 Eq. (4), sec. 4.3, Figs. 6-8; J-STAGE open) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry YASAKA1991 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author family name in capitals as deposited: HIROSE; author family name in capitals as deposited: MIYAZAKI; author family name in capitals as deposited: YASAKA. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D5. Registry: Crossref /works/10.5940/jcrsj.33.182 read 2026-09-23 (type journal-article).}
+}
+
+@article{AZUMA2007,
+  author  = {Azuma, Yasushi and Odaka, Kenji and Kurokawa, Akira and Fujimoto, Toshiyuki},
+  title   = {Effect of Surface Contamination on Thickness Evaluation of SiO2/Si by X-ray Reflectometry},
+  journal = {Transactions of the Materials Research Society of Japan},
+  volume  = {32},
+  number  = {1},
+  pages   = {263--266},
+  year    = {2007},
+  doi     = {10.14723/tmrsj.32.263},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/AZUMA2007.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (abstract, sec. 3, Table I, Fig. 2; J-STAGE open) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry AZUMA2007 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D6: 0.1-0.2 nm hydrocarbon contamination on SiO2/Si, regrowth about 0.01 nm/h in air. Registry: Crossref /works/10.14723/tmrsj.32.263 read 2026-09-23 (type journal-article).}
+}
+
+@article{TOKUTAKE2015,
+  author  = {Tokutake, Hiroki and Imai, Ryosuke and Yamashita, Yoshihiro and Ogura, Atsushi},
+  title   = {Evaluation of the SiO$_{2}$ Film by X-ray Reflectivity},
+  journal = {SPring-8/SACLA Research Report},
+  volume  = {3},
+  number  = {2},
+  pages   = {571--574},
+  year    = {2015},
+  doi     = {10.18957/rr.3.2.571},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/TOKUTAKE2015.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (Tables 2-3; J-STAGE open) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry TOKUTAKE2015 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D7: XRR densities 2.11-2.28 g/cm3 of 4.5-7 nm plasma oxides on Si(100). Japanese title (JaLC): X線反射率測定法を用いたシリコン酸化膜の評価. Registry: JaLC /dois/10.18957/rr.3.2.571 read 2026-09-23 (RA JaLC).}
+}
+
+@article{KOROBTSOV2007,
+  author  = {Korobtsov, V. V. and Balashev, V. V. and Pisarenko, T. A. and Chusovitin, E. A. and Markidonov, E. V.},
+  title   = {Fe interaction with native SiO2 on Si(001) studied by RHEED},
+  journal = {e-Journal of Surface Science and Nanotechnology},
+  volume  = {5},
+  pages   = {45--50},
+  year    = {2007},
+  doi     = {10.1380/ejssnt.2007.45},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/KOROBTSOV2007.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (sec. II, sec. III, Figs. 1a, 4c; J-STAGE open) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry KOROBTSOV2007 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D8: RHEED of Si(001) through 0.8 nm chemical oxide. Registry: Crossref /works/10.1380/ejssnt.2007.45 read 2026-09-23 (type journal-article).}
+}
+
+@article{YAGI1986,
+  author  = {Yagi, Katsumichi and Tanishiro, Yasumasa and Takayanagi, Kunio},
+  title   = {Surface Electron Microscopy},
+  journal = {Oyo Buturi},
+  volume  = {55},
+  number  = {11},
+  pages   = {1036--1050},
+  year    = {1986},
+  doi     = {10.11470/oubutsu1932.55.1036},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/YAGI1986.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (pp. 1038, 1040, 1042, 1048-1050 read as page images; J-STAGE open) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry YAGI1986 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author family name in capitals as deposited: TAKAYANAGI; author family name in capitals as deposited: TANISHIRO; author family name in capitals as deposited: YAGI. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 D9: REM needs UHV; REM image lost after ion irradiation until annealed; REM step phase 2 pi g.h plus strain term. Japanese title (JaLC): 表面電子顕微鏡法. Registry: JaLC /dois/10.11470/oubutsu1932.55.1036 read 2026-09-23 (RA JaLC).}
+}
+
+@article{CLAVERIE1992,
+  author  = {Claverie, A. and Beauvillain, J. and Faur{\'e}, J. and Vieu, C. and Jouffrey, B.},
+  title   = {Degradation, amorphization, and recrystallization of ion bombarded si(111) surfaces studied by in situ reflection electron microscopy and reflection high energy electron diffraction techniques},
+  journal = {Microscopy Research and Technique},
+  volume  = {20},
+  number  = {4},
+  pages   = {352--359},
+  year    = {1992},
+  doi     = {10.1002/jemt.1070200406},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L7) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/CLAVERIE1992.json; B4, 2026-09-23); label before B4 (L7 proposal): +ABSTRACT(PubMed) (Europe PMC record, PMID 1498350) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry CLAVERIE1992 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): body closed. L7 D10. Registry: Crossref /works/10.1002/jemt.1070200406 read 2026-09-23 (type journal-article).}
+}
+
+@article{CUSTER1994,
+  author  = {Custer, J. S. and Thompson, Michael O. and Jacobson, D. C. and Poate, J. M. and Roorda, S. and Sinke, W. C. and Spaepen, F.},
+  title   = {Density of amorphous Si},
+  journal = {Applied Physics Letters},
+  volume  = {64},
+  number  = {4},
+  pages   = {437--439},
+  year    = {1994},
+  doi     = {10.1063/1.111121},
+  note    = {evidence: +ABSTRACT(index) (as labelled by L7) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/CUSTER1994.json; B4, 2026-09-23); label before B4 (L7 proposal): +ABSTRACT(index) (OpenAlex record; AIP page behind Cloudflare) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry CUSTER1994 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): body closed. a-Si 1.8 +- 0.1 \% less dense than c-Si, 4.90e22 atoms/cm3. Registry: Crossref /works/10.1063/1.111121 read 2026-09-23 (type journal-article).}
+}
+
+@article{LAAZIRI1999,
+  author  = {Laaziri, Khalid and Kycia, S. and Roorda, S. and Chicoine, M. and Robertson, J. L. and Wang, J. and Moss, S. C.},
+  title   = {High-energy x-ray diffraction study of pure amorphous silicon},
+  journal = {Physical Review B},
+  volume  = {60},
+  number  = {19},
+  pages   = {13520--13533},
+  year    = {1999},
+  doi     = {10.1103/physrevb.60.13520},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/LAAZIRI1999.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry LAAZIRI1999 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): Cited by PEDERSEN2017 for the a-Si density (as low as 98 \%). Registry: Crossref /works/10.1103/physrevb.60.13520 read 2026-09-23 (type journal-article).}
+}
+
+@article{KATO1999,
+  author  = {Kato, N. I. and Kohno, Y. and Saka, H.},
+  title   = {Side-wall damage in a transmission electron microscopy specimen of crystalline Si prepared by focused ion beam etching},
+  journal = {Journal of Vacuum Science \& Technology A: Vacuum, Surfaces, and Films},
+  volume  = {17},
+  number  = {4},
+  pages   = {1201--1204},
+  year    = {1999},
+  doi     = {10.1116/1.581795},
+  note    = {evidence: +ABSTRACT(index) (as labelled by L7) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/KATO1999.json; B4, 2026-09-23); label before B4 (L7 proposal): +ABSTRACT(index) (OpenAlex record; AIP page behind Cloudflare) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry KATO1999 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: journal: doubled backslash before the ampersand (a LaTeX line break), not an escaped ampersand. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): body closed. FIB sidewall damage about 20 nm at 30 keV; 7 nm after 3 keV Ar+ milling at 4 deg. Registry: Crossref /works/10.1116/1.581795 read 2026-09-23 (type journal-article).}
+}
+
+@article{KATO2004,
+  author  = {Kato, N. I.},
+  title   = {Reducing focused ion beam damage to transmission electron microscopy samples},
+  journal = {Journal of Electron Microscopy},
+  volume  = {53},
+  number  = {5},
+  pages   = {451--458},
+  year    = {2004},
+  doi     = {10.1093/jmicro/dfh080},
+  note    = {evidence: +ABSTRACT(index) (as labelled by L7) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/KATO2004.json; B4, 2026-09-23); label before B4 (L7 proposal): +ABSTRACT(index) (OpenAlex record; OUP page behind Cloudflare) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry KATO2004 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): body closed. FIB damage review, 20-30 nm at 30 keV. Registry: Crossref /works/10.1093/jmicro/dfh080 read 2026-09-23 (type journal-article).}
+}
+
+@article{BARNA1998,
+  author  = {Barna, A. and P{\'e}cz, B. and Menyhard, M.},
+  title   = {Amorphisation and surface morphology development at low-energy ion milling},
+  journal = {Ultramicroscopy},
+  volume  = {70},
+  number  = {3},
+  pages   = {161--171},
+  year    = {1998},
+  doi     = {10.1016/s0304-3991(97)00120-4},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/BARNA1998.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed; no abstract in any record); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry BARNA1998 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): Low-energy Ar+ milling amorphisation; upload list L7 sec. 7 item 4. Registry: Crossref /works/10.1016/s0304-3991(97)00120-4 read 2026-09-23 (type journal-article).}
+}
+
+@article{BARNA1999,
+  author  = {Barna, {\'A} and P{\'e}cz, B and Menyhard, M},
+  title   = {TEM sample preparation by ion milling/amorphization},
+  journal = {Micron},
+  volume  = {30},
+  number  = {3},
+  pages   = {267--276},
+  year    = {1999},
+  doi     = {10.1016/s0968-4328(99)00011-6},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/BARNA1999.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry BARNA1999 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author: raw non-ASCII characters (references.bib is LaTeX-encoded). L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): Registry: Crossref /works/10.1016/s0968-4328(99)00011-6 read 2026-09-23 (type journal-article).}
+}
+
+@article{MAYER2007,
+  author  = {Mayer, Joachim and Giannuzzi, Lucille A. and Kamino, Takeo and Michael, Joseph},
+  title   = {TEM Sample Preparation and FIB-Induced Damage},
+  journal = {MRS Bulletin},
+  volume  = {32},
+  number  = {5},
+  pages   = {400--407},
+  year    = {2007},
+  doi     = {10.1557/mrs2007.63},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MAYER2007.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED only (closed); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry MAYER2007 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): FIB-induced damage review. Registry: Crossref /works/10.1557/mrs2007.63 read 2026-09-23 (type journal-article).}
+}
+
+@misc{OSAKABE1990JPS,
+  author       = {Osakabe, Nobuyuki},
+  title        = {Observation of Surfaces by Reflection Electron Holography},
+  volume       = {45.2},
+  pages        = {451--452},
+  year         = {1990},
+  doi          = {10.11316/jpsgaiyod.45.2.0_451},
+  howpublished = {Meeting Abstracts of the Physical Society of Japan},
+  note         = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/OSAKABE1990JPS.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ in full (pp. 451-452, 2a-T-7; J-STAGE open, page images) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry OSAKABE1990JPS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 J-a: Hitachi REH arrangement (specular Bragg beam, biprism below the objective, self-reference on a defect-free region), phase 2K\_perp dz and refraction formula, Pt(111) 2.3 A step about 0.5 lambda. Japanese title (JaLC): 2a-T-7 反射型電子線ホログラフィー法による表面の観察. Registry: JaLC /dois/10.11316/jpsgaiyod.45.2.0\_451 read 2026-09-23 (RA JaLC).}
+}
+
+@misc{OSAKABE1989JPS,
+  author       = {Osakabe, N. and Endo, J. and Matsuda, T. and Fukuhara, A. and Tonomura, A.},
+  title        = {6p-T-5 Observation of surface morphologies by reflection electron holography},
+  volume       = {1989.2},
+  pages        = {439},
+  year         = {1989},
+  doi          = {10.11316/jpsgaiyok.1989.2.0_439_1},
+  howpublished = {Meeting Abstracts of the Physical Society of Japan},
+  note         = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/OSAKABE1989JPS.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (p. 439, 6p-T-5, text and Figs. 1-2) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry OSAKABE1989JPS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 J-b: dphi = 2K dz sin(theta); GaAs(110) screw dislocation, one fringe = 0.5 A. Japanese title (JaLC): 6p-T-5 反射型電子線ホログラフィーによる結晶表面の観察. Registry: JaLC /dois/10.11316/jpsgaiyok.1989.2.0\_439\_1 read 2026-09-23 (RA JaLC).}
+}
+
+@misc{OSAKABE1990JPSB,
+  author       = {Osakabe, Nobuyuki},
+  title        = {3p-E-4 On the possibility of observing lattice imperfections by means of electron holography},
+  volume       = {1990.2},
+  pages        = {515},
+  year         = {1990},
+  doi          = {10.11316/jpsgaiyok.1990.2.0_515},
+  howpublished = {Meeting Abstracts of the Physical Society of Japan},
+  note         = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/OSAKABE1990JPSB.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (p. 515, 3p-E-4, sec. 3) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry OSAKABE1990JPSB of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 J-c: dPhi = 2K sin(theta) d; vertical resolution of order 0.01 A, lateral several hundred A. Japanese title (JaLC): 3p-E-4 電子線ホログラフィーによる格子欠陥研究の可能性. Registry: JaLC /dois/10.11316/jpsgaiyok.1990.2.0\_515 read 2026-09-23 (RA JaLC).}
+}
+
+@misc{SUZUKI2000JPS,
+  author       = {Suzuki, T. and Ishiguro, N. and Minoda, H. and Tanishiro, Y. and Yagi, K.},
+  title        = {REM Study of energy filtered electron holography.},
+  volume       = {55.1.4},
+  pages        = {747},
+  year         = {2000},
+  doi          = {10.11316/jpsgaiyo.55.1.4.0_747_4},
+  howpublished = {Meeting Abstracts of the Physical Society of Japan},
+  note         = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/SUZUKI2000JPS.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (p. 747, 22aT-11) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry SUZUKI2000JPS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 J-d: energy-filtered REH of Si(111)7x7; step phase observed, no value. Same content as the JSM abstract Denshi Kenbikyo 35 Suppl. 1, p. 219 (2000). Japanese title (JaLC): 22aT-11 反射電子顕微鏡法におけるEnergy filtered holography. Registry: JaLC /dois/10.11316/jpsgaiyo.55.1.4.0\_747\_4 read 2026-09-23 (RA JaLC).}
+}
+
+@misc{TANISHIRO2001JPS,
+  author       = {Tanishiro, Y. and Suzuki, T. and Minoda, H. and Yagi, K.},
+  title        = {Energy-filtered electron interferometry in reflection electron microscopy II},
+  volume       = {56.1.4},
+  pages        = {852},
+  year         = {2001},
+  doi          = {10.11316/jpsgaiyo.56.1.4.0_852_2},
+  howpublished = {Meeting Abstracts of the Physical Society of Japan},
+  note         = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/TANISHIRO2001JPS.jalc.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ (p. 852, 28aXC-7) + METADATA\_VERIFIED (JaLC); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry TANISHIRO2001JPS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 J-e: 200 kV FEG microscope with omega filter, REH of Si, one-plasmon interference distance about 45 nm. Japanese title (JaLC): 28aXC-7 反射電子顕微鏡法におけるenergy-filtered electron interferometry II. Registry: JaLC /dois/10.11316/jpsgaiyo.56.1.4.0\_852\_2 read 2026-09-23 (RA JaLC).}
+}
+
+@phdthesis{OSAKABE1995THESIS,
+  author = {Osakabe, Nobuyuki},
+  title  = {電子線ホログラフィー干渉法による極限的計測},
+  school = {Tokyo Institute of Technology (東京工業大学)},
+  type   = {博士 (理学), 乙第2714号},
+  year   = {1995},
+  doi    = {10.11501/3104578},
+  note   = {evidence: METADATA\_VERIFIED (route: JaLC API record of the doi field (NDL registration; Crossref /works 404), cached as docs/agent\_reports/crossref\_cache/OSAKABE1995THESIS.jalc.json, plus the CiNii Research record https://cir.nii.ac.jp/crid/1920865334626313088 (NDL data), cached as OSAKABE1995THESIS.cinii.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED (JaLC; NDL and CiNii records, table of contents read); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry OSAKABE1995THESIS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, doi, school, title, type, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author '長我部, 信行 (Osakabe, Nobuyuki)' is not a parseable BibTeX name; author: raw non-ASCII characters (references.bib is LaTeX-encoded). Author romanised by B4 (Hepburn) from the CiNii reading オサカベ, ノブユキ; name in the records: 長我部, 信行. School and type as proposed by L7; CiNii gives degree 博士 (理学), number 乙第2714号, grantor 東京工業大学, granted 1995-01-31, and carries the same DOI. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): content UNVERIFIED (NDL in-library only; remote copy allowed). Doctoral thesis (Rigaku hakushi), Tokyo Institute of Technology, 1995-01-31, no. 2714; ch. 4 on reflection electron holography. Upload list L7 sec. 7 item 1. Registry: JaLC /dois/10.11501/3104578 read 2026-09-23 (RA JaLC).}
+}
+
+@phdthesis{TAKEGUCHI1993THESIS,
+  author = {Takeguchi, Masaki},
+  title  = {超高真空-反射型電子線ホログラフィー顕微鏡の開発},
+  school = {Osaka University (大阪大学)},
+  type   = {博士 (工学), 甲第04794号},
+  year   = {1993},
+  doi    = {10.11501/3065914},
+  note   = {evidence: METADATA\_VERIFIED (route: JaLC API record of the doi field (NDL registration; Crossref /works 404), cached as docs/agent\_reports/crossref\_cache/TAKEGUCHI1993THESIS.jalc.json, plus the CiNii Research record https://cir.nii.ac.jp/crid/1910865335611167488 (NDL data), cached as TAKEGUCHI1993THESIS.cinii.json; B4, 2026-09-23); label before B4 (L7 proposal): METADATA\_VERIFIED (JaLC; CiNii); provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry TAKEGUCHI1993THESIS of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, doi, school, title, type, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: author '竹口, 雅樹 (Takeguchi, Masaki)' is not a parseable BibTeX name; author: raw non-ASCII characters (references.bib is LaTeX-encoded). Author romanised by B4 (Hepburn) from the CiNii reading タケグチ, マサキ; name in the records: 竹口, 雅樹. School and type as proposed by L7; CiNii gives degree 博士（工学）, number 甲第04794号, grantor 大阪大学, granted 1993-03-25, and carries the same DOI. The CiNii title has ' : ' where JaLC has '-'; the JaLC title is used. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): abstract and examiners' summary SECTION\_READ (OUKA hdl 11094/38196, 10743\_Abstract.pdf, pp. 383-384); full text closed. Doctoral thesis (Kogaku hakushi), Osaka University, 1993-03-25: UHV reflection electron holography microscope, 200 kV, Zr-O/W(100) TFE, 1e-9 Torr, Si(111). Registry: JaLC /dois/10.11501/3065914 read 2026-09-23 (RA JaLC).}
+}
+
+@article{JOY2004,
+  author  = {Joy, David C. and Frost, Bernhard G.},
+  title   = {Transmission and Reflection Holography at Low Energies},
+  journal = {e-Journal of Surface Science and Nanotechnology},
+  volume  = {2},
+  pages   = {81--88},
+  year    = {2004},
+  doi     = {10.1380/ejssnt.2004.81},
+  note    = {evidence: SECTION\_READ (as labelled by L7; not re-checked in B4) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/JOY2004.json; B4, 2026-09-23); label before B4 (L7 proposal): SECTION\_READ in full (J-STAGE open) + METADATA\_VERIFIED; provenance: proposed by docs/agent\_reports/L7\_surface\_realism.md (entry JOY2004 of L7\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b4\_check.py. B4: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L7 note (verbatim apart from LaTeX encoding; not re-checked in B4): L7 J-k: low-energy (150-300 V) point-projection reflection interferograms; not a crystalline-surface precedent. Registry: Crossref /works/10.1380/ejssnt.2004.81 read 2026-09-23 (type journal-article).}
+}
+
+@article{TAKEGUCHI1990,
+  author  = {Takeguchi, Masaki and Harada, Ken and Shimizu, Ryuichi},
+  title   = {Observation of GaAs(110) Surface Defect by Reflection Electron Holography},
+  journal = {Journal of Electron Microscopy},
+  volume  = {39},
+  number  = {4},
+  pages   = {269--272},
+  year    = {1990},
+  doi     = {10.1093/oxfordjournals.jmicro.a050815},
+  note    = {evidence: METADATA\_VERIFIED (route: CiNii Research record https://cir.nii.ac.jp/crid/1521417755419074304 (NDL article index, NDL bib 3675815, NAID 40005328351), cached as docs/agent\_reports/crossref\_cache/TAKEGUCHI1990.cinii.json, for authors, journal, volume, issue, pages and year; Crossref API /works record of the doi, cached as docs/agent\_reports/crossref\_cache/TAKEGUCHI1990.json, for title, journal and date; B4, 2026-09-23); label before B4: UNVERIFIED (B3 pass 2: fails the strict five-field rule); provenance: proposed by docs/agent\_reports/L4\_citation\_search.md section 6.2; correction proposed by docs/agent\_reports/L7\_surface\_realism.md section 3.2 row J-i (entry TAKEGUCHI1990 of L7\_new\_refs.bib). B4 CORRECTION (moved from the UNVERIFIED section): old values author = 'Takeguchi, Masaki and Harada, Ken and Shimizu, Ryuichi'; title = 'Observation of GaAs(110) Surface Defect by Reflection Electron Holography'; journal = 'Journal of Electron Microscopy'; year = '1990'; no volume, number, pages or doi. New: volume = '39', number = '4', pages = '269--272' from the CiNii/NDL record (which prints the first page as 'p269' and the byline 'Masaki Takeguchi; Ken Harada; Ryuichi Shimizu', matching the author field; its title lacks the space in '(110)Surface'); doi = '10.1093/oxfordjournals.jmicro.a050815' from Crossref. The Crossref record carries NO authors, volume or pages (published-online 1990-08), so the strict five-field rule still cannot be met by Crossref alone; the DOI is paired with 39(4) 269 by the publisher's own deposited resource URL in that Crossref record, https://academic.oup.com/jmicro/article/39/4/269/847699/Observation-of-GaAs110-Surface-Defect-by, which encodes volume 39, issue 4, first page 269 (route 'linked records', flagged for the orchestrator: to revert, drop the doi field). The OUP landing page itself answered HTTP 403 to B4 and was not read. Relevance: a 1990 Journal of Electron Microscopy report of reflection electron holography of GaAs(110) (L4, abstract level); body UNVERIFIED (closed).}
+}
+
 %% =====================================================================
 %% PART 5
 %% ===== UNVERIFIED CANDIDATES (do not cite without checking) =====
@@ -1657,14 +2689,6 @@
   title        = {rheed++: RHEED intensity oscillations during epitaxial growth},
   howpublished = {\url{https://github.com/ElsevierSoftwareX/SOFTX_2020_278} (C++)},
   note         = {evidence: METADATA\_VERIFIED(index, single) for existence; provenance: B\_literature.md section 6.5, "located (metadata only, not read)". THE README WAS NOT READ (B3: raw.githubusercontent.com returned 404 for README.md on main and master; github.com is blocked for this session). B3: a Crossref search returned a SoftwareX record, volume 12 (2020), first author Daniluk, titled "rheed++: A C++ framework to simulation of RHEED intensity oscillations during the ..."; it was NOT accepted because the title here is descriptive and the entry has no author, year or volume. Candidate DOI in the B3 log only; no author, year or DOI is established in this file.}
-}
-
-@misc{TAKEGUCHI1990,
-  author  = {Takeguchi, Masaki and Harada, Ken and Shimizu, Ryuichi},
-  title   = {Observation of GaAs(110) Surface Defect by Reflection Electron Holography},
-  journal = {Journal of Electron Microscopy},
-  year    = {1990},
-  note    = {evidence: UNVERIFIED (B3 pass 2, 2026-09-22: fails the strict five-field rule); provenance: proposed by docs/agent\_reports/L4\_citation\_search.md section 6.2. A Crossref record with this exact title, journal and year exists (cached as docs/agent\_reports/crossref\_cache/TAKEGUCHI1990.search.json, first candidate) but it CARRIES NO AUTHORS, NO VOLUME AND NO PAGES, so first author and volume cannot be matched. THE AUTHOR FIELD COMES FROM OpenAlex W1954243266 (via L4), NOT FROM CROSSREF. NO volume, pages OR doi FIELD. Read the volume, pages and byline on the OUP page before moving it up. Relevance: a 1990 Journal of Electron Microscopy report of reflection electron holography of GaAs(110) (L4, abstract level).}
 }
 
 @incollection{SCHOWALTER05,

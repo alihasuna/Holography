@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-09-23T23:22:00Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2603.10523" metadataPrefix="arXivRaw">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2603.10523</identifier>
+        <datestamp>2026-04-17</datestamp>
+            <setSpec>physics:cond-mat:mtrl-sci</setSpec>
+            <setSpec>physics:physics:chem-ph</setSpec>
+            <setSpec>physics:quant-ph</setSpec>
+    </header>
+
+            <metadata>
+                        <arXivRaw xmlns="http://arxiv.org/OAI/arXivRaw/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXivRaw/ https://oaipmh.arxiv.org/OAI/arXivRaw.xsd">
+        <id>2603.10523</id>
+        <submitter>Jin-Cheng Zheng</submitter>
+            <version version="v1">
+                <date>Wed, 11 Mar 2026 08:28:10 GMT</date>
+                <size>670kb</size>
+            </version>
+            <version version="v2">
+                <date>Thu, 16 Apr 2026 08:39:56 GMT</date>
+                <size>670kb</size>
+            </version>
+        <title>First-Principles Electronegativity Scale from the Atomic Mean Inner Potential</title>
+        <authors>Jin-Cheng Zheng</authors>
+        <categories>cond-mat.mtrl-sci physics.chem-ph quant-ph</categories>
+            <comments>36 pages, 9 figures, 3 tables. Additional data for Zn, Cd, and Hg are provided</comments>
+            <journal-ref>Frontiers of Physics, 21(11), 114201 (2026)</journal-ref>
+            <doi>10.15302/frontphys.2026.114201</doi>
+            <license>http://arxiv.org/licenses/nonexclusive-distrib/1.0/</license>
+            <abstract>Electronegativity is a cornerstone of chemical intuition, essential for rationalizing bonding, reactivity, and material properties. However, prevailing scales remain empirically derived, often relying on parameterized models or composite physical quantities. In this work, we introduce a universal electronegativity scale founded on the atomic mean inner potential (AMIP), also known as the average Coulomb potential, a fundamental, quantum-mechanical property accessible through both first-principles computation and electron-scattering experiments. Our scale, denoted $\chi_{\mathrm{AMIP},p}$, is an analytic function of just three ground-state atomic descriptors and carries explicit physical units. It demonstrates excellent agreement with established scales and successfully classifies bonding types across 358 compounds, including adherence to the metalloid ``Si rule&#34;. Beyond replicating known trends, $\chi_{\mathrm{AMIP,1/2}}$ proves to be a powerful predictive tool, accurately determining Lewis acid strengths for over 14,000 coordination environments ($R^2=0.93$) and $\gamma$-ray annihilation spectral widths for 36 elements ($R^2=0.97$), outperforming previous methods. By linking electronegativity directly to a measurable quantum property, this work provides a unified and predictive descriptor for electronic structure and chemical behavior across the periodic table.</abstract>
+    </arXivRaw>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>

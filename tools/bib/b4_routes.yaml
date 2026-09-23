@@ -1,0 +1,78 @@
+# B4 -- routes and declared decisions for the verification of the L6 and L7 bibliography
+# proposals (docs/agent_reports/L6_new_refs.bib, docs/agent_reports/L7_new_refs.bib).
+# Read by tools/bib/b4_check.py.  Nothing here is a bibliographic value typed from memory:
+#   * `cinii` ids and the `claim_doi` are copied from the L6/L7 reports (they are tested, not trusted);
+#   * `set` values are transcriptions of a cached record, named in the entry's note by the script;
+#   * `accepted_residual` lists differences between the proposal and the record that are kept on purpose
+#     (with the reason), so that the report can separate them from corrections.
+
+baseline_rev: 2a3a999f38c5c18b13eda33ac8b99a0e4ee20dae   # HEAD when B4 started; references.bib 132 entries
+
+# Additional records fetched for individual entries.
+extra:
+  TAKEGUCHI1990:
+    # L7 section 3.2 row J-i quotes this CiNii Research record (NDL article index).
+    cinii: "1521417755419074304"
+  TAKEGUCHI1993THESIS:
+    # found by CiNii OpenSearch q = the thesis title (the record carries DOI 10.11501/3065914)
+    cinii: "1910865335611167488"
+  OSAKABE1995THESIS:
+    # L7 section 3.2 row J-g quotes this CiNii Research record
+    cinii: "1920865334626313088"
+  WUSPIECKER17:
+    # L6_sourced_si_parameters.md (section 3.1 "Record discrepancy" and section 6 "Not accepted") states that
+    # the article is Wu and Spiecker, Ultramicroscopy 176 (2017) 233-245, doi 10.1016/j.ultramic.2017.03.029,
+    # and that the doi in its own .bib entry (10.1016/j.ultramic.2017.01.011) is a "Publisher's note".
+    claim_doi: "10.1016/j.ultramic.2017.03.029"
+    claimed: {author: "Wu and Spiecker", journal: "Ultramicroscopy", volume: "176",
+              pages: "233--245", year: "2017"}   # as written by L6 (family names only)
+  ZHENG26A:
+    # DOI printed on the preprint according to L6 (not added to the entry: record has no authors)
+    claim_doi: "10.15302/frontphys.2026.114201"
+    claim_only_report: true
+  MUSTEM53:
+    pdf: "https://raw.githubusercontent.com/HamishGBrown/MuSTEM/master/Manual/muSTEM_manual.pdf"
+
+# Keys whose L6/L7 entry duplicates another L6/L7 entry: the kept key is merged, the other is dropped.
+# (Duplicates against references.bib are detected by the script, not declared.)
+keep_on_duplicate:
+  HORIO2014: HORIO14      # same DOI 10.1380/ejssnt.2014.380; keep L6's key (L6 read the same pages)
+
+# Where a record value is a deposit artefact, the merged entry uses the value below and the note says so.
+# Every value is a transcription of a cached record (named in the comment), never a new value.
+set:
+  B08CH7:  &b08 {author: "Peng, L.-M. and Dudarev, S. L. and Whelan, M. J.", publisher: "Oxford University Press"}
+  B08CH8:  *b08
+  B08CH14: *b08
+  # ^ record: authors 'Peng, L -M', 'Dudarev, S L', 'Whelan, M J' and publisher 'Oxford University PressOxford'
+  #   (both also in the verified book record B08.json); the [B08] entry's forms are used (same initials).
+  ALLEN15: {author: "Allen, L.J. and D'Alfonso, A.J. and Findlay, S.D."}
+  # ^ record: second family name 'D׳Alfonso' (Hebrew punctuation geresh U+05F3 in place of the apostrophe).
+  ZANDVLIET2001E: {pages: "247"}
+  # ^ record: page '247-462' for a one-item erratum; only the first page is kept (see notes).
+  MUSTEM53: {title: "$\\mu$STEM v5.3: A transmission electron microscopy simulation suite, in particular for scanning transmission electron microscopy"}
+  # ^ title page (MUSTEM53.titlepage.txt): 'µSTEM / v5.3 / A transmission electron microscopy simulation suite,
+  #   in particular for scanning transmission electron microscopy.'; L6's added '(manual)' is not printed.
+
+# Sentences added to the merged entry's note (what the cached records show; no new values).
+notes:
+  ALLEN15: ["The Crossref record spells the second author with the Hebrew punctuation geresh (U+05F3) in place of the apostrophe of D'Alfonso; the apostrophe form of the proposal is kept."]
+  ZANDVLIET2001E: ["The Crossref record deposits the page range 247-462 (L7 copied it); for a one-item erratum that range is implausible, so only the first page 247 (shared by the record and the DOI) is kept. The APS page answered HTTP 403 to B4; check the last page there."]
+  B08CH7: ["Chapter record of [B08]: the same ISBNs 9780198500742 (print) and 9781383019926 (electronic) as the book record; pages 228-263."]
+  B08CH8: ["Chapter record of [B08]: the same ISBNs 9780198500742 (print) and 9781383019926 (electronic) as the book record; pages 264-310."]
+  B08CH14: ["Chapter record of [B08]: the same ISBNs 9780198500742 (print) and 9781383019926 (electronic) as the book record; pages 454-469."]
+  COLELLA72: ["The record title carries italic markup on the n of 'n-beam', with no space before it; transcribed as 'and $n$-beam'. The record gives the second author as 'Menadue, F. J.', whereas [MENADUE72] is 'Menadue, J. F.' (both as deposited; not resolved here)."]
+  ICHIMIYA85: ["'Formura' [sic] is the deposited title spelling and is kept."]
+  HORIO14: ["J-STAGE deposits issue '0' for this journal (no issues): no number field."]
+  HORIO83: ["Record title symbols transcribed: the multiplication sign as $\\times$, the square root as $\\sqrt{3}$."]
+  WUSPIECKER17: ["L6's entry carried the DOI, title ('Publisher's note'), volume 177 and pages 1-13 of a DIFFERENT Crossref record, 10.1016/j.ultramic.2017.01.011, a Publisher's note without authors; L6's own report (section 3.1, 'Record discrepancy', and section 6, 'Not accepted') names 10.1016/j.ultramic.2017.03.029 as the article. That record was fetched and every field now comes from it (authors Mingjian Wu and Erdmann Spiecker, Ultramicroscopy 176, 233-245, published-print 2017-05)."]
+  CHALISE22A: ["The arXiv record names a journal version, Phys. Rev. Applied 18, 014076 (2022), DOI 10.1103/PhysRevApplied.18.014076; its Crossref record (cached as CHALISE22A.arxivdoi.json) gives the same four authors, the title 'Temperature Mapping of Stacked Silicon Dies from X-Ray-Diffraction Intensities', issue 1, article 014076, published 2022-07-29. This entry stays the preprint L6 read; cite the journal version only after checking it."]
+  ZHENG26A: ["The arXiv record gives journal-ref 'Frontiers of Physics, 21(11), 114201 (2026)' and DOI 10.15302/frontphys.2026.114201; the Crossref record of that DOI (cached as ZHENG26A.claim.json) carries the title, Frontiers of Physics 21(11), article 114201, 2026, but NO authors, as L6 reported, so no doi field is given."]
+  MUSTEM53: ["No year is printed on the title page; the PDF metadata CreationDate 2018-09-24 is not a printed date, so there is no year field. Title and the five authors (L. J. Allen, H. G. Brown, A. J. D'Alfonso, S.D. Findlay, B. D. Forbes, 'in alphabetical order') read on page 1; L6's descriptor '(manual)' is not part of the printed title and was dropped."]
+  HEACOCK21: ["The arXiv record 2103.05428 links the same DOI; its title differs only in capitalisation."]
+  TAKEGUCHI1993THESIS: ["Author romanised by B4 (Hepburn) from the CiNii reading タケグチ, マサキ; name in the records: 竹口, 雅樹. School and type as proposed by L7; CiNii gives degree 博士（工学）, number 甲第04794号, grantor 大阪大学, granted 1993-03-25, and carries the same DOI. The CiNii title has ' : ' where JaLC has '-'; the JaLC title is used."]
+  OSAKABE1995THESIS: ["Author romanised by B4 (Hepburn) from the CiNii reading オサカベ, ノブユキ; name in the records: 長我部, 信行. School and type as proposed by L7; CiNii gives degree 博士 (理学), number 乙第2714号, grantor 東京工業大学, granted 1995-01-31, and carries the same DOI."]
+
+# Differences between proposal and record that are NOT errors of the proposal (kept on purpose).
+accepted_residual:
+  ALLEN15: "author[2].family: record 'D׳Alfonso' uses U+05F3 for the apostrophe; proposal kept"

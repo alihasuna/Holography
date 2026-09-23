@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-09-23T23:16:57Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2608.24679" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2608.24679</identifier>
+        <datestamp>2026-08-26</datestamp>
+            <setSpec>physics:cond-mat:mtrl-sci</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>2608.24679</id>
+        <created>2026-08-25</created>
+            <updated>2026-08-26</updated>
+        <authors>
+                <author>
+                    <keyname>Hájek</keyname>
+                        <forenames>Martin</forenames>
+                </author>
+                <author>
+                    <keyname>Rusz</keyname>
+                        <forenames>Ján</forenames>
+                </author>
+        </authors>
+        <title>Thermal diffuse scattering in TEM: complex absorptive potentials compared to the frozen phonon model</title>
+            <categories>cond-mat.mtrl-sci</categories>
+            <comments>10 pages, 7 figures</comments>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>In transmission electron microscopy, electrons undergo inelastic scattering primarily through phonon excitations, known as thermal diffuse scattering. To capture the inelastic scattering effects on the elastic scattering components, absorptive effects must be included in the modeling of electron propagation, accounting for the gradual depletion of the elastic channel of the electron beam. Several approaches to modeling this absorption exist. In this paper, we compare the widely used complex absorptive potentials method to the more elaborate frozen phonon model, based on correlated atomic motion and on the Einstein model of atomic motion.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>

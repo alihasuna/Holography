@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-09-23T23:22:24Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2203.12554" metadataPrefix="arXivRaw">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2203.12554</identifier>
+        <datestamp>2022-09-22</datestamp>
+            <setSpec>physics:physics:app-ph</setSpec>
+            <setSpec>physics:cond-mat:mtrl-sci</setSpec>
+    </header>
+
+            <metadata>
+                        <arXivRaw xmlns="http://arxiv.org/OAI/arXivRaw/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXivRaw/ https://oaipmh.arxiv.org/OAI/arXivRaw.xsd">
+        <id>2203.12554</id>
+        <submitter>Darshan Chalise</submitter>
+            <version version="v1">
+                <date>Wed, 23 Mar 2022 17:13:28 GMT</date>
+                <size>879kb</size>
+            </version>
+            <version version="v2">
+                <date>Tue, 29 Mar 2022 13:34:55 GMT</date>
+                <size>882kb</size>
+            </version>
+        <title>Temperature mapping of stacked silicon dies from x-ray diffraction intensities</title>
+        <authors>Darshan Chalise, Peter Kenesei, Sarvjit D. Shastri, David G. Cahill</authors>
+        <categories>physics.app-ph cond-mat.mtrl-sci</categories>
+            <journal-ref>Phys. Rev. Applied 18, 014076 (2022)1-8)</journal-ref>
+            <doi>10.1103/PhysRevApplied.18.014076</doi>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>Increasing power densities in integrated circuits has led to an increased prevalence of thermal hotspots in integrated circuits. Tracking these thermal hotspots is imperative to prevent circuit failures. In 3D integrated circuits, conventional surface techniques like infrared thermometry are unable to measure 3D temperature distribution and optical and magnetic resonance techniques are difficult to apply due to the presence of metals and large current densities. X-rays offer high penetration depth and can be used to probe 3D structures. We report a method utilizing the temperature dependence of x-rays diffraction intensity via the Debye-Waller factor to simultaneously map the temperature of an individual silicon die that is a part of a stack of dies. Utilizing beamline 1-ID-E at the Advanced Photon Source (Argonne), we demonstrate for each individual silicon die, a temperature resolution of 3 K, a spatial resolution of 100 um x 400 um and a temporal resolution of 20 s. Utilizing a sufficiently high intensity laboratory source, e.g., from a liquid anode source, this method can be scaled down to laboratories for non-invasive temperature mapping of 3D integrated circuits.</abstract>
+    </arXivRaw>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-09-23T23:21:04Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2103.05428" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2103.05428</identifier>
+        <datestamp>2021-09-13</datestamp>
+            <setSpec>physics:nucl-ex</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>2103.05428</id>
+        <created>2021-08-19</created>
+            <updated>2021-09-13</updated>
+        <authors>
+                <author>
+                    <keyname>Heacock</keyname>
+                        <forenames>Benjamin</forenames>
+                </author>
+                <author>
+                    <keyname>Fujiie</keyname>
+                        <forenames>Takuhiro</forenames>
+                </author>
+                <author>
+                    <keyname>Haun</keyname>
+                        <forenames>Robert W.</forenames>
+                </author>
+                <author>
+                    <keyname>Henins</keyname>
+                        <forenames>Albert</forenames>
+                </author>
+                <author>
+                    <keyname>Hirota</keyname>
+                        <forenames>Katsuya</forenames>
+                </author>
+                <author>
+                    <keyname>Hosobata</keyname>
+                        <forenames>Takuya</forenames>
+                </author>
+                <author>
+                    <keyname>Huber</keyname>
+                        <forenames>Michael G.</forenames>
+                </author>
+                <author>
+                    <keyname>Kitaguchi</keyname>
+                        <forenames>Masaaki</forenames>
+                </author>
+                <author>
+                    <keyname>Pushin</keyname>
+                        <forenames>Dmitry A.</forenames>
+                </author>
+                <author>
+                    <keyname>Shimizu</keyname>
+                        <forenames>Hirohiko</forenames>
+                </author>
+                <author>
+                    <keyname>Takeda</keyname>
+                        <forenames>Masahiro</forenames>
+                </author>
+                <author>
+                    <keyname>Valdillez</keyname>
+                        <forenames>Robert</forenames>
+                </author>
+                <author>
+                    <keyname>Yamagata</keyname>
+                        <forenames>Yutaka</forenames>
+                </author>
+                <author>
+                    <keyname>Young</keyname>
+                        <forenames>Albert</forenames>
+                </author>
+        </authors>
+        <title>Pendellösung Interferometry Probes the Neutron Charge Radius, Lattice Dynamics, and Fifth Forces</title>
+            <categories>nucl-ex</categories>
+            <doi>10.1126/science.abc2794</doi>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>Structure factors describe how incident radiation is scattered from materials such as silicon and germanium and characterize the physical interaction between the material and scattered particles. We use neutron pendellösung interferometry to make precision measurements of the (220) and (400) neutron-silicon structure factors, and achieve a factor of four improvement in the (111) structure factor uncertainty. These data provide measurements of the silicon Debye-Waller factor at room temperature and the mean square neutron charge radius $\langle r_n^2 \rangle = -0.1101 \pm 0.0089 \, \mathrm{fm}^2$. Combined with existing measurements of the Debye-Waller factor and charge radius, the measured structure factors also improve constraints on the strength of a Yukawa-modification to gravity by an order of magnitude over the 20 pm to 10 nm length scale range.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>
