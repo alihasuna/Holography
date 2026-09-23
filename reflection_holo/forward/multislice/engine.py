@@ -107,6 +107,29 @@ def _commensurability(cell: ReflectionCell, dz: float) -> dict:
     return dict(z_period_A=p, slices_per_period=int(round(r)))
 
 
+def propagate_slices(psi, *, realised, n_slices: int, backend, P_full, P_half, band_mask, sigma,
+                     absorber_factor):
+    """The slice loop (module docstring): P(dz/2) T_{N-1} P(dz) ... T_0 P(dz/2) psi.
+
+    realised: object with slice_key(i) (hashable or None; equal consecutive keys reuse the
+    transmission function) and projected(i) (complex projected potential, V A). absorber_factor:
+    exp(-sigma W(x) dz) broadcastable to (nx, ny). Returns (psi, number of transmission functions
+    built)."""
+    be, xp = backend, backend.xp
+    psi = be.ifft2(be.fft2(psi) * P_half)
+    key_prev, t_bl, n_built = object(), None, 0
+    for i in range(n_slices):
+        key = realised.slice_key(i)
+        if key is None or key != key_prev:
+            t = xp.exp(1j * sigma * realised.projected(i)) * absorber_factor
+            t_bl = be.ifft2(be.fft2(t) * band_mask)
+            key_prev = key
+            n_built += 1
+        psi = psi * t_bl
+        psi = be.ifft2(be.fft2(psi) * (P_full if i < n_slices - 1 else P_half))
+    return psi, n_built
+
+
 def reflection_setup(cell: ReflectionCell, *, potential, beam: SheetBeam,
                      params: MultisliceParams) -> dict:
     """Run every assertion of a reflection calculation and return the derived quantities (grid,
@@ -155,7 +178,6 @@ def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params:
             raise ValueError("seed must be None for a static potential (nothing is random)")
         rng = None
     be = get_backend(params.backend, params.precision, params.threads)
-    xp = be.xp
     lam, sigma = bc["wavelength_A"], bc["sigma_rad_per_VA"]
     mask = band_limit_mask(grid, params.band_limit)
     P_full, n_ev = propagator_kernel(grid, dz_A=params.dz_A, wavelength_A=lam,
@@ -172,18 +194,9 @@ def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params:
     realised = potential.realise(grid=grid, dz_A=params.dz_A, n_slices=N, backend=be, rng=rng)
     sig = be.real_dtype(sigma)
 
-    psi = be.ifft2(be.fft2(psi) * P_half)
-    key_prev, t_bl, n_built = object(), None, 0
-    for i in range(N):
-        key = realised.slice_key(i)
-        if key is None or key != key_prev:
-            Vp = realised.projected(i)
-            t = xp.exp(1j * sig * Vp) * absfac
-            t_bl = be.ifft2(be.fft2(t) * maskb)
-            key_prev = key
-            n_built += 1
-        psi = psi * t_bl
-        psi = be.ifft2(be.fft2(psi) * (P_full if i < N - 1 else P_half))
+    psi, n_built = propagate_slices(psi, realised=realised, n_slices=N, backend=be,
+                                    P_full=P_full, P_half=P_half, band_mask=maskb, sigma=sig,
+                                    absorber_factor=absfac)
     psi_np = be.to_numpy(psi).astype(params.precision)
     t_end = time.perf_counter()
 
@@ -216,7 +229,12 @@ def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params:
                        bulk_absorber_x_A=cell.metadata["layout"]["bulk_absorber_x_A"],
                        top_absorber_x_A=cell.metadata["layout"]["top_absorber_x_A"]),
         potential=dict(potential.provenance(), realised=realised.metadata),
-        mean_inner_potential_used_for_band_and_geometry_V=s["V0_potential_V"],
+        mean_inner_potential_V=dict(
+            value=s["V0_potential_V"],
+            note="mean inner potential of the potential actually used (independent-atom value for "
+                 "atomic cells; declared V0 for continuum cells); used for the internal angles of "
+                 "the band and geometry assertions; compare the sourced V0 (PROJECT_INPUT item 20, "
+                 "12.0 V ASSUMPTION B1)"),
         geometry_checks=s["geometry"],
         cell=dict(kind=cell.metadata.get("kind"), atoms_sha256=cell.metadata.get("atoms_sha256"),
                   n_atoms=int(len(cell.Z)), extent_x_A=cell.extent_x_A,
@@ -269,16 +287,16 @@ def simulate(cell: ReflectionCell, *, potential, beam: SheetBeam, params: Multis
         git = git_state()
     except Exception:                                     # pragma: no cover
         pass
-    import abtem  # noqa: F401 - version recorded
     engines = {ENGINE_NAME: dict(version=reflection_holo.__version__,
                                  commit=(git or {}).get("commit"),
                                  dirty=(git or {}).get("dirty"),
                                  licence="this repository",
                                  status=VALIDATION_STATUS)}
     if getattr(potential, "kind", None) == "atomic":
-        engines["abTEM (parameterisation functions only)"] = dict(
-            version=abtem.__version__, commit="164e644f (tag v1.0.10; report D3)",
-            licence="GPL-3.0-or-later")
+        pv = waves[0].metadata["potential"]
+        engines["abTEM (Kirkland parameterisation functions only)"] = dict(
+            version=pv["abtem_version"], commit=pv["abtem_commit"],
+            licence="GPL-3.0-or-later (optional dependency)")
     manifest = build_manifest(
         run_name=run_name, config=config, input_paths=list(input_paths) + files,
         seeds={"frozen_phonons": seed}, thread_count=params.threads,

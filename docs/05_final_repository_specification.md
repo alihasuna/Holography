@@ -159,7 +159,7 @@ Requirements independent of the engine (numbers DERIVED_HERE, source-map rows SM
    complex64 or complex128 stated, with axes, pixel sizes and tilt actually used stored in the file.
 9. Exact propagator preferred (the custom kernel provides one; released abTEM 1.0.10 has only the
    Fresnel propagator, an exact one exists only in its unreleased 1.1.0 development tree, report D3). The paraxial Fresnel error `k dz sin^4(alpha)/8`
-   over a 198 A cell is 0.026 rad at the 45 mrad specular scattering angle and 0.106 rad at the
+   over a 198 A cell is 0.025 rad at the 45 mrad specular scattering angle and 0.106 rad at the
    64 mrad band edge; it is common-mode between terraces but not negligible for absolute phases, and
    must be reported for whichever engine is used.
 
@@ -293,7 +293,7 @@ not valid. Used for experiment planning and for the rocking-series inversion.
   refracted angles (T4 to T6), accessibility (T15), wrap period (T14), foreshortening (T20),
   wavelength (T1 to T3), shadow length equals `h/tan(theta)` at the operating angle.
 * Propagation: vacuum plane-wave phase advance, inverse propagation, sampling and slice convergence, norm
-  preservation for lossless stages, paraxial-versus-exact comparison (expected 0.026 rad at 45 mrad
+  preservation for lossless stages, paraxial-versus-exact comparison (expected 0.025 rad at 45 mrad
   over 198 A), shear-tilt versus Fourier-component tilt at 24 and 48 mrad.
 * Boundaries: footprint and wrap-around assertions (T17 to T19), sampling ceilings (T21, T22), absorber
   effectiveness, no periodic-image contamination in the measurement band.

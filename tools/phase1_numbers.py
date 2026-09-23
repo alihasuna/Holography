@@ -102,6 +102,14 @@ def main() -> None:
     for k, v in sh.items():
         print(f"   {k:34s} {v:9.2f}")
 
+    # Paraxial Fresnel error k L sin^4(alpha)/8 over the 198 A default cell (SM08; docs/03 section 5,
+    # docs/05 section 4.3 item 9, model_assumptions A1). Phase 2 corrects the 45 mrad value 0.026 -> 0.025.
+    kk = float(calc.k_ang_per_A(E_KEV))
+    par = {a_mrad: kk * 198.0 * np.sin(a_mrad * 1e-3) ** 4 / 8.0 for a_mrad in (24.0, 45.0, 64.3)}
+    print("Paraxial Fresnel error over 198 A (SM08)")
+    for a_mrad, v in par.items():
+        print(f"   {a_mrad:5.1f} mrad: {v:.4f} rad")
+
     # Self-checks: the (4,-4,4) 12.0 V values must agree with the calculator table in docs/03.
     checks = [
         ("theta_ext (4,-4,4) at 12.0 V [mrad]", r444["th_ext_lo"], 13.64, 5e-3),
@@ -125,6 +133,9 @@ def main() -> None:
         ("shadow 10 nm (8,-8,8) [nm]", sh["10 nm, (8,-8,8) [nm]"], 324.0, 0.5),
         ("shadow 10 nm (0,0,8) [nm]", sh["10 nm, (0,0,8) [nm]"], 607.0, 0.5),
         ("shadow 10 nm (0,0,12) [nm]", sh["10 nm, (0,0,12) [nm]"], 378.0, 0.5),
+        ("paraxial error 24 mrad [rad]", par[24.0], 0.002, 5e-4),
+        ("paraxial error 45 mrad [rad]", par[45.0], 0.025, 5e-4),
+        ("paraxial error 64.3 mrad [rad]", par[64.3], 0.106, 5e-4),
     ]
     npass = 0
     print("-" * 96)

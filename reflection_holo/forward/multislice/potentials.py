@@ -11,12 +11,22 @@ the slice that contains it, built in Fourier space on the grid:
 
     V_p(r) = (1 / (dx dy)) IFFT2[ sum_s F_s(f^2) sum_{j in s, slice} exp(-2 pi i f.r_j) ],
 
-F_s(f^2) = abTEM 1.0.10 ``<Parametrization>().projected_scattering_factor(symbol)(f^2)``, the 2D
-Fourier transform of the infinite projected potential in V A^3 (f in cycles/A). Provenance: the
-abTEM source is SECTION_READ (report D3; this repository checked the function against abTEM's own
-real-space ``projected_potential`` by a Hankel transform); the parameterisation's paper is NOT read
-by us (SM17): UNVERIFIED. The exact phase factors place each atom at its continuous position (no
-sinc correction is needed, unlike abTEM's bilinear delta superposition, integrals.py).
+F_s(f^2) = abTEM 1.0.10 ``KirklandParametrization().projected_scattering_factor(symbol)(f^2)``,
+the 2D Fourier transform of the infinite projected potential in V A^3 (f in cycles/A); the
+construction is the one recommended in report D3 section 8. Parameterisation: KIRKLAND only
+(orchestrator decision after D3: abTEM's Kirkland table equals Kirkland's computem table for Si bit
+for bit; abTEM's Lobato table differs from Lobato's MULTEM table, D3 F5). Provenance: the abTEM
+source is SECTION_READ (report D3; this repository also checked the function against abTEM's
+real-space ``projected_potential`` by a Hankel transform, and a slice against a FRESH
+``ScatteringFactorProjectionIntegrals("kirkland").integrate_on_grid`` in tests/forward); the
+parameterisation itself (Kirkland's fit, book B06) is NOT read by us (SM17): UNVERIFIED. The exact
+phase factors place each atom at its continuous position (no bilinear delta spreading or sinc
+correction as in abTEM integrals.py:467-505). abTEM (GPL-3.0-or-later) is an OPTIONAL dependency,
+imported lazily; no abTEM code or table is copied into this repository.
+Mean inner potential of the potential actually used (``mean_inner_potential_V``; 13.903 V for
+Kirkland Si at a = 5.4309 A, D3 F16) is recorded in every ExitWave; it is the independent-atom
+value, not the sourced V0 (12.0 V ASSUMPTION B1; PROJECT_INPUT item 20); no correction to a sourced
+V0 is applied (a modelling decision left open by D3 blocker 5).
 Slice assignment rule (documented, deterministic): slice i holds the atoms with
 i dz - 1e-9 A <= z < (i + 1) dz - 1e-9 A (an atom on a boundary goes to the downstream slice);
 the z-position error of an atom is |z - (i + 1/2) dz| <= dz/2 and is recorded. Infinite projection
@@ -42,7 +52,8 @@ from reflection_holo.io.labels import require_evidence_label
 
 NUMERICAL_LABEL = "NUMERICAL (not physical): absorbing boundary of the reflection cell"
 ABSORBER_PROFILES = ("sin2", "quadratic", "cubic")
-PARAMETERISATIONS = {"lobato": "LobatoParametrization", "kirkland": "KirklandParametrization"}
+PARAMETERISATIONS = {"kirkland": "KirklandParametrization"}   # orchestrator decision after D3
+ABTEM_COMMIT = "164e644f (tag v1.0.10; report D3 F1)"
 _LABELS = ("PROJECT_INPUT", "ASSUMPTION", "TEST_ONLY")
 _SLICE_EPS_A = 1e-9
 
@@ -130,6 +141,30 @@ class FrozenPhonons:
                                   "formation), never the complex waves")
 
 
+def _import_abtem():
+    """Lazy optional import of abTEM's parameterisations (GPL-3.0-or-later; report D3 section 6)."""
+    try:
+        import abtem
+        from abtem import parametrizations as ap
+    except ImportError as exc:                                 # pragma: no cover
+        raise ImportError(
+            "the atomic potential needs the optional dependency abTEM 1.0.10 for the Kirkland "
+            "parameterisation functions: venv/bin/pip install abtem==1.0.10 (GPL-3.0-or-later; "
+            "report D3)") from exc
+    if abtem.__version__ != "1.0.10":
+        raise ImportError(f"abTEM {abtem.__version__} found; the provenance (report D3) is for "
+                          f"1.0.10 only")
+    return ap, abtem.__version__
+
+
+def potential_mean_inner_potential_V(potential) -> float:
+    """Mean inner potential (V) of the potential ACTUALLY USED by the engine: the independent-atom
+    value for AtomicPotential (13.903 V, Kirkland Si), the declared V0 for a continuum potential.
+    The pipeline computes its refraction angles with this value to stay consistent with the
+    exit waves (orchestrator decision 5 after D3)."""
+    return float(potential.mean_inner_potential_V())
+
+
 def _sha256(path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as fh:
@@ -144,7 +179,9 @@ class AtomicPotential:
     def __init__(self, cell, *, parameterisation: str, physical_absorption: PhysicalAbsorption,
                  frozen_phonons: FrozenPhonons | None, static_lattice_label: str | None):
         if parameterisation not in PARAMETERISATIONS:
-            raise ValueError(f"parameterisation must be one of {tuple(PARAMETERISATIONS)}")
+            raise ValueError(f"parameterisation must be one of {tuple(PARAMETERISATIONS)} "
+                             f"(Lobato refused: abTEM's lobato.json differs from Lobato's MULTEM "
+                             f"table, report D3 F5)")
         if not isinstance(physical_absorption, PhysicalAbsorption):
             raise TypeError("physical_absorption must be a PhysicalAbsorption (item 21)")
         if frozen_phonons is None:
@@ -154,8 +191,7 @@ class AtomicPotential:
             raise ValueError("static_lattice_label is only for frozen_phonons=None")
         if cell.metadata.get("kind") != "atomic" or len(cell.Z) == 0:
             raise ValueError("AtomicPotential needs an atomic ReflectionCell")
-        import abtem
-        from abtem import parametrizations as ap
+        ap, abtem_version = _import_abtem()
         self.cell = cell
         self.name = parameterisation
         self.absorption = physical_absorption
@@ -171,7 +207,9 @@ class AtomicPotential:
             parameterisation=parameterisation,
             parameterisation_class=PARAMETERISATIONS[parameterisation],
             function="projected_scattering_factor(symbol)(f^2), f in cycles/A, V A^3",
-            abtem_version=abtem.__version__,
+            abtem_version=abtem_version, abtem_commit=ABTEM_COMMIT,
+            abtem_licence="GPL-3.0-or-later (optional dependency, imported lazily; no code or "
+                          "table copied)",
             source_files=[os.path.join(base, "__init__.py"),
                           os.path.join(base, "functions", f"{parameterisation}.py")],
             data_file=data, data_file_sha256=_sha256(data),
@@ -233,8 +271,8 @@ class _RealisedAtomic:
         f2 = grid.fx()[:, None] ** 2 + grid.fy()[None, :] ** 2
         self.F = {int(Zs): be.asarray(pot.scattering_factor(Zs, f2), dtype=be.real_dtype)
                   for Zs in np.unique(self.Z)}
-        self.fx = be.asarray(grid.fx(), dtype=be.real_dtype)
-        self.fy = be.asarray(grid.fy(), dtype=be.real_dtype)
+        self.fx64 = be.asarray(grid.fx(), dtype=np.float64)
+        self.fy64 = be.asarray(grid.fy(), dtype=np.float64)
         self.norm = 1.0 / (grid.dx_A * grid.dy_A)
         self.ratio = float(pot.absorption.ratio)
         self.metadata = dict(n_atoms=int(len(z)), max_atom_offset_from_slice_centre_A=float(off.max()),
@@ -258,10 +296,11 @@ class _RealisedAtomic:
             sel = self.Z[a:b] == Zs
             if not np.any(sel):
                 continue
-            pos = be.asarray(self.xyz[a:b][sel], dtype=be.real_dtype)
-            twopi = be.real_dtype(2.0 * np.pi)
-            Ex = xp.exp((-1j * twopi) * (self.fx[:, None] * pos[None, :, 0])).astype(be.complex_dtype)
-            Ey = xp.exp((-1j * twopi) * (self.fy[:, None] * pos[None, :, 1])).astype(be.complex_dtype)
+            # phase arguments in float64 (2 pi f x reaches ~2e3 rad; float32 would err by ~1e-4
+            # rad), exponentials cast to the working precision afterwards
+            pos = be.asarray(self.xyz[a:b][sel], dtype=np.float64)
+            Ex = xp.exp(-2j * np.pi * (self.fx64[:, None] * pos[None, :, 0])).astype(be.complex_dtype)
+            Ey = xp.exp(-2j * np.pi * (self.fy64[:, None] * pos[None, :, 1])).astype(be.complex_dtype)
             S = (Ex @ Ey.T) * F
             acc = S if acc is None else acc + S
         V = be.ifft2(acc).real * be.real_dtype(self.norm)

@@ -183,7 +183,7 @@ about 110 wraps at (4,-4,4). Consequences:
 * Propagator: specular reflection at 22 mrad changes only the transverse wavevector by `2 k sin(theta)`;
   the longitudinal component is unchanged, so the wave is forward-propagating along the beam axis. The
   paraxial Fresnel error `k dz sin^4(alpha)/8` over the 198 A default cell is 0.002 rad at the 24 mrad
-  tilt, 0.026 rad at the 45 mrad specular scattering angle and 0.106 rad at the 64 mrad band edge
+  tilt, 0.025 rad at the 45 mrad specular scattering angle and 0.106 rad at the 64 mrad band edge
   (values corrected by the adversarial review; the C report's section 5.1 numbers are three times too
   small because they expand the cosine in the angle rather than in the transverse wavevector). The error
   is common-mode between two terraces reflecting into the same `k_out` and cancels in the step phase,
