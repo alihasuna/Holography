@@ -1,6 +1,6 @@
 # H3 — Alliance (Digital Research Alliance of Canada) run kit
 
-Agent: H3. Date: 2026-09-23. Status: see section 6 (written incrementally).
+Agent: H3. Date: 2026-09-23. Status: COMPLETE for everything possible without a cluster (section 6).
 
 Scope: a ready-to-run kit under `scripts/hpc/alliance/` so that Ali can ssh into Fir, Nibi, Rorqual,
 Narval or Trillium tonight and run our jobs himself. No agent ssh'es anywhere (the wiki: automation
@@ -166,3 +166,41 @@ and still refusing an unfilled PARTITION placeholder.
    during this work and were not modified or used.
 
 ## 6. Final state
+
+Test output, verbatim (last lines):
+
+* Baseline before any H3 change, `venv/bin/python -m pytest -q -p no:cacheprovider --durations=0`:
+  `779 passed, 12 warnings in 456.30s (0:07:36)`.
+* Kit tests alone, `venv/bin/python -m pytest -q -p no:cacheprovider tests/hpc`:
+  `SKIPPED [5] tests/hpc/test_alliance_kit.py:383: shellcheck not installed` /
+  `73 passed, 5 skipped in 117.28s (0:01:57)`.
+* The 10 bash-syntax and shellcheck tests with the scratch ShellCheck 0.11.0 on PATH:
+  `10 passed, 68 deselected in 0.67s` (ShellCheck clean on all five scripts).
+* The setup subset (exact command of setup_alliance.sh step 6, 4 threads, machine shared):
+  `SKIPPED [5] tests/hpc/test_alliance_kit.py:381: shellcheck not installed` /
+  `780 passed, 5 skipped, 2 deselected, 12 warnings in 134.53s (0:02:14)`.
+* **Final full suite, `venv/bin/python -m pytest -q`** (final tree, identical to the orchestrator's
+  snapshot commit 69d2de0 for every H3 file):
+  ```
+  =========================== short test summary info ============================
+  SKIPPED [5] tests/hpc/test_alliance_kit.py:383: shellcheck not installed
+  852 passed, 5 skipped, 12 warnings in 591.60s (0:09:51)
+  ```
+  852 = 779 existing + 73 new; no existing test or tolerance was changed. The 12 warnings are the
+  pre-existing RuntimeWarnings of the reconstruction tests (also in the baseline).
+
+No test failed in the final runs. Failures met while writing the tests, all fixed in the test
+fixture, not by loosening anything: the numpy-impersonating fake cupy first failed because `import
+abtem` also imports `cupyx`, `cupyx.scipy.ndimage`, `cp.ElementwiseKernel` and `cp.fuse` when cupy
+is importable (section 2 item 7); the fake package now provides them.
+
+## 6. Final state
+
+COMPLETE for what can be done without a cluster. Everything under `scripts/hpc/alliance/` is ready
+for Ali to use tonight; the first real test of the environment is `setup_alliance.sh` on a login
+node, and the first real test of the GPU path is the `gpu-check` job. Until gpu-check prints
+`GPU CHECK: PASS` on a cluster, every GPU number in the kit is the engine's GPU_ASSUMPTION model.
+Multislice outputs (demo-gpu, torus, null study) are UNVALIDATED; "NO HEIGHT" from demo-gpu is the
+expected result; the geometric smoke demo is the engine whose heights are trustworthy.
+Nothing was committed or pushed by H3 (the orchestrator's snapshot commit 69d2de0 contains the
+kit as it stood).
