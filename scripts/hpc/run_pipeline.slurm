@@ -22,7 +22,9 @@ SCRIPT="$(readlink -f "$0")"                # absolute: the script may be launch
 
 # ---- REQUIRED (no defaults) -----------------------------------------------------------------
 ACCOUNT="${RH_ACCOUNT:-__FILL_ME__}"        # your SLURM account
-PARTITION="${RH_PARTITION:-__FILL_ME__}"    # partition (GPU partition for the multislice run)
+# partition (GPU partition for the multislice run); "none" = let the scheduler choose (the Alliance
+# clusters ask for this: Running_jobs § "Do not specify a partition"; scripts/hpc/alliance/)
+PARTITION="${RH_PARTITION:-__FILL_ME__}"
 TIME_LIMIT="${RH_TIME_LIMIT:-__FILL_ME__}"  # wall time, e.g. 02:00:00
 GPU="${RH_GPU:-__FILL_ME__}"                # GPU request, e.g. gpu:1 or gpu:a100:1; "none" = CPU only
 # ---- run selection (explicit; change as needed) -----------------------------------------------
@@ -40,6 +42,11 @@ else
 fi
 REPO="$(cd "${RH_REPO:-$(pwd)}" && pwd)"    # absolute
 PY="${REPO}/venv/bin/python"
+# job mode only: directory for the job's own text files (dry-run report). Default: the repository
+# (unchanged behaviour). The Alliance kit sets it to a job directory under $SCRATCH, because on
+# Trillium home and project are read-only on compute nodes (Trillium_Quickstart § "Job output must
+# be written to the scratch file system") and the file would otherwise dirty the clone (A3b N3).
+WORKDIR="${RH_WORKDIR:-$REPO}"
 
 missing=()
 for v in ACCOUNT PARTITION TIME_LIMIT GPU; do
@@ -116,9 +123,11 @@ if [ -z "${SLURM_JOB_ID:-}" ]; then
   # submission mode: submit this file with the filled options
   GRES=()
   if [ "$GPU" != "none" ]; then GRES=(--gres="$GPU"); fi
-  exec sbatch --account="$ACCOUNT" --partition="$PARTITION" --time="$TIME_LIMIT" ${GRES[@]+"${GRES[@]}"} \
+  PART=()
+  if [ "$PARTITION" != "none" ]; then PART=(--partition="$PARTITION"); fi
+  exec sbatch --account="$ACCOUNT" ${PART[@]+"${PART[@]}"} --time="$TIME_LIMIT" ${GRES[@]+"${GRES[@]}"} \
        --cpus-per-task="$CPUS" --mem="$MEM" \
-       --export=ALL,RH_ACCOUNT="$ACCOUNT",RH_PARTITION="$PARTITION",RH_TIME_LIMIT="$TIME_LIMIT",RH_GPU="$GPU",RH_MODE="$MODE",RH_CONFIG="$CONFIG",RH_VARIANT="$VARIANT",RH_REPO="$REPO",RH_CPUS="$CPUS",RH_ALLOW_NO_GIT="${RH_ALLOW_NO_GIT:-0}" \
+       --export=ALL,RH_ACCOUNT="$ACCOUNT",RH_PARTITION="$PARTITION",RH_TIME_LIMIT="$TIME_LIMIT",RH_GPU="$GPU",RH_MODE="$MODE",RH_CONFIG="$CONFIG",RH_VARIANT="$VARIANT",RH_REPO="$REPO",RH_CPUS="$CPUS",RH_ALLOW_NO_GIT="${RH_ALLOW_NO_GIT:-0}",RH_WORKDIR="${RH_WORKDIR:-}" \
        "$SCRIPT"
 fi
 
@@ -134,7 +143,7 @@ if [ "$GPU" != "none" ] && command -v nvidia-smi >/dev/null 2>&1; then nvidia-sm
 "$PY" -m reflection_holo.pipeline list-inputs --config "$CONFIG" ${VARIANT_ARGS[@]+"${VARIANT_ARGS[@]}"}
 # dry-run output goes to a file first: piping into head under `set -o pipefail` failed at random
 # (SIGPIPE on the writer; audit A3 M4)
-DRYRUN_TXT="reflholo_${SLURM_JOB_ID}_dryrun.txt"
+DRYRUN_TXT="${WORKDIR}/reflholo_${SLURM_JOB_ID}_dryrun.txt"
 set +e
 "$PY" -m reflection_holo.pipeline dry-run --config "$CONFIG" ${VARIANT_ARGS[@]+"${VARIANT_ARGS[@]}"} > "$DRYRUN_TXT"
 dstatus=$?

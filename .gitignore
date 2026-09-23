@@ -12,3 +12,6 @@ outputs/
 # SLURM job logs and dry-run text written by scripts/hpc/run_pipeline.slurm (copied into outputs/)
 reflholo_*.log
 reflholo_*_dryrun.txt
+
+# Alliance kit setup logs (scripts/hpc/alliance/setup_alliance.sh; also copied into venv/alliance/)
+alliance_setup_*.log

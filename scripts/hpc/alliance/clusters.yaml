@@ -1,0 +1,383 @@
+# Alliance cluster profiles for the reflection-holography kit (scripts/hpc/alliance/).
+#
+# The single source read by kit.py (and through it by submit.sh). Every value is a mapping
+# {value: ..., locator: "..."}: the locator names the Alliance wiki page and section
+# (https://docs.alliancecan.ca/wiki/<Page>, "§" = section heading, "(header table)" = the infobox at
+# the top of the page), as retrieved on 2026-09-23 by agent H1 (raw wikitext cached; see
+# docs/agent_reports/H1_alliance_wiki.md, which gives the revision ids). NOT_FOUND means the wiki does
+# not state the value: the kit never invents it (the user must supply it, or the feature is
+# refused). INFERENCE marks an H3 reading that is not a wiki statement.
+#
+# Units: memory strings are Slurm --mem values. The wiki's bundle table writes "GB"; H3 reads it as
+# Slurm "G" (INFERENCE: e.g. Rorqual 4 x 124 <= "498G or 510000M" per GPU node, Fir 4 x 280 <= 1125G,
+# Nibi 8 x 250 = 2000G; Running_jobs § Memory: "--mem=125G is equivalent to --mem=128000M").
+schema: reflholo_alliance_clusters/1
+retrieved_utc: "2026-09-23"
+source_report: docs/agent_reports/H1_alliance_wiki.md
+wiki_base: https://docs.alliancecan.ca/wiki/
+
+common:
+  account_prefixes:
+    value: ["def-", "rrg-", "rpp-"]
+    locator: >-
+      Job_scheduling_policies § Priority and fair-share (RAC account "will probably begin with
+      rrg- or rpp-"; Rapid Access Service "will probably begin with def-"); Trillium_Quickstart §
+      Submitting jobs to the scheduler (def-, rrg-, rpp-)
+  account_env_priority:
+    value: "SBATCH_ACCOUNT overrides #SBATCH --account; a command-line --account overrides both"
+    locator: Running_jobs § Accounts and projects
+  time_limit_required:
+    value: true
+    locator: >-
+      Running_jobs § Use sbatch to submit jobs ("Our policies require that you supply at least a
+      time limit (--time) for each job")
+  time_formats:
+    value: ["minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes", "days-hours:minutes:seconds"]
+    locator: Running_jobs § Use sbatch to submit jobs
+  partition:
+    value: "not specified (the scheduler chooses)"
+    locator: >-
+      Running_jobs § Do not specify a partition; Trillium_Quickstart § Partitions and limits
+      (footnote: "Do not specify this partition explicitly")
+  module_purge_in_job:
+    value: true
+    locator: >-
+      Running_jobs § Troubleshooting > Jobs inherit environment variables ("It is best to include
+      the line module purge in your job script before loading all the required modules")
+  stdenv_module:
+    value: StdEnv/2023
+    locator: >-
+      Standard_software_environments § StdEnv/2023 ("the most recent iteration"); Trillium_Quickstart
+      § Software (users "load the StdEnv/2023")
+  python_module:
+    value: python/3.11.5
+    locator: >-
+      Trillium_Quickstart § Example: Single-GPU Job ("module load StdEnv/2023", "module load
+      cuda/12.6", "module load python/3.11.5"); Modules_avx512 and Modules_avx2 row python (3.11.5
+      listed); Available_Python_wheels, tab Python 3.11 (Wheels3.11: cupy 14.1.0, pyfftw 0.15.1,
+      numpy 2.4.2, every abTEM 1.0.10 requirement has a row). pyproject.toml requires >= 3.11.
+    note: >-
+      Python § Python version supported: the wheelhouse is built "only for the 3 most recent Python
+      versions available on the systems"; if a 3.11 wheel is missing in StdEnv/2023, pip fails loudly
+      and setup_alliance.sh accepts --python-module python/3.12.4 (Wheels3.12 has cupy 14.1.0 too).
+  cuda_module:
+    value: cuda/12.6
+    locator: >-
+      Trillium_Quickstart § Example: Single-GPU Job ("module load cuda/12.6") and § Best Practices
+      for GPU Jobs ("Be explicit with software versions ... cuda/12.6"); Modules_avx512 and
+      Modules_avx2 row cuda (12.6 listed)
+    note: >-
+      The CUDA version the wheelhouse cupy was built against: NOT_FOUND on the wiki (CUDA page gives
+      no version list; the wheel tables give no build information). The gpu-check job proves or
+      disproves this combination on a GPU node before any other GPU job is accepted.
+  cupy_wheel_version:
+    value: "14.1.0"
+    locator: Available_Python_wheels (Wheels3.11 and Wheels3.12 row cupy; newest in 3.11)
+  abtem:
+    value: {version: "1.0.10", wheel: abtem-1.0.10-py3-none-any.whl, sha256: 34e098662a26cedebd0154ae0660c49efb6149cba161a605f02ecf381f45515d}
+    locator: >-
+      not in the wheelhouse (Available_Python_wheels, all Python tabs: no abtem row; H1 §3.4);
+      route: Python § Pre-downloading packages ("pip download --no-deps", file must end with
+      none-any); sha256 from https://pypi.org/pypi/abtem/1.0.10/json (docs/agent_reports/D3 item 0.2)
+  virtualenv:
+    value: "virtualenv --no-download ENV in /home or /project, never under $SCRATCH"
+    locator: Python § Creating and using a virtual environment (Warning box "Do not create your virtual environment under $SCRATCH")
+  gpu_model_specifier_required:
+    value: {fir: "2026-04-06", nibi: "2026-04-06", rorqual: "2026-04-17", narval: "coming soon"}
+    locator: >-
+      Scheduling_policy_updates § GPU jobs ("All GPU requests must specify a GPU model or an
+      instance model"); Using_GPUs_with_Slurm § Available GPUs ("we strongly recommend that you
+      always provide a specific GPU model specifier")
+  mig_one_instance_per_job:
+    value: true
+    locator: Multi-Instance_GPU § Limitations ("requesting more than one MIG instance in a job is not permitted")
+  array_syntax:
+    value: "--array=0-7 (inclusive); --array=1-100%10 limits simultaneous tasks"
+    locator: Job_arrays § Examples of the --array parameter
+  array_tasks_count_as_jobs:
+    value: true
+    locator: Job_scheduling_policies § Number of jobs ("Each task of a job array counts as one job")
+  array_short_tasks_advice:
+    value: "do not use a job array for tasks much shorter than an hour; group them"
+    locator: Job_arrays § A simple example
+  max_array_size:
+    value: NOT_FOUND
+    locator: Job_arrays (whole page) and H1 §5.3 / §8 item 1
+  login_node_limits:
+    value: "login-node tests: a few minutes, 1-2 GB, 1-4 cores, at most 1 GPU"
+    locator: Trillium_Quickstart § Testing and debugging (stated for Trillium; other clusters NOT_FOUND)
+
+clusters:
+  fir:
+    status: {value: "In production", locator: "National_systems § List of compute clusters"}
+    login_hosts: {value: [fir.alliancecan.ca], locator: "Fir § (header table)"}
+    gpu_login_host: {value: fir.alliancecan.ca, locator: "Fir § (header table) (one login node name for all jobs)"}
+    data_transfer_host:
+      value: "to be determined; use the login node for rsync/scp"
+      locator: "Fir § (header table); Fir § Site-specific policies"
+    compute_internet: {value: true, locator: "Fir § Site-specific policies (\"full access to the internet\")"}
+    walltime_max_hours: {value: 168, locator: "Fir § Site-specific policies"}
+    walltime_min_minutes_test: {value: 5, locator: "Fir § Site-specific policies (\"at least one hour (at least five minutes for test jobs)\")"}
+    walltime_min_minutes_production: {value: 60, locator: "Fir § Site-specific policies"}
+    job_limit_queued_running:
+      value: 1000
+      locator: >-
+        Running_jobs § Cluster particularities (tab "Beluga, Fir, Narval, Nibi, Rorqual"); not
+        listed in Job_scheduling_policies § Number of jobs (H1 §8 inconsistency 2)
+    running_job_limit: {value: NOT_FOUND, locator: "Fir § Site-specific policies; Job_scheduling_policies § Number of jobs"}
+    home_quota: {value: "50 GB and 500K files per user", locator: "Storage_and_file_management § Filesystem quotas and policies (Fir tab)"}
+    home_writable_on_compute: {value: true, locator: "Storage_and_file_management (Fir tab: mounted on compute nodes)"}
+    scratch_path: {value: "$HOME/scratch", locator: "Fir § Storage"}
+    scratch_quota: {value: "20 TB and 1M files per user", locator: "Storage_and_file_management (Fir tab)"}
+    scratch_purge: {value: "files older than 60 days are purged", locator: "Storage_and_file_management (Fir tab); Scratch_purging_policy § Expiration procedure"}
+    slurm_tmpdir: {value: "7T", locator: "Using_node-local_storage § Amount of space"}
+    cpu_jobs: {value: allowed, locator: "Fir § Node characteristics (864 CPU nodes, 192 cores)"}
+    gpu:
+      model: {value: "NVidia H100 SXM5 (80 GB memory)", locator: "Fir § Node characteristics"}
+      gpus_per_node:
+        value: 4
+        locator: "Fir § Node characteristics (table); § GPU nodes > Layout says 2 (H1 §8 inconsistency 1)"
+      cores_per_gpu_node: {value: 48, locator: "Fir § Node characteristics"}
+      specifier: {value: h100, locator: "Fir § GPU instances; Using_GPUs_with_Slurm § Available GPUs"}
+      pass_cpus_per_task: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      pass_mem: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      mig_availability: {value: "approximately half of the GPU nodes", locator: "Fir § GPU instances"}
+      instances:
+        full:
+          request: {value: ["--gpus=h100:1"], locator: "Fir § GPU instances (\"One H100-80gb : --gpus=h100:1\")"}
+          gpu_mem_gb: {value: 80, locator: "Fir § Node characteristics"}
+          cpus_recommended:
+            value: 12
+            locator: "Allocations_and_compute_scheduling § Ratios in bundles (Fir H100-80gb, recommended \"12 cores, 280 GB\"); Using_GPUs_with_Slurm § Multi-threaded job (\"on Fir, no more than 12 CPU cores\")"
+          mem_recommended: {value: "280G", locator: "Allocations_and_compute_scheduling § Ratios in bundles (Fir H100-80gb recommended 280 GB)"}
+        1g.10gb:
+          request: {value: ["--gpus=nvidia_h100_80gb_hbm3_1g.10gb:1"], locator: "Fir § GPU instances"}
+          gpu_mem_gb: {value: 10, locator: "Fir § GPU instances (\"1g.10gb: 1/8th of the computing power with 10GB GPU memory\")"}
+          cpus_recommended: {value: 1, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Fir H100-1g.10gb \"1 core, 35 GB\")"}
+          mem_recommended: {value: "35G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        2g.20gb:
+          request: {value: ["--gpus=nvidia_h100_80gb_hbm3_2g.20gb:1"], locator: "Fir § GPU instances"}
+          gpu_mem_gb: {value: 20, locator: "Fir § GPU instances"}
+          cpus_recommended: {value: 3, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Fir H100-2g.20gb \"3 cores, 70 GB\")"}
+          mem_recommended: {value: "70G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        3g.40gb:
+          request: {value: ["--gpus=nvidia_h100_80gb_hbm3_3g.40gb:1"], locator: "Fir § GPU instances"}
+          gpu_mem_gb: {value: 40, locator: "Fir § GPU instances"}
+          cpus_recommended: {value: 6, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Fir H100-3g.40gb \"6 cores, 140 GB\")"}
+          mem_recommended: {value: "140G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+
+  nibi:
+    status: {value: "In production", locator: "National_systems § List of compute clusters"}
+    login_hosts: {value: [nibi.alliancecan.ca], locator: "Nibi § (header table) (\"SSH login node: nibi.alliancecan.ca\")"}
+    gpu_login_host: {value: nibi.alliancecan.ca, locator: "Nibi § (header table)"}
+    data_transfer_host: {value: "use login nodes", locator: "Nibi § (header table)"}
+    compute_internet: {value: true, locator: "Nibi § Site specifics > Internet access"}
+    walltime_max_hours:
+      value: 168
+      locator: "Job_scheduling_policies § Time limits; Running_jobs § Cluster particularities (not on the Nibi page)"
+    walltime_min_minutes_test: {value: NOT_FOUND, locator: "Nibi page; Running_jobs § Cluster particularities gives only the production advice"}
+    walltime_min_minutes_production: {value: 60, locator: "Running_jobs § Cluster particularities (\"Production jobs should have a duration of at least an hour\")"}
+    job_limit_queued_running: {value: 1000, locator: "Job_scheduling_policies § Number of jobs"}
+    running_job_limit: {value: NOT_FOUND, locator: "Job_scheduling_policies § Number of jobs"}
+    home_quota: {value: "50 GB and 500K files per user", locator: "Storage_and_file_management (Nibi tab)"}
+    home_writable_on_compute: {value: true, locator: "Storage_and_file_management (Nibi tab)"}
+    scratch_path: {value: NOT_FOUND, locator: "Nibi § Storage (VAST for /home, /project, /scratch; no user path given)"}
+    scratch_quota: {value: "1 TB soft (60 days grace) / 20 TB hard, 1M files per user", locator: "Nibi § Site specifics > /scratch quota; Storage_and_file_management (Nibi tab)"}
+    scratch_purge: {value: "no age-based deletion while under the soft limit", locator: "Scratch_purging_policy § Nibi"}
+    slurm_tmpdir: {value: "3T", locator: "Using_node-local_storage § Amount of space"}
+    cpu_jobs: {value: allowed, locator: "Nibi § Node characteristics (700 CPU nodes, 192 cores)"}
+    gpu:
+      model: {value: "Nvidia H100 SXM (80 GB)", locator: "Nibi § Node characteristics"}
+      gpus_per_node: {value: 8, locator: "Nibi § Node characteristics"}
+      cores_per_gpu_node: {value: 112, locator: "Nibi § Node characteristics"}
+      specifier: {value: h100, locator: "Nibi § GPU instances"}
+      pass_cpus_per_task: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      pass_mem: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      mig_availability: {value: "approximately half of the GPU nodes", locator: "Nibi § GPU instances"}
+      note: {value: "6 MI300A nodes exist (ROCm only; CUDA code will not work): never requested by this kit", locator: "Nibi § AMD MI300A nodes"}
+      instances:
+        full:
+          request: {value: ["--gpus=h100:1"], locator: "Nibi § GPU instances (\"--gpus=h100:1 or --gpus=h100_80gb:1\")"}
+          gpu_mem_gb: {value: 80, locator: "Nibi § Node characteristics"}
+          cpus_recommended: {value: 14, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Nibi H100-80gb \"14 cores, 250 GB\"); Using_GPUs_with_Slurm § Multi-threaded job (\"on Nibi, no more than 14 CPU cores\")"}
+          mem_recommended: {value: "250G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        1g.10gb:
+          request: {value: ["--gpus=h100_1g.10gb:1"], locator: "Nibi § GPU instances"}
+          gpu_mem_gb: {value: 10, locator: "Nibi § GPU instances"}
+          cpus_recommended: {value: 2, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Nibi H100-1g.10gb \"2 cores, 31 GB\")"}
+          mem_recommended: {value: "31G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        2g.20gb:
+          request: {value: ["--gpus=h100_2g.20gb:1"], locator: "Nibi § GPU instances"}
+          gpu_mem_gb: {value: 20, locator: "Nibi § GPU instances"}
+          cpus_recommended: {value: 4, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Nibi H100-2g.20gb \"4 cores, 62 GB\")"}
+          mem_recommended: {value: "62G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        3g.40gb:
+          request: {value: ["--gpus=h100_3g.40gb:1"], locator: "Nibi § GPU instances"}
+          gpu_mem_gb: {value: 40, locator: "Nibi § GPU instances"}
+          cpus_recommended: {value: 6, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Nibi H100-3g.40gb recommended \"6 cores, 124 GB\")"}
+          mem_recommended: {value: "124G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+
+  rorqual:
+    status: {value: "In production", locator: "National_systems § List of compute clusters"}
+    login_hosts: {value: [rorqual.alliancecan.ca], locator: "Rorqual/en § (header table)"}
+    gpu_login_host: {value: rorqual.alliancecan.ca, locator: "Rorqual/en § (header table)"}
+    data_transfer_host: {value: rorqual.alliancecan.ca, locator: "Rorqual/en § (header table)"}
+    access_note:
+      value: "CCDB access request plus three Calcul Quebec agreements; up to one hour"
+      locator: "Rorqual/en § Access"
+    compute_internet: {value: false, locator: "Rorqual/en § Site-specific policies"}
+    walltime_max_hours: {value: 168, locator: "Rorqual/en § Site-specific policies"}
+    walltime_min_minutes_test: {value: 5, locator: "Rorqual/en § Site-specific policies (\"at least one hour (at least five minutes for test jobs)\")"}
+    walltime_min_minutes_production: {value: 60, locator: "Rorqual/en § Site-specific policies"}
+    job_limit_queued_running: {value: 1000, locator: "Rorqual/en § Site-specific policies; Job_scheduling_policies § Number of jobs"}
+    running_job_limit: {value: NOT_FOUND, locator: "Rorqual/en § Site-specific policies"}
+    home_quota: {value: "50 GB and 500K files per user", locator: "Storage_and_file_management (tab Narval and Rorqual)"}
+    home_writable_on_compute: {value: true, locator: "Storage_and_file_management (tab Narval and Rorqual)"}
+    scratch_path: {value: "$HOME/links/scratch", locator: "Rorqual/en § Storage"}
+    scratch_quota: {value: "20 TB and 1M files per user", locator: "Storage_and_file_management (tab Narval and Rorqual)"}
+    scratch_purge: {value: "files older than 60 days are purged", locator: "Storage_and_file_management (tab Narval and Rorqual); Scratch_purging_policy § Expiration procedure"}
+    slurm_tmpdir: {value: "375G (--tmp=xG, x from 370 to 3360)", locator: "Using_node-local_storage § Amount of space; Rorqual/en § Node characteristics"}
+    cpu_jobs: {value: allowed, locator: "Rorqual/en § Node characteristics (670 CPU nodes, 192 cores)"}
+    gpu:
+      model: {value: "NVidia H100 SXM5 (80GB)", locator: "Rorqual/en § Node characteristics"}
+      gpus_per_node: {value: 4, locator: "Rorqual/en § Node characteristics"}
+      cores_per_gpu_node: {value: 64, locator: "Rorqual/en § Node characteristics"}
+      specifier: {value: h100, locator: "Rorqual/en § GPU instances"}
+      pass_cpus_per_task: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      pass_mem: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      mig_availability: {value: "approximately half of the GPU nodes", locator: "Rorqual/en § GPU instances"}
+      instances:
+        full:
+          request: {value: ["--gpus=h100:1"], locator: "Rorqual/en § GPU instances (\"--gpus=h100:1 or --gpus=h100_80gb:1\")"}
+          gpu_mem_gb: {value: 80, locator: "Rorqual/en § Node characteristics"}
+          cpus_recommended: {value: 16, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Rorqual H100-80gb \"16 cores, 124 GB\"); Using_GPUs_with_Slurm § Multi-threaded job (\"on Rorqual, no more than 16 CPU cores\")"}
+          mem_recommended: {value: "124G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        1g.10gb:
+          request: {value: ["--gpus=h100_1g.10gb:1"], locator: "Rorqual/en § GPU instances"}
+          gpu_mem_gb: {value: 10, locator: "Rorqual/en § GPU instances"}
+          cpus_recommended: {value: 2, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Rorqual H100-1g.10gb \"2 cores, 15 GB\")"}
+          mem_recommended: {value: "15G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        2g.20gb:
+          request: {value: ["--gpus=h100_2g.20gb:1"], locator: "Rorqual/en § GPU instances"}
+          gpu_mem_gb: {value: 20, locator: "Rorqual/en § GPU instances"}
+          cpus_recommended: {value: 4, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Rorqual H100-2g.20gb \"4 cores, 31 GB\")"}
+          mem_recommended: {value: "31G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        3g.40gb:
+          request: {value: ["--gpus=h100_3g.40gb:1"], locator: "Rorqual/en § GPU instances"}
+          gpu_mem_gb: {value: 40, locator: "Rorqual/en § GPU instances"}
+          cpus_recommended: {value: 8, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Rorqual H100-3g.40gb \"8 cores, 62 GB\")"}
+          mem_recommended: {value: "62G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+
+  narval:
+    status: {value: "In production", locator: "National_systems § List of compute clusters"}
+    login_hosts: {value: [narval.alliancecan.ca], locator: "Narval/en § (header table)"}
+    gpu_login_host: {value: narval.alliancecan.ca, locator: "Narval/en § (header table)"}
+    data_transfer_host: {value: narval.alliancecan.ca, locator: "Narval/en § (header table)"}
+    compute_internet: {value: false, locator: "Narval/en § Site-specific policies"}
+    walltime_max_hours: {value: 168, locator: "Narval/en § Site-specific policies"}
+    walltime_min_minutes_test: {value: 5, locator: "Narval/en § Site-specific policies (\"at least one hour (five minutes for test jobs)\")"}
+    walltime_min_minutes_production: {value: 60, locator: "Narval/en § Site-specific policies"}
+    job_limit_queued_running: {value: 1000, locator: "Narval/en § Site-specific policies; Job_scheduling_policies § Number of jobs"}
+    running_job_limit: {value: NOT_FOUND, locator: "Narval/en § Site-specific policies"}
+    home_quota: {value: "50 GB and 500K files per user", locator: "Storage_and_file_management (tab Narval and Rorqual)"}
+    home_writable_on_compute: {value: true, locator: "Storage_and_file_management (tab Narval and Rorqual)"}
+    scratch_path: {value: NOT_FOUND, locator: "Narval/en § Storage (no user path given)"}
+    scratch_quota: {value: "20 TB and 1M files per user", locator: "Storage_and_file_management (tab Narval and Rorqual)"}
+    scratch_purge: {value: "files older than 60 days are purged", locator: "Storage_and_file_management (tab Narval and Rorqual); Scratch_purging_policy § Expiration procedure"}
+    slurm_tmpdir: {value: "800G", locator: "Using_node-local_storage § Amount of space"}
+    cpu_jobs: {value: allowed, locator: "Narval/en § Node characteristics (1145 CPU nodes, 64 cores; no AVX-512)"}
+    gpu:
+      model: {value: "NVidia A100SXM4 (40 GB memory)", locator: "Narval/en § Node characteristics"}
+      gpus_per_node: {value: 4, locator: "Narval/en § Node characteristics"}
+      cores_per_gpu_node: {value: 48, locator: "Narval/en § Node characteristics"}
+      specifier: {value: a100, locator: "Narval/en § GPU instances"}
+      pass_cpus_per_task: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      pass_mem: {value: true, locator: "Using_GPUs_with_Slurm § Requesting CPU cores and system memory"}
+      mig_availability: {value: "several GPU nodes", locator: "Narval/en § GPU instances"}
+      mig_excluded:
+        value: "a100_4g.20gb (listed in Using_GPUs_with_Slurm and the bundle table, absent from Narval/en § GPU instances; the RGU note says 4g profiles are not available)"
+        locator: "H1 §8 inconsistency 3"
+      instances:
+        full:
+          request: {value: ["--gpus=a100:1"], locator: "Narval/en § GPU instances (\"One A100-40gb : --gpus=a100:1\")"}
+          gpu_mem_gb: {value: 40, locator: "Narval/en § Node characteristics"}
+          cpus_recommended: {value: 12, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Narval A100-40gb \"12 cores, 124 GB\"); Using_GPUs_with_Slurm § Multi-threaded job (\"on Narval, no more than 12 CPU cores\")"}
+          mem_recommended: {value: "124G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        1g.5gb:
+          request: {value: ["--gpus=a100_1g.5gb:1"], locator: "Narval/en § GPU instances"}
+          gpu_mem_gb: {value: 5, locator: "Narval/en § GPU instances"}
+          cpus_recommended: {value: 1, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Narval A100-1g.5gb \"1 core, 15 GB\")"}
+          mem_recommended: {value: "15G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        2g.10gb:
+          request: {value: ["--gpus=a100_2g.10gb:1"], locator: "Narval/en § GPU instances"}
+          gpu_mem_gb: {value: 10, locator: "Narval/en § GPU instances"}
+          cpus_recommended: {value: 3, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Narval A100-2g.10gb \"3 cores, 31 GB\")"}
+          mem_recommended: {value: "31G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+        3g.20gb:
+          request: {value: ["--gpus=a100_3g.20gb:1"], locator: "Narval/en § GPU instances"}
+          gpu_mem_gb: {value: 20, locator: "Narval/en § GPU instances"}
+          cpus_recommended: {value: 6, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Narval A100-3g.20gb \"6 cores, 62 GB\")"}
+          mem_recommended: {value: "62G", locator: "Allocations_and_compute_scheduling § Ratios in bundles"}
+
+  trillium:
+    status: {value: "In production", locator: "National_systems § List of compute clusters"}
+    login_hosts:
+      value: [trillium.alliancecan.ca]
+      locator: "Trillium § (header table) (CPU subcluster); Trillium_Quickstart § Logging in gives trillium.scinet.utoronto.ca (H1 §8 inconsistency 4)"
+    gpu_login_host:
+      value: trillium-gpu.alliancecan.ca
+      locator: "Trillium § (header table) (GPU subcluster); Trillium_Quickstart § Logging in gives trillium-gpu.scinet.utoronto.ca"
+    gpu_login_internal_hostname:
+      value: trig-login01
+      locator: "Trillium_Quickstart § Logging in (\"trig-login01 (the latter is the GPU login node)\")"
+    submit_gpu_jobs_from_gpu_login:
+      value: true
+      locator: "Trillium_Quickstart § Submitting jobs to the scheduler (\"GPU compute nodes must be submitted from the GPU login node\")"
+    data_transfer_host: {value: "tri-dm{1,2,3,4}.scinet.utoronto.ca", locator: "Trillium § (header table)"}
+    ssh_keys_required: {value: true, locator: "Trillium § Logging in (\"Password access to the login nodes is disabled. You must use SSH Keys and MFA.\")"}
+    compute_internet: {value: false, locator: "Trillium § Internet access"}
+    walltime_max_hours: {value: 24, locator: "Trillium_Quickstart § Submitting jobs for the GPU subcluster > Partitions and limits; Job_scheduling_policies § Time limits"}
+    walltime_min_minutes_test: {value: 15, locator: "Trillium_Quickstart § Submitting jobs for the GPU subcluster > Partitions and limits (min. walltime 15 minutes)"}
+    walltime_min_minutes_production: {value: 15, locator: "Trillium_Quickstart § Submitting jobs for the GPU subcluster > Partitions and limits"}
+    job_limit_queued_running: {value: 500, locator: "Trillium_Quickstart § Partitions and limits (GPU compute: 500 submitted incl. running)"}
+    running_job_limit: {value: 150, locator: "Trillium_Quickstart § Partitions and limits (GPU compute: 150 running)"}
+    home_quota: {value: "100 GB and 1M files per user", locator: "Storage_and_file_management (Trillium tab)"}
+    home_writable_on_compute:
+      value: false
+      locator: "Storage_and_file_management (Trillium tab: $HOME read-only on compute nodes); Trillium_Quickstart § Job output must be written to the scratch file system"
+    scratch_path: {value: "$SCRATCH", locator: "Trillium_Quickstart § Storage (environment variables $HOME, $SCRATCH, $PROJECT)"}
+    scratch_quota: {value: "25 TB and 10M files per user", locator: "Storage_and_file_management (Trillium tab)"}
+    scratch_purge:
+      value: "\"There is no purging policy yet\" (Trillium page) vs listed with the 60-day purge (Scratch_purging_policy)"
+      locator: "Trillium § Scratch space; Scratch_purging_policy § Expiration procedure (H1 §8 inconsistency 6)"
+    slurm_tmpdir: {value: "RAM disk (no local storage)", locator: "Trillium § Local disk space"}
+    cpu_jobs:
+      value: refused_by_kit
+      locator: >-
+        Trillium § Job scheduling ("The resources in the CPU subcluster are scheduled by whole
+        192-core node"); Trillium_Quickstart § Whole node or whole gpu scheduling; CPU jobs must be
+        submitted from the CPU login nodes (Trillium_Quickstart § Submitting jobs to the scheduler).
+        The kit's CPU jobs use 4 threads for seconds to minutes: run them on a general-purpose
+        cluster.
+    gpu:
+      model: {value: "NVidia H100 SXM (80 GB memory)", locator: "Trillium § Node characteristics"}
+      gpus_per_node: {value: 4, locator: "Trillium § Node characteristics"}
+      cores_per_gpu_node: {value: 96, locator: "Trillium § Node characteristics"}
+      specifier: {value: h100, locator: "Using_GPUs_with_Slurm § Available GPUs (the Trillium examples use no specifier)"}
+      pass_cpus_per_task:
+        value: false
+        locator: "Trillium_Quickstart § Whole node or whole gpu scheduling (\"It is not possible to request a certain number of core on Trillium\"; one GPU = \"24 cores\")"
+      cpus_fixed_per_gpu: {value: 24, locator: "Trillium_Quickstart § Whole node or whole gpu scheduling"}
+      pass_mem:
+        value: false
+        locator: "Trillium_Quickstart § Memory requests are ignored; § Best Practices for GPU Jobs (\"Do not use --mem\")"
+      mem_fixed_per_gpu: {value: "188GiB", locator: "Trillium_Quickstart § Memory requests are ignored (\"single-GPU jobs get 1/4 of the memory, i.e., 188GiB\")"}
+      mig_availability: {value: none, locator: "Trillium § Job scheduling (\"scheduled by whole GPU (no \\\"MIG\\\"), or by whole node\")"}
+      instances:
+        full:
+          request:
+            value: ["--nodes=1", "--gpus-per-node=1"]
+            locator: "Trillium_Quickstart § Example: Single-GPU Job (\"#SBATCH --nodes=1\", \"#SBATCH --gpus-per-node=1\"); § Partitions and limits (\"For single-GPU jobs, use --gpus-per-node=1\")"
+          gpu_mem_gb: {value: 80, locator: "Trillium § Node characteristics"}
+          cpus_recommended: {value: 24, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Trillium H100-80gb \"24 cores, 188 GB\")"}
+          mem_recommended: {value: "188GiB (fixed; not requested)", locator: "Trillium_Quickstart § Memory requests are ignored"}

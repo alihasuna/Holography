@@ -1,0 +1,75 @@
+# Example ~/.ssh/config blocks for the Alliance clusters (copy into ~/.ssh/config on YOUR laptop;
+# replace USERNAME with your Alliance username and ~/.ssh/YOUR_PRIVATE_KEY with your key).
+#
+# Sources (Alliance wiki, retrieved 2026-09-23, docs/agent_reports/H1_alliance_wiki.md §4):
+# * Host/User/HostName/IdentityFile layout: SSH_configuration_file (example "Host narval / User
+#   username / HostName narval.alliancecan.ca / IdentityFile ~/.ssh/your_private_key").
+# * The three ControlPath/ControlMaster/ControlPersist lines are verbatim from
+#   Multifactor_authentication § Configuring your SSH client with ControlMaster > Linux and MacOS:
+#   "a first SSH session [asks] for the first and second factors, but subsequent SSH connections
+#   on the same device will reuse the connection of the first session (without asking for
+#   authentication), even up to 10 minutes after that first session was disconnected."
+#   It does not work with native Windows (use WSL; same section).
+# * Login host names: Fir § (header table); Nibi § (header table); Rorqual/en § (header table);
+#   Narval/en § (header table); Trillium § (header table). Trillium_Quickstart § Logging in gives
+#   trillium.scinet.utoronto.ca and trillium-gpu.scinet.utoronto.ca instead (both on the wiki;
+#   H1 §8 inconsistency 4): if the alliancecan.ca names fail, use the scinet ones.
+# * Trillium: "Password access to the login nodes is disabled. You must use SSH Keys and MFA."
+#   (Trillium § Logging in); check the login node's host key fingerprint on first login
+#   (Trillium_Quickstart § Logging in, which links SSH_security_improvements). GPU jobs must
+#   be submitted from the GPU login node, so the kit's jobs on Trillium use the trillium-gpu block.
+# * The wiki advises against ForwardAgent / ForwardX11 by default (SSH_configuration_file).
+# * Automation (robot) nodes are NOT listed on purpose: "They are not suitable for usage of AI
+#   agents" (Automation_in_the_context_of_multifactor_authentication); you run the jobs yourself.
+# Register your public key in CCDB first (SSH_Keys § Using CCDB:
+# https://ccdb.alliancecan.ca/ssh_authorized_keys) and your MFA device (Multifactor_authentication).
+
+Host fir
+    User USERNAME
+    HostName fir.alliancecan.ca
+    IdentityFile ~/.ssh/YOUR_PRIVATE_KEY
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlMaster auto
+    ControlPersist 10m
+
+Host nibi
+    User USERNAME
+    HostName nibi.alliancecan.ca
+    IdentityFile ~/.ssh/YOUR_PRIVATE_KEY
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlMaster auto
+    ControlPersist 10m
+
+Host rorqual
+    User USERNAME
+    HostName rorqual.alliancecan.ca
+    IdentityFile ~/.ssh/YOUR_PRIVATE_KEY
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlMaster auto
+    ControlPersist 10m
+
+Host narval
+    User USERNAME
+    HostName narval.alliancecan.ca
+    IdentityFile ~/.ssh/YOUR_PRIVATE_KEY
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlMaster auto
+    ControlPersist 10m
+
+# Trillium CPU login nodes (setup, git, file transfers)
+Host trillium
+    User USERNAME
+    HostName trillium.alliancecan.ca
+    IdentityFile ~/.ssh/YOUR_PRIVATE_KEY
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlMaster auto
+    ControlPersist 10m
+
+# Trillium GPU login node: submit the kit's (GPU) jobs from here
+Host trillium-gpu
+    User USERNAME
+    HostName trillium-gpu.alliancecan.ca
+    IdentityFile ~/.ssh/YOUR_PRIVATE_KEY
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlMaster auto
+    ControlPersist 10m

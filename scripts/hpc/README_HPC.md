@@ -1,5 +1,11 @@
 # Running the reflection-holography pipeline on an HPC cluster
 
+On the Digital Research Alliance of Canada clusters (Fir, Nibi, Rorqual, Narval, Trillium) use the
+kit in `scripts/hpc/alliance/` (README_ALLIANCE.md): it sets up the modules and the venv from the
+wheelhouse, builds the sbatch command from the cluster profiles and delegates the pipeline jobs to
+`run_pipeline.slurm` below (with `RH_PARTITION=none`: no partition, and `RH_WORKDIR`: the job's
+text files go to its scratch directory).
+
 Everything here is a DEMO: `purpose: demo; not comparable to experiment`. Every laboratory input
 that Ali has not supplied is an explicit ASSUMPTION stand-in (B19 to B32, listed by
 `list-inputs`); the multislice engine is UNVALIDATED for atomistic reflection (its status is copied
