@@ -138,3 +138,194 @@ convergence distances). The run took 192 s here (load 5.5 after the run). H2's r
 
 ## B. Findings
 
+### M1 (MAJOR). "MEASURED" is not an evidence label of this project and overstates simulation output
+
+Quoted (brief, line 52): "the run-in after the illumination edge until the reflected wave has settled,
+MEASURED with the engine: 2500 A for the TEST_ONLY absorption r = 0.1, ..."; (line 56) "15 A absorber
+plus 55-65 A of clean crystal (MEASURED; ...)"; (section 1) "MEASURED_HERE marks a number measured in
+this container with the repository's UNVALIDATED engine ... (a REPRODUCED-type number whose premises are
+those inputs)"; the calibration JSON is labelled "MEASURED_HERE".
+
+Evidence. The label set of the instruction file is METADATA_VERIFIED, SECTION_READ, REPRODUCED,
+PROJECT_INPUT, ASSUMPTION, DERIVED_HERE, UNVERIFIED (plus TEST_ONLY and NUMERICAL in code). H2's own
+definition says the numbers are REPRODUCED-type. They are reproducible: my independent rerun of
+`bu_100_r010` gives the same plateau (0.2707, -1.5394 rad), bins, convergence distances and depths (A10).
+In the brief, where Ali reads it, capitalised "MEASURED" next to a length reads as a laboratory
+measurement; these are outputs of an UNVALIDATED engine on TEST_ONLY absorption, a TEST_ONLY azimuth and
+an ASSUMPTION angle.
+
+Required correction. Replace MEASURED_HERE by REPRODUCED everywhere, with the qualifier once per section:
+"REPRODUCED: output of the UNVALIDATED engine on the TEST_ONLY/ASSUMPTION inputs stated, saved in
+`tools/hpc/supercell_sizing_measurements.json` (bu_100_r010 independently rerun by H5)". Brief:
+"the run-in ..., computed with the (UNVALIDATED) engine on flat strips: 2500 A ...". The CPU calibration
+is a timing on this container; label it "timed here (4 shared cores, load 0.36)" rather than a new label.
+
+### M2 (MAJOR). The design run-in rests on an unlabelled amplitude tolerance (3e-2) that is looser than the repository's criterion (1e-2)
+
+Quoted (2.4): "The design run-in is 2500 A (phase 1e-2 AND amplitude 3e-2)"; (section 1 table) only
+"phase tolerance for every convergence length | 1e-2 rad | the M2 fixed-beam translation criterion".
+The 3e-2 is hard-coded in `supercell_sizing.py` (lines 306, 1082) and appears in no input table.
+
+Evidence. The repository's convergence criterion for the same quantity is `|err_rad| <= 1e-2` AND
+`|amp_ratio - 1| <= 1e-2` (`scripts/hpc/null_test_study/README.md`, M2 10.4). With 1e-2 on the amplitude,
+H2's own data and my rerun give run-ins of 3000 A (r = 0.1; my rerun: amplitude within 1e-2 beyond
+3000 A), 5000 A (r = 0.05, unchanged: H2 amplitude 1e-2 at 4500 A) and 9000 A (r = 0, H2 amplitude 1e-2
+at 9000 A). Consequence (script section 12): row 2a_a4_miscut0.1_r0.10 becomes z = 6101.6 A instead of
+5602.0 A, 33,899,040 atoms (+8.9 %), grid 2160 x 12096, 4.379 GB, GPU model 15 min, CPU x1.5 19.7 h;
+row r = 0 z = 12 102.8 A (+9.0 % atoms, 8.023 GB); the torus r = 0.1 row z = 9919.5 A, 99,185,647 atoms
+(+6.1 %), 11.140 GB. The 1116 A reconstruction margin after the run-in partly absorbs the difference,
+which is why this is MAJOR and not BLOCKER, but the brief presents 2500 A as "not a free choice".
+
+Required correction. Either adopt the repository's 1e-2 amplitude criterion (run-in 3000 / 5000 /
+9000 A and the rows recomputed), or state 3e-2 in the section 1 input table as an ASSUMPTION with its
+reason (for example: the amplitude enters only the B29 amplitude mask and the fringe contrast) and quote
+both run-ins in the brief: "2500 A (phase 1e-2, amplitude 3e-2, ASSUMPTION) or 3000 A (amplitude 1e-2,
+the null-test criterion)".
+
+### m1 (MINOR). Same quantity, different values inside H2 (terrace width, resolution element)
+
+Quoted (brief): "two terraces of the miscut width for steps parallel to the beam (0.1 deg: 782 A each
+for a/4 steps)"; (section 4) "0.1 deg: 777.9 / 1555.8 A". Evidence: h/tan(0.1 deg) = 777.9 A; 782.0 A
+is that width rounded up to 144 whole y-periods of a (script section 8). Proposed: "0.1 deg: 777.9 A
+(a/4), built as 144 periods = 782.0 A".
+
+Quoted (2.6): "one image resolution element is 371.8 A of surface (6.0 A in the image plane,
+foreshortening 1/sin(theta_ext) = 61.98)". Evidence: 6.0/sin(16.1347 mrad) = 371.884 A (3 elements
+1115.7 A); H2's tool computes 6.0/tan(theta) = 371.836 A (1115.5 A; `supercell_sizing.py` line 729,
+seen after my number existed); likewise the T2 check prints 364.17 (tan) where T2's 1/sin gives
+364.22 A. No row changes (the whole-period rounding absorbs 0.2 A). Proposed: use 6.0/sin(theta_ext)
+= 371.9 A as stated, or say "6.0/tan(theta_ext) (the exit-plane mapping)"; and in any summary state
+both angles: 371.9 A at 16.1347 mrad (MIP, B32) and 364.2 A at 16.4743 mrad (V0 = 12 V, B19, T2).
+
+### m2 (MINOR). The Bethe "missing-band" fractions are not converged in the beam set
+
+Quoted (section 5): "the perturbative Bethe correction of V(0,0,8) from couplings outside its band is
+2.8e-2 V_g at [100] and 3.0e-2 V_g at [110]; at dx = dy = 0.10 A it is 4.5e-3 and 8.2e-3".
+Evidence (script section 6 and the cut-off scan printed there): with |h|,|k|,|l| <= 12 / 16 / 20 the
+missing part at 0.13 A is 1.75e-2 / 2.85e-2 / 3.12e-2 V_g ([100]) and at 0.10 A 1.7e-3 / 3.1e-3 /
+5.8e-3 V_g; it grows with the cut-off. The effective-coupling ratio 0.479 / 0.490 / 0.493 and the
+admixtures are stable. Proposed: "at least 3e-2 V_g at 0.13 A and 6e-3 V_g at 0.10 A (perturbative,
+not converged in the beam set); the 0.13/0.10 A convergence run (run order 2c) decides".
+
+### m3 (MINOR). "None of them is a free choice" overstates
+
+Quoted (brief): "Four lengths set the cell, and none of them is a free choice". Evidence: the run-in
+depends on the TEST_ONLY absorption (item 21) and on the unlabelled 3e-2 tolerance (M2 above); the
+margins on B28/B29 (6.0 A resolution from the demo carrier and mask); y on the miscut scenarios (item 11,
+ASSUMPTION); the vacuum on the engine's conservative item-2 rule (H2 itself shows 92 A would do instead
+of 178 A). Proposed: "Four lengths set the cell; each follows from a stated stand-in, tolerance or engine
+rule (section 1), none from a free choice made in this sizing."
+
+### m4 (MINOR). The r = 0 run-in is quoted without its caveat in the brief
+
+Quoted (brief): "8000 A without absorption (where the two-beam tail predicts 22 572 A)". Evidence:
+section 2.4 of H2 says "tested only to 11 251 A": the reference window (8751-11 251 A) itself lies inside
+the two-beam tail (|E| = 0.035 at 10 000 A, script section 4), so "within 1e-2 of the plateau beyond
+8000 A" is relative to a plateau that is not established. Proposed: "8000 A without absorption relative
+to a 8751-11 251 A reference window only (not established; the two-beam tail needs 22 572 A)".
+
+### m5 (MINOR). The thermal displacement is labelled with the inspected repository's inert row A7
+
+Quoted (section 1): "thermal displacement | 0.076 A rms per axis | ASSUMPTION A7 (the inspected
+repository's value, also the value in Prismatic's example input SI100.XYZ, L2 C14; ...)". Evidence:
+model_assumptions A7 is an assumption "inherited from the inspected repository", status "Inert: thermal
+effects are never enabled". L2 C14 and E17 (SECTION_READ of the Prismatic input documentation) support
+that 0.076 A is the per-axis sigma of Prismatic's example file, not a Si Debye-Waller value. The value now
+drives the frozen-phonon counts and the "1/0.72" statement. Proposed: add a row B35 to
+model_assumptions ("u = 0.076 A per axis, stand-in for a sourced Si Debye-Waller value; not a
+PROJECT_INPUT item yet") and cite B35, not A7; add the sourced value to docs/06 section F.
+
+### m6 (MINOR). The torus cell has no margin-eroded flat reference along the beam
+
+Evidence (script section 8, torus rows): after the run-in the flat surface upstream of the 1262 A strip
+is exactly the 3-element margin (1115.5 A), and downstream of the second strip comes the exit margin;
+across the beam the gap between periodic images is 143.2 A (r = 0.1). T2's phase-map zero is "the
+median over the flat surface outside the feature, eroded by the three-resolution margin" (T2, B29); T2's
+own field had about 3800 A of flat surface up- and downstream and 132 A each side. H2 says the row "shows
+contrast, not heights", which remains true; a phase map with a zero would need about 2 resolution
+elements (744 A) of flat measured surface upstream of the strip. Proposed: say so in row 3.
+
+### m7 (MINOR). "Six times weaker" at [110]: amplitude, not intensity
+
+Quoted (brief): "At [110], the M2 study azimuth, the same angle reflects six times more weakly".
+Evidence: plateau amplitudes 0.2707 / 0.0432 = 6.3 (intensity 39). Proposed: "the specular amplitude is
+6.3 times smaller (intensity 39 times)".
+
+### m8 (MINOR). The x1.5 CPU factor is not labelled and is untested where the time goes
+
+Quoted (brief table header): "CPU (4 cores here, x1.5)". Evidence: the factor comes from one M2 smoke
+run (38.6 s against an estimate of 26.6 s, load 6 to 9; M2 section 7) and is supported by H2's five
+strips (1.26-1.89 after dividing by load/4). All six runs have ny = 60 to 480, where FFT and element-wise
+passes dominate; in every production row the model attributes 86-93 % of the CPU time to the potential
+construction (script section 8), which none of those runs exercised. Proposed: label the factor
+ASSUMPTION (empirical, narrow cells only) and see M4 for the measured wide-slice cost.
+
+### m9 (MINOR). The lateral buffer premise may be short
+
+Quoted (section 4): "for as long as the field remembers it, i.e. the run-in length. dlat = L_run
+tan(alpha_y) + 3 x 6 A ... = 64.2 A (r = 0.1)". Evidence (DERIVED_HERE): a surface-parallel wave
+damped only by the proportional absorption falls to 1e-2 in amplitude after ln(100)/(sigma r V0) =
+4545 A at r = 0.1 (5168 A for the slow two-beam-like mode sigma r (V0 - V_044)), i.e. 84-95 A of
+lateral travel at 18.47 mrad, dlat 102-113 A and W_min 216-238 A instead of 140 A. Coupling may damp
+it faster; H2 labels the premise and the terrace-width study (run order 5, W = 50-400 A) decides.
+Proposed: quote "W_min about 140-240 A (estimate; run order step 5 decides)".
+
+## C. Section 10 of H2 (what the engine lacks), checked in the code (question 9)
+
+Every file and line reference in H2's table N1-N14 was opened (SECTION_READ of the code at 661762e):
+N1 potentials.py:101-122 (proportional model only), N2 potentials.py:125-141 and 256-259 (independent
+Gaussian displacements on all three axes, seeded), N3 pipeline/config.py:673-680 (non-zero convergence
+refused) and illumination.py:27-58 (SheetBeam uniform in y, tilt in x-z only), N4 si001.py:418-425
+(dimer_2x1 raises NotImplementedError), N5 si001.py:430-457, pipeline/config.py:681-688,
+potentials.py:228-234 (MIP for Si only) called from engine.py:145, N6 si001.py:175-196 (net height
+change refused), N7 engine.py:43-47 and no `forward/dynamical/` module, `ContinuumTerracePotential`
+constant, N8 grid.py:135-166 (beam angles only; REPRODUCED in A7), N10 potentials.py:289-309 (one GEMM
+per slice, `slice_key` caches only empty slices), N12 null_test_cases.py:140-149 (sum over all x). All
+accurate. Two qualifications: N9 quotes T1's 2.4 kB/atom, which is peak RSS including about 0.8 GB of
+process overhead (M2 section 7), so the feature builder's own cost is closer to 1 kB/atom (upper bound
+as stated is fine); and the list omits what finding M4 below measures: the engine's own resource
+accounting leaves out the float64/complex128 intermediates of the structure-factor exponentials
+(potentials.py:302-303) and times a complex64 proxy for them (engine.py:394-402).
+
+## D. Places in the repository that carry a different value for the same quantity (question 8)
+
+The summary documents must correct or qualify these (none is H2's file; I edited none):
+
+1. docs/05 section 9 (line 372): "build-up scale of order 1600 A along the beam at the (0,0,8) Bragg
+   peak without absorption". The engine's static V(0,0,8) is 1.0357 V, so the two-beam scale is
+   1/(sigma V_g) = 1325 A; the no-absorption two-beam field settles to 1e-2 only after 22 550 A; the
+   engine strips settle (1e-2 rad, 3e-2 amplitude) after 2500 / 5000 / 8000 A for r = 0.1 / 0.05 / 0
+   (static lattice). Source of the 1600 A: M2 section 10.2 (0.84 V from an f_e read 19 % low, A2).
+2. M2 section 10.2 (report, not edited): "V_g(008) ~ 0.84 V ..., xi_g ~ 5100 A, penetration ~ 30 A,
+   ~1600 A along z per e-fold" -> 1.0357 V, 4161.7 A, 24.5 A (two-beam 1/b), 1325 A. Summaries must
+   quote H2/H5, not M2, for these.
+3. docs/05 section 4.3 item 4, docs/03 section 5 (line 206), docs/00 item 2 (line 25), source map SM16:
+   "0.08 to 0.42 um" of cell length "for penetration depths of 2 to 10 nm" (at theta_int = 24 mrad, the
+   CFG-A geometry). This is the geometric reach of the refracted ray, necessary but not sufficient (M2
+   10.4); at the (0,0,8) condition the reflection needs 2500-8000 A of run-in after first contact, and
+   the realistic [100] cells are 5602-11 924 A long. docs/05 item 4's "grids of order 1500 x 600 pixels
+   ... thousands of 1 A slices" becomes 2000-3969 x 84-24 000 pixels and 4126-8782 slices of 1.3577 A.
+4. docs/05 section 4.3 item 5 and docs/03 section 5 (line 207): the sampling rule names only the
+   outgoing beam angle ("2/3 rule at 0.13 A gives 64 mrad ... adequate"). Add: the working reflection's
+   Fourier coefficient must lie inside the band, f_max = 1/(3 dx) >= |g_008| = 1.4731 1/A, i.e.
+   dx <= a/24 = 0.2263 A; the engine's check_band accepts up to 0.450 A (A7; H2 N8).
+5. The (0,0,8) glancing angle: 16.1347 mrad (multislice runs, V0 = 13.903 V of the Kirkland potential,
+   B32; M2, T1, H2) and 16.4743 mrad (geometric runs, V0 = 12.0 V, B19; T2), printed as "16.5 mrad" in
+   docs/05 CFG-B, B17 and configs/cfg_b_si001_patterned.yaml. Not a contradiction, but every summary
+   number derived from the angle must name its V0: foreshortening 61.98 vs 60.70, wrap period
+   0.7772 A vs 0.7612 A ("0.76 A" in docs/05 CFG-B), resolution element 371.9 A vs 364.2 A (T2's 364 A).
+6. model_assumptions A7 ("Inert: thermal effects are never enabled") is now the source cited for the
+   production frozen-phonon displacement (m5): a new B-row is needed.
+7. M2 section 7 "HPC-size cell" (80.0 x 38.4 x 1000.4 A, 72 240 atoms) and README_HPC section 5 are
+   engine-timing examples, not converged cells; a summary must not present them as the realistic size.
+8. scripts/hpc/null_test_study/README.md (pass criterion |err| <= 1e-2, |amp - 1| <= 1e-2) with the
+   study cells' 21 A clean depth (null_test_cases.py: clean = buildup + 1): H2's stored depth profiles
+   put the bulk absorber where the exit-plane intensity is still 1.9e-2 ([100]) and 4.2e-2 ([110]),
+   amplitude 0.14 / 0.20 (script section 12). An absorber reflection of a few percent then enters the
+   specular amplitude at the 1e-3 to 1e-2 level, the size of the pass criterion (DERIVED_HERE estimate;
+   the absorber reflectivity is not measured, UNVERIFIED). H2 says the study "tests the engine, not the
+   production convergence"; the README should say it too before Ali runs it.
+9. scripts/hpc/alliance/README_ALLIANCE.md section 4.6 chooses the GPU instance with
+   `--need-gpu-mem-gb <from dry-run>`, i.e. from the engine's `estimate_resources`; see M4 for how far
+   below the real device peak that estimate lies for the wide production cells.
+

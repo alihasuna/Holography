@@ -789,6 +789,8 @@ def main_report():
           f"{th_e12*1e3:.4f} mrad: 6.0/sin = {6.0/np.sin(th_e12):.2f} A, 6.0/tan = {6.0/np.tan(th_e12):.2f} A; "
           f"1/sin = {1/np.sin(th_e):.3f}, 1/sin at 16.4743 = {1/np.sin(th_e12):.3f}")
 
+    print(f"wrap period lambda/(2 sin theta_ext): {LAM/(2*np.sin(th_e)):.4f} A at {th_e*1e3:.4f} mrad (MIP, B32); "
+          f"{LAM/(2*np.sin(th_e12)):.4f} A at {th_e12*1e3:.4f} mrad (V0 = 12 V, B19)")
     hdr("2. Fourier coefficients of the engine's potential (static lattice)")
     beams = [(0, 0, 0), (0, 0, 4), (0, 0, 8), (0, 0, 12), (0, 0, 16), (0, 4, 4), (0, 2, 2), (0, 2, 6), (0, 4, 0),
              (1, -1, 1), (1, -1, 7), (3, -3, 3), (3, -3, 5)]
@@ -1134,6 +1136,20 @@ def main_report():
         print(f"  {nm}: run-in {Lr_new:.0f} A -> z {alt['Lz']:.1f} A (was {t_['Lz']:.1f}), x {alt['ext_x']:.1f}, y {alt['y']:.1f}, "
               f"atoms {alt['atoms']:,} ({alt['atoms']/t_['atoms']-1:+.1%}), grid {alt['nx']}x{alt['ny']}, "
               f"memory {mem/1e9:.3f} GB, GPU {fmt_t(g)}, CPU x1.5 {fmt_t(1.5*c)}")
+
+
+    print("lateral buffer bounds from absorption alone (r = 0.1): ")
+    for tag, Vabs in (("mean V0", V0), ("V0 - V_044", V0 - abs(V_h((0, 4, 4))))):
+        Ldec = np.log(100) / (SIGMA * 0.1 * Vabs)
+        lat = Ldec * np.tan(alpha_y)
+        print(f"  {tag}: 1e-2 decay length {Ldec:.0f} A -> lateral {lat:.1f} A, dlat {lat+18:.1f} A, W_min {2*(lat+18)+12:.1f} A")
+    h2m = json.load(open(H2_MEAS))["runs"]
+    for nm in ("bu_100_r010", "bu_110_r010"):
+        prof = {round(p_["depth_A"]): p_["I"] for p_ in h2m[nm]["depth"]["profile"]}
+        print(f"  H2 {nm}: exit-plane intensity at 20 A depth {prof.get(20, float('nan')):.2e} (study cells: clean depth 21 A; "
+              f"amplitude {np.sqrt(prof.get(20, float('nan'))):.2f}); plateau |R| {h2m[nm]['buildup']['R_plateau_abs']:.4f}")
+    print(f"  [100]/[110] plateau amplitude ratio {h2m['bu_100_r010']['buildup']['R_plateau_abs']/h2m['bu_110_r010']['buildup']['R_plateau_abs']:.2f} "
+          f"(intensity {(h2m['bu_100_r010']['buildup']['R_plateau_abs']/h2m['bu_110_r010']['buildup']['R_plateau_abs'])**2:.0f})")
 
     hdr("11. Built cells: engine estimate_resources and geometry assertions vs H2's table (REPRODUCED)")
     study_point_checks()
