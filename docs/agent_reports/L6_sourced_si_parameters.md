@@ -62,7 +62,7 @@ comes from one unless it is labelled UNVERIFIED. Raw downloads are kept outside 
 | BIRDKING90 | 10.1107/s0108767389011906 | Bird, King, "Absorptive form factors for high-energy electron diffraction", Acta Cryst. A 46, 202-208, 1990 | closed | IUCr 403 (same host) |
 | WEICKENMEIER91 | 10.1107/s0108767391004804 | Weickenmeier, Kohl, "Computation of absorptive form factors for high-energy electron diffraction", Acta Cryst. A 47, 590-597, 1991 | closed | IUCr 403 (same host) |
 | (not added) | 10.1107/s0108767397016899 | Weickenmeier, Kohl, "The Influence of Anisotropic Thermal Vibrations on Absorptive Form Factors for High-Energy Electron Diffraction", Acta Cryst. A 54, 283-289, 1998 | not checked | not needed for cubic Si |
-| HALLHIRSCH65 | 10.1098/rspa.1965.0136 | Hall, Hirsch, "Effect of thermal diffuse scattering on propagation of high energy electrons through crystals", Proc. R. Soc. Lond. A 286, 158-177, 1965 | closed | see section 1 |
+| HALLHIRSCH65 | 10.1098/rspa.1965.0136 | Hall, Hirsch, "Effect of thermal diffuse scattering on propagation of high energy electrons through crystals", Proc. R. Soc. Lond. A 286, 158-177, 1965 | closed | royalsocietypublishing.org: Cloudflare challenge, HTTP 403 (checked 22:57 UTC) |
 | RADI70 | 10.1107/s0567739470000050 | Radi, "Complex lattice potentials in electron diffraction calculated for a number of crystals", Acta Cryst. A 26, 41-56, 1970 | closed | IUCr 403 (same host) |
 | SEARS91 | 10.1107/s0108767391002970 | Sears, Shelley, "Debye-Waller factor for elemental crystals", Acta Cryst. A 47, 441-446, 1991 | closed | IUCr 403 (same host) |
 | FLENSBURG99 | 10.1103/physrevb.60.284 | Flensburg, Stewart, "Lattice dynamical Debye-Waller factor for silicon", Phys. Rev. B 60, 284-291, 1999 | closed (Copenhagen portal: metadata only) | APS 403 |
@@ -180,10 +180,10 @@ WebFetch; old dro.dur.ac.uk link redirects there).
 | Plasmon angles for Si at 200 kV | sec. 3 | theta_E = 0.04 mrad (17 eV loss); theta_c = 19.1 mrad "obtained by fitting simulation to experiment (Barthel et al., 2019)" and rescaled from 300 kV | SECTION_READ |
 | Si thermal vibration (statement about Kirkland 2010) | sec. 3 | "The r.m.s. thermal vibration of silicon atoms is 0.078 Å (Kirkland, 2010), which gives a Debye–Waller factor B of 0.12 Å2" | SECTION_READ of the statement; UNVERIFIED for Kirkland's book. The B here follows a different convention: 2 pi^2 (0.078)^2 = 0.120 A^2, whereas the crystallographic B = 8 pi^2 u^2 = 0.480 A^2 (DERIVED_HERE arithmetic). Do not mix the two conventions. |
 
-**(c) Ni, Busch and Zuo 2026 (PyExtal; SECTION_READ of sec. 2, 4.1, 4.2, 6.2 and Tables 1-3).**
+**(c) Ni, Busch and Zuo 2026 (PyExtal; SECTION_READ of sec. 2.3, 4.1, 4.2, 5 (units), 6.2 and Tables 1-3).**
 
 The electron structure factor includes an absorption term, U_g + i U'_g, computed from "the known
-atomic scattering factor f and absorption factor" with a temperature factor (sec. 2). The column
+atomic scattering factor f and absorption factor" with a temperature factor (sec. 2.3). The column
 headers of Tables 1 to 3 are images, read as U_111, U'_111, U_222 (efi63, efi82, efi64). Units:
 the text gives the structure factors in A^-2 (sec. 5, YIG example).
 
@@ -367,7 +367,7 @@ Inferences (DERIVED_HERE; extrapolations, not sourced values for 200 keV):
   (with B = 0.38 A^2). A consistency check only.
 * Surface plasmons at 200 keV. The Lucas expression of Horio 2022 Eq. (1), evaluated with the
   relativistic velocity (beta = 0.6953), gives e^2/(8 eps0 hbar v) = (pi/2)(alpha/beta) = 0.01649.
-  At theta = 16.13 mrad that is n_s = 1.02 x beta_corr, i.e. 0.67-0.72 excitations per
+  At theta = 16.13 mrad that is n_s = 1.02 x beta_corr, i.e. 0.67-0.73 excitations per
   reflection for beta_corr = 0.66-0.71 (the 10 keV Si(111)7x7 correction, **extrapolated**). If
   it holds at 200 keV, only exp(-0.7) = 0.50 of the specularly reflected electrons leave without
   a surface-plasmon loss. The loss happens mostly in the vacuum selvedge (interaction thickness
@@ -483,7 +483,7 @@ found. What exists:
 | Hayakawa and Aizawa, Jpn. J. Appl. Phys. 21 (1982) L215, doi:10.1143/jjap.21.l215 | Si(111) RHEED surface-wave resonance | energy UNVERIFIED | not read | closed (IOP) | METADATA_VERIFIED |
 | Horio, Takakuwa, Ogawa 2014 (open, J-STAGE) | Si(001)2x1, 10 kV, [1-10] azimuth, room temperature and 880/1031 K | Fig. 5: experimental (thick) and calculated (thin) rocking curves of five spots at RT, best fit with the asymmetric dimer (R = 0.0); absorption 10 % proportional; V0 = 12 V; Bragg peaks listed: 004 at 1.66 deg, 006 at 3.34 deg, 008 at 4.79 deg | p. 5 Fig. 5; p. 5 text | open | SECTION_READ (figure caption and text; data not digitised) |
 | Minami et al. 2008 (open) | Si(111)7x7, 10 kV, energy-filtered | Figs. 3-5: with-loss and no-loss rocking curves and intensity ratios | p. 2-3 | open | SECTION_READ (captions and text) |
-| Osakabe, Tanishiro, Yagi, Honjo, Surf. Sci. 97 (1980) 393-408, doi:10.1016/0039-6028(80)90675-5 | REM of Si(111), clean and Au-covered | imaging; whether a rocking curve is given is UNVERIFIED | not read | closed | METADATA_VERIFIED (Crossref search result) |
+| Osakabe, Tanishiro, Yagi, Honjo, Surf. Sci. 97 (1980) 393-408, doi:10.1016/0039-6028(80)90675-5 (already [P14] in docs/references.bib) | REM of Si(111), clean and Au-covered | imaging; whether a rocking curve is given is UNVERIFIED | not read | closed | METADATA_VERIFIED (Crossref search result) |
 | P18, P20-P23, P26 (Peng and Cowley 1986; Ma and Marks 1989, 1990a,b; Yagi 1987; Yao and Cowley 1990) | REM theory and conditions | whether any gives a Si rocking curve at 100-300 keV is UNVERIFIED | not read | closed | METADATA_VERIFIED (B3) |
 
 Assessment (DERIVED_HERE): a quantitative 200 keV benchmark for Si(001) does not exist in any
@@ -495,3 +495,174 @@ Fig. 5 (Si(001), open). That comparison needs the 2x1 dimer reconstruction, whic
 not implement (H2 N4), so a bulk-terminated engine cannot be expected to match it. At 40 keV
 against Menadue/Moon (Si(111), specular, 333-777 peaks), the bulk termination is also an
 approximation (Si(111)7x7 or 2x1).
+
+## 5. Summary table
+
+"open?" means readable by an automated client from this environment on 2026-09-23. "DERIVED_HERE"
+rows are L6 arithmetic or L6 runs of published code on the stated inputs.
+
+| quantity | value | conditions | source | locator | label | open access? |
+|---|---|---|---|---|---|---|
+| Si Debye-Waller B | 0.4761(17) A^2 (u = 0.07765 A per axis) | 295.5 K; neutron Pendellösung (111), (220), (400) | Heacock et al. 2021 (Science 373, 1239) | arXiv:2103.05428v3 PDF p. 6 | SECTION_READ (arXiv v3) | yes (arXiv) |
+| Si B, constrained fit | 0.4767(6) A^2 | 295.5 K, charge radius constrained | Heacock et al. 2021 | PDF p. 33 | SECTION_READ | yes |
+| Si B, lattice dynamics | 0.4725(17) A^2 (u = 0.0774 A) | BvK fit to inelastic neutron data, scaled to 295.5 K | Flensburg and Stewart 1999, as quoted by Heacock et al. | PDF p. 6, p. 32 | SECTION_READ of a statement | yes (statement); original closed |
+| Si <u^2> | 0.005941 +- 0.000021 A^2 (B = 0.4691 A^2) | 293 K, BvK | Flensburg and Stewart 1999 | abstract | METADATA_VERIFIED +ABSTRACT(OpenAlex) | no (APS 403) |
+| dB/dT (Si) | 0.0014 A^2/K | at 295.5 K, BvK model | Heacock et al. 2021 | PDF p. 25 | SECTION_READ | yes |
+| Si B used by CBED study | 0.4613 A^2 | 293.2 K | Voss et al. 1980 | p. 982, Table 3 caption | SECTION_READ (a value used) | yes (CC BY) |
+| Si u_rms | 0.078 A | not stated | Kirkland 2010, as stated by Mendis 2024 | Mendis 2024 sec. 3 | SECTION_READ of a statement; UNVERIFIED for Kirkland | yes (statement) |
+| A7 (repository) | 0.076 A (B = 0.456 A^2) | | inspected repository / Prismatic example | | ASSUMPTION | - |
+| Si TDS absorptive factor f'(s, B) | f'/f = 0.0064 (g = 0), 0.0110 (111), 0.0181 (022), 0.0273 (004), 0.0396 (044), 0.0533 (008) | 200 keV, B = 0.4725 A^2, Bird-King integral, Lobato f | Thomas, Cleverley, Beanland 2024, Eq. (2) and supplementary code | l6/calc/si_tds_absorption.out | DERIVED_HERE (published code run by L6) | yes (CC BY) |
+| Si mean TDS absorptive potential V0'(TDS) | 0.089 V (0.0874-0.0902 V for B = 0.456-0.480 A^2); attenuation length about 7700 A | 200 keV | as above | as above | DERIVED_HERE | yes |
+| Si phonon mean free path | 7724 A | 200 kV, calculated | Mendis 2024 | sec. 3 | SECTION_READ | yes (CC BY) |
+| Si plasmon mean free path | 1050 A (V0'(el) = 0.653 V by 1/(2 sigma Lambda), DERIVED_HERE) | 200 kV, EELS | Mendis 2019, as stated by Mendis 2024 | Mendis 2024 sec. 3 | SECTION_READ of a statement; original UNVERIFIED | statement yes; original no |
+| Si total inelastic mean free path | about 830 A (V0' = 0.827 V, DERIVED_HERE) | 200 kV, Malis formula (calculated) | Mendis 2024 | sec. 3 | SECTION_READ | yes |
+| Si plasmon characteristic angle theta_E; critical angle theta_c | 0.04 mrad; 19.1 mrad (fit, rescaled from 300 kV) | 200 kV, 17 eV loss | Mendis 2024 | sec. 3 | SECTION_READ | yes |
+| Si U'_111/U_111 (measured) | 0.0167 (PyExtal), 0.0182 (Extal) | 200 kV energy-filtered CBED | Ni, Busch, Zuo 2026 | Table 1 | SECTION_READ (ratio DERIVED_HERE) | yes |
+| Si U'_111/U_111 (measured) | 0.0168 (CBED), 0.0123 (LARBED); U'_111 = 0.00084(10) A^-2 over 20 fits | 300 kV | Ni, Busch, Zuo 2026 | Tables 2, 3 | SECTION_READ | yes |
+| Si mean absorption potential V'_000 (measured) | 0.61 V | 100 keV CBED, room temperature | Voss, Lehmpfuhl, Smith 1980 | p. 981; Table 5, p. 983 | SECTION_READ | yes (CC BY, Edmond) |
+| Si V'_111, V'_220, V'_311, V'_004 | 0.031, 0.039, 0.025, 0.027 V (from fitted Eq. (3), B = 0.004, C = 0.0003) | 100 keV, room temperature | Voss et al. 1980 | Table 5, p. 983 | SECTION_READ | yes |
+| Si V'_g (theory, Radi 1970 via Voss) | 000 0.70, 111 0.1, 220 0.11, 311 0.07, 004 0.09 V | 100 keV | Voss et al. 1980 Table 5 | p. 983 | SECTION_READ of a statement; Radi UNVERIFIED | statement yes; Radi no |
+| Electronic/structure-potential ratio (Radi) | C(el)/V_g = 0.005-0.012 for low g, "practically all Z" | 100 keV | Radi 1970 | abstract | METADATA_VERIFIED +ABSTRACT(OpenAlex) | no |
+| RHEED imaginary potential for Si (practice) | proportional 10 % | 10 kV | Horio 2014, Horio 2022 | p. 4 (both) | SECTION_READ | yes (J-STAGE) |
+| RHEED imaginary potential for Si (Ichimiya form) | U_TDS = 0.37 V, B = 0.38 A^2, U_el = 0.01 or 1.28 V (bulk) | 10 kV, Si(111)7x7 | Minami et al. 2008 | Eq. (1) p. 2; Table I p. 3 | SECTION_READ | yes |
+| Surface-plasmon excitations per specular reflection | beta x e^2/(8 eps0 hbar v sin theta), beta = 0.66-0.71 (measured at 10 keV) | Si(111)7x7, 10 keV | Horio et al. 2022 | Eq. (1), p. 4 | SECTION_READ | yes |
+| same, extrapolated | 0.67-0.73 per reflection | 200 keV, theta = 16.13 mrad | Horio 2022 Eq. (1) with beta from 10 keV | this report sec. 1.6 | DERIVED_HERE (extrapolation, unsourced at 200 keV) | - |
+| Si mean inner potential (measured) | 12.48 +- 0.22 V | beam refraction at a wedge edge, STEM micro-diffraction | Wu and Spiecker 2017 (Ultramicroscopy 176, 233) | abstract sentence 2 | METADATA_VERIFIED +ABSTRACT(PubMed) | no (Elsevier) |
+| Si MIP (holography, secondary) | about 11.5-12.5 V, uncertainties up to about 1.3 V | several | Zheng 2026, about Wang 1997, Wu 2004, Kruse 2006 | PDF p. 30 | SECTION_READ of a statement | statement yes |
+| Si MIP (RHEED practice) | 12 V | RHEED, Si(111), Si(001) | Horio 2014, 2022 (citing Horio and Ichimiya 1983); Moon 1972 (best fit at 40 keV, V_im = V_real/8) | Horio 2022 p. 4; Moon 1972 p. 394 | SECTION_READ | yes |
+| Si MIP (DFT slab) | 12.53 V | WIEN2k GGA, bulk-terminated slab | Schowalter et al. arXiv:2607.05948v1 | Fig. 2c (L5) | SECTION_READ (L5) | yes |
+| Si MIP (independent atoms) | 13.70 (pro-crystal DFT), 13.9 (Doyle-Turner), 13.903 (Kirkland), 13.955 (Lobato; 13.9548 here) V | | Zheng 2026; Horio 2022; D3; this report | | SECTION_READ / REPRODUCED | - |
+| Si MIP 9.26 +- 0.08 V (Gajdardziska-Josifovska 1993, as stated by Zheng) | 9.26 +- 0.08 V | | Zheng 2026 | PDF p. 30 | UNVERIFIED (suspicious; do not use) | original no |
+| High-energy Si rocking curve | Si(111) specular, 333-777 peaks, 40 keV (Menadue's data in Moon's Fig. 1) | 40 keV | Moon 1972 | Fig. 1, p. 393 | SECTION_READ | yes (CC BY) |
+| Si(001) rocking curves | five spots, RT, 10 kV, [1-10] | 10 kV | Horio 2014 | Fig. 5, p. 5 | SECTION_READ | yes |
+| 100-300 keV Si rocking curve | none found | | best lead Lehmpfuhl and Dowell 1986 (CB-RHEED Si(111)) | | METADATA_VERIFIED only | no |
+
+## 6. Crossref verification record
+
+Every DOI in this report and in `L6_new_refs.bib` was read from a Crossref `/works/<doi>` record
+fetched by L6 (cached in `l6/crossref/<KEY>.json`). Fields were generated from the JSON by
+`l6/mkbib.py`. Identity was accepted when first author, title, container, year and volume matched
+the citation that led to the record: a reference list read by L6 (Thomas 2024, Mendis 2024,
+Hájek 2026, Dr. Probe, muSTEM, Voss 1980, Minami 2008, Horio 2022, Zheng 2026, Heacock 2021) or
+the task's own citation. Three records came from Crossref searches with no prior citation
+(Lehmpfuhl and Dowell 1986, Hayakawa and Aizawa 1982, Colella and Menadue 1972). For those,
+identity is the Crossref record itself.
+
+Not accepted:
+* 10.15302/frontphys.2026.114201: the Crossref record has no authors, so it cannot be matched and
+  Zheng 2026 is carried as arXiv only.
+* 10.1016/j.ultramic.2017.01.011: this is a "Publisher's note" (vol. 177, pp. 1-13, no authors),
+  not the Wu and Spiecker article (10.1016/j.ultramic.2017.03.029).
+
+Osakabe et al. 1980 is already [P14] in `docs/references.bib` and is not duplicated. No key of
+`L6_new_refs.bib` collides with `docs/references.bib`. No personal data was sent to any service:
+Crossref without mailto; OpenAlex, Europe PMC, arXiv, J-STAGE, Edmond and er-c.org anonymously.
+
+## 7. Recommendation (the orchestrator decides)
+
+### 7.1 A7 (frozen-phonon rms displacement)
+
+Adopt **u = 0.0777 A per axis (B = 0.4761 +- 0.0017 A^2 at 295.5 K)**, Heacock et al. 2021, as
+SECTION_READ from arXiv:2103.05428v3 p. 6 (label on the paper's parameter:
+SECTION_READ; value in the engine: sourced parameter at an assumed specimen temperature).
+
+Why:
+* It is a measurement with a stated uncertainty, in an open source, read with a locator. It uses
+  the same per-axis convention as the engine (`rng.normal(0, u)` per coordinate; <u^2> = B/(8 pi^2),
+  p. 3).
+* The lattice-dynamical alternative (0.4725(17) A^2 at 295.5 K, u = 0.0774 A) differs by 0.8 % in B.
+  That difference is negligible for the phase of a step between identical terraces. It changes the
+  (008) Debye-Waller amplitude factor by 0.2 % (0.7739 against 0.7724).
+* A7's 0.076 A is 4.2 % low in B. That changes the (008) Debye-Waller amplitude factor from 0.7808
+  to 0.7724 (-1.1 %) and V0'(TDS) by 2.6 % (section 1.5). The effect is small but it is removable.
+
+Conditions:
+* The specimen temperature under the beam is an unstated input. dB/dT = 0.0014 A^2/K means 10 K
+  moves B by 3 %. Record it as a PROJECT_INPUT (suggested new item) or an ASSUMPTION (295 K).
+* The Einstein model misses phonon correlations (Hájek and Rusz 2026 find about 1e-3 I0
+  differences for light diamond in transmission). This is an engine-model limitation, not a
+  parameter problem.
+
+### 7.2 PROJECT_INPUT item 21 (absorptive potential)
+
+1. **With explicit frozen phonons (the production path): add no TDS absorptive potential.** The
+   ensemble already depletes the coherent (sideband) wave by TDS (Hájek and Rusz p. 2; Dr. Probe
+   preprint p. 9; muSTEM sec. 3.8). Adding Bird-King/Weickenmeier-Kohl/Peng TDS absorption on top
+   double-counts it.
+2. **Add only the electronic (plasmon plus single-electron) absorption, as a spatially uniform
+   imaginary potential inside the crystal, not as V' = r V(r).** Candidate value: V0'(el) = 0.65 V
+   from the Si plasmon mean free path 1050 A at 200 kV (Mendis 2019, measured by EELS, as stated
+   by Mendis 2024). Upper variant: 0.83 V from the calculated total inelastic mean free path of
+   830 A. The label stays UNVERIFIED for the 1050 A until Mendis 2019 is read (upload 1).
+   * Reason for uniform: plasmon scattering is delocalised (theta_E = 0.04 mrad). A proportional
+     r = 0.047 would put the same fraction on every Fourier coefficient. At (008) that is a ratio of
+     0.047, about as large as the TDS ratio 0.053 that the phonons already produce, which would
+     nearly double the anomalous absorption of the working reflection.
+   * Engine consequence (inference from the code, `potentials.py` lines 289-311): the only
+     physical model is `V*(1 + i*ratio)`. A uniform term needs a new model, for example a step
+     profile like `absorber_profile_V` applied inside the crystal region, with its own evidence
+     label. The mean of the TEST_ONLY r = 0.05 (0.695 V) is already close to 0.65 V, so H2's
+     r = 0.05 run-in lengths are of the right order for the mean attenuation. The
+     g-distribution is wrong.
+3. **Static-lattice runs (no frozen phonons)**, if kept for speed: use a Debye-Waller-smeared real
+   potential (B from 7.1) plus the TDS absorptive factor of Thomas et al. 2024 (Bird-King, open
+   code, 200 keV) plus the uniform electronic term. The engine smears nothing today (no Debye-Waller
+   code found), so this is an engine change. Results: f'/f from 0.0064 (g = 0) to 0.053 (008);
+   V0'(TDS) = 0.089 V.
+4. **Uncertainty to carry:** the measured anomalous absorption of Si (111) scatters by a factor of
+   about 3 across sources once scaled to one energy: Voss 1980 0.0061 at 100 keV, TDS theory
+   0.0139 at 100 keV, Ni 2026 0.0167-0.0182 at 200 kV. Treat any g-dependent V'_g as uncertain at
+   the factor-2 level. Run the working condition at two absorption settings.
+5. **Surface-plasmon loss at grazing incidence is not an imaginary bulk potential.** It is the
+   largest absorption-like effect identified here: about 0.7 excitations per reflection at
+   16 mrad if the 10 keV correction holds at 200 keV. That would reduce the coherent amplitude by
+   about exp(-0.35) = 0.70 and add incoherent background. Keep it out of item 21. Record it as a
+   separate optics/coherence factor with ASSUMPTION label, and request an energy-filtered REM
+   measurement or a 200 keV source (uploads 7-8).
+
+### 7.3 PROJECT_INPUT item 20 (mean inner potential)
+
+* For the geometric engine and the angle computation, the best-sourced measured value found is
+  **12.48 +- 0.22 V (Wu and Spiecker 2017)**. It is at abstract level only
+  (METADATA_VERIFIED +ABSTRACT(PubMed)). Its conditions (specimen, surface, oxide, energy) must be
+  read in the body (upload 2) before it replaces B1. It agrees with the DFT slab value 12.53 V (L5)
+  and with the holography range of about 11.5-12.5 V (Zheng's secondary statement). The RHEED
+  working value for Si is 12 V (Horio 2014, 2022; Moon 1972).
+* Until the body is read, B1 (12.0 V) stays an ASSUMPTION. The sensitivity statement of B1 already
+  covers a 0.5 V change: -0.17 rad at (4,-4,4), and about 0.5 % of a height at (0,0,8) (1.07 %/V)
+  if the angle is computed.
+* Multislice runs keep B32 (the engine's 13.903 V for internal consistency). That is a model
+  systematic of 1.4-1.9 V against the bonded and measured values (12.0-12.53 V). For an ion-milled, oxidised Si(001)
+  surface the rocking-curve calibration of the real sample (item 9) remains the decisive route.
+
+## 8. Uploads needed from Ali (priority order)
+
+| # | item | why | exact locator |
+|---|---|---|---|
+| 1 | Mendis, Ultramicroscopy 206 (2019) 112816, doi:10.1016/j.ultramic.2019.112816, **and** corrigendum Ultramicroscopy 212 (2020) 112957, doi:10.1016/j.ultramic.2020.112957 | source of the measured Si plasmon mean free path at 200 kV (1050 A), the only number behind the electronic absorption of 7.2; the corrigendum may change it | whole paper; the EELS mean-free-path measurement section and its table/figure. A browser download of the Durham accepted manuscript (durham-repository.worktribe.com/output/1297319) may work |
+| 2 | Wu and Spiecker, Ultramicroscopy 176 (2017) 233-245, doi:10.1016/j.ultramic.2017.03.029 | measured Si MIP 12.48 +- 0.22 V: specimen preparation, oxide, beam energy, error budget | methods and results sections, table of MIP values |
+| 3 | Kruse et al., Ultramicroscopy 106 (2006) 105-113, doi:10.1016/j.ultramic.2005.06.057 (already upload 11 of the reading plan) | measured (holography) and DFT Si MIP with uncertainty; the HF IAM 13.91 V | results table for Si |
+| 4 | Gajdardziska-Josifovska et al., Ultramicroscopy 50 (1993) 285-299, doi:10.1016/0304-3991(93)90197-6 | settle the 9.26 +- 0.08 V attribution (Zheng 2026) and any Si value | the results table |
+| 5 | Lehmpfuhl and Dowell, Acta Cryst. A 42 (1986) 569-577, doi:10.1107/s0108767386098720 | the best lead for a high-energy Si(111) rocking-curve benchmark; beam energy | experimental section, figures of CB-RHEED discs |
+| 6 | Peng, Ren, Dudarev, Whelan, Acta Cryst. A 52 (1996) 456-470, doi:10.1107/s010876739600089x (and A 52 (1996) 257-276, doi:10.1107/s0108767395014371) | tabulated Si B(T) and absorptive factors; cross-check of the Thomas/Bird-King numbers of 1.5 | the Si rows of the tables; the voltage stated for the absorptive factors |
+| 7 | Z. L. Wang, Reflection Electron Microscopy and Spectroscopy for Surface Analysis (CUP 1996; ZLWANG96), chapters on inelastic scattering/valence loss in RHEED and REM | surface- and bulk-plasmon excitation in REM at 100-200 keV (item 7.2.5) | the chapter(s) on inelastic excitation in reflection; Crossref lists the RHEED chapter as pp. 31-59 (doi:10.1017/cbo9780511525254.004) |
+| 8 | Peng, Dudarev, Whelan, High-Energy Electron Diffraction and Microscopy (B08): pp. 228-263 and 264-310 (diffuse and inelastic scattering), pp. 454-469 (temperature-dependent Debye-Waller factors), with pp. 117-185 and 427-453 already on the plan | RHEED optical potential, TDS/inelastic absorption in reflection, Si B(T) tables | Crossref chapter DOIs 10.1093/oso/9780198500742.003.0007, .0008, .0014 |
+| 9 | Radi, Acta Cryst. A 26 (1970) 41-56, doi:10.1107/s0567739470000050 | the separate electronic and phonon absorption coefficients for Si (100 keV, 293 K), to split 7.2 | the Si row of the tables |
+| 10 | Dudarev, Peng, Whelan, Surf. Sci. 330 (1995) 86-100, doi:10.1016/0039-6028(95)00464-5 | optical potential for RHEED calculations | whole paper |
+| 11 | Menadue, Acta Cryst. A 28 (1972) 1-11 and Colella and Menadue, ibid. 16-22 | the measured Si(111) 40 keV specular intensities behind Moon's Fig. 1 | data tables/figures |
+| 12 | Ichimiya, Jpn. J. Appl. Phys. 24 (1985) 1579, doi:10.1143/jjap.24.1579; Horio and Ichimiya, Surf. Sci. 133 (1983) 393, doi:10.1016/0039-6028(83)90009-2 | the RHEED imaginary-potential formula and the origin of the RHEED V0 = 12 V for Si | whole papers (short) |
+| 13 | Flensburg and Stewart, Phys. Rev. B 60 (1999) 284, doi:10.1103/physrevb.60.284 | body of the BvK B; low priority (Heacock covers the number) | results section |
+
+New PROJECT_INPUT suggested (orchestrator's decision): the specimen temperature during holography
+(A7 depends on it: 0.0014 A^2/K), and, if available, an energy-filtered REM or EELS measurement of
+the specular beam's zero-loss fraction at the working angle (for 7.2.5).
+
+## 9. Closing log
+
+- 22:55 UTC: sections 5-8 written. OpenAlex's anonymous daily budget was exhausted at about
+  22:45 UTC (HTTP error "Rate limit exceeded", resets at midnight UTC), so no further OpenAlex
+  queries were made after that. Every OA verdict above was taken before then or from the host
+  itself.
+- Nothing in `docs/` other than this report and `L6_new_refs.bib` was written. No summary
+  document, no other agent's report, no code and no configuration was edited. Nothing committed
+  or pushed.

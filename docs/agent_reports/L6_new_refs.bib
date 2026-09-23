@@ -1,0 +1,516 @@
+%% =====================================================================
+%% L6_new_refs.bib -- new records found by agent L6 (2026-09-23)
+%% Companion to docs/agent_reports/L6_sourced_si_parameters.md.
+%% NOT merged into docs/references.bib (the bibliography owner decides).
+%%
+%% Rules applied (project policy):
+%%  * Every doi field was COPIED from a Crossref /works record fetched by L6
+%%    (api.crossref.org, no mailto, no personal data) and accepted on the
+%%    five-field rule (first author, title, container, year, volume) against
+%%    the citation that led to it; bibliographic fields were generated from
+%%    the cached JSON by a script (scratchpad l6/mkbib.py), not typed.
+%%  * arXiv-only records carry eprint fields from the arXiv abstract page or
+%%    the version stamp printed on the PDF; they have no doi field.
+%%  * Evidence label first in every note: SECTION_READ (with locator),
+%%    METADATA_VERIFIED, +ABSTRACT(PubMed) / +ABSTRACT(OpenAlex) (abstract
+%%    only; NOT evidence for the body), UNVERIFIED.
+%%  * Cite keys are L6's; several may duplicate informal names used in the
+%%    L6 report tables.
+%% =====================================================================
+
+%% ---- Part A: absorption (absorptive potential, TDS, inelastic) ----
+@article{THOMAS24,
+  author    = {Thomas, M. and Cleverley, A. and Beanland, R.},
+  title     = {{Parameterized absorptive electron scattering factors}},
+  journal   = {Acta Crystallographica Section A Foundations and Advances},
+  volume    = {80},
+  number    = {2},
+  pages     = {146--150},
+  year      = {2024},
+  doi       = {10.1107/s2053273323010963},
+  note      = {evidence: SECTION\_READ in full (Europe PMC full-text XML of PMC10913675, CC BY; Eqs. (1)-(3) read as images; supplementary code main\_scattering\_function.py read and run by L6, report sec. 1.3, 1.5). Bird-King TDS absorptive factor f'(s,B) parameterised for 103 elements; used by L6 to compute Si at 200 keV (DERIVED\_HERE). Crossref record cached by L6 as scratchpad l6/crossref/THOMAS24.json (sha256 52a0b80df3d8cb6a...); fields copied from it.}
+}
+
+@article{MENDIS24,
+  author    = {Mendis, Budhika},
+  title     = {{Modelling dynamical 3D electron diffraction intensities. II. The role of inelastic scattering}},
+  journal   = {Acta Crystallographica Section A Foundations and Advances},
+  volume    = {80},
+  number    = {2},
+  pages     = {178--188},
+  year      = {2024},
+  doi       = {10.1107/s2053273323010690},
+  note      = {evidence: SECTION\_READ in full (PMC10913673, CC BY; report sec. 1.3(b)). Si [110], 200 kV: plasmon mean free path 1050 A (stated, cited to Mendis 2019), total inelastic ~830 A (Malis formula), phonon mean free path 7724 A (calculated), theta\_E = 0.04 mrad; states u\_rms(Si) = 0.078 A citing Kirkland 2010 with B = 2 pi^2 u^2 convention. Crossref record cached by L6 as scratchpad l6/crossref/MENDIS24.json (sha256 4b30952297be08a4...); fields copied from it.}
+}
+
+@article{MENDIS19,
+  author    = {Mendis, B.G.},
+  title     = {{An inelastic multislice simulation method incorporating plasmon energy losses}},
+  journal   = {Ultramicroscopy},
+  volume    = {206},
+  pages     = {112816},
+  year      = {2019},
+  doi       = {10.1016/j.ultramic.2019.112816},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (Elsevier closed; Durham repository record 1297319 returned HTTP 403 to curl and WebFetch). Source of the measured Si plasmon mean free path 1050 A at 200 kV as stated in [MENDIS24]; read it before adopting that value. See also the corrigendum [MENDIS20C]. Crossref record cached by L6 as scratchpad l6/crossref/MENDIS19.json (sha256 1116602cbd2a7a59...); fields copied from it.}
+}
+
+@article{MENDIS20C,
+  author    = {Mendis, B.G.},
+  title     = {{Corrigendum to: “An inelastic multislice simulation method incorporating plasmon energy losses” [Ultramicroscopy 206 (2019) 112816]}},
+  journal   = {Ultramicroscopy},
+  volume    = {212},
+  pages     = {112957},
+  year      = {2020},
+  doi       = {10.1016/j.ultramic.2020.112957},
+  note      = {evidence: METADATA\_VERIFIED; not read. Corrigendum to [MENDIS19]; whether it changes the 1050 A value is UNVERIFIED. Crossref record cached by L6 as scratchpad l6/crossref/MENDIS20C.json (sha256 7283d08de06379f8...); fields copied from it.}
+}
+
+@article{NI26,
+  author    = {Ni, Hsu-Chih and Busch, Robert and Zuo, Jian-Min},
+  title     = {{PyExtal: a Python package for quantitative convergent-beam electron diffraction}},
+  journal   = {Journal of Applied Crystallography},
+  volume    = {59},
+  number    = {2},
+  pages     = {687--699},
+  year      = {2026},
+  doi       = {10.1107/s1600576726001469},
+  note      = {evidence: SECTION\_READ of sec. 2.3, 4.1, 4.2, 5, 6.2 and Tables 1-3 (PMC13060613 full-text XML; table-header images efi63/efi82/efi64 read as U111, U'111, U222). Si 111 at 200 kV (energy-filtered CBED, dataset of Zuo 1998): U111 = 0.04735, U'111 = 0.00079 (PyExtal); 0.04731, 0.00086 (Extal); 300 kV values in Tables 2-3. Crossref record cached by L6 as scratchpad l6/crossref/NI26.json (sha256 6e7542e532196872...); fields copied from it.}
+}
+
+@article{VOSS80,
+  author    = {Voss, R. and Lehmpfuhl, G. and Smith, P. J.},
+  title     = {{Influence of Doping on the Crystal Potential of Silicon investigated by the Convergent Beam Electron Diffraction Technique}},
+  journal   = {Zeitschrift für Naturforschung A},
+  volume    = {35},
+  number    = {9},
+  pages     = {973--984},
+  year      = {1980},
+  doi       = {10.1515/zna-1980-0913},
+  note      = {evidence: SECTION\_READ (CC BY 4.0 digitisation, extracted by HTTP range from the open Edmond archive doi:10.17617/3.GRUJYR; pages read as images; report sec. 1.7). Si CBED at 100 keV, room temperature: measured mean absorption potential V'000 = 0.61 V; V'g from Eq. (3) V\_g^im = V\_g^real (B|g| - C g^2) with B = 0.004, C = 0.0003 (Table 5, p. 983); real structure potentials Table 1 (p. 982); uses B(Si) = 0.4613 A^2 at 293.2 K (Table 3 caption). Crossref record cached by L6 as scratchpad l6/crossref/VOSS80.json (sha256 65c4fd82a4837af8...); fields copied from it.}
+}
+
+@article{BIRDKING90,
+  author    = {Bird, D. M. and King, Q. A.},
+  title     = {{Absorptive form factors for high-energy electron diffraction}},
+  journal   = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume    = {46},
+  number    = {3},
+  pages     = {202--208},
+  year      = {1990},
+  doi       = {10.1107/s0108767389011906},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (IUCr journals.iucr.org: Cloudflare 403). Its absorptive-factor integral is read only as reproduced in [THOMAS24] Eq. (2). Crossref record cached by L6 as scratchpad l6/crossref/BIRDKING90.json (sha256 23cc850f76b17b05...); fields copied from it.}
+}
+
+@article{WEICKENMEIER91,
+  author    = {Weickenmeier, A. and Kohl, H.},
+  title     = {{Computation of absorptive form factors for high-energy electron diffraction}},
+  journal   = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume    = {47},
+  number    = {5},
+  pages     = {590--597},
+  year      = {1991},
+  doi       = {10.1107/s0108767391004804},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (IUCr 403). Parameterisation used by Dr. Probe [BARTHEL18] and by Hajek and Rusz [HAJEK26]. Crossref record cached by L6 as scratchpad l6/crossref/WEICKENMEIER91.json (sha256 09b3e53dfac03a9e...); fields copied from it.}
+}
+
+@article{PENG96ROBUST,
+  author    = {Peng, L. M. and Ren, G. and Dudarev, S. L. and Whelan, M. J.},
+  title     = {{Robust Parameterization of Elastic and Absorptive Electron Atomic Scattering Factors}},
+  journal   = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume    = {52},
+  number    = {2},
+  pages     = {257--276},
+  year      = {1996},
+  doi       = {10.1107/s0108767395014371},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (IUCr 403). Abstract: absorptive factors parameterised for 17 zinc-blende materials, 1-1000 K; program takes Z, Debye-Waller factor and voltage. [THOMAS24] states the Peng et al. 1996 tables are for 100 kV (statement, not verified). Crossref record cached by L6 as scratchpad l6/crossref/PENG96ROBUST.json (sha256 f322a13e2cda7740...); fields copied from it.}
+}
+
+@article{PENG96DW,
+  author    = {Peng, L.-M. and Ren, G. and Dudarev, S. L. and Whelan, M. J.},
+  title     = {{Debye–Waller Factors and Absorptive Scattering Factors of Elemental Crystals}},
+  journal   = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume    = {52},
+  number    = {3},
+  pages     = {456--470},
+  year      = {1996},
+  doi       = {10.1107/s010876739600089x},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (IUCr 403). Abstract: Debye-Waller factors and absorptive scattering factors of 44 elemental crystals, 1-1000 K, DW accuracy 2-3 \%. Si values UNVERIFIED. Crossref record cached by L6 as scratchpad l6/crossref/PENG96DW.json (sha256 3620a5def4f944e6...); fields copied from it.}
+}
+
+@article{HALLHIRSCH65,
+  author    = {Hall, C. R. and Hirsch, Peter Bernhard},
+  title     = {{Effect of thermal diffuse scattering on propagation of high energy electrons through crystals}},
+  journal   = {Proceedings of the Royal Society of London. Series A. Mathematical and Physical Sciences},
+  volume    = {286},
+  number    = {1405},
+  pages     = {158--177},
+  year      = {1965},
+  doi       = {10.1098/rspa.1965.0136},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD. Einstein-model TDS absorption. Note: the Dr. Probe celslc page prints the year as 1957; Crossref gives 1965. Crossref record cached by L6 as scratchpad l6/crossref/HALLHIRSCH65.json (sha256 4fdef16d2a4358d4...); fields copied from it.}
+}
+
+@article{RADI70,
+  author    = {Radi, G.},
+  title     = {{Complex lattice potentials in electron diffraction calculated for a number of crystals}},
+  journal   = {Acta Crystallographica Section A},
+  volume    = {26},
+  number    = {1},
+  pages     = {41--56},
+  year      = {1970},
+  doi       = {10.1107/s0567739470000050},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (IUCr 403). 100 keV complex lattice potentials for monatomic crystals Z = 3-90 at 20, 93, 293 K. Its Si values are known here only as quoted in [VOSS80] Table 5 (000 0.70 V, 111 0.1 V, 220 0.11 V, 311 0.07 V, 004 0.09 V). Crossref record cached by L6 as scratchpad l6/crossref/RADI70.json (sha256 d3c9c50a9d5e0e8b...); fields copied from it.}
+}
+
+@article{HHW62,
+  author    = {Hashimoto, H. and Howie, Archibald and Whelan, Michael John},
+  title     = {{Anomalous electron absorption effects in metal foils: theory and comparison with experiment}},
+  journal   = {Proceedings of the Royal Society of London. Series A. Mathematical and Physical Sciences},
+  volume    = {269},
+  number    = {1336},
+  pages     = {80--103},
+  year      = {1962},
+  doi       = {10.1098/rspa.1962.0164},
+  note      = {evidence: METADATA\_VERIFIED; not read. Named by the Dr. Probe celslc page as the origin of the constant proportional absorption parameter ('typical values 0.01 to 0.20'). Crossref record cached by L6 as scratchpad l6/crossref/HHW62.json (sha256 b75e7663bcd3ebe2...); fields copied from it.}
+}
+
+@article{HUMPHREYS68,
+  author    = {Humphreys, C. J. and Hirsch, P. B.},
+  title     = {{Absorption parameters in electron diffraction theory}},
+  journal   = {The Philosophical Magazine: A Journal of Theoretical Experimental and Applied Physics},
+  volume    = {18},
+  number    = {151},
+  pages     = {115--122},
+  year      = {1968},
+  doi       = {10.1080/14786436808227313},
+  note      = {evidence: METADATA\_VERIFIED; not read. Cited by [THOMAS24] for the proportional model f' = alpha f with alpha ~ 0.1, and by [VOSS80] (ref. 11) for the relation behind their Eq. (3). Crossref record cached by L6 as scratchpad l6/crossref/HUMPHREYS68.json (sha256 c4a1e9114eaf0e76...); fields copied from it.}
+}
+
+@article{ICHIMIYA85,
+  author    = {Ichimiya, Ayahiko},
+  title     = {{Analytical Formura of Imaginary Crystal Potential for Fast Electrons}},
+  journal   = {Japanese Journal of Applied Physics},
+  volume    = {24},
+  number    = {11R},
+  pages     = {1579},
+  year      = {1985},
+  doi       = {10.1143/jjap.24.1579},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (IOP, closed per OpenAlex). The Crossref title carries the misspelling 'Formura' as deposited. Cited by [MINAMI08] for the RHEED imaginary potential U(S) = U\_TDS exp(-2BS^2) + U\_el exp(-50 S^2). Crossref record cached by L6 as scratchpad l6/crossref/ICHIMIYA85.json (sha256 d0993a23ce733e7c...); fields copied from it.}
+}
+
+@article{ICHIMIYALEHMPFUHL78,
+  author    = {Ichimiya, A. and Lehmpfuhl, G.},
+  title     = {{Axial Channeling in Electron Diffraction}},
+  journal   = {Zeitschrift für Naturforschung A},
+  volume    = {33},
+  number    = {3},
+  pages     = {269--281},
+  year      = {1978},
+  doi       = {10.1515/zna-1978-0304},
+  note      = {evidence: METADATA\_VERIFIED; not read (open in the Edmond ZfN archive, not extracted). Ref. 12 of [VOSS80], source of the first B, C absorption constants for Si (Table 5 column 'Ichimiya and Lehmpfuhl (1978)'). Crossref record cached by L6 as scratchpad l6/crossref/ICHIMIYALEHMPFUHL78.json (sha256 18bcf69abac4fbe1...); fields copied from it.}
+}
+
+@article{DUDAREV95,
+  author    = {Dudarev, S.L. and Peng, L.-M. and Whelan, M.J.},
+  title     = {{On the Doyle-Turner representation of the optical potential for RHEED calculations}},
+  journal   = {Surface Science},
+  volume    = {330},
+  number    = {1},
+  pages     = {86--100},
+  year      = {1995},
+  doi       = {10.1016/0039-6028(95)00464-5},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (Elsevier). Optical potential for RHEED calculations; candidate for the RHEED treatment of absorption. Crossref record cached by L6 as scratchpad l6/crossref/DUDAREV95.json (sha256 10287658d493951e...); fields copied from it.}
+}
+
+@article{DUDAREV93,
+  author    = {Dudarev, S. L. and Peng, L.-M. and Whelan, M. J.},
+  title     = {{Correlations in space and time and dynamical diffraction of high-energy electrons by crystals}},
+  journal   = {Physical Review B},
+  volume    = {48},
+  number    = {18},
+  pages     = {13408--13429},
+  year      = {1993},
+  doi       = {10.1103/physrevb.48.13408},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (APS 403). Kinetic-equation treatment of elastic and inelastic scattering at ~100 keV. Crossref record cached by L6 as scratchpad l6/crossref/DUDAREV93.json (sha256 9b32dfecf665eb39...); fields copied from it.}
+}
+
+@article{ALLEN15,
+  author    = {Allen, L.J. and D'Alfonso, A.J. and Findlay, S.D.},
+  title     = {{Modelling the inelastic scattering of fast electrons}},
+  journal   = {Ultramicroscopy},
+  volume    = {151},
+  pages     = {11--22},
+  year      = {2015},
+  doi       = {10.1016/j.ultramic.2014.10.011},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (Elsevier; Melbourne repository hdl 11343/52385 states 'This item is currently not available from this repository'). Crossref record cached by L6 as scratchpad l6/crossref/ALLEN15.json (sha256 528f4df48a56a5e4...); fields copied from it.}
+}
+
+@article{BARTHEL18,
+  author    = {Barthel, J.},
+  title     = {{Dr. Probe: A software for high-resolution STEM image simulation}},
+  journal   = {Ultramicroscopy},
+  volume    = {193},
+  pages     = {1--11},
+  year      = {2018},
+  doi       = {10.1016/j.ultramic.2018.06.003},
+  note      = {evidence: SECTION\_READ of the author's preprint (https://er-c.org/barthel/drprobe/drprobe-paper.pdf, 30 pages): p. 9 sec. 2.2 (Weickenmeier-Kohl absorptive factors with Debye-Waller-damped potentials for bright-field; TDS by frozen lattice without DW factors), p. 11 sec. 2.3 (B = 8 pi^2 <u\_s^2>, per-axis Gaussian displacements). Pagination of the version of record not checked. Crossref record cached by L6 as scratchpad l6/crossref/BARTHEL18.json (sha256 b68e66055b51ed1c...); fields copied from it.}
+}
+
+@article{HOWIESTERN72,
+  author    = {Howie, A and Stern, R. M.},
+  title     = {{The Optical Potential in Electron Diffraction}},
+  journal   = {Zeitschrift für Naturforschung A},
+  volume    = {27},
+  number    = {3},
+  pages     = {382--389},
+  year      = {1972},
+  doi       = {10.1515/zna-1972-0302},
+  note      = {evidence: SECTION\_READ of the abstract and first page only (CC BY 4.0 digitisation via Edmond). Optical potential and mean free path 20 eV-100 keV for Al, Cu, Au (no Si). Crossref record cached by L6 as scratchpad l6/crossref/HOWIESTERN72.json (sha256 72c13393521567dc...); fields copied from it.}
+}
+
+@article{MINAMI08,
+  author    = {Minami, Tomoko and Yamagata, Yuki and Nakahara, Hitoshi and Ichimiya, Ayahiko},
+  title     = {{Structural Analysis of Crystal Surfaces by Reflection High-Energy Electron Diffraction Patterns: The Si(111)7*7 Surface}},
+  journal   = {e-Journal of Surface Science and Nanotechnology},
+  volume    = {6},
+  pages     = {87--90},
+  year      = {2008},
+  doi       = {10.1380/ejssnt.2008.87},
+  note      = {evidence: SECTION\_READ (J-STAGE open PDF; report sec. 1.6): Si(111)7x7, 10 kV energy-filtered RHEED; Eq. (1) two-term imaginary potential; Table I bulk U\_TDS = 0.37 V, B = 0.38 A^2, U\_el = 0.01 or 1.28 V. Crossref record cached by L6 as scratchpad l6/crossref/MINAMI08.json (sha256 a69c828c8a0cebc4...); fields copied from it.}
+}
+
+@article{HORIO14,
+  author    = {Horio, Yoshimi and Takakuwa, Yuji and Ogawa, Schuichi},
+  title     = {{Dimer Configuration of Si(001)2×1 Surface by Projected Potential Approach of Reflection High-Energy Electron Diffraction}},
+  journal   = {e-Journal of Surface Science and Nanotechnology},
+  volume    = {12},
+  number    = {0},
+  pages     = {380--386},
+  year      = {2014},
+  doi       = {10.1380/ejssnt.2014.380},
+  note      = {evidence: SECTION\_READ (J-STAGE open PDF; report sec. 1.6, 4): Si(001)2x1 many-beam rocking curves at 10 kV, [1-10]; 10 \% proportional imaginary potential; Si MIP 12 eV used; Fig. 5 experimental vs calculated rocking curves at RT. Crossref record cached by L6 as scratchpad l6/crossref/HORIO14.json (sha256 b078fa850016eb34...); fields copied from it.}
+}
+
+@article{HORIO22,
+  author    = {Horio, Yoshimi and Nakahara, Hitoshi and Yuhara, Junji and Takakuwa, Yuji},
+  title     = {{Correlation between Plasmon Excitations and Wavefields under Reflection High-Energy Electron Diffraction Condition}},
+  journal   = {e-Journal of Surface Science and Nanotechnology},
+  volume    = {20},
+  number    = {2},
+  pages     = {76--84},
+  year      = {2022},
+  doi       = {10.1380/ejssnt.2022-013},
+  note      = {evidence: SECTION\_READ (J-STAGE open PDF; report sec. 1.6, 3): Si(111)7x7, 10 keV; surface-plasmon excitation number ~70 \% of Lucas' value (Eq. 1, beta = 0.66, 0.71); Doyle-Turner V000 = 13.9 eV 'corrected to a more realistic value of 12 eV' citing [HORIO83]; 10 \% proportional absorption. Crossref record cached by L6 as scratchpad l6/crossref/HORIO22.json (sha256 7f5f50fb874dc011...); fields copied from it.}
+}
+
+
+%% ---- Part B: Si thermal displacement (Debye-Waller factor) ----
+
+@article{HEACOCK21,
+  author    = {Heacock, Benjamin and Fujiie, Takuhiro and Haun, Robert W. and Henins, Albert and Hirota, Katsuya and Hosobata, Takuya and Huber, Michael G. and Kitaguchi, Masaaki and Pushin, Dmitry A. and Shimizu, Hirohiko and Takeda, Masahiro and Valdillez, Robert and Yamagata, Yutaka and Young, Albert R.},
+  title     = {{Pendellösung interferometry probes the neutron charge radius, lattice dynamics, and fifth forces}},
+  journal   = {Science},
+  volume    = {373},
+  number    = {6560},
+  pages     = {1239--1243},
+  year      = {2021},
+  doi       = {10.1126/science.abc2794},
+  eprint    = {2103.05428},
+  archiveprefix = {arXiv},
+  note      = {evidence: SECTION\_READ of arXiv:2103.05428v3 (the arXiv abstract page links doi:10.1126/science.abc2794) (19 Aug 2021; main text and supplementary text, 45 PDF pages), NOT of the Science pagination. B(Si) = 0.4761(17) A^2 at 295.5 K (neutron Pendelloesung, PDF p. 6); 0.4767(6) A^2 with the charge radius constrained (p. 33); BvK value of [FLENSBURG99] scaled to 295.5 K: 0.4725(17) A^2 (p. 6, 32); dB/dT = 0.0014 A^2/K (p. 25); <u^2> = B/(8 pi^2) (p. 3). Crossref record cached by L6 as scratchpad l6/crossref/HEACOCK21.json (sha256 b00972716add27a5...); fields copied from it.}
+}
+
+@article{FLENSBURG99,
+  author    = {Flensburg, Claus and Stewart, Robert F.},
+  title     = {{Lattice dynamical Debye-Waller factor for silicon}},
+  journal   = {Physical Review B},
+  volume    = {60},
+  number    = {1},
+  pages     = {284--291},
+  year      = {1999},
+  doi       = {10.1103/physrevb.60.284},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (APS 403; Copenhagen portal has no file). Abstract: <u\_LD^2> = 0.005941 +- 0.000021 A^2 for Si at 293 K (Born-von Karman fit to inelastic neutron data). Consistent (DERIVED\_HERE) with the 0.4725(17) A^2 at 295.5 K that [HEACOCK21] attributes to it. Crossref record cached by L6 as scratchpad l6/crossref/FLENSBURG99.json (sha256 dc34b682d7ae063d...); fields copied from it.}
+}
+
+@article{SEARS91,
+  author    = {Sears, V. F. and Shelley, S. A.},
+  title     = {{Debye–Waller factor for elemental crystals}},
+  journal   = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume    = {47},
+  number    = {4},
+  pages     = {441--446},
+  year      = {1991},
+  doi       = {10.1107/s0108767391002970},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(OpenAlex); body UNREAD (IUCr 403). Debye-Waller model coefficients for 43 elements (f.c.c., b.c.c., h.c.p., diamond); Si value UNVERIFIED. Crossref record cached by L6 as scratchpad l6/crossref/SEARS91.json (sha256 7dda27f12c535965...); fields copied from it.}
+}
+
+@incollection{B08CH14,
+  author    = {Peng, L -M and Dudarev, S L and Whelan, M J},
+  title     = {{Temperature-Dependent Debye–Waller Factors}},
+  booktitle = {High-Energy Electron Diffraction And Microscopy},
+  publisher = {Oxford University PressOxford},
+  pages     = {454--469},
+  year      = {2004},
+  doi       = {10.1093/oso/9780198500742.003.0014},
+  note      = {evidence: METADATA\_VERIFIED (Crossref chapter record); not read (OUP). Chapter 'Temperature-Dependent Debye-Waller Factors' of [B08] (Peng, Dudarev, Whelan 2004), pp. 454-469; not in the reading plan's B08 locators. Crossref record cached by L6 as scratchpad l6/crossref/B08CH14.json (sha256 92ad50e4b1506ca9...); fields copied from it.}
+}
+
+@incollection{B08CH7,
+  author    = {Peng, L -M and Dudarev, S L and Whelan, M J},
+  title     = {{Diffuse And Inelastic Scattering – Elementary Processes}},
+  booktitle = {High-Energy Electron Diffraction And Microscopy},
+  publisher = {Oxford University PressOxford},
+  pages     = {228--263},
+  year      = {2004},
+  doi       = {10.1093/oso/9780198500742.003.0007},
+  note      = {evidence: METADATA\_VERIFIED (Crossref chapter record); not read (OUP). Chapter 'Diffuse and Inelastic Scattering - Elementary Processes' of [B08], pp. 228-263. Crossref record cached by L6 as scratchpad l6/crossref/B08CH7.json (sha256 3bcb299a8ad6bfed...); fields copied from it.}
+}
+
+@incollection{B08CH8,
+  author    = {Peng, L -M and Dudarev, S L and Whelan, M J},
+  title     = {{Diffuse And Inelastic Scattering – Multiple Scattering Effects}},
+  booktitle = {High-Energy Electron Diffraction And Microscopy},
+  publisher = {Oxford University PressOxford},
+  pages     = {264--310},
+  year      = {2004},
+  doi       = {10.1093/oso/9780198500742.003.0008},
+  note      = {evidence: METADATA\_VERIFIED (Crossref chapter record); not read (OUP). Chapter 'Diffuse and Inelastic Scattering - Multiple Scattering Effects' of [B08], pp. 264-310. Crossref record cached by L6 as scratchpad l6/crossref/B08CH8.json (sha256 5e7c425853a08c67...); fields copied from it.}
+}
+
+
+%% ---- Part C: mean inner potential ----
+
+@article{WUSPIECKER17,
+  author    = {},
+  title     = {{Publisher’s note}},
+  journal   = {Ultramicroscopy},
+  volume    = {177},
+  pages     = {1--13},
+  year      = {2017},
+  doi       = {10.1016/j.ultramic.2017.01.011},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(PubMed) (Europe PMC record of PMID 28366352); body UNREAD (Elsevier, closed). Abstract: MIP of Si = 12.48 +- 0.22 V from beam refraction at a wedge edge in STEM micro-diffraction; DPC similar. Crossref also holds 10.1016/j.ultramic.2017.01.011, a 'Publisher's note' in vol. 177 pp. 1-13 without authors, and PubMed carries the same abstract under PMID 28189911 (vol. 177); this record (vol. 176) is the article. Crossref record cached by L6 as scratchpad l6/crossref/WUSPIECKER17.json (sha256 806cd433aa271b0c...); fields copied from it.}
+}
+
+@article{WU04,
+  author    = {Wu, L and Schofield, M.A and Zhu, Y and Tafto, J},
+  title     = {{A unique determination of boundary condition in quantitative electron diffraction: Application to accurate measurements of mean inner potentials}},
+  journal   = {Ultramicroscopy},
+  volume    = {98},
+  number    = {2-4},
+  pages     = {135--143},
+  year      = {2004},
+  doi       = {10.1016/j.ultramic.2003.08.006},
+  note      = {evidence: METADATA\_VERIFIED +ABSTRACT(PubMed) (PMID 15046792); body UNREAD. Abstract says Si was measured (off-axis holography + shadow imaging); no number in the abstract. Crossref record cached by L6 as scratchpad l6/crossref/WU04.json (sha256 506748fb5ba5a9c3...); fields copied from it.}
+}
+
+@article{HORIO83,
+  author    = {Horio, Yoshimi and Ichimiya, Ayahiko},
+  title     = {{Rheed intensity analysis of Si(111)7 × 7 and √3 × √3-Ag surfaces}},
+  journal   = {Surface Science},
+  volume    = {133},
+  number    = {2-3},
+  pages     = {393--400},
+  year      = {1983},
+  doi       = {10.1016/0039-6028(83)90009-2},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (Elsevier). Cited by [HORIO22] for the Si inner potential 12 eV used in RHEED calculations. Crossref record cached by L6 as scratchpad l6/crossref/HORIO83.json (sha256 352d977a9f85209d...); fields copied from it.}
+}
+
+
+%% ---- Part D: rocking-curve benchmarks and leads ----
+
+@article{MOON72,
+  author    = {Moon, A.R.},
+  title     = {{Calculation of Reflected Intensities for Medium and High Energy Electron Diffraction}},
+  journal   = {Zeitschrift für Naturforschung A},
+  volume    = {27},
+  number    = {3},
+  pages     = {390--395},
+  year      = {1972},
+  doi       = {10.1515/zna-1972-0303},
+  note      = {evidence: SECTION\_READ (CC BY 4.0 digitisation via Edmond; report sec. 4): Fig. 1 p. 393, Si(111) specular intensity vs incident angle at 40 keV, calculation vs Menadue's experimental values; V0 = 12 V and V\_im = V\_real/8 give the best 555 peak (p. 394). Crossref record cached by L6 as scratchpad l6/crossref/MOON72.json (sha256 bc8699aaa2b06dd7...); fields copied from it.}
+}
+
+@article{MENADUE72,
+  author    = {Menadue, J. F.},
+  title     = {{Si(111) surface structures by glancing-incidence high-energy electron diffraction}},
+  journal   = {Acta Crystallographica Section A},
+  volume    = {28},
+  number    = {1},
+  pages     = {1--11},
+  year      = {1972},
+  doi       = {10.1107/s0567739472000014},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (IUCr 403). Identity with Moon's ref. 13 ('J. F. Menadue, Acta Cryst., to be published') is DERIVED\_HERE from author, journal, year and subject. Crossref record cached by L6 as scratchpad l6/crossref/MENADUE72.json (sha256 6148728c32d20a99...); fields copied from it.}
+}
+
+@article{COLELLA72,
+  author    = {Colella, R. and Menadue, F. J.},
+  title     = {{Comparison of experimental andn-beam calculated intensities for glancing incidence high-energy electron diffraction}},
+  journal   = {Acta Crystallographica Section A},
+  volume    = {28},
+  number    = {1},
+  pages     = {16--22},
+  year      = {1972},
+  doi       = {10.1107/s0567739472000038},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (IUCr 403). The Crossref record gives the second author as 'Menadue, F. J.' (as deposited). Crossref record cached by L6 as scratchpad l6/crossref/COLELLA72.json (sha256 be765de028747172...); fields copied from it.}
+}
+
+@article{LEHMPFUHLDOWELL86,
+  author    = {Lehmpfuhl, G. and Dowell, W. C. T.},
+  title     = {{Convergent-beam reflection high-energy electron diffraction (RHEED) observations from an Si(111) surface}},
+  journal   = {Acta Crystallographica Section A Foundations of Crystallography},
+  volume    = {42},
+  number    = {6},
+  pages     = {569--577},
+  year      = {1986},
+  doi       = {10.1107/s0108767386098720},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (IUCr 403). Convergent-beam RHEED of Si(111); beam energy UNVERIFIED. Best candidate for a high-energy Si rocking-curve benchmark. Crossref record cached by L6 as scratchpad l6/crossref/LEHMPFUHLDOWELL86.json (sha256 d16fa68f2112d739...); fields copied from it.}
+}
+
+@article{HAYAKAWA82,
+  author    = {Hayakawa, Kazunobu and Aizawa, Noriyuki},
+  title     = {{Geometrical Surface Wave Resonance at a Silicon (111) Surface in Reflection High-Energy Electron Diffraction}},
+  journal   = {Japanese Journal of Applied Physics},
+  volume    = {21},
+  number    = {4A},
+  pages     = {L215},
+  year      = {1982},
+  doi       = {10.1143/jjap.21.l215},
+  note      = {evidence: METADATA\_VERIFIED; body UNREAD (IOP). Si(111) RHEED surface-wave resonance; energy UNVERIFIED. Crossref record cached by L6 as scratchpad l6/crossref/HAYAKAWA82.json (sha256 f79609071f397f8c...); fields copied from it.}
+}
+
+%% ---- Part E: arXiv-only and software records ----
+
+@misc{HAJEK26,
+  author        = {H{\'a}jek, Martin and Rusz, J{\'a}n},
+  title         = {{Thermal diffuse scattering in TEM: complex absorptive potentials compared to the frozen phonon model}},
+  year          = {2026},
+  eprint        = {2608.24679},
+  archiveprefix = {arXiv},
+  howpublished  = {arXiv preprint arXiv:2608.24679v1 [cond-mat.mtrl-sci], submitted 25 August 2026 (arXiv-issued DataCite DOI 10.48550/arXiv.2608.24679 shown on the abstract page, registration not checked)},
+  note          = {evidence: SECTION\_READ in full (arXiv v1 PDF, 11 pages, sha256 126a4c01...; report sec. 1.2): frozen-phonon potentials have no imaginary part and absorption arises after averaging (p. 2, sec. II.A); elastic channel = coherent average, Eqs. (4)-(6); Einstein FPM and CAP both need the Debye-Waller factor (p. 2, sec. II.B); diamond and SrTiO3 at 300 kV in transmission. No DOI or journal reference on the arXiv abstract page as retrieved.}
+}
+
+@misc{ZHENG26A,
+  author        = {Zheng, Jin-Cheng},
+  title         = {{First-Principles Electronegativity Scale from the Atomic Mean Inner Potential}},
+  year          = {2026},
+  eprint        = {2603.10523},
+  archiveprefix = {arXiv},
+  howpublished  = {arXiv preprint arXiv:2603.10523v2 [cond-mat.mtrl-sci], 16 April 2026},
+  note          = {evidence: SECTION\_READ of PDF p. 30 only (sha256 48c4a7ee...): secondary statement that holography MIP values for crystalline Si lie between about 11.5 and 12.5 V (refs. Wang 1997, Wu 2004, Kruse 2006), an early value 9.26 +- 0.08 V attributed to Gajdardziska-Josifovska 1993 (UNVERIFIED, suspicious), pro-crystal DFT 13.70 V. The preprint prints 'J.-C. Zheng, Frontiers of Physics, 21(11), 114201 (2026)' with doi 10.15302/frontphys.2026.114201; the Crossref record of that DOI has NO authors, so it fails the five-field rule and no doi field is given here.}
+}
+
+@misc{CHALISE22A,
+  author        = {Chalise, Darshan and Kenesei, Peter and Shastri, Sarvjit D. and Cahill, David G.},
+  title         = {{Temperature mapping of stacked silicon dies from x-ray diffraction intensities}},
+  year          = {2022},
+  eprint        = {2203.12554},
+  archiveprefix = {arXiv},
+  note          = {evidence: SECTION\_READ of PDF p. 3 only (latest arXiv version at retrieval, v2 listed; sha256 75db1c41...): secondary statement of the room-temperature Si mean square displacement 0.0059 A^2 citing Flensburg and Stewart, and a Debye-model estimate 0.0058 A^2. Journal version not checked.}
+}
+
+@manual{MUSTEM53,
+  author       = {Allen, L. J. and Brown, H. G. and D'Alfonso, A. J. and Findlay, S. D. and Forbes, B. D.},
+  title        = {{$\mu$STEM v5.3: A transmission electron microscopy simulation suite, in particular for scanning transmission electron microscopy (manual)}},
+  howpublished = {\url{https://raw.githubusercontent.com/HamishGBrown/MuSTEM/master/Manual/muSTEM_manual.pdf}},
+  note         = {evidence: SECTION\_READ of sec. 1 (p. 5) and sec. 3.8, 3.8.1, 3.8.2 (pp. 15-16) (PDF sha256 4b8ec3c2...): absorptive model and QEP model offered as alternatives; QEP uses unsmeared potentials. No year printed on the pages read; retrieved 2026-09-23.}
+}
