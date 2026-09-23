@@ -274,3 +274,87 @@ Ga+ FIB damage in Si (D2, D3):
   the cosine of the incident angle ... at 80° a variation of ±5° can lead to a change in thickness of ±50 %" (sec. 6,
   p. 10); experimental error about 2 nm between positions (Fig. 4 caption).
 
+### 2.3 More sources read for task 2 (densities, contamination, REM practice)
+
+| # | Source | Access, URL, hash | Label |
+|---|---|---|---|
+| D4 | A. Pedersen, L. Pizzagalli, H. Jónsson, "Optimal atomic structure of amorphous silicon obtained from density functional theory calculations", New J. Phys. 19, 063018 (2017), DOI 10.1088/1367-2630/aa732e | OPEN (CC BY 3.0). IOP served a Radware captcha (not bypassed); read the copy at Opin vísindi `https://opinvisindi.is/bitstreams/0f30b85f-ea06-478d-b9db-309825b8021e/download` (typeset published pages); SHA-256 6ca9cb6a...ed4f | SECTION_READ (pp. 1-6, Fig. 1, Table 1) + METADATA_VERIFIED (Crossref) |
+| D5 | T. Yasaka, S. Miyazaki, M. Hirose, "シリコンウエハの自然酸化" (Native Oxide Formation on Silicon Wafer), Nihon Kessho Gakkaishi 33(3), 182-187 (1991), DOI 10.5940/jcrsj.33.182 | OPEN (J-STAGE); read in full; SHA-256 8fc37611...75cb | SECTION_READ (sec. 3, Eq. (4); sec. 4.3; Figs. 6-8) + METADATA_VERIFIED (Crossref) |
+| D6 | Y. Azuma, K. Odaka, A. Kurokawa, T. Fujimoto, "Effect of Surface Contamination on Thickness Evaluation of SiO2/Si by X-ray Reflectometry", Trans. Mater. Res. Soc. Jpn. 32(1), 263-266 (2007), DOI 10.14723/tmrsj.32.263 | OPEN (J-STAGE); read in full; SHA-256 d660f7d3...7e0f | SECTION_READ (abstract; sec. 3; Table I; Fig. 2) |
+| D7 | H. Tokutake, R. Imai, Y. Yamashita, A. Ogura, "X線反射率測定法を用いたシリコン酸化膜の評価", SPring-8/SACLA Research Report 3(2), 571-574 (2015), DOI 10.18957/rr.3.2.571 | OPEN (J-STAGE); read in full; SHA-256 13b2a805...bf55 | SECTION_READ (Tables 2-3) |
+| D8 | V. V. Korobtsov et al., "Fe interaction with native SiO2 on Si(001) studied by RHEED", e-J. Surf. Sci. Nanotech. 5, 45-50 (2007), DOI 10.1380/ejssnt.2007.45 | OPEN; read in full; SHA-256 724b8010...a2685 | SECTION_READ (sec. II; sec. III, Figs. 1a, 4c) |
+| D9 | K. Yagi, Y. Tanishiro, K. Takayanagi, "表面電子顕微鏡法" (Surface Electron Microscopy), Oyo Buturi 55(11), 1036-1050 (1986), DOI 10.11470/oubutsu1932.55.1036 | OPEN (J-STAGE `.../oubutsu1932/55/11/55_11_1036/_pdf/-char/ja`); pages 1038, 1040, 1042, 1048-1050 read as rendered images; SHA-256 ffea7c27...6f73 | SECTION_READ (sec. 2.1 p. 1038, Table 2; sec. 3 p. 1040; sec. 4.1.1 p. 1042; sec. 4.3.5 p. 1048; refs. 31, 64) |
+| D10 | A. Claverie, J. Beauvillain, J. Fauré, C. Vieu, et al., "Degradation, amorphization, and recrystallization of ion bombarded Si(111) surfaces studied by in situ reflection electron microscopy and reflection high energy electron diffraction techniques", Microsc. Res. Tech. 20(4), 352-359 (1992), DOI 10.1002/jemt.1070200406 | CLOSED (OpenAlex closed); abstract read in the Europe PMC REST record (PMID 1498350) | +ABSTRACT(PubMed) + METADATA_VERIFIED (Crossref) |
+| D11 | N. Inoue, Y. Tanishiro, K. Yagi, JJAP 26(4A), L293 (1987), DOI 10.1143/JJAP.26.L293; H. Kahata, K. Yagi, JJAP 28(5A), L858 (1989), DOI 10.1143/JJAP.28.L858 | CLOSED (IOP: "The computer you are using is not registered by an institution with a subscription"); abstracts read on the IOP landing pages (curl, 2026-09-23; SHA-256 of the saved pages 20c353a2...746b and 973c5f2b...ac64) | +ABSTRACT(publisher) + METADATA_VERIFIED (Crossref) |
+
+### 2.4 Facts extracted (continued)
+
+Densities:
+* a-Si (D4 p. 2): density "found experimentally to be 1%-2% lower than the density of c-Si in several measurements
+  [12, 22, 23]" (refs. 22 = Custer et al., APL 64, 437 (1994); 23 = Laaziri et al., PRB 60, 13520 (1999); both closed,
+  so the measured values are second-hand here); D4's optimal DFT model has 99 % of the crystal density (p. 3), "Some
+  measurements have given a density as low as 98%" (p. 4). DERIVED_HERE: with ρ(c-Si) = 2.329 g/cm³ (8 × 28.0855 u /
+  (5.431 Å)³) this is 2.28-2.31 g/cm³. D4's structure model (216 atoms) is in its online supplementary material, which
+  was not retrieved (IOP captcha).
+* Thin SiO2 on Si(100) by XRR (D7, plasma oxides grown at 750 °C, 4.5-7 nm): film densities 2.11-2.28 g/cm³ (Table 3);
+  a three-layer fit of one film gives 2.03 (surface layer, 1.15 nm), 2.14 (bulk, 2.56 nm), 2.19 g/cm³ (interface, 0.98
+  nm) with the Si substrate at 2.33 g/cm³ (Table 2). Native oxide itself was not measured in D7; no open XRR density of
+  a native oxide was found in this session (UNVERIFIED gap).
+* D5 (sec. 3, Eq. (4)): oxide thickness from XPS with the constant k = 2.086 "Si および酸化膜(SiO2)の原子密度" ratio
+  factor; D5 Fig. 7 reproduces the Herman et al. SiO2/Si interface model with layer spacings 1.8, 1.8, 1.8, 2.2 Å
+  (7.6 Å in total).
+Native oxide kinetics (D5, D1): layer-by-layer growth with plateaus near 2, 4, 6 and 8 Å in ultrapure water (D5 sec.
+4.3, Fig. 8); D1 as in 2.2.
+Hydrocarbon contamination (D6; 4-10 nm thermal SiO2 on Si(100)): heating at 400 °C for 30 min removes 0.1-0.2 nm of
+apparent thickness (abstract; Table I: 10.30 → 10.13 nm, roughness 0.50 → 0.33 nm); readsorption in air at
+0.005-0.013 nm/h (sec. 3, p. 266); under 0.5 Pa vacuum less than 0.03 nm in 24 h (p. 266).
+What RHEED sees through a thin oxide (D8): 0.8 nm chemical oxide (HCl:H2O2:H2O boil) on Si(001), UHV RHEED along
+[1-10]: "intense background from amorphous structure of SiO2 layer and weak reflections from 1×1 structure of Si(001)
+surface" (p. 46, Fig. 1(a)); (2×1) streaks of the clean surface appear only after the oxide is desorbed at 710 °C
+(p. 48, Fig. 4(c)). The electron energy of D8's RHEED is not stated in the text read.
+REM practice and ion damage (D9-D11):
+* D9 p. 1038: the specimen-chamber vacuum of ordinary commercial electron microscopes "10⁻⁵ Pa 台で,これでは超高真空を
+  前提とする表面研究には対応できない" (10⁻⁵ Pa range, inadequate for surface research, which presupposes UHV); Table 2
+  lists UHV microscopes used for clean-surface work, including Osakabe et al. (1980), "Si(111)7×7, Si(001)2×1" (JEM
+  100B).
+* D9 p. 1040: profile-imaging work on surfaces "一度大気にさらされたもの" observed "普通真空の電子顕微鏡で" cannot be
+  called clean-surface observation.
+* D9 p. 1048 (sec. 4.3.5, "イオン照射"): "照射によって表面に欠陥が導入されるため,表面像は見えなくなる.これは,REM像
+  がひずみに敏感なためである.イオン照射が少ないときは,アニールによって,まずステップ近傍で表面の欠陥の回復が起こり,
+  ステップが照射前と同じところに現われる.アニール温度を上げていくと,回復が進み,テラス幅の狭いところでは回復が終了
+  するが,広いテラスでは回復不十分であり,さらに高い温度でのアニールが必要であった." (after ion irradiation the REM
+  surface image disappears because REM is strain-sensitive; on annealing, recovery starts near steps, the steps reappear
+  where they were, narrow terraces recover first, wide terraces need higher temperatures). Source cited: ref. 31, S. Ogawa,
+  Y. Tanishiro, K. Kobayashi, K. Takayanagi, K. Yagi, Proc. 11th Int. Congr. Electron Microscopy, Kyoto 1986, Vol. 2,
+  p. 1349 (UNVERIFIED, not read).
+* D10 abstract: noble-gas ion bombardment of Si(111) at room temperature and 400-600 °C, in situ RHEED and REM; "the fading
+  of the specularly reflected beam is not directly related to the amorphization of the surface"; "difficulties one meets to
+  regrow a defect-free material after amorphization by noble gas bombardment"; at high temperature the surface "loses its
+  stepped structure and turns into a monocrystalline but atomically rough surface".
+* D11 abstracts: Inoue 1987: "in situ ultra high vacuum reflection electron microscopy" of clean (100) Si; after quenching
+  from 1200 °C, at about 800 °C the surface is covered with "periodic arrays of 2×1 and 1×2 reconstructed domains bounded
+  by monolayer high steps"; terraces up to a few microns above 900 °C. Kahata 1989: UHV-REM, above 700 °C a DC heating
+  current makes one domain type wider than the other; the major domain reverses with the current direction.
+* Tokyo Tech REH (J-d, J-e) and Osaka REHM (J-f): UHV microscopes, surfaces cleaned in situ (section 3.2). Hitachi REH
+  (J-a): "通常の電子顕微鏡" (an ordinary electron microscope), on Pt(111) and GaAs(110); vacuum and preparation not stated
+  in the abstracts read.
+
+### 2.5 Inferences (DERIVED_HERE)
+
+* Every reflection-holography and REM study of Si found (sections 2.4 and 3) worked on UHV-cleaned surfaces
+  (flash or current heating to about 1200 °C in situ). No REM or reflection-holography study of an ion-milled,
+  air-exposed Si surface was found. D9 and D10 say ion bombardment destroys the REM surface image and the step
+  structure until the surface is annealed, and that recovery after amorphisation is difficult. A paper on an ion-milled
+  Si(001) sample must therefore state which preparation produced the imaged surface, and the simulation must cover the
+  corresponding overlayer.
+* Orders of magnitude for the overlayer on an ion-milled, air-exposed surface: amorphous Si from the last milling step,
+  about 1 nm (2 keV Ga+) to about 22 nm (30 keV Ga+) at grazing FIB incidence (D2), ×(1 ± 0.5) for ±5° of grazing angle
+  (D3), then a native oxide of 0.5-1 nm after days to months in air if the a-Si oxidises like HF-last Si (D1; this
+  transfer is an ASSUMPTION), then 0.1-0.2 nm of hydrocarbon contamination (D6). No open data for broad-beam Ar+ milling
+  (PIPS-type, 0.1-5 keV, 2-10° incidence) were found this session: Barna et al., Ultramicroscopy 70, 161 (1998) and
+  Micron 30, 267 (1999) are closed (upload list).
+* Path length: at the repository's (0,0,8) external angle of 16.13 mrad (ASSUMPTION B32; item 7 open) a layer of
+  thickness t is crossed over 2t/sin θ ≈ 124 t (in and out): 1 nm of oxide gives about 124 nm, 5 nm of a-Si about
+  620 nm (H2 section 3 gives 1240 Å for 10 Å). D8 shows that 0.8 nm of oxide still transmits weak
+  Si(001) 1×1 RHEED reflections under a strong amorphous background.
+
