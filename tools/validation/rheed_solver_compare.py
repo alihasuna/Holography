@@ -174,6 +174,8 @@ SOLVER_CASES = [
     SolverCase("fine_a100_N6_r000_ML300", "100", 6, 0.0, "A", "fine", ML=300),
     SolverCase("fine_a110_N9_r000_ML150", "110", 9, 0.0, "A", "fine", ML=150),
     SolverCase("fine_a110_N9_r000_ML300", "110", 9, 0.0, "A", "fine", ML=300),
+    # the (0,0) rod alone on the fine grid (what the many-beam rods change at the (0,0,8) peak)
+    SolverCase("fine_a100_N0_r010", "100", 0, 0.1, "A", "fine"),
     # at exactly the engine angles (like-for-like rods, and rod-set sensitivity)
     SolverCase("eng_a100_N6_r010", "100", 6, 0.1, "A", "engine100"),
     SolverCase("eng_a100_N8_r010_B", "100", 8, 0.1, "B", "engine100"),
@@ -942,6 +944,14 @@ def report_part3(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start) -> int:
           f"arg R(pk + w/2) - arg R(pk - w/2) = {sweep:+.4f} rad (wrapped; the unwrapped sweep across "
           f"the peak is this plus 0 or 2 pi)")
     msk = (t1 >= 15.5 - 1e-9) & (t1 <= 16.9 + 1e-9)
+    if "fine_a100_N0_r010" in sol["cases"]:
+        t0_, R0_ = solver_curve(sol, "fine_a100_N0_r010")
+        m0 = (t0_ > 15.0) & (t0_ < 17.5)
+        tp0, Ip0, ip0 = peak_parabola(t0_[m0], np.abs(R0_[m0]) ** 2)
+        w0, _, _ = fwhm(t0_[m0], np.abs(R0_[m0]) ** 2, ip0)
+        print(f"  [100] (0,0) rod alone (1 beam, same potential): peak {tp0:.4f} mrad, |R|^2 {Ip0:.5f}, "
+              f"FWHM {w0:.4f} mrad, arg R at peak {np.angle(interp_c(t0_, R0_, tp0)):+.4f}; the 13-rod "
+              f"curve differs from it by up to {np.max(np.abs(R0_ - R1)):.4f} in R")
     un = np.unwrap(np.angle(R1[msk]))
     print(f"  [100] unwrapped arg R from {t1[msk][0]:.2f} to {t1[msk][-1]:.2f} mrad: {un[0]:+.3f} -> "
           f"{un[-1]:+.3f} rad (total {un[-1] - un[0]:+.3f} rad); monotonic increase on the 0.02 mrad "
