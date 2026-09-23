@@ -467,7 +467,8 @@ def _two_beam_R_K(K, slab, bc, order, form):
         S = np.sqrt(eps**2 - P + 0j)
         cands = []
         for s in (S, -S):
-            rho = -Ug / (eps + s)
+            with np.errstate(invalid="ignore", divide="ignore"):     # 0/0 only when U_g = 0
+                rho = -Ug / (eps + s)
             dec = (s / G).imag
             if abs(dec) > 1e-12 * abs(G):
                 phys = dec > 0
@@ -493,7 +494,11 @@ def _two_beam_R_K(K, slab, bc, order, form):
         if phys:
             best.append((d, rho))
     if len(best) != 1:
-        raise RuntimeError("two-beam root selection ambiguous")
+        # degenerate only for U_g = 0 (decoupled waves): keep the downward wave kappa = q
+        q0 = np.sqrt(K**2 + U0 + 0j)
+        best = sorted(best, key=lambda b: abs((G / 2 + b[0]) - q0))[:1]
+        if not best or abs(Ug) > 0:
+            raise RuntimeError("two-beam root selection ambiguous")
     d, rho = best[0]
     num = (K - G / 2 - d) + rho * (K + G / 2 - d)
     den = (K + G / 2 + d) + rho * (K - G / 2 + d)
@@ -645,7 +650,7 @@ def step_response_fft(theta_rad, energy_keV, V0_V, Vg_list, g_per_A, absorption_
 def split_step_1d(*, theta0_rad, V0_V, Vg_V, g_per_A, absorption_ratio, propagator, dx_A, dz_A,
                   H_A, edge_A, gap_A, clean_depth_A, exit_after_top_contact_A, extra_vacuum_A,
                   absorber_A=15.0, top_absorber_A=10.0, W0_V=100.0, entrance_A=10.0,
-                  rel_threshold=0.05):
+                  rel_threshold=0.05, readout_window_above_A=None):
     """MINIMAL INDEPENDENT 1D split-step (NOT the engine; report section 7): written here from the
     engine's documented scheme to check the claims of report sections 4 and 5 and the proposed test
     protocol before the engine is run. Symmetric split step P(dz/2) T ... T P(dz/2); P Fresnel
@@ -656,7 +661,10 @@ def split_step_1d(*, theta0_rad, V0_V, Vg_V, g_per_A, absorption_ratio, propagat
     top. Sheet beam of height H (sin^2 edges), bottom gap_A above x_s at z = 0, tilt -sin(theta0)/
     lambda, projected onto f < 0. Read-out as the engine's flat_reflection_coefficient: r(f) =
     Psi_L(+f) exp(+i 4 pi f x_s) / (Psi_0(-f) P_L(f)) for bins with |Psi_0(-f)| >= rel_threshold max.
-    Returns dict(theta_bins, r, weight, n_x, n_slices, L_A, dx_A)."""
+    readout_window_above_A = w0: additionally returns r_win, the same read-out after multiplying the
+    exit wave by w(x) = sin^2(pi/2 clip((x - x_s - w0)/40 A, 0, 1)) (vacuum-only read-out that drops
+    the field left near and below the surface; report section 8).
+    Returns dict(theta_bins, r, [r_win,] weight, n_x, n_slices, L_A, dx_A)."""
     bc = beam_constants(200.0)
     lam, k, sigma = bc["wavelength_A"], bc["k"], bc["sigma"]
     th0 = float(theta0_rad)
@@ -706,18 +714,27 @@ def split_step_1d(*, theta0_rad, V0_V, Vg_V, g_per_A, absorption_ratio, propagat
         psi = psi * (t_cr if (i + 0.5) * dz_A >= entrance_A else t_va)
         psi = np.fft.ifft(np.fft.fft(psi) * (Pf if i < N - 1 else Ph))
     out = np.fft.fft(psi)
+    if readout_window_above_A is not None:
+        win = np.sin(0.5 * np.pi * np.clip((x - x_s - readout_window_above_A) / 40.0, 0.0, 1.0)) ** 2
+        out_w = np.fft.fft(psi * win)
     PL = P(L)
     thr = rel_threshold * np.abs(spec0).max()
-    th_b, rr_, w_ = [], [], []
+    th_b, rr_, rw_, w_ = [], [], [], []
     for m in range(1, nx // 2):
         mi = (-m) % nx
         if abs(spec0[mi]) < thr or not mask[m]:
             continue
-        rr_.append(out[m] * np.exp(4j * np.pi * f[m] * x_s) / (spec0[mi] * PL[mi]))
+        fac = np.exp(4j * np.pi * f[m] * x_s) / (spec0[mi] * PL[mi])
+        rr_.append(out[m] * fac)
+        if readout_window_above_A is not None:
+            rw_.append(out_w[m] * fac)
         th_b.append(float(np.arcsin(f[m] * lam)))
         w_.append(float(abs(spec0[mi])))
-    return dict(theta_bins=np.array(th_b), r=np.array(rr_), weight=np.array(w_), n_x=nx,
-                n_slices=N, L_A=L, dx_A=dx)
+    res = dict(theta_bins=np.array(th_b), r=np.array(rr_), weight=np.array(w_), n_x=nx,
+               n_slices=N, L_A=L, dx_A=dx)
+    if readout_window_above_A is not None:
+        res["r_win"] = np.array(rw_)
+    return res
 
 
 # =================================================================================================
@@ -887,6 +904,16 @@ def main() -> int:  # noqa: C901 (a linear report script)
           f"(= 2 kc in E-units: {2 * p['kc']:.4e} rad/A); Darwin phase slope at the centre "
           f"d(arg R)/d(theta) = K_c/(sigma V_g) = {p['K_centre'] / (bc['sigma'] * V008) * 1e-3:.3f} rad/mrad;"
           f" d(arg R)/dV0 = 1/V_g = {1 / V008:.4f} rad/V; d(arg R)/dV_g = 0 at the centre")
+    Kc_ = p["K_centre"]
+    print(f"derived quantities quoted in the report: U_g/G^2 = {p['Ug'] / G8**2:.3e}; K_c^2/(4 k^2) = "
+          f"{Kc_**2 / (4 * bc['k']**2):.2e} (paraxial vs exact z-dispersion); 2 q_c = {G8:.3f} rad/A "
+          f"(momentum a smooth absorber ramp must supply for V_g = 0); at eta = 3 the Bloch waves differ"
+          f" by 2 delta = {2 * p['Ug'] * np.sqrt(8.0) / G8:.4f} rad/A (beat length pi/delta = "
+          f"{np.pi / (p['Ug'] * np.sqrt(8.0) / G8):.1f} A); sinc(pi g dx) = {np.sinc(g8 * 0.025):.5f} "
+          f"(dx 0.025 A), {np.sinc(g8 * 0.05):.5f} (dx 0.05 A); sheet-beam edge along z e/tan(theta_c) = "
+          f"{2.0 / np.tan(p['theta_centre']):.0f} to {8.0 / np.tan(p['theta_centre']):.0f} A for e = 2 to 8 A;"
+          f" top-edge contact of the test beam z_top = (2 + 24 A)/tan(theta_c) = "
+          f"{26.0 / np.tan(p['theta_centre']):.1f} A; V_008/0.84 V - 1 = {V008 / 0.84 - 1:+.3f} (M2 estimate)")
     from reflection_holo.geometry.specular import specular_condition_for
     sc = specular_condition_for((0, 0, 8), (0, 0, 1), E_keV=E, V0_V=V0, a_A=a)
     print(f"package specular_condition_for((0,0,8)) theta_ext = {sc.theta_ext * 1e3:.6f} mrad "
@@ -898,6 +925,9 @@ def main() -> int:  # noqa: C901 (a linear report script)
           f"{(ex_hi - ex_lo) * 1e6:.3f} urad, midpoint {ex_c * 1e3:.5f} mrad; shifts vs two-beam: "
           f"low {(ex_lo - p['theta_low']) * 1e6:+.3f} urad, high {(ex_hi - p['theta_high']) * 1e6:+.3f} urad")
     mh_lo, mh_hi = exact_band_edges(E, V0, Vn_all, g4, order=2)
+    print(f"full layer potential vs single harmonic: width change {((mh_hi - mh_lo) / (ex_hi - ex_lo) - 1) * 100:+.1f} %,"
+          f" midpoint shift {(0.5 * (mh_lo + mh_hi) - ex_c) * 1e6:+.2f} urad = "
+          f"{(0.5 * (mh_lo + mh_hi) - ex_c) / (ex_hi - ex_lo) * 100:+.1f} % of the single-harmonic width")
     print(f"EXACT band edges (full layer potential, harmonics (0,0,4)...(0,0,48)): {mh_lo * 1e3:.5f} to"
           f" {mh_hi * 1e3:.5f} mrad, width {(mh_hi - mh_lo) * 1e6:.3f} urad, midpoint "
           f"{0.5 * (mh_lo + mh_hi) * 1e3:.5f} mrad")
@@ -1317,6 +1347,10 @@ def main() -> int:  # noqa: C901 (a linear report script)
               f"{res['n_x']}, {res['n_slices']} slices, bins |eta|<=3: {len(eb)}; vs reference ({model}):"
               f" max |dR| = {d.max():.2e} (|eta|<=0.9: {d[s9].max():.2e}), max |d arg| = {ph.max():.2e}"
               f" (|eta|<=0.9: {ph[s9].max():.2e}) rad")
+    resF = runs["F"][0]
+    df_bin = 1.0 / (resF["n_x"] * resF["dx_A"])
+    print(f"bin spacing of run F: 1/extent = {df_bin:.3e} 1/A = {df_bin * bc['wavelength_A'] * 1e6:.1f} urad "
+          f"in theta; L = {resF['L_A']:.0f} A")
     for key in ("F",):
         _, eb, rm, Rr = runs[key]
         for e_, r_, R_ in zip(eb, rm, Rr):
@@ -1351,11 +1385,47 @@ def main() -> int:  # noqa: C901 (a linear report script)
           f"{np.max(np.abs(runs['F_r005'][2] - runs['F_r005'][3])):.2e}")
     if "--long" in sys.argv:
         res = split_step_1d(**base, absorption_ratio=0.0, propagator="fresnel", dx_A=0.025, dz_A=1.0,
-                            clean_depth_A=250.0, exit_after_top_contact_A=30000.0)
+                            clean_depth_A=250.0, exit_after_top_contact_A=30000.0,
+                            readout_window_above_A=60.0)
         eb, rm, Rr = ss_eval(res, 0.0, "exact")
-        print(f"r = 0 (D = 250 A, Z_e = 30000 A): nx = {res['n_x']}, {res['n_slices']} slices")
-        for e_, r_, R_ in zip(eb, rm, Rr):
-            print(f"   eta = {e_:+6.3f}: |dR| = {abs(r_ - R_):.2e}, d arg = {np.angle(r_ / R_):+.2e} rad")
+        sel = np.abs(((bc["k"] * np.sin(res["theta_bins"])) ** 2 - p["K_centre"] ** 2) / p["Ug"]) <= 3.0
+        rw = res["r_win"][sel]
+        print(f"r = 0 (D = 250 A, Z_e = 30000 A): nx = {res['n_x']}, {res['n_slices']} slices; whole-"
+              f"box read-out and vacuum-only read-out (window from x_s + 60 A, full from x_s + 100 A)")
+        for e_, r_, w_, R_ in zip(eb, rm, rw, Rr):
+            print(f"   eta = {e_:+6.3f}: whole box |dR| = {abs(r_ - R_):.2e}, d arg = "
+                  f"{np.angle(r_ / R_):+.2e} rad; vacuum-only |dR| = {abs(w_ - R_):.2e}, d arg = "
+                  f"{np.angle(w_ / R_):+.2e} rad")
+        for lim in (0.5, 0.9):
+            s_ = np.abs(eb) <= lim
+            print(f"   |eta| <= {lim}: max |dR| whole box {np.max(np.abs(rm - Rr)[s_]):.2e}, vacuum-only "
+                  f"{np.max(np.abs(rw - Rr)[s_]):.2e}")
+
+    # ---------------------------------------------------------------------------------------------
+    rule("12b. Sensitivity of the rung-2 read-out (what a given tolerance can detect)")
+    print("max over the bins of |R_perturbed - R| (and of |arg(R_perturbed/R)|), same angles")
+    for rr, emax in ((0.1, 3.0), (0.05, 3.0), (0.0, 0.5)):
+        eta_s = np.linspace(-emax, emax, 61)
+        th_s = theta_of_eta(eta_s, E, V0, V008, g8)
+        R0 = reflection_amplitude(th_s, E, V0, [V008], g8, rr)
+        cases = (("V0 + 1 mV", dict(V0_V=V0 + 1e-3, Vg_list=[V008])),
+                 ("V0 + 5 mV", dict(V0_V=V0 + 5e-3, Vg_list=[V008])),
+                 ("V_g x sinc(pi g dx), dx = 0.025 A (cell-averaged harmonic)",
+                  dict(V0_V=V0, Vg_list=[V008 * np.sinc(g8 * 0.025)])),
+                 ("V_g x sinc(pi g dx), dx = 0.05 A", dict(V0_V=V0, Vg_list=[V008 * np.sinc(g8 * 0.05)])),
+                 ("cosine origin 0.01 A below x_s (t = 0.01 A)",
+                  dict(V0_V=V0, Vg_list=[V008], plane_offset_A=0.01)),
+                 ("engine exact propagator (one-way model)",
+                  dict(V0_V=V0, Vg_list=[V008], model="engine_exact_propagator")))
+        for lab, kw in cases:
+            R1 = reflection_amplitude(th_s, E, kw.pop("V0_V"), kw.pop("Vg_list"), g8, rr, **kw)
+            print(f"   r = {rr:4.2f}, |eta| <= {emax}: {lab:58s}: max |dR| = {np.max(np.abs(R1 - R0)):.2e}"
+                  f", max |d arg| = {np.max(np.abs(wrap(np.angle(R1 / R0)))):.2e} rad")
+        K_s = bc["k"] * np.sin(th_s)
+        print(f"   r = {rr:4.2f}: read-out reference plane moved by 0.01 A changes arg R by 2 K (0.01 A) = "
+              f"{2 * K_s.min() * 0.01:.4f} to {2 * K_s.max() * 0.01:.4f} rad")
+        Rt = two_beam_reflection(th_s, E, V0, [V008], g8, rr, order=1, form="darwin")
+        print(f"   r = {rr:4.2f}: Darwin/TT instead of exact: max |dR| = {np.max(np.abs(Rt - R0)):.2e}")
 
     # ---------------------------------------------------------------------------------------------
     rule("13. Summary of self-checks")

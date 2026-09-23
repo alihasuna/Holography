@@ -92,6 +92,9 @@ def beams_for(azimuth: str, N: int):
         return [(h, h) for h in range(-N, N + 1)], -45.0
     if azimuth == "110":          # beam along a_s1 = (a/2)[1,1,0], the top-layer back-bond axis
         return [(0, k) for k in range(-N, N + 1)], 0.0
+    if azimuth == "110perp":      # beam along a_s2 = (a/2)[-1,1,0]: back-bonds of the top layer
+        #                           PERPENDICULAR to the beam (orientation check, report section 6)
+        return [(h, 0) for h in range(-N, N + 1)], 90.0
     if azimuth == "100disk":      # every rod with |g| <= N/a (HOLZ test at [100])
         out = [(h, k) for h in range(-12, 13) for k in range(-12, 13)
                if np.hypot(h, k) * np.sqrt(2.0) / A <= N / A + 1e-9]
@@ -177,6 +180,7 @@ SOLVER_CASES = [
     SolverCase("eng_a100_N10_r010_B", "100", 10, 0.1, "B", "engine100"),
     SolverCase("eng_a110_N9_r010", "110", 9, 0.1, "A", "engine110"),
     SolverCase("eng_a110_N12_r010_B", "110", 12, 0.1, "B", "engine110"),
+    SolverCase("eng_a110perp_N9_r010", "110perp", 9, 0.1, "A", "engine110"),
     # at report H2's angle (cross-check of H2's stored engine plateaus, report section 6)
     SolverCase("h2_a100_N6_r010", "100", 6, 0.1, "A", "h2"),
     SolverCase("h2_a110_N9_r010", "110", 9, 0.1, "A", "h2"),
@@ -486,15 +490,17 @@ MAX_PIXEL_A = 0.13                                                # H2 section 5
 # Read-out window: 2500 A after contact to 750 A before the exit plane (H2's exclusion).
 ENGINE_DEFAULT = dict(L_after_contact_A=4500.0, clean_A=55.0, y_periods=1, precision="complex64",
                       max_pixel_A=MAX_PIXEL_A, window_start_A=2500.0, exit_excl_A=750.0,
-                      bin_A=250.0, radius_per_A=0.1)
+                      bin_A=250.0, radius_per_A=0.1, dz_div=1)
 _A100 = sorted(set(ENGINE_COARSE) | set(ENGINE_FINE_100))
 _A110 = sorted(set(ENGINE_COARSE) | set(ENGINE_EXTRA_110))
 ENGINE_CASES = {
     # like-for-like METHOD test: the solver's Doyle-Turner scattering factors inside the engine
     "eng_a100_dt_r010": dict(azimuth="100", pot="dt", r=0.1, angles=_A100),
     "eng_a110_dt_r010": dict(azimuth="110", pot="dt", r=0.1, angles=_A110),
-    # the engine as used in production (Kirkland, abTEM 1.0.10)
-    "eng_a100_kk_r010": dict(azimuth="100", pot="kirkland", r=0.1, angles=_A100),
+    # the engine as used in production (Kirkland, abTEM 1.0.10); angles reduced to the (0,0,8) peak
+    # and the two other [100] maxima for CPU time (report section 6)
+    "eng_a100_kk_r010": dict(azimuth="100", pot="kirkland", r=0.1,
+                             angles=sorted(set(ENGINE_FINE_100) | {12.0, 21.0})),
 }
 
 
@@ -525,8 +531,17 @@ def _dt_potential_class():
     return DoyleTurnerPotential
 
 
+def _working_reflections_kw():
+    """The engine gained a required MultisliceParams.working_reflections_hkl (PROJECT_INPUT item 9)
+    at commit 2a3a999 (a band assertion; the propagation is unchanged, report section 6.1); pass the
+    specular (0,0,8) when the field exists so that the tool runs on either engine version."""
+    from reflection_holo.forward.multislice import MultisliceParams
+    names = {f.name for f in dataclasses.fields(MultisliceParams)}
+    return dict(working_reflections_hkl=((0, 0, 8),)) if "working_reflections_hkl" in names else {}
+
+
 def engine_flat_strip(*, azimuth, theta_ext, pot, r, dt, L_after_contact_A, clean_A, y_periods,
-                      precision, max_pixel_A, threads=4, **_):
+                      precision, max_pixel_A, dz_div=1, threads=4, **_):
     from reflection_holo.forward.cell import build_reflection_cell
     from reflection_holo.forward.multislice import (AtomicPotential, MultisliceParams,
                                                     NumericalAbsorber, PhysicalAbsorption,
@@ -534,10 +549,10 @@ def engine_flat_strip(*, azimuth, theta_ext, pot, r, dt, L_after_contact_A, clea
     from reflection_holo.structure import Staircase, build_si001_terraces
     th = float(theta_ext)
     P = A if azimuth == "100" else A / np.sqrt(2.0)
-    dz = A / 4.0 if azimuth == "100" else P / 4.0
+    dz = (A / 4.0 if azimuth == "100" else P / 4.0) / int(dz_div)
     depth = BULK_ABSORBER_A + clean_A
     sub = int(np.ceil(depth / Q)) + 2
-    ent = 10 * dz
+    ent = 10 * dz * int(dz_div)
     periods = int(np.ceil((GAP_A / np.tan(th) + L_after_contact_A - ent) / P))
     one = build_si001_terraces(
         azimuth_uvw=AZ_UVW[azimuth], azimuth_label=AZ_LABEL[azimuth],
@@ -584,7 +599,8 @@ def engine_flat_strip(*, azimuth, theta_ext, pot, r, dt, L_after_contact_A, clea
                               band_limit="2/3", backend="numpy", precision=precision,
                               threads=threads,
                               absorber=NumericalAbsorber(strength_V=ABSORBER_V, profile="sin2"),
-                              theta_out_ext_rad=th, buildup_depth_A=20.0)
+                              theta_out_ext_rad=th, buildup_depth_A=20.0,
+                              **_working_reflections_kw())
     info = dict(azimuth=azimuth, pot=pot, r=r, theta_ext_rad=th, L_after_contact_A=L_after_contact_A,
                 clean_A=clean_A, y_periods=y_periods, precision=precision, nx=nx, ny=ny, dz_A=dz,
                 dx_A=cell.extent_x_A / nx, dy_A=cell.extent_y_A / ny, L_z_A=Lz, H_A=float(H),
@@ -886,6 +902,11 @@ def report_part2(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start) -> int:
         nd = len(sol["cases"]["holz_a100disk_N6_B"]["runs"][0]["geometry"]["beams"])
         cmp("holz_a100disk_N6_B", "holz_a100_N3_B",
             f"[100] HOLZ: all {nd} rods |g|<=6/a vs the row |h|<=3 (3 angles)")
+        ta, Ra = solver_curve(sol, "holz_a100disk_N6_B")
+        tb, Rb = solver_curve(sol, "holz_a100_N3_B")
+        for t, x, y in zip(ta, Ra, Rb):
+            print(f"      {t:6.2f} mrad: disk |R|^2 {abs(x)**2:.5f} arg {np.angle(x):+.4f}; row |R|^2 "
+                  f"{abs(y)**2:.5f} arg {np.angle(y):+.4f}; |R_disk|/|R_row| - 1 = {abs(x) / abs(y) - 1:+.4f}")
     fl = []
     for nm in ("fine_a100_N6_r000_ML150", "fine_a100_N6_r000_ML300", "fine_a110_N9_r000_ML150",
                "fine_a110_N9_r000_ML300", "fine_a100_N6_r010", "fine_a110_N9_r010"):
@@ -1002,6 +1023,13 @@ def report_part4(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, t_start) -> int
             cfit, dx = np.linalg.lstsq(Am, dphi, rcond=None)[0]
             print(f"   reference-plane fit over {int(big.sum())} angles with |R_sol| >= 0.1: d arg = c + 2 Gamma0 dx,"
                   f" c = {cfit:+.4f} rad, dx = {dx:+.5f} A; rms d arg {np.sqrt(np.mean(dphi**2)):.4f} rad")
+        if tag == "eng_a110_dt_r010" and "eng_a110perp_N9_r010" in sol["cases"]:
+            tp_, Rp = solver_curve(sol, "eng_a110perp_N9_r010")
+            Rp = at_angles(tp_, Rp, te)
+            print(f"   orientation check: median |R_eng - R_sol| with the top-layer back-bonds PARALLEL to "
+                  f"the beam (as built) {np.median(np.abs(Re - Rs)):.4f}, PERPENDICULAR (solver phi = 90 "
+                  f"deg) {np.median(np.abs(Re - Rp)):.4f}; the two solver orientations differ by median "
+                  f"{np.median(np.abs(Rs - Rp)):.4f} (max {np.max(np.abs(Rs - Rp)):.4f})")
         results[tag] = dict(te=te, Re=Re, Rs=Rs, sp=sp, npass=npass, n=len(te))
         if like:
             check(f"{tag}: every angle within the declared tolerance", npass == len(te),

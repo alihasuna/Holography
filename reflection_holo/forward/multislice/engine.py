@@ -434,7 +434,9 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
     the potential-construction stage). The cell's own atom arrays (32 B/atom, held by the caller)
     are included; the structure-builder objects of the caller, Python objects and arrays of size
     O(nx + ny + n_slices) other than fx, fy and the slice index are not. FFT library scratch
-    buffers (pocketfft, cuFFT) are not visible to tracemalloc and are not included.
+    buffers (pocketfft, cuFFT) are not visible to tracemalloc and are not included. Written for
+    the atomic potential; for a structureless (continuum) cell it is an upper bound (by about one
+    complex array). The temporaries follow numpy's temporary elision (numpy 2.x, as tested).
 
     Returns dict(numpy=dict(phases, peak), cupy=dict(device_phases, device_peak, host_phases,
     host_peak), loop_residents, per_atom_B, ...)."""

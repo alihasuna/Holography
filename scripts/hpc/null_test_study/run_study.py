@@ -118,8 +118,9 @@ def main(argv=None):
         est = estimate_resources(cell, params, realisations=n_runs,
                                  calibrate_cpu=rt["backend"] == "numpy")
         line = (f"{p['name']}: grid {est['grid']['nx']}x{est['grid']['ny']}, {est['n_slices']} "
-                f"slices, {est['n_atoms']} atoms, engine arrays "
-                f"{est['memory_bytes']['total'] / 1e6:.0f} MB, ")
+                f"slices, {est['n_atoms']} atoms, memory peak "
+                f"{est['memory_bytes']['total'] / 1e6:.0f} MB (numpy/CPU; GPU device "
+                f"{est['memory_bytes']['device_peak_cupy'] / 1e6:.0f} MB, lower bound), ")
         if "cpu" in est:
             line += f"CPU ~{est['cpu']['seconds_total'] * 1.5:.0f} s (x1.5 calibration), "
         line += f"GPU ~{est['gpu']['seconds_total']:.1f} s (ASSUMPTION model)"

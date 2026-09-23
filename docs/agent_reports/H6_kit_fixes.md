@@ -1,7 +1,7 @@
 # H6: fixes to the Alliance kit after the H4 audit (F1-F13) and the gpu-sanity job
 
-Agent H6. Date: 2026-09-23. Status: IN PROGRESS (written incrementally; the table in section 1 is
-the final word once the status reads COMPLETE).
+Agent H6. Date: 2026-09-23. Status: COMPLETE (written incrementally; the table in section 1 is the final word;
+section 4 item 0 needs the orchestrator before tonight).
 
 Scope: `scripts/hpc/alliance/`, `tests/hpc/`, `scripts/hpc/README_HPC.md`,
 `scripts/torus/run_torus_multislice.py` (F11 only). `scripts/hpc/run_pipeline.slurm` is not changed
@@ -67,6 +67,22 @@ data sent anywhere.
   (caller)), memory 10 GB`, `REFUSED`, exit 2; `case_trench.json` and `summary_trench.json` record
   `cpu_seconds_source: --max-cpu-seconds (caller)`. The 1379 s estimate (machine loaded by my own
   parallel runs) is above the runner's 600 s default: one more data point for F11.
+- 23:20 UTC: other agents' in-progress snapshot 2a3a999 made `MultisliceParams.working_reflections_hkl`
+  a required field (engine.py:89) and adapted tests/forward and the torus runner (my F11 lines are
+  intact), but NOT `tools/hpc/supercell_sizing.py` (lines 217 and 1320). Checked at 2a3a999:
+  `supercell_sizing.py --measure <new> --only bu_100_r010 --backend numpy` ->
+  `TypeError: MultisliceParams.__init__() missing 1 required positional argument:
+  'working_reflections_hkl'`, exit 1. gpu-sanity part 2 would therefore report `GPU SANITY: FAIL (a
+  sub-run failed or wrote no result)` tonight for a reason that has nothing to do with the GPU
+  (section 4, item 0). Part 1 is unaffected: `run_study.py --only tfix_bragg_abs0_L0` (numpy) at
+  2a3a999 -> `err_rad 0.5685887531628921 amp_ratio 0.9510072597201454`, as before.
+- 23:29-23:41 UTC: H7 has meanwhile edited `tools/hpc/supercell_sizing.py` in the working tree
+  (uncommitted; md5 530689ddc9094fcb3dbd238e55ac3a5a; it now passes `working_reflections_hkl`).
+  The numpy check of the gpu-sanity driver against that tree: `tfix_bragg_abs0_L0: err +0.568589 rad
+  (dev 4.11e-04), amplitude ratio 0.951007 (dev 7.26e-06); 83.6 s ... -> PASS`, `bu_100_r010:
+  plateau |R| 0.270682 (rel dev 0.00e+00), arg -1.539357 rad (dev 0.00e+00); run 588.0 s -> PASS`,
+  `GPU SANITY: PASS`, exit 0 (11 min 34 s at load ~14). `scripts/hpc/null_test_study/run_study.py`
+  was also being edited by another agent during this run.
 
 ## 1. Findings -> fix -> where -> proof
 
@@ -125,9 +141,19 @@ PyPI wheels + H4's stand-in `cupy-14.1.0` whose import raises `ImportError: libc
 | setup end to end, 7 runs (section 2) | as in the table of section 2 |
 | gpu-sanity driver on numpy (not a GPU) | `GPU SANITY: PASS`, exit 0 (section 0, 22:37) |
 | torus runner `--max-cpu-seconds 1 --estimate-only` | `REFUSED`, exit 2, limit and source recorded |
+| full suite `venv/bin/python -m pytest -q` (tree of 2a3a999 plus other agents' uncommitted edits in progress; load average 13-15 on 4 CPUs from other agents' jobs) | `FAILED tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008` / `1 failed, 887 passed, 5 skipped, 12 warnings in 1205.47s (0:20:05)` (skips: shellcheck not on PATH). The failure is the test's wall-time assertion: `assert t_total < 120.0` / `E       assert 140.45733391000067 < 120.0` (`SMOKE: build 11.8 s, propagation 128.4 s, total 140.5 s`; physics output as documented, +0.58 rad). Rerun alone at load 13.3-14.0: `E       assert 210.9983002609988 < 120.0`, `1 failed in 211.21s`. Outside the kit and untouched by me; H3's full suite passed it on a quieter machine. Not weakened. Every tests/hpc test passed in this run |
 
 ## 4. For the orchestrator (outside the kit or decisions to review)
 
+0. BEFORE TONIGHT: the commit Ali clones must contain H7's fix of `tools/hpc/supercell_sizing.py`
+   (passing `working_reflections_hkl`, required since the engine change in 2a3a999). At 2a3a999
+   itself the tool raises a TypeError (log 23:20) and gpu-sanity part 2 would report FAIL (with the
+   sub-run's status; nothing is hidden). With H7's uncommitted working-tree version (md5
+   530689dd...) the numpy check of the driver passes with both stored references reproduced (log
+   23:29). Any later change to the engine, `run_study.py`, the null-test cases or the strip builder
+   should be followed by the same numpy check (`gpu_sanity.py --backend numpy` on a numpy study copy,
+   about 3 min on a quiet 4-core machine): if it fails, the stored references no longer describe the
+   engine and step 0 cannot pass on any GPU.
 1. `tests/forward/test_engine_contract.py::test_cupy_is_lazy_and_not_a_fallback` asserts that cupy is
    not in `sys.modules`. Wherever cupy IMPORTS (the PyPI cupy-cuda12x 14.1.0 does without a driver,
    H4 §2.3; very likely the Alliance venv too), `import abtem` imports it, and the test fails even

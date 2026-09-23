@@ -94,7 +94,10 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"cell {rep['cell']}")
                 print(f"grid {est['grid']}, slices {est['n_slices']}, atoms {est['n_atoms']}, "
                       f"realisations {est['realisations']}")
-                print(f"memory per realisation ~{_human_bytes(est['memory_bytes']['total'])}")
+                mb = est["memory_bytes"]
+                print(f"memory per realisation ~{_human_bytes(mb['total'])} (numpy backend, host); "
+                      f"cupy backend: device ~{_human_bytes(mb['device_peak_cupy'])} (lower bound: "
+                      f"library workspaces not included), host ~{_human_bytes(mb['host_peak_cupy'])}")
                 if "cpu" in est:
                     print(f"CPU (measured here) ~{est['cpu']['seconds_total']:.0f} s")
                 print(f"GPU (ASSUMPTION model, not measured) ~{est['gpu']['seconds_total']:.0f} s")

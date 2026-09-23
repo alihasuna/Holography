@@ -28,10 +28,21 @@ Modes
                           sanity run: compare bu_100_r010 with the stored CPU plateau), --threads N.
 
 Labels: every quantity carries one of METADATA_VERIFIED, SECTION_READ, REPRODUCED, PROJECT_INPUT,
-ASSUMPTION, DERIVED_HERE, UNVERIFIED, TEST_ONLY (stand-in used only for a test run), MEASURED_HERE
-(a measurement with the repository's engine in this container; a REPRODUCED-type number whose
-premises are the labelled inputs of the run). Constants come only from reflection_holo.constants
-(through the package functions that use them).
+ASSUMPTION, DERIVED_HERE, UNVERIFIED, TEST_ONLY (stand-in used only for a test run). Engine outputs
+are REPRODUCED: computed with the UNVALIDATED engine on the TEST_ONLY / ASSUMPTION inputs stated,
+saved in the JSON files named (H2's `bu_100_r010` independently rerun by H5); they are not
+laboratory measurements. The CPU calibration is a timing on this container ("timed here"). The
+label MEASURED_HERE of H2's first version and of its JSON files is read as REPRODUCED (H5 M1).
+Constants come only from reflection_holo.constants (through the package functions that use them).
+
+Corrections after the adversarial review docs/agent_reports/H5_sizing_review.md (agent H7; H2's
+report stays unedited as the record, the corrected numbers are those printed by this tool):
+M1 label; M2 run-in amplitude tolerance explicit (RUNIN_AMP_TOL = 1e-2, the null-test criterion);
+M3 frozen-phonon ensemble run-in from H5's 6000 A strip (tools/hpc/review_h5_rerun.json) for r = 0.1,
+static-lattice LOWER BOUNDS for r = 0.05 and r = 0; M4 memory from engine.memory_model (device peak
+of the cupy backend, host peak, numpy/CPU peak) with the complex128 temporaries; minors m1 (1/sin
+resolution element, built terrace widths), m2 (Bethe cut-off scan), m4 (r = 0 caveat), m5 (u label),
+m6 (torus note), m7 ([110] amplitude ratio), m8 (x1.5 labelled), m9 (lateral buffer bound).
 """
 from __future__ import annotations
 
@@ -75,9 +86,14 @@ AZ_LABEL = {"100": "TEST_ONLY: stands in for PROJECT_INPUT item 8 (exact [100], 
             "110": "TEST_ONLY: stands in for PROJECT_INPUT item 8 ([110], the M2 null-test azimuth)"}
 THETA_LABEL = ("TEST_ONLY: stands in for PROJECT_INPUT item 7; external angle of the (0,0,8) internal "
                "Bragg condition with the potential's own mean inner potential (B32)")
-U_RMS_ASSUMED_A = 0.076            # ASSUMPTION (A7): inspected repository's value, also the value in
-#                                    Prismatic's example input SI100.XYZ (L2 C14, SECTION_READ of the
-#                                    format page); NOT a sourced Debye-Waller value for Si
+U_RMS_ASSUMED_A = 0.076            # ASSUMPTION: the per-axis sigma of Prismatic's example input
+#                                    SI100.XYZ (L2 C14/E17, SECTION_READ of the format page), also the
+#                                    inspected repository's value; NOT a sourced Si Debye-Waller
+#                                    value. model_assumptions A7 is inert (thermal effects never
+#                                    enabled): a new row is needed (H5 m5, proposed B35; not yet
+#                                    registered, docs/ not edited by H7)
+U_RMS_LABEL = ("ASSUMPTION: 0.076 A per axis, Prismatic example value (L2 C14), not a sourced Si "
+               "value; no model_assumptions row yet (H5 m5)")
 B22_APERTURE_MRAD = 3.0            # ASSUMPTION B22 (demo dark-field objective aperture semi-angle)
 T2_IMAGE_RES_A = 6.0               # T2 report: reconstruction resolution 6.0 A in the image plane
 #                                    (B28 carrier 2 A x 3, B29 mask |q_c|/3; ASSUMPTION stand-ins)
@@ -87,6 +103,12 @@ BULK_ABSORBER_A = 15.0             # NUMERICAL: M2 cases and T1
 TOP_ABSORBER_A = 10.0              # NUMERICAL: M2 cases, T1, demo_hpc
 GAP_A, EDGE_A = 2.0, 2.0           # sheet beam: bottom 2 A above the surface, sin^2 edges 2 A (M2)
 MAX_PIXEL_A = 0.13                 # derived below (band requirements); the M2/T1 practice
+WORKING_REFLECTIONS = ((0, 0, 8),)  # ASSUMPTION B17 (PROJECT_INPUT item 9): asserted inside the band
+#                                    of the transmission function by the engine (H7, H2 N8)
+H5_RERUN = HERE / "review_h5_rerun.json"      # H5's engine reruns (REPRODUCED by H5, --rerun)
+H5_MEMTIME = HERE / "review_h5_memtime.json"  # H5's tracemalloc probes (REPRODUCED by H5, --memtime)
+STRUCTURE_B_PER_ATOM = 48          # builder structure object still referenced by the caller:
+#                                    positions f8 x3, species <U2, layer_index i8, terrace_index i8
 
 CHECKS: list[tuple[str, bool, str]] = []
 
@@ -207,7 +229,7 @@ def flat_strip(*, azimuth: str, r: float, L_after_contact_A: float, y_periods: i
         pot = AtomicPotential(cell, parameterisation="kirkland", physical_absorption=absn,
                               frozen_phonons=FrozenPhonons(
                                   rms_displacement_A=float(u_rms_A),
-                                  label="ASSUMPTION: 0.076 A per axis (A7), not a sourced value"),
+                                  label=U_RMS_LABEL),
                               static_lattice_label=None)
     xs = float(cell.metadata["layout"]["highest_surface_x_A"])
     beam = SheetBeam(height_A=float(H), edge_A=EDGE_A, x_bottom_A=xs + GAP_A,
@@ -218,7 +240,8 @@ def flat_strip(*, azimuth: str, r: float, L_after_contact_A: float, y_periods: i
                               band_limit="2/3", backend=backend, precision=precision,
                               threads=threads,
                               absorber=NumericalAbsorber(strength_V=ABSORBER_V, profile="sin2"),
-                              theta_out_ext_rad=th, buildup_depth_A=buildup_depth_A)
+                              theta_out_ext_rad=th, buildup_depth_A=buildup_depth_A,
+                              working_reflections_hkl=WORKING_REFLECTIONS)
     info = dict(azimuth=azimuth, absorption_ratio=r, absorption_label=lab, backend=backend,
                 L_after_contact_A=L_after_contact_A, y_periods=y_periods, clean_depth_A=clean_A,
                 bulk_absorber_A=BULK_ABSORBER_A, top_absorber_A=TOP_ABSORBER_A,
@@ -383,7 +406,7 @@ def run_phonons(name, *, n_real, seed, **kw):
                              amp_mean_over_static=float(np.sqrt(np.mean(np.abs(m[rr]) ** 2) /
                                                                 np.mean(np.abs(D0[rr]) ** 2)))))
     res = dict(info=info, n_realisations=n_real, seed=seed, u_rms_A=U_RMS_ASSUMED_A,
-               u_label="ASSUMPTION A7 (not sourced)", aperture_mrad=B22_APERTURE_MRAD,
+               u_label=U_RMS_LABEL, aperture_mrad=B22_APERTURE_MRAD,
                aperture_radius_per_A=rad, region=dict(distance_A=[1500.0, L - 750.0],
                                                       min_height_above_surface_A=5.0,
                                                       x_rows=int(reg.sum()),
@@ -416,8 +439,9 @@ def measure(out: Path, only=None, backend="numpy", threads=4):
                 git=git_state(), nproc=os.cpu_count(), loadavg_start=loadavg(),
                 threads_env={k: os.environ.get(k) for k in ("OMP_NUM_THREADS",
                                                            "OPENBLAS_NUM_THREADS")},
-                label="MEASURED_HERE with the UNVALIDATED engine; TEST_ONLY absorption and "
-                      "azimuth stand-ins; static lattice unless stated", runs={})
+                label="REPRODUCED: computed with the UNVALIDATED engine in this container; "
+                      "TEST_ONLY absorption and azimuth stand-ins; static lattice unless stated",
+                runs={})
     if out.exists():
         data = json.loads(out.read_text())
     for name, spec in MEASUREMENTS:
@@ -486,7 +510,7 @@ def calibrate(out: Path, threads=4, precision="complex64"):
                                                                           time.gmtime()),
                 git=git_state(), nproc=os.cpu_count(), loadavg=loadavg(), threads=threads,
                 precision=precision, fft=fft_rows, potential=pot_rows,
-                label="MEASURED_HERE (4-core container shared with other agents)")
+                label=f"timed here (4 shared cores, load {loadavg()[:1]})")
     out.write_text(json.dumps(data, indent=1))
     print(f"[calibrate] written {out}", flush=True)
 
@@ -517,7 +541,7 @@ def main(argv=None):
 # ================================================================================================
 from scipy import special  # noqa: E402
 
-from reflection_holo.forward.multislice import estimate_resources  # noqa: E402
+from reflection_holo.forward.multislice import estimate_resources, memory_model  # noqa: E402
 from reflection_holo.forward.multislice.engine import GPU_ASSUMED  # noqa: E402
 from reflection_holo.geometry.refraction import refraction_delta  # noqa: E402
 from reflection_holo.structure.shapes import HalfTorus  # noqa: E402
@@ -526,6 +550,16 @@ D_ASSERT_A = 20.0      # engine buildup_depth_A: the minimum of its 20-100 A ran
 #                        amplitude 1/e depth at [100] is about 10 A (section 7), below it
 EPS_PHASE = 1e-2       # rad: the M2 fixed-beam translation tolerance (docs/05 4.4 rung 3), adopted
 #                        here as the convergence target of every length (DERIVED_HERE there)
+RUNIN_AMP_TOL = 1e-2   # |amplitude / plateau amplitude - 1| for the run-in: the repository's
+#                        null-test criterion |amp_ratio - 1| <= 1e-2 (scripts/hpc/null_test_study/
+#                        README.md; M2 10.4). H2's first version used an unlabelled 3e-2 (H5 M2).
+RUNIN_AMP_TOL_LABEL = ("the repository's null-test criterion |amp - 1| <= 1e-2 (null_test_study "
+                       "README, M2 10.4); H2 first used 3e-2 (H5 M2)")
+CPU_FACTOR = 1.5       # ASSUMPTION: empirical factor on the calibrated CPU replica (M2 smoke run,
+#                        H2's five strips, H5's wide-slice probe), for an UNLOADED node; on a shared
+#                        node the times double (H5 m8)
+CPU_FACTOR_LABEL = ("CPU x1.5 (ASSUMPTION: empirical factor, M2 and H2 strips, H5 wide-slice probe; "
+                    "for an unloaded node, H5 m8)")
 N_MEAS_RES = 2         # ASSUMPTION: measuring length of one terrace region, in resolution elements
 MISCUTS_DEG = (0.05, 0.1, 0.25, 0.5)   # ASSUMPTION scenarios for PROJECT_INPUT item 11
 OVERLAYERS_A = (0.0, 10.0, 20.0, 30.0) # ASSUMPTION scenarios for PROJECT_INPUT item 12 (0 = B26)
@@ -561,20 +595,16 @@ def hdr(title):
     print("\n" + "=" * 100 + "\n" + title + "\n" + "=" * 100, flush=True)
 
 
-# ---- cost model: replica of engine.estimate_resources -------------------------------------------
-def replica_memory(nx, ny, n_max, n_atoms, n_species=1, precision="complex64"):
-    """engine.estimate_resources' array accounting, replicated line by line."""
-    cb = np.dtype(precision).itemsize
-    rb = cb // 2
-    npx = nx * ny
-    arrays = {"psi": cb * npx, "transmission (band-limited)": cb * npx,
-              "propagators P(dz), P(dz/2)": 2 * cb * npx, "band mask": rb * npx,
-              "scattering factor per species": rb * npx * max(1, n_species),
-              "FFT work arrays (x3)": 3 * cb * npx,
-              "structure-factor factors Ex, Ey (largest slice)": cb * (nx + ny) * n_max,
-              "structure-factor sum S": cb * npx,
-              "atom positions (float64)": 8 * 3 * n_atoms * 2}
-    return arrays, int(sum(arrays.values()))
+# ---- cost model ---------------------------------------------------------------------------------
+def memory_row(nx, ny, N, n_max, n_atoms, n_species=1, precision="complex64"):
+    """Memory of one realisation from the ENGINE's model (engine.memory_model, H7; checked against
+    tracemalloc in tests/forward/test_memory_model.py): cupy device peak, cupy host peak, numpy
+    (CPU job) peak; the host figures add the builder structure (48 B/atom) the caller keeps."""
+    mm = memory_model(nx=nx, ny=ny, n_slices=N, n_atoms=n_atoms, atoms_per_slice_max=n_max,
+                      n_species=n_species, precision=precision)
+    st = STRUCTURE_B_PER_ATOM * n_atoms
+    return dict(model=mm, device=mm["cupy"]["device_peak"], host_cupy=mm["cupy"]["host_peak"] + st,
+                cpu_job=mm["numpy"]["peak"] + st, structure=st)
 
 
 def replica_gpu_s(nx, ny, N, nonempty, n_mean, precision="complex64"):
@@ -603,8 +633,8 @@ def cpu_constants(cal):
 
 
 def replica_cpu_s(nx, ny, N, nonempty, n_mean, cc):
-    """engine.estimate_resources' CPU model with the fitted component costs (MEASURED_HERE),
-    WITHOUT the x1.5 factor of run_study.py (the caller applies it and says so)."""
+    """engine.estimate_resources' CPU model with the fitted component costs (timed here),
+    WITHOUT the x1.5 factor of run_study.py (the caller applies CPU_FACTOR and says so)."""
     npx = nx * ny
     t_fft = cc["c_fft"] * npx * np.log2(npx)
     t_el = cc["c_el"] * npx
@@ -691,6 +721,82 @@ def transverse_beams(azimuth, lmax=24, kmax=12):
     return out
 
 
+def bethe_missing_scan(azimuth, *, kap0, K, sig, Vg, cutoff, dxs):
+    """Perturbative Bethe correction of V(0,0,8) from beams OUTSIDE the 2/3 band at pixel dx, as a
+    fraction of V_g, for the beam set |l| <= cutoff, |k| <= cutoff (the same terms as section 4,
+    H5 m2: the value grows with the cut-off, i.e. it is not converged in the beam set)."""
+    gvec = np.array([0, 0, 8])
+    off_all, terms = 0.0, []
+    for hkl, gx, gy in transverse_beams(azimuth, lmax=cutoff, kmax=cutoff):
+        if hkl in ((0, 0, 0), (0, 0, 8)):
+            continue
+        Vh, Vgh = V_hkl(hkl), V_hkl(tuple(gvec - np.array(hkl)))
+        if abs(Vh) < 1e-9 and abs(Vgh) < 1e-9:
+            continue
+        kxh = 2 * np.pi * gx - kap0
+        zeta = (kap0 ** 2 - kxh ** 2 - (2 * np.pi * gy) ** 2) / (2 * K)
+        if abs(zeta) < 1e-9:
+            continue                                         # exactly excited beams: not Bethe
+        off = sig * Vgh * Vh / zeta
+        off_all += off
+        terms.append((gx, gy, off))
+    out = {}
+    for dxv in dxs:
+        fm = 1 / (3 * dxv)
+        inc = sum(o for gx, gy, o in terms
+                  if np.hypot(gx - kap0 / (2 * np.pi), gy) <= fm and np.hypot(gx, gy) <= fm
+                  and np.hypot(8 / A - gx, gy) <= fm)
+        out[dxv] = abs(off_all - inc) / Vg
+    return out
+
+
+def converged_from(bins, R_ref, end_A, tol_phase, tol_amp):
+    """(L_phase, L_amp): the smallest bin start L such that every bin starting at >= L and ending
+    before end_A lies within the tolerance of R_ref (phase in rad, relative amplitude); None if no
+    such bin exists (the criterion is not met on the strip). Same rule as H5's converged_beyond and
+    as buildup_analysis above (last failing bin end)."""
+    rows = [(lo, R) for lo, R in bins if lo + 500.0 <= end_A + 1e-6]
+    out = []
+    for f in (lambda R: abs(np.angle(R / R_ref)) <= tol_phase,
+              lambda R: abs(abs(R) / abs(R_ref) - 1) <= tol_amp):
+        L = None
+        for i, (lo, _) in enumerate(rows):
+            if all(f(R) for _, R in rows[i:]):
+                L = float(lo)
+                break
+        out.append(L)
+    return tuple(out)
+
+
+def h5_fp_analysis(path: Path):
+    """Ensemble mean of H5's frozen-phonon strip (review_h5_rerun.json, fp_100_r010_6000_h5):
+    per-bin means over the realisations, reference = mean of the bins in the window
+    [d_end - 3250, d_end - 750] A (as H2's plateau), convergence distances (converged_from)."""
+    if not path.exists():
+        return None
+    raw = path.read_bytes()
+    run = json.loads(raw)["runs"].get("fp_100_r010_6000_h5")
+    if run is None:
+        return None
+    st = {lo: complex(re_, im_) for lo, re_, im_ in run["static"]["bins"]}
+    reals = [{lo: complex(re_, im_) for lo, re_, im_ in rz["bins"]} for rz in run["realisations"]]
+    mean = {lo: complex(np.mean([rz[lo] for rz in reals])) for lo in st}
+    d_end = float(run["d_end"])
+    w0, w1 = d_end - 750.0 - 2500.0, d_end - 750.0
+    win = [lo for lo in st if lo >= w0 and lo + 500.0 <= w1 + 1e-6]
+    R_st = complex(np.mean([st[lo] for lo in win]))
+    R_mn = complex(np.mean([mean[lo] for lo in win]))
+    bins_s = sorted(st.items())
+    bins_m = sorted(mean.items())
+    return dict(sha=hashlib.sha256(raw).hexdigest(), u=run["u_rms_A"], seed=run["seed"],
+                n_real=len(reals), rows=[(lo, st[lo], mean[lo]) for lo in sorted(st)],
+                window=(min(win), max(win) + 500.0), R_static=R_st, R_mean=R_mn,
+                ratio=abs(R_mn) / abs(R_st), phase=float(np.angle(R_mn / R_st)),
+                static=converged_from(bins_s, R_st, w1, EPS_PHASE, RUNIN_AMP_TOL),
+                mean=converged_from(bins_m, R_mn, w1, EPS_PHASE, RUNIN_AMP_TOL),
+                mean_3e2=converged_from(bins_m, R_mn, w1, EPS_PHASE, 3e-2))
+
+
 def report(cal_path: Path, meas_path: Path) -> int:
     t_start = time.time()
     S = {}                                     # numbers carried between sections
@@ -698,8 +804,11 @@ def report(cal_path: Path, meas_path: Path) -> int:
     print(f"git {git_state()}; loadavg {loadavg()}; numpy {np.__version__}; nproc {os.cpu_count()}")
     print(f"calibration file {cal_path} (sha256 "
           f"{hashlib.sha256(cal_path.read_bytes()).hexdigest()[:16] if cal_path.exists() else 'MISSING'})")
-    print(f"measurement file {meas_path} (sha256 "
+    print(f"engine-run file {meas_path} (sha256 "
           f"{hashlib.sha256(meas_path.read_bytes()).hexdigest()[:16] if meas_path.exists() else 'MISSING'})")
+    for f_ in (H5_RERUN, H5_MEMTIME):
+        print(f"H5 file {f_} (sha256 "
+              f"{hashlib.sha256(f_.read_bytes()).hexdigest()[:16] if f_.exists() else 'MISSING'})")
 
     # --------------------------------------------------------------------------------------------
     hdr("1. Beam, potential, (0,0,8) geometry")
@@ -726,13 +835,18 @@ def report(cal_path: Path, meas_path: Path) -> int:
           f"{2 * kap0 / G - 1:.2e} (engine dispersion vs exact SM04 refraction)")
     tan_e = np.tan(th)
     fs = 1 / np.sin(th)
-    ds_res = T2_IMAGE_RES_A / tan_e
+    ds_res = T2_IMAGE_RES_A / np.sin(th)          # the stated foreshortening 1/sin (H5 m1)
     th_b19 = float(specular_condition_for((0, 0, 8), (0, 0, 1), E_keV=E_KEV, V0_V=12.0, a_A=A).theta_ext)
     print(f"foreshortening 1/sin(theta_ext) = {fs:.2f}; one image resolution element "
-          f"({T2_IMAGE_RES_A} A, T2) = {ds_res:.1f} A of surface along the beam at this angle "
-          f"(T2: {T2_IMAGE_RES_A / np.tan(th_b19):.1f} A at the B19 angle {th_b19 * 1e3:.4f} mrad)")
-    check("T2_res_element", abs(T2_IMAGE_RES_A / np.tan(th_b19) - 364.0) < 0.5,
-          f"{T2_IMAGE_RES_A / np.tan(th_b19):.2f} A vs T2 364 A")
+          f"({T2_IMAGE_RES_A} A, T2) = 6.0/sin(theta_ext) = {ds_res:.3f} A of surface along the beam "
+          f"at {th * 1e3:.4f} mrad (MIP, B32; the exit-plane ray mapping 6.0/tan gives "
+          f"{T2_IMAGE_RES_A / tan_e:.3f} A); at the B19 angle {th_b19 * 1e3:.4f} mrad (V0 = 12 V, "
+          f"T2): {T2_IMAGE_RES_A / np.sin(th_b19):.2f} A (1/sin) / "
+          f"{T2_IMAGE_RES_A / np.tan(th_b19):.2f} A (1/tan) (H5 m1)")
+    check("T2_res_element", abs(T2_IMAGE_RES_A / np.sin(th_b19) - 364.0) < 0.5,
+          f"{T2_IMAGE_RES_A / np.sin(th_b19):.2f} A vs T2 364 A (1/sin)")
+    check("res_element_H5", abs(ds_res - 371.884) < 1e-3,
+          f"6.0/sin(theta_ext) = {ds_res:.3f} A vs H5 371.884 A")
     for nm, h in (("a/4", Q), ("a/2", 2 * Q)):
         print(f"shadow / blocked-view strip of an {nm} step: h/tan(theta_ext) = {h / tan_e:.1f} A")
     S.update(k=k, sig=sig, lam=lam, V0=V0, th=th, th_int=th_int, G=G, K=K, kap0=kap0,
@@ -757,7 +871,8 @@ def report(cal_path: Path, meas_path: Path) -> int:
     Vg = abs(V_hkl((0, 0, 8)))
     S["Vg"] = Vg
     dw8 = np.exp(-2 * np.pi ** 2 * u ** 2 * (8 / A) ** 2)
-    print(f"V(0,0,8) = {Vg:.4f} V; with u = {u} A per axis (ASSUMPTION A7) the thermally averaged "
+    print(f"V(0,0,8) = {Vg:.4f} V; with u = {u} A per axis (ASSUMPTION, H5 m5: not a sourced "
+          f"value) the thermally averaged "
           f"coefficient is {Vg * dw8:.4f} V (factor {dw8:.4f}, intensity {dw8 ** 2:.4f})")
     check("V008_vs_M2", Vg > 0.84 * 1.2, f"engine V(0,0,8) = {Vg:.4f} V exceeds the M2 estimate "
           f"0.84 V by {100 * (Vg / 0.84 - 1):.0f} %")
@@ -863,6 +978,18 @@ def report(cal_path: Path, meas_path: Path) -> int:
         S[f"exact_{azimuth}"] = [t["hkl"] for t in exact]
         S[f"Veff_ratio_{azimuth}"] = abs(Vg - off) / Vg
         S[f"shift_{azimuth}"] = dshift / b
+    print("Bethe correction outside the band versus the beam-set cut-off |k|, |l| <= c (H5 m2: it "
+          "grows with c, so the printed values are LOWER BOUNDS, perturbative, not converged):")
+    for azimuth in ("100", "110"):
+        scan = {c: bethe_missing_scan(azimuth, kap0=kap0, K=K, sig=sig, Vg=Vg, cutoff=c,
+                                      dxs=(0.13, 0.10)) for c in (12, 16, 20, 24)}
+        print(f"   [{azimuth}] " + "; ".join(
+            f"c = {c}: dx 0.13 A {v[0.13]:.2e}, dx 0.10 A {v[0.10]:.2e} V_g" for c, v in scan.items()))
+        S[f"bethe_scan_{azimuth}"] = scan
+    check("bethe_not_converged_H5_m2",
+          S["bethe_scan_100"][24][0.13] > S["bethe_scan_100"][12][0.13],
+          f"[100] missing part at 0.13 A grows from {S['bethe_scan_100'][12][0.13]:.2e} (c = 12) to "
+          f"{S['bethe_scan_100'][24][0.13]:.2e} (c = 24): quote as 'at least' (H5 m2)")
     check("four_beam_100", set(S["exact_100"]) == {(0, 4, 4), (0, -4, 4)},
           f"exactly excited at [100]: {S['exact_100']}")
     check("no_exact_110", S["exact_110"] == [], f"exactly excited at [110]: {S['exact_110']}")
@@ -995,11 +1122,15 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
     k, sig, V0, th, th_int, tan_e, Vg, b = (S["k"], S["sig"], S["V0"], S["th"], S["th_int"],
                                            S["tan_e"], S["Vg"], S["b"])
     # --------------------------------------------------------------------------------------------
-    hdr("7. Engine measurements on flat strips (MEASURED_HERE, UNVALIDATED engine, TEST_ONLY inputs)")
+    hdr("7. Engine runs on flat strips (REPRODUCED: computed with the UNVALIDATED engine; "
+        "TEST_ONLY inputs)")
     meas = json.loads(meas_path.read_text()) if meas_path.exists() else {"runs": {}}
     runs = meas["runs"]
-    print(f"measurement file: created {meas.get('created_utc')}, git {meas.get('git')}, "
-          f"loadavg start {meas.get('loadavg_start')} end {meas.get('loadavg_end')}")
+    print(f"engine-run file: created {meas.get('created_utc')}, git {meas.get('git')}, "
+          f"loadavg start {meas.get('loadavg_start')} end {meas.get('loadavg_end')}; its label "
+          f"{meas.get('label', '')[:14]!r}... is read as REPRODUCED: outputs of the UNVALIDATED "
+          f"engine on TEST_ONLY/ASSUMPTION inputs, not laboratory measurements (bu_100_r010 "
+          f"independently rerun by H5; H5 M1)")
     lam_ = S["lam"]
     print(f"read-out resolution: pass band 0.1 1/A -> 1/(2 x 0.1) = 5 A in x = {5.0 / tan_e:.0f} A "
           f"of surface; free-space diffraction between surface and exit plane sqrt(lambda D)/tan = "
@@ -1043,7 +1174,8 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
               f"{fp['region']['distance_A'][1]:.0f} A after contact, >= 5 A above the surface: "
               f"{rows_x} x-rows x {fp['info']['ny']} y-columns = {rows_x * fp['info']['ny']} pixels")
         print(f"[fp_100_r010] {fp['n_realisations']} frozen-phonon realisations, u = "
-              f"{fp['u_rms_A']} A per axis ({fp['u_label']}), seed {fp['seed']}, aperture "
+              f"{fp['u_rms_A']} A per axis ({U_RMS_LABEL}; the file says {fp['u_label']!r}), "
+              f"seed {fp['seed']}, aperture "
               f"{fp['aperture_mrad']} mrad = {fp['aperture_radius_per_A']:.4f} 1/A (B22): "
               f"variance/coherent intensity rho^2 = {fp['rho2']:.4e} (rho = "
               f"{fp['rho']:.4f}); arg(mean) - arg(static) = {fp['phase_mean_minus_static_rad']:+.4f}"
@@ -1053,6 +1185,43 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
             print(f"    {rw['start_A']:6.0f}-{rw['start_A'] + 500:6.0f} A: rho^2 {rw['rho2']:.3e}, "
                   f"|mean|/|static| {rw['amp_mean_over_static']:.4f}")
         S["fp"] = fp
+        print("    NOTE (H5 M3): this 3000 A strip's region (1500-2252 A after contact) lies in the "
+              "transient; the converged ensemble values are those of H5's 6000 A strip below")
+    if "meas_bu_110_r010" in S and "meas_bu_100_r010" in S:
+        a100 = S["meas_bu_100_r010"]["buildup"]["R_plateau_abs"]
+        a110 = S["meas_bu_110_r010"]["buildup"]["R_plateau_abs"]
+        print(f"[100] / [110] plateau: specular AMPLITUDE ratio {a100 / a110:.2f} (intensity "
+              f"{(a100 / a110) ** 2:.0f}) at the same angle and r = 0.1 (H5 m7)")
+        S["amp_ratio_100_110"] = a100 / a110
+    fh = h5_fp_analysis(H5_RERUN)
+    S["fp_h5"] = fh
+    if fh is not None:
+        print(f"[H5 fp_100_r010_6000_h5] REPRODUCED by H5 ({H5_RERUN.name}, sha256 {fh['sha'][:16]}): "
+              f"6000 A strip after contact, [100], r = 0.1 TEST_ONLY, clean depth 60 A, y = 2 periods, "
+              f"u = {fh['u']} A ({U_RMS_LABEL}), seed {fh['seed']}, {fh['n_real']} realisations + the "
+              f"static lattice in the same cell; read-out and 500 A bins of H5 (review A10)")
+        for lo, st, mn in fh["rows"]:
+            print(f"    {lo:6.0f}-{lo + 500:6.0f} A: static |R| {abs(st):.4f}, ensemble mean |R| "
+                  f"{abs(mn):.4f}, |mean|/|static| {abs(mn) / abs(st):.4f}, arg(mean/static) "
+                  f"{np.angle(mn / st):+.4f}; mean vs its reference: dphase "
+                  f"{np.angle(mn / fh['R_mean']):+.4f}, damp {abs(mn) / abs(fh['R_mean']) - 1:+.4f}")
+        print(f"    reference window {fh['window'][0]:.0f}-{fh['window'][1]:.0f} A: |mean|/|static| "
+              f"{fh['ratio']:.4f} (1/x = {1 / fh['ratio']:.3f}), arg(mean) - arg(static) "
+              f"{fh['phase']:+.4f} rad (H2's 3000 A strip: 0.7213, -0.0457 = transient values)")
+        print(f"    converged beyond (every later bin within tolerance): static lattice phase 1e-2 "
+              f"{fh['static'][0]} A, amplitude {RUNIN_AMP_TOL:g} {fh['static'][1]} A; ENSEMBLE MEAN "
+              f"phase 1e-2 {fh['mean'][0]} A, amplitude {RUNIN_AMP_TOL:g} "
+              f"{fh['mean'][1] if fh['mean'][1] is not None else 'NOT REACHED on this strip'}, "
+              f"amplitude 3e-2 {fh['mean_3e2'][1]} A")
+        check("h5_fp_ratio_phase", abs(fh["ratio"] - 0.7656) < 1e-4 and abs(fh["phase"] + 0.0832) < 1e-4,
+              f"|mean|/|static| {fh['ratio']:.4f}, phase {fh['phase']:+.4f} rad vs H5 0.7656, -0.0832")
+        check("h5_fp_runin", fh["mean"][0] == 3500.0 and fh["mean"][1] is None
+              and fh["mean_3e2"][1] == 3000.0 and fh["static"] == (2000.0, 3000.0),
+              f"ensemble mean phase {fh['mean'][0]} A, amplitude 1e-2 {fh['mean'][1]}, 3e-2 "
+              f"{fh['mean_3e2'][1]} A; static {fh['static']} (H5: 3500, None, 3000; static 2000, 3000)")
+    else:
+        print(f"  H5 frozen-phonon strip file {H5_RERUN} MISSING: phonon run-ins unavailable")
+        check("h5_fp_file_present", False, str(H5_RERUN))
 
     # comparison two-beam vs engine
     for r, nm in ((0.10, "bu_100_r010"), (0.05, "bu_100_r005"), (0.0, "bu_100_r000")):
@@ -1071,7 +1240,10 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
     print(f"image resolution element {T2_IMAGE_RES_A} A = {ds_res:.1f} A of surface along the beam; "
           f"B29 margin {B29_MARGIN_RES} elements = {M_up:.1f} A upstream of every measured region; "
           f"exit margin L_exit = {L_exit:.1f} A")
+    print(f"run-in tolerances: phase {EPS_PHASE:g} rad; amplitude {RUNIN_AMP_TOL:g} "
+          f"({RUNIN_AMP_TOL_LABEL})")
     design = {}
+    fh = S.get("fp_h5")
     for r, nm in ((0.10, "bu_100_r010"), (0.05, "bu_100_r005"), (0.0, "bu_100_r000")):
         mm = S.get(f"meas_{nm}")
         tbL = S[f"tb_Lrun_{r}"][1e-2]
@@ -1079,15 +1251,16 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
             bu = mm["buildup"]
             conv_ok = (bu["plateau_max_phase_dev"] is not None
                        and bu["plateau_max_phase_dev"] <= EPS_PHASE
-                       and bu["plateau_max_amp_dev"] <= 3e-2)
-            Lm = (max(bu["converged_phase_1e_2_A"], bu["converged_amp_3e_2_A"]) if conv_ok
-                  else float("nan"))
+                       and bu["plateau_max_amp_dev"] <= RUNIN_AMP_TOL)
+            amp_key = {1e-2: "converged_amp_1e_2_A", 3e-2: "converged_amp_3e_2_A"}[RUNIN_AMP_TOL]
+            Lm = (max(bu["converged_phase_1e_2_A"], bu[amp_key]) if conv_ok else float("nan"))
             Dm = mm["depth"]["depth_I_below_1e-04_A"]
             exit_bad = [q for q in bu["exit_bins"] if abs(q["phase_dev"]) > EPS_PHASE]
         else:
             conv_ok, Lm, Dm, exit_bad = False, float("nan"), float("nan"), []
-        L_run = Lm if conv_ok else tbL
-        src = "engine measurement" if conv_ok else "two-beam estimate (engine did not converge)"
+        L_static = Lm if conv_ok else tbL
+        src = ("static lattice, REPRODUCED (engine run)" if conv_ok
+               else "two-beam estimate (engine did not converge)")
         floor = mm is not None and Dm >= mm["info"]["clean_depth_A"] - 5.0
         if floor:
             # the 1e-4 depth reaches the bulk absorber: transmitted (non-Bragg) waves, not the
@@ -1099,14 +1272,45 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
                      f"evanescent part as for r = 0.05")
         else:
             D_clean = float(5 * np.ceil(Dm / 5)) if np.isfinite(Dm) else float("nan")
-            src_d = "exit-plane intensity below 1e-4 (amplitude 1e-2), measured"
-        design[r] = dict(L_run=L_run, L_run_src=src, D_clean=D_clean, L_tb=tbL, D_src=src_d,
+            src_d = "exit-plane intensity below 1e-4 (amplitude 1e-2), engine run (REPRODUCED)"
+        # frozen-phonon (ensemble-mean) run-in used by every production row (H5 M3)
+        if r == 0.10 and fh is not None and fh["mean"][0] is not None:
+            L_fp = max(fh["mean"][0], L_static)
+            fp_src = (f"frozen-phonon ensemble mean, H5's 6000 A strip (REPRODUCED by H5): phase "
+                      f"{EPS_PHASE:g} rad beyond {fh['mean'][0]:.0f} A; its amplitude does not settle "
+                      f"within {RUNIN_AMP_TOL:g} on the strip (the static lattice's does beyond "
+                      f"{L_static:.0f} A), so for the amplitude criterion this is a LOWER BOUND")
+            lower = "amplitude"
+        else:
+            L_fp = L_static
+            fp_src = ("static-lattice LOWER BOUND: the frozen-phonon run-in is to be computed on the "
+                      "cluster (H5 M3: the ensemble mean settles later than the static lattice; an "
+                      "8-realisation strip of at least 9000 A at r = 0.05 before any r = 0.05 "
+                      "production row, longer without absorption)")
+            lower = "phonon"
+        design[r] = dict(L_run=L_fp, L_static=L_static, L_run_src=fp_src, lower_bound=lower,
+                         static_src=src, D_clean=D_clean, L_tb=tbL, D_src=src_d,
                          tested_to=(mm["buildup"]["plateau_A"][1] if mm is not None else None))
-        print(f"r = {r:.2f}: run-in L_run = {L_run:.0f} A ({src}: phase within 1e-2 rad AND "
-              f"amplitude within 3e-2 of the plateau, tested to {design[r]['tested_to']:.0f} A; "
-              f"two-beam phase estimate {tbL:.0f} A); clean depth D_clean = {D_clean:.0f} A "
-              f"({src_d}); exit bins beyond the plateau worse than 1e-2 rad: "
+        print(f"r = {r:.2f}: static-lattice run-in {L_static:.0f} A ({src}: phase within "
+              f"{EPS_PHASE:g} rad AND amplitude within {RUNIN_AMP_TOL:g} of the plateau, tested to "
+              f"{design[r]['tested_to']:.0f} A; with H2's 3e-2 amplitude: "
+              f"{max(bu['converged_phase_1e_2_A'], bu['converged_amp_3e_2_A']) if mm else float('nan'):.0f}"
+              f" A; two-beam phase "
+              f"estimate {tbL:.0f} A); clean depth D_clean = {D_clean:.0f} A ({src_d}); exit bins "
+              f"beyond the plateau worse than 1e-2 rad: "
               f"{[(q['start_A'], round(q['phase_dev'], 3)) for q in exit_bad]}")
+        print(f"          production (frozen phonons) run-in L_run = {L_fp:.0f} A: {fp_src}")
+        if r == 0.0:
+            print(f"          CAVEAT (H5 m4): relative to a {design[r]['tested_to'] - 2500:.0f}-"
+                  f"{design[r]['tested_to']:.0f} A reference window only, which lies inside the "
+                  f"two-beam tail (|E| still about 3e-2 at 10 000 A); the no-absorption plateau is "
+                  f"NOT established (the two-beam tail needs {tbL:.0f} A)")
+    check("runin_static_null_test_criterion",
+          [design[r]["L_static"] for r in (0.10, 0.05, 0.0)] == [3000.0, 5000.0, 9000.0],
+          f"static run-ins with amplitude {RUNIN_AMP_TOL:g}: "
+          f"{[design[r]['L_static'] for r in (0.10, 0.05, 0.0)]} A (H5 M2: 3000 / 5000 / 9000)")
+    check("runin_phonon_r010", design[0.10]["L_run"] == 3500.0,
+          f"r = 0.1 production run-in {design[0.10]['L_run']:.0f} A (H5 M3: ensemble phase 3500 A)")
     S["design"] = design
     alpha = S["alpha_y_100"]
     print(f"lateral spread angle at [100]: alpha_y = {alpha * 1e3:.2f} mrad (section 4)")
@@ -1117,12 +1321,29 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
         print(f"r = {r:.2f}: lateral buffer from a step edge parallel to the beam dlat = L_run "
               f"tan(alpha_y) + {B29_MARGIN_RES} x {T2_IMAGE_RES_A} A = {d['dlat']:.1f} A; minimum "
               f"terrace width W_min = 2 dlat + {N_MEAS_RES} x {T2_IMAGE_RES_A} A = {d['W_min']:.1f} A")
+    V044 = abs(V_hkl((0, 4, 4)))
+    for r in (0.10, 0.05):
+        for nm_, Vd in (("mean V0", V0), ("V0 - |V_044|", V0 - V044)):
+            Ld = np.log(100.0) / (sig * r * Vd)
+            lat = Ld * np.tan(alpha)
+            dl = lat + B29_MARGIN_RES * T2_IMAGE_RES_A
+            print(f"  premise check (H5 m9, DERIVED_HERE): a surface-parallel wave damped only by the "
+                  f"r = {r:.2f} absorption ({nm_}) falls to 1e-2 after {Ld:.0f} A = {lat:.1f} A of "
+                  f"lateral travel -> dlat {dl:.1f} A, W_min {2 * dl + N_MEAS_RES * T2_IMAGE_RES_A:.1f} A")
+    dl_hi = (np.log(100.0) / (sig * 0.1 * (V0 - V044)) * np.tan(alpha)
+             + B29_MARGIN_RES * T2_IMAGE_RES_A)
+    print(f"  => quote W_min as about {design[0.10]['W_min']:.0f}-"
+          f"{2 * dl_hi + N_MEAS_RES * T2_IMAGE_RES_A:.0f} A at "
+          f"r = 0.1 (estimate; the terrace-width study, run order step 5, decides)")
     print("terrace widths from the miscut (ASSUMPTION scenarios for PROJECT_INPUT item 11): "
           "W = h/tan(miscut)")
     for md in MISCUTS_DEG:
         phi = np.radians(md)
-        print(f"  miscut {md:.2f} deg = {phi * 1e3:.3f} mrad: single-layer (a/4) W = "
-              f"{Q / np.tan(phi):7.1f} A; double-layer (a/2) W = {2 * Q / np.tan(phi):7.1f} A")
+        w4, w2 = Q / np.tan(phi), 2 * Q / np.tan(phi)
+        n4, n2 = int(np.ceil(w4 / A - 1e-9)), int(np.ceil(w2 / A - 1e-9))
+        print(f"  miscut {md:.2f} deg = {phi * 1e3:.3f} mrad: single-layer (a/4) W = {w4:7.1f} A, "
+              f"built as {n4} periods = {n4 * A:.1f} A; double-layer (a/2) W = {w2:7.1f} A, built as "
+              f"{n2} periods = {n2 * A:.1f} A (H5 m1)")
     print("overlayer scenarios (PROJECT_INPUT item 12; ASSUMPTION thicknesses; 0 = B26):")
     for t in OVERLAYERS_A:
         print(f"  t = {t:4.1f} A: adds {t:.1f} A to x; glancing path through it "
@@ -1155,27 +1376,40 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
             ("(0,0,16) coupling", 16 / A)]
     for nm, f in reqs:
         print(f"  {nm:52s} f = {f:.4f} 1/A -> dx <= {1 / (3 * f):.4f} A")
-    print(f"  engine check_band asserts only the beam angles: dx <= {1 / (3 * np.sin(th_int) / lam):.4f}"
-          f" A passes although it drops the (0,0,8) coupling (needs dx <= {A / 24:.4f} A)")
+    print(f"  the beam angles alone would pass up to dx = {1 / (3 * np.sin(th_int) / lam):.4f} A, "
+          f"which drops the (0,0,8) coupling (needs dx <= {A / 24:.4f} A); since H7 the engine's "
+          f"check_band also asserts every declared working reflection "
+          f"(MultisliceParams.working_reflections_hkl = {WORKING_REFLECTIONS}, H2 N8 fixed)")
     for dxv in (0.13, 0.10):
         fm = 1 / (3 * dxv)
         print(f"  dx = dy = {dxv} A: f_max = {fm:.4f} 1/A; F(f_max^2)/F(0) = "
               f"{float(kirkland_F(np.array([fm * fm]))[0] / kirkland_F(np.array([0.0]))[0]):.4f}; "
-              f"Bethe correction of V(0,0,8) outside the band: [100] "
-              f"{S[f'bethe_missing_100_{dxv}']:.1e}, [110] {S[f'bethe_missing_110_{dxv}']:.1e} of V_g")
+              f"Bethe correction of V(0,0,8) outside the band: at least [100] "
+              f"{max(v[dxv] for v in S['bethe_scan_100'].values()):.1e}, [110] "
+              f"{max(v[dxv] for v in S['bethe_scan_110'].values()):.1e} of V_g (perturbative, "
+              f"largest of the cut-off scan, not converged in the beam set: H5 m2; the 0.13/0.10 A "
+              f"convergence run, run order 2c, decides)")
     print(f"  slice thickness: [100] dz = a/4 = {A / 4:.6f} A (one atomic plane per slice), [110] "
           f"dz = p/4 = {A / np.sqrt(2) / 4:.6f} A (half the slices empty); both commensurate")
 
     # --------------------------------------------------------------------------------------------
-    hdr("10. Frozen phonons (u = 0.076 A per axis: ASSUMPTION A7)")
+    hdr(f"10. Frozen phonons (u = {U_RMS_ASSUMED_A} A per axis: {U_RMS_LABEL})")
     dphi = DPHI_FP
     if "fp" in S:
         rho2 = S["fp"]["rho2"]
         N_pix = int(np.ceil(rho2 / (2 * dphi ** 2)))
-        print(f"measured rho^2 = {rho2:.4e}: realisations for {dphi} rad per resolution element "
-              f"N = rho^2/(2 dphi^2) = {rho2 / (2 * dphi ** 2):.2f} -> {N_pix}; the static-lattice "
-              f"phase differs from the ensemble-mean phase by "
-              f"{S['fp']['phase_mean_minus_static_rad']:+.4f} rad (a systematic, not noise)")
+        print(f"rho^2 = {rho2:.4e} (H2's 3000 A strip, REPRODUCED; not recomputed by H5): "
+              f"realisations for {dphi} rad per resolution element N = rho^2/(2 dphi^2) = "
+              f"{rho2 / (2 * dphi ** 2):.2f} -> {N_pix}")
+        fh = S.get("fp_h5")
+        if fh is not None:
+            print(f"static lattice versus the ensemble mean at the converged reference window of H5's "
+                  f"6000 A strip: |mean|/|static| = {fh['ratio']:.3f} (still rising, the static "
+                  f"lattice overestimates the coherent amplitude by 1/{fh['ratio']:.3f} = "
+                  f"{1 / fh['ratio']:.2f}), arg(mean) - arg(static) = {fh['phase']:+.3f} rad (a "
+                  f"systematic, not noise); H2's {S['fp']['amp_mean_over_static']:.3f} / "
+                  f"{S['fp']['phase_mean_minus_static_rad']:+.4f} rad were transient-region values "
+                  f"(H5 M3). The ensemble mean settles later than the static lattice: see section 8")
         S["N_pix"] = N_pix
     else:
         S["N_pix"] = None
@@ -1217,11 +1451,14 @@ def _stats_from_cell(cell, dz):
 def report_part3(S, cal_path, meas_path, t_start) -> int:
     th, tan_e = S["th"], S["tan_e"]
     # --------------------------------------------------------------------------------------------
-    hdr("12. Cost model: replica of engine.estimate_resources, checked against the engine")
+    hdr("12. Cost model: engine.memory_model (H7) and replicas of the engine's time models, checked "
+        "against the engine")
     cal = json.loads(cal_path.read_text())
     cc = cpu_constants(cal)
-    print(f"CPU calibration {cal['created_utc']} (loadavg {cal['loadavg']}, {cal['threads']} "
-          f"threads, {cal['precision']}): c_fft = {cc['c_fft']:.3e} s/(px log2 px), element-wise "
+    print(f"CPU calibration timed here (4 shared cores) {cal['created_utc']} (loadavg "
+          f"{cal['loadavg']}, {cal['threads']} threads, {cal['precision']}; the file's label "
+          f"{cal.get('label', '')[:13]!r} is read as 'timed here', H5 M1): c_fft = "
+          f"{cc['c_fft']:.3e} s/(px log2 px), element-wise "
           f"{cc['c_el']:.3e} s/px, exp {cc['c_exp']:.3e} s/element, GEMM "
           f"{1 / cc['c_gemm'] / 1e9:.0f} GFLOP/s (medians; FFT and element-wise from grids >= 1e6 px)")
     print(f"GPU model: engine.GPU_ASSUMED = {GPU_ASSUMED['label']}")
@@ -1249,17 +1486,20 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
             nrun = 1
         est = estimate_resources(cell, params, realisations=nrun, calibrate_cpu=False)
         g = est["grid"]
-        arrays, mem = replica_memory(g["nx"], g["ny"], est["atoms_per_slice_max"], est["n_atoms"],
-                                     precision=params.precision)
+        mr = memory_row(g["nx"], g["ny"], est["n_slices"], est["atoms_per_slice_max"],
+                        est["n_atoms"], n_species=len(np.unique(cell.Z)), precision=params.precision)
+        mem = mr["model"]["numpy"]["peak"]
         gpu = nrun * replica_gpu_s(g["nx"], g["ny"], est["n_slices"], est["nonempty_slices"],
                                    est["atoms_per_nonempty_slice_mean"], params.precision)
-        cpu = 1.5 * nrun * replica_cpu_s(g["nx"], g["ny"], est["n_slices"], est["nonempty_slices"],
-                                         est["atoms_per_nonempty_slice_mean"], cc)
+        cpu = CPU_FACTOR * nrun * replica_cpu_s(g["nx"], g["ny"], est["n_slices"],
+                                                est["nonempty_slices"],
+                                                est["atoms_per_nonempty_slice_mean"], cc)
         m2 = M2_STUDY[p["name"]]
         same = (mem == est["memory_bytes"]["total"]
+                and mr["device"] == est["memory_bytes"]["device_peak_cupy"]
                 and abs(gpu / est["gpu"]["seconds_total"] - 1) < 1e-12)
         vs_m2 = ((g["nx"], g["ny"], est["n_slices"], est["n_atoms"]) == m2[:4]
-                 and round(mem / 1e6) == m2[4] and abs(round(gpu, 1) - m2[6]) < 0.051)
+                 and abs(round(gpu, 1) - m2[6]) < 0.051)
         all_ok &= same and vs_m2
         tot["cpu"] += cpu
         tot["gpu"] += gpu
@@ -1269,19 +1509,22 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
             lo, hi = tot.get(key, (val, val))
             tot[key] = (min(lo, val), max(hi, val))
         tot["mem"] = max(tot["mem"], mem)
+        tot["dev"] = max(tot.get("dev", 0), mr["device"])
         print(f"  {p['name']:26s} grid {g['nx']}x{g['ny']}, {est['n_slices']} slices, "
-              f"{est['n_atoms']} atoms, {mem / 1e6:.1f} MB, GPU {gpu:.2f} s (engine "
-              f"{est['gpu']['seconds_total']:.2f}), CPU x1.5 {cpu:.0f} s (M2 printed {m2[5]} s); "
-              f"replica==engine {same}, ==M2 {vs_m2}")
+              f"{est['n_atoms']} atoms, CPU-job peak {mem / 1e6:.1f} MB, GPU device peak "
+              f"{mr['device'] / 1e6:.1f} MB (M2 printed {m2[4]} MB with the pre-H7 accounting), "
+              f"GPU {gpu:.2f} s (engine {est['gpu']['seconds_total']:.2f}), CPU x{CPU_FACTOR} "
+              f"{cpu:.0f} s (M2 printed {m2[5]} s); tool==engine {same}, ==M2 {vs_m2}")
         del cell, params
-    check("replica_equals_engine_and_M2_on_17_study_points", all_ok,
-          "memory bytes and GPU seconds identical to estimate_resources; grid, slices, atoms, MB "
-          "and GPU s identical to the M2 printout")
+    check("tool_equals_engine_and_M2_on_17_study_points", all_ok,
+          "memory (engine.memory_model) and GPU seconds identical to estimate_resources; grid, "
+          "slices, atoms and GPU s identical to the M2 printout (M2's MB used the pre-H7 accounting)")
     S["study_tot"] = tot
-    print(f"  replica CPU (x1.5) / M2 printed CPU on the 17 points: {min(tot['ratios_m2']):.2f} to "
-          f"{max(tot['ratios_m2']):.2f}")
-    print(f"  study.yaml total: CPU (x1.5) {fmt_t(tot['cpu'])} on 4 cores, GPU (ASSUMPTION model) "
-          f"{tot['gpu']:.0f} s; largest engine arrays {tot['mem'] / 1e6:.0f} MB")
+    print(f"  replica CPU (x{CPU_FACTOR}) / M2 printed CPU on the 17 points: "
+          f"{min(tot['ratios_m2']):.2f} to {max(tot['ratios_m2']):.2f}")
+    print(f"  study.yaml total: CPU (x{CPU_FACTOR}) {fmt_t(tot['cpu'])} on 4 cores, GPU (ASSUMPTION "
+          f"model) {tot['gpu']:.0f} s; largest CPU-job peak {tot['mem'] / 1e6:.0f} MB, largest GPU "
+          f"device peak {tot['dev'] / 1e6:.0f} MB")
     # (b) a [100] staircase cell of the production layout at reduced width, built with every
     #     builder assertion and checked by the engine's reflection_setup; counts vs the formulas
     d = S["design"][0.10]
@@ -1321,18 +1564,21 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
                               propagator="exact", band_limit="2/3", backend="numpy",
                               precision="complex64", threads=4,
                               absorber=NumericalAbsorber(strength_V=ABSORBER_V, profile="sin2"),
-                              theta_out_ext_rad=th, buildup_depth_A=D_ASSERT_A)
+                              theta_out_ext_rad=th, buildup_depth_A=D_ASSERT_A,
+                              working_reflections_hkl=WORKING_REFLECTIONS)
     from reflection_holo.forward.multislice import reflection_setup
     setup = reflection_setup(cell, potential=pot, beam=beam, params=params)
     est = estimate_resources(cell, params, realisations=1, calibrate_cpu=True)
-    _, mem = replica_memory(lay["nx"], lay["ny"], lay["n_max"], lay["n_atoms"])
+    mr = memory_row(lay["nx"], lay["ny"], lay["N"], lay["n_max"], lay["n_atoms"])
+    mem = mr["model"]["numpy"]["peak"]
     same_counts = (est["n_atoms"] == lay["n_atoms"] and est["n_slices"] == lay["N"]
                    and est["nonempty_slices"] == lay["nonempty"]
                    and est["atoms_per_slice_max"] == lay["n_max"]
                    and abs(est["atoms_per_nonempty_slice_mean"] - lay["n_mean"]) < 1e-9
                    and abs(cell.extent_x_A - lay["ext_x"]) < 1e-6
                    and (est["grid"]["nx"], est["grid"]["ny"]) == (lay["nx"], lay["ny"]))
-    check("layout_formulas_vs_built_100_cell", same_counts and mem == est["memory_bytes"]["total"],
+    check("layout_formulas_vs_built_100_cell", same_counts and mem == est["memory_bytes"]["total"]
+          and mr["device"] == est["memory_bytes"]["device_peak_cupy"],
           f"built: {est['n_atoms']} atoms, {est['n_slices']} slices ({est['nonempty_slices']} "
           f"non-empty), n_max {est['atoms_per_slice_max']}, extent_x {cell.extent_x_A:.3f} A; "
           f"formulas: {lay['n_atoms']}, {lay['N']} ({lay['nonempty']}), {lay['n_max']}, "
@@ -1374,7 +1620,8 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
         meas_s = m["run_s"] if "run_s" in m else float(np.mean(m["times_s"]))
         L1 = float(m["loadavg_after"][0])
         norm = meas_s / rep / max(1.0, L1 / 4.0)
-        print(f"  measured run {name}: {meas_s:.0f} s per realisation vs replica {rep:.0f} s "
+        print(f"  timed engine run {name} (wall clock here): {meas_s:.0f} s per realisation vs "
+              f"replica {rep:.0f} s "
               f"(ratio measured/replica {meas_s / rep:.2f}; 1-min load after the run {L1:.2f}; "
               f"ratio divided by max(1, load/4) = {norm:.2f}); x1.5 replica {1.5 * rep:.0f} s")
         S.setdefault("cpu_ratios", []).append(meas_s / rep)
@@ -1409,13 +1656,15 @@ def torus_slice_area_max(R, r):
     return best
 
 
-# host bytes per atom, from reading the code (DERIVED_HERE, not measured): structure object
-# (si001.Si001Structure: positions f8 x3, species '<U2', layer_index i8, terrace_index i8), cell
-# (forward.cell: atoms_xyz_A f8 x3, Z i8), realised potential (potentials._RealisedAtomic: sorted
-# xyz f8 x3, idx_sorted i8, Z i8) and its transients in __init__ (xyz copy, idx, order, offsets,
-# the tobytes() copy for the hash; with frozen phonons also the noise array and the displaced copy)
-HOST_B_PER_ATOM = dict(structure=24 + 8 + 8 + 8, cell=24 + 8, realised=24 + 8 + 8,
-                       init_transient_static=24 + 8 + 8 + 8 + 24, init_transient_phonon_extra=24 + 24)
+def h5_host_bytes_per_atom(path: Path):
+    """H5's tracemalloc measurement of realise() (review_h5_memtime.json; REPRODUCED by H5)."""
+    if not path.exists():
+        return None
+    raw = path.read_bytes()
+    hp = json.loads(raw)["host_per_atom"]
+    return dict(sha=hashlib.sha256(raw).hexdigest(), static=hp["static"]["peak_B_per_atom"],
+                frozen=hp["frozen"]["peak_B_per_atom"], cell=hp["cell_arrays_B_per_atom"],
+                n_atoms=hp["n_atoms"])
 
 
 def split_times(nx, ny, N, nonempty, n_mean, cc, precision="complex64"):
@@ -1437,14 +1686,25 @@ def split_times(nx, ny, N, nonempty, n_mean, cc, precision="complex64"):
 
 def report_part4(S, cc, t_start) -> int:
     th, tan_e, ds_res = S["th"], S["tan_e"], S["ds_res"]
-    hb = HOST_B_PER_ATOM
-    persistent = hb["structure"] + hb["cell"] + hb["realised"]
-    peak_s = persistent + hb["init_transient_static"]
-    peak_p = peak_s + hb["init_transient_phonon_extra"]
-    print(f"host memory per atom (code reading, DERIVED_HERE, not measured): persistent {persistent} B "
-          f"(structure {hb['structure']}, cell {hb['cell']}, realised potential {hb['realised']}); "
-          f"peak while realising {peak_s} B (static) / {peak_p} B (frozen phonons); the engine's "
-          f"own accounting (estimate_resources) counts 48 B per atom")
+    from reflection_holo.forward.multislice import engine as _eng
+    per_atom = (_eng.MEM_CELL_B_PER_ATOM + _eng.MEM_REALISE_PEAK_B_PER_ATOM + STRUCTURE_B_PER_ATOM)
+    h5h = h5_host_bytes_per_atom(H5_MEMTIME)
+    print(f"host memory per atom while realising (engine.memory_model, H7; tracemalloc-tested in "
+          f"tests/forward/test_memory_model.py): cell {_eng.MEM_CELL_B_PER_ATOM} + realise() peak "
+          f"{_eng.MEM_REALISE_PEAK_B_PER_ATOM} + builder structure kept by the caller "
+          f"{STRUCTURE_B_PER_ATOM} = {per_atom} B/atom (static and frozen phonons alike); the realised "
+          f"potential keeps {_eng.MEM_REALISED_B_PER_ATOM} B/atom during the slice loop")
+    if h5h is not None:
+        print(f"  H5 measured ({H5_MEMTIME.name}, sha256 {h5h['sha'][:16]}, {h5h['n_atoms']} atoms): "
+              f"realise() {h5h['static']:.0f} B/atom static (first call in its process), "
+              f"{h5h['frozen']:.0f} B/atom frozen phonons, both including the f2 grid share; with "
+              f"the cell and the structure: {h5h['static'] + h5h['cell'] + STRUCTURE_B_PER_ATOM:.0f} / "
+              f"{h5h['frozen'] + h5h['cell'] + STRUCTURE_B_PER_ATOM:.0f} B/atom (H2's code reading: "
+              f"192 / 240 B; H5 M4)")
+        check("host_per_atom_vs_H5", abs(h5h["frozen"] - _eng.MEM_REALISE_PEAK_B_PER_ATOM) < 3.0,
+              f"model realise() peak {_eng.MEM_REALISE_PEAK_B_PER_ATOM} B/atom vs H5 measured "
+              f"{h5h['frozen']:.1f} B/atom (frozen phonons; the difference is the f2 grid share)")
+    peak_s = peak_p = per_atom
     print(f"structure builders (reports M2, T1): si001 builder ~4.7 GB per 84 000 atoms = "
           f"{4.7e9 / 84000 / 1e3:.0f} kB/atom (M2 10.5); feature builder 1.33 GB for 547 662 atoms = "
           f"{1.33e9 / 547662 / 1e3:.1f} kB/atom (T1 section 4); tiling one verified z period is exact "
@@ -1456,16 +1716,24 @@ def report_part4(S, cc, t_start) -> int:
     rows = []
 
     def add(label, lay, n_real, n_ang, note, precision="complex64"):
-        arrays, mem = replica_memory(lay["nx"], lay["ny"], lay["n_max"], lay["n_atoms"],
-                                     precision=precision)
+        mr = memory_row(lay["nx"], lay["ny"], lay["N"], lay["n_max"], lay["n_atoms"],
+                        precision=precision)
         gpu = replica_gpu_s(lay["nx"], lay["ny"], lay["N"], lay["nonempty"], lay["n_mean"],
                             precision)
-        cpu = 1.5 * replica_cpu_s(lay["nx"], lay["ny"], lay["N"], lay["nonempty"], lay["n_mean"], cc)
-        host = arrays["atom positions (float64)"]
+        cpu = CPU_FACTOR * replica_cpu_s(lay["nx"], lay["ny"], lay["N"], lay["nonempty"],
+                                         lay["n_mean"], cc)
         ok = all(lay["engine_rules"].values())
         check(f"engine_rules_{label}", ok, f"{lay['engine_rules']}")
-        row = dict(label=label, lay=lay, mem=mem, dev=mem - host, gpu=gpu, cpu=cpu, n_real=n_real,
-                   n_ang=n_ang, note=note, exit_bytes=8 * lay["nx"] * lay["ny"])
+        npx, nx_, ny_, nm_ = lay["nx"] * lay["ny"], lay["nx"], lay["ny"], lay["n_max"]
+        h5_dev = 48 * npx + max(32 * nx_ * nm_, 8 * nx_ * nm_ + 32 * ny_ * nm_)
+        check(f"device_peak_ge_H5_model_{label}", mr["device"] >= h5_dev,
+              f"model device peak {mr['device'] / 1e9:.3f} GB >= H5's measured-model "
+              f"{h5_dev / 1e9:.3f} GB (48 B/px + max(32 nx n, 8 nx n + 32 ny n); the engine model "
+              f"adds the entrance wave and the pixel stage of the potential construction)")
+        row = dict(label=label, lay=lay, mem=mr["cpu_job"], dev=mr["device"],
+                   host=mr["host_cupy"], h5_dev=h5_dev, gpu=gpu, cpu=cpu, n_real=n_real,
+                   n_ang=n_ang, note=note, exit_bytes=8 * lay["nx"] * lay["ny"],
+                   ls=mr["model"]["largest_slice"])
         rows.append(row)
         print(f"[{label}] {note}")
         print(f"    extents x {lay['ext_x']:.1f} A (depth below the lowest top layer "
@@ -1484,21 +1752,46 @@ def report_part4(S, cc, t_start) -> int:
               f"(dx {lay['ext_x'] / lay['nx']:.4f}, dy {lay['Ly'] / lay['ny']:.4f} A); slices "
               f"{lay['N']} (non-empty {lay['nonempty']}, atoms per slice max {lay['n_max']}, mean "
               f"{lay['n_mean']:.0f})")
-        print(f"    engine arrays {mem / 1e9:.3f} GB per realisation (device part {(mem - host) / 1e9:.3f}"
-              f" GB, atom positions {host / 1e9:.3f} GB); exit wave {row['exit_bytes'] / 1e9:.3f} GB")
+        print(f"    memory per realisation (engine.memory_model): GPU device peak "
+              f"{row['dev'] / 1e9:.3f} GB (cupy; UNVERIFIED on a GPU, lower bound: cuFFT/cuBLAS "
+              f"workspaces and the pool not included; H5's measured model {h5_dev / 1e9:.3f} GB); host "
+              f"of that run {row['host'] / 1e9:.1f} GB; a CPU (numpy) job needs "
+              f"{row['mem'] / 1e9:.1f} GB (both with the {STRUCTURE_B_PER_ATOM} B/atom builder "
+              f"structure); largest slice: exponentials {row['ls']['exponentials_B'] / 1e9:.3f} GB, "
+              f"pixel stage {row['ls']['pixel_stage_B'] / 1e9:.3f} GB; exit wave "
+              f"{row['exit_bytes'] / 1e9:.3f} GB")
         (cf, cp), (gf, gp) = split_times(lay["nx"], lay["ny"], lay["N"], lay["nonempty"],
                                          lay["n_mean"], cc, precision)
-        print(f"    per realisation: CPU {fmt_t(cpu)} (4 cores, replica x1.5; FFT+element-wise "
+        print(f"    per realisation: CPU {fmt_t(cpu)} (4 cores, {CPU_FACTOR_LABEL}; FFT+element-wise "
               f"{100 * cf / (cf + cp):.0f} %, potential construction {100 * cp / (cf + cp):.0f} %), "
               f"GPU {fmt_t(gpu)} (ASSUMPTION model; potential construction "
               f"{100 * gp / (gf + gp):.0f} %); x {n_real} realisations x {n_ang} angles = CPU "
               f"{fmt_t(cpu * n_real * n_ang)}, GPU {fmt_t(gpu * n_real * n_ang)}; exit waves "
-              f"{row['exit_bytes'] * n_real * n_ang / 1e9:.1f} GB; host memory (code reading) "
-              f"{lay['n_atoms'] * S['host_peak'][1] / 1e9:.1f} GB peak with frozen phonons")
+              f"{row['exit_bytes'] * n_real * n_ang / 1e9:.1f} GB")
         return row
 
     d10, d05, d00 = S["design"][0.10], S["design"][0.05], S["design"][0.0]
     N_pix = S.get("N_pix") or 0
+
+    def runin_note(d):
+        if d["lower_bound"] == "phonon":
+            return (f"run-in {d['L_run']:.0f} A = static-lattice LOWER BOUND (phonon run-in to be "
+                    f"computed on the cluster, H5 M3)")
+        return (f"run-in {d['L_run']:.0f} A = frozen-phonon ensemble phase run-in (H5's 6000 A "
+                f"strip); ensemble amplitude within {RUNIN_AMP_TOL:g} not established (lower bound)")
+
+    # cross-check of the M2 correction alone (static run-in 3000 A with the 1e-2 amplitude
+    # criterion) against H5's tolerance-sensitivity row (review section 11)
+    W01 = Q / np.tan(np.radians(0.1))
+    py01 = int(np.ceil(W01 / A - 1e-9))
+    lay_h5 = layout_100(name="h5_check", L_run=d10["L_static"], z_fov=M + meas_len, y_A=2 * py01 * A,
+                        D_clean=d10["D_clean"], S=S, terraces_y=[(0, py01), (1, py01)],
+                        step_layers=1)
+    check("H5_tolerance_row_2a_a4_miscut0.1_r0.10",
+          abs(lay_h5["Lz"] - 6101.6) < 0.05 and lay_h5["n_atoms"] == 33_899_040
+          and (lay_h5["nx"], lay_h5["ny"]) == (2160, 12096),
+          f"static run-in {d10['L_static']:.0f} A: z {lay_h5['Lz']:.1f} A, {lay_h5['n_atoms']:,} atoms, "
+          f"grid {lay_h5['nx']}x{lay_h5['ny']} (H5 M2: 6101.6 A, 33,899,040, 2160x12096)")
 
     def n_terr(window_y_A):
         n_el = max(1.0, N_MEAS_RES * window_y_A / T2_IMAGE_RES_A)
@@ -1513,8 +1806,14 @@ def report_part4(S, cc, t_start) -> int:
         win = py_half * A - 2 * d["dlat"]
         nr, n_el = n_terr(max(win, 0.0))
         note += (f"; W = {py_half * A:.1f} A vs W_min {d['W_min']:.1f} A; measuring window "
-                 f"{win:.1f} A x {meas_len:.0f} A = {n_el:.0f} resolution elements")
-        return add(label, lay, nr, 1, note)
+                 f"{win:.1f} A x {meas_len:.0f} A = {n_el:.0f} resolution elements; "
+                 f"{runin_note(d)}")
+        if win <= 0:
+            note += ("; NO CONVERGED MEASURING WINDOW: W < W_min with this run-in (the terraces are "
+                     "narrower than two lateral buffers)")
+        row = add(label, lay, nr, 1, note)
+        row["flag"] = " (W < W_min: no converged window)" if win <= 0 else ""
+        return row
 
     for md_, sl in ((0.1, 1), (0.5, 1)):
         W = sl * Q / np.tan(np.radians(md_))
@@ -1530,8 +1829,8 @@ def report_part4(S, cc, t_start) -> int:
     if np.isfinite(d00["D_clean"]):
         s2a("2a_a4_miscut0.1_r0.00", 1, W, d00,
             f"a/4 steps parallel to the beam, miscut 0.1 deg, NO absorption (B30 ASSUMPTION); "
-            f"run-in {d00['L_run']:.0f} A from the {d00['L_run_src']} (two-beam tail "
-            f"{d00['L_tb']:.0f} A)")
+            f"the static run-in is relative to a reference window that is not established (the "
+            f"two-beam tail needs {d00['L_tb']:.0f} A; H5 m4)")
     # --- (2b) edges transverse to the beam -------------------------------------------------------
     t_min = (2 * B29_MARGIN_RES + N_MEAS_RES) * ds_res
     print(f"steps transverse to the beam: each terrace >= {2 * B29_MARGIN_RES + N_MEAS_RES} "
@@ -1554,7 +1853,7 @@ def report_part4(S, cc, t_start) -> int:
             f"one {nm.replace('a', 'a/')} up-step transverse to the beam, terraces "
             f"{pz1 * A:.0f} A and {(pz - pz1) * A:.0f} A along the beam (>= 8 resolution elements "
             f"each), y = 16 a, r = 0.10 TEST_ONLY; strip {strip:.0f} A; {n_el:.0f} resolution "
-            f"elements per measuring region")
+            f"elements per measuring region; {runin_note(d10)}")
     # --- (3) half-torus, R = 1000 A, r = 20 A, ridge and trench in one cell size ---------------
     amax = torus_slice_area_max(TORUS_R_A, TORUS_r_A)
     fmax = int(np.ceil(8 / A ** 3 * (A / 4) * amax))
@@ -1575,13 +1874,18 @@ def report_part4(S, cc, t_start) -> int:
             f"vacuum + {crest:.2f} A), r = {r:.2f} TEST_ONLY; y gap between periodic images "
             f"{py * A - 2 * (TORUS_R_A + TORUS_r_A):.1f} A; strips {strip:.0f} A; phase MAP -> "
             f"N = max({N_FP_MIN}, {N_pix}) realisations per resolution element; a B16 rocking "
-            f"series would multiply by {S['n_b16']} angles but T2 shows the ring is not resolved")
+            f"series would multiply by {S['n_b16']} angles but T2 shows the ring is not resolved "
+            f"(at the B19 demo condition); {runin_note(d)}. NOTE (H5 m6): upstream of the strip "
+            f"only the {B29_MARGIN_RES}-element margin ({M:.0f} A) is flat: the cell shows "
+            f"contrast, not heights; a phase map with a zero needs about {N_MEAS_RES} more "
+            f"resolution elements ({meas_len:.0f} A) of flat measured surface upstream")
     # --- (V) validation rocking curve on a flat strip --------------------------------------------
-    lay = layout_100(name="V_rocking", L_run=d10["L_run"], z_fov=M + meas_len, y_A=2 * A,
+    lay = layout_100(name="V_rocking", L_run=d10["L_static"], z_fov=M + meas_len, y_A=2 * A,
                      D_clean=d10["D_clean"], S=S, terraces_y=[(0, 2)])
     add("V_rocking_flat_strip_r0.10", lay, 1, S["n_rock"],
         f"flat strip for the rocking-curve benchmark (docs/05 4.4) and the run-in check, static "
-        f"lattice, {S['n_rock']} angles")
+        f"lattice, {S['n_rock']} angles; static run-in {d10['L_static']:.0f} A (phase {EPS_PHASE:g} "
+        f"rad and amplitude {RUNIN_AMP_TOL:g})")
     # --- (4) patterned CFG-B feature: BLOCKED ------------------------------------------------------
     h10 = 100.0
     print(f"[4_patterned] BLOCKED on PROJECT_INPUT item 13 (docs/05 gives no lateral size). With "
@@ -1591,26 +1895,40 @@ def report_part4(S, cc, t_start) -> int:
           f" A plus the feature length")
 
     # --------------------------------------------------------------------------------------------
-    hdr("14. Table (paste into the report)")
+    hdr("14. Table (corrected after H5; the orchestrator quotes it; H2's report stays the record)")
     st = S["study_tot"]
-    print("| scenario | extents x, y, z (A) | atoms | grid | slices | memory per realisation (GB) "
-          "| CPU time per realisation (4 cores, x1.5) | GPU time per realisation (ASSUMPTION "
-          "model) | realisations x angles | total CPU / GPU |")
-    print("|---|---|---|---|---|---|---|---|---|---|")
+    print("Run-in per row: r = 0.10 rows with phonons 3500 A (frozen-phonon ensemble phase run-in, "
+          "amplitude not established); r = 0.05 and r = 0 rows: static-lattice LOWER BOUNDS (phonon "
+          "run-in to be computed on the cluster); V row: static run-in. Memory: engine.memory_model; "
+          "GPU device peak UNVERIFIED on a GPU (lower bound); host and CPU-job figures include the "
+          f"{STRUCTURE_B_PER_ATOM} B/atom builder structure. CPU: {CPU_FACTOR_LABEL}.")
+    print("| scenario | extents x, y, z (A) | atoms | grid | slices | run-in (A) | GPU device peak "
+          "(GB) | host, GPU run (GB) | CPU job peak (GB) | CPU time per realisation (4 cores, "
+          f"x{CPU_FACTOR}) | GPU time per realisation (ASSUMPTION model) | realisations x angles | "
+          "total CPU / GPU |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     print(f"| 1 study.yaml, 17 points ([110], reference) | {st['x'][0]:.0f}-{st['x'][1]:.0f} x "
           f"{st['y'][0]:.1f}-{st['y'][1]:.1f} x {st['z'][0]:.0f}-{st['z'][1]:.0f} | "
-          f"{st['atoms'][0]:,} to {st['atoms'][1]:,} | see section 8 | {st['slices'][0]} to "
-          f"{st['slices'][1]} | <= {st['mem'] / 1e9:.3f} | {fmt_t(st['cpu'])} (sum) | "
-          f"{st['gpu']:.0f} s (sum) | 1 x 1 (translation points 2 runs) | "
+          f"{st['atoms'][0]:,} to {st['atoms'][1]:,} | see section 12 | {st['slices'][0]} to "
+          f"{st['slices'][1]} | per point | <= {st['dev'] / 1e9:.3f} | | <= {st['mem'] / 1e9:.3f} | "
+          f"{fmt_t(st['cpu'])} (sum) | {st['gpu']:.0f} s (sum) | 1 x 1 (translation points 2 runs) | "
           f"{fmt_t(st['cpu'])} / {fmt_t(st['gpu'])} |")
     for rw in rows:
         L = rw["lay"]
         n = rw["n_real"] * rw["n_ang"]
-        print(f"| {rw['label']} | {L['ext_x']:.0f} x {L['Ly']:.0f} x {L['Lz']:.0f} | "
-              f"{L['n_atoms']:,} | {L['nx']}x{L['ny']} | {L['N']} | {rw['mem'] / 1e9:.2f} | "
+        r_ = "0.00" if rw["label"].endswith("r0.00") else ("0.05" if "r0.05" in rw["label"] else "0.10")
+        lb = ("" if rw["label"].startswith("V_") else
+              " (phonon phase; amplitude not established)" if r_ == "0.10" else
+              " (static lower bound)")
+        print(f"| {rw['label']}{rw.get('flag', '')} | {L['ext_x']:.0f} x {L['Ly']:.0f} x {L['Lz']:.0f} | "
+              f"{L['n_atoms']:,} | {L['nx']}x{L['ny']} | {L['N']} | {L['L_run']:.0f}{lb} | "
+              f"{rw['dev'] / 1e9:.2f} | {rw['host'] / 1e9:.1f} | {rw['mem'] / 1e9:.1f} | "
               f"{fmt_t(rw['cpu'])} | {fmt_t(rw['gpu'])} | {rw['n_real']} x {rw['n_ang']} | "
               f"{fmt_t(rw['cpu'] * n)} / {fmt_t(rw['gpu'] * n)} |")
-    print("| 4 patterned CFG-B feature | BLOCKED on PROJECT_INPUT item 13 | | | | | | | | |")
+    print("| 4 patterned CFG-B feature | BLOCKED on PROJECT_INPUT item 13 | | | | | | | | | | | |")
+    big = [rw for rw in rows if rw["dev"] > 10e9]
+    print(f"GPU instances: rows whose device peak exceeds 10 GB (a 1g.10gb / 2g.10gb MIG instance is "
+          f"too small even before the library workspaces): {[rw['label'] for rw in big]}")
 
     # --------------------------------------------------------------------------------------------
     hdr("15. Self-checks")

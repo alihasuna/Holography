@@ -356,3 +356,41 @@ constant or absorption sign scales the widths or gives |R| > 1. Expected, not a 
 Kirkland potential (production engine) peak shifts, widths and phases differ by amounts set by the
 two parameterisations' V_0 and V_g (section 6 prints both); the ZOLZ-row solver omits HOLZ couplings
 that the engine partly carries.
+
+## 6. Engine against solver
+
+### 6.1 Engine set-up (DERIVED_HERE from H2; tool `engine_flat_strip`, `engine_readout`)
+
+* Flat bulk-terminated Si(001) strip built as in H2 (`build_si001_terraces` for one period along the
+  beam with every builder assertion, tiled along z), top-layer back-bond (1,1,0), 1 period across the
+  beam (5.43 A at [100], 3.84 A at [110]; the flat crystal has no other transverse periodicity),
+  4500 A of surface after the first contact of the sheet beam, clean depth 55 A + 15 A bulk absorber
+  (H2 section 3, r = 0.1), 10 A top absorber, 100 V sin^2 absorbers, sheet beam 2 A above the top
+  layer with 2 A sin^2 edges whose top edge lands 1 A before the exit plane, vacuum from the engine's
+  item-2 rule, dx = dy <= 0.13 A (derived pixel 0.1293-0.1296 A), dz = a/4 ([100]) or a/(4 sqrt 2)
+  ([110]), exact propagator, 2/3 band, complex64, numpy backend, static lattice, proportional
+  absorption r = 0.1 (TEST_ONLY stand-in for item 21), entrance vacuum 10 slices.
+* Read-out (tool `engine_readout`, DERIVED_HERE, the formula of `analysis.flat_reflection_coefficient`
+  applied to the vacuum part of the exit plane as in H2's `specular_column`): y-average, vacuum mask
+  from 2 A above the top layer, band-pass |f_x - f_c| <= 0.1 1/A, demodulation, mean over the rays
+  that left the surface 2500 A after first contact up to 750 A before the exit plane (H2 section 2.4:
+  r = 0.1 phase settled within 1e-2 rad beyond 1500 A, amplitude within 3 % beyond 2500 A; exit-plane
+  contamination over the last 500 A), then `R = <e> exp(+4 pi i f_c x_s) / P_L` with x_s the top-layer
+  plane and `P_L = exp(i L_z (k_z - k))` the exact vacuum propagation factor. The spread `s_eng` is the
+  largest deviation of a 250 A bin inside the window from the window mean. The y-averaged exit column
+  is stored per angle (7 significant digits) so that every read-out choice can be re-evaluated from
+  the committed results (section 6.5).
+* Like-for-like potential: `DoyleTurnerPotential` (tool) = the engine's `AtomicPotential` with only
+  `scattering_factor` replaced by `h^2/(2 pi m0 e) sum_j a_j exp(-b_j f^2/4)` with the solver's
+  Doyle-Turner numbers; the engine's own slice construction, band limit, absorption and MIP code are
+  used unchanged. TEST_ONLY: the orchestrator's decision "Kirkland only" (M2) is for production; this
+  class exists only in the validation tool.
+* Engine version: the main [100] and [110] Doyle-Turner runs were started at 23:08 UTC with the engine
+  of commit `148e4f6`; another agent's snapshot `2a3a999` (23:13 UTC) added a REQUIRED
+  `MultisliceParams.working_reflections_hkl` (a band assertion that the declared working reflection
+  lies inside the transmission band) and a memory model to `engine.py` and `grid.py`; the slice loop,
+  potentials, propagator and illumination are unchanged in that diff (SECTION_READ of `git diff
+  148e4f6 2a3a999 -- reflection_holo/forward/multislice/`). The tool passes
+  `working_reflections_hkl=((0,0,8),)` when the field exists. Check (REPRODUCED): the 16.2 mrad [100]
+  run repeated with the new engine (tag `__bin_A=250.0`, identical settings) gives the same R as the
+  run with the old engine (section 6.5 prints both).
