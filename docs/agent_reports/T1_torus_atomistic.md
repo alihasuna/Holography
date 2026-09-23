@@ -108,10 +108,104 @@ ring margin 2a = 10.86 A (measured gaps 11.32 A in y, 938.0 / 436.9 A in z).
 | height map: grid points / checked / checked inside the ring | 313 600 / 167 108 / 12 728 | 313 600 / 167 844 / 12 728 |
 | disagree within the excluded band | 35.7 % | 35.3 % |
 | disagree inside the ring footprint (all points) | 39.6 % | 36.6 % |
-| largest boundary distance of a disagreement | (<= a/2, see test) | 2.42 A |
+| largest boundary distance of a disagreement (<= a/2 = 2.72 A) | 2.48 A | 2.42 A |
 | coordination 1 / 2 / 3 / 4 | 56 / 29 587 / 670 / 517 349 | 35 / 29 610 / 601 / 524 475 |
 | build time, peak RSS | 14.3 s, 1.33 GB | 12.8 s, 1.35 GB |
 
 Inside the ring only the band within 1.26 A of the ring centre line is farther than 3.84 A from
 every terrace edge, so the height-map equality is verified there and outside the ring; elsewhere
 inside the ring it is not assertable at this lattice spacing (the disagreement fraction above).
+
+## 5. Multislice runs (UNVALIDATED: finite-cell build-up, no absorption B30, M2 section 10)
+
+Setup (scripts/torus/run_torus_multislice.py; every value in case_<kind>.json with its label):
+Kirkland independent-atom potential (abTEM 1.0.10 functions), static lattice (ASSUMPTION), no
+physical absorption (ASSUMPTION B30), glancing angle 16.1347 mrad = external angle of the (0,0,8)
+internal Bragg condition with the engine's MIP 13.9028 V (B32; recomputed independently, agreement
+< 5e-4 V asserted), azimuth [100] (B20), exact propagator, 2/3 band limit, complex128, numpy, 4
+threads (OMP/OPENBLAS/MKL/NUMEXPR = 4, manifest thread check "consistent"). Cell: depth below the
+flat surface 48.88 A (bulk absorber 15 A, sin^2, 100 V, NUMERICAL), vacuum above the flat surface
+60 A, top absorber 10 A, entrance vacuum 20 a/4 = 27.15 A; box 118.88 x 146.63 x 1526.08 A; grid
+945 x 1134 (dx 0.1258, dy 0.1293 A, derived), dz = a/4 = 1.3577 A, 1124 slices (every slice holds
+one atomic plane at its upstream edge: max offset from the slice centre 0.679 A, recorded). Sheet
+beam H = 22 A, sin^2 edges 2 A, bottom 1 A above the flat surface at launch (0.56 A at the front
+face). The ring (crystal z 938 to 1062 A, i.e. 0.626 to 0.709 of the crystal length) lies in the
+downstream half and inside the fully lit footprint core (cell z 186 to 1301 A) with clearances
+779 A upstream and 212 A downstream (asserted >= 100 A).
+
+Engine geometry assertions (forward.cell.check_reflection_geometry, run inside the engine): all
+passed for all three cells (item 2 margin 60.0 > 46.63 A; item 3 footprint 1363 A < 1499 A; item 4
+build-up 1464 A available > 1083 A required; clean depth 33.9 > 20 A). They are made for the FLAT
+surface (the only terrace). Feature-aware checks F1 to F3 passed: vacuum above the ridge crest
+49.14 > 46.63 A (trench 60.0 A); clean depth below the trench floor 21.66 > 20 A (ridge 33.88 A).
+F4, recorded: read with the feature extremes as terrace surfaces, the engine's assertions would
+demand a crystal of 1840 A (trench) / 1756 A (ridge) instead of 1083 A; the shadow / blocked-view
+length of the feature is 757 A (trench) / 673 A (ridge), i.e. longer than the ring.
+
+| run | atoms | estimate (x1.5) | simulate | structure build | peak RSS |
+|---|---|---|---|---|---|
+| trench | 547 662 | 213 s | 187.6 s | 13.3 s | 1.33 GB |
+| ridge | 554 721 | 163 s | 207.3 s | 12.5 s | 1.35 GB |
+| flat reference | 551 448 | 185 s | 196.7 s | 10.1 s | 1.34 GB |
+
+(load average 3 to 5: another agent shared the 4 CPUs; engine arrays ~200 MB per run.) No cell
+shrinking was needed. Outputs: <scratchpad>/torus/ms_{trench,ridge,flat}/outputs/exit_waves/
+torus_<kind>_r0000.npz and outputs/manifests/torus_<kind>_<UTC>.json (package versions, engine
+commit and dirty flag, repository commit 2471f76 + diff hash, precision complex128, seed None
+(static), threads, input hashes of structure_<kind>.npz and the exit wave, case JSON hash,
+configuration_sha256, validation status). All exit waves are finite.
+
+Quick-look numbers (specular beam selected with a 0.2 1/A aperture about +sin(theta)/lambda;
+UNVALIDATED, not to be used as results): specular power relative to the flat reference 0.872
+(trench), 0.966 (ridge); specular phase difference to the flat reference over pixels where both
+amplitudes exceed 5 % of their maximum: median |dphi| 0.144 rad (trench), 0.044 rad (ridge), 95th
+percentile 0.54 / 0.60 rad; in the y strips outside the ring (y < 11.3 or > 135.3 A) median
+|dphi| 0.007 / 0.004 rad. The largest differences sit at y ~ 25 and 120 A (the ring crossings at
+y_c -+ R) and 5 to 20 A above the flat surface in the exit plane.
+
+## 6. Figures (<scratchpad>/torus/figures/)
+
+supercell_trench.png, supercell_ridge.png: (a) top view of the top-layer height map of the built
+atoms (sequential single-hue "Blues", colour bar in A); (d) built top-layer height versus
+rho - R (all azimuths) against the continuous half circle and the ideal a/4 terraces (1:1);
+(b), (c) cross-sections through the ring centre along y and along z (two atomic planes; removed
+sites open circles, added ridge atoms blue). exitwave_trench.png, exitwave_ridge.png: |psi|,
+arg psi (cyclic "twilight"), log Fourier intensity with the specular beam and the selection
+circle marked, raw phase minus the flat reference, specular |psi_s|, demodulated specular phase,
+specular phase minus the flat reference, specular amplitude ratio; masked pixels mid grey.
+
+## 7. Tests (verbatim)
+
+```
+$ venv/bin/pytest -q tests/structure
+........................................................................ [ 44%]
+........................................................................ [ 88%]
+...................                                                      [100%]
+163 passed in 13.61s
+$ venv/bin/pytest -q tests/forward/test_feature_cell.py
+......                                                                   [100%]
+6 passed in 2.15s
+```
+Corrupted-structure tests (each must raise StructureAssertionError): displaced atom (a); a true
+lattice site added above the trench's flat surface (a, feature rule); duplicate atom and periodic
+image (b); missing atom far from the ring (b, count); atom moved 0.3 A towards a neighbour (c);
+count doubled or wrong radius (d); missing flat top-layer atom, ridge crest layer removed, trench
+floor refilled (e); feature site outside the ring box (f); left-handed frame (g), wrong-azimuth
+frame (a).
+
+## 8. NOT RUN / open
+
+- Convergence of any multislice number with cell length, absorption, pixel, slice thickness or
+  aperture: NOT RUN. The M2 section 10 finding applies: without absorption the reflection does
+  not converge along z, so every exit wave here is UNVALIDATED and no phase or height may be read
+  from it. Engine rung 2 and the abTEM cross-check: NOT RUN (engine status).
+- Frozen phonons, a 2x1 reconstruction, an overlayer, wall relaxation: NOT IMPLEMENTED / not run.
+- <110> azimuth: the builder supports and tests it; no multislice run.
+- Hologram formation, reconstruction and the geometric-engine comparison of these exit waves:
+  NOT RUN here (T2 / pipeline agent).
+- The height-map assertion (e) is verified only beyond 3.84 A from every terrace edge of the ring
+  (inside the ring: a 2.5 A wide band on the centre line); the interpretation of "ring boundary"
+  as all terrace edges is mine (section 3) and should be confirmed.
+- Registry rows B33/B34 are to be added by the orchestrator (the source strings already cite them).
+- tests/structure was run while no other job of mine was running; the full repository test suite
+  was NOT RUN by this agent.

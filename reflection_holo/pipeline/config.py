@@ -174,6 +174,10 @@ FEATURE_SUB_KINDS = ("trench", "ridge")
 FEATURE_KEYS = ("kind", "sub_kind", "center_y_A", "center_z_A", "major_radius_A", "minor_radius_A")
 FEATURE_QUANT_KEYS = {"max_phase_step_rad": "positive"}
 PATTERN_FROM_FEATURE = "sections.structure.feature"
+# The registry maps stand-in ids to docs/06 items only. Item-13 stand-ins whose model_assumptions
+# row states something else than the declared feature are refused here (agent T2): B27 states that
+# there is NO feature; B33 is the demo trench, B34 the demo ridge (proposed rows, report T2).
+FEATURE_STAND_IN_SUB_KIND = {"B27": None, "B33": "trench", "B34": "ridge"}
 APERTURE_PASSAGES = ("second_aperture_hole", "condenser_biprism_pretilt", "no_aperture")
 
 
@@ -759,6 +763,14 @@ def _check_structure(sections: dict) -> None:
                                   "(item 13), not both (a feature on a staircase is NOT IMPLEMENTED)")
     plain = ("edge_periods", "substrate_layers", "vacuum_above_A")
     if feature:
+        f = st["feature"]
+        if f.label == "ASSUMPTION" and f.assumption_id in FEATURE_STAND_IN_SUB_KIND:
+            want = FEATURE_STAND_IN_SUB_KIND[f.assumption_id]
+            if want != f.value["sub_kind"]:
+                raise PipelineConfigError(
+                    f"sections.structure.feature: stand-in {f.assumption_id} states "
+                    f"{'that there is no feature' if want is None else 'a ' + want}, not a "
+                    f"{f.value['sub_kind']}: refused")
         extra = [k for k in plain if k in st]
         if extra:
             raise PipelineConfigError(f"sections.structure.{extra[0]}: not used on the feature path "

@@ -31,6 +31,7 @@ from reflection_holo.structure.shapes import HalfTorus
 INK, MUTED = "#1f1f1e", "#6b6a64"
 BASE, FEAT, REMOVED = "#8c8c86", "#2a78d6", "#eb6834"
 UNVAL = "UNVALIDATED (finite-cell build-up, no absorption B30; M2 report section 10)"
+MASKED = "#9a9a9a"
 APERTURE_PER_A = 0.2          # specular-beam selection radius (1/A), as in M2 report section 10.3
 AXES = ["x: outward normal [001]", "y: z cross x", "z: beam azimuth"]
 
@@ -191,12 +192,14 @@ def exitwave_figure(kind: str, ew, flat_ew, cell_feature: dict, out: Path) -> Pa
     fc = np.sin(th_out) / lam
     xr = (x - xs >= -15.0) & (x - xs <= 35.0)
     ext = [y[0], y[-1], x[xr][0] - xs, x[xr][-1] - xs]
-    fig, axs = plt.subplots(2, 4, figsize=(22, 9.6))
+    fig, axs = plt.subplots(2, 4, figsize=(24, 10.5), gridspec_kw=dict(wspace=0.5, hspace=0.38))
     fig.suptitle(f"Exit plane z = {ew.z_A:.1f} A, half-torus {kind}; 200 keV, theta_ext = "
                  f"{ew.theta_in_ext_rad * 1e3:.4f} mrad (B32), stored {ew.psi.dtype}; {UNVAL}",
                  fontsize=10, color=INK, x=0.01, ha="left")
 
     def img(ax, data, cmap, title, label, vmin=None, vmax=None):
+        cmap = plt.get_cmap(cmap).copy()
+        cmap.set_bad(MASKED)                   # masked pixels: mid grey, not a twilight colour
         im = ax.imshow(data[xr], origin="lower", aspect="auto", cmap=cmap, extent=ext,
                        interpolation="nearest", vmin=vmin, vmax=vmax)
         cb = fig.colorbar(im, ax=ax, shrink=0.9)
@@ -230,10 +233,10 @@ def exitwave_figure(kind: str, ew, flat_ew, cell_feature: dict, out: Path) -> Pa
     cb = fig.colorbar(im, ax=ax, shrink=0.9)
     cb.set_label("log10 |FFT psi|^2 / max")
     ax.add_patch(plt.Circle((0, fc), APERTURE_PER_A, fill=False, color="#1baf7a", lw=1.2))
-    ax.annotate("specular (0,0,8)\n+sin(theta)/lambda", (0, fc), (0.35, fc + 0.35),
+    ax.annotate("specular (0,0,8)\n+sin(theta)/lambda", (0, fc), (0.2, fc + 0.55),
                 color="#1baf7a", fontsize=8, arrowprops=dict(arrowstyle="->", color="#1baf7a"))
     ax.plot([0], [-fc], "+", color="w", ms=9)
-    ax.text(0.05, -fc - 0.15, "incident -sin(theta)/lambda", color="w", fontsize=8)
+    ax.text(-0.9, -fc - 0.2, "incident, -sin(theta)/lambda (+)", color="w", fontsize=8)
     ax.set_xlabel("f_y (1/A)")
     ax.set_ylabel("f_x (1/A)")
     ax.set_title("(c) Fourier-space intensity; circle = specular selection", fontsize=10,
@@ -244,7 +247,7 @@ def exitwave_figure(kind: str, ew, flat_ew, cell_feature: dict, out: Path) -> Pa
     img(axs[1, 0], amp, "viridis",
         f"(e) specular beam |psi_s| (aperture {APERTURE_PER_A} 1/A)", "|psi_s|")
     ph = np.where(amp > 0.05 * amp[xr].max(), np.angle(demod), np.nan)
-    img(axs[1, 1], ph, "twilight", "(f) arg psi_s exp(-2 pi i f_c x) (|psi_s| > 5 % of max)",
+    img(axs[1, 1], ph, "twilight", "(f) arg psi_s exp(-2 pi i f_c x)\n(grey: |psi_s| < 5 % of max)",
         "phase (rad)", -np.pi, np.pi)
     if flat_ew is None:
         not_run(axs[0, 3])
@@ -255,14 +258,15 @@ def exitwave_figure(kind: str, ew, flat_ew, cell_feature: dict, out: Path) -> Pa
         pf = flat_ew.psi.astype(np.complex128)
         m_raw = (amp_all > 0.05 * amp_all[xr].max()) & (np.abs(pf) > 0.05 * np.abs(pf)[xr].max())
         img(axs[0, 3], np.where(m_raw, np.angle(psi * np.conj(pf)), np.nan), "twilight",
-            "(d) arg(psi psi_flat*): exit phase minus the flat\nreference (both > 5 % of max)",
+            "(d) arg(psi psi_flat*): exit phase minus the flat\nreference (grey: |psi| or "
+            "|psi_flat| < 5 % of max)",
             "phase difference (rad)", -np.pi, np.pi)
         spec_f = select_beam(flat_ew, fx_centre_per_A=fc, fy_centre_per_A=0.0,
                              radius_per_A=APERTURE_PER_A)
         af = np.abs(spec_f)
         m_s = (amp > 0.05 * amp[xr].max()) & (af > 0.05 * af[xr].max())
         img(axs[1, 2], np.where(m_s, np.angle(spec * np.conj(spec_f)), np.nan), "twilight",
-            "(g) specular phase minus flat reference\narg(psi_s psi_s,flat*) (both > 5 % of max)",
+            "(g) specular phase minus flat reference\narg(psi_s psi_s,flat*) (grey: < 5 % of max)",
             "phase difference (rad)", -np.pi, np.pi)
         img(axs[1, 3], np.where(m_s, amp / np.where(af > 0, af, np.nan), np.nan), "viridis",
             "(h) specular amplitude ratio |psi_s| / |psi_s,flat|", "ratio", 0.0, 2.0)

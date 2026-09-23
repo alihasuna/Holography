@@ -37,13 +37,14 @@ import reflection_holo
 from reflection_holo.constants import BEAM_ENERGY_SUPPLIED_KEV
 from reflection_holo.forward.geometric import STATUS
 from reflection_holo.forward.geometric.height_field import trace_height_field
+from reflection_holo.geometry.specular import wrap_to_pi
 from reflection_holo.geometry.wavelength import wavelength_A
 from reflection_holo.optics.hologram import fringe_contrast
 from reflection_holo.pipeline import quantify as Q
 from reflection_holo.pipeline.config import PipelineConfig, assumptions_in_use, list_inputs
 from reflection_holo.pipeline.engines import run_geometric_feature
 from reflection_holo.provenance.manifest import build_manifest
-from reflection_holo.quantification.height_map import REASONS, box_span, height_map
+from reflection_holo.quantification.height_map import REASONS, box_all, box_span, height_map
 from reflection_holo.quantification.invisibility import detect_invisibility
 from reflection_holo.quantification.shadow import height_field_masks
 from reflection_holo.reconstruction.sideband import sideband_phase_noise
@@ -282,7 +283,7 @@ def run_feature(cfg: PipelineConfig, out: Path, *, t0: float, git_preflight: dic
     take = dist[rows, cols] <= dz_row
     cy = dict(y_A=placement.y_A[take], row=rows[take], z_src_A=zsrc[rows[take], cols[take]])
     col0 = int(np.argmin(np.abs(placement.y_A - shape.center_y_A)))
-    cz = dict(u_A=placement.u_A.copy(), column=col0, y_A=float(placement.y_A[col0]),
+    cz = dict(u_A=placement.u_A.copy(), column=np.array(col0), y_A=np.array(placement.y_A[col0]),
               z_src_A=zsrc[:, col0].copy())
     for name, arr in (("h_meas_A", height), ("sigma_h_A", sigma_h), ("h_layer_A", h_layer),
                       ("h_continuous_A", h_cont), ("h_data_only_A", hm["height_data_only_A"]),
@@ -305,8 +306,8 @@ def run_feature(cfg: PipelineConfig, out: Path, *, t0: float, git_preflight: dic
         n_columns=int(take.sum()))
     stats["z_cut_at_y_centre"].update(
         definition=f"the detector column nearest y_c = {shape.center_y_A:g} A (y = "
-                   f"{cz['y_A']:.3f} A); crosses the ring front and back arcs (z_c -+ R), where the "
-                   f"ring runs across the beam", column=col0)
+                   f"{float(cz['y_A']):.3f} A); crosses the ring front and back arcs (z_c -+ R), "
+                   f"where the ring runs across the beam", column=col0)
     # measurable fractions ------------------------------------------------------------------------
     n_px = int(lit.size)
     fractions = dict(
@@ -326,6 +327,21 @@ def run_feature(cfg: PipelineConfig, out: Path, *, t0: float, git_preflight: dic
         reason_counts={k: int((hm["reason_code"] == v).sum()) for k, v in REASONS.items()},
         reason_counts_on_footprint={k: int(((hm["reason_code"] == v) & footprint).sum())
                                     for k, v in REASONS.items()})
+    # reliable footprint pixels NOT connected to the flat reference: their height is known modulo
+    # h_2pi only; check the chain there modulo 2 pi against the built phase at the source
+    iso_all = hm["reliable"] & ~hm["connected"] & footprint
+    iso = iso_all & box_all(hm["reliable"], r0, r1)          # half a resolution from unreliable px
+    rec_iso: dict[str, Any] = dict(
+        n_px=int(iso_all.sum()), n_px_half_resolution_inside=int(iso.sum()),
+        note="reliable pixels on the footprint that no reliable path joins to the flat reference: "
+             "height known modulo h_2pi only (not returned). Residual over those at least half a "
+             "resolution element from any unreliable pixel: wrap(phi - phi_ref - (-s "
+             "h_layer(source))), a check of the chain modulo 2 pi")
+    if iso.any() and "phi0_rad" in hm:
+        res_w = np.asarray(wrap_to_pi(phase[iso] - hm["phi0_rad"] - source_phase[iso]))
+        rec_iso.update(rms_wrapped_residual_rad=_rms(res_w),
+                       rms_wrapped_residual_A=_rms(res_w) / s_sens)
+    fractions["isolated_reliable_on_footprint"] = rec_iso
     resolution = _resolution_record(shape, theta=theta, res_A=res_A, pixel_A=p_A, layer_A=layer,
                                     s=s_sens, alpha=op["alpha"])
     if withhold is not None:
@@ -397,8 +413,8 @@ def run_feature(cfg: PipelineConfig, out: Path, *, t0: float, git_preflight: dic
     for key, c in (("cut_y", cy), ("cut_z", cz)):
         for name, v in c.items():
             if isinstance(v, np.ndarray):
-                arrays[f"{key}_{name}"] = (v, ["cut"], "see summary quantification.profile_cuts",
-                                           grid.plane)
+                arrays[f"{key}_{name}"] = (v, ["cut"] if v.ndim else ["none (0-d scalar)"],
+                                           "see summary quantification.profile_cuts", grid.plane)
     arrays["purpose"] = (np.array(cfg.purpose), ["none (0-d scalar)"], "text (run purpose)",
                          "not a wave: run metadata (audit A3 m1)")
     with open(out / "arrays.npz", "xb") as fh:

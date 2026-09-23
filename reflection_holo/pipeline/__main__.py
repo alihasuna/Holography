@@ -127,6 +127,21 @@ def main(argv: list[str] | None = None) -> int:
                    f"wrap period {h['wrap_period_A']:.4f} A)" if h else f"no height: {st.get('reason')}")
             print(f"step field terraces {st['from_field_terrace']}->{st['to_field_terrace']} "
                   f"({st['type']}): {txt}")
+        if "feature" in s:                                   # feature path (agent T2)
+            q = s["quantification"]
+            m = q["measurable"]
+            iso = m.get("isolated_reliable_on_footprint") or {}
+            print(f"feature {s['feature']['shape']['sub_kind']}: measurable {m['measurable_px']} of "
+                  f"{m['detector_px']} detector px; ring footprint: {m['measurable_footprint_px']} "
+                  f"of {m['footprint_source_px']} lit footprint px measurable; isolated reliable "
+                  f"footprint px (height modulo h_2pi only): {iso.get('n_px', 0)}")
+            for name, c in q["profile_cuts"].items():
+                f = (lambda v: "-" if v is None else f"{v:.4f}")
+                print(f"profile {name}: {c['n_measurable']} of {c['n_px']} px measurable "
+                      f"({c['n_measurable_on_footprint']} of {c['n_on_footprint']} on the "
+                      f"footprint); rms vs layer {f(c['rms_vs_layer_A'])} A, vs continuous "
+                      f"{f(c['rms_vs_continuous_A'])} A")
+            print(f"resolution: {q['resolution']['summary']}")
         deg = s["quantification"].get("sign_degeneracy") or {}
         if any(p.get("degenerate_single_step") for p in deg.get("pairs", [])):
             print(f"note: {deg['note']}")
