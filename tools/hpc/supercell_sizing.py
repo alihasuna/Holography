@@ -383,7 +383,8 @@ def run_phonons(name, *, n_real, seed, **kw):
                u_label="ASSUMPTION A7 (not sourced)", aperture_mrad=B22_APERTURE_MRAD,
                aperture_radius_per_A=rad, region=dict(distance_A=[1500.0, L - 750.0],
                                                       min_height_above_surface_A=5.0,
-                                                      pixels=int(reg.sum())),
+                                                      x_rows=int(reg.sum()),
+                                                      pixels=int(reg.sum()) * D0.shape[1]),
                rho2=rho2, rho=float(np.sqrt(rho2)), phase_mean_minus_static_rad=ph_sys,
                amp_mean_over_static=amp_ratio, rows=rows, times_s=times,
                total_s=time.time() - t0, loadavg_after=loadavg())
@@ -994,6 +995,11 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
     runs = meas["runs"]
     print(f"measurement file: created {meas.get('created_utc')}, git {meas.get('git')}, "
           f"loadavg start {meas.get('loadavg_start')} end {meas.get('loadavg_end')}")
+    lam_ = S["lam"]
+    print(f"read-out resolution: pass band 0.1 1/A -> 1/(2 x 0.1) = 5 A in x = {5.0 / tan_e:.0f} A "
+          f"of surface; free-space diffraction between surface and exit plane sqrt(lambda D)/tan = "
+          f"{np.sqrt(lam_ * 1000) / tan_e:.0f} A (D = 1000 A) to {np.sqrt(lam_ * 6000) / tan_e:.0f} A "
+          f"(D = 6000 A); bins 500 A")
     need = [n for n, _ in MEASUREMENTS]
     check("measurements_present", all(n in runs for n in need),
           f"runs present: {sorted(runs)}; required: {need}")
@@ -1027,10 +1033,14 @@ def report_part2(S, cal_path, meas_path, t_start) -> int:
         S[f"meas_{name}"] = m
     if "fp_100_r010" in runs:
         fp = runs["fp_100_r010"]
+        rows_x = fp["region"].get("x_rows", fp["region"]["pixels"])   # v1 files stored x rows as "pixels"
+        print(f"[fp_100_r010] region: surface distance {fp['region']['distance_A'][0]:.0f}-"
+              f"{fp['region']['distance_A'][1]:.0f} A after contact, >= 5 A above the surface: "
+              f"{rows_x} x-rows x {fp['info']['ny']} y-columns = {rows_x * fp['info']['ny']} pixels")
         print(f"[fp_100_r010] {fp['n_realisations']} frozen-phonon realisations, u = "
               f"{fp['u_rms_A']} A per axis ({fp['u_label']}), seed {fp['seed']}, aperture "
-              f"{fp['aperture_mrad']} mrad = {fp['aperture_radius_per_A']:.4f} 1/A (B22); region "
-              f"{fp['region']}: variance/coherent intensity rho^2 = {fp['rho2']:.4e} (rho = "
+              f"{fp['aperture_mrad']} mrad = {fp['aperture_radius_per_A']:.4f} 1/A (B22): "
+              f"variance/coherent intensity rho^2 = {fp['rho2']:.4e} (rho = "
               f"{fp['rho']:.4f}); arg(mean) - arg(static) = {fp['phase_mean_minus_static_rad']:+.4f}"
               f" rad; |mean|/|static| = {fp['amp_mean_over_static']:.4f}; "
               f"{np.mean(fp['times_s']):.0f} s per realisation")
@@ -1357,16 +1367,25 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
         rep = replica_cpu_s(inf["nx"], inf["ny"], inf["n_slices"], nonempty,
                             inf["n_atoms"] / nonempty, cc)
         meas_s = m["run_s"] if "run_s" in m else float(np.mean(m["times_s"]))
+        L1 = float(m["loadavg_after"][0])
+        norm = meas_s / rep / max(1.0, L1 / 4.0)
         print(f"  measured run {name}: {meas_s:.0f} s per realisation vs replica {rep:.0f} s "
-              f"(ratio measured/replica {meas_s / rep:.2f}); x1.5 replica {1.5 * rep:.0f} s")
+              f"(ratio measured/replica {meas_s / rep:.2f}; 1-min load after the run {L1:.2f}; "
+              f"ratio divided by max(1, load/4) = {norm:.2f}); x1.5 replica {1.5 * rep:.0f} s")
         S.setdefault("cpu_ratios", []).append(meas_s / rep)
+        S.setdefault("cpu_ratios_norm", []).append(norm)
+        S.setdefault("cpu_loads", []).append(L1)
     if S.get("cpu_ratios"):
         rmin, rmax = min(S["cpu_ratios"]), max(S["cpu_ratios"])
-        check("cpu_replica_vs_measured_runs", 1 / 3 < rmin and rmax < 3,
-              f"measured/replica between {rmin:.2f} and {rmax:.2f} (sanity bound: factor 3)")
-        print(f"  observation: the x1.5 factor of run_study.py {'covers' if rmax <= 1.5 else 'does NOT cover'}"
-              f" the measured runs here (largest measured/replica {rmax:.2f}; the runs shared the 4 "
-              f"cores with other agents)")
+        check("cpu_replica_is_lower_bound_of_measured_runs", rmin >= 0.9,
+              f"measured/replica {rmin:.2f} to {rmax:.2f}: the replica counts only FFT, element-wise "
+              f"and potential-slice operations and was calibrated at load 0.36, so no measured run "
+              f"may be faster (tolerance 0.9)")
+        print(f"  observation: measured/replica {rmin:.2f} to {rmax:.2f} under 1-min loads of "
+              f"{min(S['cpu_loads']):.2f} to {max(S['cpu_loads']):.2f} on 4 cores; divided by "
+              f"max(1, load/4): {min(S['cpu_ratios_norm']):.2f} to "
+              f"{max(S['cpu_ratios_norm']):.2f}. The x1.5 factor of run_study.py (used in every CPU "
+              f"time below) sits at the low end of that range")
     return report_part4(S, cc, t_start)
 
 
@@ -1449,6 +1468,11 @@ def report_part4(S, cc, t_start) -> int:
               f"y {lay['Ly']:.1f} A ({lay['py']} periods), z {lay['Lz']:.1f} A ({lay['pz']} "
               f"periods; contact {lay['z_contact']:.0f} + run-in {lay['L_run']:.0f} + field "
               f"{lay['z_fov']:.0f} + exit {lay['L_exit']:.0f})")
+        vac_phys = max(GAP_A + lay["H"], lay["Lz"] * tan_e) + EDGE_A
+        print(f"    vacuum: engine rule (item 2) H + L_z tan(theta) -> {lay['vac']:.0f} A; physical "
+              f"need max(gap + H, L_z tan(theta)) + edge = {vac_phys:.0f} A (DERIVED_HERE: incident "
+              f"sheet at the entrance, reflected sheet at the exit plane; diffraction spread not "
+              f"included)")
         print(f"    atoms {lay['n_atoms']:,}; grid {lay['nx']} x {lay['ny']} "
               f"(dx {lay['ext_x'] / lay['nx']:.4f}, dy {lay['Ly'] / lay['ny']:.4f} A); slices "
               f"{lay['N']} (non-empty {lay['nonempty']}, atoms per slice max {lay['n_max']}, mean "

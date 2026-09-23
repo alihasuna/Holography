@@ -1212,11 +1212,114 @@
    },
    "specular_filter_radius_per_A": 0.1,
    "validation_status": "UNVALIDATED: rung 1 (refraction-only analytic limit) and rung 3 (continuum null tests) of the docs/05 4.4 ladder pass in tests/forward; rung 2 (Bragg-case two-beam phase sweep), the abTEM cross-check (transmission and reflection-like configurations) and the flat-surface rocking curve against a dynamical solver were NOT RUN"
+  },
+  "fp_100_r010": {
+   "info": {
+    "azimuth": "100",
+    "absorption_ratio": 0.1,
+    "absorption_label": "TEST_ONLY: stands in for PROJECT_INPUT item 21",
+    "L_after_contact_A": 3000.0,
+    "y_periods": 3,
+    "clean_depth_A": 60.0,
+    "bulk_absorber_A": 15.0,
+    "top_absorber_A": 10.0,
+    "absorber_V": 100.0,
+    "depth_below_A": 75.0,
+    "substrate_layers": 58,
+    "periods": 573,
+    "entrance_A": 13.577250000000001,
+    "L_z_A": 3125.48295,
+    "H_A": 47.43325765334164,
+    "vacuum_above_A": 99.0,
+    "gap_A": 2.0,
+    "edge_A": 2.0,
+    "x_surface_A": 75.0,
+    "extent_x_A": 184.0,
+    "extent_y_A": 16.2927,
+    "nx": 1440,
+    "ny": 126,
+    "dz_A": 1.357725,
+    "n_slices": 2302,
+    "n_atoms": 192528,
+    "theta_ext_rad": 0.016134748438027965,
+    "theta_int_rad": 0.018471894068541668,
+    "V0_mip_V": 13.902842551200722,
+    "z_contact_A": 123.94531289187542,
+    "u_rms_A": null,
+    "precision": "complex64",
+    "threads": 4
+   },
+   "n_realisations": 8,
+   "seed": 20260923,
+   "u_rms_A": 0.076,
+   "u_label": "ASSUMPTION A7 (not sourced)",
+   "aperture_mrad": 3.0,
+   "aperture_radius_per_A": 0.11962037063633645,
+   "region": {
+    "distance_A": [
+     1500.0,
+     2251.5376371081247
+    ],
+    "min_height_above_surface_A": 5.0,
+    "pixels": 95
+   },
+   "rho2": 0.0009374937360041188,
+   "rho": 0.03061851949399446,
+   "phase_mean_minus_static_rad": -0.045740542605036766,
+   "amp_mean_over_static": 0.7213336612718474,
+   "rows": [
+    {
+     "start_A": 0.0,
+     "rho2": 0.005709331129663575,
+     "amp_mean_over_static": 0.6964108502984501
+    },
+    {
+     "start_A": 500.0,
+     "rho2": 0.0023718456603557887,
+     "amp_mean_over_static": 0.6929750479010311
+    },
+    {
+     "start_A": 1000.0,
+     "rho2": 0.0011586891709500237,
+     "amp_mean_over_static": 0.6984671434541855
+    },
+    {
+     "start_A": 1500.0,
+     "rho2": 0.0010332398118784937,
+     "amp_mean_over_static": 0.717037907384658
+    },
+    {
+     "start_A": 2000.0,
+     "rho2": 0.0008032868098873018,
+     "amp_mean_over_static": 0.7314346511473787
+    },
+    {
+     "start_A": 2500.0,
+     "rho2": 0.0006172626684122034,
+     "amp_mean_over_static": 0.7409601350793728
+    }
+   ],
+   "times_s": [
+    102.49596738815308,
+    94.68313550949097,
+    97.82509732246399,
+    101.86866664886475,
+    76.17532205581665,
+    102.86371994018555,
+    106.81468272209167,
+    100.93882894515991
+   ],
+   "total_s": 885.9005887508392,
+   "loadavg_after": [
+    6.8,
+    7.23,
+    6.73
+   ]
   }
  },
  "loadavg_end": [
-  6.92,
-  6.93,
-  5.54
+  6.8,
+  7.23,
+  6.73
  ]
 }

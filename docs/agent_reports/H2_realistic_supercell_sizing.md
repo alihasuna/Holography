@@ -168,7 +168,10 @@ at every surface point of the strip from ONE run. Resolution: about 5 A in x, 30
 excludes the internal Bragg wave (0.093 1/A from f_c) and the steeper (0,0,l) exit beams. Bins of
 500 A from the bottom-edge contact point; the reference is the mean over the last 2500 A before
 the last 750 A. The strip is converged beyond L when every later bin up to the end of the reference
-window is within the tolerance and the reference window itself is flat to 1e-2 rad and 3e-2.
+window is within the tolerance and the reference window itself is flat to 1e-2 rad and 3e-2. The distances are bin edges: resolution 500 A, and the
+read-out is blurred by the pass band (5 A in x, 310 A of surface) and by free-space diffraction
+between the surface and the exit plane (sqrt(lambda D)/tan(theta_ext): 310 A for D = 1000 A, 760 A
+for D = 6000 A).
 
 | run | azimuth, r | strip after contact | plateau |R| | reference window flat to (phase / amplitude) | phase within 1e-2 rad beyond | amplitude within 3e-2 beyond | last 500 A before exit | depth where exit-plane I > 1e-2 / 1e-4 |
 |---|---|---|---|---|---|---|---|---|
@@ -185,14 +188,15 @@ Reading:
   the two-beam estimate (3721 A) is too short here. Design run-in 5000 A.
 * [100], r = 0: the amplitude reaches 0.89 by 3000 A, then amplitude and phase oscillate
   (phase +-0.086 rad, period about 5000-6000 A) and settle within 1e-2 rad after 8000 A in this
-  strip (tested only to 11 251 A). The two-beam tail predicts 22 572 A. Without absorption 0.206
-  of the incident intensity is not reflected into the specular beam (|R|^2 = 0.794); the exit-plane
+  strip (tested only to 11 251 A). The two-beam tail predicts 22 572 A. Without absorption 0.207
+  of the incident intensity is not reflected into the specular beam (|R|^2 = 0.793); the exit-plane
   intensity stays near 1e-2 down to the bulk absorber, which therefore carries the transmitted wave
   and must not reflect it.
 * [110], r = 0.1 (the M2 study azimuth): at the two-beam Bragg angle the specular amplitude is only
-  0.043 (six times weaker than at [100]) and its phase beats by +-0.036 rad over the whole strip. The
-  M2 null-test study therefore runs away from a reflection maximum, in a strongly many-beam regime
-  (section 2.2). Its convergence lengths do not transfer to [100].
+  0.043 (six times weaker than at [100]) and its phase beats by +-0.036 rad over the whole strip, in
+  a strongly many-beam regime (section 2.2). Where the [110] reflection maximum lies is for the
+  rocking curve (run order step 2); the M2 study's convergence lengths at this angle do not transfer
+  to [100].
 * Exit margin: the last 500 A before the exit plane are off by 0.04-0.05 rad in every run (the
   reflected ray is then less than 8 A above the surface, where the pass band mixes it with the
   crystal). The 3-resolution-element exit margin of 1115.5 A (section 2.6) covers this.
