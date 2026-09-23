@@ -1,6 +1,7 @@
 # P1: end-to-end pipeline, geometric-phase engine, dark-field optics and HPC runner (Phase 3)
 
-Status: IN PROGRESS, 2026-09-22. Written incrementally. Not committed (the orchestrator commits).
+Status: COMPLETE for this task, 2026-09-23. Not committed by me (the orchestrator took snapshots
+while I worked).
 Code not audited or reviewed by another agent.
 
 Scope (orchestrator task P1): `reflection_holo/pipeline/`, `reflection_holo/forward/geometric/`,
@@ -112,3 +113,73 @@ All are demo stand-ins; a run with `purpose: comparison` refuses stand-ins for b
 | B30 | No physical absorption in the multislice demos (imaginary potential 0; B6 not represented) | item 21 | no sourced absorptive-potential parameterisation (the [B15] warning forbids a tuned one) |
 | B31 | Beam-energy stability: relative wavelength uncertainty 1e-5 (1 sigma), used only in the height uncertainty | item 1 (stability part) | negligible against the angle term; a stated, not guessed-to-zero, uncertainty |
 | B32 | Multislice runs: the glancing angle and every refraction angle are computed with the mean inner potential of the potential actually used (Kirkland independent-atom model, 13.903 V, report D3 F16; 16.135 mrad at (0,0,8)), asserted against the engine's value to 5e-4 V; geometric runs keep B1. The IAM value exceeds B1 (12.0 V) by 1.90 V and the DFT value 12.53 V by 1.37 V: a model systematic of the engine (neutral free atoms, no bonding), not a correction | item 7 | consistency of the incidence angle with the refraction inside the simulated crystal (orchestrator decision after D3) |
+9. Second full HPC-size multislice run (CPU, `--variant cpu_numpy`, corrected configuration:
+   1920 x 432 x 7215 slices, 1.44 million atoms; 18.8 min wall, 45 min CPU on 4 CPUs): the pipeline
+   ran end to end and wrote every output. No height: terrace 0 has no usable region, the a/4 step
+   is refused ("branch inconsistent under the lattice constraint"), and the no-step control FAILS
+   (delta = 0.441 rad between the two halves of terrace 1, tolerance 3 x 0.0966 = 0.290 rad). The
+   dark-field phase of the multislice exit wave varies along the beam inside a terrace (quicklook:
+   a slow gradient and amplitude modulation along the beam), unlike the geometric model. Not
+   investigated further here: it is the engine's physics (UNVALIDATED; rung 2 and the abTEM
+   cross-check NOT RUN), and the pipeline's refusals are the intended behaviour. Outputs are in the
+   scratch directory only.
+
+## Files (all new unless stated)
+
+* `reflection_holo/forward/geometric/{__init__,model}.py`: geometric-phase engine, ray trace,
+  B4-scope refusals, `FieldLayout` (also used for multislice masks).
+* `reflection_holo/optics/darkfield.py`, `projection.py`, `detector.py`.
+* `reflection_holo/pipeline/{__init__,__main__,config,engines,run,quantify,estimates}.py`.
+* `configs/demo_smoke_si001.yaml` (geometric; variant `multislice_tiny`),
+  `configs/demo_hpc_si001.yaml` (multislice cupy/complex64; variants `cpu_numpy`,
+  `geometric_same_structure`).
+* `scripts/hpc/run_pipeline.slurm`, `setup_env.sh`, `README_HPC.md`.
+* `tests/forward_geometric/test_geometric_model.py` (7 tests),
+  `tests/forward_geometric/test_darkfield_projection_detector.py` (7),
+  `tests/pipeline/test_pipeline_geometric.py` (10), `tests/pipeline/test_pipeline_multislice.py`
+  (2), `tests/pipeline/conftest_pipeline.py` (constants).
+* Modified: `reflection_holo/io/assumption_registry.yaml` (B19-B32 appended, as requested).
+
+## CLI
+
+    venv/bin/python -m reflection_holo.pipeline list-inputs --config configs/demo_smoke_si001.yaml
+    venv/bin/python -m reflection_holo.pipeline dry-run --config C [--variant V] [--calibrate-cpu]
+    venv/bin/python -m reflection_holo.pipeline run --config C --out D [--variant V] [--allow-no-git]
+
+Exit status 3 = configuration refused (missing PROJECT_INPUT, unregistered stand-in), 4 = engine
+unavailable, 5 = output directory not empty.
+
+## Test results (verbatim summary of the last full run, `venv/bin/pytest -q`)
+
+    FAILED tests/io/test_io_config_stand_ins.py::test_registry_is_package_data_mapping_ids_to_items
+    FAILED tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions
+    2 failed, 641 passed, 6 warnings in 197.86s (0:03:17)
+
+The two failures are the registry extension of item 8 (`E       AssertionError: assert {'B1':
+(20,),...9': (7,), ...} == {'B1': (20,),... 'B18': (14,)}` and `E           AssertionError: B19`);
+every test I wrote passes (26; each acceptance test passed on its first run; no tolerance changed).
+
+## NOT RUN
+
+* The GPU run of `demo_hpc_si001.yaml` (no GPU here; the cupy backend is untested by me) and the
+  SLURM submission itself (the script was exercised locally: placeholder refusal, a fake `sbatch`
+  for the submission line, and job mode with the smoke configuration).
+* `setup_env.sh` on a fresh machine (abTEM and matplotlib were already in this venv).
+* R2 through the pipeline (implemented, no test), parallel step edges through the pipeline (engine
+  test only), frozen-phonon ensembles (`n_realisations > 1`) through the pipeline.
+* Any validation of the multislice step phases: they are not flat along the beam (item 9).
+
+## Integration steps left for the multislice engine
+
+1. Keep the names the adapter calls stable, or update `pipeline/engines.py`
+   (`build_reflection_cell`, `AtomicPotential`, `PhysicalAbsorption`, `FrozenPhonons`, `SheetBeam`,
+   `MultisliceParams`, `NumericalAbsorber`, `simulate`, `potentials.potential_mean_inner_potential_V`);
+   `multislice_status()` reports what is missing.
+2. Export `potential_mean_inner_potential_V` from the package (it is found in `potentials`).
+3. Explain or remove the along-beam phase variation inside a terrace (item 9) before any
+   multislice height is reported; the no-step control is the check.
+4. A declared band limit as a number (`metadata["band_limit_cycles_per_A"]`) would let the
+   dark-field stage assert the aperture against it (it now checks Nyquist only).
+5. The orchestrator: add rows B19-B32 to docs/model_assumptions.md, update the expected registry
+   in tests/io/test_io_config_stand_ins.py, and decide whether the three pipeline units ("e/px",
+   "counts/e", "deg") move into io.config.UNITS.

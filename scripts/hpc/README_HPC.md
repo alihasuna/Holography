@@ -77,6 +77,13 @@ In the output directory:
 `python -m reflection_holo.pipeline run` prints the signed heights, e.g. for the smoke demo
 `h = +2.7156 +- 0.0117 A` (a/2 = 2.7155 A) and `h = -1.3576 +- 0.0058 A` (a/4 down-step).
 
+What to expect from the multislice demo (measured on CPU here, the same physics as on a GPU): the
+pipeline runs end to end, but the dark-field phase of the UNVALIDATED multislice exit wave is not
+flat along the beam within a terrace; the no-step control FAILS (0.44 rad between the two halves of
+terrace 1 against a 0.29 rad tolerance) and no step height is returned (the a/4 branch is
+"inconsistent" with the lattice constraint; terrace 0 has no usable region). This is reported, not
+hidden: heights from the multislice engine need the validation ladder of docs/05 4.4 first.
+
 ## 5. Runtimes measured on the build machine (4 CPUs, no GPU; 2026-09-22)
 
 | Run | Measured |
@@ -85,7 +92,7 @@ In the output directory:
 | smoke, tiny multislice variant (`--variant multislice_tiny`, 27,000 atoms, 432 x 48 x 1095 slices) | about 7 s wall |
 | `dry-run` of `demo_hpc_si001.yaml` (builds 1.44 million atoms and the cell) | 39 s wall |
 | `demo_hpc_si001.yaml --variant cpu_numpy` estimate (`--calibrate-cpu`, engine's measured model) | 344 s per realisation |
-| `demo_hpc_si001.yaml --variant cpu_numpy`, full run | see docs/agent_reports/P1_pipeline.md |
+| `demo_hpc_si001.yaml --variant cpu_numpy`, full run (1920 x 432 x 7215 slices, 8 FFT threads on 4 CPUs) | 18.8 min wall, 45 min CPU, about 0.75 GB resident |
 | GPU run | NOT RUN (no GPU here); the engine's ASSUMPTION model gives about 10 s of propagation |
 
 Memory: about 140 MiB per realisation for the HPC grid (engine estimate) plus the 1.44-million-atom
