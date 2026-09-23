@@ -83,7 +83,7 @@ agrees with this dispersion to 4e-10 (check `bragg_internal`). P3: symmetric Bra
 planes parallel to the surface), semi-infinite bulk-terminated crystal, plane-wave components.
 P4: absorption, when present, is the engine's proportional model `V' = r V` (so `V0' = r V0`,
 `V_g' = r V_g`). P5: first order in eta/G (|eta| < 0.06 rad/A against G = 9.26 rad/A); the exact
-two-beam quartic confirms |Im q| = b to 3e-5 (check `two_beam_exact_root`).
+two-beam quartic gives |Im q| = 0.040867 rad/A against b = 0.040868 rad/A (check `two_beam_exact_root`).
 
 With `kappa0` the normal component of the refracted incident wave, `eta = kappa0 - G/2`, the two
 Bloch solutions have normal wavevectors `q - G/2` and `q + G/2` with `q^2 = eta^2 - c^2`,
@@ -323,7 +323,7 @@ What must be carried, and the pixel it needs (script section 9):
   (pixel log2 pixel), element-wise pass 1.803e-9 s per pixel, complex exponential 4.463e-8 s per
   element, GEMM 362 GFLOP/s (medians; FFT and element-wise from grids >= 1e6 pixels). The CPU times
   quoted include the x1.5 factor of `run_study.py` (the estimator under-read M2's measured smoke run
-  by that factor). On the 17 study points the replica x1.5 is within 0.75 to 1.40 of the CPU numbers
+  by that factor). On the 17 study points the replica x1.5 is within 0.75 to 1.41 of the CPU numbers
   M2 printed (measured under a different load).
 * Memory: the engine's accounting is per concurrent realisation and counts 48 B per atom for the
   positions; the host side is larger (N9: about 120 B/atom persistent, 192 B/atom (static) or
