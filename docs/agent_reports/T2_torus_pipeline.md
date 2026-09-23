@@ -44,3 +44,17 @@ projection, detector); `reconstruction/sideband.py`; `configs/demo_smoke_si001.y
    (aliased a/4 steps, slopes outside the aperture, unresolved terraces); the measurable height map
    is the flat surrounding surface; the ring is detected (amplitude, shadow and phase contrast) but
    not measured. The quantification must say so rather than return aliased heights.
+2. Baseline before any change (HEAD 2f40c9a): `venv/bin/pytest -q`: `724 passed, 12 warnings in
+   246.45s (0:04:06)`. Reference smoke run (`$S/smoke_before`, CLI exit 0): the S4 numbers
+   (+2.7156 +- 0.0165, -1.3576 +- 0.0082, -1.3580 +- 0.0082 A; control delta -0.0036868859167245027
+   rad), kept to check that the refactor of `pipeline/run.py` leaves the staircase path bit-identical.
+3. Implemented `quantification/shadow.py` `height_field_corner_maxima` and `height_field_masks`
+   (same conventions and 1e-9 A tolerance as `shadow_masks`; profiles "piecewise_constant" with
+   vertical risers at cell boundaries, B13, and "piecewise_linear") and
+   `forward/geometric/height_field.py` (HeightField, HeightFieldParams, the B4 scope check,
+   `trace_height_field`, `height_field_exit_wave`). The exit-plane trace uses the running maxima of
+   shadow.py for the illumination test and asserts visibility of every traced source. First check
+   (`$S/check_tracer.py`, before any test file was written): the masks equal `shadow_masks` exactly
+   for three step profiles (up, down, trench); the exit-plane trace of the built (0, 2, 1) staircase
+   (60 periods, a/4 cells) equals `forward.geometric.trace_exit_points` (upstream "none") on all
+   8002 exit points: identical status, source z difference 0.0.

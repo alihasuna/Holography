@@ -343,6 +343,9 @@ def assert_height_map(positions_A, frame: SurfaceFrame, a_A: float, l_s: int,
                 fraction_disagree_near_boundary=float((near & mism).sum() / max(near.sum(), 1)),
                 fraction_disagree_inside_ring_footprint=float(
                     (footprint & mism).sum() / max(footprint.sum(), 1)),
+                max_boundary_distance_of_disagreement_A=(float(dist[mism].max()) if mism.any()
+                                                         else None),
+                covering_radius_of_layer_net_A=float(a_A / 2.0),
                 exclusion_distance_A=float(spacing),
                 exclusion_rule="grid points within a/sqrt(2) of any circle where layer_height_A "
                                "jumps (rims and every a/4 terrace edge of the ring) are excluded",

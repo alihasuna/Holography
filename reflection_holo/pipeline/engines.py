@@ -34,9 +34,13 @@ from reflection_holo.constants import BEAM_ENERGY_SUPPLIED_KEV
 from reflection_holo.forward.contracts import ExitWave, ReflectionCell
 from reflection_holo.forward.geometric import (GeometricParams, geometric_exit_wave,
                                                terrace_model_from_structure)
+from reflection_holo.forward.geometric.height_field import (HeightField, HeightFieldParams,
+                                                            height_field_exit_wave,
+                                                            require_b4_scope_height_field)
 from reflection_holo.optics.darkfield import validate_exit_wave
 from reflection_holo.pipeline.config import PipelineConfig, PipelineConfigError, Record
 from reflection_holo.structure import OverlayerSpec, Staircase, build_si001_terraces
+from reflection_holo.structure.shapes import HalfTorus
 
 MULTISLICE_MODULE = "reflection_holo.forward.multislice"
 CELL_MODULE = "reflection_holo.forward.cell"
@@ -123,6 +127,77 @@ def run_geometric(structure, cfg: PipelineConfig):
     validate_exit_wave(run.exit_wave, energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
                        theta_in_ext_rad=ga["value_rad"])
     return [run.exit_wave], model, run
+
+
+def feature_shape(cfg: PipelineConfig) -> HalfTorus:
+    """The surface feature of ``sections.structure.feature`` (PROJECT_INPUT item 13) as the shared
+    shape of ``structure.shapes`` (read, not changed, by this path)."""
+    rec: Record = cfg.rec("structure", "feature")
+    v = rec.value
+    if v["kind"] != "half_torus":
+        raise PipelineConfigError(f"feature kind {v['kind']!r} is not implemented")
+    return HalfTorus(center_y_A=float(v["center_y_A"]), center_z_A=float(v["center_z_A"]),
+                     major_radius_A=float(v["major_radius_A"]),
+                     minor_radius_A=float(v["minor_radius_A"]), kind=v["sub_kind"],
+                     label=_label(rec), source=rec.source)
+
+
+def feature_height_field(cfg: PipelineConfig, shape: HalfTorus) -> HeightField:
+    """Top-atomic-layer height field of the feature on the flat Si(001) surface: heights
+    ``shape.layer_height_A`` quantised to a/4 (a = cfg_b lattice_parameter), the flat surrounding
+    surface at 0, the field [0, field_length_A] along the beam sampled every surface_dz_A."""
+    b = cfg.cfg_b
+    prep = b.value("surface_preparation_details")
+    if not isinstance(prep, dict) or prep.get("termination") != "bulk" or prep.get("overlayer") != "none":
+        raise PipelineConfigError("the feature path needs cfg_b.surface_preparation_details "
+                                  "{termination: bulk, overlayer: none} (item 12)")
+    a_A, unit = b.quantity("lattice_parameter")
+    if unit != "A":
+        raise PipelineConfigError("cfg_b.lattice_parameter must be in A")
+    layer = float(a_A) / 4.0
+    g = cfg.value("engine", "geometric")
+
+    def h(y, z):
+        return shape.layer_height_A(y, z, layer_spacing_A=layer)
+
+    return HeightField(
+        height_fn=h, profile="piecewise_constant", layer_spacing_A=layer, z_start_A=0.0,
+        field_length_A=float(g["field_length_A"]), surface_dz_A=float(g["surface_dz_A"]),
+        upstream_level_A=0.0,
+        description=(f"half torus {shape.kind} (R = {shape.major_radius_A} A, r = "
+                     f"{shape.minor_radius_A} A, centre (y, z) = ({shape.center_y_A}, "
+                     f"{shape.center_z_A}) A) on a flat, step-free Si(001) surface: ideal top atomic "
+                     f"layer HalfTorus.layer_height_A with layer spacing a/4 = {layer} A"),
+        label=shape.label, source=shape.source)
+
+
+def run_geometric_feature(cfg: PipelineConfig):
+    """Height-field geometric engine for the surface feature: returns (exit waves, shape, height
+    field, HeightFieldRun). The B4 scope check (azimuth, termination, overlayer, plane wave,
+    specular beam) runs first."""
+    shape = feature_shape(cfg)
+    hf = feature_height_field(cfg, shape)
+    b = cfg.cfg_b
+    prep = b.value("surface_preparation_details")
+    n_layers = int(round(shape.minor_radius_A / hf.layer_spacing_A))
+    b4 = require_b4_scope_height_field(
+        hf, azimuth_uvw=tuple(b.value("beam_azimuth_uvw")), termination=prep["termination"],
+        overlayer=None if prep["overlayer"] == "none" else prep["overlayer"],
+        illumination=illumination_kind(cfg), beam=cfg.value("optics", "selected_beam"),
+        layer_index_parity="any" if n_layers >= 1 else "even")
+    b4["azimuth_label"] = _label(b.parameters["beam_azimuth_uvw"])
+    g = cfg.value("engine", "geometric")
+    params = HeightFieldParams(
+        exit_plane_pixel_A=(g["exit_plane_pixel_A"]["x"], g["exit_plane_pixel_A"]["y"]),
+        n_y=g["n_y"], x_margin_A=g["x_margin_A"], reflectivity_amplitude=g["reflectivity_amplitude"])
+    ga = cfg.glancing_angle
+    run = height_field_exit_wave(hf, energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
+                                 theta_in_ext_rad=ga["value_rad"],
+                                 theta_label=_label(cfg.rec("illumination", "glancing_angle")),
+                                 params=params, b4=b4)
+    validate_exit_wave(run.exit_wave, energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
+                       theta_in_ext_rad=ga["value_rad"])
+    return [run.exit_wave], shape, hf, run
 
 
 def multislice_status() -> tuple[bool, str]:

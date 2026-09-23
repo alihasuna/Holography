@@ -1,0 +1,355 @@
+# Pipeline demo, second smoke test requested by Ali: a half-torus ("half donut") surface feature on
+# Si(001), version 1: a ring TRENCH (atoms removed inside the lower half-torus). 200 keV (300 keV is
+# never used), (0,0,8) specular condition, exact [100] azimuth, geometric engine (height field).
+# purpose: demo; not comparable to experiment. Derived from configs/demo_smoke_si001.yaml: every
+# unsupplied PROJECT_INPUT is the same registered stand-in (B19-B32), the feature geometry
+# (PROJECT_INPUT item 13) is the stand-in B33 (report docs/agent_reports/T2_torus_pipeline.md).
+# Removing any stand-in makes the run FAIL.
+#   venv/bin/python -m reflection_holo.pipeline dry-run --config configs/demo_smoke_torus_trench.yaml
+#   venv/bin/python -m reflection_holo.pipeline run --config configs/demo_smoke_torus_trench.yaml --out <dir>
+# Field: the ring (R = 1000 A, r = 20 A) is centred at y_c = 1199.75 A (the centre of the 4800-column
+# exit plane, 0.5 A per column) and z_c = 4800 A (the centre of the 9600 A field along the beam);
+# the detector ROI (4608 x 0.5 A = 2304 A across the beam) covers 2R + 2r = 2040 A plus 132 A of flat
+# surface on each side; along the beam its 320 rows (160 A, image plane) cover the whole projected
+# field (9600 A x sin(theta) = 158.2 A), including the 1154 A shadows of 19 A features.
+pipeline_schema: 1
+run_name: demo_smoke_torus_trench
+purpose: "demo; not comparable to experiment"
+description: >-
+  Second smoke test (Ali): a half-torus TRENCH, a circular groove of semicircular cross-section
+  (major radius 1000 A, minor radius 20 A) cut into a flat, step-free, bulk-terminated Si(001)
+  surface, centred in the field; the geometric engine uses the ideal top atomic layer
+  (structure.shapes.HalfTorus.layer_height_A, a/4 terraces), which at the exact [100] azimuth is
+  inside the B4 scope for the specular beam (stand-in B20). Full chain: height-field ray trace
+  (shadows and blocked views), dark-field selection, projection along k_out, detector, R1 reference,
+  hologram, Poisson noise, sideband reconstruction with the carrier from an empty hologram of the
+  flat surface, HEIGHT MAP with a reliability map, profile cuts and the no-step control on the flat
+  surface. Geometric model: no dynamical amplitude. Not comparable to experiment.
+cfg_b:
+  schema_version: 1
+  config_id: CFG-B
+  name: si001_patterned
+  status: experiment
+  description: >-
+    CFG-B parameters of the pipeline demo (Ali's Si(001) experiment with every unsupplied input
+    replaced by a registered ASSUMPTION stand-in; not comparable to experiment).
+  parameters:
+    surface_material:
+      value: Si
+      unit: none
+      label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
+      item: 11
+      source: "docs/06 item 11, partly supplied by Ali 2026-09-22 (the surface is Si(001))"
+    surface_normal_hkl:
+      value: [0, 0, 1]
+      unit: none
+      label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
+      item: 11
+      source: "docs/06 item 11, supplied by Ali 2026-09-22 (Si(001))"
+    beam_azimuth_uvw:
+      value: [1, 0, 0]
+      unit: none
+      label: ASSUMPTION
+      item: 8
+      stands_in_for_item: 8
+      assumption_id: B20
+      source: "demo stand-in B20: exact [100] azimuth, chosen so that bulk-terminated a/4 steps are inside the B4 scope for the specular beam of a plane wave (SM26); the laboratory azimuth is PROJECT_INPUT item 8, not supplied"
+    beam_energy_keV:
+      value: 200.0
+      unit: keV
+      label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
+      item: 1
+      source: "docs/06 item 1, supplied by Ali 2026-09-22: 200 keV for all reflection holography work; 300 keV is never used"
+    lattice_parameter:
+      value: 5.4309
+      unit: A
+      label: ASSUMPTION
+      source: "model_assumptions B2 (standard room-temperature value); equals reflection_holo.constants.A_SI_A"
+    mean_inner_potential_V:
+      value: 12.0
+      unit: V
+      label: ASSUMPTION
+      item: 20
+      stands_in_for_item: 20
+      assumption_id: B1
+      source: "model_assumptions B1; the sourced or measured value is PROJECT_INPUT item 20"
+    target_reflection_hkl:
+      value: [0, 0, 8]
+      unit: none
+      label: ASSUMPTION
+      item: 9
+      stands_in_for_item: 9
+      assumption_id: B17
+      source: "model_assumptions B17: (0,0,8) is the proposed working condition (docs/05 section 2); PROJECT_INPUT item 9 not supplied"
+    forbidden_rod_reflections_hkl:
+      value: [[0, 0, 2], [0, 0, 6], [0, 0, 10]]
+      unit: none
+      label: DERIVED_HERE
+      source: "source map SM02; docs/05 sections 2 and 4.1"
+    step_types:
+      value: [single_layer_a4, double_layer_a2_translation]
+      unit: none
+      label: ASSUMPTION
+      item: 14
+      stands_in_for_item: 14
+      assumption_id: B18
+      source: "model_assumptions B18 (CFG-B covers a/4 and a/2 atomic steps); the demo images atomic steps only; PROJECT_INPUT item 14 not supplied"
+    step_translations:
+      value:
+        single_layer:
+          relation: "diamond 4_1 and 4_3 screws about [001] and the two <100> d-glides, t_z = a/4 (not a lattice translation); in the B4 scope at the exact <100> azimuth for the specular beam of a plane wave on bulk-terminated terraces (SM26)"
+          height: "a/4"
+        double_layer:
+          vector_cubic_a_units: [0.5, 0.0, 0.5]
+          height: "a/2"
+          relation: lattice_translation
+      unit: none
+      label: DERIVED_HERE
+      source: "docs/03 section 2; C2 section 1 (SM26); relations measured on the built atoms by the structure builder"
+    convergence_semi_angle:
+      value: 0.0
+      unit: mrad
+      label: ASSUMPTION
+      item: 3
+      stands_in_for_item: 3
+      assumption_id: B21
+      source: "demo stand-in B21: plane-wave illumination (no convergence, source-size or energy-spread ensemble); PROJECT_INPUT item 3 not supplied (blocking)"
+    objective_aperture_semi_angle:
+      value: 3.0
+      unit: mrad
+      label: ASSUMPTION
+      item: 4
+      stands_in_for_item: 4
+      assumption_id: B22
+      source: "demo stand-in B22: 3 mrad, centred on the specular beam; below the 4.6 mrad transverse offset of the nearest non-specular rods at [100]; PROJECT_INPUT item 4 not supplied (blocking)"
+    image_pixel_size:
+      value: {along_beam: 0.05, perpendicular: 0.05}
+      unit: nm
+      label: ASSUMPTION
+      item: 5
+      stands_in_for_item: 5
+      assumption_id: B23
+      source: "demo stand-in B23: 15 um pitch / magnification 3.0e5 = 0.05 nm (specimen-referred, image plane) on both axes; PROJECT_INPUT item 5 not supplied (blocking)"
+    reference_trajectory:
+      value: vacuum_beside_sample
+      unit: none
+      label: ASSUMPTION
+      item: 15
+      stands_in_for_item: 15
+      assumption_id: B28
+      source: "demo stand-in B28: R1 vacuum reference beside the sample (US 4,998,788 arrangement, SM21); PROJECT_INPUT item 15 not supplied (blocking)"
+    reference_model:
+      value: R1
+      unit: none
+      label: ASSUMPTION
+      source: "model_assumptions B5 (R1 idealisation), chosen with stand-in B28"
+    pattern_geometry:
+      value: {features: half_torus, geometry: sections.structure.feature}
+      unit: none
+      label: ASSUMPTION
+      item: 13
+      stands_in_for_item: 13
+      assumption_id: B33
+      source: "demo stand-in B33: one half-torus trench in the field of view; its geometry is declared once, in sections.structure.feature; PROJECT_INPUT item 13 not supplied"
+    surface_preparation_method:
+      value: ion-milled
+      unit: none
+      label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
+      item: 12
+      source: "docs/06 item 12, partly supplied by Ali 2026-09-22 (the surface is ion-milled)"
+    surface_preparation_details:
+      value: {termination: bulk, overlayer: none}
+      unit: none
+      label: ASSUMPTION
+      item: 12
+      stands_in_for_item: 12
+      assumption_id: B26
+      source: "demo stand-in B26: clean, bulk-terminated surface without oxide or damage overlayer (restates B3 and B7); the real ion-milled surface is PROJECT_INPUT item 12, not supplied (blocking)"
+sections:
+  structure:
+    feature:
+      value: {kind: half_torus, sub_kind: trench, center_y_A: 1199.75, center_z_A: 4800.0, major_radius_A: 1000.0, minor_radius_A: 20.0}
+      unit: none
+      label: ASSUMPTION
+      item: 13
+      stands_in_for_item: 13
+      assumption_id: B33
+      source: "demo stand-in B33 (Ali's second smoke test): half-torus TRENCH, atoms with x_rel <= 0 inside the lower half-torus removed (structure.shapes.HalfTorus), major radius 1000 A, minor radius 20 A, centred in the field (y_c = 1199.75 A, z_c = 4800 A), on an otherwise flat, step-free, bulk-terminated Si(001) surface (no miscut in the field); PROJECT_INPUT item 13 not supplied"
+  cell:
+    periods_along_beam: 1
+  engine:
+    name: geometric
+    geometric:
+      exit_plane_pixel_A: {x: 0.25, y: 0.5}
+      n_y: 4800
+      x_margin_A: 20.0
+      reflectivity_amplitude: 1.0
+      invisibility_tol_cycles: 0.01
+      field_length_A: 9600.0
+      surface_dz_A: 1.0
+  illumination:
+    glancing_angle:
+      value: {rule: internal_bragg_external_angle, reflection_hkl: [0, 0, 8], V0_source: cfg_b.mean_inner_potential_V}
+      unit: none
+      label: ASSUMPTION
+      item: 7
+      stands_in_for_item: 7
+      assumption_id: B19
+      source: "demo stand-in B19: the external glancing angle of the (0,0,8) internal Bragg condition at V0 = 12 V (B1, B17), computed by the pipeline; PROJECT_INPUT item 7 not supplied (blocking)"
+    angle_calibration_sigma:
+      value: 0.1
+      unit: mrad
+      label: ASSUMPTION
+      item: 7
+      stands_in_for_item: 7
+      assumption_id: B19
+      source: "demo stand-in B19: 1-sigma calibration uncertainty of the glancing angle (and of the exit angle), used only in the height uncertainty"
+    wavelength_sigma_rel:
+      value: 1.0e-5
+      unit: none
+      label: ASSUMPTION
+      item: 1
+      stands_in_for_item: 1
+      assumption_id: B31
+      source: "demo stand-in B31: relative wavelength (energy-stability) uncertainty, used only in the height uncertainty; the stability part of PROJECT_INPUT item 1 is not supplied"
+  optics:
+    selected_beam:
+      value: specular
+      unit: none
+      label: ASSUMPTION
+      item: 4
+      stands_in_for_item: 4
+      assumption_id: B22
+      source: "demo stand-in B22: the aperture selects the specular (0,0) rod at the (0,0,8) condition"
+    projection_reference: flat_surface
+    lens_transfer: none
+  reference:
+    carrier_fringe_spacing:
+      value: 2.0
+      unit: A
+      label: ASSUMPTION
+      item: 16
+      stands_in_for_item: 16
+      assumption_id: B28
+      source: "demo stand-in B28: carrier fringe spacing 2.0 A (specimen-referred image plane, after the 2 theta_ext compensation), i.e. 4 detector pixels, so that the 3 mrad aperture band (0.12 cycles/A) is inside a |q_c|/3 sideband mask"
+    carrier_direction:
+      value: 90.0
+      unit: deg
+      label: ASSUMPTION
+      item: 16
+      stands_in_for_item: 16
+      assumption_id: B28
+      source: "demo stand-in B28: carrier along the perpendicular detector axis (angle from the along-beam axis)"
+    amplitude_ratio:
+      value: 1.0
+      unit: none
+      label: ASSUMPTION
+      item: 16
+      stands_in_for_item: 16
+      assumption_id: B28
+      source: "demo stand-in B28: reference amplitude equal to the empty object amplitude (ideal fringe contrast 1 on the empty hologram; no partial coherence)"
+    aperture_passage:
+      value: condenser_biprism_pretilt
+      unit: none
+      label: ASSUMPTION
+      item: 15
+      stands_in_for_item: 15
+      assumption_id: B28
+      source: "demo stand-in B28: the R1 reference passes the dark-field aperture after a condenser-biprism pre-tilt of 2 theta_ext (US 4,998,788 embodiment 2, SM21); recorded, no effect on the field"
+    relative_phase_rad: 0.0
+  detector:
+    pixel_pitch:
+      value: {along_beam: 15.0, perpendicular: 15.0}
+      unit: um
+      label: ASSUMPTION
+      item: 5
+      stands_in_for_item: 5
+      assumption_id: B23
+      source: "demo stand-in B23: physical pixel pitch"
+    magnification:
+      value: 300000.0
+      unit: none
+      label: ASSUMPTION
+      item: 5
+      stands_in_for_item: 5
+      assumption_id: B23
+      source: "demo stand-in B23: magnification of the holograms"
+    dose:
+      value: 500.0
+      unit: e/px
+      label: ASSUMPTION
+      item: 6
+      stands_in_for_item: 6
+      assumption_id: B24
+      source: "demo stand-in B24: mean electrons per detector pixel per hologram"
+    gain:
+      value: 1.0
+      unit: counts/e
+      label: ASSUMPTION
+      item: 6
+      stands_in_for_item: 6
+      assumption_id: B24
+      source: "demo stand-in B24: gain 1 count per electron"
+    mtf:
+      value: none
+      unit: none
+      label: ASSUMPTION
+      item: 6
+      stands_in_for_item: 6
+      assumption_id: B24
+      source: "demo stand-in B24: ideal detector (no MTF, no readout noise, no drift)"
+    roi_shape: [320, 4608]
+    alignment: field_of_view
+    noise_seed: 20260922
+  reconstruction:
+    processing:
+      value:
+        search_radius_fraction: 0.5
+        exclusion_radius_fraction: 0.25
+        subpixel: none
+        mask_radius_fraction: 0.3333333333333333
+        apodisation: hann
+        reference_correction: divide_empty
+        empty_min_visibility: 0.5
+        unwrapping: itoh_raster
+      unit: none
+      label: ASSUMPTION
+      item: 19
+      stands_in_for_item: 19
+      assumption_id: B29
+      source: "demo stand-in B29: carrier searched on the EMPTY hologram in a disc of |q|/2 about -q_ref, centre band |q|/4 excluded, integer bin; Hann disc mask of radius |q_c|/3; division by the empty hologram with minimum visibility 0.5; Itoh raster unwrapping; no zero padding, no ramp removal (PROJECT_INPUT item 19 not supplied)"
+  quantification:
+    processing:
+      value:
+        edge_margin_resolutions: 3.0
+        branch_rule: lattice_constraint
+        max_layers: 2
+        n_sigma: 3.0
+        min_region_px: 50
+        min_relative_amplitude: 0.25
+      unit: none
+      label: ASSUMPTION
+      item: 19
+      stands_in_for_item: 19
+      assumption_id: B29
+      source: "demo stand-in B29: terrace regions kept 3 reconstruction resolutions away from any unusable pixel; branch from the lattice constraint h = n a/4 with |n| <= 2 (the builder's step set), refused if a second branch lies within 3 sigma; 3-sigma no-step control; at least 50 pixels per region; pixels whose reconstructed object amplitude is below 0.25 of the empty-hologram object amplitude are not used (no object wave, no phase)"
+    feature_processing:
+      value: {max_phase_step_rad: 1.5707963267948966}
+      unit: none
+      label: ASSUMPTION
+      item: 19
+      stands_in_for_item: 19
+      assumption_id: B29
+      source: "demo stand-in B29, feature path (agent T2; B29 row amendment proposed in docs/agent_reports/T2_torus_pipeline.md): the height map is unwrapped only through pixels whose wrapped 4-neighbour phase differences are at most pi/2 (half the Itoh limit, a margin for noise), with the B29 amplitude threshold (0.25), the three-resolution margin and the 50-pixel minimum above; zero and no-step control on the flat surface outside the feature"
+  runtime:
+    threads: 4
+  outputs:
+    quicklooks: true

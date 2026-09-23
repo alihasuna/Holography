@@ -40,9 +40,63 @@ def _geometry_numbers(cfg: PipelineConfig) -> dict:
                 height_span_A=span, edges=st["edges"])
 
 
+# Measured by agent T2 on this machine (4 CPUs, 2026-09-23): the height-field ray trace costs
+# 7.9e-8 s per traced surface sample (192 columns x 9600 cells, 870 exit rows, 0.146 s); the
+# band-limited detector resampling is a complex matrix product of n_det_along x n_y x n_det_perp
+# multiply-adds (assumed 2e9 complex multiply-adds per second: an ASSUMPTION, not measured).
+FEATURE_COSTS = dict(surface_sample_s=7.9e-8, complex_madd_per_s=2.0e9,
+                     label="surface-sample cost MEASURED here (agent T2); matrix-product rate an "
+                           "ASSUMPTION; scaled linearly")
+
+
+def _dry_run_feature(cfg: PipelineConfig, out: dict) -> dict:
+    """Resource estimate of the feature path (height-field engine; agent T2)."""
+    theta = cfg.glancing_angle["value_rad"]
+    e = cfg.value("engine", "geometric")
+    f = cfg.rec("structure", "feature").value
+    a, _ = cfg.cfg_b.quantity("lattice_parameter")
+    layer = a / 4.0
+    n_layers = math.ceil(f["minor_radius_A"] / layer)
+    h_lo = -n_layers * layer if f["sub_kind"] == "trench" else 0.0
+    h_hi = (n_layers - 1) * layer if f["sub_kind"] == "ridge" else 0.0
+    L = e["field_length_A"]
+    n_cells = int(round(L / e["surface_dz_A"]))
+    dx = e["exit_plane_pixel_A"]["x"]
+    nx = int(math.ceil((h_hi - h_lo + L * math.tan(theta) + 2 * e["x_margin_A"]) / dx)) + 1
+    ny = e["n_y"]
+    n0, n1 = cfg.value("detector", "roi_shape")
+    n_det = n0 * n1
+    mem_exit = nx * ny * (16 * 6 + 8 * 3 + 1)
+    mem_resample = 16 * (n1 * ny + n0 * nx + n0 * ny + nx * ny)
+    mem_det = n_det * 16 * 40
+    mem_trace_chunk = 96 * (n_cells + 1) * 8 * 10
+    t = ((ny + n1 + ny // 8) * n_cells * FEATURE_COSTS["surface_sample_s"]
+         + nx * ny * SMOKE_COSTS["exit_pixel_s"] + n_det * SMOKE_COSTS["detector_pixel_s"]
+         + (n0 * nx * ny + n0 * ny * n1) / FEATURE_COSTS["complex_madd_per_s"])
+    out["structure"] = dict(feature=f, atomistic="not built on the feature path",
+                            layer_spacing_A=layer, height_range_A=[h_lo, h_hi])
+    out["geometric"] = dict(field_length_A=L, exit_plane_shape=[nx, ny], surface_cells=n_cells,
+                            traced_surface_samples=(ny + n1 + ny // 8) * n_cells,
+                            exit_plane_memory_bytes=mem_exit,
+                            resampling_matrices_bytes=mem_resample,
+                            trace_chunk_bytes=mem_trace_chunk, estimated_seconds=t,
+                            cost_basis=dict(SMOKE_COSTS, feature=FEATURE_COSTS))
+    out["detector"]["memory_bytes"] = mem_det
+    out["detector"]["note"] = "about 40 detector-sized arrays of 16 B (feature path)"
+    out["total_memory_bytes"] = mem_exit + mem_resample + mem_det + mem_trace_chunk
+    return out
+
+
 def dry_run(cfg: PipelineConfig, *, calibrate_cpu: bool = False) -> dict:
     """Resource estimate of a gated configuration (see module docstring)."""
     theta = cfg.glancing_angle["value_rad"]
+    if "feature" in cfg.sections["structure"]:
+        det = cfg.value("detector", "roi_shape")
+        out = dict(run_name=cfg.run_name, variant=cfg.variant, purpose=cfg.purpose,
+                   engine=cfg.value("engine", "name"), glancing_angle_mrad=theta * 1e3,
+                   glancing_angle=cfg.glancing_angle, beam_energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
+                   detector=dict(roi_shape=det))
+        return _dry_run_feature(cfg, out)
     g = _geometry_numbers(cfg)
     det = cfg.value("detector", "roi_shape")
     n_det = det[0] * det[1]

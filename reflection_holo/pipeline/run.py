@@ -218,6 +218,122 @@ def _sign_degeneracy(steps: list[dict], *, lam: float, theta: float, layer_A: fl
     return dict(note=note, pairs=pairs)
 
 
+def _optics_stage(cfg: PipelineConfig, waves, *, x0: float, x0_def: str,
+                  fov_u: tuple[float, float]) -> dict:
+    """Stages 4-6 (shared by the staircase and feature paths): dark-field selection around k_out
+    with the declared aperture, projection along k_out (reference x0 declared by the caller) and the
+    detector resampling of every realisation."""
+    b = cfg.cfg_b
+    theta = float(cfg.glancing_angle["value_rad"])
+    lam = wavelength_A(BEAM_ENERGY_SUPPLIED_KEV)
+    alpha, _ = b.quantity("objective_aperture_semi_angle")
+    aperture = DarkFieldAperture(semi_angle_rad=alpha, beam=cfg.value("optics", "selected_beam"),
+                                 label=_label(b.parameters["objective_aperture_semi_angle"]))
+    spec = _detector_spec(cfg)
+    band = math.sin(alpha) / lam
+    obj_waves, dfs, imgs = [], [], []
+    placement = None
+    for ew in waves:
+        df = select_dark_field(ew, aperture, energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
+                               theta_out_ext_rad=theta)
+        img = project_along_k_out(df, x0_A=x0, x0_definition=x0_def, aperture_semi_angle_rad=alpha)
+        det, placement = resample_to_detector(
+            img, spec, band_cycles_per_A=band,
+            field_of_view_u_A=fov_u if spec.alignment == "field_of_view" else None)
+        obj_waves.append(det)
+        if not dfs:
+            dfs.append(df)
+            imgs.append(img)
+    return dict(alpha=alpha, aperture=aperture, spec=spec, band=band, obj_waves=obj_waves, dfs=dfs,
+                imgs=imgs, placement=placement)
+
+
+def _hologram_stage(cfg: PipelineConfig, obj_waves, spec: DetectorSpec, *, amplitude_px,
+                    amplitude_px_description: str) -> dict:
+    """Stages 7-9 (shared): the empty-object amplitude from the declared pixels (lit terrace tops,
+    or lit flat-surface pixels on the feature path; A3 m3), the R1/R2 reference, the object hologram
+    averaged over realisations AFTER squaring, the empty hologram, Poisson counting and gain."""
+    b = cfg.cfg_b
+    grid = spec.grid()
+    a_all = np.abs(np.stack([w.data for w in obj_waves]))
+    lit_px = np.broadcast_to(amplitude_px, a_all.shape)
+    if not lit_px.any():
+        raise RuntimeError(f"no detector pixel traces to a lit {amplitude_px_description}: the "
+                           f"empty-object amplitude is undefined")
+    # A3 m3: the empty-object amplitude from LIT pixels only (the multislice exit plane also
+    # carries the field inside the crystal, which traces to no surface)
+    bright = lit_px & (a_all >= 0.5 * a_all[lit_px].max())
+    A_emp = float(np.sqrt(np.mean(a_all[bright] ** 2)))
+    ratio = cfg.rec("reference", "amplitude_ratio").canonical_value
+    q_ref = _carrier(cfg)
+    ref_model = b.value("reference_model")
+    trajectory = b.value("reference_trajectory")
+    expected_traj = {"R1": "vacuum_beside_sample", "R2": "reflected_flat_area"}
+    if ref_model not in expected_traj:
+        raise PipelineConfigError(f"reference model {ref_model!r}: the pipeline implements R1 "
+                                  f"and R2 (R3 NOT IMPLEMENTED here)")
+    if trajectory != expected_traj[ref_model]:
+        raise PipelineConfigError(f"reference model {ref_model} needs reference_trajectory "
+                                  f"{expected_traj[ref_model]!r} (item 15), got {trajectory!r}")
+    rel_phase = cfg.value("reference", "relative_phase_rad")
+    passage = cfg.rec("reference", "aperture_passage").value
+    vac = vacuum_object_wave(grid, amplitude=A_emp, realisation=0)
+
+    def reference_for(obj: Wave) -> Wave:
+        if ref_model == "R1":
+            return reference_r1_vacuum_plane_wave(grid, carrier_cycles_per_A=q_ref,
+                                                  amplitude=ratio * A_emp,
+                                                  relative_phase_rad=rel_phase,
+                                                  aperture_passage=passage,
+                                                  realisation=obj.realisation)
+        shift_rec = cfg.sections["reference"].get("shift")
+        if shift_rec is None:
+            raise PipelineConfigError("R2 needs sections.reference.shift (item 16)")
+        sh = shift_rec.canonical_value
+        return reference_r2_self_reference(obj, shift_A=(sh["along_beam"], sh["perpendicular"]),
+                                           carrier_cycles_per_A=q_ref, amplitude_scale=ratio,
+                                           relative_phase_rad=rel_phase)
+
+    artefacts = ArtefactOptions(biprism_fresnel_fringes=None, drift=None, charging_phase_rad=None)
+    refs = [reference_for(o) for o in obj_waves]
+    H_obj = ensemble_hologram_intensity(list(zip(obj_waves, refs)), artefacts=artefacts,
+                                        content="object")
+    ref_emp = reference_for(vac)
+    H_emp = hologram_intensity(vac, ref_emp, artefacts=artefacts, content="empty")
+    seed = cfg.value("detector", "noise_seed")
+    H_obj_n, H_emp_n = record_holograms([H_obj, H_emp], spec, seed=seed)
+    return dict(a_all=a_all, A_emp=A_emp, refs=refs, H_obj=H_obj, H_emp=H_emp, H_obj_n=H_obj_n,
+                H_emp_n=H_emp_n, ratio=ratio, q_ref=q_ref, ref_model=ref_model,
+                trajectory=trajectory, rel_phase=rel_phase, passage=passage, seed=seed)
+
+
+def _reconstruction_stage(cfg: PipelineConfig, H_obj_n, H_emp_n, q_ref) -> dict:
+    """Stage 10 (shared): sideband reconstruction with the carrier located on the EMPTY hologram."""
+    proc = cfg.rec("reconstruction", "processing").value
+    qm = math.hypot(*q_ref)
+    search = CarrierSearch(
+        sideband_guess_cycles_per_A=(-q_ref[0], -q_ref[1]),
+        search_radius_cycles_per_A=proc["search_radius_fraction"] * qm,
+        exclusion_radius_cycles_per_A=proc["exclusion_radius_fraction"] * qm,
+        subpixel=proc["subpixel"],
+        sideband_declaration="simulation: -q_ref of the declared reference (the phi_o - phi_r "
+                             "sideband; model_assumptions B15)")
+    loc = locate_carrier(H_emp_n, search)
+    mask = MaskSpec(radius_cycles_per_A=proc["mask_radius_fraction"]
+                    * loc.carrier_magnitude_cycles_per_A, shape="disc",
+                    apodisation=proc["apodisation"])
+    divide = proc["reference_correction"] == "divide_empty"
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        recon = reconstruct_sideband(
+            H_obj_n, carrier=loc, mask=mask, empty_hologram=H_emp_n if divide else None,
+            reference_correction=proc["reference_correction"], unwrapping=proc["unwrapping"],
+            empty_min_visibility=proc["empty_min_visibility"] if divide else None,
+            object_min_visibility=None if divide else proc["object_min_visibility"])
+    return dict(recon=recon, divide=divide, warnings=[str(w.message) for w in caught], loc=loc,
+                mask=mask)
+
+
 def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = False) -> dict:
     """Run the pipeline for ``config`` (a path, or a PipelineConfig already gated) into
     ``out_dir`` (created; must be empty). Returns the summary dictionary (also written)."""
@@ -238,6 +354,9 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     git_preflight = require_git_state(allow_no_git=allow_no_git)
     require_engine(cfg)                     # multislice module and cupy/GPU, before computing (m5)
     out = _prepare_out(out_dir)
+    if "feature" in cfg.sections["structure"]:
+        from reflection_holo.pipeline.feature import run_feature   # agent T2: feature path
+        return run_feature(cfg, out, t0=t0, git_preflight=git_preflight, allow_no_git=allow_no_git)
     notes: list[str] = []
     theta = float(cfg.glancing_angle["value_rad"])
     lam = wavelength_A(BEAM_ENERGY_SUPPLIED_KEV)
@@ -283,30 +402,15 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
 
     # 4-6. dark field, projection, detector ----------------------------------------------------
     t = time.perf_counter()
-    alpha, _ = b.quantity("objective_aperture_semi_angle")
-    aperture = DarkFieldAperture(semi_angle_rad=alpha, beam=cfg.value("optics", "selected_beam"),
-                                 label=_label(b.parameters["objective_aperture_semi_angle"]))
-    spec = _detector_spec(cfg)
     H_ref = min(model.heights_A) + layout.x_offset_A
     x0 = H_ref + (layout.field_length_A - layout.z_start_A) * math.tan(theta)
     x0_def = (f"lowest terrace top (x = {H_ref:.6f} A in the exit-wave frame); z_s = 0 at the "
               f"upstream end of the terraces (z = {layout.z_start_A:.6f} A); exit plane "
               f"z = {layout.field_length_A:.6f} A")
-    band = math.sin(alpha) / lam
     fov_u = (0.0, (layout.field_length_A - layout.z_start_A) * math.sin(theta))
-    obj_waves, dfs, imgs = [], [], []
-    placement = None
-    for ew in waves:
-        df = select_dark_field(ew, aperture, energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
-                               theta_out_ext_rad=theta)
-        img = project_along_k_out(df, x0_A=x0, x0_definition=x0_def, aperture_semi_angle_rad=alpha)
-        det, placement = resample_to_detector(
-            img, spec, band_cycles_per_A=band,
-            field_of_view_u_A=fov_u if spec.alignment == "field_of_view" else None)
-        obj_waves.append(det)
-        if not dfs:
-            dfs.append(df)
-            imgs.append(img)
+    op = _optics_stage(cfg, waves, x0=x0, x0_def=x0_def, fov_u=fov_u)
+    spec, placement, obj_waves, dfs, imgs = (op["spec"], op["placement"], op["obj_waves"],
+                                             op["dfs"], op["imgs"])
     timing["optics_s"] = time.perf_counter() - t
 
     # 7-9. references, holograms, detector noise ------------------------------------------------
@@ -315,83 +419,22 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     # ray trace of every detector pixel to the built surface (also used by the quantification)
     tr = Q.detector_trace(model, placement.u_A, placement.y_A, x0_A=x0, theta_rad=theta,
                           layout=layout)
-    a_all = np.abs(np.stack([w.data for w in obj_waves]))
-    lit_px = np.broadcast_to(tr["status"] == Q.STATUS["lit"], a_all.shape)
-    if not lit_px.any():
-        raise RuntimeError("no detector pixel traces to a lit terrace top: the empty-object "
-                           "amplitude is undefined")
-    # A3 m3: the empty-object amplitude from LIT terrace-top pixels only (the multislice exit plane
-    # also carries the field inside the crystal, which traces to no surface)
-    bright = lit_px & (a_all >= 0.5 * a_all[lit_px].max())
-    A_emp = float(np.sqrt(np.mean(a_all[bright] ** 2)))
+    ho = _hologram_stage(cfg, obj_waves, spec, amplitude_px=tr["status"] == Q.STATUS["lit"],
+                         amplitude_px_description="terrace top")
+    a_all, A_emp, refs = ho["a_all"], ho["A_emp"], ho["refs"]
+    H_obj, H_emp, H_obj_n, H_emp_n = ho["H_obj"], ho["H_emp"], ho["H_obj_n"], ho["H_emp_n"]
+    ratio, q_ref, ref_model, trajectory = ho["ratio"], ho["q_ref"], ho["ref_model"], ho["trajectory"]
+    rel_phase, passage, seed = ho["rel_phase"], ho["passage"], ho["seed"]
     amp_by_status = {name: dict(n_px=int((tr["status"] == c).sum()),
                                 mean_abs=(float(a_all[:, tr["status"] == c].mean())
                                           if (tr["status"] == c).any() else None))
                      for name, c in Q.STATUS.items()}
-    ratio = cfg.rec("reference", "amplitude_ratio").canonical_value
-    q_ref = _carrier(cfg)
-    ref_model = b.value("reference_model")
-    trajectory = b.value("reference_trajectory")
-    expected_traj = {"R1": "vacuum_beside_sample", "R2": "reflected_flat_area"}
-    if ref_model not in expected_traj:
-        raise PipelineConfigError(f"reference model {ref_model!r}: the pipeline implements R1 "
-                                  f"and R2 (R3 NOT IMPLEMENTED here)")
-    if trajectory != expected_traj[ref_model]:
-        raise PipelineConfigError(f"reference model {ref_model} needs reference_trajectory "
-                                  f"{expected_traj[ref_model]!r} (item 15), got {trajectory!r}")
-    rel_phase = cfg.value("reference", "relative_phase_rad")
-    passage = cfg.rec("reference", "aperture_passage").value
-    vac = vacuum_object_wave(grid, amplitude=A_emp, realisation=0)
-
-    def reference_for(obj: Wave) -> Wave:
-        if ref_model == "R1":
-            return reference_r1_vacuum_plane_wave(grid, carrier_cycles_per_A=q_ref,
-                                                  amplitude=ratio * A_emp,
-                                                  relative_phase_rad=rel_phase,
-                                                  aperture_passage=passage,
-                                                  realisation=obj.realisation)
-        shift_rec = cfg.sections["reference"].get("shift")
-        if shift_rec is None:
-            raise PipelineConfigError("R2 needs sections.reference.shift (item 16)")
-        sh = shift_rec.canonical_value
-        return reference_r2_self_reference(obj, shift_A=(sh["along_beam"], sh["perpendicular"]),
-                                           carrier_cycles_per_A=q_ref, amplitude_scale=ratio,
-                                           relative_phase_rad=rel_phase)
-
-    artefacts = ArtefactOptions(biprism_fresnel_fringes=None, drift=None, charging_phase_rad=None)
-    refs = [reference_for(o) for o in obj_waves]
-    H_obj = ensemble_hologram_intensity(list(zip(obj_waves, refs)), artefacts=artefacts,
-                                        content="object")
-    ref_emp = reference_for(vac)
-    H_emp = hologram_intensity(vac, ref_emp, artefacts=artefacts, content="empty")
-    seed = cfg.value("detector", "noise_seed")
-    H_obj_n, H_emp_n = record_holograms([H_obj, H_emp], spec, seed=seed)
     timing["holography_s"] = time.perf_counter() - t
 
     # 10. reconstruction ---------------------------------------------------------------------------
     t = time.perf_counter()
-    proc = cfg.rec("reconstruction", "processing").value
-    qm = math.hypot(*q_ref)
-    search = CarrierSearch(
-        sideband_guess_cycles_per_A=(-q_ref[0], -q_ref[1]),
-        search_radius_cycles_per_A=proc["search_radius_fraction"] * qm,
-        exclusion_radius_cycles_per_A=proc["exclusion_radius_fraction"] * qm,
-        subpixel=proc["subpixel"],
-        sideband_declaration="simulation: -q_ref of the declared reference (the phi_o - phi_r "
-                             "sideband; model_assumptions B15)")
-    loc = locate_carrier(H_emp_n, search)
-    mask = MaskSpec(radius_cycles_per_A=proc["mask_radius_fraction"]
-                    * loc.carrier_magnitude_cycles_per_A, shape="disc",
-                    apodisation=proc["apodisation"])
-    divide = proc["reference_correction"] == "divide_empty"
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        recon = reconstruct_sideband(
-            H_obj_n, carrier=loc, mask=mask, empty_hologram=H_emp_n if divide else None,
-            reference_correction=proc["reference_correction"], unwrapping=proc["unwrapping"],
-            empty_min_visibility=proc["empty_min_visibility"] if divide else None,
-            object_min_visibility=None if divide else proc["object_min_visibility"])
-    recon_warnings = [str(w.message) for w in caught]
+    rc = _reconstruction_stage(cfg, H_obj_n, H_emp_n, q_ref)
+    recon, divide, recon_warnings = rc["recon"], rc["divide"], rc["warnings"]
     timing["reconstruction_s"] = time.perf_counter() - t
 
     # 11. quantification ---------------------------------------------------------------------------

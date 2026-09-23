@@ -67,6 +67,7 @@ RECORD_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note") +
 TOP_KEYS_REQUIRED = ("pipeline_schema", "run_name", "purpose", "description", "cfg_b", "sections")
 TOP_KEYS_OPTIONAL = ("variants",)
 ENGINES = ("geometric", "multislice")
+PROJECTION_REFERENCES = ("lowest_terrace_top", "flat_surface")   # staircase / feature path
 GLANCING_RULES = ("internal_bragg_external_angle",)
 V0_SOURCES = ("cfg_b.mean_inner_potential_V", "sections.engine.multislice.potential_mip")
 MS_KEYS = ("parameterisation", "physical_absorption", "frozen_phonons", "static_lattice_label",
@@ -95,10 +96,13 @@ def _plain(kind, optional=False, **extra):
 
 SECTIONS: dict[str, dict[str, dict]] = {
     "structure": {
-        "staircase": _rec(11, "none", "staircase"),
-        "edge_periods": _plain("int_pos"),
-        "substrate_layers": _plain("int_ge4"),
-        "vacuum_above_A": _plain("float_pos"),
+        # exactly one of staircase (item 11) and feature (item 13) is given (``_check_structure``);
+        # the three plain settings belong to the staircase path (atomistic builder) only
+        "staircase": _rec(11, "none", "staircase", optional=True),
+        "feature": _rec(13, "none", "feature", optional=True),
+        "edge_periods": _plain("int_pos", optional=True),
+        "substrate_layers": _plain("int_ge4", optional=True),
+        "vacuum_above_A": _plain("float_pos", optional=True),
     },
     "cell": {
         "periods_along_beam": _plain("int_pos"),
@@ -116,7 +120,7 @@ SECTIONS: dict[str, dict[str, dict]] = {
     },
     "optics": {
         "selected_beam": _rec(4, "none", "beam"),
-        "projection_reference": _plain("enum", choices=("lowest_terrace_top",)),
+        "projection_reference": _plain("enum", choices=PROJECTION_REFERENCES),
         "lens_transfer": _plain("enum", choices=("none",)),
     },
     "reference": {
@@ -142,6 +146,7 @@ SECTIONS: dict[str, dict[str, dict]] = {
     },
     "quantification": {
         "processing": _rec(19, "none", "quantification"),
+        "feature_processing": _rec(19, "none", "feature_processing", optional=True),
     },
     "runtime": {
         "threads": _plain("int_pos"),
@@ -162,6 +167,13 @@ STAIRCASE_KEYS = ("edges", "terrace_layers", "terrace_widths_periods", "boundary
                   "first_terrace_backbond_uvw")
 GEOMETRIC_KEYS = {"exit_plane_pixel_A": "xy_pos", "n_y": "int_pos", "x_margin_A": "float_pos",
                   "reflectivity_amplitude": "float_pos", "invisibility_tol_cycles": "float_nonneg"}
+# feature path (agent T2): the height-field engine needs the field along the beam and its sampling
+GEOMETRIC_FEATURE_KEYS = {"field_length_A": "float_pos", "surface_dz_A": "float_pos"}
+FEATURE_KINDS = ("half_torus",)
+FEATURE_SUB_KINDS = ("trench", "ridge")
+FEATURE_KEYS = ("kind", "sub_kind", "center_y_A", "center_z_A", "major_radius_A", "minor_radius_A")
+FEATURE_QUANT_KEYS = {"max_phase_step_rad": "positive"}
+PATTERN_FROM_FEATURE = "sections.structure.feature"
 APERTURE_PASSAGES = ("second_aperture_hole", "condenser_biprism_pretilt", "no_aperture")
 
 
@@ -338,6 +350,23 @@ def _check_record_kind(where: str, kind: str, v, dim: str):
         _check_mapping(where, v, keys)
     elif kind == "quantification":
         _check_mapping(where, v, QUANT_KEYS)
+    elif kind == "feature_processing":
+        _check_mapping(where, v, FEATURE_QUANT_KEYS)
+        if not v["max_phase_step_rad"] < math.pi:
+            bad("max_phase_step_rad below pi (Itoh unwrapping needs |true phase step| < pi per "
+                "pixel; the wrapped difference itself never exceeds pi)")
+    elif kind == "feature":
+        if not (isinstance(v, dict) and set(v) == set(FEATURE_KEYS)):
+            bad(f"a mapping with exactly the keys {FEATURE_KEYS} (all required, lengths in A)")
+        if v["kind"] not in FEATURE_KINDS:
+            bad(f"kind one of {FEATURE_KINDS}")
+        if v["sub_kind"] not in FEATURE_SUB_KINDS:
+            bad(f"sub_kind one of {FEATURE_SUB_KINDS}")
+        for key in FEATURE_KEYS[2:]:
+            if not _is_num(v[key]):
+                bad(f"{key} a finite number (A)")
+        if not 0.0 < v["minor_radius_A"] < v["major_radius_A"]:
+            bad("0 < minor_radius_A < major_radius_A")
     else:  # pragma: no cover
         raise PipelineConfigError(f"schema error: unknown record kind {kind!r}")
 
@@ -596,11 +625,15 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
             else:
                 out[name] = _check_plain(f"sections.{sec}.{name}", spec, got[name])
         sections[sec] = out
+    st_raw = sections_raw["structure"]
+    if "staircase" not in st_raw and "feature" not in st_raw:
+        missing_items.append(("structure.staircase", 11))      # the staircase path (no feature)
     if missing_items:
         listing = "; ".join(f"item {i} ({n})" for n, i in sorted(missing_items, key=lambda t: t[1]))
         raise MissingProjectInputError(
             f"pipeline run refused, missing PROJECT_INPUT (docs/06_project_inputs_required.md): "
             f"{listing}", [i for _, i in missing_items], [n for n, _ in missing_items])
+    _check_structure(sections)
     _check_engine(sections, allow_test_only=allow_test_only)
     ga_rec = sections["illumination"]["glancing_angle"]
     cfg_b_raw = data["cfg_b"]
@@ -655,11 +688,27 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
                 f"bulk-terminated terraces are built (the 2x1 reconstruction is NOT IMPLEMENTED): "
                 f"refused (audit A3 M6)")
     pat = cfg_b.value("pattern_geometry")
-    if pat != {"features": "none"}:
-        raise PipelineConfigError(
-            f"cfg_b.pattern_geometry = {pat!r} (docs/06 item 13): the pipeline's structure and "
-            f"engines build atomic steps only, no patterned mesa or trench; only "
-            f"{{features: none}} is accepted, anything else would be ignored: refused (audit A3 M6)")
+    feat = sections["structure"].get("feature")
+    if feat is None:
+        if pat != {"features": "none"}:
+            raise PipelineConfigError(
+                f"cfg_b.pattern_geometry = {pat!r} (docs/06 item 13): without "
+                f"sections.structure.feature the pipeline's structure and engines build atomic "
+                f"steps only, no patterned mesa or trench; only {{features: none}} is accepted, "
+                f"anything else would be ignored: refused (audit A3 M6)")
+    else:
+        want = {"features": feat.value["kind"], "geometry": PATTERN_FROM_FEATURE}
+        p13 = cfg_b.parameters["pattern_geometry"]
+        if pat != want:
+            raise PipelineConfigError(
+                f"cfg_b.pattern_geometry = {pat!r} (docs/06 item 13) contradicts "
+                f"sections.structure.feature: with a feature it must be {want!r} (the numbers are "
+                f"declared once, in the feature record)")
+        if (p13.label, getattr(p13, "assumption_id", None)) != (feat.label, feat.assumption_id):
+            raise PipelineConfigError(
+                f"cfg_b.pattern_geometry ({p13.label} {getattr(p13, 'assumption_id', None)}) and "
+                f"sections.structure.feature ({feat.label} {feat.assumption_id}) must carry the same "
+                f"label and assumption_id (one item-13 declaration)")
     if ga.get("rule") is not None:
         target = cfg_b.value("target_reflection_hkl")
         if list(target) != list(ga["reflection_hkl"]):
@@ -699,17 +748,72 @@ def assumptions_in_use(cfg: "PipelineConfig") -> list[dict]:
     return out
 
 
+def _check_structure(sections: dict) -> None:
+    """The structure is EITHER a staircase (item 11; atomistic builder, both engines) OR a surface
+    feature on a flat, step-free surface (item 13; agent T2, geometric engine only). Settings that the
+    chosen path does not use are refused rather than ignored."""
+    st = sections["structure"]
+    feature = "feature" in st
+    if feature and "staircase" in st:
+        raise PipelineConfigError("sections.structure: give either staircase (item 11) or feature "
+                                  "(item 13), not both (a feature on a staircase is NOT IMPLEMENTED)")
+    plain = ("edge_periods", "substrate_layers", "vacuum_above_A")
+    if feature:
+        extra = [k for k in plain if k in st]
+        if extra:
+            raise PipelineConfigError(f"sections.structure.{extra[0]}: not used on the feature path "
+                                      f"(no atomistic structure is built there): refused rather than "
+                                      f"ignored")
+        if "feature_processing" not in sections["quantification"]:
+            raise PipelineConfigError("sections.quantification.feature_processing (item 19) is "
+                                      "required with a feature (no default)")
+        if sections["cell"]["periods_along_beam"] != 1:
+            raise PipelineConfigError("sections.cell.periods_along_beam must be 1 on the feature "
+                                      "path (one field of view, sections.engine.geometric."
+                                      "field_length_A)")
+        if sections["optics"]["projection_reference"] != "flat_surface":
+            raise PipelineConfigError("sections.optics.projection_reference must be 'flat_surface' "
+                                      "on the feature path (the image is referred to the flat "
+                                      "surrounding surface)")
+    else:
+        for k in plain:
+            if k not in st:
+                raise PipelineConfigError(f"sections.structure.{k} is required (no default)")
+        if "feature_processing" in sections["quantification"]:
+            raise PipelineConfigError("sections.quantification.feature_processing applies to the "
+                                      "feature path only: refused rather than ignored")
+        if sections["optics"]["projection_reference"] != "lowest_terrace_top":
+            raise PipelineConfigError("sections.optics.projection_reference must be "
+                                      "'lowest_terrace_top' on the staircase path")
+
+
 def _check_engine(sections: dict, *, allow_test_only: bool) -> None:
     eng = sections["engine"]
     name = eng["name"]
     if name not in eng:
         raise PipelineConfigError(f"sections.engine.{name} (the parameters of the selected engine) "
                                   f"is required")
+    feature = "feature" in sections["structure"]
+    if feature and name != "geometric":
+        raise PipelineConfigError(
+            f"sections.structure.feature: the feature path of the pipeline is implemented for the "
+            f"geometric engine only (engine {name!r} refused; the atomistic feature structure and "
+            f"its multislice runs are not connected to the pipeline)")
     if name == "geometric":
         g = eng["geometric"]
-        if set(g) != set(GEOMETRIC_KEYS):
+        want = dict(GEOMETRIC_KEYS, **GEOMETRIC_FEATURE_KEYS) if feature else GEOMETRIC_KEYS
+        if set(g) != set(want):
             raise PipelineConfigError(f"sections.engine.geometric must have exactly the keys "
-                                      f"{sorted(GEOMETRIC_KEYS)}, got {sorted(g)}")
+                                      f"{sorted(want)}{' (feature path)' if feature else ''}, got "
+                                      f"{sorted(g)}")
+        if feature:
+            for k in GEOMETRIC_FEATURE_KEYS:
+                if not (_is_num(g[k]) and g[k] > 0):
+                    raise PipelineConfigError(f"sections.engine.geometric.{k} must be > 0")
+            n = g["field_length_A"] / g["surface_dz_A"]
+            if abs(n - round(n)) > 1e-9 * max(1.0, n) or round(n) < 2:
+                raise PipelineConfigError("sections.engine.geometric.surface_dz_A must divide "
+                                          "field_length_A into at least 2 cells")
         px = g["exit_plane_pixel_A"]
         if not (isinstance(px, dict) and set(px) == {"x", "y"}
                 and all(_is_num(v) and v > 0 for v in px.values())):
@@ -839,6 +943,20 @@ def _path_usage(parameter: str, data: dict, sections: dict) -> str | None:
     return reasons.get(parameter)
 
 
+def _absent_reason(parameter: str, sections: dict) -> str | None:
+    """Why an optional record that the selected path does not use is absent (agent T2), or None."""
+    feature = "feature" in (sections.get("structure") or {})
+    if parameter == "sections.structure.staircase" and feature:
+        return ("the feature path has no staircase: the surface around the feature is flat and "
+                "step-free, as stated by the feature stand-in (the miscut and terrace part of item 11 "
+                "is not represented on this path)")
+    if parameter == "sections.structure.feature" and not feature:
+        return "no surface feature on this path (cfg_b.pattern_geometry {features: none})"
+    if parameter == "sections.quantification.feature_processing" and not feature:
+        return "staircase path: the feature height map is not computed"
+    return None
+
+
 def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
     """Every PROJECT_INPUT item 1-22 with the parameters that carry it, their status and whether
     the selected path uses them, WITHOUT failing on a missing one (placeholder-level view;
@@ -866,6 +984,11 @@ def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
                 continue
             p = (sections.get(sec) or {}).get(name)
             where = f"sections.{sec}.{name}"
+            why = _absent_reason(where, sections) if p is None else None
+            if why is not None:
+                rows.append(dict(item=spec["item"], parameter=where, status="NOT USED on this path",
+                                 value=None, detail=f"NOT USED on this path: {why}", used=False))
+                continue
             rows.append(_row(spec["item"], where, p, required=not spec["optional"],
                              unused=_path_usage(where, data, sections)))
     eng = (sections.get("engine") or {})
