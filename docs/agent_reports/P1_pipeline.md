@@ -34,3 +34,81 @@ Baseline before any change: `venv/bin/pytest -q`: 580 passed, 6 warnings in 19.0
    * Adding stand-in IDs B19+ to the registry makes two existing io tests fail until the
      orchestrator adds the model_assumptions rows and updates the expected registry in
      tests/io/test_io_config_stand_ins.py (both files are not mine; not edited).
+2. Implemented `forward/geometric/model.py`: TerraceModel from the builder (R_k accumulated from the
+   step relations measured on the atoms; checked against the terrace heights), B4-scope refusals
+   (a/4 step whose builder B4 statement is not the <100> in-scope one, any overlayer, a termination
+   other than bulk, non-plane-wave illumination, a non-specular beam), exact ray trace of every
+   exit-plane point back along -k_out with shadow.py's `shadow_masks` for illumination (and an
+   assertion that every traced source is visible), invisibility flag for translation steps,
+   ExitWave on "exit plane z = L_z (no further propagation)" in the envelope convention (the
+   transverse carrier exp(i k_out,x x) included, exp(i k_z z) omitted, as in the multislice
+   engine). First probe (terraces 800 periods, (0,0,8) at 16.474 mrad): the a/4 down-step shows a
+   shadow band of 5 px and a riser band of 6 px at dx = 0.25 A (h = 1.358 A each on the exit-plane
+   axis), the a/2 up-step no dark band (its blocked-view strip is not imaged), as derived.
+3. Implemented `optics/darkfield.py` (exact angular aperture disc about k_out, demodulation at the
+   absolute exit-plane x, band checks, aperture record), `optics/projection.py` (z_s, u and x
+   samplings stated, flip so the along-beam axis runs downstream, parallax and the neglected
+   envelope propagation recorded), `optics/detector.py` (pitch / M must equal CFG-B's image pixel;
+   band-limited DFT resampling inside the projected field only; Poisson at the dose, then gain;
+   MTF "none" only).
+4. Coordinator decision received mid-task (report D3): multislice runs compute the glancing angle
+   from the MIP of the potential actually used (Kirkland IAM, 13.903 V; measured here
+   13.9028 V through `forward.multislice.potentials.potential_mean_inner_potential_V`), geometric
+   runs keep B1 = 12.0 V. Implemented as the `V0_source` of the glancing-angle rule; the run
+   asserts the potential's MIP equals the configured value to 5e-4 V. New stand-in B32 (item 7).
+   (0,0,8): 16.474 mrad at 12.0 V, 16.135 mrad at 13.903 V.
+5. The multislice agent's package became importable during the task; the adapter
+   (`pipeline/engines.py`) was written against its current API (`forward.cell.build_reflection_cell`,
+   `AtomicPotential`, `PhysicalAbsorption`, `SheetBeam`, `MultisliceParams`, `NumericalAbsorber`,
+   `simulate`), not against a guessed one. The multislice ray-trace masks use a `FieldLayout`
+   (crystal from z = crystal_start_z to the exit plane, x shifted to the cell frame, vacuum upstream,
+   no closing step), because the reflection cell is open along z.
+6. First end-to-end runs. Smoke demo (geometric): 2.1 s wall; a/2 step h = +2.71564 +- 0.01166 A
+   (built +2.71545), a/4 steps -1.35765 +- 0.00584 A and -1.35800 +- 0.00584 A (built -1.35773);
+   phase differences within 1 sigma of -q.n h; no-step control delta = -0.0037 rad against a
+   3-sigma tolerance of 0.0123 rad; measured per-pixel phase scatter 0.005-0.0066 rad against the
+   predicted 0.0039 rad for one hologram (x sqrt 2 for the division by the empty hologram: 0.0055).
+   One configuration error on the way: PyYAML reads `3.0e5` as a string (YAML 1.1 needs a sign in
+   the exponent); the demo now writes 300000.0. Tiny multislice variant: 7.5 s wall, steps
+   reported as not measurable (terraces of 489 A are below the dark-field resolution), as intended.
+7. First full HPC-size multislice run on this machine (CPU, `--variant cpu_numpy`, 1.44 million
+   atoms, 1152 x 432 x 7215 slices, 10 min wall): the a/2 step was refused ("branch inconsistent
+   under the lattice constraint") and the a/4 down-step came out as h = +1.4272 +- 0.0355 A
+   (built -1.3577 A): WRONG SIGN. Diagnosis from the dark-field wave: the 8 A sheet beam has a
+   footprint of H/tan(theta) = 496 A, so only the first ~500 A of terrace 0 is illuminated; the
+   reflected amplitude over terraces 1 and 2 is 1-3 % of terrace 0's, i.e. those "phases" are not
+   the specular reflection of the incident beam from those terraces. Two changes, both made before
+   the rerun and not tuned on its result: (a) the HPC demo now uses a 150 A sheet beam whose
+   footprint covers the three terraces (9.3 um of the 9.8 um crystal; vacuum above 320 A; nx 1920;
+   all docs/05 4.3 assertions of the engine pass in dry-run) and centres the detector on the image
+   of the terraces (`alignment: field_of_view`); (b) the quantification now excludes pixels whose
+   reconstructed object amplitude is below a declared fraction (0.25, B29) of the empty-hologram
+   object amplitude ("no object wave, no phase"), so an unilluminated terrace is reported as not
+   measurable instead of giving a height. The first run's outputs are kept only in the scratch
+   directory (not in the repository).
+8. Two existing io tests fail because the registry now holds B19-B32 (expected; not my files):
+   `test_registry_is_package_data_mapping_ids_to_items` (expects exactly B1, B17, B18) and
+   `test_registry_ids_exist_in_model_assumptions` (B19 is not yet a row of
+   docs/model_assumptions.md). The orchestrator must add the rows below and update the expected
+   registry in tests/io/test_io_config_stand_ins.py.
+
+## Proposed model_assumptions rows (orchestrator adds them to docs/model_assumptions.md)
+
+All are demo stand-ins; a run with `purpose: comparison` refuses stand-ins for blocking items.
+
+| ID | Assumption | Stands in for | Why this value |
+|---|---|---|---|
+| B19 | Glancing angle = external angle of the (0,0,8) internal Bragg condition computed by geometry.specular with V0 = 12.0 V (B1): 16.474 mrad; angle-calibration uncertainty 0.1 mrad (1 sigma) | item 7 | (0,0,8) is the proposed working condition (B17); computing, not typing, the angle keeps it consistent with V0; 0.1 mrad is a typical Kikuchi/rocking-curve calibration |
+| B20 | Beam azimuth exactly [100], no misalignment | item 8 | inside the B4 scope for bulk-terminated a/4 steps (SM26), so the geometric model is valid for both step types |
+| B21 | Plane-wave illumination: convergence semi-angle 0, no source-size or energy-spread ensemble | item 3 (and 2) | the geometric engine computes one plane wave; the azimuthal-spread effect on a/4 steps is not analysed (B4) |
+| B22 | Dark-field objective aperture 3 mrad, centred on the specular beam | item 4 | below the 4.6 mrad transverse offset of the nearest non-specular rods at [100]; gives about 370 A of surface per reconstruction resolution along the beam |
+| B23 | Detector pitch 15 um, magnification 3.0e5, image pixel 0.05 nm on both axes | item 5 | 4 pixels per 2 A fringe; object band 0.12 cycles/A below the detector Nyquist frequency 1.0 cycles/A |
+| B24 | Ideal detector: gain 1 count/e, 500 e/px per hologram, Poisson noise only, no MTF, no readout noise, no drift | item 6 | a typical hologram dose; gives about 0.005 rad of phase scatter per pixel |
+| B25 | Periodic Si(001) staircase, edges transverse to the beam, terrace layers (0, 2, 1): an a/2 up-step and two a/4 down-steps (one at the period boundary); terrace widths per configuration (800 periods smoke, 600 HPC, 90 tiny); terrace-0 back-bond axis [110] (irrelevant at [100]) | item 11 | one a/2 and one a/4 step in the field (the builder needs a closed period); terraces several resolutions long after foreshortening |
+| B26 | Clean, bulk-terminated surface, no oxide or damage overlayer (restates B3 and B7) | item 12 | the ion-milling details are not supplied; B4 and the geometric model exclude an overlayer |
+| B27 | No patterned features in the field of view | item 13 | the demo images atomic steps only |
+| B28 | R1 vacuum reference beside the sample, passing the dark-field aperture after a condenser-biprism pre-tilt of 2 theta_ext (recorded, no effect); carrier fringe spacing 2.0 A (after compensation) along the perpendicular detector axis; reference amplitude equal to the empty object amplitude | items 15, 16 | the patent arrangement SM21; 2.0 A keeps the 3 mrad object band inside a |q_c|/3 sideband mask |
+| B29 | Processing: carrier on the EMPTY hologram in a disc of |q|/2 about -q_ref, centre band |q|/4 excluded, integer bin; Hann disc mask |q_c|/3; division by the empty hologram, minimum visibility 0.5; Itoh raster unwrapping; regions 3 resolutions from any unusable pixel; object amplitude >= 0.25 of the empty object amplitude; branch from the lattice constraint h = n a/4, |n| <= 2, refused if not exactly one candidate within 3 sigma; 3-sigma no-step control; >= 50 px per region | item 19 | the calculator's T24/T25 processing (mask |q_c|/3, three-resolution pad) plus explicit refusal rules |
+| B30 | No physical absorption in the multislice demos (imaginary potential 0; B6 not represented) | item 21 | no sourced absorptive-potential parameterisation (the [B15] warning forbids a tuned one) |
+| B31 | Beam-energy stability: relative wavelength uncertainty 1e-5 (1 sigma), used only in the height uncertainty | item 1 (stability part) | negligible against the angle term; a stated, not guessed-to-zero, uncertainty |
+| B32 | Multislice runs: the glancing angle and every refraction angle are computed with the mean inner potential of the potential actually used (Kirkland independent-atom model, 13.903 V, report D3 F16; 16.135 mrad at (0,0,8)), asserted against the engine's value to 5e-4 V; geometric runs keep B1. The IAM value exceeds B1 (12.0 V) by 1.90 V and the DFT value 12.53 V by 1.37 V: a model systematic of the engine (neutral free atoms, no bonding), not a correction | item 7 | consistency of the incidence angle with the refraction inside the simulated crystal (orchestrator decision after D3) |

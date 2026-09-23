@@ -67,6 +67,13 @@ TOP_KEYS_REQUIRED = ("pipeline_schema", "run_name", "purpose", "description", "c
 TOP_KEYS_OPTIONAL = ("variants",)
 ENGINES = ("geometric", "multislice")
 GLANCING_RULES = ("internal_bragg_external_angle",)
+V0_SOURCES = ("cfg_b.mean_inner_potential_V", "sections.engine.multislice.potential_mip")
+MS_KEYS = ("parameterisation", "physical_absorption", "frozen_phonons", "static_lattice_label",
+           "potential_mip", "sheet_beam", "nx", "ny", "dz_A", "propagator", "band_limit",
+           "backend", "precision", "absorber", "buildup_depth_A", "n_realisations", "seed",
+           "save_exit_waves")
+MS_CELL_KEYS = ("vacuum_above_A", "depth_below_A", "bulk_absorber_A", "top_absorber_A",
+                "entrance_vacuum_z_A")
 
 
 class PipelineConfigError(ConfigError):
@@ -126,7 +133,7 @@ SECTIONS: dict[str, dict[str, dict]] = {
         "gain": _rec(6, "gain", "positive"),
         "mtf": _rec(6, "none", "mtf"),
         "roi_shape": _plain("int_pair"),
-        "alignment": _plain("enum", choices=("centre",)),
+        "alignment": _plain("enum", choices=("centre", "field_of_view")),
         "noise_seed": _plain("seed"),
     },
     "reconstruction": {
@@ -148,7 +155,8 @@ RECON_KEYS = {"search_radius_fraction": "fraction", "exclusion_radius_fraction":
               "apodisation": ("none", "hann"), "reference_correction": ("none", "divide_empty"),
               "empty_min_visibility": "fraction", "unwrapping": ("none", "itoh_raster")}
 QUANT_KEYS = {"edge_margin_resolutions": "positive", "branch_rule": ("lattice_constraint",),
-              "max_layers": "int_pos", "n_sigma": "positive", "min_region_px": "int_pos"}
+              "max_layers": "int_pos", "n_sigma": "positive", "min_region_px": "int_pos",
+              "min_relative_amplitude": "fraction"}
 STAIRCASE_KEYS = ("edges", "terrace_layers", "terrace_widths_periods", "boundary_step_layers",
                   "first_terrace_backbond_uvw")
 GEOMETRIC_KEYS = {"exit_plane_pixel_A": "xy_pos", "n_y": "int_pos", "x_margin_A": "float_pos",
@@ -266,10 +274,12 @@ def _check_record_kind(where: str, kind: str, v, dim: str):
         if dim == "angle":
             if not (_is_num(v) and v > 0):
                 bad("a positive angle")
-        elif not (isinstance(v, dict) and set(v) == {"rule", "reflection_hkl"}
+        elif not (isinstance(v, dict) and set(v) == {"rule", "reflection_hkl", "V0_source"}
                   and v["rule"] in GLANCING_RULES and isinstance(v["reflection_hkl"], list)
-                  and len(v["reflection_hkl"]) == 3 and all(_is_int(a) for a in v["reflection_hkl"])):
-            bad(f"a positive angle, or {{rule: one of {GLANCING_RULES}, reflection_hkl: [h,k,l]}}")
+                  and len(v["reflection_hkl"]) == 3 and all(_is_int(a) for a in v["reflection_hkl"])
+                  and v["V0_source"] in V0_SOURCES):
+            bad(f"a positive angle, or {{rule: one of {GLANCING_RULES}, reflection_hkl: [h,k,l], "
+                f"V0_source: one of {V0_SOURCES}}}")
     elif kind == "beam":
         if v != "specular":
             bad("'specular' (the only beam the pipeline selects)")
@@ -427,8 +437,10 @@ def resolve_variant(data: dict, variant: str | None) -> dict:
     return _deep_merge(data["sections"], v["sections"])
 
 
-def _glancing_angle(rec: Record, cfg_b_params: dict) -> dict:
-    """Value of the glancing angle: supplied/assumed number, or computed by the declared rule."""
+def _glancing_angle(rec: Record, cfg_b_params: dict, sections: dict) -> dict:
+    """Value of the glancing angle: supplied/assumed number, or computed by the declared rule with
+    the declared mean inner potential (B1 for the geometric engine; the MIP of the potential
+    actually used for the multislice engine, orchestrator decision after report D3)."""
     if rec.value is None:
         raise MissingProjectInputError(
             "sections.illumination.glancing_angle is a missing PROJECT_INPUT "
@@ -445,17 +457,33 @@ def _glancing_angle(rec: Record, cfg_b_params: dict) -> dict:
             vals[n] = p["value"]
         if cfg_b_params["lattice_parameter"]["unit"] != "A":
             raise PipelineConfigError("glancing-angle rule: lattice_parameter must be in A")
+        src = rec.value["V0_source"]
+        if src == "cfg_b.mean_inner_potential_V":
+            if cfg_b_params["mean_inner_potential_V"].get("unit") != "V":
+                raise PipelineConfigError("cfg_b mean_inner_potential_V must be in V")
+            V0 = float(vals["mean_inner_potential_V"])
+            v0_rec = dict(value_V=V0, label=cfg_b_params["mean_inner_potential_V"].get("label"),
+                          assumption_id=cfg_b_params["mean_inner_potential_V"].get("assumption_id"),
+                          source=cfg_b_params["mean_inner_potential_V"].get("source"))
+        else:
+            eng = sections["engine"]
+            if eng["name"] != "multislice":
+                raise PipelineConfigError("V0_source 'sections.engine.multislice.potential_mip' "
+                                          "is only for the multislice engine")
+            mip = eng["multislice"]["potential_mip"]
+            V0 = float(mip.canonical_value)
+            v0_rec = dict(value_V=V0, label=mip.label, assumption_id=None, source=mip.source)
         try:
             sc = specular_condition_for(tuple(hkl), tuple(vals["surface_normal_hkl"]),
-                                        E_keV=float(vals["beam_energy_keV"]),
-                                        V0_V=float(vals["mean_inner_potential_V"]),
+                                        E_keV=float(vals["beam_energy_keV"]), V0_V=V0,
                                         a_A=float(vals["lattice_parameter"]))
         except GeometryError as exc:
             raise PipelineConfigError(f"glancing-angle rule: {exc}") from exc
         return dict(value_rad=float(sc.theta_ext), rule=rec.value["rule"], reflection_hkl=list(hkl),
                     theta_int_rad=float(sc.theta_int), h_2pi_A=float(sc.h_2pi_A),
                     computed_by="reflection_holo.geometry.specular.specular_condition_for",
-                    V0_V=float(vals["mean_inner_potential_V"]),
+                    V0_V=V0, V0_source=src, V0_record=v0_rec,
+                    cfg_b_mean_inner_potential_V=float(vals["mean_inner_potential_V"]),
                     label=rec.label, assumption_id=rec.assumption_id, source=rec.source)
     return dict(value_rad=float(rec.canonical_value), rule=None, label=rec.label,
                 assumption_id=rec.assumption_id, source=rec.source)
@@ -476,7 +504,8 @@ def _cfg_b_with_angle(cfg_b: dict, ga: dict, rec: Record) -> dict:
     src = rec.source
     if ga["rule"] is not None:
         src = (f"{rec.source}; computed by the pipeline: {ga['computed_by']}"
-               f"({tuple(ga['reflection_hkl'])}) at V0 = {ga['V0_V']} V (not typed)")
+               f"({tuple(ga['reflection_hkl'])}) at V0 = {ga['V0_V']} V from {ga['V0_source']} "
+               f"(not typed)")
     entry["source"] = src
     params["glancing_angle_ext"] = entry
     return out
@@ -549,7 +578,7 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
     cfg_b_raw = data["cfg_b"]
     if not isinstance(cfg_b_raw, dict):
         raise PipelineConfigError("cfg_b must be a CFG-B configuration mapping")
-    ga = _glancing_angle(ga_rec, cfg_b_raw.get("parameters") or {})
+    ga = _glancing_angle(ga_rec, cfg_b_raw.get("parameters") or {}, sections)
     cfg_b_full = _cfg_b_with_angle(cfg_b_raw, ga, ga_rec)
     cfg_b = load_config_dict(cfg_b_full, level="run", allow_test_only=allow_test_only)
     if cfg_b.config_id != "CFG-B":
@@ -605,21 +634,46 @@ def _check_engine(sections: dict, *, allow_test_only: bool) -> None:
             raise PipelineConfigError("sections.engine.geometric.invisibility_tol_cycles >= 0")
     else:
         m = eng["multislice"]
-        if "absorptive_potential" not in m:
+        if "physical_absorption" not in m:
             raise MissingProjectInputError(
-                "sections.engine.multislice.absorptive_potential is a missing PROJECT_INPUT "
-                "(docs/06_project_inputs_required.md item 21)", [21], ["absorptive_potential"])
-        r = _gate_record("engine.multislice", "absorptive_potential", _rec(21, "none", "mapping"),
-                         m["absorptive_potential"], allow_test_only=allow_test_only)
+                "sections.engine.multislice.physical_absorption is a missing PROJECT_INPUT "
+                "(docs/06_project_inputs_required.md item 21)", [21], ["physical_absorption"])
+        miss = [k for k in MS_KEYS if k not in m]
+        extra = sorted(set(m) - set(MS_KEYS))
+        if miss or extra:
+            raise PipelineConfigError(f"sections.engine.multislice: missing keys {miss}, unknown "
+                                      f"keys {extra} (every key required, no default)")
+        r = _gate_record("engine.multislice", "physical_absorption", _rec(21, "none", "mapping"),
+                         m["physical_absorption"], allow_test_only=allow_test_only)
         if r.value is None:
             raise MissingProjectInputError(
-                "sections.engine.multislice.absorptive_potential is a missing PROJECT_INPUT "
-                "(docs/06_project_inputs_required.md item 21)", [21], ["absorptive_potential"])
-        m["absorptive_potential"] = r
-        for k, lo in (("n_realisations", 1), ("seed", 0)):
-            if not (_is_int(m.get(k)) and m[k] >= lo):
-                raise PipelineConfigError(f"sections.engine.multislice.{k} must be an integer "
-                                          f">= {lo} (required, no default)")
+                "sections.engine.multislice.physical_absorption is a missing PROJECT_INPUT "
+                "(docs/06_project_inputs_required.md item 21)", [21], ["physical_absorption"])
+        m["physical_absorption"] = r
+        m["potential_mip"] = _gate_record("engine.multislice", "potential_mip",
+                                          _rec(None, "potential", "positive"), m["potential_mip"],
+                                          allow_test_only=allow_test_only)
+        if not (_is_int(m["n_realisations"]) and m["n_realisations"] >= 1):
+            raise PipelineConfigError("sections.engine.multislice.n_realisations must be >= 1")
+        if not (m["seed"] is None or (_is_int(m["seed"]) and m["seed"] >= 0)):
+            raise PipelineConfigError("sections.engine.multislice.seed must be null (static "
+                                      "lattice) or an integer >= 0 (frozen phonons)")
+        if (m["frozen_phonons"] == "none") != (m["seed"] is None):
+            raise PipelineConfigError("sections.engine.multislice: seed must be null exactly when "
+                                      "frozen_phonons is 'none' (a static lattice has no seed)")
+        sb = m["sheet_beam"]
+        if not (isinstance(sb, dict) and set(sb) == {"height_A", "edge_A",
+                                                      "x_bottom_above_highest_surface_A"}):
+            raise PipelineConfigError("sections.engine.multislice.sheet_beam must be {height_A, "
+                                      "edge_A, x_bottom_above_highest_surface_A}")
+        ab = m["absorber"]
+        if not (isinstance(ab, dict) and set(ab) == {"strength_V", "profile"}):
+            raise PipelineConfigError("sections.engine.multislice.absorber must be "
+                                      "{strength_V, profile}")
+        c = sections["cell"].get("multislice")
+        if not (isinstance(c, dict) and set(c) == set(MS_CELL_KEYS)):
+            raise PipelineConfigError(f"sections.cell.multislice must have exactly the keys "
+                                      f"{MS_CELL_KEYS} (forward.cell.build_reflection_cell)")
 
 
 def load_pipeline_file(path, *, variant: str | None) -> PipelineConfig:
@@ -650,6 +704,8 @@ NOT_USED = {
     17: "not modelled: empty-hologram residual phase, biprism Fresnel fringes and overlap width "
         "(NOT IMPLEMENTED; divide_empty removes a static reference residual)",
     18: "not needed (the measured carrier, item 16, is used instead of biprism voltages)",
+    21: "not an input of the geometric engine (no potential); required by the multislice engine "
+        "(sections.engine.multislice.physical_absorption)",
     22: "not modelled: no charging phase (ASSUMPTION B8)",
 }
 
@@ -678,8 +734,8 @@ def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
                              required=not spec["optional"]))
     eng = (sections.get("engine") or {})
     if eng.get("name") == "multislice":
-        p = (eng.get("multislice") or {}).get("absorptive_potential")
-        rows.append(_row(21, "sections.engine.multislice.absorptive_potential", p, required=True))
+        p = (eng.get("multislice") or {}).get("physical_absorption")
+        rows.append(_row(21, "sections.engine.multislice.physical_absorption", p, required=True))
     items_seen = {r["item"] for r in rows}
     for item, why in NOT_USED.items():
         if item not in items_seen:

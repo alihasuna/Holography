@@ -31,3 +31,4 @@ stand_ins:
   B29: [19]    # reconstruction and quantification processing choices of the demo
   B30: [21]    # absorptive potential of the multislice demos (none)
   B31: [1]     # beam-energy stability: relative wavelength uncertainty 1e-5 (sigma)
+  B32: [7]     # multislice runs: glancing angle (and every refraction angle) from the MIP of the potential used (Kirkland IAM 13.903 V, report D3)

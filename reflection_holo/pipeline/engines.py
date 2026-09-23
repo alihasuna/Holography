@@ -2,27 +2,33 @@
 
 Engines (``sections.engine.name``):
 * "geometric": ``reflection_holo.forward.geometric`` (docs/05 section 4.5), always available.
-* "multislice": imported LAZILY from ``reflection_holo.forward.multislice`` (the multislice agent's
-  package) and ``reflection_holo.forward.cell``. Integration contract proposed to that agent
-  (the only two names the pipeline calls; the types are the fixed ones of forward/contracts.py):
+* "multislice": the multislice agent's ``reflection_holo.forward.multislice`` with
+  ``reflection_holo.forward.cell``, imported LAZILY (abTEM, GPL-3.0-or-later, is an optional
+  dependency of its atomic potential and is never imported here). The adapter calls, with every
+  argument taken from the configuration (no default):
 
-      reflection_holo.forward.cell.reflection_cell_from_structure(structure, *, cell_params)
-          -> ReflectionCell
-      reflection_holo.forward.multislice.simulate_exit_waves(cell, *, energy_keV,
-          theta_in_ext_rad, engine_params) -> list[ExitWave]     (one per realisation)
+      cell = forward.cell.build_reflection_cell(structure, **sections.cell.multislice)
+      pot  = multislice.AtomicPotential(cell, parameterisation, physical_absorption (item 21),
+                                        frozen_phonons, static_lattice_label)
+      beam = multislice.SheetBeam(height_A, edge_A, x_bottom_A, theta_in_ext_rad, theta_label)
+      params = multislice.MultisliceParams(energy_keV=200, nx, ny, dz_A, propagator, band_limit,
+                                           backend, precision, threads, absorber,
+                                           theta_out_ext_rad, buildup_depth_A)
+      waves, engine_manifest = multislice.simulate(cell, potential=pot, beam=beam, params=params,
+                                                   realisations, seed, outputs_root, ...)
 
-  ``cell_params`` is ``sections.cell.multislice`` and ``engine_params`` is
-  ``sections.engine.multislice`` (with ``absorptive_potential`` as its gated record value, and
-  ``n_realisations`` and ``seed``), both handed over unchanged. If either module is absent, or
-  lacks the entry point, the run fails with EngineUnavailableError naming what is missing; nothing
-  falls back to the geometric engine.
+  The mean inner potential of the potential actually used (``potentials.
+  potential_mean_inner_potential_V``) must equal the value with which the glancing angle was
+  computed (``sections.engine.multislice.potential_mip``, report D3 F16) to 5e-4 V, or the run
+  fails (orchestrator decision after D3). If a module or name is missing the run fails with
+  EngineUnavailableError; nothing falls back to the geometric engine.
 Every ExitWave is validated (optics.darkfield.validate_exit_wave): pixel sizes, origins and plane
 are read from the wave and asserted, never assumed.
 """
 from __future__ import annotations
 
 import importlib
-from typing import Any
+import importlib.util
 
 from reflection_holo.constants import BEAM_ENERGY_SUPPLIED_KEV
 from reflection_holo.forward.contracts import ExitWave, ReflectionCell
@@ -34,8 +40,11 @@ from reflection_holo.structure import OverlayerSpec, Staircase, build_si001_terr
 
 MULTISLICE_MODULE = "reflection_holo.forward.multislice"
 CELL_MODULE = "reflection_holo.forward.cell"
-MULTISLICE_ENTRY = "simulate_exit_waves"
-CELL_ENTRY = "reflection_cell_from_structure"
+MULTISLICE_NAMES = ("AtomicPotential", "PhysicalAbsorption", "FrozenPhonons", "SheetBeam",
+                    "MultisliceParams", "NumericalAbsorber", "simulate")
+CELL_NAMES = ("build_reflection_cell",)
+MIP_FUNCTION = ("reflection_holo.forward.multislice.potentials", "potential_mean_inner_potential_V")
+MIP_TOL_V = 5e-4
 
 
 class EngineUnavailableError(RuntimeError):
@@ -125,52 +134,114 @@ def multislice_status() -> tuple[bool, str]:
                        f"the multislice engine is being written by the multislice agent")
     try:
         cellmod = importlib.import_module(CELL_MODULE)
+        potmod = importlib.import_module(MIP_FUNCTION[0])
     except ImportError as exc:
-        return False, f"{CELL_MODULE} is not importable ({type(exc).__name__}: {exc})"
-    missing = []
-    if not callable(getattr(ms, MULTISLICE_ENTRY, None)):
-        missing.append(f"{MULTISLICE_MODULE}.{MULTISLICE_ENTRY}")
-    if not callable(getattr(cellmod, CELL_ENTRY, None)):
-        missing.append(f"{CELL_MODULE}.{CELL_ENTRY}")
+        return False, f"{CELL_MODULE} or {MIP_FUNCTION[0]} not importable ({exc})"
+    missing = [f"{MULTISLICE_MODULE}.{n}" for n in MULTISLICE_NAMES if not hasattr(ms, n)]
+    missing += [f"{CELL_MODULE}.{n}" for n in CELL_NAMES if not hasattr(cellmod, n)]
+    if not callable(getattr(potmod, MIP_FUNCTION[1], None)):
+        missing.append(".".join(MIP_FUNCTION))
     if missing:
-        return False, (f"integration entry points missing: {missing} (see "
-                       f"reflection_holo/pipeline/engines.py for the proposed signatures)")
+        return False, f"integration names missing: {missing}"
+    if importlib.util.find_spec("abtem") is None:
+        return False, ("the optional dependency abTEM 1.0.10 (GPL-3.0-or-later) is not installed; "
+                       "the atomic potential needs it (report D3)")
     return True, "available"
 
 
-def run_multislice(structure, cfg: PipelineConfig) -> tuple[list[ExitWave], ReflectionCell]:
-    """Multislice engine through the integration contract of the module docstring."""
+def reflection_cell(structure, cfg: PipelineConfig) -> ReflectionCell:
+    cellmod = importlib.import_module(CELL_MODULE)
+    cp = dict(cfg.sections["cell"]["multislice"])
+    cell = cellmod.build_reflection_cell(structure, **cp)
+    if not isinstance(cell, ReflectionCell):
+        raise EngineUnavailableError(f"build_reflection_cell returned {type(cell).__name__}")
+    return cell
+
+
+def multislice_objects(structure, cfg: PipelineConfig) -> dict:
+    """Cell, potential, beam and parameters of the multislice engine from the configuration, with
+    the mean-inner-potential consistency check (module docstring). No propagation."""
     ok, why = multislice_status()
     if not ok:
         raise EngineUnavailableError(f"engine 'multislice' unavailable: {why}")
     ms = importlib.import_module(MULTISLICE_MODULE)
-    cellmod = importlib.import_module(CELL_MODULE)
-    cell_params = cfg.sections["cell"].get("multislice")
-    if cell_params is None:
-        raise PipelineConfigError("sections.cell.multislice is required with the multislice engine")
-    cell = getattr(cellmod, CELL_ENTRY)(structure, cell_params=dict(cell_params))
-    if not isinstance(cell, ReflectionCell):
-        raise EngineUnavailableError(f"{CELL_ENTRY} returned {type(cell).__name__}, not a "
-                                     f"ReflectionCell")
-    eng: dict[str, Any] = dict(cfg.value("engine", "multislice"))
-    ap = eng["absorptive_potential"]
-    eng["absorptive_potential"] = ap.value if isinstance(ap, Record) else ap
-    eng["absorptive_potential_label"] = _label(ap) if isinstance(ap, Record) else None
+    potmod = importlib.import_module(MIP_FUNCTION[0])
+    m = cfg.value("engine", "multislice")
     ga = cfg.glancing_angle
-    waves = getattr(ms, MULTISLICE_ENTRY)(cell, energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
-                                         theta_in_ext_rad=ga["value_rad"], engine_params=eng)
+    th = ga["value_rad"]
+    cell = reflection_cell(structure, cfg)
+    pa_rec: Record = m["physical_absorption"]
+    pa = ms.PhysicalAbsorption(model=pa_rec.value["model"], ratio=pa_rec.value["ratio"],
+                               label=_label(pa_rec))
+    fp_cfg = m["frozen_phonons"]
+    if fp_cfg == "none":
+        fp, static = None, m["static_lattice_label"]
+    else:
+        fp = ms.FrozenPhonons(rms_displacement_A=fp_cfg["rms_displacement_A"],
+                              label=fp_cfg["label"])
+        static = None
+    pot = ms.AtomicPotential(cell, parameterisation=m["parameterisation"], physical_absorption=pa,
+                             frozen_phonons=fp, static_lattice_label=static)
+    mip = float(getattr(potmod, MIP_FUNCTION[1])(pot))
+    mip_cfg = float(m["potential_mip"].canonical_value)
+    mip_check = dict(potential_mip_V=mip, configured_potential_mip_V=mip_cfg,
+                     configured_label=m["potential_mip"].label,
+                     configured_source=m["potential_mip"].source, tolerance_V=MIP_TOL_V,
+                     V0_used_for_glancing_angle_V=ga.get("V0_V"),
+                     V0_source=ga.get("V0_source"))
+    if abs(mip - mip_cfg) > MIP_TOL_V:
+        raise PipelineConfigError(
+            f"the potential's mean inner potential is {mip:.6f} V but the configuration declares "
+            f"{mip_cfg} V (sections.engine.multislice.potential_mip); refraction angles would be "
+            f"inconsistent with the exit waves")
+    if ga.get("rule") is not None and ga.get("V0_source") != "sections.engine.multislice.potential_mip":
+        raise PipelineConfigError("with the multislice engine the glancing angle must be computed "
+                                  "from the potential's MIP (V0_source "
+                                  "'sections.engine.multislice.potential_mip'; report D3)")
+    lay = cell.metadata["layout"]
+    sb = m["sheet_beam"]
+    beam = ms.SheetBeam(height_A=sb["height_A"], edge_A=sb["edge_A"],
+                        x_bottom_A=lay["highest_surface_x_A"] + sb["x_bottom_above_highest_surface_A"],
+                        theta_in_ext_rad=th, theta_label=_label(cfg.rec("illumination",
+                                                                         "glancing_angle")))
+    params = ms.MultisliceParams(
+        energy_keV=BEAM_ENERGY_SUPPLIED_KEV, nx=m["nx"], ny=m["ny"], dz_A=m["dz_A"],
+        propagator=m["propagator"], band_limit=m["band_limit"], backend=m["backend"],
+        precision=m["precision"], threads=cfg.value("runtime", "threads"),
+        absorber=ms.NumericalAbsorber(strength_V=m["absorber"]["strength_V"],
+                                      profile=m["absorber"]["profile"]),
+        theta_out_ext_rad=th, buildup_depth_A=m["buildup_depth_A"])
+    return dict(ms=ms, cell=cell, potential=pot, beam=beam, params=params, mip_check=mip_check,
+                engine_params=m)
+
+
+def run_multislice(structure, cfg: PipelineConfig, *, outputs_root, run_name: str
+                   ) -> tuple[list[ExitWave], ReflectionCell, dict]:
+    """Multislice engine through the adapter of the module docstring. Returns the exit waves, the
+    reflection cell and a record (engine manifest path, MIP check, parameters)."""
+    o = multislice_objects(structure, cfg)
+    ms, cell, beam, params, m = o["ms"], o["cell"], o["beam"], o["params"], o["engine_params"]
+    th = cfg.glancing_angle["value_rad"]
+    waves, man = ms.simulate(cell, potential=o["potential"], beam=beam, params=params,
+                             realisations=m["n_realisations"], seed=m["seed"],
+                             outputs_root=outputs_root, run_name=f"{run_name}_multislice",
+                             save_waves=m["save_exit_waves"], config=None, input_paths=[])
     waves = list(waves)
     if not waves:
         raise EngineUnavailableError("the multislice engine returned no exit wave")
     seen = set()
+    g0 = (waves[0].psi.shape, waves[0].dx_A, waves[0].dy_A, waves[0].x0_A, waves[0].y0_A,
+          waves[0].plane, waves[0].z_A)
     for w in waves:
-        validate_exit_wave(w, energy_keV=BEAM_ENERGY_SUPPLIED_KEV, theta_in_ext_rad=ga["value_rad"],
+        validate_exit_wave(w, energy_keV=BEAM_ENERGY_SUPPLIED_KEV, theta_in_ext_rad=th,
                            rtol_angle=1e-12)
         if w.realisation in seen:
             raise ValueError(f"realisation {w.realisation} returned twice")
         seen.add(w.realisation)
-        g0 = (waves[0].psi.shape, waves[0].dx_A, waves[0].dy_A, waves[0].x0_A, waves[0].y0_A,
-              waves[0].plane, waves[0].z_A)
         if (w.psi.shape, w.dx_A, w.dy_A, w.x0_A, w.y0_A, w.plane, w.z_A) != g0:
             raise ValueError("exit waves of one run must share grid, origin and plane")
-    return waves, cell
+    record = dict(engine_manifest=str(man), mip_check=o["mip_check"], params=params.to_dict(),
+                  beam=beam.describe(waves[0].metadata["beam"]["wavelength_A"]),
+                  validation_status=waves[0].metadata.get("validation_status"),
+                  cell_layout=cell.metadata["layout"])
+    return waves, cell, record

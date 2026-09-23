@@ -1,0 +1,125 @@
+"""Command line of the pipeline.
+
+    python -m reflection_holo.pipeline run --config C --out D [--variant V] [--allow-no-git]
+    python -m reflection_holo.pipeline dry-run --config C [--variant V] [--calibrate-cpu]
+    python -m reflection_holo.pipeline list-inputs --config C [--variant V]
+
+Exit status: 0 success; 2 usage; 3 configuration refused (a missing PROJECT_INPUT, an unregistered
+stand-in, a schema error); 4 engine unavailable; 5 output directory not empty.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+
+from reflection_holo.io.config import ConfigError, MissingProjectInputError
+from reflection_holo.pipeline.config import (format_inputs, list_inputs, load_pipeline_file,
+                                             read_pipeline_file)
+from reflection_holo.pipeline.engines import EngineUnavailableError
+
+
+def _parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="python -m reflection_holo.pipeline",
+                                description="Reflection-mode dark-field holography pipeline "
+                                            "(200 keV; no default replaces a PROJECT_INPUT).")
+    sub = p.add_subparsers(dest="command", required=True)
+    r = sub.add_parser("run", help="run the pipeline")
+    r.add_argument("--config", required=True)
+    r.add_argument("--out", required=True, help="output directory (created; must be empty)")
+    r.add_argument("--variant", default=None)
+    r.add_argument("--allow-no-git", action="store_true",
+                   help="record, instead of refusing, a missing git state in the manifest")
+    d = sub.add_parser("dry-run", help="validate the configuration and print resource estimates")
+    d.add_argument("--config", required=True)
+    d.add_argument("--variant", default=None)
+    d.add_argument("--calibrate-cpu", action="store_true",
+                   help="multislice: measure the FFT and potential costs on this machine")
+    li = sub.add_parser("list-inputs", help="show every PROJECT_INPUT and its status")
+    li.add_argument("--config", required=True)
+    li.add_argument("--variant", default=None)
+    return p
+
+
+def _human_bytes(n: float) -> str:
+    for unit in ("B", "KiB", "MiB", "GiB", "TiB"):
+        if abs(n) < 1024 or unit == "TiB":
+            return f"{n:.1f} {unit}"
+        n /= 1024.0
+    return f"{n:.1f} TiB"
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
+    try:
+        if args.command == "list-inputs":
+            data = read_pipeline_file(args.config)
+            print(f"purpose: {data.get('purpose')}")
+            print(format_inputs(list_inputs(data, variant=args.variant)))
+            try:
+                load_pipeline_file(args.config, variant=args.variant)
+                print("run-level gate: PASS")
+            except ConfigError as exc:
+                print(f"run-level gate: REFUSED ({type(exc).__name__}): {exc}")
+                return 3
+            return 0
+        cfg = load_pipeline_file(args.config, variant=args.variant)
+        if args.command == "dry-run":
+            from reflection_holo.pipeline.estimates import dry_run
+            rep = dry_run(cfg, calibrate_cpu=args.calibrate_cpu)
+            print(f"purpose: {cfg.purpose}")
+            print(f"configuration valid (run level); engine {rep['engine']}; glancing angle "
+                  f"{rep['glancing_angle_mrad']:.6f} mrad "
+                  f"({cfg.glancing_angle.get('rule') or 'value'}; V0 {cfg.glancing_angle.get('V0_V')} V)")
+            if rep["engine"] == "geometric":
+                gm = rep["geometric"]
+                print(f"exit plane {gm['exit_plane_shape']} px, field {gm['field_length_A']:.1f} A "
+                      f"along the beam, memory ~{_human_bytes(rep['total_memory_bytes'])}, "
+                      f"~{gm['estimated_seconds']:.1f} s (scaled from the smoke demo)")
+            else:
+                if not rep["multislice_available"]:
+                    print(f"multislice engine NOT available: {rep['multislice_status']}")
+                    return 4
+                est = rep["multislice"]
+                print(f"cell {rep['cell']}")
+                print(f"grid {est['grid']}, slices {est['n_slices']}, atoms {est['n_atoms']}, "
+                      f"realisations {est['realisations']}")
+                print(f"memory per realisation ~{_human_bytes(est['memory_bytes']['total'])}")
+                if "cpu" in est:
+                    print(f"CPU (measured here) ~{est['cpu']['seconds_total']:.0f} s")
+                print(f"GPU (ASSUMPTION model, not measured) ~{est['gpu']['seconds_total']:.0f} s")
+            print(json.dumps(rep, indent=1, default=str)[:4000])
+            return 0
+        from reflection_holo.pipeline.run import OutputDirectoryError, run
+        try:
+            s = run(cfg, args.out, allow_no_git=args.allow_no_git)
+        except OutputDirectoryError as exc:
+            print(f"refused: {exc}", file=sys.stderr)
+            return 5
+        print(s["banner"])
+        print(f"engine: {s['engine'].get('label')}")
+        for st in s["quantification"]["steps"]:
+            h = st.get("height")
+            txt = (f"h = {h['h_A']:+.4f} +- {h['sigma_h_A']:.4f} A (branch {h['branch_index']}, "
+                   f"wrap period {h['wrap_period_A']:.4f} A)" if h else f"no height: {st.get('reason')}")
+            print(f"step field terraces {st['from_field_terrace']}->{st['to_field_terrace']} "
+                  f"({st['type']}): {txt}")
+        c = s["quantification"]["no_step_control"]
+        print(f"no-step control: {'PASS' if c.get('passed') else 'NOT PASSED or not performed'} "
+              f"{c}")
+        print(f"outputs in {args.out}: summary.json, manifest.json, arrays.npz "
+              f"{' '.join(s['quicklooks'])}")
+        return 0
+    except MissingProjectInputError as exc:
+        print(f"REFUSED (missing PROJECT_INPUT, docs/06 items {exc.items}): {exc}", file=sys.stderr)
+        return 3
+    except ConfigError as exc:
+        print(f"REFUSED (configuration): {exc}", file=sys.stderr)
+        return 3
+    except EngineUnavailableError as exc:
+        print(f"REFUSED (engine): {exc}", file=sys.stderr)
+        return 4
+
+
+if __name__ == "__main__":
+    sys.exit(main())

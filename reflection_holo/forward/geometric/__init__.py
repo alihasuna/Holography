@@ -5,6 +5,6 @@ Fast engine for pipeline tests and large fields of view. Every output is labelle
 refused (``OutsideB4ScopeError``).
 """
 from reflection_holo.forward.geometric.model import (  # noqa: F401
-    ENGINE_NAME, EXIT_PLANE, GEOMETRIC_LABEL, STATUS, GeometricParams, GeometricRun,
+    ENGINE_NAME, EXIT_PLANE, GEOMETRIC_LABEL, STATUS, FieldLayout, GeometricParams, GeometricRun,
     OutsideB4ScopeError, TerraceModel, field_length_A, geometric_exit_wave, require_b4_scope,
     terrace_model_from_structure, trace_exit_points)

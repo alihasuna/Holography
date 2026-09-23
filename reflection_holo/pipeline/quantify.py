@@ -44,14 +44,13 @@ from reflection_holo.quantification.height import (height_from_phase,
 from reflection_holo.structure.si001 import B4_A4_100
 
 
-def detector_trace(model, u_A, y_A, *, x0_A: float, theta_rad: float, field_length_A: float,
-                   periods: int) -> dict:
+def detector_trace(model, u_A, y_A, *, x0_A: float, theta_rad: float, layout) -> dict:
     """Ray trace of every detector pixel centre (u along the beam, y perpendicular; image-plane A)
     through its exit-plane point x = x0 - u / cos(theta)."""
     U, Y = np.meshgrid(np.asarray(u_A, float), np.asarray(y_A, float), indexing="ij")
     X = x0_A - U / math.cos(theta_rad)
-    tr = trace_exit_points(model, X, Y, field_length_A=field_length_A, periods=periods,
-                           theta_in_ext_rad=theta_rad, theta_out_ext_rad=theta_rad)
+    tr = trace_exit_points(model, X, Y, layout=layout, theta_in_ext_rad=theta_rad,
+                           theta_out_ext_rad=theta_rad)
     n = model.n_terraces
     ft = np.where(tr["source_terrace"] >= 0, tr["source_period"] * n + tr["source_terrace"], -1)
     tr["field_terrace"] = ft.astype(np.int64)

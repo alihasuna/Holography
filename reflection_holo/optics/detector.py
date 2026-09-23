@@ -7,7 +7,8 @@ Inputs (all REQUIRED, no defaults):
 * PROJECT_INPUT item 6: dose (mean electrons per detector pixel per hologram), gain (counts per
   electron) and the MTF ("none" is the only implemented value: an ideal detector);
 * a region of interest (pixels on each axis) and its alignment ("centre": the ROI centre on the
-  centre of the projected field), and an explicit integer noise seed.
+  centre of the projected exit-plane grid; "field_of_view": on the centre of the image of the
+  terraces, an interval of image-plane u given by the caller), and an explicit integer noise seed.
 
 Pixel mapping: the specimen-referred detector pixel is p = pitch / M on each axis, in the image
 plane perpendicular to k_out. Axis 0 of the detector is the along-beam (foreshortened) axis, axis 1
@@ -37,7 +38,7 @@ from reflection_holo.optics.fields import Grid, Hologram, Wave
 from reflection_holo.optics.hologram import apply_poisson_noise
 from reflection_holo.optics.projection import IMAGE_AXES, ProjectedImage
 
-ALIGNMENTS = ("centre",)
+ALIGNMENTS = ("centre", "field_of_view")
 MTFS = ("none",)
 _LABELS = ("PROJECT_INPUT", "ASSUMPTION", "TEST_ONLY")
 _REL_TOL = 1e-9
@@ -133,12 +134,22 @@ class DetectorPlacement:
     record: dict = field(default_factory=dict)
 
 
-def place_detector(image: ProjectedImage, spec: DetectorSpec) -> DetectorPlacement:
-    """Pixel-centre coordinates of the ROI ("centre" alignment: ROI centre on the field centre).
+def place_detector(image: ProjectedImage, spec: DetectorSpec, *,
+                   field_of_view_u_A: tuple[float, float] | None) -> DetectorPlacement:
+    """Pixel-centre coordinates of the ROI ("centre": ROI centre on the centre of the projected
+    exit-plane grid; "field_of_view": on the centre of ``field_of_view_u_A``, required then).
     Refuses an ROI that is not inside the projected field on both axes."""
     p = spec.pixel_A
     n0, n1 = spec.roi_shape
-    uc = 0.5 * (image.image_u_A[0] + image.image_u_A[-1])
+    if spec.alignment == "field_of_view":
+        if field_of_view_u_A is None:
+            raise ValueError("alignment 'field_of_view' needs the image-plane interval of the "
+                             "terraces (field_of_view_u_A)")
+        uc = 0.5 * (float(field_of_view_u_A[0]) + float(field_of_view_u_A[1]))
+    else:
+        if field_of_view_u_A is not None:
+            raise ValueError("field_of_view_u_A is only for alignment 'field_of_view'")
+        uc = 0.5 * (image.image_u_A[0] + image.image_u_A[-1])
     yc = 0.5 * (image.y_A[0] + image.y_A[-1])
     u = uc + (np.arange(n0) - 0.5 * (n0 - 1)) * p[0]
     y = yc + (np.arange(n1) - 0.5 * (n1 - 1)) * p[1]
@@ -149,7 +160,9 @@ def place_detector(image: ProjectedImage, spec: DetectorSpec) -> DetectorPlaceme
                              f"the projected field [{lo:.3f}, {hi:.3f}] A: enlarge the engine field "
                              f"or reduce the ROI (no periodic wrap is used)")
     return DetectorPlacement(u_A=u, y_A=y, record=dict(
-        alignment=spec.alignment, u_first_A=float(u[0]), u_last_A=float(u[-1]),
+        alignment=spec.alignment, field_of_view_u_A=(None if field_of_view_u_A is None else
+                                                     [float(v) for v in field_of_view_u_A]),
+        u_first_A=float(u[0]), u_last_A=float(u[-1]),
         y_first_A=float(y[0]), y_last_A=float(y[-1]),
         field_u_A=[float(image.image_u_A[0]), float(image.image_u_A[-1])],
         field_y_A=[float(image.y_A[0]), float(image.y_A[-1])]))
@@ -166,7 +179,9 @@ def _dft_interpolation_matrix(n_in: int, d_in: float, t_out: np.ndarray) -> np.n
 
 
 def resample_to_detector(image: ProjectedImage, spec: DetectorSpec, *,
-                         band_cycles_per_A: float) -> tuple[Wave, DetectorPlacement]:
+                         band_cycles_per_A: float,
+                         field_of_view_u_A: tuple[float, float] | None = None
+                         ) -> tuple[Wave, DetectorPlacement]:
     """Band-limited resampling of the projected complex image onto the detector pixel centres.
 
     band_cycles_per_A: the band of the wave (the aperture band sin(alpha)/lambda); it must lie below
@@ -185,7 +200,7 @@ def resample_to_detector(image: ProjectedImage, spec: DetectorSpec, *,
     g = image.wave.grid
     if g.axes != IMAGE_AXES:
         raise ValueError(f"image axes must be {IMAGE_AXES}, got {g.axes}")
-    placement = place_detector(image, spec)
+    placement = place_detector(image, spec, field_of_view_u_A=field_of_view_u_A)
     du, dy = g.pixel_size_A
     E0 = _dft_interpolation_matrix(g.shape[0], du, placement.u_A - image.image_u_A[0])
     E1 = _dft_interpolation_matrix(g.shape[1], dy, placement.y_A - image.y_A[0])

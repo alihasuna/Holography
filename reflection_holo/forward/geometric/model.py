@@ -245,36 +245,71 @@ def _field_terraces(model: TerraceModel, periods: int):
             np.asarray(pp, dtype=np.int64))
 
 
-def _illumination_profile(model: TerraceModel, periods: int, theta_in: float):
-    """(edges, h_start, heights_after) over the field of view plus enough upstream periods for the
-    longest illumination shadow (the staircase continues periodically upstream)."""
+@dataclass(frozen=True)
+class FieldLayout:
+    """Where the terraces sit in the frame of the exit wave (all fields required).
+
+    field_length_A  z of the exit plane (downstream end of the field)
+    z_start_A       z where the first terrace starts; terraces fill [z_start_A, field_length_A)
+    x_offset_A      added to the builder's terrace heights (0 in the slab frame; the reflection
+                    cell of forward.cell shifts x so that its box bottom is at 0)
+    periods         staircase periods (transverse edges) along the field
+    upstream        "periodic": the staircase continues upstream of z_start (geometric field of
+                    view); "none": vacuum upstream (the crystal front face of a reflection cell)
+    """
+    field_length_A: float
+    z_start_A: float
+    x_offset_A: float
+    periods: int
+    upstream: str
+
+    def __post_init__(self):
+        if self.upstream not in ("periodic", "none"):
+            raise ValueError("upstream must be 'periodic' or 'none'")
+        for name in ("field_length_A", "z_start_A", "x_offset_A"):
+            if not np.isfinite(float(getattr(self, name))):
+                raise ValueError(f"{name} must be finite")
+        if isinstance(self.periods, bool) or int(self.periods) != self.periods or self.periods < 1:
+            raise ValueError("periods must be a positive integer")
+
+
+def _illumination_profile(model: TerraceModel, layout: FieldLayout, theta_in: float):
+    """(edges, h_start, heights_after) over the field, plus enough upstream periods for the longest
+    illumination shadow when the staircase continues upstream."""
+    if layout.upstream == "none":
+        st, _, H, _, _ = _field_terraces(model, layout.periods)
+        return st[1:] + layout.z_start_A, float(H[0]) + layout.x_offset_A, H[1:] + layout.x_offset_A
     span = max(model.heights_A) - min(model.heights_A)
     up = max(1, int(math.ceil(projection.shadow_length_A(span, theta_in) / model.period_A))) \
         if span > 0 else 1
-    st, _, H, _, _ = _field_terraces(model, periods + up)
-    st = st - up * model.period_A
+    st, _, H, _, _ = _field_terraces(model, layout.periods + up)
+    st = st - up * model.period_A + layout.z_start_A
+    H = H + layout.x_offset_A
     return st[1:], float(H[0]), H[1:]
 
 
-def trace_exit_points(model: TerraceModel, x_A, y_A, *, field_length_A: float, periods: int,
+def trace_exit_points(model: TerraceModel, x_A, y_A, *, layout: FieldLayout,
                       theta_in_ext_rad: float, theta_out_ext_rad: float) -> dict:
-    """Ray trace of exit-plane points (x_A, y_A) (broadcast arrays) at z = field_length_A back
-    along -k_out (module docstring). Returns arrays: status (int8, STATUS codes), source_z_A (NaN
-    unless the ray meets a terrace top), source_terrace (index within the period, -1 if none),
-    source_period (-1 if none), and the shadow.py masks at the traced sources."""
+    """Ray trace of exit-plane points (x_A, y_A) (broadcast arrays) at z = layout.field_length_A
+    back along -k_out (module docstring). Returns arrays: status (int8, STATUS codes), source_z_A
+    (NaN unless the ray meets a terrace top), source_terrace (index within the period, -1 if
+    none), source_period (-1 if none), and the shadow.py masks at the traced sources."""
     x = np.asarray(x_A, float)
     y = np.asarray(y_A, float)
     x, y = np.broadcast_arrays(x, y)
-    L = float(field_length_A)
+    L = float(layout.field_length_A)
+    z0 = float(layout.z_start_A)
     t_out = math.tan(theta_out_ext_rad)
     status = np.full(x.shape, STATUS["outside_field_of_view"], dtype=np.int8)
     src_z = np.full(x.shape, np.nan)
     src_k = np.full(x.shape, -1, dtype=np.int64)
     src_p = np.full(x.shape, -1, dtype=np.int64)
     if model.edges == "transverse":
-        st, en, H, kk, pp = _field_terraces(model, periods)
-        if abs(en[-1] - L) > 1e-9:
-            raise ValueError("field_length_A does not match the terrace layout")
+        st, en, H, kk, pp = _field_terraces(model, layout.periods)
+        st, en, H = st + z0, en + z0, H + layout.x_offset_A
+        if abs(en[-1] - L) > 1e-6:
+            raise ValueError(f"the terraces end at z = {en[-1]:.6f} A, not at the exit plane "
+                             f"z = {L:.6f} A")
         active = x >= H[-1]
         status[~active] = STATUS["below_surface"]
         for k in range(len(H) - 1, -1, -1):
@@ -290,16 +325,16 @@ def trace_exit_points(model: TerraceModel, x_A, y_A, *, field_length_A: float, p
                 riser = active & (X < H[k - 1])
                 status[riser] = STATUS["riser"]
                 active &= ~riser
-        # remaining active rays pass above z = 0: their source is upstream of the field of view
-        edges, h0, after = _illumination_profile(model, periods, theta_in_ext_rad)
+        # remaining active rays pass above z = z_start: their source is upstream of the field
+        edges, h0, after = _illumination_profile(model, layout, theta_in_ext_rad)
     elif model.edges == "parallel":
         P = model.period_A
         u = np.mod(y, P)
         k_of = np.searchsorted(np.asarray(model.starts_A), u, side="right") - 1
-        Hy = np.asarray(model.heights_A)[k_of]
+        Hy = np.asarray(model.heights_A)[k_of] + layout.x_offset_A
         below = x < Hy
         zh = L - (x - Hy) / t_out
-        hit = (~below) & (zh >= 0.0)
+        hit = (~below) & (zh >= z0)
         status[below] = STATUS["below_surface"]
         status[hit] = STATUS["lit"]
         src_z[hit] = zh[hit]
@@ -338,6 +373,7 @@ class GeometricRun:
     x_A: np.ndarray
     y_A: np.ndarray
     field_length_A: float
+    layout: FieldLayout
     record: dict = field(default_factory=dict)
 
 
@@ -385,7 +421,9 @@ def geometric_exit_wave(model: TerraceModel, *, energy_keV: float, theta_in_ext_
         raise ValueError(f"exit-plane pixel dx = {dx} A cannot sample the reflected carrier "
                          f"sin(theta)/lambda = {q_band:.4f} cycles/A (Nyquist {0.5 / dx:.4f})")
     X, Y = np.meshgrid(x, y, indexing="ij")
-    tr = trace_exit_points(model, X, Y, field_length_A=L, periods=periods, theta_in_ext_rad=th,
+    layout = FieldLayout(field_length_A=L, z_start_A=0.0, x_offset_A=0.0, periods=periods,
+                         upstream="periodic")
+    tr = trace_exit_points(model, X, Y, layout=layout, theta_in_ext_rad=th,
                            theta_out_ext_rad=th_out)
     lit = tr["status"] == STATUS["lit"]
     # R_k of each lit source (terrace k in period p): R_k + p R_period
@@ -452,7 +490,7 @@ def geometric_exit_wave(model: TerraceModel, *, energy_keV: float, theta_in_ext_
     ew = ExitWave(psi=psi, dx_A=dx, dy_A=dy, x0_A=float(x[0]), y0_A=0.0, plane=EXIT_PLANE, z_A=L,
                   energy_keV=float(energy_keV), theta_in_ext_rad=th, realisation=0, seed=None,
                   metadata=metadata)
-    return GeometricRun(exit_wave=ew, trace=tr, x_A=x, y_A=y, field_length_A=L,
+    return GeometricRun(exit_wave=ew, trace=tr, x_A=x, y_A=y, field_length_A=L, layout=layout,
                         record=dict(n_lit=int(lit.sum()),
                                     n_by_status={name: int((tr["status"] == c).sum())
                                                  for name, c in STATUS.items()}))
