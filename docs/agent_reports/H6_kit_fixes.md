@@ -137,6 +137,7 @@ PyPI wheels + H4's stand-in `cupy-14.1.0` whose import raises `ImportError: libc
 | H4 F1 reproductions before / after | BASH_ENV: `8 failed, 70 deselected in 0.76s` / `10 passed, 103 deselected in 10.04s`; noexec basetemp: `7 failed, 1 passed, 70 deselected in 0.74s` / `10 passed, 103 deselected in 9.78s` |
 | tests/hpc, BASH_ENV and ENV = Lmod-like profile, `--basetemp` on `tmpfs -o noexec`, ShellCheck on PATH, bash 5.2.21 | `113 passed in 390.51s (0:06:30)` |
 | tests/hpc, GNU bash 4.2.0 (H4's build) first on PATH, ShellCheck on PATH | `113 passed in 410.02s (0:06:50)` |
+| final tests/hpc, current tree (other agents' uncommitted run_study.py and supercell_sizing.py edits included), ShellCheck on PATH | `114 passed in 553.22s (0:09:13)` |
 | setup's physics gate with an importable real cupy-cuda12x 14.1.0 (no driver) | `52 passed, 1 deselected in 74.49s (0:01:14)` |
 | setup end to end, 7 runs (section 2) | as in the table of section 2 |
 | gpu-sanity driver on numpy (not a GPU) | `GPU SANITY: PASS`, exit 0 (section 0, 22:37) |
