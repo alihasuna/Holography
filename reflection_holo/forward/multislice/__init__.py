@@ -16,7 +16,8 @@ Typical use (every argument required; no default stands in for a PROJECT_INPUT):
     params = MultisliceParams(energy_keV=200.0, nx=..., ny=..., dz_A=..., propagator="exact",
                               band_limit="2/3", backend="numpy", precision="complex64",
                               threads=4, absorber=NumericalAbsorber(strength_V=..., profile="sin2"),
-                              theta_out_ext_rad=..., buildup_depth_A=...)
+                              theta_out_ext_rad=..., buildup_depth_A=...,
+                              working_reflections_hkl=((0, 0, 8),))   # PROJECT_INPUT item 9
     waves, manifest = simulate(cell, potential=pot, beam=beam, params=params, realisations=1,
                                seed=None, outputs_root=".../outputs", run_name="...",
                                save_waves=True, config=None, input_paths=[],
@@ -26,8 +27,8 @@ from .analysis import (analytic_step_reflection, flat_reflection_coefficient,
                        geometric_step_phase, refracted_frequency, select_beam,
                        terrace_step_phase, wrap)
 from .engine import (GPU_ASSUMED, PLANE_TEXT, VALIDATION_STATUS, MultisliceParams,
-                     estimate_resources, propagate_slices, reflection_setup, run_realisation,
-                     simulate)
+                     estimate_resources, memory_model, propagate_slices, reflection_setup,
+                     run_realisation, simulate, working_reflection_vectors)
 from .exitwave_io import ExitWaveFileError, load_exit_wave, save_exit_wave
 from .grid import (BAND_LIMIT_RULES, Grid, band_limit_mask, check_band, fft_friendly,
                    grid_shape_for_pixel, make_grid)
@@ -42,7 +43,8 @@ __all__ = [
     "analytic_step_reflection", "flat_reflection_coefficient", "geometric_step_phase",
     "refracted_frequency", "select_beam", "terrace_step_phase", "wrap",
     "GPU_ASSUMED", "PLANE_TEXT", "VALIDATION_STATUS", "MultisliceParams", "estimate_resources",
-    "propagate_slices", "reflection_setup", "run_realisation", "simulate",
+    "memory_model", "propagate_slices", "reflection_setup", "run_realisation", "simulate",
+    "working_reflection_vectors",
     "ExitWaveFileError", "load_exit_wave", "save_exit_wave",
     "BAND_LIMIT_RULES", "Grid", "band_limit_mask", "check_band", "fft_friendly",
     "grid_shape_for_pixel", "make_grid", "SheetBeam", "sheet_beam_wave",

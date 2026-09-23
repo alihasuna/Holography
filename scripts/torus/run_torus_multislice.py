@@ -71,6 +71,9 @@ CASE = dict(
                          "smoke run",
     theta_label="ASSUMPTION B32: external angle of the (0,0,8) internal Bragg condition computed "
                 "with the engine's mean inner potential (stands in for PROJECT_INPUT item 7)",
+    working_reflection_hkl=(0, 0, 8),
+    working_reflection_label="ASSUMPTION B17: (0,0,8) working condition (stands in for "
+                             "PROJECT_INPUT item 9); asserted inside the band (H2 N8, H5 A7)",
     buildup_depth_A=20.0, footprint_margin_A=100.0,
     max_pixel_A=0.13, slices_per_period=4, propagator="exact", band_limit="2/3",
     backend="numpy", precision="complex128", threads=4,
@@ -133,7 +136,8 @@ def setup(kind: str, out: Path):
         np.array([0.0]))[0])
     if abs(V0 - V0_check) > 5e-4:                                  # B32: asserted to 5e-4 V
         raise RuntimeError(f"engine MIP {V0} V != independent value {V0_check} V")
-    sc = specular_condition_for((0, 0, 8), (0, 0, 1), E_keV=c["energy_keV"], V0_V=V0, a_A=A)
+    sc = specular_condition_for(c["working_reflection_hkl"], (0, 0, 1), E_keV=c["energy_keV"],
+                                V0_V=V0, a_A=A)
     theta = float(sc.theta_ext)
     x_flat = cell.metadata["layout"]["highest_surface_x_A"]
     b = c["beam"]
@@ -147,7 +151,8 @@ def setup(kind: str, out: Path):
                               backend=c["backend"], precision=c["precision"],
                               threads=c["threads"],
                               absorber=NumericalAbsorber(**c["absorber"]),
-                              theta_out_ext_rad=theta, buildup_depth_A=c["buildup_depth_A"])
+                              theta_out_ext_rad=theta, buildup_depth_A=c["buildup_depth_A"],
+                              working_reflections_hkl=(c["working_reflection_hkl"],))
     engine_setup = reflection_setup(cell, potential=pot, beam=beam, params=params)
     feat_checks = None
     if kind != "flat":

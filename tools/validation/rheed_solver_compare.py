@@ -125,7 +125,14 @@ def angle_grids():
         "onebeam": [(12.0, 22.0, 0.5)],
         "engine100": [(12.0, 22.0, 1.0), (15.6, 16.8, 0.1)],
         "engine110": [(12.0, 22.0, 1.0)] + [(t, t, 0.0) for t in ENGINE_EXTRA_110],
+        "h2": [(H2_THETA_MRAD, H2_THETA_MRAD, 0.0)],
+        "holz": [(t, t, 0.0) for t in (12.0, 16.2, 21.0)],
     }
+
+
+# the angle of report H2's stored flat-strip measurements (tools/hpc/supercell_sizing_measurements.json,
+# info.theta_ext_rad: the (0,0,8) condition with the Kirkland MIP)
+H2_THETA_MRAD = 16.134748438027965
 
 
 # Engine angles (mrad), fixed from the solver's fine curves before any engine-solver comparison
@@ -170,8 +177,16 @@ SOLVER_CASES = [
     SolverCase("eng_a100_N10_r010_B", "100", 10, 0.1, "B", "engine100"),
     SolverCase("eng_a110_N9_r010", "110", 9, 0.1, "A", "engine110"),
     SolverCase("eng_a110_N12_r010_B", "110", 12, 0.1, "B", "engine110"),
-    # HOLZ test: every rod with |g| <= 8/a = 1.47 1/A (including rods along the beam), thinner slab
-    SolverCase("chk_a100disk_N8_B", "100disk", 8, 0.1, "B", "check", slab_layers=40),
+    # at report H2's angle (cross-check of H2's stored engine plateaus, report section 6)
+    SolverCase("h2_a100_N6_r010", "100", 6, 0.1, "A", "h2"),
+    SolverCase("h2_a110_N9_r010", "110", 9, 0.1, "A", "h2"),
+    SolverCase("h2_a100_N6_r000_ML150", "100", 6, 0.0, "A", "h2", ML=150),
+    SolverCase("h2_a100_N6_r000_ML300", "100", 6, 0.0, "A", "h2", ML=300),
+    # HOLZ test at three angles: every rod with |g| <= 6/a = 1.10 1/A (including rods with a
+    # component along the beam) against the ZOLZ row inside the same disk (|h| <= 3), same slab (40
+    # layers); the full 1 mrad grid with 101 rods took about 10 min per angle on the loaded machine
+    SolverCase("holz_a100disk_N6_B", "100disk", 6, 0.1, "B", "holz", slab_layers=40),
+    SolverCase("holz_a100_N3_B", "100", 3, 0.1, "B", "holz", slab_layers=40),
 ]
 
 
@@ -418,11 +433,19 @@ def solver_run(args) -> int:
         futs = {ex.submit(run_solver_case, c, build, workdir): c for c in cases}
         for fu in cf.as_completed(futs):
             c = futs[fu]
-            data["cases"][c.name] = fu.result()
-            data["updated_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-            tmp = SOLVER_JSON.with_suffix(".tmp")
-            tmp.write_text(json.dumps(data, indent=0, default=float))
-            tmp.replace(SOLVER_JSON)
+            res = fu.result()
+            import fcntl
+            with open(SOLVER_JSON.with_suffix(".lock"), "w") as lk:
+                fcntl.flock(lk, fcntl.LOCK_EX)
+                cur = json.loads(SOLVER_JSON.read_text()) if SOLVER_JSON.exists() else dict(cases={})
+                meta = {k: v for k, v in data.items() if k != "cases"}
+                cur.update(meta)
+                cur["cases"][c.name] = res
+                cur["updated_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+                tmp = SOLVER_JSON.with_suffix(f".tmp{os.getpid()}")
+                tmp.write_text(json.dumps(cur, indent=0, default=float))
+                tmp.replace(SOLVER_JSON)
+                fcntl.flock(lk, fcntl.LOCK_UN)
     return 0
 
 
@@ -571,25 +594,24 @@ def engine_flat_strip(*, azimuth, theta_ext, pot, r, dt, L_after_contact_A, clea
     return cell, potential, beam, params, info
 
 
-def engine_readout(ew, info, *, radius_per_A, window_start_A, exit_excl_A, bin_A, **_):
-    """Specular reflection coefficient at the top-layer plane from one exit wave (DERIVED_HERE):
-    y-average (f_y = 0), vacuum part only (sin^2 taper from 2 A above the top layer, as H2), band-pass
-    |f_x - f_c| <= radius about f_c = sin(theta)/lambda, demodulation by exp(-2 pi i f_c x) (x from
-    the box bottom, the phase reference of the launched sheet beam). A plane wave reflected at the
-    plane x_s gives e = r exp(-4 pi i f_c x_s) P_L with P_L = exp(i L_z (k_z - k)) the exact vacuum
-    propagation factor of both the incident and the reflected component, hence
-    r = <e>_window exp(+4 pi i f_c x_s) / P_L (the formula of analysis.flat_reflection_coefficient).
-    The ray found at height x left the surface at z_s = L_z - (x - x_s)/tan(theta)."""
-    lam = ew.metadata["beam"]["wavelength_A"]
+def engine_readout(col, x, lam, info, *, radius_per_A, window_start_A, exit_excl_A, bin_A, **_):
+    """Specular reflection coefficient at the top-layer plane from the y-averaged exit column
+    (DERIVED_HERE): f_y = 0 component (y average), vacuum part only (sin^2 taper from 2 A above the
+    top layer, as H2), band-pass |f_x - f_c| <= radius about f_c = sin(theta)/lambda, demodulation by
+    exp(-2 pi i f_c x) (x from the box bottom, the phase reference of the launched sheet beam). A
+    plane wave reflected at the plane x_s gives e = r exp(-4 pi i f_c x_s) P_L with
+    P_L = exp(i L_z (k_z - k)) the exact vacuum propagation factor of both the incident and the
+    reflected component, hence r = <e>_window exp(+4 pi i f_c x_s) / P_L (the formula of
+    analysis.flat_reflection_coefficient). The ray found at height x left the surface at
+    z_s = L_z - (x - x_s)/tan(theta)."""
     k = 2 * np.pi / lam
     th, xs, Lz, zc = (info["theta_ext_rad"], info["x_surface_A"], info["L_z_A"], info["z_contact_A"])
     fc = np.sin(th) / lam
-    nx = ew.psi.shape[0]
-    x = ew.x0_A + np.arange(nx) * ew.dx_A
+    nx = len(col)
+    dxg = x[1] - x[0]
     w = np.sin(0.5 * np.pi * np.clip((x - (xs + 2.0)) / 3.0, 0.0, 1.0)) ** 2
-    col = ew.psi.astype(np.complex128).mean(axis=1) * w
-    fx = np.fft.fftfreq(nx, ew.dx_A)
-    e = np.fft.ifft(np.fft.fft(col) * (np.abs(fx - fc) <= radius_per_A)) * np.exp(-2j * np.pi * fc * x)
+    fx = np.fft.fftfreq(nx, dxg)
+    e = np.fft.ifft(np.fft.fft(col * w) * (np.abs(fx - fc) <= radius_per_A)) * np.exp(-2j * np.pi * fc * x)
     d = Lz - (x - xs) / np.tan(th) - zc
     L = Lz - zc
     ok = x >= xs + 5.0
@@ -664,9 +686,15 @@ def engine_run(args) -> int:
         t1 = time.time()
         ew = run_realisation(cell, potential=pot, beam=beam, params=params, realisation=0, seed=None)
         t2 = time.time()
-        ro = engine_readout(ew, info, **variant)
+        col = ew.psi.astype(np.complex128).mean(axis=1)
+        x = ew.x0_A + np.arange(len(col)) * ew.dx_A
+        lam = ew.metadata["beam"]["wavelength_A"]
+        ro = engine_readout(col, x, lam, info, **variant)
         rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
-        rec = dict(info=info, readout=ro, build_s=t1 - t0, run_s=t2 - t1,
+        rec = dict(info=info, readout=ro, build_s=t1 - t0, run_s=t2 - t1, wavelength_A=lam,
+                   x0_A=float(ew.x0_A), dx_A=float(ew.dx_A),
+                   col_re=[float(f"{v:.7g}") for v in col.real],
+                   col_im=[float(f"{v:.7g}") for v in col.imag],
                    peak_rss_MB=rss, loadavg=list(os.getloadavg()),
                    engine_commit=git, engine_dirty=dirty,
                    validation_status=ew.metadata["validation_status"])
@@ -676,6 +704,451 @@ def engine_run(args) -> int:
               f"{info['n_slices']} slices, {info['n_atoms']} atoms, run {t2 - t1:.0f} s, RSS {rss:.0f} MB,"
               f" |r|^2 {abs(r)**2:.5f} arg {np.angle(r):+.4f}, bin spread {ro['max_bin_deviation']:.2e}",
               flush=True)
+    return 0
+
+
+# ================================================================================================
+# Report mode: every number of the S5 report
+# ================================================================================================
+CHECKS: list = []
+
+
+def check(name, ok, detail):
+    CHECKS.append((name, bool(ok), detail))
+    print(f"  CHECK {'PASS' if ok else 'FAIL'} {name}: {detail}")
+
+
+def hdr(t):
+    print("\n" + "=" * 100 + "\n" + t + "\n" + "=" * 100)
+
+
+def _cplx(d, pre):
+    return np.array(d[pre + "_re"]) + 1j * np.array(d[pre + "_im"])
+
+
+def solver_curve(sol, name, plane="R_layer"):
+    th, R = [], []
+    for run in sol["cases"][name]["runs"]:
+        th += list(np.array(run["theta_rad"]) * 1e3)
+        R += list(_cplx(run, plane))
+    o = np.argsort(th)
+    return np.array(th)[o], np.array(R)[o]
+
+
+def engine_curve(eng, tag):
+    c = eng["cases"].get(tag)
+    if not c:
+        return np.array([]), np.array([]), np.array([]), []
+    keys = sorted(c["angles"], key=float)
+    th = np.array([float(k) for k in keys])
+    R = np.array([complex(c["angles"][k]["readout"]["r_top_re"], c["angles"][k]["readout"]["r_top_im"])
+                  for k in keys])
+    sp = np.array([c["angles"][k]["readout"]["max_bin_deviation"] for k in keys])
+    return th, R, sp, [c["angles"][k] for k in keys]
+
+
+def at_angles(th_src, R_src, th_q, tol=1e-6):
+    out = []
+    for t in th_q:
+        i = int(np.argmin(np.abs(th_src - t)))
+        out.append(R_src[i] if abs(th_src[i] - t) < tol else np.nan)
+    return np.array(out)
+
+
+def peak_parabola(th, I):
+    i = int(np.nanargmax(I))
+    if i == 0 or i == len(I) - 1:
+        return th[i], I[i], i
+    y0, y1, y2 = I[i - 1], I[i], I[i + 1]
+    h = th[i + 1] - th[i]
+    den = y0 - 2 * y1 + y2
+    dx = 0.5 * (y0 - y2) / den * h
+    return th[i] + dx, y1 - 0.25 * (y0 - y2) * dx / h, i
+
+
+def fwhm(th, I, i):
+    half = 0.5 * I[i]
+    lo = i
+    while lo > 0 and I[lo] > half:
+        lo -= 1
+    hi = i
+    while hi < len(I) - 1 and I[hi] > half:
+        hi += 1
+    if I[lo] > half or I[hi] > half:
+        return np.nan, np.nan, np.nan
+    tl = th[lo] + (half - I[lo]) / (I[lo + 1] - I[lo]) * (th[lo + 1] - th[lo])
+    tr = th[hi - 1] + (half - I[hi - 1]) / (I[hi] - I[hi - 1]) * (th[hi] - th[hi - 1])
+    return tr - tl, tl, tr
+
+
+def interp_c(th, R, t):
+    return np.interp(t, th, R.real) + 1j * np.interp(t, th, R.imag)
+
+
+def report() -> int:
+    t_start = time.time()
+    sol = json.loads(SOLVER_JSON.read_text())
+    eng = json.loads(ENGINE_JSON.read_text()) if ENGINE_JSON.exists() else dict(cases={})
+    git = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=REPO, capture_output=True,
+                         text=True).stdout.strip()
+    print(f"S5 report mode; repository HEAD {git}; solver results updated {sol.get('updated_utc')}; "
+          f"engine results updated {eng.get('updated_utc')}")
+    dt = sol["dt_params"]
+
+    hdr("1. Solver provenance record (REPRODUCED in this container)")
+    print(f"  solver {sol['solver']} commit {sol['solver_commit']}; {sol['solver_licence']}")
+    print(f"  patch SHA-256 {sol['patch_sha256']}; compiler: {sol['compiler']}")
+    for e, h in sol["exe_sha256"].items():
+        print(f"  {e} SHA-256 {h}")
+    print(f"  Doyle-Turner Si read from {Path(dt['file']).name} (SHA-256 {dt['sha256']}): a = {dt['a']} A "
+          f"(line {dt['line_a']}), b = {dt['b']} A^2 (line {dt['line_b']})")
+
+    hdr("2. Constants and potentials of the two codes (DERIVED_HERE)")
+    from reflection_holo.forward.multislice.physics import beam_constants
+    from reflection_holo.geometry.specular import specular_condition_for
+    bc = beam_constants(E_KEV)
+    K_sol = sol["cases"]["onebeam_r010"]["runs"][0]["header"]["wn"]
+    print(f"  engine k = {bc['k_rad_per_A']:.6f} rad/A (CODATA 2018, m c^2 = {M_E_C2_EV / 1e3:.5f} keV); "
+          f"solver K = {K_sol:.6f} rad/A (m c^2 = {SOLVER_E_REST_KEV} keV, 2me/hbar^2 = {SOLVER_EK}); "
+          f"relative difference {K_sol / bc['k_rad_per_A'] - 1:+.2e}")
+    g_e = 1 + E_KEV / (M_E_C2_EV / 1e3)
+    g_s = 1 + E_KEV / SOLVER_E_REST_KEV
+    print(f"  gamma: engine {g_e:.8f}, solver {g_s:.8f} (relative {g_s / g_e - 1:+.2e}); "
+          f"2 k sigma / (4 pi gamma) = {2 * bc['k_rad_per_A'] * bc['sigma_rad_per_VA'] * C_VA2 / (4 * np.pi * g_e):.8f}"
+          " (1 if U_engine = 2 k sigma V equals U_solver = gamma 4 pi f / Omega for V = C f / Omega)")
+    print(f"  C = h^2/(2 pi m0 e) = {C_VA2:.5f} V A^2")
+    fd0 = float(fe_dt(np.array([0.0]), dt)[0])
+    fk0 = float(F_kirkland(np.array([0.0]))[0]) / C_VA2
+    mip_d, mip_k = 8 / A**3 * C_VA2 * fd0, 8 / A**3 * C_VA2 * fk0
+    print(f"  f_e(0): Doyle-Turner {fd0:.5f} A, Kirkland (abTEM) {fk0:.5f} A; mean inner potential "
+          f"(8 f(0) C / a^3): DT {mip_d:.4f} V, Kirkland {mip_k:.4f} V (difference {mip_d - mip_k:+.4f} V)")
+    th_d = specular_condition_for((0, 0, 8), (0, 0, 1), E_keV=E_KEV, V0_V=mip_d, a_A=A).theta_ext
+    th_k = specular_condition_for((0, 0, 8), (0, 0, 1), E_keV=E_KEV, V0_V=mip_k, a_A=A).theta_ext
+    print(f"  (0,0,8) external Bragg angle from refraction alone: DT {th_d * 1e3:.4f} mrad, Kirkland "
+          f"{th_k * 1e3:.4f} mrad (difference {(th_d - th_k) * 1e3:+.4f} mrad)")
+    print("  Fourier coefficients V_hkl (V) of bulk Si, DT / Kirkland / ratio:")
+    for hkl in [(0, 0, 4), (0, 0, 8), (0, 0, 12), (0, 0, 16), (0, 2, 2), (0, 4, 0), (0, 4, 4),
+                (0, 2, 6), (0, 4, 8), (1, 1, 1), (1, 1, 3), (1, 1, 5), (1, 1, 7), (2, 2, 4)]:
+        vd = V_hkl(hkl, lambda f2: F_dt(f2, dt)).real
+        vk = V_hkl(hkl, F_kirkland).real
+        g = np.sqrt(np.dot(hkl, hkl)) / A
+        print(f"    {str(hkl):12s} |g| {g:.4f} 1/A  DT {vd:+.4f}  Kirkland {vk:+.4f}  ratio {vd / vk:.4f}")
+    return report_part2(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start)
+
+
+def report_part2(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start) -> int:
+    hdr("3. One-beam convention test: solver (0,0) rod against an independent RK4 integration")
+    for name in ("onebeam_r010", "onebeam_r000"):
+        run = sol["cases"][name]["runs"][0]
+        Rf = _cplx(run, "R_top")
+        o = run["ode_1d"]["runs"]
+        R1, R2 = _cplx(o["0.002"], "R_top"), _cplx(o["0.001"], "R_top")
+        print(f"  {name}: {len(Rf)} angles 12-22 mrad, slab {sol['cases'][name]['case']['slab_layers']} "
+              f"layers, s_top {run['header']['s_top']:.5f} A, dz {run['header']['dz']:.6f} A")
+        print(f"    max |R_solver - R_RK4| = {np.max(np.abs(Rf - R2)):.2e};  max |R_solver - conj(R_RK4)|"
+              f" = {np.max(np.abs(Rf - np.conj(R2))):.3f};  RK4 h 0.002 vs 0.001: {np.max(np.abs(R1 - R2)):.1e};"
+              f"  max |R| {np.max(np.abs(Rf)):.4f}")
+        check(f"{name}: solver equals RK4 (not its conjugate)",
+              np.max(np.abs(Rf - R2)) < 1e-3 < np.max(np.abs(Rf - np.conj(R2))),
+              f"{np.max(np.abs(Rf - R2)):.1e} < 1e-3 < {np.max(np.abs(Rf - np.conj(R2))):.2f}")
+        th = np.array(run["theta_rad"]) * 1e3
+        i = int(np.argmax(np.abs(Rf)))
+        print(f"    largest |R|^2 {abs(Rf[i])**2:.4f} at {th[i]:.1f} mrad (0.5 mrad grid), arg R(s_top) "
+              f"{np.angle(Rf[i]):+.4f} (solver) / {np.angle(R2[i]):+.4f} (RK4)")
+
+    hdr("4. Solver numerical checks (max |Delta R| over the angles; relative where |R| > 0.05)")
+
+    def cmp(a, b, label):
+        ta, Ra = solver_curve(sol, a)
+        tb, Rb = solver_curve(sol, b)
+        Rb = at_angles(tb, Rb, ta)
+        d = np.abs(Ra - Rb)
+        m = np.abs(Rb) > 0.05
+        rel = np.max(d[m] / np.abs(Rb[m])) if m.any() else np.nan
+        print(f"  {label:58s} {np.max(d):.2e}  rel {rel:.2e}  ({len(ta)} angles)")
+        return np.max(d), rel
+    cmp("chk_a100_N6_A", "chk_a100_N6_B", "[100] N=6: approach A (bulk.exe) vs B (slab)")
+    cmp("chk_a100_N4_A", "chk_a100_N4_B", "[100] N=4: A vs B")
+    cmp("chk_a100_N6_B_slab180", "chk_a100_N6_B", "[100] N=6 B: slab 180 vs 90 layers")
+    cmp("chk_a100_N6_A_dz005", "chk_a100_N6_A", "[100] N=6 A: dz 0.005 vs 0.01 A")
+    cmp("chk_a100_N6_A_dz02", "chk_a100_N6_A", "[100] N=6 A: dz 0.02 vs 0.01 A")
+    cmp("chk_a100m_N6_A", "chk_a100_N6_A", "[100]: phi = -45 deg (rods (h,h)) vs +45 deg")
+    cmp("chk_a100_N4_B", "chk_a100_N6_B", "[100] rods: N=4 vs N=6 (B)")
+    cmp("chk_a100_N8_B", "chk_a100_N6_B", "[100] rods: N=8 vs N=6 (B)")
+    cmp("chk_a100_N10_B", "chk_a100_N6_B", "[100] rods: N=10 vs N=6 (B)")
+    cmp("chk_a110_N9_A", "chk_a110_N9_B", "[110] N=9: A vs B")
+    cmp("chk_a110_N9_A_dz005", "chk_a110_N9_A", "[110] N=9 A: dz 0.005 vs 0.01 A")
+    cmp("chk_a110_N12_B", "chk_a110_N9_B", "[110] rods: N=12 vs N=9 (B)")
+    cmp("eng_a100_N8_r010_B", "eng_a100_N6_r010", "[100] engine angles: N=8 (B) vs N=6 (A)")
+    cmp("eng_a100_N10_r010_B", "eng_a100_N6_r010", "[100] engine angles: N=10 (B) vs N=6 (A)")
+    cmp("eng_a110_N12_r010_B", "eng_a110_N9_r010", "[110] engine angles: N=12 (B) vs N=9 (A)")
+    if "holz_a100disk_N6_B" in sol["cases"]:
+        nd = len(sol["cases"]["holz_a100disk_N6_B"]["runs"][0]["geometry"]["beams"])
+        cmp("holz_a100disk_N6_B", "holz_a100_N3_B",
+            f"[100] HOLZ: all {nd} rods |g|<=6/a vs the row |h|<=3 (3 angles)")
+    fl = []
+    for nm in ("fine_a100_N6_r000_ML150", "fine_a100_N6_r000_ML300", "fine_a110_N9_r000_ML150",
+               "fine_a110_N9_r000_ML300", "fine_a100_N6_r010", "fine_a110_N9_r010"):
+        fl.append(max(max(r["reflected_flux_all_rods"]) for r in sol["cases"][nm]["runs"]))
+    print(f"  total reflected flux of all propagating rods, largest over the fine grids: {max(fl):.6f}")
+    check("reflected flux <= 1 everywhere (r = 0 and 0.1)", max(fl) <= 1 + 1e-6, f"{max(fl):.6f}")
+    return report_part3(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start)
+
+
+def report_part3(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start) -> int:
+    hdr("5. Solver rocking curves (DT, static lattice; R at the top-layer nuclei, exp(+ikr - iwt))")
+    t1, R1 = solver_curve(sol, "fine_a100_N6_r010")
+    t2, R2 = solver_curve(sol, "fine_a110_N9_r010")
+    print("  r = sap = 0.1, 0.02 mrad grid (printed every 0.2 mrad); [100]: 13 rods (h,-h), |h| <= 6;"
+          " [110]: 19 rods (0,k), |k| <= 9")
+    print("  theta(mrad)  [100] |R|^2   arg R    [110] |R|^2   arg R")
+    for i in range(0, len(t1), 10):
+        print(f"  {t1[i]:8.2f}    {abs(R1[i])**2:9.5f}  {np.angle(R1[i]):+7.3f}    {abs(R2[i])**2:9.5f}  "
+              f"{np.angle(R2[i]):+7.3f}")
+    for lab, t, R in (("[100]", t1, R1), ("[110]", t2, R2)):
+        I = np.abs(R) ** 2
+        pk = [i for i in range(1, len(I) - 1) if I[i] > I[i - 1] and I[i] >= I[i + 1] and I[i] > 0.005]
+        print(f"  {lab} r = 0.1 local maxima with |R|^2 > 0.005 (grid points): " + "; ".join(
+            f"{t[i]:.2f} mrad |R|^2 {I[i]:.4f} arg {np.angle(R[i]):+.3f}" for i in pk))
+    I1 = np.abs(R1) ** 2
+    m = (t1 > 15.0) & (t1 < 17.5)
+    tp, Ip, ip = peak_parabola(t1[m], I1[m])
+    w, tl, tr = fwhm(t1[m], I1[m], ip)
+    Rl, Rr = interp_c(t1, R1, tp - w / 2), interp_c(t1, R1, tp + w / 2)
+    sweep = float(np.angle(Rr / Rl))
+    print(f"  [100] (0,0,8) peak (fine grid, parabola): {tp:.4f} mrad, |R|^2 {Ip:.5f}, FWHM {w:.4f} mrad "
+          f"({tl:.3f} to {tr:.3f}), arg R at peak {np.angle(interp_c(t1, R1, tp)):+.4f}, phase sweep "
+          f"arg R(pk + w/2) - arg R(pk - w/2) = {sweep:+.4f} rad (wrapped; the unwrapped sweep across "
+          f"the peak is this plus 0 or 2 pi)")
+    msk = (t1 >= 15.5 - 1e-9) & (t1 <= 16.9 + 1e-9)
+    un = np.unwrap(np.angle(R1[msk]))
+    print(f"  [100] unwrapped arg R from {t1[msk][0]:.2f} to {t1[msk][-1]:.2f} mrad: {un[0]:+.3f} -> "
+          f"{un[-1]:+.3f} rad (total {un[-1] - un[0]:+.3f} rad); monotonic increase on the 0.02 mrad "
+          f"grid: {bool(np.all(np.diff(un) > 0))}")
+    print(f"  [100] many-beam peak minus the refraction-only (0,0,8) angle with the DT MIP: "
+          f"{tp - th_d * 1e3:+.4f} mrad")
+    SOLVER_PEAK = dict(theta=tp, I=Ip, fwhm=w, sweep=sweep)
+
+    print("\n  r = 0 (no absorption): FINITE slabs, bulk.exe ML = 150 or 300 units (407 or 815 A) on "
+          "vacuum; printed every 0.2 mrad")
+    c = {}
+    for az, N in (("a100", 6), ("a110", 9)):
+        for ml in (150, 300):
+            c[(az, ml)] = solver_curve(sol, f"fine_{az}_N{N}_r000_ML{ml}")
+    fl = {az: np.concatenate([np.array(r["reflected_flux_all_rods"]) for r in
+                              sol["cases"][f"fine_{az}_N{6 if az == 'a100' else 9}_r000_ML150"]["runs"]])
+          for az in ("a100", "a110")}
+    print("  theta   [100] ML150 |R|^2 arg   ML300 |R|^2 arg  flux150 |  [110] ML150 |R|^2 arg   ML300 |R|^2 arg  flux150")
+    for i in range(0, len(t1), 10):
+        row = f"  {t1[i]:6.2f}"
+        for az in ("a100", "a110"):
+            a, b = c[(az, 150)][1][i], c[(az, 300)][1][i]
+            row += (f"   {abs(a)**2:7.4f} {np.angle(a):+6.3f}   {abs(b)**2:7.4f} {np.angle(b):+6.3f}  "
+                    f"{fl[az][i]:6.4f} |")
+        print(row)
+    for az in ("a100", "a110"):
+        a, b = c[(az, 150)][1], c[(az, 300)][1]
+        d = np.abs(a - b)
+        tot = fl[az] > 0.9999
+        print(f"  {az}: angles where ML150 and ML300 differ by more than 1e-3 in R: {int((d > 1e-3).sum())}"
+              f" of {len(d)}; total reflection (flux > 0.9999) at {int(tot.sum())} angles, max |Delta R| "
+              f"there {d[tot].max() if tot.any() else float('nan'):.1e}; largest |R|^2 {np.max(np.abs(a)**2):.4f}")
+    return report_part4(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SOLVER_PEAK, t_start)
+
+
+def wrapd(x):
+    return (np.asarray(x) + np.pi) % (2 * np.pi) - np.pi
+
+
+def report_part4(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, t_start) -> int:
+    hdr("6. Engine (UNVALIDATED, MEASURED_HERE) against the solver at the same angles")
+    print(f"  tolerance per angle: |R_eng - R_sol| <= {TOL_REL} |R_sol| + {TOL_ABS} + {TOL_SPREAD_MULT} "
+          f"s_eng (declared before the comparison); curve level: peak {TOL_PEAK_ANGLE_MRAD} mrad, peak "
+          f"|R|^2 {TOL_PEAK_I_REL:.0%}, FWHM {TOL_FWHM_REL:.0%}, sweep {TOL_SWEEP_RAD} rad")
+    solmap = {"eng_a100_dt_r010": "eng_a100_N6_r010", "eng_a110_dt_r010": "eng_a110_N9_r010",
+              "eng_a100_kk_r010": "eng_a100_N6_r010"}
+    results = {}
+    for tag in ENGINE_CASES:
+        te, Re, sp, recs = engine_curve(eng, tag)
+        if not len(te):
+            print(f"  {tag}: no engine results")
+            continue
+        ts, Rs = solver_curve(sol, solmap[tag])
+        Rs = at_angles(ts, Rs, te)
+        like = ENGINE_CASES[tag]["pot"] == "dt"
+        print(f"\n  {tag} ({'LIKE-FOR-LIKE: Doyle-Turner in both' if like else 'PRODUCTION Kirkland engine vs DT solver: model difference, no pass/fail'}); "
+              f"{len(te)} angles; solver case {solmap[tag]}")
+        print("   theta   sol|R|^2  sol arg   eng|R|^2  eng arg   |dR|     tol    ok  d arg    d|R|/|R|  s_eng    run_s  grid")
+        npass = 0
+        for i, t in enumerate(te):
+            d = abs(Re[i] - Rs[i])
+            tol = TOL_REL * abs(Rs[i]) + TOL_ABS + TOL_SPREAD_MULT * sp[i]
+            ok = d <= tol
+            npass += ok
+            inf = recs[i]["info"]
+            print(f"  {t:6.2f}  {abs(Rs[i])**2:8.5f} {np.angle(Rs[i]):+7.3f}  {abs(Re[i])**2:8.5f} "
+                  f"{np.angle(Re[i]):+7.3f}  {d:.4f}  {tol:.4f}  {'yes' if ok else 'NO ':3s} "
+                  f"{wrapd(np.angle(Re[i]) - np.angle(Rs[i])):+7.3f}  {abs(Re[i]) / abs(Rs[i]) - 1:+7.3f}  "
+                  f"{sp[i]:.4f}  {recs[i]['run_s']:5.0f}  {inf['nx']}x{inf['ny']}x{inf['n_slices']}")
+        print(f"   angles within tolerance: {npass} of {len(te)}")
+        dc = np.abs(Re - np.conj(Rs))
+        print(f"   conjugation test: median |R_eng - R_sol| {np.median(np.abs(Re - Rs)):.4f}, median "
+              f"|R_eng - conj(R_sol)| {np.median(dc):.4f}")
+        big = np.abs(Rs) >= 0.1
+        if big.sum() >= 3:
+            G0 = bc["k_rad_per_A"] * np.sin(te[big] * 1e-3)
+            dphi = wrapd(np.angle(Re[big]) - np.angle(Rs[big]))
+            Am = np.vstack([np.ones_like(G0), 2 * G0]).T
+            cfit, dx = np.linalg.lstsq(Am, dphi, rcond=None)[0]
+            print(f"   reference-plane fit over {int(big.sum())} angles with |R_sol| >= 0.1: d arg = c + 2 Gamma0 dx,"
+                  f" c = {cfit:+.4f} rad, dx = {dx:+.5f} A; rms d arg {np.sqrt(np.mean(dphi**2)):.4f} rad")
+        results[tag] = dict(te=te, Re=Re, Rs=Rs, sp=sp, npass=npass, n=len(te))
+        if like:
+            check(f"{tag}: every angle within the declared tolerance", npass == len(te),
+                  f"{npass}/{len(te)}")
+    return report_part5(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, results, t_start)
+
+
+def curve_metrics(te, R, lo=15.0, hi=17.5):
+    m = (te > lo) & (te < hi)
+    if m.sum() < 5:
+        return None
+    t, Rm = te[m], R[m]
+    I = np.abs(Rm) ** 2
+    tp, Ip, ip = peak_parabola(t, I)
+    w, tl, tr = fwhm(t, I, ip)
+    return dict(theta=tp, I=Ip, fwhm=w, t=t, R=Rm)
+
+
+def report_part5(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, results, t_start) -> int:
+    hdr("7. Curve-level comparison at the [100] (0,0,8) peak (engine angles 15.6-16.8 mrad at 0.1 mrad)")
+    for tag in ("eng_a100_dt_r010", "eng_a100_kk_r010"):
+        if tag not in results:
+            continue
+        r = results[tag]
+        me, ms = curve_metrics(r["te"], r["Re"]), curve_metrics(r["te"], r["Rs"])
+        if me is None:
+            print(f"  {tag}: fewer than 5 engine angles in 15-17.5 mrad; skipped")
+            continue
+        w = SP["fwhm"]
+        sw_e = float(np.angle(interp_c(me["t"], me["R"], me["theta"] + w / 2) /
+                              interp_c(me["t"], me["R"], me["theta"] - w / 2)))
+        sw_s = float(np.angle(interp_c(ms["t"], ms["R"], ms["theta"] + w / 2) /
+                              interp_c(ms["t"], ms["R"], ms["theta"] - w / 2)))
+        like = ENGINE_CASES[tag]["pot"] == "dt"
+        print(f"  {tag}:")
+        print(f"    peak angle: engine {me['theta']:.4f}, solver (same angles) {ms['theta']:.4f}, solver "
+              f"(fine grid) {SP['theta']:.4f} mrad; engine - solver(same) {me['theta'] - ms['theta']:+.4f} mrad")
+        print(f"    peak |R|^2: engine {me['I']:.5f}, solver (same) {ms['I']:.5f}, solver (fine) {SP['I']:.5f};"
+              f" engine/solver(same) - 1 = {me['I'] / ms['I'] - 1:+.4f}")
+        print(f"    FWHM: engine {me['fwhm']:.4f}, solver (same angles) {ms['fwhm']:.4f}, solver (fine) "
+              f"{SP['fwhm']:.4f} mrad; engine/solver(same) - 1 = {me['fwhm'] / ms['fwhm'] - 1:+.4f}")
+        print(f"    phase sweep over +-w/2 (w = solver fine FWHM {w:.4f}): engine {sw_e:+.4f}, solver (same "
+              f"angles) {sw_s:+.4f}, solver (fine) {SP['sweep']:+.4f} rad; difference {wrapd(sw_e - sw_s):+.4f}")
+        if like:
+            check("[100] DT peak angle", abs(me["theta"] - ms["theta"]) <= TOL_PEAK_ANGLE_MRAD,
+                  f"{me['theta'] - ms['theta']:+.4f} mrad")
+            check("[100] DT peak |R|^2", abs(me["I"] / ms["I"] - 1) <= TOL_PEAK_I_REL,
+                  f"{me['I'] / ms['I'] - 1:+.4f}")
+            check("[100] DT FWHM", abs(me["fwhm"] / ms["fwhm"] - 1) <= TOL_FWHM_REL,
+                  f"{me['fwhm'] / ms['fwhm'] - 1:+.4f}")
+            check("[100] DT phase sweep", abs(wrapd(sw_e - sw_s)) <= TOL_SWEEP_RAD,
+                  f"{wrapd(sw_e - sw_s):+.4f} rad")
+    if "eng_a100_dt_r010" in results and "eng_a100_kk_r010" in results:
+        a, b = results["eng_a100_dt_r010"], results["eng_a100_kk_r010"]
+        common = np.intersect1d(np.round(a["te"], 4), np.round(b["te"], 4))
+        ia = [int(np.argmin(np.abs(a["te"] - t))) for t in common]
+        ib = [int(np.argmin(np.abs(b["te"] - t))) for t in common]
+        d = b["Re"][ib] - a["Re"][ia]
+        print(f"  engine Kirkland minus engine DT at {len(common)} common angles: max |Delta R| "
+              f"{np.max(np.abs(d)):.4f}; per angle d|R|^2 / d arg:")
+        for t, x, y in zip(common, a["Re"][ia], b["Re"][ib]):
+            print(f"    {t:6.2f}  {abs(y)**2 - abs(x)**2:+.5f}  {wrapd(np.angle(y) - np.angle(x)):+.4f}")
+        print(f"  refraction-only expectation of the peak shift Kirkland - DT: {(th_k - th_d) * 1e3:+.4f} mrad"
+              f" (MIP {mip_k:.4f} vs {mip_d:.4f} V)")
+    return report_part6(sol, eng, t_start)
+
+
+def report_part6(sol, eng, t_start) -> int:
+    hdr("8. Engine-internal sensitivity at one angle, and resources")
+    base = eng["cases"].get("eng_a100_dt_r010", {}).get("angles", {})
+    for tag, c in eng["cases"].items():
+        if "__" not in tag:
+            continue
+        for key, rec in c["angles"].items():
+            ro = rec["readout"]
+            r = complex(ro["r_top_re"], ro["r_top_im"])
+            b = base.get(key)
+            rb = complex(b["readout"]["r_top_re"], b["readout"]["r_top_im"]) if b else np.nan
+            inf = rec["info"]
+            print(f"  {tag} at {key} mrad: |R|^2 {abs(r)**2:.5f} arg {np.angle(r):+.4f}; default run "
+                  f"|R|^2 {abs(rb)**2:.5f} arg {np.angle(rb):+.4f}; |Delta R| {abs(r - rb):.4f}; spread "
+                  f"{ro['max_bin_deviation']:.4f}; grid {inf['nx']}x{inf['ny']}x{inf['n_slices']}, dx "
+                  f"{inf['dx_A']:.4f} A, run {rec['run_s']:.0f} s, RSS {rec['peak_rss_MB']:.0f} MB")
+    for tag, c in eng["cases"].items():
+        recs = list(c["angles"].values())
+        if not recs:
+            continue
+        rs = np.array([r["run_s"] for r in recs])
+        rss = max(r["peak_rss_MB"] for r in recs)
+        la = np.array([r["loadavg"][0] for r in recs])
+        print(f"  resources {tag}: {len(recs)} angles, run {rs.min():.0f}-{rs.max():.0f} s (median "
+              f"{np.median(rs):.0f}), peak RSS {rss:.0f} MB, 1-min load average {la.min():.1f}-{la.max():.1f}"
+              f", engine commit {recs[0]['engine_commit'][:7]} dirty {recs[0]['engine_dirty']}")
+    print("\n  read-out choices re-evaluated on the stored exit columns (max over the angles of |Delta R| "
+          "against the stored default; relative where |R| >= 0.1):")
+    variants = [("default (self-check)", {}), ("band-pass radius 0.05 1/A", dict(radius_per_A=0.05)),
+                ("band-pass radius 0.2 1/A", dict(radius_per_A=0.2)),
+                ("exit exclusion 1250 A", dict(exit_excl_A=1250.0)),
+                ("window start 2000 A", dict(window_start_A=2000.0)),
+                ("window start 3000 A", dict(window_start_A=3000.0))]
+    for tag, c in eng["cases"].items():
+        if "__" in tag:
+            continue
+        for vname, over in variants:
+            dmax, rmax = 0.0, 0.0
+            for key, rec in c["angles"].items():
+                if "col_re" not in rec:
+                    continue
+                col = np.array(rec["col_re"]) + 1j * np.array(rec["col_im"])
+                x = rec["x0_A"] + np.arange(len(col)) * rec["dx_A"]
+                v = dict(c["variant"])
+                v.update(over)
+                ro = engine_readout(col, x, rec["wavelength_A"], rec["info"], **v)
+                r = complex(ro["r_top_re"], ro["r_top_im"])
+                r0 = complex(rec["readout"]["r_top_re"], rec["readout"]["r_top_im"])
+                dmax = max(dmax, abs(r - r0))
+                if abs(r0) >= 0.1:
+                    rmax = max(rmax, abs(r - r0) / abs(r0))
+            print(f"    {tag:18s} {vname:28s} max |dR| {dmax:.2e}  rel {rmax:.2e}")
+            if not over:
+                check(f"{tag}: stored read-out reproduced from the stored column", dmax < 1e-5,
+                      f"{dmax:.1e} (column stored with 7 significant digits)")
+
+    hdr("9. Cross-check of report H2's stored flat-strip plateaus (Kirkland engine, 16.1347 mrad)")
+    h2 = json.loads((REPO / "tools/hpc/supercell_sizing_measurements.json").read_text())
+    from reflection_holo.forward.multislice.physics import beam_constants
+    lam = beam_constants(E_KEV)["wavelength_A"]
+    k = 2 * np.pi / lam
+    for run, scase in (("bu_100_r010", "h2_a100_N6_r010"), ("bu_110_r010", "h2_a110_N9_r010"),
+                       ("bu_100_r000", "h2_a100_N6_r000_ML150"), ("bu_100_r000", "h2_a100_N6_r000_ML300")):
+        if run not in h2["runs"] or scase not in sol["cases"]:
+            continue
+        i = h2["runs"][run]["info"]
+        b = h2["runs"][run]["buildup"]
+        e = b["R_plateau_abs"] * np.exp(1j * b["R_plateau_arg"])
+        fc = np.sin(i["theta_ext_rad"]) / lam
+        q = 2 * np.pi * fc
+        PL = np.exp(1j * i["L_z_A"] * (-q**2 / (k + np.sqrt(k**2 - q**2))))
+        r = e * np.exp(4j * np.pi * fc * i["x_surface_A"]) / PL
+        ts, Rs = solver_curve(sol, scase)
+        print(f"  H2 {run} (plateau {b['plateau_A'][0]:.0f}-{b['plateau_A'][1]:.0f} A, stored |e| {abs(e):.4f} "
+              f"arg e {np.angle(e):+.4f}) -> R at the top layer: |R|^2 {abs(r)**2:.5f} arg {np.angle(r):+.4f};"
+              f"  solver {scase}: |R|^2 {abs(Rs[0])**2:.5f} arg {np.angle(Rs[0]):+.4f};  |Delta R| "
+              f"{abs(r - Rs[0]):.4f}, d arg {wrapd(np.angle(r) - np.angle(Rs[0])):+.4f}")
+    tot = sum(r["bulk_s"] + r["surf_s"] for c in sol["cases"].values() for r in c["runs"])
+    print(f"  solver: {len(sol['cases'])} cases, total bulk.exe + surf.exe time {tot:.0f} s (single core)")
+    print(f"\n  report mode ran in {time.time() - t_start:.0f} s")
     return 0
 
 
@@ -697,7 +1170,10 @@ def main(argv=None) -> int:
         return solver_run(args)
     if args.engine_run:
         return engine_run(args)
-    return 0
+    rc = report()
+    bad = [c for c in CHECKS if not c[1]]
+    print(f"\n{len(CHECKS) - len(bad)}/{len(CHECKS)} checks pass")
+    return 1 if (bad or rc) else 0
 
 
 if __name__ == "__main__":

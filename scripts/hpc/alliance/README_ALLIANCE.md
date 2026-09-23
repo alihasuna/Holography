@@ -337,7 +337,7 @@ Narval and Rorqual; Nibi has a 1 TB soft quota; Storage_and_file_management, Scr
 | `logs/<job>_<jobid>.log` (`<job>_<arrayjobid>_<task>.log`) | the Slurm log |
 | `runs/<job>_<jobid>_<UTC stamp>/` (`runs/null-study_<arrayjobid>/task<NNN>_<jobid>_<stamp>/`) | one directory per job, never reused |
 | ... `/pipeline/` | pipeline jobs: summary.json, manifest.json, arrays.npz, quick looks, dry-run text |
-| ... `/torus_<kind>/`, `/study/`, `/gpu_check/` | the other jobs' outputs |
+| ... `/torus_<kind>/`, `/study/` (+ `study_used.yaml`), `/gpu_check/`, `/gpu_sanity/`, `/dry_run/` | the other jobs' outputs |
 | ... `/manifests/` | copies of every provenance manifest of the job |
 | ... `/slurm.log`, `job_info.json`, `job_status.txt`, `module_list.txt`, `nvidia-smi.txt`, `scontrol_show_job.txt`, `submission.json` | job records |
 | `submissions/` | one record per submission, never overwritten (`<UTC>_<cluster>_<job>_<pid>_<random>.json`: the sbatch command, profile values, gate, study hash), sbatch's reply (`.json.sbatch_output`) and, for study jobs, the study copy the jobs read (`.study.yaml`) |
@@ -379,4 +379,8 @@ nodes: Narval and Rorqual use their login host name; Trillium `tri-dm{1,2,3,4}.s
   command, not from the wiki); the running-job limits of the general-purpose clusters.
 * The `$SCRATCH` variable is documented only for Trillium; Fir documents `$HOME/scratch`, Rorqual
   `$HOME/links/scratch`. If `$SCRATCH` is unset, pass `--scratch <dir>` to submit.sh.
-* The minimum test-job length on Nibi (only the one-hour production advice is stated).
+* The minimum test-job length on Nibi (only the one-hour production advice is stated); the kit
+  warns below 5 min there.
+* Whether Trillium's sbatch accepts the model in `--gpus-per-node=h100:1` (the general syntax and
+  Trillium's specifier are on the wiki, a Trillium example with a model is not); if it is
+  rejected, use `--gpu-instance unpinned` (section 4).

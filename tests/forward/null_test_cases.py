@@ -70,7 +70,8 @@ def _params(cell, theta, *, max_pixel=0.13, precision="complex64", buildup=20.0,
     return MultisliceParams(energy_keV=200.0, nx=nx, ny=ny, dz_A=dz, propagator="exact",
                             band_limit="2/3", backend="numpy", precision=precision, threads=4,
                             absorber=NumericalAbsorber(strength_V=100.0, profile="sin2"),
-                            theta_out_ext_rad=theta, buildup_depth_A=buildup)
+                            theta_out_ext_rad=theta, buildup_depth_A=buildup,
+                            working_reflections_hkl=((0, 0, 8),))   # B17 stand-in (item 9)
 
 
 def _length_periods(theta, *, gap, h_total, buildup, extra_A, ent):

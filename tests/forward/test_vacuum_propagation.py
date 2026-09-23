@@ -117,16 +117,20 @@ def test_band_limit_enforced_on_the_propagated_wave():
 def test_band_limit_refuses_outgoing_beam_outside_band():
     # docs/03 section 5: 0.13 A supports 64.3 mrad (2/3) and 48 mrad (half-Nyquist) at 200 keV
     g = Grid(nx=100, ny=100, dx_A=0.13, dy_A=0.13, x0_A=0.0, y0_A=0.0)
-    rec = check_band(g, rule="2/3", wavelength_A=LAM, angles_rad={"out": 45e-3})
+    rec = check_band(g, rule="2/3", wavelength_A=LAM, angles_rad={"out": 45e-3},
+                     reflections_per_A={})               # vacuum: no crystal
     assert rec["angle_ceiling_x_mrad"] == pytest.approx(64.31, abs=0.01)
     assert "UNVERIFIED" in rec["rule_label"]
-    rec = check_band(g, rule="half_nyquist", wavelength_A=LAM, angles_rad={"out": 45e-3})
+    rec = check_band(g, rule="half_nyquist", wavelength_A=LAM, angles_rad={"out": 45e-3},
+                     reflections_per_A={})               # vacuum: no crystal
     assert rec["angle_ceiling_x_mrad"] == pytest.approx(48.23, abs=0.01)
     with pytest.raises(SamplingError):
-        check_band(g, rule="half_nyquist", wavelength_A=LAM, angles_rad={"out": 50e-3})
+        check_band(g, rule="half_nyquist", wavelength_A=LAM, angles_rad={"out": 50e-3},
+                   reflections_per_A={})
     coarse = Grid(nx=100, ny=100, dx_A=0.5, dy_A=0.5, x0_A=0.0, y0_A=0.0)
     with pytest.raises(SamplingError):          # the realised 0.5 A pixel cannot carry 24 mrad
-        check_band(coarse, rule="2/3", wavelength_A=LAM, angles_rad={"out": 24e-3})
+        check_band(coarse, rule="2/3", wavelength_A=LAM, angles_rad={"out": 24e-3},
+                   reflections_per_A={})
 
 
 def test_paraxial_error_at_45_mrad():

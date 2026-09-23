@@ -57,7 +57,8 @@ def rung1_case(theta, *, dx, dz, propagator, precision="complex128", H=48.0, edg
     params = MultisliceParams(energy_keV=E_KEV, nx=nx, ny=1, dz_A=dz, propagator=propagator,
                               band_limit="2/3", backend="numpy", precision=precision, threads=4,
                               absorber=NumericalAbsorber(strength_V=W0, profile="sin2"),
-                              theta_out_ext_rad=theta, buildup_depth_A=buildup_A)
+                              theta_out_ext_rad=theta, buildup_depth_A=buildup_A,
+                              working_reflections_hkl=())       # continuum cell: no lattice
     return cell, pot, beam, params, dep
 
 
@@ -141,7 +142,8 @@ def rung3_case(theta, h, *, dx, dy, dz, propagator="exact", precision="complex12
     params = MultisliceParams(energy_keV=E_KEV, nx=nx, ny=ny, dz_A=dz, propagator=propagator,
                               band_limit="2/3", backend="numpy", precision=precision, threads=4,
                               absorber=NumericalAbsorber(strength_V=W0, profile="sin2"),
-                              theta_out_ext_rad=theta, buildup_depth_A=buildup_A)
+                              theta_out_ext_rad=theta, buildup_depth_A=buildup_A,
+                              working_reflections_hkl=())       # continuum cell: no lattice
     return cell, pot, beam, params
 
 

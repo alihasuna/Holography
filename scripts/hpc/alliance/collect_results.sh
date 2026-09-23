@@ -42,7 +42,7 @@ while [ $# -gt 0 ]; do
     --run-root) [ $# -ge 2 ] || die 2 "$1 needs a value"; ROOT="$2"; shift 2 ;;
     --jobs) [ $# -ge 2 ] || die 2 "$1 needs a value"; JOBS="$2"; shift 2 ;;
     --out) [ $# -ge 2 ] || die 2 "$1 needs a value"; OUTD="$2"; shift 2 ;;
-    -h|--help) sed -n '2,31p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help) sed -n '2,26p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die 2 "unknown option $1" ;;
   esac
 done

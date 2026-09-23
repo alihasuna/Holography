@@ -1192,3 +1192,17 @@ def test_gpu_sanity_job_plan(tmp_path):
     assert ex["RH_SANITY_POINT"] == "tfix_bragg_abs0_L0" and ex["RH_KIT_THREADS"] == "8"
     r = kit.submit("gpu-sanity", *a, "--study", "scripts/hpc/null_test_study/study.yaml")
     assert r.returncode == 2 and "null-study job only" in r.stderr
+
+
+def test_emulated_gpu_sanity_refuses_without_gpu(tmp_path):
+    if shutil.which("nvidia-smi"):
+        pytest.skip("nvidia-smi present")
+    kit = Kit(tmp_path, "nibi")
+    kit.gpu_pass()
+    r = _run_emulated(kit, "gpu-sanity", "--account", "def-testpi", "--time", "00:30:00")
+    assert r.returncode == 0, r.stderr                 # sbatch itself succeeded
+    log = (kit.run_root / "logs" / "gpu-sanity_900001.log").read_text()
+    assert (tmp_path / "job_900001.status").read_text() == "4", log[-3000:]
+    assert "gpu-check gate: PASS_nibi_" in log and "nvidia-smi not found" in log
+    (jd,) = _jobdirs(kit, "gpu-sanity_900001_*")
+    assert not (jd / "gpu_sanity").exists()           # nothing computed

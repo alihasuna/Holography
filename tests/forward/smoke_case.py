@@ -71,7 +71,8 @@ def smoke_setup(*, widths=(6, 6), H=8.0, edge=2.0, gap=2.0, buildup=20.0, absorb
                               band_limit="2/3", backend="numpy", precision=precision,
                               threads=threads,
                               absorber=NumericalAbsorber(strength_V=100.0, profile="sin2"),
-                              theta_out_ext_rad=theta, buildup_depth_A=buildup)
+                              theta_out_ext_rad=theta, buildup_depth_A=buildup,
+                              working_reflections_hkl=((0, 0, 8),))   # B17 stand-in (item 9)
     return dict(cell=cell, potential=pot, beam=beam, params=params, theta=theta, h=h,
                 V0_mip=V0_mip, structure=s)
 

@@ -19,6 +19,12 @@ band-limited (as abTEM 1.0.10 does, multislice.py:403 and :173, SECTION_READ, D3
 Assertion: every beam declared by the caller (incident and outgoing external glancing angles and
 the internal refracted angles) must have its transverse spatial frequency sin(theta)/lambda inside
 the x-axis band: the OUTGOING beam angle must lie inside the band limit (docs/05 4.3 item 5).
+Second assertion (H2 N8, H5 A7; report H7): every WORKING REFLECTION declared by the caller must lie
+inside the band of the transmission function, (g_x/fx_max)^2 + (g_y/fy_max)^2 <= 1 with (g_x, g_y)
+its transverse reciprocal-lattice vector in cycles/A. The slice potential of a crystal is
+band-limited like the wave; a reflection whose Fourier coefficient lies outside the aperture is not
+coupled at first order (for (0,0,8) of Si(001), |g| = 8/a = 1.4731 1/A: dx <= a/24 = 0.2263 A with
+the 2/3 rule), although the beam angles alone pass up to dx = 0.45 A. DERIVED_HERE.
 """
 from __future__ import annotations
 
@@ -132,16 +138,24 @@ def band_limit_mask(grid: Grid, rule: str) -> np.ndarray:
     return r2 <= 1.0
 
 
-def check_band(grid: Grid, *, rule: str, wavelength_A: float, angles_rad: dict) -> dict:
-    """Assert that every declared beam lies inside the x-axis band (SamplingError otherwise).
+def check_band(grid: Grid, *, rule: str, wavelength_A: float, angles_rad: dict,
+               reflections_per_A: dict) -> dict:
+    """Assert that every declared beam and every declared working reflection lies inside the band
+    (SamplingError otherwise).
 
     angles_rad: name -> glancing angle (rad) of a beam tilted in the x-z plane (incident, outgoing,
     internal). The condition is sin(theta)/lambda <= fx_max, and the same angle is passed to
     reflection_holo.geometry.sampling.require_angle_in_band (the SM15 ceiling lambda q_max).
+    reflections_per_A: name -> (g_x, g_y), the transverse reciprocal-lattice vector (cycles/A) of a
+    working reflection whose Fourier coefficient the transmission function must carry (module
+    docstring); REQUIRED, an empty mapping only for a structureless (continuum) cell.
     Returns the record stored in ExitWave.metadata["band_limit"].
     """
     if not angles_rad:
         raise ValueError("at least the incident and outgoing beam angles must be declared")
+    if reflections_per_A is None:
+        raise ValueError("reflections_per_A is required (an empty mapping only for a "
+                         "structureless cell)")
     fxm, fym = band_limits_per_A(grid, rule)
     geom_rule = BAND_LIMIT_RULES[rule]["geometry_rule"]
     ceiling = antialias_max_angle_rad(grid.dx_A, wavelength_A, rule=geom_rule)
@@ -156,6 +170,28 @@ def check_band(grid: Grid, *, rule: str, wavelength_A: float, angles_rad: dict) 
                 f"SM15)")
         require_angle_in_band(th, grid.dx_A, wavelength_A, rule=geom_rule)
         rows[name] = dict(theta_mrad=th * 1e3, fx_per_A=f, fraction_of_band=f / fxm)
+    refl = {}
+    frac = BAND_LIMIT_RULES[rule]["fraction_of_nyquist"]
+    for name, g in reflections_per_A.items():
+        gx, gy = (float(v) for v in g)
+        if not (np.isfinite(gx) and np.isfinite(gy)):
+            raise ValueError(f"working reflection '{name}': non-finite (g_x, g_y) = {g!r}")
+        r2 = (gx / fxm) ** 2 + ((gy / fym) ** 2 if np.isfinite(fym) else 0.0)
+        if grid.ny == 1 and gy != 0.0:
+            raise SamplingError(f"working reflection '{name}' has g_y = {gy:.4f} 1/A but the grid "
+                                f"has a single y point (it carries only f_y = 0)")
+        if r2 > 1.0 + 1e-12:
+            need_dx = frac / (2.0 * abs(gx)) if gx else float("inf")
+            need_dy = frac / (2.0 * abs(gy)) if gy else float("inf")
+            raise SamplingError(
+                f"working reflection '{name}' (g_x = {gx:.4f}, g_y = {gy:.4f} 1/A) lies outside "
+                f"the {rule} band of the transmission function ((g_x/fx_max)^2 + (g_y/fy_max)^2 = "
+                f"{r2:.4f} > 1; fx_max = {fxm:.4f}, fy_max = "
+                f"{fym if np.isfinite(fym) else float('inf'):.4f} 1/A; derived pixels dx = "
+                f"{grid.dx_A:.5f}, dy = {grid.dy_A:.5f} A): the slice potential would lose the "
+                f"Fourier coefficient that couples this reflection. Along one axis alone the pixel "
+                f"must satisfy dx <= {need_dx:.4f} A, dy <= {need_dy:.4f} A (H2 N8, H5 A7)")
+        refl[name] = dict(g_x_per_A=gx, g_y_per_A=gy, fraction_of_band=float(np.sqrt(r2)))
     return dict(rule=rule, rule_label=BAND_LIMIT_RULES[rule]["label"],
                 fx_max_per_A=fxm, fy_max_per_A=(None if not np.isfinite(fym) else fym),
                 angle_ceiling_x_mrad=ceiling * 1e3,
@@ -163,4 +199,6 @@ def check_band(grid: Grid, *, rule: str, wavelength_A: float, angles_rad: dict) 
                          "the transmission function of every slice",
                 pixel_derived=dict(dx_A=grid.dx_A, dy_A=grid.dy_A,
                                    note="dx = extent_x / nx, dy = extent_y / ny (derived)"),
-                beams=rows)
+                beams=rows,
+                working_reflections=(refl if refl else
+                                     "none declared (structureless cell: no reciprocal lattice)"))

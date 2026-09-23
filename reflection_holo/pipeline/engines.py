@@ -13,7 +13,8 @@ Engines (``sections.engine.name``):
       beam = multislice.SheetBeam(height_A, edge_A, x_bottom_A, theta_in_ext_rad, theta_label)
       params = multislice.MultisliceParams(energy_keV=200, nx, ny, dz_A, propagator, band_limit,
                                            backend, precision, threads, absorber,
-                                           theta_out_ext_rad, buildup_depth_A)
+                                           theta_out_ext_rad, buildup_depth_A,
+                                           working_reflections_hkl=(target reflection,))
       waves, engine_manifest = multislice.simulate(cell, potential=pot, beam=beam, params=params,
                                                    realisations, seed, outputs_root, ...)
 
@@ -323,7 +324,11 @@ def multislice_objects(structure, cfg: PipelineConfig, *, require_backend: bool)
         precision=m["precision"], threads=cfg.value("runtime", "threads"),
         absorber=ms.NumericalAbsorber(strength_V=m["absorber"]["strength_V"],
                                       profile=m["absorber"]["profile"]),
-        theta_out_ext_rad=th, buildup_depth_A=m["buildup_depth_A"])
+        theta_out_ext_rad=th, buildup_depth_A=m["buildup_depth_A"],
+        # the band assertion must carry the declared working reflection (PROJECT_INPUT item 9,
+        # cfg_b.target_reflection_hkl; value() refuses an absent or null one): H2 N8, H5 A7
+        working_reflections_hkl=(
+            tuple(int(v) for v in cfg.cfg_b.value("target_reflection_hkl")),))
     return dict(ms=ms, cell=cell, potential=pot, beam=beam, params=params, mip_check=mip_check,
                 engine_params=m)
 

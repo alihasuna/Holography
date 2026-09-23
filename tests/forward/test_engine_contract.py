@@ -136,7 +136,8 @@ def phonon_case():
     params = MultisliceParams(energy_keV=200.0, nx=640, ny=60, dz_A=dz, propagator="exact",
                               band_limit="2/3", backend="numpy", precision="complex64", threads=4,
                               absorber=NumericalAbsorber(strength_V=100.0, profile="sin2"),
-                              theta_out_ext_rad=th, buildup_depth_A=20.0)
+                              theta_out_ext_rad=th, buildup_depth_A=20.0,
+                              working_reflections_hkl=((0, 0, 8),))   # B17 stand-in (item 9)
     absn = PhysicalAbsorption(model="proportional", ratio=0.0, label="ASSUMPTION: none")
     fp = FrozenPhonons(rms_displacement_A=0.076, label="TEST_ONLY: stands in for a sourced value")
     pot = AtomicPotential(cell, parameterisation="kirkland", physical_absorption=absn,

@@ -55,7 +55,7 @@ while [ $# -gt 0 ]; do
     --account|--time|--config|--variant|--study|--only|--array-throttle|--kinds|--gpu-instance|\
     --need-gpu-mem-gb|--cpus|--mem)
       [ $# -ge 2 ] || die 2 "$1 needs a value"; PLAN_ARGS+=("$1" "$2"); shift 2 ;;
-    -h|--help) sed -n '2,40p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help) sed -n '2,38p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die 2 "unknown option $1 (see the header of $0)" ;;
   esac
 done

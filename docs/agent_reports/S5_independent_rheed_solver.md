@@ -219,6 +219,116 @@ this section is printed by the tool's default (report) mode; the log below only 
 - 22:41-22:43 UTC: main curves on the 0.02 mrad grid, 12-22 mrad (501 angles): `fine_a100_N6_r010`
   (21 s + 42 s), `fine_a110_N9_r010` (50 s + 91 s).
 
+### 3.3 Convention, reference plane and units: one-beam test (REPRODUCED; tool report section 3)
+
+The solver's (0,0)-rod result for a 60-layer slab (s_top = 87.50338 A, dz = 0.009983 A) is compared
+at 21 angles (12-22 mrad, 0.5 mrad) with a fixed-step RK4 integration of `psi'' = -(Gamma_0^2 +
+U_00(s)) psi` for the same laterally averaged potential (continuous Doyle-Turner Gaussians, gamma =
+1 + 200/511.001, 4 pi/cell area), started at s = 0 with a pure downward wave and decomposed at s_top
+in the `exp(-i omega t)` convention (tool function `ode_1d_check`):
+
+| case | max \|R_solver - R_RK4\| | max \|R_solver - conj(R_RK4)\| | RK4 h = 0.002 vs 0.001 A | max \|R\| |
+|---|---|---|---|---|
+| r = 0.1 | 9.61e-05 | 0.376 | 1.3e-09 | 0.2793 |
+| r = 0 (finite slab) | 5.10e-04 | 1.707 | 1.7e-08 | 0.9735 |
+
+At the largest |R| (16.0 mrad) arg R(s_top) is +2.6930 (solver) and +2.6931 (RK4) for r = 0.1, +2.0725
+and +2.0730 for r = 0. Conclusions (REPRODUCED): (i) the patched output `f(0,nb0)` is the reflection
+coefficient `B/A` at `s_top` in the `exp(+i k.r - i omega t)` convention of this repository, NOT its
+conjugate: the phases of sim-trhepd-rheed need NO conjugation (this corrects the expectation in
+docs/05 section 4.4 and L2 D-I3, which concern the P49 paper's notation); (ii) the header value
+`s_top` is the reference plane; (iii) the potential scale `gamma 4 pi f / Omega` is as read (F13).
+The residual (1e-4 to 5e-4) is the solver's slice discretisation (section 3.4: dz = 0.005 A changes R
+by 6e-5).
+
+### 3.4 Numerical convergence of the solver (REPRODUCED; tool report section 4)
+
+Max |Delta R| over the angles (1 mrad grid unless stated), and max relative difference where |R| > 0.05:
+
+| comparison | max \|Delta R\| | relative |
+|---|---|---|
+| [100] N = 6: approach A (bulk.exe) vs B (slab) | 2.18e-05 | 1.01e-04 |
+| [100] N = 4: A vs B | 2.20e-05 | 1.04e-04 |
+| [100] N = 6 B: slab 180 vs 90 layers | 1.32e-06 | 1.66e-06 |
+| [100] N = 6 A: dz 0.005 vs 0.01 A | 5.94e-05 | 3.90e-04 |
+| [100] N = 6 A: dz 0.02 vs 0.01 A | 2.37e-04 | 1.56e-03 |
+| [100]: phi = -45 deg (rods (h,h)) vs +45 deg | 2.15e-09 | 8.33e-09 |
+| [100] rods: N = 4 vs 6 (B) | 1.03e-02 | 4.27e-02 |
+| [100] rods: N = 8 vs 6 (B) | 2.11e-03 | 8.80e-03 |
+| [100] rods: N = 10 vs 6 (B) | 2.65e-03 | 1.10e-02 |
+| [110] N = 9: A vs B | 1.26e-05 | 1.48e-04 |
+| [110] N = 9 A: dz 0.005 vs 0.01 A | 8.04e-05 | 6.58e-04 |
+| [110] rods: N = 12 vs 9 (B) | 2.24e-03 | 1.02e-02 |
+| [100] engine angles (24): N = 8 (B) vs N = 6 (A) | 2.12e-03 | 1.04e-02 |
+| [100] engine angles (24): N = 10 (B) vs N = 6 (A) | 2.66e-03 | 1.31e-02 |
+| [110] engine angles (15): N = 12 (B) vs N = 9 (A) | 2.85e-03 | 1.36e-02 |
+
+Reading: the two numerical routes agree to 2e-5, the slab and the slice thickness are converged to
+better than 1e-4 in R, the [1,0,0] and [0,1,0] azimuths give the same R to 2e-9 (the mirror symmetry
+of the bulk-terminated surface, a check of the input geometry), and the rods beyond the engine's band
+change R by about 1 % (up to 1.4 % at the engine angles). The total reflected flux summed over all
+propagating rods never exceeds 1 (largest value 1.000000, at total-reflection angles), with or
+without absorption. [The HOLZ row of this table is added when the run finishes; section 3.5.]
+
+## 4. Solver rocking curves (REPRODUCED; tool report section 5)
+
+Doyle-Turner Si, static lattice, 0.02 mrad grid from 12 to 22 mrad (501 angles), R at the top-layer
+nuclei in the repository's convention. Beams: [100] 13 rods (h,-h), |h| <= 6; [110] 19 rods (0,k),
+|k| <= 9. The tool prints the full tables every 0.2 mrad; the rows below are a subset.
+
+### 4.1 r = sap = 0.1 (the like-for-like absorption)
+
+| theta (mrad) | [100] \|R\|^2 | [100] arg R | [110] \|R\|^2 | [110] arg R |
+|---|---|---|---|---|
+| 12.00 | 0.04650 | -2.533 | 0.06288 | -3.123 |
+| 12.20 | 0.04801 | -2.162 | 0.07991 | -2.677 |
+| 13.00 | 0.00955 | -1.474 | 0.01174 | -1.409 |
+| 14.00 | 0.00167 | -1.510 | 0.01495 | -1.789 |
+| 15.00 | 0.00001 | -0.007 | 0.04860 | -1.379 |
+| 15.20 | 0.00026 | +1.313 | 0.04901 | -1.057 |
+| 15.60 | 0.00765 | +1.717 | 0.02959 | -0.370 |
+| 15.80 | 0.02953 | +2.158 | 0.01715 | -0.012 |
+| 16.00 | 0.06678 | +2.843 | 0.00683 | +0.431 |
+| 16.20 | 0.07881 | -2.712 | 0.00034 | +0.737 |
+| 16.40 | 0.05303 | -2.017 | 0.00085 | -0.797 |
+| 16.60 | 0.01784 | -1.576 | 0.00053 | -0.305 |
+| 16.80 | 0.00764 | -1.517 | 0.00001 | -2.920 |
+| 17.00 | 0.00448 | -1.463 | 0.00171 | -2.763 |
+| 17.60 | 0.00080 | -1.181 | 0.04389 | -0.867 |
+| 18.00 | 0.00006 | -0.508 | 0.00634 | +0.361 |
+| 18.60 | 0.00068 | +2.802 | 0.03303 | +0.866 |
+| 19.00 | 0.00083 | +3.113 | 0.01227 | +2.582 |
+| 20.00 | 0.00126 | +2.916 | 0.00194 | +0.820 |
+| 21.00 | 0.00986 | -2.364 | 0.00061 | -2.678 |
+| 22.00 | 0.00017 | -2.888 | 0.00033 | -1.275 |
+
+* [100] local maxima (|R|^2 > 0.005): 12.12 mrad (0.0494, arg -2.309), 16.16 mrad (0.0798, arg -2.855),
+  20.96 mrad (0.0100, arg -2.497). The (0,0,8) peak (parabola on the fine grid): 16.1571 mrad,
+  |R|^2 0.07977, FWHM 0.6065 mrad (15.856 to 16.463), arg R at the peak -2.8658 rad; arg R rises
+  monotonically through the peak, unwrapped from +1.590 rad at 15.5 mrad to +4.783 rad at 16.9 mrad
+  (+3.193 rad), the Bragg-case phase sweep that docs/05 4.4 rung 2 asks for. Near 15.0 and 18.1 mrad
+  R passes close to zero and its phase jumps.
+* [110] local maxima: 12.30 (0.0823, arg -2.451), 13.10 (0.0098), 13.78 (0.0160), 15.12 (0.0498, arg
+  -1.189), 17.58 (0.0439, arg -0.949), 18.62 mrad (0.0332, arg +0.962). At [110] the (0,0,8)
+  condition (about 16.13 mrad) is a near-ZERO of the specular reflectivity (|R|^2 = 3.4e-4 at 16.20
+  mrad), consistent with H2's finding that [110] reflects six times more weakly there (section 6.4).
+* The refraction-only (0,0,8) angle with the DT mean inner potential is 16.1327 mrad (tool section 2);
+  the many-beam peak at [100] lies 0.024 mrad higher.
+
+### 4.2 r = 0 (no absorption): finite slabs only
+
+Without absorption the bulk recursion does not converge outside total-reflection bands (F7): the
+results are those of a slab of ML units (ML = 150: 407 A; ML = 300: 815 A) on vacuum. The two
+thicknesses differ by more than 1e-3 in R at 468 of 501 angles ([100]) and 469 of 501 ([110]); they
+agree (max |Delta R| 3.9e-09 at [100], 1.7e-05 at [110]) only where the total reflected flux is 1
+(19 angles at [100], e.g. 12.0-12.2 and 21.0 mrad; 29 at [110], e.g. 16.2, 17.4, 18.6 mrad). Largest
+|R|^2: 0.9739 ([100]), 0.9003 ([110]). Example rows ([100], ML150 | ML300): 16.00 mrad 0.7744 / +2.648 |
+0.8139 / +2.616; 16.20 mrad 0.8635 / -2.279 | 0.8306 / -2.441; 16.40 mrad 0.9667 / -1.502 | 0.6583 /
+-1.265. A semi-infinite, non-absorbing rocking curve is therefore not a well-defined reference here,
+in the solver as in the engine (H2: the engine's r = 0 strip has not settled within 8000 A); an
+r = 0 comparison would need a stated tiny absorption or a Bloch-wave bulk boundary condition, neither
+of which the upstream code provides.
+
 ## 5. Tolerances (DECLARED at 22:45 UTC, before the first engine run of this study and before any
 ## engine-solver difference was computed)
 
