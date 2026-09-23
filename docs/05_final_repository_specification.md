@@ -358,13 +358,13 @@ code audit A2 (state 7874c85), re-audit A2b (state d35b751), verification A2c of
   values fail; explicit units) and `provenance/` (manifest with versions, git commit and diff hash,
   seeds, precision, hashes).
 
-Open after the fixes (A2c): G1 (Major) a run whose surface and azimuth are those of CFG-B can be
-declared as CFG-A and so skip the CFG-B gate; G2 the PROJECT_INPUT source rule is a text match; G3
-TEST_ONLY passes at run level when a caller sets `allow_test_only`; with `reference_correction="none"`
-no visibility check is made; on uniform tilt grids aliases above `h_max` are flagged, not refused; the
-noise-declaration sensitivity of B16 (the phase uncertainties must be measured, not guessed); the
-R1/R3 aperture passage is recorded but has no effect; the thread count is recorded, not enforced.
-These are scheduled for the Phase 3 fix round.
+The A2c items G1 (CFG-A declaration bypass), G2 (text-match source rule, now structured
+`supplied_by`/`supplied_on` fields), G3 (TEST_ONLY unreachable from the CLI and pipeline) and the
+missing visibility check with `reference_correction="none"` were fixed in Phase 3 (report S4, commit
+7bdfb79; full suite 724 passed). Still open: on uniform tilt grids aliases above `h_max` are flagged, not
+refused; the noise-declaration sensitivity of B16 (the phase uncertainties must be measured, not
+guessed); the R1/R3 aperture passage is recorded but has no effect; the thread count is recorded, not
+enforced.
 
 Phase 3 (2026-09-23): the multislice engine M2 (`reflection_holo/forward/multislice`, report M2)
 passes ladder rungs 1 and 3 on continuum models and the moving-beam translation test on atoms, but
@@ -372,7 +372,12 @@ atomistic step phases are NOT usable: with a fixed beam the finite cell leaves t
 (+0.569 rad for a pure translation of a flat terrace; build-up scale of order 1600 A along the beam at the
 (0,0,8) Bragg peak without absorption). The end-to-end pipeline (report P1) with the geometric engine
 recovers the demo step heights; with the multislice engine it runs but returns no heights. A 17-point
-HPC null-test study is in `scripts/hpc/null_test_study/`.
+HPC null-test study is in `scripts/hpc/null_test_study/`. The pipeline audit A3 (1 Blocker, 6 Major) was fixed in S4:
+a failed or missing no-step control now suppresses every height; the lattice-branch rule is joint over
+the steps of a run with an exact chance-acceptance bound (B29); the height uncertainty treats the
+incidence and exit angles of the specular beam as sharing one calibration error (smoke demo a/2 step
++2.7156 +- 0.0165 A); comparison runs refuse every demo stand-in; unused physical inputs are refused.
+Re-audit of S4: pending.
 
 Not implemented at 017761d: the reflection forward model (M2) and the geometric-phase model of section
 4.5 (both are being built in Phase 3 under `reflection_holo/forward/`); dark-field aperture selection, projection along `k_out`, magnification and
