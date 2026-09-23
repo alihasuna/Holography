@@ -35,8 +35,8 @@ stand_ins:
   B32: [7]     # multislice runs: glancing angle (and every refraction angle) from the MIP of the potential used (Kirkland IAM 13.903 V, report D3)
   # Second smoke test (half-torus surface feature; report docs/agent_reports/T2_torus_pipeline.md,
   # rows proposed there, added to docs/model_assumptions.md by the orchestrator). Demo only.
-  B33: [13]    # half-torus TRENCH, R = 1000 A, r = 20 A, centred in the field, on a flat step-free Si(001) surface
-  B34: [13]    # half-torus RIDGE, R = 1000 A, r = 20 A, centred in the field, on a flat step-free Si(001) surface
+  B33: [13]    # half-torus TRENCH on a flat step-free Si(001) surface; R, r and centre per configuration (pipeline demo R 1000 A, r 20 A; T1 atomistic cells R 50 A, r 12 A)
+  B34: [13]    # half-torus RIDGE on a flat step-free Si(001) surface; R, r and centre per configuration (pipeline demo R 1000 A, r 20 A; T1 atomistic cells R 50 A, r 12 A)
 # Demo-only stand-ins (audit A3 M2): refused by every pipeline run with purpose "comparison",
 # whatever the docs/06 item. Every id listed here must be a key of stand_ins.
 demo_only: [B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34]

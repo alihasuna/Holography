@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
+import textwrap
 
 import matplotlib
 matplotlib.use("Agg")
@@ -225,15 +226,18 @@ def figure(run_dir: pathlib.Path, out: pathlib.Path) -> None:
               f"  delta {q['no_step_control'].get('delta_rad', float('nan')):+.2e} rad, tol "
               f"{q['no_step_control'].get('tolerance_rad', float('nan')):.2e} rad",
               "", "resolution:"]
-    txt = res["summary"]
-    lines += ["  " + txt[i:i + 58] for i in range(0, len(txt), 58)]
+    lines += ["  " + res["summary"]]
     lines += ["", f"a/4 step: {res['a4_step']['wraps']:.3f} wraps, apparent "
                   f"{res['a4_step']['apparent_height_A']:+.3f} A",
               f"aperture passes |dh/dy| < {res['aperture_slope_acceptance']['across_beam_dh_dy']:.3f},",
               f"  |dh/dz| < {res['aperture_slope_acceptance']['along_beam_dh_dz']:.4f}",
               f"parallax of the extreme layer: {res['extreme_layer']['parallax_image_A']:+.1f} A "
               f"({res['extreme_layer']['parallax_rows']:+.0f} rows)"]
-    ax.text(0.0, 1.0, "\n".join(lines), va="top", ha="left", fontsize=8, family="monospace",
+    wrapped = []
+    for ln in lines:
+        indent = " " * (len(ln) - len(ln.lstrip()))
+        wrapped += textwrap.wrap(ln, width=46, subsequent_indent=indent + "  ") or [""]
+    ax.text(0.0, 1.0, "\n".join(wrapped), va="top", ha="left", fontsize=7.5, family="monospace",
             transform=ax.transAxes)
     fig.suptitle(f"{s['run_name']}: half-torus {sh['sub_kind']} on Si(001), geometric model (no "
                  f"dynamical amplitude, B4 scope applies); demo, not comparable to experiment",

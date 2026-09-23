@@ -41,7 +41,6 @@ import math
 
 import numpy as np
 
-from reflection_holo.constants import TWO_PI
 from reflection_holo.geometry.specular import wrap_to_pi
 from reflection_holo.quantification.height import (sensitivity_rad_per_A,
                                                     sensitivity_uncertainty_rad_per_A,

@@ -101,7 +101,8 @@ def test_registry_is_package_data_mapping_ids_to_items():
                    # Phase 3 demo stand-ins (docs/model_assumptions.md B19-B32)
                    "B19": (7,), "B20": (8,), "B21": (3,), "B22": (4,), "B23": (5,), "B24": (6,),
                    "B25": (11,), "B26": (12,), "B27": (13,), "B28": (15, 16), "B29": (19,),
-                   "B30": (21,), "B31": (1,), "B32": (7,)}
+                   "B30": (21,), "B31": (1,), "B32": (7,),
+                   "B33": (13,), "B34": (13,)}
     assert not any(k.startswith("A") for k in reg)            # inherited A-rows never stand in
     assert "B2" not in reg                                    # the lattice parameter is no stand-in
     assert all(C.SCHEMAS[c][kind].get("lattice_parameter") is None      # no docs/06 item anywhere
