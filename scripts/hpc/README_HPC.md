@@ -51,6 +51,13 @@ sees a GPU: without one the checks still run but the dry run exits 4 ("multislic
 available"), and a run is refused (exit 4) before computing. On a login node without CUDA this is
 expected; the job checks again on the GPU node before its first step.
 
+Memory of the dry run itself: it builds the whole structure and the reflection cell. The dry run of
+`demo_hpc_si001.yaml` (1.44 million atoms) peaked at 3.6 GB RSS in 52 s (H4 audit, 2026-09-23),
+while it prints about 127 MiB "per realisation": that number counts the engine's arrays of one
+realisation only, not the process. On a shared login node (Alliance: Trillium_Quickstart § Testing
+and debugging asks for 1-2 GB) run dry runs of large cells inside a job; the Alliance kit has a
+CPU `dry-run` job that also reports the peak RSS (`scripts/hpc/alliance/README_ALLIANCE.md` §4.7).
+
 ## 3. Submit: smoke test first, then the full run
 
 Fill the four REQUIRED placeholders at the top of `scripts/hpc/run_pipeline.slurm` (`ACCOUNT`,
@@ -121,7 +128,8 @@ ladder of docs/05 4.4 first.
 | GPU run | NOT RUN (no GPU here); the engine's ASSUMPTION model gives about 10 s of propagation |
 
 Memory: about 140 MiB per realisation for the HPC grid (engine estimate) plus the 1.44-million-atom
-structure (about 0.5 GB in the builder); 32 GB is ample.
+structure (about 0.5 GB in the builder); 32 GB is ample. (The dry run of the same configuration
+peaked at 3.6 GB RSS: H4 audit, 2026-09-23.)
 
 ## 6. What the demo does not do
 

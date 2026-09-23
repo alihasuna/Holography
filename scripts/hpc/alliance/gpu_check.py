@@ -31,6 +31,8 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "tests" / "forward"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from kit import PASS_SCHEMA, engine_code_sha256  # noqa: E402  (the gate reads what is written here)
 
 # ---- tolerances, fixed before any GPU run (max |a - b| / max |reference|) ----------------------
 # FFT, complex128: double-precision FFT round-off is ~1e-16 x log2(N) (N = 65536 points -> ~2e-15);
@@ -169,7 +171,12 @@ def main(argv=None) -> int:
     ap.add_argument("--seed", type=int, required=True)
     a = ap.parse_args(argv)
     a.out.mkdir(parents=True, exist_ok=False)
+    # the engine code this check exercises (F9: a PASS unlocks GPU jobs only for this code)
+    engine = engine_code_sha256(REPO)
+    print(f"engine code {engine['sha256']} ({len(engine['files'])} files under "
+          f"{', '.join(engine['dirs'])})", flush=True)
     res = dict(schema="reflholo_gpu_check/1", status=STATUS, cluster=a.cluster, env_id=a.env_id,
+               engine_code=engine,
                job_id=os.environ.get("SLURM_JOB_ID"), threads=a.threads, seed=a.seed,
                tolerances=dict(fft_complex128=TOL_FFT_C128, fft_complex64=TOL_FFT_C64,
                                multislice_complex128=TOL_MS_C128,
@@ -227,11 +234,27 @@ def main(argv=None) -> int:
     mpath = write_manifest(m, outputs_root=a.out / "outputs")
     if rc == 0:
         a.pass_dir.mkdir(parents=True, exist_ok=True)
-        ppath = a.pass_dir / f"PASS_{a.cluster}_{a.env_id}_{res['job_id']}.json"
-        with open(ppath, "x", encoding="utf-8") as fh:
-            json.dump(dict(result=str(rpath), manifest=str(mpath), device=res["device"],
-                           commit=m["repository"]["commit"]), fh, indent=1)
-        print(f"GPU CHECK: PASS (record {ppath})", flush=True)
+        rec = dict(schema=PASS_SCHEMA, passed=True, cluster=a.cluster, env_id=a.env_id,
+                   engine_code_sha256=engine["sha256"], engine_files=engine["files"],
+                   job_id=res["job_id"], result=str(rpath), manifest=str(mpath),
+                   device=res["device"], commit=m["repository"]["commit"],
+                   tolerances=res["tolerances"])
+        base = f"PASS_{a.cluster}_{a.env_id}_{res['job_id']}"
+        ppath = None
+        for k in range(100):              # F13: a requeued job (same id) adds a record
+            cand = a.pass_dir / (f"{base}.json" if k == 0 else f"{base}_requeue{k}.json")
+            try:
+                with open(cand, "x", encoding="utf-8") as fh:        # never overwritten
+                    json.dump(rec, fh, indent=1)
+                ppath = cand
+                break
+            except FileExistsError:
+                continue
+        if ppath is None:
+            print(f"GPU CHECK: PASS, but no free record name {base}_requeue<k>.json", flush=True)
+            return 1
+        print(f"GPU CHECK: PASS (record {ppath}; valid for cluster {a.cluster}, environment "
+              f"{a.env_id} and engine code {engine['sha256'][:12]})", flush=True)
     elif rc == 1:
         print("GPU CHECK: FAIL (a comparison exceeded its tolerance or the GPU path raised; see "
               "gpu_check.json); do not run other GPU jobs on this environment", flush=True)

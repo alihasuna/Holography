@@ -198,24 +198,40 @@ def main(argv=None) -> int:
     ap.add_argument("--kind", required=True, choices=("trench", "ridge", "flat"))
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--estimate-only", action="store_true")
+    ap.add_argument("--max-cpu-seconds", type=float, default=None,
+                    help="refuse above this calibrated CPU estimate (s); default: CASE limits "
+                         "cpu_seconds (600 s, set for the build machine). Batch jobs pass a value "
+                         "derived from their walltime (scripts/hpc/alliance); recorded in "
+                         "case_<kind>.json and summary_<kind>.json")
     args = ap.parse_args(argv)
     out = args.out
     kind = args.kind
+    lim = dict(CASE["limits"])
+    if args.max_cpu_seconds is None:
+        lim["cpu_seconds_source"] = "CASE default (build machine)"
+    else:
+        if not args.max_cpu_seconds > 0:
+            ap.error("--max-cpu-seconds must be > 0")
+        lim["cpu_seconds"] = float(args.max_cpu_seconds)
+        lim["cpu_seconds_source"] = "--max-cpu-seconds (caller)"
     t0 = time.perf_counter()
     s, cell, pot, beam, params, rec = setup(kind, out)
     est = estimate_resources(cell, params, realisations=1, calibrate_cpu=True)
-    lim = CASE["limits"]
     cpu_s = est["cpu"]["seconds_per_realisation"] * lim["cpu_calibration_factor"]
     mem = est["memory_bytes"]["total"]
     rec["estimate"] = dict(cpu_seconds_calibrated=cpu_s, raw=est, rss_after_setup_MB=_rss_mb())
+    rec["limits_used"] = lim
     print(f"[{kind}] atoms {rec['n_atoms']}, grid {params.nx} x {params.ny} (dx {rec['grid']['dx_A']:.4f}, "
           f"dy {rec['grid']['dy_A']:.4f} A), {rec['n_slices']} slices of {params.dz_A:.4f} A, "
           f"theta {rec['theta_ext_rad'] * 1e3:.4f} mrad, MIP {rec['mean_inner_potential_V']:.4f} V")
     print(f"[{kind}] estimate: CPU {cpu_s:.0f} s (x{lim['cpu_calibration_factor']}), engine arrays "
-          f"{mem / 1e6:.0f} MB, RSS after setup {_rss_mb():.0f} MB")
+          f"{mem / 1e6:.0f} MB, RSS after setup {_rss_mb():.0f} MB; limits CPU "
+          f"{lim['cpu_seconds']:.0f} s ({lim['cpu_seconds_source']}), memory "
+          f"{lim['memory_bytes'] / 1e9:.0f} GB")
     over = cpu_s > lim["cpu_seconds"] or mem > lim["memory_bytes"]
     rec["over_limits"] = bool(over)
-    (out / f"case_{kind}.json").write_text(json.dumps(dict(CASE=CASE, kind=kind, status=STATUS),
+    (out / f"case_{kind}.json").write_text(json.dumps(dict(CASE=CASE, kind=kind, status=STATUS,
+                                                           limits_used=lim),
                                                       indent=2, default=_jsonable))
     if args.estimate_only or over:
         if over:

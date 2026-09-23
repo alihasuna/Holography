@@ -34,6 +34,10 @@ common:
   time_formats:
     value: ["minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes", "days-hours:minutes:seconds"]
     locator: Running_jobs § Use sbatch to submit jobs
+    note: >-
+      H6 (H4 F7): the kit refuses "minutes" and "minutes:seconds" (e.g. 01:00 is one minute to
+      Slurm) as ambiguous; it accepts the forms that name the hours: HH:MM:SS, D-HH, D-HH:MM,
+      D-HH:MM:SS (kit.py checked_time).
   partition:
     value: "not specified (the scheduler chooses)"
     locator: >-
@@ -363,7 +367,7 @@ clusters:
       model: {value: "NVidia H100 SXM (80 GB memory)", locator: "Trillium § Node characteristics"}
       gpus_per_node: {value: 4, locator: "Trillium § Node characteristics"}
       cores_per_gpu_node: {value: 96, locator: "Trillium § Node characteristics"}
-      specifier: {value: h100, locator: "Using_GPUs_with_Slurm § Available GPUs (the Trillium examples use no specifier)"}
+      specifier: {value: h100, locator: "Using_GPUs_with_Slurm § Available GPUs (row Trillium, H100-80gb, h100; the Trillium examples use no specifier)"}
       pass_cpus_per_task:
         value: false
         locator: "Trillium_Quickstart § Whole node or whole gpu scheduling (\"It is not possible to request a certain number of core on Trillium\"; one GPU = \"24 cores\")"
@@ -373,11 +377,26 @@ clusters:
         locator: "Trillium_Quickstart § Memory requests are ignored; § Best Practices for GPU Jobs (\"Do not use --mem\")"
       mem_fixed_per_gpu: {value: "188GiB", locator: "Trillium_Quickstart § Memory requests are ignored (\"single-GPU jobs get 1/4 of the memory, i.e., 188GiB\")"}
       mig_availability: {value: none, locator: "Trillium § Job scheduling (\"scheduled by whole GPU (no \\\"MIG\\\"), or by whole node\")"}
+      other_gpu_nodes:
+        value: "1 node with 4 x H200 SXM (141 GB); 52 nodes with 8 x B200 SXM (180 GB), \"the B200s are not yet available\""
+        locator: "Trillium § Node characteristics (Trillium.wiki:63-75; H4 audit F5)"
       instances:
         full:
+          # H6 (F5): the model is named. Syntax: Using_GPUs_with_Slurm.wiki:8 "--gpus-per-node=<model_specifier>:<number>";
+          # specifier: Using_GPUs_with_Slurm.wiki:112-113, Available GPUs table row "[[Trillium#Node_characteristics|Trillium]] || H100-80gb" / "| || h100".
+          # The Trillium pages themselves write --gpus-per-node=1 (no model); if sbatch rejects the model on
+          # Trillium, --gpu-instance unpinned requests exactly the Quickstart's form (below).
           request:
-            value: ["--nodes=1", "--gpus-per-node=1"]
-            locator: "Trillium_Quickstart § Example: Single-GPU Job (\"#SBATCH --nodes=1\", \"#SBATCH --gpus-per-node=1\"); § Partitions and limits (\"For single-GPU jobs, use --gpus-per-node=1\")"
+            value: ["--nodes=1", "--gpus-per-node=h100:1"]
+            locator: "Using_GPUs_with_Slurm § Introduction (\"--gpus-per-node=<model_specifier>:<number>\") and § Available GPUs (Trillium H100-80gb: specifier h100; \"we strongly recommend that you always provide a specific GPU model specifier\"); Trillium_Quickstart § Example: Single-GPU Job (\"#SBATCH --nodes=1\"); § Partitions and limits (\"For single-GPU jobs, use --gpus-per-node=1\")"
           gpu_mem_gb: {value: 80, locator: "Trillium § Node characteristics"}
           cpus_recommended: {value: 24, locator: "Allocations_and_compute_scheduling § Ratios in bundles (Trillium H100-80gb \"24 cores, 188 GB\")"}
           mem_recommended: {value: "188GiB (fixed; not requested)", locator: "Trillium_Quickstart § Memory requests are ignored"}
+      unpinned:
+        # only with --gpu-instance unpinned (never chosen by the kit): the Quickstart's own request
+        request:
+          value: ["--nodes=1", "--gpus-per-node=1"]
+          locator: "Trillium_Quickstart § Example: Single-GPU Job (\"#SBATCH --nodes=1\", \"#SBATCH --gpus-per-node=1\"); § Partitions and limits (\"For single-GPU jobs, use --gpus-per-node=1\")"
+        warning:
+          value: "--gpu-instance unpinned: no GPU model is requested; the job may land on the H200 node (or on B200 nodes once they open), for which the gpu-check PASS of an H100 says nothing; nvidia-smi.txt in the job directory shows the GPU you got"
+          locator: "Trillium § Node characteristics; Using_GPUs_with_Slurm § Available GPUs (\"If you do not supply a model specifier your job may be rejected or it may be sent to an arbitrary GPU instance\")"

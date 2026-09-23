@@ -21,16 +21,19 @@ import pytest
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from fake_slurm import MODULES, clean_environ, make_env_dir, make_fakebin  # noqa: E402
+from fake_slurm import (MODULES, clean_environ, make_env_dir, make_fakebin,  # noqa: E402
+                        write_gpu_pass)
 
 REPO = HERE.parents[1]
 KIT = REPO / "scripts" / "hpc" / "alliance"
 SUBMIT = KIT / "submit.sh"
 JOB_SCRIPT = KIT / "job.sbatch"
 CLUSTERS = ("fir", "nibi", "rorqual", "narval", "trillium")
-JOBS = ("gpu-check", "smoke", "demo-gpu", "pipeline", "torus", "null-study")
+JOBS = ("gpu-check", "gpu-sanity", "smoke", "demo-gpu", "pipeline", "dry-run", "torus",
+        "null-study")
+CPU_JOBS = ("smoke", "torus", "dry-run")
 GPU_FLAGS = {"fir": ["--gpus=h100:1"], "nibi": ["--gpus=h100:1"], "rorqual": ["--gpus=h100:1"],
-             "narval": ["--gpus=a100:1"], "trillium": ["--nodes=1", "--gpus-per-node=1"]}
+             "narval": ["--gpus=a100:1"], "trillium": ["--nodes=1", "--gpus-per-node=h100:1"]}
 RECOMMENDED = {"fir": ("12", "280G"), "nibi": ("14", "250G"), "rorqual": ("16", "124G"),
                "narval": ("12", "124G")}
 N_STUDY_POINTS = 17
@@ -58,10 +61,8 @@ class Kit:
         return clean_environ(PATH=f"{self.bin}:{os.environ['PATH']}", SCRATCH=str(self.scratch),
                              RH_ALLIANCE_ENV_DIR=str(self.env_dir), **extra)
 
-    def gpu_pass(self):
-        d = self.run_root / "gpu_check"
-        d.mkdir(parents=True, exist_ok=True)
-        (d / f"PASS_{self.cluster}_{self.env_id}_1.json").write_text("{}")
+    def gpu_pass(self, name=None, **fields):
+        return write_gpu_pass(self.run_root, self.cluster, self.env_id, name=name, fields=fields)
 
     def submit(self, job, *args, dry=True, env=None, timeout=600):
         cmd = ["bash", str(SUBMIT), self.cluster, job, *args] + (["--dry-run"] if dry else [])
@@ -86,10 +87,12 @@ def export_vars(argv) -> dict:
 def job_args(cluster, job, tmp_path):
     """Minimal complete argument list of each job (a CPU job needs --mem)."""
     base = ["--account", "def-testpi", "--time", "01:00:00"]
-    if job in ("smoke", "torus"):
+    if job in CPU_JOBS:
         base += ["--mem", "4G"]
     if job == "pipeline":
         base += ["--config", "configs/demo_hpc_si001.yaml"]
+    if job == "dry-run":
+        base += ["--config", "configs/demo_smoke_si001.yaml"]
     return base
 
 
@@ -102,7 +105,7 @@ def test_dry_run_command_every_cluster_and_job(tmp_path, cluster, job):
     kit = Kit(tmp_path, cluster)
     kit.gpu_pass()
     r = kit.submit(job, *job_args(cluster, job, tmp_path))
-    cpu_job = job in ("smoke", "torus")
+    cpu_job = job in CPU_JOBS
     if cluster == "trillium" and cpu_job:
         assert r.returncode == 2, (r.stdout, r.stderr)
         assert "192-core" in r.stderr and "sbatch command" not in r.stdout
@@ -124,8 +127,11 @@ def test_dry_run_command_every_cluster_and_job(tmp_path, cluster, job):
     assert ex["RH_KIT_CLUSTER"] == cluster and ex["RH_ACCOUNT"] == "def-testpi"
     assert len(ex["RH_SUBMIT_COMMIT"]) == 40
     if job == "null-study":
-        assert "--array=0-16" in argv and out.endswith(f"{job}_%A_%a.log")
-        assert ex["RH_STUDY_MODE"] == "array" and ex["RH_STUDY_N"] == str(N_STUDY_POINTS)
+        assert not any(a.startswith("--array") for a in argv) and out.endswith(f"{job}_%j.log")
+        assert ex["RH_STUDY_MODE"] == "serial" and ex["RH_STUDY_N"] == str(N_STUDY_POINTS)
+    if job in ("null-study", "gpu-sanity"):               # F6: the job reads the submission copy
+        assert ex["RH_STUDY"].startswith(f"{kit.run_root}/submissions/")
+        assert ex["RH_STUDY"].endswith(".study.yaml") and len(ex["RH_STUDY_SHA256"]) == 64
     else:
         assert not any(a.startswith("--array") for a in argv) and out.endswith(f"{job}_%j.log")
     if cpu_job:
@@ -142,6 +148,7 @@ def test_dry_run_command_every_cluster_and_job(tmp_path, cluster, job):
         cpus, mem = RECOMMENDED[cluster]
         assert f"--cpus-per-task={cpus}" in argv and f"--mem={mem}" in argv
     assert ex["RH_KIT_GPU"] == "full"
+    assert ex["RH_GPU_GATE"] == ("none" if job == "gpu-check" else "pass")
 
 
 def test_null_study_array_range_is_read_from_the_study_file(tmp_path):
@@ -195,16 +202,19 @@ def test_account_prefix_checked(tmp_path):
     ("trillium", "25:00:00", "maximum of 24 h"),
     ("trillium", "00:10:00", "minimum of 15 min"),
     ("fir", "8-00:00:00", "maximum of 168 h"),
-    ("rorqual", "3", "minimum of 5 min"),
-    ("nibi", "01:00", None),          # minutes:seconds = 1 min; Nibi states no test minimum
+    ("rorqual", "00:03:00", "minimum of 5 min"),
+    ("nibi", "01:00", "ambiguous"),   # minutes:seconds = 1 min to Slurm: refused (H4 F7)
+    ("fir", "3", "ambiguous"),        # bare minutes: refused (H4 F7)
+    ("nibi", "00:01:00", None),       # explicit one minute; Nibi states no test minimum
 ])
 def test_time_limits(tmp_path, cluster, time, why):
     kit = Kit(tmp_path, cluster)
     kit.gpu_pass()
     r = kit.submit("gpu-check", "--account", "def-testpi", "--time", time)
-    if cluster == "nibi":
-        # Nibi states no test-job minimum (NOT_FOUND): accepted with the production warning
+    if why is None:
+        # Nibi states no test-job minimum (NOT_FOUND): accepted with the warnings
         assert r.returncode == 0 and "production jobs should last at least 60 min" in r.stderr
+        assert "states no minimum" in r.stderr and "= 00:01:00 (1 min)" in r.stderr
         return
     assert r.returncode == 2 and why in r.stderr, r.stderr
 
@@ -531,7 +541,7 @@ def test_emulated_null_study_array_task(tmp_path):
     assert "backend: numpy" in txt
     study.write_text(txt)
     r = _run_emulated(kit, "null-study", "--account", "def-testpi", "--time", "01:00:00",
-                      "--study", str(study), "--mem", "8G", tasks="0")
+                      "--study", str(study), "--mem", "8G", "--array", tasks="0")
     assert r.returncode == 0, (r.stdout, r.stderr)
     argv = shlex.split(r.stdout.splitlines()[1])
     assert "--array=0-16" in argv and "--cpus-per-task=2" in argv
@@ -583,7 +593,8 @@ def test_collect_results(tmp_path):
                        env=env, capture_output=True, text=True)
     assert r.returncode == 2 and "--max-array-mb is required" in r.stderr
     r = subprocess.run(["bash", str(KIT / "collect_results.sh"), "--run-root", str(root),
-                        "--max-array-mb", "1", "--jobs", "123", "--out", str(tmp_path / "c")],
+                        "--max-array-mb", "1", "--max-file-mb", "10", "--max-total-mb", "100",
+                        "--jobs", "123", "--out", str(tmp_path / "c")],
                        env=env, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     (tar,) = list((tmp_path / "c").glob("reflholo_results_*.tar.gz"))
@@ -755,3 +766,429 @@ def test_gpu_check_pass_record_with_fake_cupy(tmp_path, mode):
     assert json.loads(rec.read_text())["commit"]
     names = set(res["multislice"])
     assert names == {"rung1_continuum_refraction", "atomistic_a2_step_w2"}
+
+
+# ==================================================================================================
+# H6: fixes after the H4 audit (F1-F13) and the gpu-sanity / dry-run jobs
+# ==================================================================================================
+def _kit_module():
+    sys.path.insert(0, str(KIT))
+    import kit
+    return kit
+
+
+def run_job_direct(kit, argv, jobid="555", **extra):
+    """Run job.sbatch as Slurm would, with the exports of a planned sbatch command (no fake sbatch:
+    lets a test change the world between submission and job start)."""
+    ex = export_vars(argv)
+    cpus = [a.split("=", 1)[1] for a in argv if a.startswith("--cpus-per-task=")]
+    env = kit.environ(**ex, SLURM_JOB_ID=jobid, SLURM_CPUS_PER_TASK=cpus[0] if cpus else "24",
+                      **extra)
+    kit.run_root.mkdir(parents=True, exist_ok=True)
+    return subprocess.run(["bash", str(JOB_SCRIPT)], cwd=kit.run_root, env=env,
+                          capture_output=True, text=True, timeout=600)
+
+
+# ---- F1: tests/hpc hermetic; the setup gate tests the installed physics, not the kit -------------
+def test_f1_login_shell_hooks_do_not_reach_the_scripts(tmp_path, monkeypatch):
+    """H4 command 17: BASH_ENV naming a file that defines Lmod's module function made 8 tests fail."""
+    prof = tmp_path / "site_profile.sh"
+    prof.write_text("module() { echo LMOD-FUNCTION >> %s; printf '%%s\\n' CCconfig gentoo/2023 "
+                    "StdEnv/2023 >&2; return 0; }\n" % (tmp_path / "lmod_calls.txt"))
+    monkeypatch.setenv("BASH_ENV", str(prof))
+    monkeypatch.setenv("ENV", str(prof))
+    monkeypatch.setenv("BASH_FUNC_module%%", "() {  return 1\n}")
+    env = clean_environ()
+    assert "BASH_ENV" not in env and "ENV" not in env
+    assert not any(k.startswith("BASH_FUNC_") for k in env)
+    kit = Kit(tmp_path, "fir")
+    r = kit.submit("smoke", "--account", "def-testpi", "--time", "01:00:00", "--mem", "2G")
+    assert r.returncode == 0, r.stderr
+    assert not (tmp_path / "lmod_calls.txt").exists(), "the site profile's module() ran"
+    assert "module -t list" in (tmp_path / "module_calls.txt").read_text()
+
+
+def test_f1_fakes_are_not_executed_from_the_test_temp_dir(tmp_path):
+    """H4 command 22: a noexec temporary directory made 7 tests fail (Permission denied)."""
+    b = make_fakebin(tmp_path / "rec")
+    for name in ("module", "sbatch"):
+        # only a symlink lives in the temporary directory; the executable is tracked in the repo
+        assert (b / name).is_symlink()
+        assert (b / name).resolve().parent == HERE / "bin"
+        assert os.access((b / name).resolve(), os.X_OK)
+    r = subprocess.run([str(b / "sbatch"), "--account=x", "script"], capture_output=True,
+                       text=True, env=clean_environ())
+    assert r.returncode == 0 and "Submitted batch job 900001" in r.stdout
+    assert (tmp_path / "rec" / "sbatch_args.txt").read_text().splitlines() == ["--account=x",
+                                                                               "script"]
+
+
+def test_f1_setup_gate_is_a_cpu_physics_subset_not_tests_hpc():
+    text = (KIT / "setup_alliance.sh").read_text()
+    i = text.index("python -m pytest -q -p no:cacheprovider tests/geometry")
+    cmd = text[i:text.index("|| \\", i)]
+    paths = [w for w in cmd.split() if w.startswith("tests")]
+    assert "tests/hpc" not in cmd and paths
+    for pth in paths:
+        assert (REPO / pth).exists(), pth
+    for need in ("tests/geometry/test_geom_wavelength.py", "tests/forward/test_rung1_refraction.py",
+                 "tests/forward/test_potential_atomic.py", "tests/pipeline/test_pipeline_geometric.py"):
+        assert need in paths
+    assert '-k "not test_cupy_is_lazy_and_not_a_fallback"' in cmd
+
+
+# ---- F2: dry-run as a CPU job; the memory hint says what the numbers count ------------------------
+def test_f2_pipeline_memory_hint_is_not_the_engine_estimate(tmp_path):
+    kit = Kit(tmp_path, "nibi")
+    r = kit.submit("pipeline", "--account", "def-testpi", "--time", "03:00:00", "--config",
+                   "configs/demo_hpc_si001.yaml", "--variant", "cpu_numpy")
+    assert r.returncode == 2 and "--mem is required" in r.stderr
+    assert "counts only the engine's arrays" in r.stderr and "NOT the memory of the job" in r.stderr
+    assert "H2 is under review" in r.stderr and "`dry-run` job" in r.stderr
+    readme = (KIT / "README_ALLIANCE.md").read_text()
+    assert "# login node: memory and GPU estimate" not in readme
+
+
+def test_f2_dry_run_job_is_a_cpu_job_even_for_a_cupy_configuration(tmp_path):
+    kit = Kit(tmp_path, "rorqual")
+    a = ["--account", "def-testpi", "--time", "01:00:00", "--config", "configs/demo_hpc_si001.yaml"]
+    r = kit.submit("dry-run", *a)
+    assert r.returncode == 2 and "--mem is required" in r.stderr and "3.6 GB" in r.stderr
+    r = kit.submit("dry-run", *a, "--mem", "16G")
+    assert r.returncode == 0, r.stderr
+    argv = sbatch_argv(r.stdout)
+    assert not any(x.startswith("--gpus") for x in argv) and "--mem=16G" in argv
+    assert "--cpus-per-task=8" in argv and "exits 4" in r.stderr
+    ex = export_vars(argv)
+    assert ex["RH_KIT_GPU"] == "none" and ex["RH_PIPE_BACKEND"] == "cupy"
+    r = Kit(tmp_path / "t", "trillium").submit("dry-run", *a, "--mem", "16G")
+    assert r.returncode == 2 and "CPU job" in r.stderr
+
+
+def test_f2_emulated_dry_run_job_reports_peak_rss(tmp_path):
+    kit = Kit(tmp_path, "fir")
+    r = _run_emulated(kit, "dry-run", "--account", "def-testpi", "--time", "00:30:00", "--config",
+                      "configs/demo_smoke_si001.yaml", "--mem", "2G")
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    log = (kit.run_root / "logs" / "dry-run_900001.log").read_text()
+    assert (tmp_path / "job_900001.status").read_text() == "0", log[-3000:]
+    (jd,) = _jobdirs(kit, "dry-run_900001_*")
+    res = json.loads((jd / "dry_run" / "dry_run_resources.json").read_text())
+    assert res["exit_status"] == 0 and res["peak_rss_MB"] > 10
+    assert "configuration valid" in (jd / "dry_run" / "dry_run.txt").read_text()
+    assert "peak RSS" in log and list((jd / "manifests").glob("dry_run__outputs__manifests__*.json"))
+
+
+# ---- F3: setup resumable -------------------------------------------------------------------------
+def test_f3_setup_is_resumable_by_design():
+    text = (KIT / "setup_alliance.sh").read_text()
+    for step in ("venv", "wheelhouse", "abtem", "repo"):
+        assert f"stamp_write {step} " in text and f"stamp_done {step} " in text
+    assert text.index("abTEM 1.0.10 wheel: before the long install") < text.index(
+        "---- 4. wheelhouse packages")
+    assert "--recreate --allow-cupy-import-failure" not in text     # no reinstall to allow it
+    assert "pip_report_wheelhouse_$STAMP.json" in text              # one report per attempt
+
+
+# ---- F4: the null study runs every point in one job unless --array is asked for --------------------
+def test_f4_null_study_array_is_explicit_and_warned(tmp_path):
+    kit = Kit(tmp_path, "narval")
+    kit.gpu_pass()
+    a = ["--account", "def-testpi", "--time", "01:00:00"]
+    r = kit.submit("null-study", *a)
+    assert r.returncode == 0 and "Job_arrays" not in r.stderr, r.stderr
+    assert export_vars(sbatch_argv(r.stdout))["RH_STUDY_MODE"] == "serial"
+    r = kit.submit("null-study", *a, "--array")
+    assert r.returncode == 0, r.stderr
+    assert "--array=0-16" in sbatch_argv(r.stdout)
+    assert "much less than an hour" in r.stderr and "Job_arrays § A simple example" in r.stderr
+    r = kit.submit("null-study", *a, "--array", "--serial")
+    assert r.returncode == 2 and "exclusive" in r.stderr
+    r = kit.submit("smoke", *a, "--mem", "2G", "--array")
+    assert r.returncode == 2 and "null-study job only" in r.stderr
+
+
+# ---- F5: Trillium names the GPU model; unpinned only on request, with the wiki's warning ----------
+def test_f5_trillium_gpu_model_and_unpinned(tmp_path):
+    kit = Kit(tmp_path, "trillium")
+    kit.gpu_pass()
+    a = ["--account", "def-testpi", "--time", "01:00:00"]
+    argv = sbatch_argv(kit.submit("demo-gpu", *a).stdout)
+    assert "--gpus-per-node=h100:1" in argv and "--nodes=1" in argv
+    r = kit.submit("demo-gpu", *a, "--gpu-instance", "unpinned")
+    assert r.returncode == 0, r.stderr
+    argv = sbatch_argv(r.stdout)
+    assert "--gpus-per-node=1" in argv and "--gpus-per-node=h100:1" not in argv
+    assert "no GPU model is requested" in r.stderr and "H200" in r.stderr
+    r = Kit(tmp_path / "f", "fir").submit("gpu-check", *a, "--gpu-instance", "unpinned")
+    assert r.returncode == 2 and "not offered" in r.stderr
+
+
+# ---- F6: the study copy made at submission is what every task reads -------------------------------
+def _numpy_study(tmp_path):
+    study = tmp_path / "study_numpy.yaml"
+    txt = (REPO / "scripts" / "hpc" / "null_test_study" / "study.yaml").read_text()
+    txt = txt.replace("  backend: cupy          # numpy on CPU nodes (then set threads to "
+                      "cpus-per-task)\n  threads: 8\n", "  backend: numpy\n  threads: 2\n")
+    assert "backend: numpy" in txt
+    study.write_text(txt)
+    return study
+
+
+def test_f6_study_copy_is_made_hashed_and_checked(tmp_path):
+    import hashlib
+    kit = Kit(tmp_path, "rorqual")
+    study = _numpy_study(tmp_path)
+    a = ["--account", "def-testpi", "--time", "01:00:00", "--study", str(study), "--mem", "8G",
+         "--only", "tfix_bragg_abs0_L0"]
+    r = kit.submit("null-study", *a, dry=False)
+    assert r.returncode == 0, r.stderr
+    sent = (kit.root / "sbatch_args.txt").read_text().splitlines()
+    ex = export_vars(["sbatch"] + sent)
+    copy = Path(ex["RH_STUDY"])
+    assert copy.read_bytes() == study.read_bytes()
+    assert ex["RH_STUDY_SHA256"] == hashlib.sha256(study.read_bytes()).hexdigest()
+    assert copy.name == Path(ex["RH_SUBMISSION_RECORD"]).name.replace(".json", ".study.yaml")
+    study.write_text(study.read_text() + "\n# edited after submission\n")   # the source may change
+    copy.write_text(copy.read_text() + "\n# tampered\n")                   # the copy may not
+    j = run_job_direct(kit, ["sbatch"] + sent)
+    assert j.returncode == 2 and "modified after submission" in j.stderr, (j.stdout, j.stderr)
+    (jd,) = _jobdirs(kit, "null-study_555_*")
+    assert not (jd / "study").exists()                                    # nothing computed
+
+
+# ---- F7: see test_time_limits; the parsed duration is echoed --------------------------------------
+def test_f7_time_forms():
+    kit = _kit_module()
+    for ok, minutes in (("01:00:00", 60), ("0-10:00", 600), ("1-00:00:00", 1440), ("2-3", 3060),
+                        ("36:00:00", 2160)):
+        assert kit.checked_time(ok)[1] == minutes
+    for bad in ("01:00", "10:30", "90", "3", "00:60:00", "1-00:61", "1h"):
+        with pytest.raises(kit.Refused):
+            kit.checked_time(bad)
+
+
+# ---- F8: one record per submission, never overwritten --------------------------------------------
+def test_f8_parallel_submissions_get_their_own_records(tmp_path):
+    kit = Kit(tmp_path, "rorqual")
+    base = ["bash", str(SUBMIT), "rorqual", "smoke", "--account", "def-testpi", "--time",
+            "01:00:00"]
+    procs = [subprocess.Popen(base + ["--mem", m], cwd=kit.root, env=kit.environ(),
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+             for m in ("2G", "3G", "5G")]
+    outs = [p.communicate(timeout=300) for p in procs]
+    assert all(p.returncode == 0 for p in procs), outs
+    recs = sorted((kit.run_root / "submissions").glob("*.json"))
+    assert len(recs) == 3
+    assert sorted(json.loads(r.read_text())["mem"] for r in recs) == ["2G", "3G", "5G"]
+    for r in recs:
+        assert (r.parent / (r.name + ".sbatch_output")).is_file()
+
+
+# ---- F9: the PASS is tied to cluster, environment and engine code, and re-checked in the job -----
+def test_f9_pass_content_decides(tmp_path):
+    kit = Kit(tmp_path, "fir")
+    a = ["--account", "def-testpi", "--time", "01:00:00"]
+    kit.gpu_pass(engine_code_sha256="0" * 64)
+    r = kit.submit("demo-gpu", *a)
+    assert r.returncode == 2 and "engine code 000000000000 != current" in r.stderr
+    kit.gpu_pass(name=f"PASS_fir_{kit.env_id}_2.json", cluster="narval")
+    r = kit.submit("demo-gpu", *a)
+    assert r.returncode == 2 and "cluster 'narval' != 'fir'" in r.stderr
+    kit.gpu_pass(name=f"PASS_fir_{kit.env_id}_3.json", schema=None)
+    assert kit.submit("demo-gpu", *a).returncode == 2
+    kit.gpu_pass(name=f"PASS_fir_{kit.env_id}_4.json")
+    r = kit.submit("demo-gpu", *a)
+    assert r.returncode == 0, r.stderr
+    plan_gate = export_vars(sbatch_argv(r.stdout))
+    assert plan_gate["RH_GPU_GATE"] == "pass"
+
+
+def test_f9_engine_hash_follows_the_engine_code(tmp_path):
+    kit = _kit_module()
+    real = kit.engine_code_sha256(REPO)
+    assert "reflection_holo/forward/multislice/backend.py" in real["files"]
+    fake = tmp_path / "repo"
+    shutil.copytree(REPO / "reflection_holo" / "forward" / "multislice",
+                    fake / "reflection_holo" / "forward" / "multislice",
+                    ignore=shutil.ignore_patterns("__pycache__"))
+    assert kit.engine_code_sha256(fake)["sha256"] == real["sha256"]
+    f = fake / "reflection_holo" / "forward" / "multislice" / "propagator.py"
+    f.write_text(f.read_text() + "\n# changed\n")
+    assert kit.engine_code_sha256(fake)["sha256"] != real["sha256"]
+
+
+def test_f9_gate_rechecked_when_the_job_starts(tmp_path):
+    kit = Kit(tmp_path, "fir")
+    p = kit.gpu_pass()
+    r = kit.submit("demo-gpu", "--account", "def-testpi", "--time", "01:00:00")
+    assert r.returncode == 0, r.stderr
+    argv = sbatch_argv(r.stdout)
+    p.unlink()                                  # e.g. a PASS of code that has changed since
+    j = run_job_direct(kit, argv)
+    assert j.returncode == 2 and "no gpu-check PASS record" in j.stderr, (j.stdout, j.stderr)
+    assert "checked when the job started" in j.stderr
+    (jd,) = _jobdirs(kit, "demo-gpu_555_*")
+    assert not (jd / "pipeline").exists() and not (jd / "nvidia-smi.txt").exists()
+
+
+def test_f9_environment_rebuilt_while_queued_is_refused(tmp_path):
+    kit = Kit(tmp_path, "nibi")
+    r = kit.submit("smoke", "--account", "def-testpi", "--time", "01:00:00", "--mem", "2G")
+    argv = sbatch_argv(r.stdout)
+    make_env_dir(tmp_path, "nibi", env_id="nibi-20260924T000000Z-ffffffffffff")   # setup --recreate
+    j = run_job_direct(kit, argv)
+    assert j.returncode == 2 and "rebuilt after submission" in j.stderr, (j.stdout, j.stderr)
+
+
+def test_job_refuses_a_module_set_that_differs_from_the_record(tmp_path):
+    """H4 §7 blind spot: the job-side module comparison (exit 7) had no refusal test."""
+    kit = Kit(tmp_path, "narval")
+    argv = sbatch_argv(kit.submit("smoke", "--account", "def-testpi", "--time", "01:00:00",
+                                  "--mem", "2G").stdout)
+    (kit.env_dir / "module_list.txt").write_text("\n".join(MODULES + ["scipy-stack/2026a"]) + "\n")
+    j = run_job_direct(kit, argv)
+    assert j.returncode == 7 and "module set differs" in j.stderr, (j.stdout, j.stderr)
+
+
+def test_f9_f13_gpu_check_pass_record_is_valid_and_requeue_safe(tmp_path):
+    """numpy impersonating cupy (NOT a GPU): the PASS written by gpu_check.py carries what the gate
+    checks; a second PASS of the same job id (requeue) gets its own name (F13)."""
+    fake = _fake_cupy(tmp_path, "pass")
+    pdir = tmp_path / "run" / "gpu_check"
+    pdir.mkdir(parents=True)
+    (pdir / "PASS_fir_e1_78.json").write_text("{}")       # the first run of a requeued job
+    env = clean_environ(PYTHONPATH=str(fake), SLURM_JOB_ID="78", OMP_NUM_THREADS="2")
+    r = subprocess.run([sys.executable, str(KIT / "gpu_check.py"), "--out", str(tmp_path / "gc"),
+                        "--threads", "2", "--pass-dir", str(pdir), "--cluster", "fir",
+                        "--env-id", "e1", "--seed", "3"], env=env, capture_output=True,
+                       text=True, timeout=1200)
+    assert r.returncode == 0, (r.stdout[-3000:], r.stderr[-3000:])
+    rec = pdir / "PASS_fir_e1_78_requeue1.json"
+    assert rec.is_file() and (pdir / "PASS_fir_e1_78.json").read_text() == "{}"
+    kit = _kit_module()
+    ok, rejected = kit.find_gate_pass(tmp_path / "run", "fir", "e1",
+                                      kit.engine_code_sha256(REPO)["sha256"])
+    assert [p for p, _ in ok] == [rec] and len(rejected) == 1
+
+
+# ---- F10: every file capped, a total cap, every dropped file listed --------------------------------
+def test_f10_collect_caps_every_file_and_the_total(tmp_path):
+    root = tmp_path / "reflholo"
+    run = root / "runs" / "pipeline_321_20260923T000000Z"
+    run.mkdir(parents=True)
+    (run / "summary.json").write_bytes(b"{" + b" " * 3_000_000 + b"}")      # 3 MB json
+    (run / "small.json").write_text("{}")
+    (run / "weird.bin").write_bytes(b"b" * 1000)                              # any extension
+    (run / "a.npz").write_bytes(b"a" * 400_000)
+    (run / "b.npz").write_bytes(b"b" * 400_000)
+    env = clean_environ(PATH=os.environ["PATH"])
+    base = ["bash", str(KIT / "collect_results.sh"), "--run-root", str(root), "--out",
+            str(tmp_path / "c")]
+    r = subprocess.run(base + ["--max-array-mb", "1"], env=env, capture_output=True, text=True)
+    assert r.returncode == 2 and "--max-file-mb is required" in r.stderr
+    r = subprocess.run(base + ["--max-array-mb", "1", "--max-file-mb", "1"], env=env,
+                       capture_output=True, text=True)
+    assert r.returncode == 2 and "--max-total-mb is required" in r.stderr
+    r = subprocess.run(base + ["--max-array-mb", "1", "--max-file-mb", "1", "--max-total-mb",
+                               "0.5", "--jobs", "321"], env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    (tar,) = list((tmp_path / "c").glob("reflholo_results_*.tar.gz"))
+    with tarfile.open(tar) as t:
+        names = set(t.getnames())
+        dropped = t.extractfile("DROPPED_FILES.tsv").read().decode().splitlines()
+    rel = "runs/pipeline_321_20260923T000000Z"
+    assert {f"{rel}/small.json", f"{rel}/weird.bin", f"{rel}/a.npz"} <= names
+    assert f"{rel}/summary.json" not in names and f"{rel}/b.npz" not in names
+    rows = {line.split("\t")[0]: line for line in dropped[1:]}
+    assert set(rows) == {f"{rel}/summary.json", f"{rel}/b.npz"}
+    assert "--max-file-mb" in rows[f"{rel}/summary.json"]
+    assert "--max-total-mb" in rows[f"{rel}/b.npz"]
+    assert "dropped files: 2" in r.stdout
+
+
+# ---- F11: the torus CPU guard is an explicit option; the kit derives it from the walltime ---------
+def test_f11_torus_cpu_limit_from_walltime(tmp_path):
+    kit = Kit(tmp_path, "fir")
+    r = kit.submit("torus", "--account", "def-testpi", "--time", "01:00:00", "--mem", "4G")
+    assert r.returncode == 0, r.stderr
+    assert export_vars(sbatch_argv(r.stdout))["RH_TORUS_MAX_CPU_S"] == "1440"   # 0.8 * 3600 / 2
+    r = kit.submit("torus", "--account", "def-testpi", "--time", "02:00:00", "--mem", "4G",
+                   "--kinds", "ridge")
+    assert export_vars(sbatch_argv(r.stdout))["RH_TORUS_MAX_CPU_S"] == "5760"
+    runner = REPO / "scripts" / "torus" / "run_torus_multislice.py"
+    h = subprocess.run([sys.executable, str(runner), "--help"], capture_output=True, text=True)
+    assert "--max-cpu-seconds" in h.stdout
+    bad = subprocess.run([sys.executable, str(runner), "--kind", "ridge", "--out",
+                          str(tmp_path / "t"), "--max-cpu-seconds", "0"], capture_output=True,
+                         text=True)
+    assert bad.returncode == 2 and "must be > 0" in bad.stderr
+    readme = (KIT / "README_ALLIANCE.md").read_text()
+    assert "should be closer to T1's" not in readme
+
+
+# ---- gpu-sanity (H2 run order step 0) ------------------------------------------------------------
+def _gpu_sanity():
+    sys.path.insert(0, str(KIT))
+    import gpu_sanity
+    return gpu_sanity
+
+
+def test_gpu_sanity_references_are_read_from_the_repository():
+    gs = _gpu_sanity()
+    s = gs.study_reference()
+    assert (s["err_rad"], s["amp_ratio"], s["delta_phi_rad"]) == (0.569, 0.951, -2.5341)
+    assert s["source"].startswith("docs/agent_reports/M2_multislice_engine.md:")
+    b = gs.buildup_reference()
+    stored = json.loads((REPO / "tools" / "hpc" / "supercell_sizing_measurements.json")
+                        .read_text())["runs"]["bu_100_r010"]["buildup"]
+    assert b["R_plateau_abs"] == stored["R_plateau_abs"]
+    assert b["R_plateau_arg"] == stored["R_plateau_arg"]
+    # fixed before any GPU run (H6, 2026-09-23)
+    assert (gs.TOL_STUDY_ERR_RAD, gs.TOL_STUDY_AMP, gs.TOL_BU_ARG_RAD, gs.TOL_BU_AMP_REL) == (
+        1e-2, 1e-2, 1e-2, 1e-2)
+
+
+def test_gpu_sanity_comparisons():
+    gs = _gpu_sanity()
+    ref = gs.study_reference()
+    pt = dict(name=gs.SANITY_POINT)
+    assert gs.compare_study(dict(point=pt, err_rad=0.5686, amp_ratio=0.9510), ref)["passed"]
+    assert not gs.compare_study(dict(point=pt, err_rad=0.585, amp_ratio=0.951), ref)["passed"]
+    assert not gs.compare_study(dict(point=pt, err_rad=0.569, amp_ratio=0.94), ref)["passed"]
+    assert not gs.compare_study(dict(point=pt, err_rad=float("nan"), amp_ratio=0.951),
+                                ref)["passed"]
+    assert not gs.compare_study(dict(point=dict(name="x"), err_rad=0.569, amp_ratio=0.951),
+                                ref)["passed"]
+    bref = gs.buildup_reference()
+    stored = json.loads((REPO / "tools" / "hpc" / "supercell_sizing_measurements.json")
+                        .read_text())["runs"]["bu_100_r010"]
+
+    def meas(backend="cupy", d_arg=0.0, amp_f=1.0, **cell):
+        info = dict(stored["info"], backend=backend, **cell)
+        b = dict(stored["buildup"], R_plateau_arg=stored["buildup"]["R_plateau_arg"] + d_arg,
+                 R_plateau_abs=stored["buildup"]["R_plateau_abs"] * amp_f)
+        return dict(runs=dict(bu_100_r010=dict(info=info, buildup=b, run_s=1.0)))
+
+    assert gs.compare_buildup(meas(d_arg=0.009, amp_f=1.009), bref, "cupy")["passed"]
+    assert not gs.compare_buildup(meas(d_arg=0.011), bref, "cupy")["passed"]
+    assert not gs.compare_buildup(meas(amp_f=0.989), bref, "cupy")["passed"]
+    assert not gs.compare_buildup(meas(backend="numpy"), bref, "cupy")["passed"]
+    assert not gs.compare_buildup(meas(nx=2000), bref, "cupy")["passed"]
+    assert gs.compare_buildup(meas(d_arg=2 * 3.141592653589793), bref, "cupy")["passed"]
+
+
+def test_gpu_sanity_job_plan(tmp_path):
+    kit = Kit(tmp_path, "fir")
+    a = ["--account", "def-testpi", "--time", "00:30:00"]
+    r = kit.submit("gpu-sanity", *a)
+    assert r.returncode == 2 and "gpu-check" in r.stderr              # gated like every GPU job
+    kit.gpu_pass()
+    r = kit.submit("gpu-sanity", *a)
+    assert r.returncode == 0, r.stderr
+    argv = sbatch_argv(r.stdout)
+    assert "--gpus=h100:1" in argv and "--cpus-per-task=12" in argv
+    ex = export_vars(argv)
+    assert ex["RH_SANITY_POINT"] == "tfix_bragg_abs0_L0" and ex["RH_KIT_THREADS"] == "8"
+    r = kit.submit("gpu-sanity", *a, "--study", "scripts/hpc/null_test_study/study.yaml")
+    assert r.returncode == 2 and "null-study job only" in r.stderr

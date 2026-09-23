@@ -1,0 +1,164 @@
+{
+"cases": {
+"eng_a100_dt_r010": {
+"spec": {
+"azimuth": "100",
+"pot": "dt",
+"r": 0.1
+},
+"variant": {
+"L_after_contact_A": 4500.0,
+"clean_A": 55.0,
+"y_periods": 1,
+"precision": "complex64",
+"max_pixel_A": 0.13,
+"window_start_A": 2500.0,
+"exit_excl_A": 750.0,
+"bin_A": 250.0,
+"radius_per_A": 0.1
+},
+"angles": {
+"16.2000": {
+"info": {
+"azimuth": "100",
+"pot": "dt",
+"r": 0.1,
+"theta_ext_rad": 0.0162,
+"L_after_contact_A": 4500.0,
+"clean_A": 55.0,
+"y_periods": 1,
+"precision": "complex64",
+"nx": 1764,
+"ny": 42,
+"dz_A": 1.357725,
+"dx_A": 0.1292517006802721,
+"dy_A": 0.12930714285714287,
+"L_z_A": 4624.41135,
+"H_A": 71.92201816282365,
+"vacuum_above_A": 148.0,
+"x_surface_A": 70.0,
+"z_contact_A": 123.44598993449529,
+"n_slices": 3406,
+"n_atoms": 88296,
+"mip_V": 13.914358551031688
+},
+"readout": {
+"r_top_re": -0.24564802749113393,
+"r_top_im": -0.10647680550520508,
+"e_mean_re": 0.24939730457321707,
+"e_mean_im": -0.09737170016227586,
+"P_L_phase_rad": -1.2270610979385537,
+"window_A": [
+2500.0,
+3750.9653600655047
+],
+"window_rows": 157,
+"bins": [
+{
+"start_A": 0.0,
+"re": -0.01970608401557179,
+"im": -0.01960529019643462
+},
+{
+"start_A": 250.0,
+"re": -0.05621854724043756,
+"im": -0.03172151247203211
+},
+{
+"start_A": 500.0,
+"re": -0.08851683250928884,
+"im": -0.034748131693608075
+},
+{
+"start_A": 750.0,
+"re": -0.12680617713432568,
+"im": -0.040701476377543434
+},
+{
+"start_A": 1000.0,
+"re": -0.16014985776759436,
+"im": -0.0517690019546201
+},
+{
+"start_A": 1250.0,
+"re": -0.18507128307630194,
+"im": -0.06517346489909438
+},
+{
+"start_A": 1500.0,
+"re": -0.20591776804206174,
+"im": -0.07674728300318306
+},
+{
+"start_A": 1750.0,
+"re": -0.21883796954285697,
+"im": -0.08548127297361942
+},
+{
+"start_A": 2000.0,
+"re": -0.2321844448957725,
+"im": -0.09546532151397046
+},
+{
+"start_A": 2250.0,
+"re": -0.2363467791017711,
+"im": -0.09884741375758155
+},
+{
+"start_A": 2500.0,
+"re": -0.24352331470904326,
+"im": -0.10433122018443425
+},
+{
+"start_A": 2750.0,
+"re": -0.24602927543383024,
+"im": -0.10651553347525353
+},
+{
+"start_A": 3000.0,
+"re": -0.24497744932710921,
+"im": -0.10586852265746578
+},
+{
+"start_A": 3250.0,
+"re": -0.25240636184839627,
+"im": -0.10988529398637
+},
+{
+"start_A": 3500.0,
+"re": -0.24142758124388886,
+"im": -0.10580391410727213
+},
+{
+"start_A": 3750.0,
+"re": -0.26081368013729433,
+"im": -0.11065197259451875
+},
+{
+"start_A": 4000.0,
+"re": -0.24215672314460096,
+"im": -0.0968514340796841
+}
+],
+"max_bin_deviation": 0.007569205837522614,
+"f_c_per_A": 0.6459217479538987,
+"wavelength_A": 0.02507934045046928
+},
+"build_s": 2.6560492515563965,
+"run_s": 108.43144845962524,
+"peak_rss_MB": 317.0390625,
+"loadavg": [
+7.02734375,
+4.873046875,
+4.35693359375
+],
+"engine_commit": "a84b4b33da1205b8f025656770ed0197584b89f5",
+"engine_dirty": false,
+"validation_status": "UNVALIDATED: rung 1 (refraction-only analytic limit) and rung 3 (continuum null tests) of the docs/05 4.4 ladder pass in tests/forward; rung 2 (Bragg-case two-beam phase sweep), the abTEM cross-check (transmission and reflection-like configurations) and the flat-surface rocking curve against a dynamical solver were NOT RUN"
+}
+}
+}
+},
+"updated_utc": "2026-09-23T22:47:50Z",
+"label": "MEASURED_HERE with the UNVALIDATED engine; TEST_ONLY absorption, azimuth, angle stand-ins; static lattice"
+}

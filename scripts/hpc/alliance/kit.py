@@ -3,10 +3,16 @@
 written by setup_alliance.sh, validates a submission and builds the sbatch command. Called by
 submit.sh and job.sbatch; not meant to be run by hand (but `plan` is harmless: it only prints).
 
-    kit.py plan --cluster C --job J --account A --time T --repo R --env-dir E --argv-out F [...]
+    kit.py plan --cluster C --job J --account A --time T --repo R --env-dir E --run-root D
+                --record F --argv-out F [...]
     kit.py study-point --study S --index I          # name of point I of a study file
     kit.py modules-diff --recorded F --current G    # compare two `module -t list` outputs
     kit.py job-record --out F [--extra KEY=VALUE ...]
+    kit.py copy-study --src S --dst D --sha256 H    # submission: the study copy the job reads (F6)
+    kit.py verify-study --study S --sha256 H --copy-to D   # job start: hash check, copy (F6)
+    kit.py env-check --env-dir E --env-id I         # job start: still the submitted environment (F9)
+    kit.py gate-check --run-root D --cluster C --env-id I --repo R   # job start: gpu-check PASS (F9)
+    kit.py engine-hash --repo R                     # SHA-256 of the engine code the PASS is tied to
 
 Rules (docs/05, docs/agent_reports/H1): no default replaces a required input (account and time
 limit are required; memory is required for CPU jobs); every cluster value comes from clusters.yaml
@@ -18,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import hashlib
 import json
 import os
 import re
@@ -31,28 +38,50 @@ JOB_SCRIPT = KIT_DIR / "job.sbatch"
 NOT_FOUND = "NOT_FOUND"
 
 DEFAULT_STUDY = "scripts/hpc/null_test_study/study.yaml"
+# gpu-sanity (H2 report, "Recommended run order" step 0; H2 is under review): the first point of the
+# null study on the GPU against its stored CPU value; the point name is fixed by that step
+SANITY_POINT = "tfix_bragg_abs0_L0"
 # Job definitions of this repository. "config" is part of the job's definition (which run it is),
-# not a stand-in for a PROJECT_INPUT; the `pipeline` job takes any configuration (--config).
+# not a stand-in for a PROJECT_INPUT; the `pipeline` and `dry-run` jobs take any configuration.
 JOBS = {
     "gpu-check": dict(kind="gpu_check"),
+    "gpu-sanity": dict(kind="gpu_sanity"),
     "smoke": dict(kind="pipeline", config="configs/demo_smoke_si001.yaml"),
     "demo-gpu": dict(kind="pipeline", config="configs/demo_hpc_si001.yaml", backend="cupy"),
     "pipeline": dict(kind="pipeline", config=None),
+    "dry-run": dict(kind="dry_run"),
     "torus": dict(kind="torus"),
     "null-study": dict(kind="null_study"),
 }
 TORUS_KINDS = ("trench", "ridge", "flat")
 # scripts/torus/run_torus_multislice.py fixes CASE["threads"] = 4 and backend numpy (T1 runner)
 TORUS_THREADS = 4
+# F11: the torus runner refuses a kind whose calibrated CPU estimate exceeds its limit (600 s by
+# default, set for the build machine). The kit passes a limit derived from the requested walltime:
+# this fraction of the walltime, shared by the kinds that run one after the other in the job.
+TORUS_WALLTIME_FRACTION = 0.8
 
-# measured memory hints printed when --mem is missing for a CPU job (sources in the message)
+# Hints printed when --mem is missing for a CPU job. They say what each number counts and where it
+# was measured; none of them is used as a value (--mem stays required).
 CPU_MEM_HINTS = {
     "smoke": ("the geometric smoke demo measured 3.4 s wall and a peak RSS of 132 MB here "
               "(H3, 4 CPUs, 2026-09-23); 2G is ample"),
     "torus": ("T1 report measured a peak RSS of 1.33-1.35 GB per kind (4 CPUs); 4G is ample; "
               "the runner refuses cases above 10 GB of engine arrays (CASE limits)"),
-    "pipeline": "take the memory from `python -m reflection_holo.pipeline dry-run --config ...`",
-    "null-study": "take the memory from run_study.py --estimate (engine arrays) plus the structure",
+    "pipeline": ("the 'memory per realisation' printed by `pipeline dry-run` counts only the engine's "
+                 "arrays of one realisation (wave, propagator, potential slices); it is NOT the memory "
+                 "of the job. The host also holds the structure and the reflection cell (the dry run of "
+                 "configs/demo_hpc_si001.yaml, 1.44 M atoms, printed ~127 MiB per realisation and "
+                 "peaked at 3.6 GB RSS: H4 audit, command 18) and, while realising, about 192-240 B "
+                 "per atom (H2 §8 and §12, from reading the code, not measured; H2 is under review). "
+                 "Measure the peak with the `dry-run` job (it prints the peak RSS of the structure "
+                 "build) and pass --mem explicitly"),
+    "dry-run": ("the dry run builds the whole structure and reflection cell: peak RSS 3.6 GB for "
+                "configs/demo_hpc_si001.yaml (1.44 M atoms; H4 audit, command 18); larger cells "
+                "need more (not measured here)"),
+    "null-study": ("run_study.py --estimate prints the engine's arrays only (at most 340 MB for "
+                   "study.yaml); the host also holds the structures of each point (up to 2.97 M atoms "
+                   "in study.yaml; host memory not measured here)"),
 }
 
 
@@ -65,6 +94,11 @@ class Refused(Exception):
 def _load_yaml(path: Path):
     from reflection_holo.io.config import load_yaml_unique      # duplicate keys refused
     return load_yaml_unique(Path(path).read_bytes())
+
+
+def _load_yaml_bytes(data: bytes):
+    from reflection_holo.io.config import load_yaml_unique
+    return load_yaml_unique(data)
 
 
 def load_clusters(path: Path = CLUSTERS_YAML) -> dict:
@@ -86,32 +120,65 @@ def loc(entry) -> str:
 
 
 # ------------------------------------------------------------------------------------------------
-# time limit (Running_jobs § Use sbatch to submit jobs: accepted formats)
+# time limit (Running_jobs § Use sbatch to submit jobs: "The acceptable time formats include
+# "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and
+# "days-hours:minutes:seconds"", Running_jobs.wiki:47)
 # ------------------------------------------------------------------------------------------------
 _TIME_FORMS = [
-    (re.compile(r"^(\d+)$"), lambda m: int(m[1])),                                  # minutes
-    (re.compile(r"^(\d+):(\d{1,2})$"), lambda m: int(m[1]) + int(m[2]) / 60),      # min:sec
-    (re.compile(r"^(\d+):(\d{1,2}):(\d{1,2})$"),
-     lambda m: 60 * int(m[1]) + int(m[2]) + int(m[3]) / 60),                       # h:m:s
-    (re.compile(r"^(\d+)-(\d+)$"), lambda m: 1440 * int(m[1]) + 60 * int(m[2])),   # d-h
-    (re.compile(r"^(\d+)-(\d+):(\d{1,2})$"),
-     lambda m: 1440 * int(m[1]) + 60 * int(m[2]) + int(m[3])),                     # d-h:m
-    (re.compile(r"^(\d+)-(\d+):(\d{1,2}):(\d{1,2})$"),
-     lambda m: 1440 * int(m[1]) + 60 * int(m[2]) + int(m[3]) + int(m[4]) / 60),    # d-h:m:s
+    ("minutes", re.compile(r"^(\d+)$"), lambda m: int(m[1])),
+    ("minutes:seconds", re.compile(r"^(\d+):(\d{1,2})$"), lambda m: int(m[1]) + int(m[2]) / 60),
+    ("hours:minutes:seconds", re.compile(r"^(\d+):(\d{1,2}):(\d{1,2})$"),
+     lambda m: 60 * int(m[1]) + int(m[2]) + int(m[3]) / 60),
+    ("days-hours", re.compile(r"^(\d+)-(\d+)$"), lambda m: 1440 * int(m[1]) + 60 * int(m[2])),
+    ("days-hours:minutes", re.compile(r"^(\d+)-(\d+):(\d{1,2})$"),
+     lambda m: 1440 * int(m[1]) + 60 * int(m[2]) + int(m[3])),
+    ("days-hours:minutes:seconds", re.compile(r"^(\d+)-(\d+):(\d{1,2}):(\d{1,2})$"),
+     lambda m: 1440 * int(m[1]) + 60 * int(m[2]) + int(m[3]) + int(m[4]) / 60),
 ]
+# F7: the two forms without hours are refused by the kit: "01:00" is ONE MINUTE to Slurm
+# (minutes:seconds) and "2" is two minutes; both are easily meant as hours. The others name the
+# hours explicitly (a day prefix or three fields).
+AMBIGUOUS_TIME_FORMS = ("minutes", "minutes:seconds")
 
 
-def time_minutes(t: str) -> float:
-    for rx, f in _TIME_FORMS:
-        m = rx.match(t.strip())
+def parse_time(t: str):
+    """(form, minutes) of a Slurm time limit; every form of the wiki is recognised."""
+    s = (t or "").strip()
+    for name, rx, f in _TIME_FORMS:
+        m = rx.match(s)
         if m:
             v = float(f(m))
             if v <= 0:
                 raise Refused(f"time limit {t!r} is zero")
-            return v
+            return name, v
     raise Refused(f"time limit {t!r} is not a Slurm time (minutes, minutes:seconds, "
                   f"hours:minutes:seconds, days-hours, days-hours:minutes, "
                   f"days-hours:minutes:seconds; Running_jobs § Use sbatch to submit jobs)")
+
+
+def time_minutes(t: str) -> float:
+    return parse_time(t)[1]
+
+
+def hms(minutes: float) -> str:
+    s = int(round(minutes * 60))
+    return f"{s // 3600:02d}:{s % 3600 // 60:02d}:{s % 60:02d}"
+
+
+def checked_time(t: str):
+    """The kit's time policy: a Slurm form that names the hours (F7). Returns (form, minutes)."""
+    form, minutes = parse_time(t)
+    if form in AMBIGUOUS_TIME_FORMS:
+        raise Refused(f"--time {t!r} is ambiguous and refused: Slurm reads it as {form} "
+                      f"(= {minutes:g} min, i.e. {hms(minutes)}), which is easily meant as hours. "
+                      f"Write HH:MM:SS or D-HH:MM:SS, e.g. {hms(minutes)} for {minutes:g} min or "
+                      f"01:00:00 for one hour")
+    n_sub_hour = {"hours:minutes:seconds": 2, "days-hours:minutes": 1,
+                  "days-hours:minutes:seconds": 2}.get(form, 0)
+    fields = re.split(r"[-:]", t.strip())
+    if n_sub_hour and any(int(x) >= 60 for x in fields[-n_sub_hour:]):
+        raise Refused(f"--time {t!r}: minutes and seconds must be below 60 ({form})")
+    return form, minutes
 
 
 _MEM_RX = re.compile(r"^\d+[KMGT]?$")
@@ -123,6 +190,79 @@ def _safe(name: str, v: str) -> str:
         raise Refused(f"{name} {v!r} contains a character the kit cannot pass through "
                       f"sbatch --export (comma, space or quote); use another path")
     return v
+
+
+# ------------------------------------------------------------------------------------------------
+# engine code identity (F9): the gpu-check PASS is valid only for the engine code it checked
+# ------------------------------------------------------------------------------------------------
+ENGINE_CODE_DIRS = ("reflection_holo/forward/multislice",)
+ENGINE_BACKEND_FILE = "reflection_holo/forward/multislice/backend.py"
+PASS_SCHEMA = "reflholo_gpu_check_pass/2"
+
+
+def engine_code_sha256(repo) -> dict:
+    """SHA-256 over every *.py file (relative path, size, content; sorted) of the multislice engine
+    package, which contains the array backend (backend.py). A PASS carries this hash; a PASS of
+    other engine code does not unlock GPU jobs."""
+    repo = Path(repo).resolve()
+    files = []
+    for d in ENGINE_CODE_DIRS:
+        base = repo / d
+        if not base.is_dir():
+            raise Refused(f"engine code directory {base} not found")
+        files += sorted(p for p in base.rglob("*.py") if "__pycache__" not in p.parts)
+    rels = [p.relative_to(repo).as_posix() for p in files]
+    if ENGINE_BACKEND_FILE not in rels:
+        raise Refused(f"{ENGINE_BACKEND_FILE} not found under {repo}")
+    h = hashlib.sha256()
+    for rel, p in zip(rels, files):
+        data = p.read_bytes()
+        h.update(f"{rel}\0{len(data)}\0".encode())
+        h.update(data)
+    return dict(sha256=h.hexdigest(), files=rels, dirs=list(ENGINE_CODE_DIRS))
+
+
+def pass_problems(rec, *, cluster, env_id, engine_sha) -> list[str]:
+    if not isinstance(rec, dict):
+        return ["not a JSON object"]
+    why = []
+    if rec.get("schema") != PASS_SCHEMA:
+        why.append(f"schema {rec.get('schema')!r} is not {PASS_SCHEMA} (not written by this "
+                   f"gpu_check.py)")
+    if rec.get("passed") is not True:
+        why.append("not a pass")
+    if rec.get("cluster") != cluster:
+        why.append(f"cluster {rec.get('cluster')!r} != {cluster!r}")
+    if rec.get("env_id") != env_id:
+        why.append(f"environment {rec.get('env_id')!r} != {env_id!r}")
+    if rec.get("engine_code_sha256") != engine_sha:
+        why.append(f"engine code {str(rec.get('engine_code_sha256'))[:12]} != current "
+                   f"{engine_sha[:12]}")
+    return why
+
+
+def find_gate_pass(run_root, cluster, env_id, engine_sha):
+    """(valid, rejected): PASS files under <run root>/gpu_check whose CONTENT matches the cluster,
+    the environment id and the engine code hash (the file name is not trusted)."""
+    ok, rejected = [], []
+    for p in sorted((Path(run_root) / "gpu_check").glob("PASS_*.json")):
+        try:
+            rec = json.loads(p.read_text())
+        except (OSError, ValueError) as exc:
+            rejected.append((p, [f"unreadable: {exc}"]))
+            continue
+        why = pass_problems(rec, cluster=cluster, env_id=env_id, engine_sha=engine_sha)
+        (rejected if why else ok).append((p, why))
+    return ok, rejected
+
+
+def _gate_refusal(run_root, cluster, env_id, engine_sha, rejected) -> str:
+    msg = (f"no gpu-check PASS record for cluster {cluster}, environment {env_id} and engine code "
+           f"{engine_sha[:12]} under {run_root}/gpu_check")
+    if rejected:
+        msg += "; PASS files that do not qualify: " + "; ".join(
+            f"{p.name}: {', '.join(w)}" for p, w in rejected[-5:])
+    return msg
 
 
 # ------------------------------------------------------------------------------------------------
@@ -142,18 +282,22 @@ def pipeline_backend_threads(repo: Path, config: str, variant: str | None):
     return eng, backend, int(cfg.value("runtime", "threads"))
 
 
-def study_points(study: Path):
-    d = _load_yaml(study)
+def study_from_bytes(data: bytes, label):
+    d = _load_yaml_bytes(data)
     rt = d.get("runtime") or {}
     for k in ("backend", "threads"):
         if k not in rt:
-            raise Refused(f"{study}: runtime.{k} is required")
+            raise Refused(f"{label}: runtime.{k} is required")
     names = [p.get("name") for p in d.get("points") or []]
     if not names or any(not n for n in names):
-        raise Refused(f"{study}: every point needs a name (and there must be at least one)")
+        raise Refused(f"{label}: every point needs a name (and there must be at least one)")
     if len(set(names)) != len(names):
-        raise Refused(f"{study}: duplicate point names")
+        raise Refused(f"{label}: duplicate point names")
     return rt["backend"], int(rt["threads"]), names
+
+
+def study_points(study: Path):
+    return study_from_bytes(Path(study).read_bytes(), study)
 
 
 # ------------------------------------------------------------------------------------------------
@@ -185,6 +329,7 @@ def make_plan(a) -> dict:
         raise Refused(f"unknown job {a.job!r}; jobs: {sorted(JOBS)}")
     job = JOBS[a.job]
     warnings: list[str] = []
+    notes: list[str] = []
     repo = Path(a.repo).resolve()
 
     # --- environment record written by setup_alliance.sh -------------------------------------
@@ -211,10 +356,11 @@ def make_plan(a) -> dict:
                       f"this really is your RAP")
     _safe("account", a.account)
 
-    # --- time limit (required, no default) --------------------------------------------------
+    # --- time limit (required, no default; a form that names the hours: F7) ------------------
     if not a.time:
         raise Refused("--time is required (no default; Running_jobs § Use sbatch to submit jobs)")
-    minutes = time_minutes(a.time)
+    _form, minutes = checked_time(a.time)
+    notes.append(f"time limit {a.time} = {hms(minutes)} ({minutes:g} min)")
     tmax = val(prof["walltime_max_hours"])
     if minutes > 60 * tmax:
         raise Refused(f"time limit {a.time} exceeds the {a.cluster} maximum of {tmax} h "
@@ -223,6 +369,9 @@ def make_plan(a) -> dict:
     if tmin != NOT_FOUND and minutes < tmin:
         raise Refused(f"time limit {a.time} is below the {a.cluster} minimum of {tmin} min "
                       f"({loc(prof['walltime_min_minutes_test'])})")
+    if tmin == NOT_FOUND and minutes < 5:
+        _warn(warnings, f"time limit {a.time} is {minutes:g} min; {a.cluster} states no minimum "
+                        f"for test jobs (NOT_FOUND), the other clusters ask for at least 5 min")
     pmin = val(prof["walltime_min_minutes_production"])
     if pmin != NOT_FOUND and minutes < pmin:
         _warn(warnings, f"time limit {a.time} < {pmin} min: acceptable for a test job, but "
@@ -236,23 +385,51 @@ def make_plan(a) -> dict:
     config = variant = None
     array = None
     n_tasks = 1
-    if a.config and a.job != "pipeline":
-        raise Refused("--config is accepted by the `pipeline` job only (smoke and demo-gpu run "
-                      "their fixed demo configurations; use `pipeline --config ...` otherwise)")
-    if a.variant and job["kind"] != "pipeline":
-        raise Refused("--variant applies to the pipeline jobs (smoke, demo-gpu, pipeline) only")
+    study_rec = None
+    if a.config and job["kind"] not in ("pipeline", "dry_run") or (
+            a.config and a.job in ("smoke", "demo-gpu")):
+        raise Refused("--config is accepted by the `pipeline` and `dry-run` jobs only (smoke and "
+                      "demo-gpu run their fixed demo configurations; use `pipeline --config ...` "
+                      "otherwise)")
+    if a.variant and job["kind"] not in ("pipeline", "dry_run"):
+        raise Refused("--variant applies to the pipeline jobs (smoke, demo-gpu, pipeline) and "
+                      "dry-run only")
     for opt, kinds in (("study", ("null_study",)), ("only", ("null_study",)),
-                       ("serial", ("null_study",)), ("array_throttle", ("null_study",)),
-                       ("kinds", ("torus",))):
-        if getattr(a, opt) and job["kind"] not in kinds:
+                       ("serial", ("null_study",)), ("array", ("null_study",)),
+                       ("array_throttle", ("null_study",)), ("kinds", ("torus",))):
+        v = getattr(a, opt)
+        if (v is not None and v is not False) and job["kind"] not in kinds:
             raise Refused(f"--{opt.replace('_', '-')} applies to the {kinds[0].replace('_', '-')} "
                           f"job only")
 
-    if job["kind"] == "pipeline":
-        config = a.config or job["config"]
+    def study_setup(study, fixed_backend=None):
+        spath = Path(study) if os.path.isabs(study) else repo / study
+        if not spath.is_file():
+            raise Refused(f"study file {study} not found")
+        data = spath.read_bytes()                        # read once: parsed, hashed and copied
+        sha = hashlib.sha256(data).hexdigest()
+        backend, threads, names = study_from_bytes(data, study)
+        if backend not in ("cupy", "numpy"):
+            raise Refused(f"{study}: runtime.backend must be cupy or numpy, got {backend!r}")
+        if fixed_backend and backend != fixed_backend:
+            raise Refused(f"{a.job} needs a study with runtime.backend {fixed_backend}; "
+                          f"{study} has {backend}")
+        if not a.record or not a.record.endswith(".json"):
+            raise Refused("internal: plan needs --record <submission record>.json (submit.sh "
+                          "passes it)")
+        copy = a.record[:-len(".json")] + ".study.yaml"
+        rec = dict(source=str(spath), copy=copy, sha256=sha)
+        # F6: every task reads this copy (written by submit.sh after planning, hash-checked by the
+        # job), never the repository file, which a `git pull` may change while tasks wait
+        export.update(RH_STUDY=_safe("study copy", copy), RH_STUDY_SHA256=sha,
+                      RH_STUDY_SOURCE=_safe("study", str(spath)))
+        return backend, threads, names, rec
+
+    if job["kind"] in ("pipeline", "dry_run"):
+        config = a.config or job.get("config")
         if not config:
-            raise Refused("the `pipeline` job needs --config PATH (any pipeline configuration, "
-                          "e.g. a production configuration from agent H2)")
+            raise Refused(f"the `{a.job}` job needs --config PATH (any pipeline configuration, "
+                          f"e.g. a production configuration from agent H2)")
         cpath = Path(config) if os.path.isabs(config) else repo / config
         if not cpath.is_file():
             raise Refused(f"configuration {config} not found (relative paths are relative to "
@@ -262,7 +439,16 @@ def make_plan(a) -> dict:
         if job.get("backend") and backend != job["backend"]:
             raise Refused(f"{a.job} is the {job['backend']} demo; {config} variant "
                           f"{variant or 'none'} uses backend {backend}: use the `pipeline` job")
-        needs_gpu = backend == "cupy"
+        if job["kind"] == "pipeline":
+            needs_gpu = backend == "cupy"
+        else:
+            # a sizing job on a CPU node: the dry run builds the structure and the cell and prints
+            # the estimates; for a cupy configuration it then exits 4 (no GPU on a CPU node)
+            needs_gpu = False
+            if backend == "cupy":
+                notes.append("dry-run of a cupy configuration on a CPU node: the estimates and the "
+                             "peak RSS are printed, then the dry run exits 4 (no GPU here); that "
+                             "status is expected")
         export.update(RH_CONFIG=_safe("config", config), RH_VARIANT=variant,
                       RH_PIPE_ENGINE=eng, RH_PIPE_BACKEND=backend)
     elif job["kind"] == "torus":
@@ -271,39 +457,49 @@ def make_plan(a) -> dict:
         if bad or not kinds:
             raise Refused(f"--kinds must be a comma list of {TORUS_KINDS}, got {a.kinds!r}")
         declared_threads = TORUS_THREADS
-        export.update(RH_TORUS_KINDS=":".join(kinds))
+        # F11: the runner's CPU guard, derived from the walltime (recorded by the runner)
+        max_cpu = int(TORUS_WALLTIME_FRACTION * minutes * 60 / len(kinds))
+        notes.append(f"torus: the runner accepts a calibrated CPU estimate up to {max_cpu} s per "
+                     f"kind ({TORUS_WALLTIME_FRACTION:g} x {hms(minutes)} / {len(kinds)} kinds; "
+                     f"its own default for local use is 600 s)")
+        export.update(RH_TORUS_KINDS=":".join(kinds), RH_TORUS_MAX_CPU_S=str(max_cpu))
     elif job["kind"] == "null_study":
         study = a.study or DEFAULT_STUDY
-        spath = Path(study) if os.path.isabs(study) else repo / study
-        if not spath.is_file():
-            raise Refused(f"study file {study} not found")
-        backend, declared_threads, names = study_points(spath)
-        if backend not in ("cupy", "numpy"):
-            raise Refused(f"{study}: runtime.backend must be cupy or numpy, got {backend!r}")
+        backend, declared_threads, names, study_rec = study_setup(study)
         needs_gpu = backend == "cupy"
-        if a.only and a.serial:
-            raise Refused("--only and --serial are exclusive")
-        if a.array_throttle is not None and (a.only or a.serial):
-            raise Refused("--array-throttle applies to the array mode only (not --only/--serial)")
+        if a.array_throttle is not None:
+            a.array = True                               # an explicit request of the array mode
+        if sum(bool(x) for x in (a.only, a.serial, a.array)) > 1:
+            if a.array_throttle is not None and (a.only or a.serial):
+                raise Refused("--array-throttle applies to the array mode only (not --only/--serial)")
+            raise Refused("--only, --serial and --array are exclusive")
         if a.only:
             if a.only not in names:
                 raise Refused(f"--only {a.only!r} is not a point of {study}: {names}")
             mode = "only"
-        elif a.serial:
-            mode = "serial"
-        else:
+        elif a.array:
             mode = "array"
             array = f"0-{len(names) - 1}"
             n_tasks = len(names)
-            if a.array_throttle:
+            if a.array_throttle is not None:
                 if a.array_throttle < 1:
                     raise Refused("--array-throttle must be >= 1")
                 array += f"%{a.array_throttle}"
-            _warn(warnings, "each array task is one study point; the wiki advises against arrays "
-                            "of tasks much shorter than an hour (Job_arrays § A simple example): "
-                            "--serial runs every point in one job")
-        export.update(RH_STUDY=_safe("study", study), RH_STUDY_MODE=mode,
-                      RH_STUDY_ONLY=a.only or "", RH_STUDY_N=str(len(names)))
+            _warn(warnings, "array mode: each array task is one study point. The wiki: \"You should "
+                            "not use a job array to submit tasks with very short run times, e.g. "
+                            "much less than an hour. Tasks with run times of only a few minutes "
+                            "should be grouped into longer jobs\" (Job_arrays § A simple example); "
+                            "the default --serial runs every point in one job")
+        else:
+            mode = "serial"                              # F4: the default (Job_arrays § A simple example)
+        export.update(RH_STUDY_MODE=mode, RH_STUDY_ONLY=a.only or "", RH_STUDY_N=str(len(names)))
+    elif job["kind"] == "gpu_sanity":
+        backend, declared_threads, names, study_rec = study_setup(DEFAULT_STUDY,
+                                                                  fixed_backend="cupy")
+        if SANITY_POINT not in names:
+            raise Refused(f"{DEFAULT_STUDY} has no point {SANITY_POINT}")
+        needs_gpu = True
+        export.update(RH_SANITY_POINT=SANITY_POINT)
     else:                                                              # gpu_check
         needs_gpu = True
 
@@ -319,10 +515,16 @@ def make_plan(a) -> dict:
     if needs_gpu:
         inst_name = a.gpu_instance or "full"
         insts = gpu["instances"]
-        if inst_name not in insts:
+        if inst_name == "unpinned" and "unpinned" in gpu:
+            # F5: the Trillium site pages request a GPU without a model; offered only on request
+            inst = dict(insts["full"], request=gpu["unpinned"]["request"])
+            _warn(warnings, f"{val(gpu['unpinned']['warning'])} ({loc(gpu['unpinned']['warning'])})")
+        elif inst_name not in insts:
+            extra = ["unpinned"] if "unpinned" in gpu else []
             raise Refused(f"GPU instance {inst_name!r} not offered on {a.cluster}: "
-                          f"{sorted(insts)} ({loc(gpu['mig_availability'])})")
-        inst = insts[inst_name]
+                          f"{sorted(insts) + extra} ({loc(gpu['mig_availability'])})")
+        else:
+            inst = insts[inst_name]
         if a.need_gpu_mem_gb is not None and val(inst["gpu_mem_gb"]) < a.need_gpu_mem_gb:
             raise Refused(f"{a.cluster} {inst_name} has {val(inst['gpu_mem_gb'])} GB of GPU memory "
                           f"< the {a.need_gpu_mem_gb} GB you need ({loc(inst['gpu_mem_gb'])})")
@@ -381,22 +583,28 @@ def make_plan(a) -> dict:
                       f"pass --cpus {declared_threads} or more")
     threads = declared_threads if declared_threads is not None else cpus
 
-    # --- GPU gate: the GPU path has never run; gpu-check must pass first -----------------------
+    # --- GPU gate: gpu-check must have passed for this cluster, environment and engine code (F9) --
     run_root = Path(a.run_root)
+    engine = engine_code_sha256(repo)
     gate = None
+    gate_mode = "none"
     if needs_gpu and a.job != "gpu-check":
-        passes = sorted((run_root / "gpu_check").glob(f"PASS_{a.cluster}_{env['env_id']}_*.json"))
-        if passes:
-            gate = dict(status="PASS", record=str(passes[-1]))
+        ok, rejected = find_gate_pass(run_root, a.cluster, env["env_id"], engine["sha256"])
+        if ok:
+            gate = dict(status="PASS", record=str(ok[-1][0]), engine_code_sha256=engine["sha256"])
+            gate_mode = "pass"
         elif a.skip_gpu_check_gate:
-            gate = dict(status="SKIPPED by --skip-gpu-check-gate")
-            _warn(warnings, "no gpu-check PASS record for this environment: the GPU path is "
-                            "UNVERIFIED on this cluster (--skip-gpu-check-gate)")
+            gate = dict(status="SKIPPED by --skip-gpu-check-gate",
+                        engine_code_sha256=engine["sha256"])
+            gate_mode = "skipped"
+            _warn(warnings, "no valid gpu-check PASS record for this cluster, environment and "
+                            "engine code: the GPU path is UNVERIFIED (--skip-gpu-check-gate)")
         else:
-            raise Refused(f"no gpu-check PASS record for this environment "
-                          f"({run_root}/gpu_check/PASS_{a.cluster}_{env['env_id']}_*.json): run "
-                          f"`submit.sh {a.cluster} gpu-check ...` first and check its log; the cupy "
-                          f"path has never been executed. Override: --skip-gpu-check-gate")
+            raise Refused(_gate_refusal(run_root, a.cluster, env["env_id"], engine["sha256"],
+                                        rejected)
+                          + f": run `submit.sh {a.cluster} gpu-check ...` first and check its "
+                            f"log (the job re-checks this record when it starts). Override: "
+                            f"--skip-gpu-check-gate")
 
     # --- where things go ------------------------------------------------------------------------
     if a.cluster == "trillium":
@@ -415,18 +623,20 @@ def make_plan(a) -> dict:
                   RH_RUN_ROOT=_safe("run root", str(run_root)), RH_KIT_THREADS=str(threads),
                   RH_KIT_CPUS=str(cpus), RH_TIME_LIMIT=a.time, RH_ACCOUNT=a.account,
                   RH_ENV_ID=env["env_id"], RH_SUBMIT_COMMIT=a.commit or "",
+                  RH_GPU_GATE=gate_mode, RH_ENGINE_SHA256=engine["sha256"],
                   RH_SUBMISSION_RECORD=_safe("record", a.record or ""))
     for k, v in export.items():
         _safe(k, v) if v else None
     argv.append("--export=ALL," + ",".join(f"{k}={v}" for k, v in export.items()))
     argv.append(str(JOB_SCRIPT))
-    return dict(schema="reflholo_alliance_submission/1",
+    return dict(schema="reflholo_alliance_submission/2",
                 created_utc=_dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
-                cluster=a.cluster, job=a.job, argv=argv, warnings=warnings, gpu=gpu_rec,
-                cpus_per_task=cpus, threads=threads, mem=mem, time=a.time,
+                cluster=a.cluster, job=a.job, argv=argv, warnings=warnings, notes=notes,
+                gpu=gpu_rec, cpus_per_task=cpus, threads=threads, mem=mem, time=a.time,
                 time_minutes=minutes, array=array, gate=gate, config=config, variant=variant,
+                study=study_rec, engine_code=engine,
                 run_root=str(run_root), log_dir=str(logdir), env=env, repo=str(repo),
-                commit=a.commit, profile_locators=dict(
+                commit=a.commit, record=a.record, profile_locators=dict(
                     walltime_max=loc(prof["walltime_max_hours"]),
                     job_limit=loc(prof["job_limit_queued_running"]),
                     gpu=gpu_rec["locator"] if gpu_rec else None))
@@ -438,6 +648,8 @@ def cmd_plan(a) -> int:
     except Refused as exc:
         print(f"REFUSED: {exc}", file=sys.stderr)
         return exc.status
+    for n in plan["notes"]:
+        print(f"NOTE: {n}", file=sys.stderr)
     for w in plan["warnings"]:
         print(f"WARNING: {w}", file=sys.stderr)
     with open(a.argv_out, "wb") as fh:
@@ -485,9 +697,9 @@ def cmd_job_record(a) -> int:
     keys = ("SLURM_JOB_ID", "SLURM_ARRAY_JOB_ID", "SLURM_ARRAY_TASK_ID", "SLURM_CLUSTER_NAME",
             "SLURM_JOB_NODELIST", "SLURM_CPUS_PER_TASK", "SLURM_CPUS_ON_NODE", "SLURM_MEM_PER_NODE",
             "SLURM_JOB_ACCOUNT", "SLURM_JOB_PARTITION", "SLURM_GPUS", "SLURM_GPUS_ON_NODE",
-            "CUDA_VISIBLE_DEVICES", "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
-            "NUMEXPR_NUM_THREADS", "CUPY_CACHE_DIR", "NUMBA_CACHE_DIR", "MPLCONFIGDIR",
-            "PYTHONNOUSERSITE", "VIRTUAL_ENV")
+            "SLURM_RESTART_COUNT", "CUDA_VISIBLE_DEVICES", "OMP_NUM_THREADS",
+            "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS", "CUPY_CACHE_DIR",
+            "NUMBA_CACHE_DIR", "MPLCONFIGDIR", "PYTHONNOUSERSITE", "VIRTUAL_ENV")
     rec = dict(schema="reflholo_alliance_job/1",
                written_utc=_dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
                host=socket.gethostname(), python=sys.version, executable=sys.executable,
@@ -497,6 +709,95 @@ def cmd_job_record(a) -> int:
         k, _, v = kv.partition("=")
         rec.setdefault("extra", {})[k] = v
     Path(a.out).write_text(json.dumps(rec, indent=1))
+    return 0
+
+
+def cmd_copy_study(a) -> int:
+    """Submission (F6): write the copy of the study file that every task will read."""
+    data = Path(a.src).read_bytes()
+    sha = hashlib.sha256(data).hexdigest()
+    if sha != a.sha256:
+        print(f"REFUSED: {a.src} changed after the plan was made (SHA-256 {sha}, planned "
+              f"{a.sha256}); submit again", file=sys.stderr)
+        return 2
+    try:
+        with open(a.dst, "xb") as fh:                    # never overwritten
+            fh.write(data)
+    except FileExistsError:
+        print(f"REFUSED: {a.dst} exists; submission copies are never overwritten", file=sys.stderr)
+        return 2
+    print(f"study copy {a.dst} (SHA-256 {sha}); the job reads this copy")
+    return 0
+
+
+def cmd_verify_study(a) -> int:
+    """Job start (F6): the study copy must still have the submitted hash; the job copies it into its
+    own directory and reads only that copy."""
+    try:
+        data = Path(a.study).read_bytes()
+    except OSError as exc:
+        print(f"REFUSED: study copy {a.study} unreadable: {exc}; nothing was computed",
+              file=sys.stderr)
+        return 2
+    sha = hashlib.sha256(data).hexdigest()
+    if sha != a.sha256:
+        print(f"REFUSED: study copy {a.study} has SHA-256 {sha}, the submission recorded "
+              f"{a.sha256}: it was modified after submission; nothing was computed",
+              file=sys.stderr)
+        return 2
+    if a.copy_to:
+        with open(a.copy_to, "xb") as fh:
+            fh.write(data)
+    print(f"study: {a.study} SHA-256 {sha} as submitted"
+          + (f"; job copy {a.copy_to}" if a.copy_to else ""))
+    return 0
+
+
+def cmd_env_check(a) -> int:
+    """Job start (F9): the environment must be the one the job was submitted against."""
+    envf = Path(a.env_dir) / "env.json"
+    try:
+        env = json.loads(envf.read_text())
+    except (OSError, ValueError) as exc:
+        print(f"REFUSED: {envf} unreadable ({exc}): the environment is being rebuilt or is "
+              f"gone; nothing was computed", file=sys.stderr)
+        return 2
+    if env.get("setup_complete") is not True:
+        print(f"REFUSED: {envf} is not a complete setup; nothing was computed", file=sys.stderr)
+        return 2
+    if env.get("env_id") != a.env_id:
+        print(f"REFUSED: the environment was rebuilt after submission (submitted against "
+              f"{a.env_id}, now {env.get('env_id')}); nothing was computed. Resubmit (GPU jobs "
+              f"need a gpu-check PASS of the new environment)", file=sys.stderr)
+        return 2
+    print(f"environment: {a.env_id} (as submitted)")
+    return 0
+
+
+def cmd_gate_check(a) -> int:
+    """Job start (F9): a PASS for this cluster, environment and the engine code as it is NOW."""
+    try:
+        engine = engine_code_sha256(Path(a.repo))
+    except Refused as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
+    ok, rejected = find_gate_pass(Path(a.run_root), a.cluster, a.env_id, engine["sha256"])
+    if not ok:
+        print(f"REFUSED: {_gate_refusal(a.run_root, a.cluster, a.env_id, engine['sha256'], rejected)}"
+              f"; checked when the job started, nothing was computed", file=sys.stderr)
+        return 2
+    print(f"gpu-check gate: {ok[-1][0].name} matches cluster {a.cluster}, environment {a.env_id} "
+          f"and engine code {engine['sha256'][:12]}")
+    return 0
+
+
+def cmd_engine_hash(a) -> int:
+    try:
+        e = engine_code_sha256(Path(a.repo))
+    except Refused as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
+    print(e["sha256"])
     return 0
 
 
@@ -521,6 +822,7 @@ def main(argv=None) -> int:
     p.add_argument("--study", default=None)
     p.add_argument("--only", default=None)
     p.add_argument("--serial", action="store_true")
+    p.add_argument("--array", action="store_true")
     p.add_argument("--array-throttle", type=int, default=None)
     p.add_argument("--kinds", default=None)
     p.add_argument("--gpu-instance", default=None)
@@ -538,10 +840,29 @@ def main(argv=None) -> int:
     j = sub.add_parser("job-record")
     j.add_argument("--out", required=True)
     j.add_argument("--extra", action="append")
+    c = sub.add_parser("copy-study")
+    c.add_argument("--src", required=True)
+    c.add_argument("--dst", required=True)
+    c.add_argument("--sha256", required=True)
+    v = sub.add_parser("verify-study")
+    v.add_argument("--study", required=True)
+    v.add_argument("--sha256", required=True)
+    v.add_argument("--copy-to", default=None)
+    e = sub.add_parser("env-check")
+    e.add_argument("--env-dir", required=True)
+    e.add_argument("--env-id", required=True)
+    g = sub.add_parser("gate-check")
+    g.add_argument("--run-root", required=True)
+    g.add_argument("--cluster", required=True)
+    g.add_argument("--env-id", required=True)
+    g.add_argument("--repo", required=True)
+    h = sub.add_parser("engine-hash")
+    h.add_argument("--repo", required=True)
     a = ap.parse_args(argv)
-    return dict(plan=cmd_plan, **{"study-point": cmd_study_point,
-                                  "modules-diff": cmd_modules_diff,
-                                  "job-record": cmd_job_record})[a.cmd](a)
+    return {"plan": cmd_plan, "study-point": cmd_study_point, "modules-diff": cmd_modules_diff,
+            "job-record": cmd_job_record, "copy-study": cmd_copy_study,
+            "verify-study": cmd_verify_study, "env-check": cmd_env_check,
+            "gate-check": cmd_gate_check, "engine-hash": cmd_engine_hash}[a.cmd](a)
 
 
 if __name__ == "__main__":

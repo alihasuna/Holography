@@ -1,0 +1,8 @@
+#!/bin/bash
+# Fake Lmod `module` for tests/hpc (see tests/hpc/fake_slurm.py). Tests call it through a symlink
+# named `module` in their temporary directory <root>/bin/; calls are recorded in <root>.
+echo "module $*" >> "$(dirname "$0")/../module_calls.txt"
+if [ "${1:-}" = "-t" ] && [ "${2:-}" = "list" ]; then
+  printf '%s\n' StdEnv/2023 python/3.11.5 cuda/12.6 >&2
+fi
+exit 0
