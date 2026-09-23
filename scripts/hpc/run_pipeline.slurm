@@ -97,9 +97,16 @@ echo "job ${SLURM_JOB_ID} on $(hostname): mode=$MODE config=$CONFIG variant=${VA
 echo "account=$ACCOUNT partition=$PARTITION time=$TIME_LIMIT gpu=$GPU threads=$THREADS out=$OUT"
 if [ "$GPU" != "none" ] && command -v nvidia-smi >/dev/null 2>&1; then nvidia-smi; fi
 "$PY" -m reflection_holo.pipeline list-inputs --config "$CONFIG" "${VARIANT_ARGS[@]}"
-"$PY" -m reflection_holo.pipeline dry-run --config "$CONFIG" "${VARIANT_ARGS[@]}" | head -12
+# dry-run output goes to a file first: piping into head under `set -o pipefail` failed at random
+# (SIGPIPE on the writer; audit A3 M4)
+DRYRUN_TXT="reflholo_${SLURM_JOB_ID}_dryrun.txt"
+"$PY" -m reflection_holo.pipeline dry-run --config "$CONFIG" "${VARIANT_ARGS[@]}" > "$DRYRUN_TXT"
+head -n 12 "$DRYRUN_TXT"
+set +e
 "$PY" -m reflection_holo.pipeline run --config "$CONFIG" "${VARIANT_ARGS[@]}" --out "$OUT"
 status=$?
+set -e
+if [ -d "$OUT" ]; then cp "$DRYRUN_TXT" "$OUT/" || true; fi
 if [ -f "reflholo_${SLURM_JOB_ID}.log" ]; then cp "reflholo_${SLURM_JOB_ID}.log" "$OUT/" || true; fi
 echo "finished with status $status; outputs in $OUT"
 exit $status
