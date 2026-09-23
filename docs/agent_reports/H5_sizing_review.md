@@ -90,3 +90,51 @@ passes for dx up to 0.450 A and fails first at 0.455 A when called here: CONFIRM
 0.2263 and 0.4526 A passes while the transmission function loses its (0,0,8) Fourier component
 (reflection then proceeds only through second-order paths such as (0,0,4) twice). F(f_max^2)/F(0) =
 0.0303 (0.13 A) and 0.0186 (0.10 A). dz = a/4 = 1.357725 A at [100], p/4 = 0.960057 A at [110].
+
+A8. Scenario rows (question 6; DERIVED_HERE, script section 8). I rebuilt every row of H2's table from
+the rules stated in the H2 report alone (entrance 10 slices; contact 2/tan(theta); run-in; field =
+3 + 2 resolution elements, or the transverse / torus fields of section 2.6; exit margin 3 elements;
+whole z-periods of a; H = L_z tan(theta) - 2 - h - 1; vacuum = ceil(H + L_z tan(theta) + 1) (+19.008 A
+for the ridge); depth 15 + 55/65 (+20.366 for the torus); y = whole periods; 7-smooth grids at
+<= 0.13 A; (001) layers counted from the depth; 1 atom per y-period per same-parity layer in each
+[100] slice). Result, identical to H2 in every printed digit: atoms 31,116,960 / 6,266,610 /
+51,031,008 / 62,608,476 / 5,618,340 / 69,983,424 / 2,710,784 / 2,666,624 / 93,496,543 / 136,189,483 /
+214,032; grids, slices, x-y-z extents, the 4.096 / 0.705 / 5.824 / 9.625 / 0.631 / 7.444 / 0.278 /
+0.275 / 0.023 GB of engine arrays, GPU-model times (13 min, 56 s, 28 min, 46 min, 48 s, 49 min, 22 s,
+22 s, 82 min, 2.4 h, 1 s) and CPU x1.5 times (17.2 h, 72 min, 33.6 h, 2.6 d, 62 min, 2.3 d, 28 min,
+27 min, 3.8 d, 6.5 d, 75 s) with my own median fit of the RAW calibration entries (FFT 2.786e-10
+s/(px log2 px), element-wise 1.803e-9 s/px, exp 4.463e-8 s/element, GEMM 362 GFLOP/s), totals over
+8 realisations (5.7 d / 103 min ... 52.1 d / 19.4 h) and host memory at 240 B/atom (7.5, 12.2, 22.4,
+32.7 GB). The torus memory (10.852, 14.361 GB) needs H2's bound of 595 extra atoms per slice on top of
+my flat-slice maximum (13 668, 15 503): 10.756 + 0.096 and 14.258 + 0.103 GB. Also confirmed: W =
+777.9 A (0.1 deg, a/4), 1555.8 A (a/2), rounded up to 782.0 / 1558.7 A of whole y-periods; strips
+84.1 / 168.3 / 1178.0 / 1262.1 A; dlat 64.2 / 110.4 / 165.8 A; W_min 140.4 / 232.7 / 343.6 A; torus
+gaps 143.2 / 235.5 A; overlayer paths 1240 / 2479 / 3719 A; 8 resolution elements 2975 A; ring volume
+197 167 atoms.
+
+A9. Built cells against the engine itself (REPRODUCED, script section 11). Three study.yaml points
+(tfix_bragg_abs0_L0, tfix_off20_abs10_L5k, step_w32_bragg_abs10_L5k) built with the M2 case code: the
+engine's `estimate_resources` gives 3,844,352 / 10,701,408 / 340,405,248 B and 0.314 / 1.722 /
+22.750 GPU-model seconds, equal to my replica and to the M2 printout (grid, slices, atoms). Two H2 rows
+built for real with the repository builder (one z-period, tiled): row V (214,032 atoms, 2000 x 84, 4126
+slices, 23,236,480 B) and row 2a_a4_Wmin_r0.10 (5,618,340 atoms, 2000 x 2187, 4126 slices, n_max 1378,
+630,765,808 B = 0.631 GB, GPU model 47.8 s). With H2's beam (H from the stated rule, 2 A above the
+highest top layer) all ten geometry assertions of the engine's `reflection_setup` pass for both. The
+cost model is therefore a faithful copy of the engine's accounting; whether that accounting is right is
+finding M4.
+
+A10. Engine rerun of `bu_100_r010` (question 4; REPRODUCED, `--rerun`, `tools/hpc/review_h5_rerun.json`).
+My own cell construction (repository builder, one period tiled, same layout: 382 840 atoms, 2500 x 84,
+4514 slices, L_z 6128.77 A, H 95.89 A, vacuum 196 A) and my own read-out (y-average, sin^2 vacuum mask
+from 2 A above the top layer, pass band 0.1 1/A about f_c, demodulation, ray mapping
+z_s = L_z - (x - x_s)/tan(theta_ext), 500 A bins from the contact point, reference = last 2500 A before
+the last 750 A). Plateau |R| = 0.2707, arg = -1.5394 rad: identical to H2. Every 500 A bin agrees with
+H2 to <= 2e-3 in |R| and <= 4e-3 rad in phase (largest differences in the exit bin). Converged beyond:
+phase 1e-2 rad 1500 A, 3e-3 rad 3000 A; amplitude 3e-2 2500 A, 1e-2 3000 A (H2: same). Exit-plane
+intensity deeper than 1e-2 / 1e-4 / 1e-6: 26.0 / 53.2 / 94.2 A (H2: same); 2.0e-1 at 10 A, 1.9e-2 at
+20 A. The result does not depend on the mask edge (2-4, 2-6, 2-10 A: plateau 0.2707-0.2712, same
+convergence distances). The run took 192 s here (load 5.5 after the run). H2's r = 0.05, r = 0 and
+[110] strips were not rerun; they rest on the same, now reproduced, method.
+
+## B. Findings
+

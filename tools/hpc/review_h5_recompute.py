@@ -1093,6 +1093,48 @@ def main_report():
         print("  (no rerun JSON)")
 
 
+
+    hdr("12. Phonons, rocking angles, B16, vacuum rule, tolerance sensitivity (DERIVED_HERE)")
+    fp = json.load(open(H2_MEAS))["runs"]["fp_100_r010"]
+    rho2 = fp["rho2"]
+    print(f"H2 stored rho^2 = {rho2:.4e}: N = rho^2/(2 dphi^2) for dphi = 1e-2 rad: {rho2/(2*1e-4):.2f}; "
+          f"|mean|/|static| = {fp['amp_mean_over_static']:.4f} (1/x = {1/fp['amp_mean_over_static']:.3f}, "
+          f"+{(1/fp['amp_mean_over_static']-1)*100:.1f} %), arg diff {fp['phase_mean_minus_static_rad']:+.4f} rad")
+    rows_fp = fp["rows"]
+    print("  H2 per-bin |mean|/|static|: " + ", ".join(f"{r_.get('start_A', r_.get('d0', '?'))}: {r_.get('amp_mean_over_static', r_.get('ratio', float('nan'))):.4f}"
+                                                  for r_ in rows_fp))
+    w = dth_ext
+    n_rock = int(round(2 * 1.5 * w / (w / 6))) + 1
+    print(f"rocking: +-1.5 Darwin widths = +-{1.5*w*1e3:.4f} mrad, step w/6 = {w/6*1e3:.4f} mrad -> {n_rock} angles")
+    hmax, sig = 20.366, 0.028
+    dth_max = (np.pi - 3 * np.sqrt(2) * sig) / ((2 * np.pi / LAM) * hmax * 2 * np.cos(th_e))
+    s_off = np.array([-1.5, -0.5, 0.5, 1.5]) * 2 * np.cos(th_e) * dth_max
+    sig_h = sig / ((2 * np.pi / LAM) * np.sqrt(np.sum(s_off ** 2)))
+    print(f"B16 (h_max 20.366 A, sigma 0.028 rad): largest tilt step {dth_max*1e3:.4f} mrad; 4 angles over "
+          f"{3*dth_max*1e3:.3f} mrad: slope standard error {sig_h:.4f} A")
+    for nm in ("2a_a4_miscut0.1_r0.10", "3_torus_R1000_r20_r0.10", "2a_a4_miscut0.1_r0.05"):
+        t_ = table[nm]
+        need = max(2.0 + t_["H"], t_["Lz"] * np.tan(th_e)) + 2.0
+        print(f"  vacuum {nm}: engine rule H + L_z tan = {t_['H'] + t_['Lz']*np.tan(th_e):.1f} A (cell {t_['vac']:.0f} A); "
+              f"max(gap + H, L_z tan) + edge = {need:.1f} A")
+    print("tolerance sensitivity: design run-in with the M2/README amplitude criterion |B/A - 1| <= 1e-2 instead of 3e-2:")
+    for nm, Lr_new, Dc, r in (("2a_a4_miscut0.1_r0.10", 3000.0, 55.0, 0.1), ("2a_a4_miscut0.1_r0.00", 9000.0, 65.0, 0.0),
+                              ("3_torus_R1000_r20_r0.10", 3000.0, 55.0, 0.1)):
+        t_ = table[nm]
+        if nm.startswith("3_"):
+            alt = layout(nm, th=th_e, res_el=re_, L_run=Lr_new, D_clean=Dc, y_mode="torus", field=tor_field, torus=True,
+                         W=2040 + 2 * (Lr_new * np.tan(alpha_y) + 18) + 12, extra_depth=20.366, ridge=19.008,
+                         ring_V=np.pi ** 2 * 1000 * 400)
+        else:
+            alt = layout(nm, th=th_e, res_el=re_, L_run=Lr_new, D_clean=Dc, y_mode="staircase", step_h=Q,
+                         field=5 * re_, W=Q / np.tan(np.deg2rad(0.1)))
+        mem, _ = engine_memory(alt["nx"], alt["ny"], alt["n_max"], alt["atoms"])
+        g, _ = engine_gpu_s(alt["nx"], alt["ny"], alt["N"], alt["nonempty"], alt["n_mean"])
+        c, _ = cpu_model_s(alt["nx"], alt["ny"], alt["N"], alt["nonempty"], alt["n_mean"], cc)
+        print(f"  {nm}: run-in {Lr_new:.0f} A -> z {alt['Lz']:.1f} A (was {t_['Lz']:.1f}), x {alt['ext_x']:.1f}, y {alt['y']:.1f}, "
+              f"atoms {alt['atoms']:,} ({alt['atoms']/t_['atoms']-1:+.1%}), grid {alt['nx']}x{alt['ny']}, "
+              f"memory {mem/1e9:.3f} GB, GPU {fmt_t(g)}, CPU x1.5 {fmt_t(1.5*c)}")
+
     hdr("11. Built cells: engine estimate_resources and geometry assertions vs H2's table (REPRODUCED)")
     study_point_checks()
     # the validation strip (row V) and the narrowest converged terrace (row 2a_a4_Wmin), built for real
