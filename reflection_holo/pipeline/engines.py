@@ -149,6 +149,38 @@ def multislice_status() -> tuple[bool, str]:
     return True, "available"
 
 
+def backend_status(backend: str) -> tuple[bool, str]:
+    """(available, reason) of an array backend of the multislice engine (audit A3 m5): "numpy" is
+    always available; "cupy" needs ``import cupy`` to work and at least one visible GPU."""
+    if backend != "cupy":
+        return True, f"{backend}: available"
+    if importlib.util.find_spec("cupy") is None:
+        return False, ("backend cupy requested but cupy is not installed in this Python "
+                       "environment (install it with GPU support, or use the numpy variant)")
+    try:
+        cp = importlib.import_module("cupy")
+        n = int(cp.cuda.runtime.getDeviceCount())
+    except Exception as exc:                          # import or CUDA runtime failure
+        return False, f"backend cupy requested but cupy/CUDA is not usable ({type(exc).__name__}: {exc})"
+    if n < 1:
+        return False, "backend cupy requested but no GPU is visible (getDeviceCount() = 0)"
+    return True, f"cupy: available, {n} GPU(s) visible"
+
+
+def require_engine(cfg: PipelineConfig) -> None:
+    """Pre-flight of the selected engine BEFORE any computation (audit A3 m5): the multislice module
+    and, for backend "cupy", an importable cupy with a visible GPU. EngineUnavailableError
+    otherwise."""
+    if cfg.value("engine", "name") != "multislice":
+        return
+    ok, why = multislice_status()
+    if not ok:
+        raise EngineUnavailableError(f"engine 'multislice' unavailable: {why}")
+    ok, why = backend_status(cfg.value("engine", "multislice")["backend"])
+    if not ok:
+        raise EngineUnavailableError(why)
+
+
 def reflection_cell(structure, cfg: PipelineConfig) -> ReflectionCell:
     cellmod = importlib.import_module(CELL_MODULE)
     cp = dict(cfg.sections["cell"]["multislice"])
@@ -158,12 +190,18 @@ def reflection_cell(structure, cfg: PipelineConfig) -> ReflectionCell:
     return cell
 
 
-def multislice_objects(structure, cfg: PipelineConfig) -> dict:
+def multislice_objects(structure, cfg: PipelineConfig, *, require_backend: bool) -> dict:
     """Cell, potential, beam and parameters of the multislice engine from the configuration, with
-    the mean-inner-potential consistency check (module docstring). No propagation."""
-    ok, why = multislice_status()
-    if not ok:
-        raise EngineUnavailableError(f"engine 'multislice' unavailable: {why}")
+    the mean-inner-potential consistency check (module docstring). No propagation.
+    ``require_backend``: True for a run (the array backend must be usable); the dry run passes False
+    so that the geometry checks run on a machine without the GPU and reports the backend
+    separately."""
+    if require_backend:
+        require_engine(cfg)
+    else:
+        ok, why = multislice_status()
+        if not ok:
+            raise EngineUnavailableError(f"engine 'multislice' unavailable: {why}")
     ms = importlib.import_module(MULTISLICE_MODULE)
     potmod = importlib.import_module(MIP_FUNCTION[0])
     m = cfg.value("engine", "multislice")
@@ -219,13 +257,22 @@ def run_multislice(structure, cfg: PipelineConfig, *, outputs_root, run_name: st
                    ) -> tuple[list[ExitWave], ReflectionCell, dict]:
     """Multislice engine through the adapter of the module docstring. Returns the exit waves, the
     reflection cell and a record (engine manifest path, MIP check, parameters)."""
-    o = multislice_objects(structure, cfg)
+    o = multislice_objects(structure, cfg, require_backend=True)
     ms, cell, beam, params, m = o["ms"], o["cell"], o["beam"], o["params"], o["engine_params"]
     th = cfg.glancing_angle["value_rad"]
+    src = cfg.source_path
     waves, man = ms.simulate(cell, potential=o["potential"], beam=beam, params=params,
                              realisations=m["n_realisations"], seed=m["seed"],
                              outputs_root=outputs_root, run_name=f"{run_name}_multislice",
-                             save_waves=m["save_exit_waves"], config=None, input_paths=[])
+                             save_waves=m["save_exit_waves"], config=src,
+                             input_paths=[src] if src else [],
+                             caller_record=dict(
+                                 caller="reflection_holo.pipeline (audit A3 m1)",
+                                 purpose=cfg.purpose, pipeline_run_name=cfg.run_name,
+                                 variant=cfg.variant, test_only=cfg.test_only,
+                                 pipeline_config_path=src,
+                                 pipeline_config_sha256_file=cfg.sha256_file,
+                                 pipeline_config_sha256_resolved=cfg.sha256_resolved))
     waves = list(waves)
     if not waves:
         raise EngineUnavailableError("the multislice engine returned no exit wave")

@@ -1,9 +1,11 @@
 """reflection_holo.optics (see docs/05_final_repository_specification.md sections 3 and 5).
 
-Implemented (S1c): declared grids, waves and holograms (``fields``); hologram formation with the
-reference models R1/R2/R3, ensemble averaging after squaring, charging phase option and Poisson
-detector noise (``hologram``). Not implemented: dark-field aperture selection, projection along k_out,
-lens transfer, biprism Fresnel fringes, drift, partial-coherence ensembles, detector MTF.
+Implemented (S1c, P1): declared grids, waves and holograms (``fields``); hologram formation with
+the reference models R1/R2/R3, ensemble averaging after squaring, charging phase option and Poisson
+detector noise (``hologram``); dark-field aperture selection around k_out (``darkfield``);
+projection along k_out onto surface and image coordinates (``projection``); magnification, pixel
+mapping and detector recording (``detector``). Not implemented: lens transfer, biprism Fresnel
+fringes, drift, partial-coherence ensembles, detector MTF (audit A3 n2).
 """
 from reflection_holo.optics.fields import Grid, Hologram, Wave, sha256_array  # noqa: F401
 from reflection_holo.optics.hologram import (  # noqa: F401

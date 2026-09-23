@@ -39,7 +39,15 @@ def test_multislice_tiny_end_to_end(tmp_path):
 
 def test_hpc_config_passes_the_gate_and_the_engine_geometry_checks(capsys):
     """dry-run of the HPC demo builds its 1.44M-atom structure and cell and runs every engine
-    assertion (docs/05 4.3 items 1-4, band limits) without propagating."""
-    assert cli_main(["dry-run", "--config", str(HPC)]) == 0
+    assertion (docs/05 4.3 items 1-4, band limits) without propagating. The HPC demo requests the
+    cupy backend: where cupy is not usable the checks still run and the dry run exits 4 saying so
+    (audit A3 m5; before, it exited 0)."""
+    from reflection_holo.pipeline.engines import backend_status
+    rc = cli_main(["dry-run", "--config", str(HPC)])
     txt = capsys.readouterr().out
     assert "engine multislice" in txt and "16.134720 mrad" in txt
+    ok, why = backend_status("cupy")
+    if ok:
+        assert rc == 0
+    else:
+        assert rc == 4 and "multislice backend cupy NOT available" in txt, why

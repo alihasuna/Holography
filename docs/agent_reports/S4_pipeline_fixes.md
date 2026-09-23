@@ -161,3 +161,166 @@ no-step control: PASS {'performed': True, 'delta_rad': -0.0036868859167245027, '
 outputs in /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/s4_smoke_1: summary.json, manifest.json, arrays.npz quicklook_detector.png quicklook_exit_wave.png
 cli exit 0
 ```
+
+## Priority 2: COMPLETE
+
+### (d) A3 M1: R2 heights near 0 marked "resolved"
+
+Cause: `run.py` built the R2 reference as the object shifted by s, so the reconstructed phase is the
+differential `phi(r) - phi(r + s)` (docs/03 section 6). Region medians of that phase were then
+quantified as terrace phases. On a terrace where r and r + s lie together the phase is 0, and the
+old lattice rule accepted n = 0, so h ~ 0 was returned as "resolved". Fix: (1) under R2 every
+height is withheld with the reason `R2 self-reference: the reconstructed phase is the DIFFERENTIAL
+phi(r) - phi(r + s) ... Quantification of a differential phase is NOT IMPLEMENTED ...` (holograms
+and reconstruction are still produced); (2) the joint rule excludes n = 0 for regions that
+straddle a step (see (a)). `NOT_IMPLEMENTED` in the summary lists it.
+
+### (e) A3 M2: the comparison gate
+
+* `reflection_holo/io/assumption_registry.yaml` gains the key `demo_only: [B19 ... B32]`. The loader
+  requires it, checks that every id is a stand-in, and exposes `demo_only_stand_ins()`.
+* `purpose: comparison` (`pipeline/config._comparison_gate`) refuses every demo-only stand-in
+  whatever its item, every ASSUMPTION standing in for a blocking item, and TEST_ONLY. It now sees
+  the records nested in `sections.engine.multislice` too (`_all_records`; the old gate did not, so
+  B30 on item 21 was invisible to it).
+* The rule form of item 7 labelled PROJECT_INPUT is refused at every purpose unless the V0 it used is
+  itself a PROJECT_INPUT: "the computed angle cannot carry the label PROJECT_INPUT ...".
+* `summary.json["assumptions_in_use"]` lists every remaining ASSUMPTION (parameter, item, id,
+  demo_only, source).
+
+### (f) A3 M6: supplied inputs that no path represents
+
+Refused in the gate (`_refuse_unused_physical_inputs`), for every engine, because each one changes
+the physics and would otherwise be silently ignored:
+* a non-zero convergence semi-angle (item 3): the multislice path ran a plane wave;
+* an overlayer other than none, or a termination other than bulk (item 12): not built, and docs/06
+  item 12 says "must be modelled rather than ignored";
+* `pattern_geometry` other than `{features: none}` (item 13): no mesa or trench is built;
+* a rule `reflection_hkl` that differs from `target_reflection_hkl` (item 9).
+Everything else that is accepted but not used on the selected path is listed by `list-inputs` (and
+in `summary.json["inputs"]`) as `SUPPLIED, NOT USED on this path` or `ASSUMPTION Bxx stand-in, NOT
+USED on this path`, with the reason on the next line. This covers: `step_types`,
+`surface_preparation_method`, `second_reflection_hkl`, `recommended_reflections_hkl`,
+`reconstruction_method`, `aperture_passage` (recorded only), `reference.shift` under R1, item 9 for a
+typed angle, and the CFG-B V0 when the multislice engine uses the potential's MIP. For the multislice
+path, item 20 lists `sections.engine.multislice.potential_mip` (13.903 V, REPRODUCED) as USED (this
+is also A3 m2).
+
+### (g) A2c G1, G2, G3 and the reference_correction="none" residual
+
+* G1 (`io/config.PINNED`): CFG-A is defined by material Si, surface [1,-1,1] and azimuth [1,1,0];
+  CFG-B by Si and [0,0,1]; CFG-O by Pt. Any other value is refused ("... CFG-A is defined by
+  surface_normal_hkl = [1, -1, 1] ... cannot use its gate"). The CFG-A imaging parameters now carry
+  the CFG-B docs/06 items: glancing angle 7, convergence 3, aperture 4, pixel size 5, reference
+  trajectory 15, reconstruction method 19. They therefore pass the same PROJECT_INPUT gate:
+  DERIVED_HERE and similar labels are refused. The shipped CFG-A has none of them and still loads
+  at run level.
+* G2 (`io/config.check_supply`, used by both the CFG and the pipeline gates): a PROJECT_INPUT with a
+  value needs `supplied_by` (a non-empty name; placeholders such as "nobody", "unknown" or "the
+  simulation", and negations starting "not "/"no ", are refused) and `supplied_on` (ISO
+  `YYYY-MM-DD` or a YAML date; valid; not after today at UTC+14, the latest calendar date anywhere).
+  The fields are refused on anything else. The free-text `SUPPLIER_DATE_RE` no longer gates
+  anything. The supply record is kept (`Parameter.supply`, `Record.supply`) and travels with the
+  item-7 value into CFG-B. The shipped configs now carry `supplied_by: Ali`,
+  `supplied_on: "2026-09-22"` on the values whose sources already said so: cfg_a (1 parameter),
+  cfg_b, demo_smoke and demo_hpc (4 each).
+* G3: `run()` refuses a configuration with `test_only=True` before any computation ("a pipeline run
+  refuses them"). The CLI has no switch for it. The manifest records `extra.test_only` and
+  `extra.allow_test_only: "never set by a pipeline run or the CLI"`. `load_pipeline_dict(...,
+  allow_test_only=True)` remains for gate tests only.
+* Residual R1: `reconstruct_sideband(..., reference_correction="none")` now REQUIRES
+  `object_min_visibility`, computed as for the empty hologram from the OBJECT hologram
+  (`2 |w_obj| / D_obj`), and refuses it with divide_empty. The pipeline requires the key in
+  `reconstruction.processing` exactly when `reference_correction` is "none".
+
+Existing tests and tools changed (values unchanged, no tolerance touched):
+* `tests/io/test_io_config.py` (the `ALI` fixture now has the structured fields; the null-energy
+  case drops them with the value); `tests/io/test_io_config_gate.py` (one fixture);
+  `tests/io/test_io_config_stand_ins.py` (`test_project_input_value_names_supplier_and_date` keeps
+  its five cases in the structured form that replaces the free-text rule, and the non-finite
+  fixture).
+* `tests/pipeline/test_pipeline_geometric.py::test_outside_b4_scope_is_refused`: `run()` now
+  refuses the TEST_ONLY configuration first (asserted), so the B4 refusal is asserted on the
+  engine adapter that `run()` calls (`run_geometric(build_structure(cfg), cfg)`), same error, same
+  match.
+* 23 test calls of `reconstruct_sideband(reference_correction="none")` and the helper in
+  `test_carrier_trap.py` declare `object_min_visibility=0.05`. Their outcomes are unchanged:
+  `tests/reconstruction tests/optics tests/quantification`: 235 passed. The same applies to
+  `tools/physics_checks/q2_carrier_trap.py` (21/21 self-checks pass) and `q3_r2_twin.py`
+  (7/7 pass).
+
+### Regression tests (44)
+
+`tests/pipeline/test_a3_priority2.py` (M1 x2, M2 x3, M6 x7, G3 x3, R1-in-pipeline x1),
+`tests/io/test_a2c_gate_fixes.py` (G1 x9, G2 x12), `tests/reconstruction/test_object_visibility_r1.py`
+(R1 x5). Fabricated supplies in them are marked TEST.
+
+Before (fdabd67 copy), `42 failed, 2 passed in 7.74s`. The two that pass there guard behaviour
+that already existed: `test_cli_offers_no_test_only_switch` and
+`test_cfg_a_defining_values_are_pinned[surface_material-Pt]` (the material was already checked).
+Verbatim final lines (`$S/s4/p2_before_line.txt`):
+```
+$S/before/tests/pipeline/test_a3_priority2.py:61: AssertionError: (2.7154500000000006, {'h_A': -0.0001381555762252291, 'sigma_h_A': 0.0003696462460876539, 'branch_index': 0, 'branch_so...ttice constraint: h = n a/4 with |n| <= 2 (the builde
+$S/before/tests/pipeline/test_a3_priority2.py:61: AssertionError: (2.7154500000000006, {'h_A': 7.556900569911431e-05, 'sigma_h_A': 0.021099010987653058, 'branch_index': 0, 'branch_sour...ttice constraint: h = n a/4 with |n| <= 2 (the builde
+$S/before/tests/pipeline/test_a3_priority2.py:92: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:110: ImportError: cannot import name 'assumptions_in_use' from 'reflection_holo.pipeline.config' ($S/before/reflection_holo/pipeline/config.py)
+$S/before/tests/pipeline/test_a3_priority2.py:120: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:136: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:136: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:146: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:146: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:157: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:157: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:165: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:175: AssertionError: assert False
+$S/before/tests/pipeline/test_a3_priority2.py:195: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/pipeline/test_a3_priority2.py:203: KeyError: 'test_only'
+$S/before/tests/pipeline/test_a3_priority2.py:218: Failed: DID NOT RAISE PipelineConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:54: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:64: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:64: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:71: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:83: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:83: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:83: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:83: Failed: DID NOT RAISE ConfigError
+$S/before/reflection_holo/io/config.py:439: reflection_holo.io.config.ConfigError: CFG-A: parameter glancing_angle_ext has unknown keys ['supplied_by', 'supplied_on']
+$S/before/tests/io/test_a2c_gate_fixes.py:123: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:123: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:123: Failed: DID NOT RAISE ConfigError
+$S/before/tests/io/test_a2c_gate_fixes.py:140: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:140: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:140: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:140: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:140: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:140: AssertionError: Regex pattern did not match.
+$S/before/tests/io/test_a2c_gate_fixes.py:138: ImportError: cannot import name 'latest_today' from 'reflection_holo.io.config' ($S/before/reflection_holo/io/config.py)
+$S/before/reflection_holo/io/config.py:439: reflection_holo.io.config.ConfigError: CFG-B: parameter beam_azimuth_uvw has unknown keys ['supplied_by', 'supplied_on']
+$S/before/tests/io/test_a2c_gate_fixes.py:158: AssertionError: Regex pattern did not match.
+$S/before/tests/reconstruction/test_object_visibility_r1.py:42: Failed: DID NOT RAISE ValueError
+$S/before/tests/reconstruction/test_object_visibility_r1.py:52: Failed: DID NOT WARN. No warnings of type (<class 'RuntimeWarning'>,) were emitted.
+$S/before/tests/reconstruction/test_object_visibility_r1.py:52: Failed: DID NOT WARN. No warnings of type (<class 'RuntimeWarning'>,) were emitted.
+$S/before/tests/reconstruction/test_object_visibility_r1.py:52: Failed: DID NOT WARN. No warnings of type (<class 'RuntimeWarning'>,) were emitted.
+$S/before/tests/reconstruction/test_object_visibility_r1.py:73: TypeError: reconstruct_sideband() got an unexpected keyword argument 'object_min_visibility'
+42 failed, 2 passed in 7.74s
+```
+(The R2 lines show the auditor's h = -0.00014 and +0.00008 A for the step built at +2.7155 A.)
+
+After: `44 passed in 6.26s`.
+
+### Priority-2 checkpoint
+
+`venv/bin/pytest -q`: `711 passed, 12 warnings in 219.22s (0:03:39)`.
+
+Smoke CLI (`--out $S/s4_smoke_2`):
+```
+purpose: demo; not comparable to experiment
+engine: geometric model, no dynamical amplitude, B4 scope applies
+heights: 3 of 3 step heights returned (joint lattice branch resolved, chance-acceptance bound 0.000122 <= alpha 0.0027)
+step field terraces 0->1 (translation): h = +2.7156 +- 0.0165 A (branch -4, wrap period 0.7612 A)
+step field terraces 1->2 (screw): h = -1.3576 +- 0.0082 A (branch 2, wrap period 0.7612 A)
+step field terraces 2->0 (screw): h = -1.3580 +- 0.0082 A (branch 2, wrap period 0.7612 A)
+no-step control: PASS {'performed': True, 'delta_rad': -0.0036868859167245027, 'tolerance_rad': 0.012310012257320535, 'n_sigma': 3.0, 'se_correlated_rad': 0.004103337419106845, 'passed': True, 'n_a': 1960, 'n_b': 2016, 'controls_sigma_uncorrelated_rad': 0.0002516205842901576, 'field_terrace': 1}
+outputs in /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/s4_smoke_2: summary.json, manifest.json, arrays.npz quicklook_detector.png quicklook_exit_wave.png
+cli exit 0
+```

@@ -53,7 +53,8 @@ class DetectorSpec:
     image_pixel_size_A    (along_beam, perpendicular) specimen-referred image pixel, A; must equal
                           pitch / M
     roi_shape             (n_along_beam, n_perpendicular) detector pixels simulated
-    alignment             "centre"
+    alignment             "centre" (ROI centred on the projected exit-plane grid) or
+                          "field_of_view" (ROI centred on the image of the field of view)
     dose_e_per_px         mean electrons per pixel per hologram (> 0)
     gain_counts_per_e     counts per electron (> 0)
     mtf                   "none" (ideal detector; anything else is not implemented)

@@ -53,8 +53,8 @@ from reflection_holo.optics.projection import project_along_k_out
 from reflection_holo.pipeline import quantify as Q
 from reflection_holo.pipeline.config import (PipelineConfig, PipelineConfigError, Record,
                                              assumptions_in_use, list_inputs, load_pipeline_file)
-from reflection_holo.pipeline.engines import (_label, build_structure, run_geometric,
-                                              run_multislice)
+from reflection_holo.pipeline.engines import (_label, build_structure, require_engine,
+                                              run_geometric, run_multislice)
 from reflection_holo.provenance.manifest import build_manifest, require_git_state
 from reflection_holo.reconstruction.sideband import (CarrierSearch, MaskSpec, locate_carrier,
                                                      reconstruct_sideband, sideband_phase_noise)
@@ -188,6 +188,36 @@ def _height_verdict(steps: list[dict], withhold: str | None, joint: dict) -> dic
                 withhold_reason=withhold, line=line)
 
 
+def _sign_degeneracy(steps: list[dict], *, lam: float, theta: float, layer_A: float, n_max: int,
+                     n_sigma: float) -> dict:
+    """At the run's angle, the wrapped phases of +n a/4 and -n a/4 differ by
+    |wrap(2 s n a/4)|; when that is below the single-step window 2 (n_sigma sigma_phi + n_sigma
+    (sigma_s/s) s n a/4), one step alone cannot tell +n a/4 from -n a/4 (audit A3 m4: at the B32
+    angle +a/2 and -a/2 differ by 0.078 rad). The joint rule can still separate them when the other
+    steps pin the common angle error."""
+    from reflection_holo.geometry.specular import wrap_to_pi
+    measured = [st for st in steps if st.get("measured")]
+    if not measured:
+        return dict(note="no measured step", pairs=[])
+    s = measured[0]["sensitivity_rad_per_A"]
+    rel = measured[0]["sigma_sensitivity_rad_per_A"] / s
+    sphi = max(st["sigma_delta_phi_rad"] for st in measured)
+    pairs = []
+    for n in range(1, n_max + 1):
+        sep = abs(float(wrap_to_pi(2 * s * n * layer_A)))
+        window = 2 * (n_sigma * sphi + n_sigma * rel * s * n * layer_A)
+        pairs.append(dict(n=n, height_A=n * layer_A, wrapped_separation_rad=sep,
+                          single_step_window_rad=window, degenerate_single_step=sep < window))
+    bad = [f"+-{p['n']} a/4 ({p['wrapped_separation_rad']:.3f} rad < "
+           f"{p['single_step_window_rad']:.3f} rad)" for p in pairs if p["degenerate_single_step"]]
+    note = (f"at theta = {theta * 1e3:.6f} mrad the sign of {', '.join(bad)} cannot be decided from "
+            f"one step (the wrapped phases of +n a/4 and -n a/4 are closer than the branch window); "
+            f"only the joint rule with steps that pin the angle error can separate them" if bad else
+            f"at theta = {theta * 1e3:.6f} mrad every +-n a/4 pair (n <= {n_max}) is separated by "
+            f"more than the single-step branch window")
+    return dict(note=note, pairs=pairs)
+
+
 def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = False) -> dict:
     """Run the pipeline for ``config`` (a path, or a PipelineConfig already gated) into
     ``out_dir`` (created; must be empty). Returns the summary dictionary (also written)."""
@@ -206,6 +236,7 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
                                   "refuses them (they exist for in-memory gate tests only; A2c G3)")
     # the manifest must identify the code: check the git state BEFORE any computation (A3 M5)
     git_preflight = require_git_state(allow_no_git=allow_no_git)
+    require_engine(cfg)                     # multislice module and cupy/GPU, before computing (m5)
     out = _prepare_out(out_dir)
     notes: list[str] = []
     theta = float(cfg.glancing_angle["value_rad"])
@@ -281,9 +312,22 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     # 7-9. references, holograms, detector noise ------------------------------------------------
     t = time.perf_counter()
     grid = spec.grid()
+    # ray trace of every detector pixel to the built surface (also used by the quantification)
+    tr = Q.detector_trace(model, placement.u_A, placement.y_A, x0_A=x0, theta_rad=theta,
+                          layout=layout)
     a_all = np.abs(np.stack([w.data for w in obj_waves]))
-    bright = a_all >= 0.5 * a_all.max()
+    lit_px = np.broadcast_to(tr["status"] == Q.STATUS["lit"], a_all.shape)
+    if not lit_px.any():
+        raise RuntimeError("no detector pixel traces to a lit terrace top: the empty-object "
+                           "amplitude is undefined")
+    # A3 m3: the empty-object amplitude from LIT terrace-top pixels only (the multislice exit plane
+    # also carries the field inside the crystal, which traces to no surface)
+    bright = lit_px & (a_all >= 0.5 * a_all[lit_px].max())
     A_emp = float(np.sqrt(np.mean(a_all[bright] ** 2)))
+    amp_by_status = {name: dict(n_px=int((tr["status"] == c).sum()),
+                                mean_abs=(float(a_all[:, tr["status"] == c].mean())
+                                          if (tr["status"] == c).any() else None))
+                     for name, c in Q.STATUS.items()}
     ratio = cfg.rec("reference", "amplitude_ratio").canonical_value
     q_ref = _carrier(cfg)
     ref_model = b.value("reference_model")
@@ -353,8 +397,6 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     # 11. quantification ---------------------------------------------------------------------------
     t = time.perf_counter()
     qp = cfg.rec("quantification", "processing").value
-    tr = Q.detector_trace(model, placement.u_A, placement.y_A, x0_A=x0, theta_rad=theta,
-                          layout=layout)
     phase = np.asarray(recon.wrapped_phase)
     amp_rel = np.asarray(recon.amplitude, dtype=float)       # |u_o| / A_emp with divide_empty
     if not divide:                                           # relative to the median lit amplitude
@@ -412,6 +454,8 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
                        f"series"),
         withhold_reason=withhold)
     height_verdict = _height_verdict(steps, withhold, joint_branch)
+    degeneracy = _sign_degeneracy(steps, lam=lam, theta=theta, layer_A=a_lat / 4.0,
+                                  n_max=qp["max_layers"], n_sigma=qp["n_sigma"])
     strips = terrace_shadow_strips(structure, theta, _label(cfg.rec("illumination",
                                                                     "glancing_angle")),
                                    theta_out_ext_rad=theta,
@@ -495,7 +539,10 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         "region_map": (region_map, ["along_beam", "perpendicular"], "field terrace (-1 none)",
                        grid.plane),
     }
-    np.savez_compressed(out / "arrays.npz", **{k: v[0] for k, v in arrays.items()})
+    arrays["purpose"] = (np.array(cfg.purpose), ["none (0-d scalar)"], "text (run purpose)",
+                         "not a wave: run metadata (audit A3 m1)")
+    with open(out / "arrays.npz", "xb") as fh:          # never overwrite (A3 n3)
+        np.savez_compressed(fh, **{k: v[0] for k, v in arrays.items()})
     array_index = {k: dict(axes=v[1], units=v[2], plane=v[3], shape=list(np.shape(v[0])),
                            dtype=str(np.asarray(v[0]).dtype)) for k, v in arrays.items()}
     ga = dict(cfg.glancing_angle)
@@ -531,8 +578,10 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         dark_field=df0.record, projection=dict(img0.record, sampling=img0.sampling),
         detector=dict(spec.as_record(theta), placement=placement.record,
                       empty_object_amplitude=A_emp,
-                      empty_object_amplitude_rule="RMS of the detector object amplitude over "
-                                                  "pixels >= half its maximum"),
+                      empty_object_amplitude_rule="RMS of the detector object amplitude over the "
+                                                  "LIT terrace-top pixels >= half their maximum "
+                                                  "(audit A3 m3)",
+                      object_amplitude_by_trace_status=amp_by_status),
         reference=dict(model=ref_model, trajectory=trajectory, carrier_cycles_per_A=list(q_ref),
                        amplitude=ratio * A_emp, amplitude_ratio=ratio, relative_phase_rad=rel_phase,
                        aperture_passage=passage, empty_hologram_fringe_contrast=contrast_empty,
@@ -546,7 +595,7 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
                             warnings=recon_warnings,
                             predicted_phase_noise_per_px=noise_pred),
         quantification=dict(height_verdict=height_verdict, steps=steps,
-                            joint_branch=joint_branch,
+                            joint_branch=joint_branch, sign_degeneracy=degeneracy,
                             regions={str(k): v for k, v in regions.items()},
                             no_step_control=control, shadow_exclusion=shadow,
                             a_eff_px=a_eff, sigma_source="measured phase scatter (B16: measured, "

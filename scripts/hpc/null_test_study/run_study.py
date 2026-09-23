@@ -26,7 +26,6 @@ import time
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "tests" / "forward"))
@@ -35,7 +34,13 @@ from null_test_cases import (run_translation, step_case, step_phase_rows,  # noq
                              theta_0008, translation_pair)
 from reflection_holo.forward.multislice import (PhysicalAbsorption, estimate_resources,  # noqa: E402
                                                 run_realisation)
+from reflection_holo.io.config import load_yaml_unique  # noqa: E402
 from reflection_holo.provenance.manifest import build_manifest, write_manifest  # noqa: E402
+
+# The study feeds TEST_ONLY stand-ins from study.yaml straight to the engine: it is an engine null
+# test, never a pipeline run, and says so in every result and manifest (audit A3 m7).
+STUDY_PURPOSE = ("engine null test with TEST_ONLY stand-ins read from the study file (not a "
+                 "pipeline run, bypasses the pipeline gate); not comparable to experiment")
 
 KINDS = ("translation_fixed_beam", "translation_moved_beam", "step_parallel")
 POINT_KEYS = ("name", "kind", "theta", "extra_length_A", "width_periods", "absorption_ratio",
@@ -82,7 +87,7 @@ def main(argv=None):
     ap.add_argument("--estimate", action="store_true")
     ap.add_argument("--only", default=None)
     a = ap.parse_args(argv)
-    cfg = yaml.safe_load(Path(a.config).read_text())
+    cfg = load_yaml_unique(Path(a.config).read_bytes())      # duplicate keys refused (A3 m7)
     rt = cfg["runtime"]
     for k in RUNTIME_KEYS:
         if k not in rt:
@@ -99,6 +104,10 @@ def main(argv=None):
             raise SystemExit(f"point {p['name']}: kind must be one of {KINDS}")
         if a.only and p["name"] != a.only:
             continue
+        path = out / "null_test_study" / f"{p['name']}.json"
+        if path.exists() and not a.estimate:
+            raise SystemExit(f"{path} exists: results are never overwritten (audit A3 m7); use "
+                             f"another --out")
         th, obj = _build(p, rt)
         if p["kind"].startswith("translation"):
             cell, params = obj["A"][0], obj["params"]
@@ -130,9 +139,10 @@ def main(argv=None):
                                         window_width_A=p["window_width_A"])
             res = dict(geometric_rad=geo, rows=rows, n_slices=ew.metadata["slices"]["n_slices"],
                        grid=[params.nx, params.ny])
-        res.update(point=p, theta_rad=th, wall_s=time.time() - t0, estimate=est)
-        path = out / "null_test_study" / f"{p['name']}.json"
-        path.write_text(json.dumps(res, indent=1, default=str))
+        res.update(point=p, theta_rad=th, wall_s=time.time() - t0, estimate=est,
+                   purpose=STUDY_PURPOSE, test_only=True)
+        with open(path, "x", encoding="utf-8") as fh:        # never overwrite (A3 m7)
+            fh.write(json.dumps(res, indent=1, default=str))
         m = build_manifest(run_name=f"null_test_{p['name']}", config=Path(a.config),
                            input_paths=[path], seeds={}, thread_count=int(rt["threads"]),
                            precision={"complex": p["precision"]},
@@ -140,7 +150,8 @@ def main(argv=None):
                                status="UNVALIDATED (M2 report)")},
                            wave_planes={"exit_wave": "exit plane z = L_z (no further "
                                                      "propagation)"},
-                           beam_energy_keV=200.0, extra=dict(point=p))
+                           beam_energy_keV=200.0,
+                           extra=dict(point=p, purpose=STUDY_PURPOSE, test_only=True))
         print(f"  -> {path} ({res['wall_s']:.0f} s), manifest {write_manifest(m, outputs_root=out)}",
               flush=True)
 

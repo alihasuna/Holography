@@ -18,6 +18,7 @@
 #SBATCH --output=reflholo_%j.log
 
 set -euo pipefail
+SCRIPT="$(readlink -f "$0")"                # absolute: the script may be launched from anywhere
 
 # ---- REQUIRED (no defaults) -----------------------------------------------------------------
 ACCOUNT="${RH_ACCOUNT:-__FILL_ME__}"        # your SLURM account
@@ -26,7 +27,9 @@ TIME_LIMIT="${RH_TIME_LIMIT:-__FILL_ME__}"  # wall time, e.g. 02:00:00
 GPU="${RH_GPU:-__FILL_ME__}"                # GPU request, e.g. gpu:1 or gpu:a100:1; "none" = CPU only
 # ---- run selection (explicit; change as needed) -----------------------------------------------
 MODE="${RH_MODE:-full}"                     # smoke | full
-CPUS="${RH_CPUS:-8}"                        # cpus-per-task; must be >= runtime.threads of the config
+# cpus-per-task; must be >= runtime.threads of the config. Inside a job submitted directly with
+# sbatch --cpus-per-task=N (no RH_CPUS), N is used (audit A3 m6).
+CPUS="${RH_CPUS:-${SLURM_CPUS_PER_TASK:-8}}"
 MEM="${RH_MEM:-32G}"
 if [ "$MODE" = "smoke" ]; then
   CONFIG="${RH_CONFIG:-configs/demo_smoke_si001.yaml}"
@@ -35,7 +38,7 @@ else
   CONFIG="${RH_CONFIG:-configs/demo_hpc_si001.yaml}"
   VARIANT="${RH_VARIANT:-}"                 # "" = GPU (cupy) run; cpu_numpy = CPU-only run
 fi
-REPO="${RH_REPO:-$(pwd)}"
+REPO="$(cd "${RH_REPO:-$(pwd)}" && pwd)"    # absolute
 PY="${REPO}/venv/bin/python"
 
 missing=()
@@ -71,6 +74,8 @@ fi
 
 VARIANT_ARGS=()
 if [ -n "$VARIANT" ]; then VARIANT_ARGS=(--variant "$VARIANT"); fi
+# relative config paths are relative to the repository, in both modes (audit A3 m6)
+cd "$REPO"
 
 # the configuration decides the backend and the thread count; check them against the request
 read -r BACKEND THREADS < <("$PY" - "$CONFIG" "$VARIANT" <<'EOF'
@@ -91,6 +96,21 @@ if [ "$CPUS" -lt "$THREADS" ]; then
   echo "ERROR: cpus-per-task $CPUS < runtime.threads $THREADS of $CONFIG" >&2
   exit 2
 fi
+# cupy pre-flight (audit A3 m5): the pipeline refuses a cupy run without an importable cupy and a
+# visible GPU (exit 4, before computing). Submission host: a warning only (login nodes often lack
+# CUDA); inside the job: checked before any step, so a missing cupy costs seconds, not the dry run.
+if [ "$BACKEND" = "cupy" ]; then
+  if [ -z "${SLURM_JOB_ID:-}" ]; then
+    if ! "$PY" -c "import cupy" >/dev/null 2>&1; then
+      echo "WARNING: 'import cupy' fails with $PY on this host; the job will be refused on the" >&2
+      echo "         GPU node (exit 4) unless cupy is installed there (scripts/hpc/setup_env.sh)" >&2
+    fi
+  elif ! "$PY" -c "import sys, cupy; sys.exit(0 if cupy.cuda.runtime.getDeviceCount() > 0 else 1)"; then
+    echo "ERROR: the configuration uses the cupy backend but cupy is not importable or sees no" >&2
+    echo "       GPU on $(hostname); nothing was computed" >&2
+    exit 4
+  fi
+fi
 
 if [ -z "${SLURM_JOB_ID:-}" ]; then
   # submission mode: submit this file with the filled options
@@ -99,11 +119,10 @@ if [ -z "${SLURM_JOB_ID:-}" ]; then
   exec sbatch --account="$ACCOUNT" --partition="$PARTITION" --time="$TIME_LIMIT" "${GRES[@]}" \
        --cpus-per-task="$CPUS" --mem="$MEM" \
        --export=ALL,RH_ACCOUNT="$ACCOUNT",RH_PARTITION="$PARTITION",RH_TIME_LIMIT="$TIME_LIMIT",RH_GPU="$GPU",RH_MODE="$MODE",RH_CONFIG="$CONFIG",RH_VARIANT="$VARIANT",RH_REPO="$REPO",RH_CPUS="$CPUS",RH_ALLOW_NO_GIT="${RH_ALLOW_NO_GIT:-0}" \
-       "$0"
+       "$SCRIPT"
 fi
 
 # ---- job mode ----------------------------------------------------------------------------------
-cd "$REPO"
 export OMP_NUM_THREADS="$THREADS" OPENBLAS_NUM_THREADS="$THREADS" MKL_NUM_THREADS="$THREADS" \
        NUMEXPR_NUM_THREADS="$THREADS"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -116,8 +135,15 @@ if [ "$GPU" != "none" ] && command -v nvidia-smi >/dev/null 2>&1; then nvidia-sm
 # dry-run output goes to a file first: piping into head under `set -o pipefail` failed at random
 # (SIGPIPE on the writer; audit A3 M4)
 DRYRUN_TXT="reflholo_${SLURM_JOB_ID}_dryrun.txt"
+set +e
 "$PY" -m reflection_holo.pipeline dry-run --config "$CONFIG" "${VARIANT_ARGS[@]}" > "$DRYRUN_TXT"
+dstatus=$?
+set -e
 head -n 12 "$DRYRUN_TXT"
+if [ "$dstatus" -ne 0 ]; then
+  echo "dry-run failed with status $dstatus (see $DRYRUN_TXT); the run was not started" >&2
+  exit "$dstatus"
+fi
 set +e
 "$PY" -m reflection_holo.pipeline run --config "$CONFIG" "${VARIANT_ARGS[@]}" "${NOGIT_ARGS[@]}" --out "$OUT"
 status=$?

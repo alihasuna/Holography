@@ -74,9 +74,12 @@ def dry_run(cfg: PipelineConfig, *, calibrate_cpu: bool = False) -> dict:
     out["multislice_status"] = why
     if not ok:
         return out
-    from reflection_holo.pipeline.engines import multislice_objects
+    from reflection_holo.pipeline.engines import backend_status, multislice_objects
+    backend = cfg.value("engine", "multislice")["backend"]
+    b_ok, b_why = backend_status(backend)
+    out["backend"] = dict(name=backend, available=b_ok, status=b_why)
     structure = build_structure(cfg)
-    o = multislice_objects(structure, cfg)
+    o = multislice_objects(structure, cfg, require_backend=False)
     ms, cell, params = o["ms"], o["cell"], o["params"]
     setup = ms.reflection_setup(cell, potential=o["potential"], beam=o["beam"], params=params)
     m = cfg.value("engine", "multislice")

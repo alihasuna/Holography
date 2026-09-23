@@ -6,7 +6,10 @@
 
 Exit status: 0 success; 2 usage; 3 configuration refused (a missing PROJECT_INPUT, an unregistered
 stand-in, a schema error); 4 engine unavailable; 5 output directory not empty; 6 git state
-unavailable (refused before any computation unless --allow-no-git).
+unavailable (refused before any computation unless --allow-no-git). A refusal by the model scope
+(the geometric engine's B4 check) is a configuration refusal (3); a multislice run or dry run whose
+array backend is unusable (cupy not importable or no GPU) exits 4 (audit A3 m5, m8). A reader that
+closes the pipe early (``... | head``) ends the command quietly with status 0 (A3 M4).
 
 A run that returns no height (for example because the no-step control failed or was not performed)
 still exits 0: the refusal is the result, printed first as "NO HEIGHT: ..." and recorded in
@@ -18,6 +21,7 @@ import argparse
 import json
 import sys
 
+from reflection_holo.forward.geometric import OutsideB4ScopeError
 from reflection_holo.io.config import ConfigError, MissingProjectInputError
 from reflection_holo.pipeline.config import (format_inputs, list_inputs, load_pipeline_file,
                                              read_pipeline_file)
@@ -95,6 +99,11 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"CPU (measured here) ~{est['cpu']['seconds_total']:.0f} s")
                 print(f"GPU (ASSUMPTION model, not measured) ~{est['gpu']['seconds_total']:.0f} s")
             print(json.dumps(rep, indent=1, default=str)[:4000])
+            be = rep.get("backend")
+            if be is not None and not be["available"]:
+                print(f"multislice backend {be['name']} NOT available: {be['status']} (the "
+                      f"geometry checks above ran; a run would be refused)")
+                return 4
             return 0
         from reflection_holo.pipeline.run import OutputDirectoryError, run
         try:
@@ -118,6 +127,9 @@ def main(argv: list[str] | None = None) -> int:
                    f"wrap period {h['wrap_period_A']:.4f} A)" if h else f"no height: {st.get('reason')}")
             print(f"step field terraces {st['from_field_terrace']}->{st['to_field_terrace']} "
                   f"({st['type']}): {txt}")
+        deg = s["quantification"].get("sign_degeneracy") or {}
+        if any(p.get("degenerate_single_step") for p in deg.get("pairs", [])):
+            print(f"note: {deg['note']}")
         c = s["quantification"]["no_step_control"]
         print(f"no-step control: {'PASS' if c.get('passed') else 'NOT PASSED or not performed'} "
               f"{c}")
@@ -136,7 +148,21 @@ def main(argv: list[str] | None = None) -> int:
     except GitStateError as exc:
         print(f"REFUSED (git state, before any computation): {exc}", file=sys.stderr)
         return 6
+    except OutsideB4ScopeError as exc:
+        print(f"REFUSED (model scope B4, configuration): {exc}", file=sys.stderr)
+        return 3
+
+
+def _entry() -> int:
+    try:
+        return main()
+    except BrokenPipeError:
+        # the reader closed the pipe (e.g. `| head`): stop writing quietly (audit A3 M4)
+        import os
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno())
+        return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(_entry())
