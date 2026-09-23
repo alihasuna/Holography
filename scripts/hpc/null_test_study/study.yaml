@@ -1,0 +1,32 @@
+# Atomistic a/2 null-test study (M2 report, "Atomistic null-test diagnosis"). Every key is required.
+# theta: "bragg_0008_mip" = external angle of the (0,0,8) internal Bragg condition computed with the
+# mean inner potential of the Kirkland potential actually used (13.903 V): 16.1347 mrad; a number is
+# an angle in mrad (TEST_ONLY stand-in for PROJECT_INPUT item 7).
+# absorption_ratio: V_imag / V_real (model "proportional"); 0 must carry an ASSUMPTION label,
+# non-zero values here are TEST_ONLY stand-ins for PROJECT_INPUT item 21 (no sourced value yet).
+# extra_length_A: cell length beyond the minimum build-up assertion (D = 20 A).
+runtime:
+  backend: cupy          # numpy on CPU nodes (then set threads to cpus-per-task)
+  threads: 8
+
+points:
+  # --- A. fixed-beam translation (contact point 168 A apart): convergence with cell length -------
+  - {name: tfix_bragg_abs0_L0,     kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 0,     width_periods: 2, absorption_ratio: 0.0,  absorption_label: "ASSUMPTION: no absorption", precision: complex64}
+  - {name: tfix_bragg_abs0_L10k,   kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.0,  absorption_label: "ASSUMPTION: no absorption", precision: complex64}
+  - {name: tfix_bragg_abs0_L20k,   kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 20000, width_periods: 2, absorption_ratio: 0.0,  absorption_label: "ASSUMPTION: no absorption", precision: complex64}
+  - {name: tfix_bragg_abs05_L0,    kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 0,     width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  - {name: tfix_bragg_abs05_L5k,   kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 5000,  width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  - {name: tfix_bragg_abs05_L10k,  kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  - {name: tfix_bragg_abs10_L5k,   kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 5000,  width_periods: 2, absorption_ratio: 0.1,  absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  - {name: tfix_bragg_abs10_L10k,  kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.1,  absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  - {name: tfix_off12_abs10_L5k,   kind: translation_fixed_beam, theta: 12.0,           extra_length_A: 5000,  width_periods: 2, absorption_ratio: 0.1,  absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  - {name: tfix_off20_abs10_L5k,   kind: translation_fixed_beam, theta: 20.0,           extra_length_A: 5000,  width_periods: 2, absorption_ratio: 0.1,  absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  # --- B. covariant control (beam moved with the crystal): must match -(k_out - k_in).R --------
+  - {name: tmov_bragg_abs10_L10k,  kind: translation_moved_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.1,  absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64}
+  # --- C. a/2 step, edges parallel to the beam: terrace width, window distance, aperture -------
+  - {name: step_w8_bragg_abs10_L5k,  kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 8,  absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0], window_width_A: 6.0}
+  - {name: step_w16_bragg_abs10_L5k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 16, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}
+  - {name: step_w32_bragg_abs10_L5k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 32, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0, 32.0], window_width_A: 6.0}
+  - {name: step_w16_bragg_abs0_L5k,  kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 16, absorption_ratio: 0.0, absorption_label: "ASSUMPTION: no absorption", precision: complex64, apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}
+  - {name: step_w16_off20_abs10_L5k, kind: step_parallel, theta: 20.0,           extra_length_A: 5000, width_periods: 16, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}
+  - {name: step_w16_bragg_abs10_L10k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 16, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}

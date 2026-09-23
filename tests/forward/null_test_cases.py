@@ -123,14 +123,32 @@ def specular_component(ew, theta, aperture, y_range=None):
                    / (m.sum() * ew.dy_A))
 
 
-def run_translation(pair, *, aperture=0.2):
+def vacuum_component(ew, theta, x_min_A, x_max_A):
+    """Fourier component at f_c of the field in the vacuum window x_min <= x < x_max (all y),
+    without a k-space aperture (the window excludes the crystal)."""
+    lam = ew.metadata["beam"]["wavelength_A"]
+    fc = np.sin(theta) / lam
+    x = ew.x0_A + np.arange(ew.psi.shape[0]) * ew.dx_A
+    w = (x >= x_min_A) & (x < x_max_A)
+    col = ew.psi.astype(np.complex128).mean(axis=1)[w]
+    return complex((col * np.exp(-2j * np.pi * fc * x[w])).sum() * ew.dx_A)
+
+
+def run_translation(pair, *, aperture=0.2, vacuum_margins_A=()):
+    """Specular components of A and B: over all x after a k-space aperture (the engine's
+    terrace_step_phase measurement) and, for each margin m, over the vacuum window
+    [highest surface of B + m, top absorber) (the same window for A and B)."""
     theta = pair["beam"].theta_in_ext_rad
     out = {}
+    layB = pair["B"][0].metadata["layout"]
     for key in ("A", "B"):
         cell, pot = pair[key]
         ew = run_realisation(cell, potential=pot, beam=pair["beams"][key],
                              params=pair["params"], realisation=0, seed=None)
         out[key] = specular_component(ew, theta, aperture)
+        for m in vacuum_margins_A:
+            out[(key, m)] = vacuum_component(ew, theta, layB["highest_surface_x_A"] + m,
+                                             layB["top_absorber_x_A"][0])
         out[key + "_time"] = ew.metadata["timing_s"]["total"]
     k = 2 * np.pi / ew.metadata["beam"]["wavelength_A"]
     th_out = pair["params"].theta_out_ext_rad
@@ -138,7 +156,11 @@ def run_translation(pair, *, aperture=0.2):
     k_out = np.array([k * np.sin(th_out), 0.0, k * np.cos(th_out)])
     expected = float(-(k_out - k_in) @ pair["R_slab_A"])
     meas = float(np.angle(out["B"] / out["A"]))
+    vac = {m: dict(err_rad=float(wrap(np.angle(out[("B", m)] / out[("A", m)]) - expected)),
+                   amp_ratio=float(abs(out[("B", m)]) / abs(out[("A", m)])),
+                   amp_A=abs(out[("A", m)])) for m in vacuum_margins_A}
     return dict(delta_phi_rad=meas, expected_rad=expected, expected_wrapped=float(wrap(expected)),
+                vacuum=vac,
                 err_rad=float(wrap(meas - expected)),
                 amp_ratio=float(abs(out["B"]) / abs(out["A"])), amp_A=abs(out["A"]),
                 time_s=out["A_time"] + out["B_time"], grid=(pair["params"].nx, pair["params"].ny),
