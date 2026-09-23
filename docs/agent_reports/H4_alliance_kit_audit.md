@@ -1,7 +1,7 @@
 # H4: audit of the Alliance run kit (H3)
 
-Agent: H4 (code auditor). Date: 2026-09-23. Status: IN PROGRESS (written incrementally; the verdict
-table at the end is the final word).
+Agent: H4 (code auditor). Date: 2026-09-23. Status: COMPLETE (written incrementally; the verdict
+table in section 13 is the final word). 1 BLOCKER (conditional), 1 MAJOR, 11 MINOR.
 
 Scope: `scripts/hpc/alliance/` (clusters.yaml, kit.py, setup_alliance.sh, submit.sh, job.sbatch,
 gpu_check.py, collect_results.sh, ssh_config.example, README_ALLIANCE.md); the H3 changes to
@@ -135,14 +135,14 @@ all present in Wheels3.11), the real cupy wheel.
   (setup_alliance.sh:204-212) run AFTER the complete wheelhouse install, and both failure messages
   require `--recreate`, i.e. a full reinstall (runs 1 and 2 above: each failure cost a complete
   install before failing). See F3.
-* The final gate is a pytest subset that includes `tests/hpc` (setup_alliance.sh:217-221). Those
+* The final gate is a pytest subset that includes `tests/hpc` (setup_alliance.sh:216-221). Those
   tests emulate Lmod with a `module` executable on PATH and rely on stripping `BASH_FUNC_*` from
   the environment (tests/hpc/fake_slurm.py:100-105); they do not strip `BASH_ENV`. See F1.
 * bash-version safety: no `mapfile`, `${var@Q}`, associative arrays, `local -n`, `wait -n` in any
   kit script (grep, command 13). Every possibly empty array is expanded as `${A[@]+"${A[@]}"}`
   (submit.sh:95, job.sbatch:150, collect_results.sh:57, run_pipeline.slurm:128,143,148,157) or only
   after a non-empty check (collect_results.sh:62-64, 73-77). Verified with a real bash 4.2 (section 7).
-  Alliance login and compute nodes run EL9 (Trillium: "Rocky Linux 9.6", Trillium_Quickstart.wiki),
+  Alliance login and compute nodes run EL9 (Trillium_Quickstart.wiki:57 "Trillium runs Rocky Linux 9.6"; Installing_software_in_your_home_directory.wiki:88 "AlmaLinux-9"),
   i.e. bash 5.1, so this is a margin, not a need.
 * `set -euo pipefail` (setup_alliance.sh:29); the only pipe (setup_alliance.sh:137 `grep -v | sed`)
   cannot close early; `loaded()` avoids `| grep -q` (A3 M4) by matching in bash. The Lmod `module`
@@ -354,12 +354,15 @@ What the tests do and do not establish:
    study result `err_rad 0.5685887531628921`). Not reproduced: with `module load cuda/12.6` (no Lmod
    here).
 2. The torus runner's 600 s guard (scripts/torus/run_torus_multislice.py:77, 207-223): the estimate
-   is calibrated on the node with the run's 4 threads and multiplied by 1.5. T1 measured 163-213 s
-   on a shared 4-CPU machine (T1 report table: simulate 187.6-207.3 s); H3's 502-865 s were under
-   heavy load from other agents. On a Slurm allocation the 4 cores are dedicated, so a refusal needs
-   a per-core FFT/elementwise throughput about 3 x below this VM's: unlikely, and cheap if it
-   happens (exit 2 after about 20 s, message in the log). Keep the guard; if it trips, the fix is a
-   documented override in the T1 runner, not a kit change. Not measured on a cluster (NOT RUN).
+   is calibrated on the node with the run's 4 threads and multiplied by 1.5. T1 measured estimates of
+   163-213 s (simulate 187.6-207.3 s, T1 report table); H3 got 502-865 s under heavy load; my four
+   `--estimate-only` runs here (command 23; VM shared with another agent's 3-core job) gave ridge
+   557, 461, 763, 420 s and trench 265, 485, 515, 511 s. The calibration is noisy and the ridge sits
+   near the limit, so a refusal on a cluster node cannot be excluded (F11); dedicated Slurm cores
+   help but nothing here shows that a cluster core is faster than this VM's. Cost if it trips: exit 2
+   after about 30 s with the message in the log; resubmit `--kinds ridge`. Keep the guard, add a
+   recorded override to the T1 runner for batch runs (a T1 code decision, not a kit change). Not
+   measured on a cluster (NOT RUN).
 3. Array vs `--serial` for the 17-point study: `--serial` is the better default. Job_arrays.wiki:45:
    "You should not use a job array to submit tasks with very short run times, e.g. much less than an
    hour. Tasks with run times of only a few minutes should be grouped into longer jobs". Per point
@@ -381,8 +384,9 @@ What the tests do and do not establish:
 * What is wrong: the kit's own emulation tests become a pass/fail condition of the ENVIRONMENT
   build on the cluster, yet their outcome depends on two properties of the login node that have
   nothing to do with the environment: (a) if `BASH_ENV` names a file that defines Lmod's `module`
-  function (Lmod's stock profile exports `BASH_ENV=<lmod>/init/bash`; whether Alliance's profile
-  does is NOT_FOUND on the wiki), every child `bash` uses real Lmod instead of the fake, the module
+  function (to my knowledge Lmod's stock `init/profile` exports `BASH_ENV=<lmod>/init/bash`, which
+  is how many sites make `module` work in `bash script.sh`; not verified here, and whether Alliance's
+  profile does so is NOT_FOUND on the wiki), every child `bash` uses real Lmod instead of the fake, the module
   lists differ and the tests fail; (b) if pytest's temporary directory is mounted `noexec`, the
   fakes cannot run and the tests fail.
 * Reproduction (command 17): `BASH_ENV=<file defining module()> venv/bin/python -m pytest tests/hpc
@@ -413,7 +417,7 @@ What the tests do and do not establish:
   peak RSS 3629 MB`, while the dry-run prints `memory per realisation ~126.6 MiB` (engine arrays
   only). The dry-run builds the full structure (1.44 M atoms). H2's production cells are 31 M to
   93 M atoms (H2_realistic_supercell_sizing.md:427-443); at the measured ~2.5 kB/atom that is roughly
-  78-235 GB and 20-60 min on a login node. Trillium_Quickstart.wiki:172-173: lightweight login-node
+  78-235 GB and 20-60 min on a login node. Trillium_Quickstart.wiki:233-235: lightweight login-node
   tests "Use no more than 1–2 GB of memory"; even the demo exceeds that. For a cupy configuration
   the dry-run also exits 4 on a GPU-less login node (after printing the estimate), which the README
   does not say.
@@ -446,7 +450,7 @@ What the tests do and do not establish:
 ### F5. MINOR: Trillium GPU jobs name no GPU model while Trillium has H100, H200 and (soon) B200 nodes
 * Where: clusters.yaml:376-380 (`--nodes=1`, `--gpus-per-node=1`), :363-365 (only the H100 row).
 * Wiki: Trillium.wiki:63-75 (63 H100 nodes, 1 H200 node, 52 B200 nodes "not yet available");
-  Using_GPUs_with_Slurm.wiki (after the table): "If you do not supply a model specifier your job may
+  Using_GPUs_with_Slurm.wiki:151: "If you do not supply a model specifier your job may
   be rejected or it may be sent to an arbitrary GPU instance ... we strongly recommend that you always
   provide a specific GPU model specifier"; the same page lists `h100` for Trillium. The Trillium
   examples themselves use no model, so the kit follows the site page; the risk is that a PASS earned
@@ -518,3 +522,81 @@ What the tests do and do not establish:
 * submit.sh:79: `git status --porcelain | wc -l` under `pipefail` inside `$(...)`: if `git status`
   failed after `rev-parse` succeeded, submit.sh would exit silently (no message). Unlikely.
 
+## 10. What was verified to work (no finding)
+
+* Every GPU request string, MIG name, recommended core/memory value, walltime limit, job limit and
+  login host in clusters.yaml matches the cached wiki (section 1); inconsistencies of the wiki are
+  recorded, not silently resolved, except the Trillium H200/B200 rows (F5).
+* abTEM 1.0.10: SHA-256 equals PyPI's; the requirement list equals PyPI's requires_dist; the whole
+  dependency closure has Wheels3.11 rows and resolves without conflict (approximation, 3.3).
+* setup_alliance.sh body runs end to end in a fresh clone (stand-in tools), stops loudly on every
+  failure, never falls back silently, leaves the clone clean, writes env.json last.
+* bash 4.2 safe (real bash 4.2.0: the kit suite passes); ShellCheck clean; no pipefail pipe into an
+  early-closing reader; A3/A3b fixes in run_pipeline.slurm intact.
+* No default account, time or GPU; outputs under $SCRATCH, job-id stamped, never reused; threads
+  bounded by the allocation; module set and git state checked before computing; exit codes
+  propagate; `--dry-run` submits and creates nothing.
+* Array index -> point mapping correct (0-based, 17 points; task 3 -> 4th point).
+* gpu_check.py exercises the engine's cupy path and fails on a wrong backend (section 4); the PASS
+  gate is per cluster and per environment.
+* A CPU job is not broken by an installed cupy (section 2.3).
+* The setup test subset stays within login-node limits here (largest process 631 MB, 2 min on 4
+  threads; command 27).
+
+## 11. NOT RUN (and why)
+
+* Anything on an Alliance cluster (no ssh by design): Lmod (`module purge` with sticky modules, the
+  exact `module -t list` output, whether the login-node list equals the compute-node list, which
+  job.sbatch requires, exit 7 otherwise), the real wheelhouse and `avail_wheels`, real `sbatch`
+  option validation, cgroups, `SLURM_CPUS_ON_NODE` on Trillium, time-limit SIGTERM handling, requeue.
+* Whether Alliance login shells export `BASH_ENV` or mount the temporary directory `noexec` (F1
+  trigger): NOT_FOUND on the wiki; the check is in F1.
+* The Alliance-built cupy 14.1.0 wheel (its CUDA build, its import without a driver) and `module load
+  cuda/12.6` together with cupy: no Lmod or CVMFS here. The PyPI cupy-cuda12x 14.1.0 was used instead
+  (section 2.3).
+* Any GPU execution: gpu-check, demo-gpu, the null study or H2 configurations on a GPU. The cupy path
+  of the engine has still never run on a GPU; every GPU time remains the GPU_ASSUMED model.
+* Full torus runs (only `--estimate-only`, command 23) and the full 17-point study (points 0 and 3 on
+  CPU only).
+* The ssh configuration (no ssh); `git fetch` of the remote (the local tracking ref was read only);
+  `shasum` on macOS (documentation inference).
+* The full repository test suite (only tests/hpc, with bash 5.2 and 4.2, and the setup subset in the
+  fresh clone were run).
+
+## 12. For Ali tonight (in addition to README_ALLIANCE.md)
+
+1. Before `setup_alliance.sh` on each cluster: `echo "BASH_ENV=[$BASH_ENV]"; findmnt -no OPTIONS
+   --target "${TMPDIR:-/tmp}"`. If BASH_ENV is non-empty or the options contain `noexec`, use the
+   workarounds in F1, or wait for the fix.
+2. Run `submit.sh ... null-study --only tfix_bragg_abs0_L0` first, then `--serial --time 01:00:00`
+   rather than the 17-task array (F4).
+3. Do not run `pipeline dry-run` of large configurations on a login node (F2); `demo_hpc` alone needs
+   3.6 GB.
+4. If `$SCRATCH` is unset (Fir documents `$HOME/scratch`, Rorqual `$HOME/links/scratch`), pass
+   `--scratch` to submit.sh; the refusal message says so.
+5. If gpu-check FAILs on CUDA, pick the `cuda/<x.y>` module matching the "CUDA runtime" line printed
+   by setup and by gpu-check (F12), rerun setup with `--recreate --cuda-module ...`.
+
+## 13. Verdict
+
+| ID | Severity | Item | Verdict | Fix needed before tonight? |
+|---|---|---|---|---|
+| F1 | BLOCKER (conditional) | setup gate runs non-hermetic tests/hpc (BASH_ENV / noexec tmp) | reproduced (8 and 7 failures); trigger on Alliance NOT_FOUND | yes, or apply the F1 pre-check and workaround |
+| F2 | MAJOR | README §4.6 login-node dry-run; kit.py:54 memory hint | reproduced (3.6 GB peak vs 126.6 MiB printed) | README change; avoid the command tonight |
+| F3 | MINOR | late failures need a full `--recreate` | reproduced (runs 1-2) | no |
+| F4 | MINOR | null study defaults to an array of seconds-long tasks | wiki-contradicting default | no (use `--serial`) |
+| F5 | MINOR | Trillium GPU request without model; H200/B200 present | wiki quote | no (H100 dominates; B200 not yet available) |
+| F6 | MINOR | array tasks re-read the study file | wiki quote | no (do not edit/pull while tasks wait) |
+| F7 | MINOR | Nibi accepts a 1-minute limit | reproduced | no (use HH:MM:SS) |
+| F8 | MINOR | parallel submissions share one record | reproduced | no (submit sequentially) |
+| F9 | MINOR | PASS gate only at submission, not tied to code | code reading | no |
+| F10 | MINOR | collect: arrays-only cap, no total cap, silent drops | reproduced | no |
+| F11 | MINOR | torus 600 s guard marginal; README claim unsupported | measured 420-763 s here | no (T1 runner decision) |
+| F12 | MINOR | documentation details | code/README reading | no |
+| F13 | MINOR | requeue PASS crash, setup.log copy race, silent exit on git status failure | code reading | no |
+| - | OK | cluster facts, abTEM hash and requirements, bash 4.2, ShellCheck, account/time/GPU defaults, $SCRATCH outputs, threads, module and git checks, dry-run, exit codes, array mapping, gpu-check sensitivity, CPU jobs with cupy installed, A3/A3b fixes | verified (sections 1-8, 10) | - |
+
+Overall: the kit is carefully built and its cluster facts are right; one conditional BLOCKER (F1)
+can stop the setup on every cluster at its last step for reasons unrelated to the environment, and
+has a 10-second pre-check and a workaround. With F1 checked, the GPU path still depends on the
+first real gpu-check; nothing in the kit makes a multislice output look validated.
