@@ -22,7 +22,8 @@ def P(value, label, unit, source="TEST_ONLY fixture", **kw):
 
 
 V0_B1 = dict(item=20, stands_in_for_item=20, assumption_id="B1")   # traceable ASSUMPTION (A2 M2)
-ALI = "supplied by Ali 2026-09-22 (copy of the shipped value, test fixture)"   # PROJECT_INPUT source
+ALI = "docs/06, copy of the shipped value (test fixture)"      # PROJECT_INPUT source
+ALI_SUPPLY = dict(supplied_by="Ali", supplied_on="2026-09-22")  # structured supply record (A2c G2)
 STEP_TRANSLATIONS = {"double_layer": {"vector_cubic_a_units": [0.5, 0.0, 0.5]}}
 
 
@@ -32,10 +33,10 @@ def cfg_b_complete():
         schema_version=1, config_id="CFG-B", name="si001_patterned", status="experiment",
         description="TEST_ONLY in-memory fixture",
         parameters=dict(
-            surface_material=P("Si", "PROJECT_INPUT", "none", source=ALI, item=11),
-            surface_normal_hkl=P([0, 0, 1], "PROJECT_INPUT", "none", source=ALI, item=11),
+            surface_material=P("Si", "PROJECT_INPUT", "none", source=ALI, **ALI_SUPPLY, item=11),
+            surface_normal_hkl=P([0, 0, 1], "PROJECT_INPUT", "none", source=ALI, **ALI_SUPPLY, item=11),
             beam_azimuth_uvw=P([1, 1, 0], "TEST_ONLY", "none", item=8),
-            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", source=ALI, item=1),
+            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", source=ALI, **ALI_SUPPLY, item=1),
             lattice_parameter=P(5.4309, "ASSUMPTION", "A"),
             mean_inner_potential_V=P(12.0, "ASSUMPTION", "V", **V0_B1),
             target_reflection_hkl=P([0, 0, 8], "ASSUMPTION", "none", item=9,
@@ -54,7 +55,7 @@ def cfg_b_complete():
                                item=5),
             reference_trajectory=P("vacuum_beside_sample", "TEST_ONLY", "none", item=15),
             pattern_geometry=P({"mesa_height_nm": 10.0}, "TEST_ONLY", "none", item=13),
-            surface_preparation_method=P("ion-milled", "PROJECT_INPUT", "none", source=ALI, item=12),
+            surface_preparation_method=P("ion-milled", "PROJECT_INPUT", "none", source=ALI, **ALI_SUPPLY, item=12),
             surface_preparation_details=P({"oxide": "TEST_ONLY"}, "TEST_ONLY", "none", item=12),
         ))
 
@@ -67,7 +68,7 @@ def cfg_a_fixture():
             surface_material=P("Si", "ASSUMPTION", "none"),
             surface_normal_hkl=P([1, -1, 1], "ASSUMPTION", "none"),
             beam_azimuth_uvw=P([1, 1, 0], "ASSUMPTION", "none"),
-            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", source=ALI, item=1),
+            beam_energy_keV=P(200.0, "PROJECT_INPUT", "keV", source=ALI, **ALI_SUPPLY, item=1),
             lattice_parameter=P(5.4309, "ASSUMPTION", "A"),
             mean_inner_potential_V=P(12.0, "ASSUMPTION", "V", **V0_B1),
             target_reflection_hkl=P([4, -4, 4], "DERIVED_HERE", "none"),
@@ -162,6 +163,8 @@ def test_cfg_b_energy_other_than_200_keV_fails(energy, level):
 def test_cfg_b_must_state_the_energy():
     d = cfg_b_complete()
     d["parameters"]["beam_energy_keV"].update(value=None, label="PROJECT_INPUT")
+    for k in ALI_SUPPLY:                          # a null PROJECT_INPUT has no supply record (G2)
+        d["parameters"]["beam_energy_keV"].pop(k)
     with pytest.raises(ConfigError, match="must state the beam energy"):
         load(d, level="placeholder")
     d = cfg_b_complete()

@@ -119,7 +119,8 @@ def test_three_parameter_cfg_a_fails_at_run_level():
              parameters=dict(surface_material=P("Si", "ASSUMPTION", unit="none"),
                              surface_normal_hkl=P([1, -1, 1], "ASSUMPTION", unit="none"),
                              beam_energy_keV=P(200.0, "PROJECT_INPUT", unit="keV", item=1,
-                                               source="supplied by Ali 2026-09-22 (fixture)")))
+                                               source="docs/06 item 1 (fixture)",
+                                               supplied_by="Ali", supplied_on="2026-09-22")))
     with pytest.raises((MissingRequiredParameterError, MissingProjectInputError)):
         load_config_dict(copy.deepcopy(d), level="run", allow_test_only=True)
     cfg = load_config_dict(d, level="placeholder", allow_test_only=True)

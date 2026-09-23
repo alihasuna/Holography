@@ -52,10 +52,10 @@ from reflection_holo.optics.hologram import (ArtefactOptions, ensemble_hologram_
 from reflection_holo.optics.projection import project_along_k_out
 from reflection_holo.pipeline import quantify as Q
 from reflection_holo.pipeline.config import (PipelineConfig, PipelineConfigError, Record,
-                                             list_inputs, load_pipeline_file)
+                                             assumptions_in_use, list_inputs, load_pipeline_file)
 from reflection_holo.pipeline.engines import (_label, build_structure, run_geometric,
                                               run_multislice)
-from reflection_holo.provenance.manifest import build_manifest
+from reflection_holo.provenance.manifest import build_manifest, require_git_state
 from reflection_holo.reconstruction.sideband import (CarrierSearch, MaskSpec, locate_carrier,
                                                      reconstruct_sideband, sideband_phase_noise)
 from reflection_holo.structure import terrace_shadow_strips
@@ -70,7 +70,9 @@ NOT_IMPLEMENTED = [
     "declared carrier is the post-compensation value; the aperture passage is recorded only)",
     "R3 reference in the pipeline",
     "terrace segmentation from the data (regions come from the ray-traced simulated geometry)",
-    "rocking-series branch resolution in the pipeline (the lattice constraint is used)",
+    "rocking-series branch resolution in the pipeline (the joint lattice constraint is used)",
+    "quantification of an R2 (differential) phase: R2 runs form and reconstruct the holograms, "
+    "every height is withheld (audit A3 M1)",
     "patterned mesas/trenches and overlayers in the engines",
 ]
 PURPOSE_BANNER = "purpose: {purpose}"
@@ -146,6 +148,46 @@ def _field_steps(model, layout: FieldLayout, reference_model: str) -> list[dict]
     return out
 
 
+NO_HEIGHT_CONTROL = "no-step control failed or not performed"
+R2_DIFFERENTIAL = (
+    "R2 self-reference: the reconstructed phase is the DIFFERENTIAL phi(r) - phi(r + s) of the "
+    "object and its copy shifted by s (docs/03 section 6; model_assumptions B5), not a terrace "
+    "phase; wherever r and r + s lie on one terrace it is 0, so region medians of it are not "
+    "terrace phases. Quantification of a differential phase is NOT IMPLEMENTED (it needs the "
+    "reference region traced through the same ray trace, audit A3 M1); every height of this run "
+    "is withheld")
+
+
+def _withhold_reason(control: dict) -> str | None:
+    """Reason to withhold every height of the run, or None (audit A3 B1). The no-step control is
+    the only in-pipeline check that the phase is flat within a terrace; without a passed control no
+    height is returned."""
+    if not control.get("performed"):
+        return (f"{NO_HEIGHT_CONTROL} (not performed: {control.get('reason')}); every height of "
+                f"this run is withheld")
+    if not control.get("passed"):
+        return (f"{NO_HEIGHT_CONTROL} (failed: delta = {control['delta_rad']:+.4f} rad, tolerance "
+                f"{control['tolerance_rad']:.4f} rad = {control['n_sigma']:g} correlated standard "
+                f"errors); every height of this run is withheld")
+    return None
+
+
+def _height_verdict(steps: list[dict], withhold: str | None, joint: dict) -> dict:
+    n_h = sum(1 for s in steps if s.get("height"))
+    if withhold is not None:
+        line = f"NO HEIGHT: {withhold}"
+    elif n_h:
+        line = (f"{n_h} of {len(steps)} step heights returned (joint lattice branch "
+                f"{joint.get('decision')}, chance-acceptance bound "
+                f"{joint.get('chance_probability_bound', float('nan')):.3g} <= alpha "
+                f"{joint.get('chance_level', float('nan')):.3g})")
+    else:
+        line = (f"NO HEIGHT: 0 of {len(steps)} step heights returned (joint lattice branch "
+                f"{joint.get('decision')}: {joint.get('reason', '-')})")
+    return dict(heights_returned=n_h, n_steps=len(steps), withheld=withhold is not None,
+                withhold_reason=withhold, line=line)
+
+
 def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = False) -> dict:
     """Run the pipeline for ``config`` (a path, or a PipelineConfig already gated) into
     ``out_dir`` (created; must be empty). Returns the summary dictionary (also written)."""
@@ -157,6 +199,13 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
             raise PipelineConfigError("variant given twice with different values")
     else:
         cfg = load_pipeline_file(config, variant=variant)
+    if cfg.test_only:
+        # A2c G3: TEST_ONLY values (accepted by the loader only with allow_test_only=True, for
+        # gate tests) never reach a pipeline run; the CLI never sets allow_test_only
+        raise PipelineConfigError("the configuration contains TEST_ONLY values: a pipeline run "
+                                  "refuses them (they exist for in-memory gate tests only; A2c G3)")
+    # the manifest must identify the code: check the git state BEFORE any computation (A3 M5)
+    git_preflight = require_git_state(allow_no_git=allow_no_git)
     out = _prepare_out(out_dir)
     notes: list[str] = []
     theta = float(cfg.glancing_angle["value_rad"])
@@ -296,7 +345,8 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         recon = reconstruct_sideband(
             H_obj_n, carrier=loc, mask=mask, empty_hologram=H_emp_n if divide else None,
             reference_correction=proc["reference_correction"], unwrapping=proc["unwrapping"],
-            empty_min_visibility=proc["empty_min_visibility"] if divide else None)
+            empty_min_visibility=proc["empty_min_visibility"] if divide else None,
+            object_min_visibility=None if divide else proc["object_min_visibility"])
     recon_warnings = [str(w.message) for w in caught]
     timing["reconstruction_s"] = time.perf_counter() - t
 
@@ -338,15 +388,7 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     theta_sigma = cfg.rec("illumination", "angle_calibration_sigma").canonical_value
     wl_sigma = cfg.rec("illumination", "wavelength_sigma_rel").canonical_value
     a_lat, _ = b.quantity("lattice_parameter")
-    steps = Q.measure_steps(
-        phase=phase, regions=regions, a_eff_px=a_eff,
-        field_steps=_field_steps(model, layout, ref_model), wavelength_A=lam, theta_rad=theta,
-        sigma_theta_rad=theta_sigma, sigma_wavelength_rel=wl_sigma, layer_A=a_lat / 4.0,
-        n_max=qp["max_layers"], n_sigma=qp["n_sigma"],
-        branch_source=(f"lattice constraint: h = n a/4 with |n| <= {qp['max_layers']} (the "
-                       f"builder's a/4 and a/2 steps; stand-in "
-                       f"{cfg.rec('quantification', 'processing').assumption_id}); not a rocking "
-                       f"series"))
+    # the no-step control FIRST: its verdict decides whether any height may be returned (A3 B1)
     measurable = [r for r in regions.values() if r["measurable"]]
     if measurable:
         big = max(measurable, key=lambda r: r["n_region_px"])
@@ -355,6 +397,21 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         control["field_terrace"] = big["field_terrace"]
     else:
         control = dict(performed=False, reason="no measurable flat region")
+    withhold = _withhold_reason(control)
+    if ref_model == "R2":
+        withhold = R2_DIFFERENTIAL
+    steps, joint_branch = Q.measure_steps(
+        phase=phase, regions=regions, a_eff_px=a_eff,
+        field_steps=_field_steps(model, layout, ref_model), wavelength_A=lam, theta_rad=theta,
+        sigma_theta_rad=theta_sigma, sigma_wavelength_rel=wl_sigma, layer_A=a_lat / 4.0,
+        n_max=qp["max_layers"], n_sigma=qp["n_sigma"],
+        branch_source=(f"joint lattice constraint: h = n a/4 with 1 <= |n| <= "
+                       f"{qp['max_layers']} over the steps of the run, one common angle "
+                       f"calibration (stand-in "
+                       f"{cfg.rec('quantification', 'processing').assumption_id}); not a rocking "
+                       f"series"),
+        withhold_reason=withhold)
+    height_verdict = _height_verdict(steps, withhold, joint_branch)
     strips = terrace_shadow_strips(structure, theta, _label(cfg.rec("illumination",
                                                                     "glancing_angle")),
                                    theta_out_ext_rad=theta,
@@ -444,12 +501,14 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     ga = dict(cfg.glancing_angle)
     summary = dict(
         purpose=cfg.purpose, banner=PURPOSE_BANNER.format(purpose=cfg.purpose),
+        height_verdict=height_verdict,
         run_name=cfg.run_name, variant=cfg.variant, test_only=cfg.test_only,
         description=cfg.description,
         config=dict(path=cfg.source_path, sha256_file=cfg.sha256_file,
                     sha256_resolved=cfg.sha256_resolved,
                     cfg_b_sha256_canonical=cfg.cfg_b.sha256_canonical),
         inputs=list_inputs(cfg.raw, variant=cfg.variant),
+        assumptions_in_use=assumptions_in_use(cfg),
         beam_energy_keV=BEAM_ENERGY_SUPPLIED_KEV, wavelength_A=lam,
         glancing_angle=dict(ga, value_mrad=theta * 1e3),
         mean_inner_potentials=dict(
@@ -486,7 +545,9 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
                             sideband_sign_check=recon.sideband_sign_check,
                             warnings=recon_warnings,
                             predicted_phase_noise_per_px=noise_pred),
-        quantification=dict(steps=steps, regions={str(k): v for k, v in regions.items()},
+        quantification=dict(height_verdict=height_verdict, steps=steps,
+                            joint_branch=joint_branch,
+                            regions={str(k): v for k, v in regions.items()},
                             no_step_control=control, shadow_exclusion=shadow,
                             a_eff_px=a_eff, sigma_source="measured phase scatter (B16: measured, "
                                                          "not guessed)",
@@ -511,11 +572,13 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         wave_planes={"exit_wave": ew0.plane, "dark_field": df0.wave.grid.plane,
                      "projected": img0.wave.grid.plane, "detector": grid.plane},
         beam_energy_keV=BEAM_ENERGY_SUPPLIED_KEV,
-        extra=dict(purpose=cfg.purpose, variant=cfg.variant,
+        extra=dict(purpose=cfg.purpose, variant=cfg.variant, test_only=cfg.test_only,
+                   allow_test_only="never set by a pipeline run or the CLI (A2c G3)",
                    pipeline_config_sha256_file=cfg.sha256_file,
                    pipeline_config_sha256_resolved=cfg.sha256_resolved,
                    structure_positions_sha256=structure.metadata["positions_sha256"],
-                   glancing_angle=ga, engine_label=engine_record.get("label")),
+                   glancing_angle=ga, engine_label=engine_record.get("label"),
+                   git_preflight=git_preflight, height_verdict=height_verdict),
         allow_no_git=allow_no_git)
     with open(out / "manifest.json", "x", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2)

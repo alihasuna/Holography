@@ -34,7 +34,9 @@ def _step(H_obj, carrier, H_emp, correction, trap=False):
                                empty_hologram=H_emp if correction == "divide_empty" else None,
                                reference_correction=correction, unwrapping="none",
                                empty_min_visibility=EMPTY_MIN_VISIBILITY if correction == "divide_empty"
-                               else None, trap_demonstration=trap)
+                               else None,
+                               object_min_visibility=None if correction == "divide_empty" else 0.05,
+                               trap_demonstration=trap)
     return calculator_measure(res.wrapped_phase, res.resolution_A, 512)[0], res
 
 

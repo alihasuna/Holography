@@ -134,7 +134,7 @@ def test_r2_shift_in_any_direction_is_unwrapped(shift):
     H2 = hologram_intensity(u, ref2, artefacts=NO_ARTEFACTS, content="flat_region")
     c2 = locate_carrier(H2, CarrierSearch((0.0, -0.125), 0.06, 0.03, "none", SIM_SIDEBAND))
     r2 = reconstruct_sideband(H2, carrier=c2, mask=MaskSpec(0.04, "disc", "hann"),
-                              empty_hologram=None, reference_correction="none",
+                              empty_hologram=None, reference_correction="none", object_min_visibility=0.05,
                               unwrapping="itoh_raster")
     assert int(r2.valid_mask.sum()) == 14336
     assert np.array_equal(np.isfinite(r2.unwrapped_phase), r2.valid_mask)

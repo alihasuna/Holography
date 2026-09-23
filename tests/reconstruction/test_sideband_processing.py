@@ -43,7 +43,7 @@ def test_returned_phase_is_phi_o_minus_phi_r(q):
     c = locate_carrier(H_e, _search(q, "none"))
     assert np.allclose(c.carrier_cycles_per_A, q, atol=1e-15)
     res = reconstruct_sideband(H, carrier=c, mask=_hann_third(c), empty_hologram=None,
-                               reference_correction="none", unwrapping="none")
+                               reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     assert np.max(np.abs(res.wrapped_phase_raw - 0.5)) <= 1e-9
     assert np.allclose(res.amplitude, 1.0, atol=1e-9)          # |u_o||u_r|
     assert res.sideband_sign_check.startswith("phi_o - phi_r")
@@ -55,7 +55,7 @@ def test_resolution_reported_three_fringe_spacings():
     H, H_e = _flat_pair(grid, q, 0.0, 0.0)
     c = locate_carrier(H_e, _search(q, "none"))
     res = reconstruct_sideband(H, carrier=c, mask=_hann_third(c), empty_hologram=None,
-                               reference_correction="none", unwrapping="none")
+                               reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     assert res.resolution_A == pytest.approx(3.0 * c.fringe_spacing_A, rel=1e-12)
     assert res.resolution_fringe_spacings == pytest.approx(3.0, rel=1e-12)
     assert res.resolution_A == pytest.approx(24.0, rel=1e-12)      # fringe 8 A, pixel 1 A
@@ -78,7 +78,7 @@ def test_subpixel_carrier_refinement(delta):
     out = {}
     for sp, carrier in (("dft_ratio", c), ("none", locate_carrier(H_e, _search(q, "none")))):
         res = reconstruct_sideband(H, carrier=carrier, mask=_hann_third(carrier), empty_hologram=None,
-                                   reference_correction="none", unwrapping="none")
+                                   reference_correction="none", object_min_visibility=0.05, unwrapping="none")
         pad = int(np.ceil(3 * res.resolution_A))
         out[sp] = np.max(np.abs(wrap_to_pi(res.wrapped_phase[pad:n - pad, pad:n - pad] - 0.5)))
     assert out["dft_ratio"] <= T25_TOL_RAD
@@ -107,7 +107,7 @@ def test_r3_residual_is_entangled_without_correction_and_removed_with_empty_holo
     quad = curv[0] * (r0 - cen[0]) ** 2 + 2 * curv[1] * (r0 - cen[0]) * (r1 - cen[1]) + curv[2] * (r1 - cen[1]) ** 2
     sl = (slice(72, n - 72), slice(72, n - 72))
     raw = reconstruct_sideband(H, carrier=c, mask=_hann_third(c), empty_hologram=None,
-                               reference_correction="none", unwrapping="itoh_raster")
+                               reference_correction="none", object_min_visibility=0.05, unwrapping="itoh_raster")
     d = raw.unwrapped_phase + quad
     d = d - d[256, 256]
     assert np.max(np.abs(d[sl])) <= 1e-3
@@ -174,7 +174,7 @@ def test_carrier_from_flat_region_crop():
                     {"source": "rows 0:128 of the object hologram (lower terrace)"}, None)
     c = locate_carrier(crop, calculator_search(q_ref, "none"))
     res = reconstruct_sideband(H_obj, carrier=c, mask=calculator_mask(c), empty_hologram=None,
-                               reference_correction="none", unwrapping="none")
+                               reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     got, _ = calculator_measure(res.wrapped_phase, res.resolution_A, 512)
     assert abs(got - want) <= T24_TOL_RAD
 
@@ -203,11 +203,11 @@ def test_required_processing_inputs():
         reconstruct_sideband(H, carrier=c, mask=m, empty_hologram=None, reference_correction="divide_empty",
                              unwrapping="none")
     with pytest.raises(ValueError):
-        reconstruct_sideband(H, carrier=c, mask=m, empty_hologram=H_e, reference_correction="none",
+        reconstruct_sideband(H, carrier=c, mask=m, empty_hologram=H_e, reference_correction="none", object_min_visibility=0.05,
                              unwrapping="none")
     with pytest.raises(ValueError):                             # mask would contain q = 0
         reconstruct_sideband(H, carrier=c, mask=MaskSpec(0.2, "disc", "hann"), empty_hologram=None,
-                             reference_correction="none", unwrapping="none")
+                             reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     q_hi = (0.0, 0.375)                                         # 24 bins of 64, close to Nyquist 0.5
     H_hi, H_hi_e = _flat_pair(grid, q_hi, 0.0, 0.0)
     # search disc 0.1 about -q_hi stays inside the band (0.475 < 0.5 cycles/A); a disc reaching the
@@ -215,9 +215,9 @@ def test_required_processing_inputs():
     c_hi = locate_carrier(H_hi_e, CarrierSearch((-q_hi[0], -q_hi[1]), 0.1, 0.02, "none", SIM_SIDEBAND))
     with pytest.raises(ValueError):                             # 0.375 + 0.13 crosses Nyquist
         reconstruct_sideband(H_hi, carrier=c_hi, mask=MaskSpec(0.13, "disc", "none"), empty_hologram=None,
-                             reference_correction="none", unwrapping="none")
+                             reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     other = Grid(grid.shape, (1.0, 2.0), grid.axes, grid.plane)
     H_other = Hologram(H.intensity, other, "object", {}, None)
     with pytest.raises(ValueError):                             # sampling differs from carrier grid
-        reconstruct_sideband(H_other, carrier=c, mask=m, empty_hologram=None, reference_correction="none",
+        reconstruct_sideband(H_other, carrier=c, mask=m, empty_hologram=None, reference_correction="none", object_min_visibility=0.05,
                              unwrapping="none")

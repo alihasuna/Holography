@@ -83,7 +83,7 @@ def test_measured_resolution_versus_mask_radius():
         widths = []
         for R in (0.125 / 3, 0.125 / 4, 0.125 / 6, 0.125 / 8):
             res = reconstruct_sideband(H, carrier=c, mask=MaskSpec(R, "disc", apod),
-                                       empty_hologram=None, reference_correction="none",
+                                       empty_hologram=None, reference_correction="none", object_min_visibility=0.05,
                                        unwrapping="none")
             w = _width(res.wrapped_phase[:, 32], n)
             bound = 1.0 / (n * R - 1.0) + phi0 ** 2
@@ -112,7 +112,7 @@ def test_ensemble_converges_with_the_number_of_realisations():
     c = locate_carrier(empty, CarrierSearch((0.0, -0.125), 0.06, 0.03, "none", SIM_SIDEBAND))
     mask = MaskSpec(0.04, "disc", "none")
     ref_amp = np.median(reconstruct_sideband(empty, carrier=c, mask=mask, empty_hologram=None,
-                                             reference_correction="none",
+                                             reference_correction="none", object_min_visibility=0.05,
                                              unwrapping="none").amplitude)
     for K in (4, 16, 64, 256, 1024):
         delta = rng.normal(0.0, s, K)
@@ -126,7 +126,7 @@ def test_ensemble_converges_with_the_number_of_realisations():
             pairs.append((u_o, u_r))
         H = ensemble_hologram_intensity(pairs, artefacts=NA, content="object")
         res = reconstruct_sideband(H, carrier=c, mask=mask, empty_hologram=None,
-                                   reference_correction="none", unwrapping="none")
+                                   reference_correction="none", object_min_visibility=0.05, unwrapping="none")
         mu = float(np.median(res.amplitude)) / ref_amp
         ph = float(np.median(res.wrapped_phase))
         exact = np.mean(np.exp(-1j * delta))

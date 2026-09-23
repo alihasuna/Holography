@@ -5,8 +5,9 @@ the shipped CFG-B (items 3, 4, 5, 7, 8, 12, 13, 15) filled with non-laboratory v
 DERIVED_HERE, SECTION_READ, REPRODUCED or METADATA_VERIFIED, or ASSUMPTION with an unrelated but
 existing row (A3, B2, B17), passed the run-level gate. Now a parameter whose schema names a docs/06
 item accepts only
-  * PROJECT_INPUT: null (missing; fails at run level), or a value whose source names the supplier
-    and the date ("supplied by <name> <YYYY-MM-DD>");
+  * PROJECT_INPUT: null (missing; fails at run level), or a value with the structured supply
+    fields supplied_by (a name) and supplied_on (an ISO date, not in the future); A2c G2 replaced
+    the former free-text rule "supplied by <name> <YYYY-MM-DD>" in the source;
   * ASSUMPTION with stands_in_for_item equal to that item and an assumption_id that the package
     registry reflection_holo/io/assumption_registry.yaml maps to that item (B1 -> 20, B17 -> 9,
     B18 -> 14);
@@ -73,20 +74,22 @@ def test_registered_stand_ins_of_the_shipped_configs_pass():
     load_config_file(CFG_A, level="run")
 
 
-@pytest.mark.parametrize("source,ok", [
-    ("audit: not a laboratory value", False),
-    ("supplied by Ali", False),                               # no date
-    ("supplied by Ali 2026-13-40", False),                    # not a date
-    ("measured 2026-09-23", False),                           # no supplier
-    ("docs/06, supplied by Ali 2026-09-23 (logbook)", True),
+@pytest.mark.parametrize("supply,ok", [
+    ({}, False),                                              # no supply record
+    ({"supplied_by": "Ali"}, False),                          # no date
+    ({"supplied_by": "Ali", "supplied_on": "2026-13-40"}, False),   # not a date
+    ({"supplied_on": "2026-09-23"}, False),                   # no supplier
+    ({"supplied_by": "Ali", "supplied_on": "2026-09-23"}, True),
 ])
-def test_project_input_value_names_supplier_and_date(source, ok):
-    d = filled("PROJECT_INPUT", source=source)
+def test_project_input_value_names_supplier_and_date(supply, ok):
+    """The same cases as before A2c G2, in the structured form that replaced the free-text rule
+    (the free-text sentences themselves are tested in test_a2c_gate_fixes.py)."""
+    d = filled("PROJECT_INPUT", source="docs/06 logbook", **supply)
     if ok:
         cfg = load_config_dict(d, level="run")
         assert cfg.missing_project_inputs == []
     else:
-        with pytest.raises(ConfigError, match="supplier and the date"):
+        with pytest.raises(ConfigError, match="supplied_by|supplied_on|date"):
             load_config_dict(d, level="placeholder")
 
 
@@ -128,7 +131,8 @@ def test_assumption_id_on_a_parameter_without_item_is_refused():
     ("lattice_parameter", float("inf")), ("convergence_semi_angle", float("-inf")),
     ("image_pixel_size", {"along_beam": float("nan"), "perpendicular": 0.5})])
 def test_non_finite_values_are_refused(name, value):
-    d = filled("PROJECT_INPUT", source="supplied by Ali 2026-09-23")
+    d = filled("PROJECT_INPUT", source="docs/06 logbook", supplied_by="Ali",
+               supplied_on="2026-09-23")
     d["parameters"][name]["value"] = value
     with pytest.raises(ConfigError, match="finite"):
         load_config_dict(copy.deepcopy(d), level="placeholder")

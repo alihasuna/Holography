@@ -23,10 +23,20 @@ series, lattice constraint); the unwrapped phase is Delta_phi_wrapped + 2 pi m. 
 the branch index and its source are always reported.
 
 Small-denominator policy (C report section 4.3 and test-plan item "small-denominator guard"): the
-sensitivity s = |q.n_hat| is compared with its propagated uncertainty
-    sigma_s^2 = (2 pi / lambda)^2 (cos^2 theta_in sigma_theta_in^2 + cos^2 theta_out sigma_theta_out^2)
-                + (s sigma_lambda/lambda)^2,
-and the conversion is REFUSED (SmallDenominatorError, before any division) when s <= sigma_s.
+sensitivity s = |q.n_hat| is compared with its propagated uncertainty and the conversion is REFUSED
+(SmallDenominatorError, before any division) when s <= sigma_s. The angle part of sigma_s depends on
+how the two angle errors are related, which the caller states explicitly (``angle_errors``, no
+default; audit A3 M3):
+  * "independent": two separately calibrated angles (e.g. a non-specular beam),
+        sigma_s^2 = k^2 (cos^2 theta_in sigma_theta_in^2 + cos^2 theta_out sigma_theta_out^2)
+                    + (s sigma_lambda/lambda)^2;
+  * "common": ONE calibration error moves both angles together (the specular beam, theta_out =
+    theta_in, docs/06 item 7): the angle errors are fully correlated, ds/dtheta = k (cos theta_in +
+    cos theta_out) = 2 k cos theta for the specular beam, so
+        sigma_s^2 = k^2 (cos theta_in sigma_theta_in + cos theta_out sigma_theta_out)^2
+                    + (s sigma_lambda/lambda)^2,
+    i.e. sqrt(2) times the "independent" angle term for equal sigmas (k = 2 pi/lambda).
+The wavelength term is a common scale of s in both cases.
 Otherwise the height uncertainty sigma_h^2 = (sigma_phi / s)^2 + (h sigma_s / s)^2 is returned
 with h. Every declared uncertainty must be finite and strictly positive (a zero would disable the
 refusal; audit A2 m2), the phase uncertainty must be below pi (a larger one carries no phase
@@ -43,6 +53,7 @@ from reflection_holo.constants import TWO_PI
 from reflection_holo.geometry.specular import wrap_to_pi
 from reflection_holo.quantification.errors import SmallDenominatorError
 
+ANGLE_ERRORS = ("independent", "common")
 CONVENTION = ("exp(+i(k.r - omega t)); Delta_phi = phi(upper) - phi(lower) = -(k_out - k_in).R; "
               "h = R.n_hat, n_hat outward; external glancing angles; vacuum wavelength")
 
@@ -78,14 +89,25 @@ def sensitivity_rad_per_A(*, wavelength_A: float, theta_in_ext_rad: float,
     return float(TWO_PI / _wavelength(wavelength_A) * (np.sin(ti) + np.sin(to)))
 
 
+def _angle_errors(angle_errors) -> str:
+    if angle_errors not in ANGLE_ERRORS:
+        raise ValueError(f"angle_errors must be one of {ANGLE_ERRORS} (stated by the caller: "
+                         f"'common' when one calibration error moves both angles, e.g. the "
+                         f"specular beam; audit A3 M3), got {angle_errors!r}")
+    return angle_errors
+
+
 def sensitivity_uncertainty_rad_per_A(*, wavelength_A: float, theta_in_ext_rad: float,
                                       theta_out_ext_rad: float, sigma_theta_in_rad: float,
                                       sigma_theta_out_rad: float,
-                                      sigma_wavelength_rel: float) -> float:
+                                      sigma_wavelength_rel: float, angle_errors: str) -> float:
     """Propagated 1-sigma uncertainty of |q.n_hat| from the angle calibration and the relative
     wavelength (energy) uncertainty, first order (SM03, DERIVED_HERE). All arguments required;
-    every uncertainty must be finite and > 0."""
+    every uncertainty must be finite and > 0. ``angle_errors`` ("independent" or "common", module
+    docstring) states whether the two angle errors are independent or one common calibration
+    error (fully correlated; the specular beam, audit A3 M3)."""
     ti, to = _angles(theta_in_ext_rad, theta_out_ext_rad)
+    corr = _angle_errors(angle_errors)
     for name, v in (("sigma_theta_in_rad", sigma_theta_in_rad),
                     ("sigma_theta_out_rad", sigma_theta_out_rad),
                     ("sigma_wavelength_rel", sigma_wavelength_rel)):
@@ -93,8 +115,9 @@ def sensitivity_uncertainty_rad_per_A(*, wavelength_A: float, theta_in_ext_rad: 
     s = sensitivity_rad_per_A(wavelength_A=wavelength_A, theta_in_ext_rad=ti,
                               theta_out_ext_rad=to)
     k = TWO_PI / wavelength_A
-    var = (k**2 * ((np.cos(ti) * sigma_theta_in_rad)**2 + (np.cos(to) * sigma_theta_out_rad)**2)
-           + (s * sigma_wavelength_rel)**2)
+    a_in, a_out = np.cos(ti) * sigma_theta_in_rad, np.cos(to) * sigma_theta_out_rad
+    angle_var = (a_in + a_out)**2 if corr == "common" else a_in**2 + a_out**2
+    var = k**2 * angle_var + (s * sigma_wavelength_rel)**2
     return float(np.sqrt(var))
 
 
@@ -132,13 +155,15 @@ class HeightEstimate:
     sigma_sensitivity_rad_per_A: float
     theta_in_ext_rad: float
     theta_out_ext_rad: float
+    angle_errors: str
     convention: str = CONVENTION
 
 
 def height_from_phase(wrapped_phase_rad: float, *, branch_index: int, branch_source: str,
                       wavelength_A: float, theta_in_ext_rad: float, theta_out_ext_rad: float,
                       sigma_phi_rad: float, sigma_theta_in_rad: float,
-                      sigma_theta_out_rad: float, sigma_wavelength_rel: float) -> HeightEstimate:
+                      sigma_theta_out_rad: float, sigma_wavelength_rel: float,
+                      angle_errors: str) -> HeightEstimate:
     """Signed height h = -Delta_phi lambda / (2 pi (sin theta_in,ext + sin theta_out,ext)).
 
     wrapped_phase_rad must lie in (-pi, pi] (-pi itself excluded, as wrap_to_pi maps it to +pi);
@@ -147,7 +172,9 @@ def height_from_phase(wrapped_phase_rad: float, *, branch_index: int, branch_sou
     hologram: NOT resolved", "rocking series", "lattice constraint"). All keywords are required.
     Applies the small-denominator policy BEFORE dividing (SmallDenominatorError when
     |q.n_hat| = 0 or <= its propagated uncertainty). Every uncertainty must be finite and > 0,
-    sigma_phi_rad < pi (audit A2 m2). docs/05 section 5 item 8; SM03, SM05; DERIVED_HERE.
+    sigma_phi_rad < pi (audit A2 m2). ``angle_errors`` ("independent" or "common") states how the
+    two angle errors are related (module docstring; "common" for the specular beam, audit A3 M3).
+    docs/05 section 5 item 8; SM03, SM05; DERIVED_HERE.
     """
     w = float(wrapped_phase_rad)
     if not np.isfinite(w) or w <= -np.pi or w > np.pi:
@@ -171,7 +198,7 @@ def height_from_phase(wrapped_phase_rad: float, *, branch_index: int, branch_sou
     sigma_s = sensitivity_uncertainty_rad_per_A(
         wavelength_A=wavelength_A, theta_in_ext_rad=ti, theta_out_ext_rad=to,
         sigma_theta_in_rad=sigma_theta_in_rad, sigma_theta_out_rad=sigma_theta_out_rad,
-        sigma_wavelength_rel=sigma_wavelength_rel)
+        sigma_wavelength_rel=sigma_wavelength_rel, angle_errors=angle_errors)
     if not s > sigma_s:
         raise SmallDenominatorError(
             f"sensitivity |q.n_hat| = {s:.6g} rad/A is not larger than its propagated "
@@ -187,7 +214,7 @@ def height_from_phase(wrapped_phase_rad: float, *, branch_index: int, branch_sou
         branch_source=branch_source, unwrapped_phase_rad=float(phi),
         wrap_period_A=float(TWO_PI / s), h_principal_A=float(-w / s),
         sensitivity_rad_per_A=s, sigma_sensitivity_rad_per_A=sigma_s,
-        theta_in_ext_rad=ti, theta_out_ext_rad=to)
+        theta_in_ext_rad=ti, theta_out_ext_rad=to, angle_errors=angle_errors)
 
 
 def height_candidates_A(wrapped_phase_rad: float, branches, *, wavelength_A: float,

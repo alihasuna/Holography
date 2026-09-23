@@ -38,6 +38,8 @@ parameters:
     value: 200.0
     unit: keV
     label: PROJECT_INPUT
+    supplied_by: Ali
+    supplied_on: "2026-09-22"
     item: 1
     source: "docs/06 item 1, supplied by Ali 2026-09-22: 200 keV for all reflection holography work; 300 keV is never used"
   lattice_parameter:

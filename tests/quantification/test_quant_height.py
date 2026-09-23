@@ -19,7 +19,8 @@ SC444 = specular_condition_for((4, -4, 4), (1, -1, 1), E_keV=E, V0_V=V0, a_A=A_S
 SC008 = specular_condition_for((0, 0, 8), (0, 0, 1), E_keV=E, V0_V=V0, a_A=A_SI_A)
 # TEST_ONLY uncertainties (stand-ins for PROJECT_INPUT items 7 and 1; never used outside tests)
 TEST_ONLY_SIGMAS = dict(sigma_phi_rad=0.03, sigma_theta_in_rad=0.05e-3,
-                        sigma_theta_out_rad=0.05e-3, sigma_wavelength_rel=1e-6)
+                        sigma_theta_out_rad=0.05e-3, sigma_wavelength_rel=1e-6,
+                        angle_errors="independent")   # the pre-A3-M3 relation, stated explicitly
 
 
 def check(got, want, tol):
@@ -124,7 +125,7 @@ def test_small_denominator_refused_never_divided():
         height_from_phase(0.5, branch_index=0, branch_source="test", wavelength_A=SC444.lam_A,
                           theta_in_ext_rad=0.0, theta_out_ext_rad=0.0, sigma_phi_rad=0.03,
                           sigma_theta_in_rad=0.0, sigma_theta_out_rad=0.0,
-                          sigma_wavelength_rel=0.0)
+                          sigma_wavelength_rel=0.0, angle_errors="independent")
 
 
 def test_small_denominator_boundary():
@@ -138,7 +139,7 @@ def test_small_denominator_boundary():
     est = height_from_phase(0.1, branch_index=0, branch_source="test", wavelength_A=lam,
                             theta_in_ext_rad=th, theta_out_ext_rad=th, sigma_phi_rad=0.03,
                             sigma_theta_in_rad=sig, sigma_theta_out_rad=sig,
-                            sigma_wavelength_rel=1e-6)
+                            sigma_wavelength_rel=1e-6, angle_errors="independent")
     assert est.sensitivity_rad_per_A > est.sigma_sensitivity_rad_per_A
     assert est.sigma_h_A > abs(est.h_A) * 0.5
 

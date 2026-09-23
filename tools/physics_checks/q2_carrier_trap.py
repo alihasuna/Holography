@@ -301,7 +301,7 @@ def section_D(D: float):
     car0 = locate_carrier(H_obj, conj_side, allow_object_hologram=True)
     m0 = MaskSpec(radius_cycles_per_A=car0.carrier_magnitude_cycles_per_A / 3.0, shape="disc", apodisation="hann")
     r0 = reconstruct_sideband(H_obj, carrier=car0, mask=m0, empty_hologram=None, reference_correction="none",
-                              unwrapping="none", trap_demonstration=True)
+                              unwrapping="none", trap_demonstration=True, object_min_visibility=0.05)
     rec_c, _, R_c = calc._sideband_wave(I_obj_calc, peak_idx=(255, 320))
     dmax = float(np.max(np.abs(np.angle(np.exp(1j * (r0.wrapped_phase - np.angle(rec_c)))))))
     print(f"   package phase map at bin (511, 64) vs calculator _sideband_wave at (255, 320): max |difference| = "
@@ -316,7 +316,8 @@ def section_D(D: float):
                                    empty_hologram=H_emp if empty == "divide" else None,
                                    reference_correction="divide_empty" if empty == "divide" else "none",
                                    unwrapping="none", trap_demonstration=allow,
-                                   empty_min_visibility=0.5 if empty == "divide" else None)
+                                   empty_min_visibility=0.5 if empty == "divide" else None,
+                                   object_min_visibility=None if empty == "divide" else 0.05)
         return car, res, measure(res.wrapped_phase, mask.radius_cycles_per_A)   # R in cycles/px (1 A px)
 
     try:

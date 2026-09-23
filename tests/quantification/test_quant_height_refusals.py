@@ -18,7 +18,7 @@ from reflection_holo.quantification.height import height_from_phase, sensitivity
 
 LAM = wavelength_A(E)
 SIG = dict(sigma_phi_rad=0.03, sigma_theta_in_rad=0.05e-3, sigma_theta_out_rad=0.05e-3,
-           sigma_wavelength_rel=1e-6)
+           sigma_wavelength_rel=1e-6, angle_errors="independent")
 
 
 def call(w=0.5, th=0.02, lam=LAM, **over):

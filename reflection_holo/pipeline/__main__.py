@@ -5,7 +5,12 @@
     python -m reflection_holo.pipeline list-inputs --config C [--variant V]
 
 Exit status: 0 success; 2 usage; 3 configuration refused (a missing PROJECT_INPUT, an unregistered
-stand-in, a schema error); 4 engine unavailable; 5 output directory not empty.
+stand-in, a schema error); 4 engine unavailable; 5 output directory not empty; 6 git state
+unavailable (refused before any computation unless --allow-no-git).
+
+A run that returns no height (for example because the no-step control failed or was not performed)
+still exits 0: the refusal is the result, printed first as "NO HEIGHT: ..." and recorded in
+summary.json["height_verdict"].
 """
 from __future__ import annotations
 
@@ -17,6 +22,7 @@ from reflection_holo.io.config import ConfigError, MissingProjectInputError
 from reflection_holo.pipeline.config import (format_inputs, list_inputs, load_pipeline_file,
                                              read_pipeline_file)
 from reflection_holo.pipeline.engines import EngineUnavailableError
+from reflection_holo.provenance.manifest import GitStateError
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -98,6 +104,14 @@ def main(argv: list[str] | None = None) -> int:
             return 5
         print(s["banner"])
         print(f"engine: {s['engine'].get('label')}")
+        verdict = s["height_verdict"]
+        bar = "*" * 100
+        if verdict["heights_returned"] == 0:
+            print(bar)
+            print(verdict["line"])
+            print(bar)
+        else:
+            print(f"heights: {verdict['line']}")
         for st in s["quantification"]["steps"]:
             h = st.get("height")
             txt = (f"h = {h['h_A']:+.4f} +- {h['sigma_h_A']:.4f} A (branch {h['branch_index']}, "
@@ -119,6 +133,9 @@ def main(argv: list[str] | None = None) -> int:
     except EngineUnavailableError as exc:
         print(f"REFUSED (engine): {exc}", file=sys.stderr)
         return 4
+    except GitStateError as exc:
+        print(f"REFUSED (git state, before any computation): {exc}", file=sys.stderr)
+        return 6
 
 
 if __name__ == "__main__":

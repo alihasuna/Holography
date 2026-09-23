@@ -50,7 +50,7 @@ def test_trap_carrier_refused_without_explicit_opt_in():
     search = CarrierSearch((0.0, -0.125), 0.06, 0.03, "none", "TEST_ONLY: -q_ref")
     trap = locate_carrier(Hobj, search, allow_object_hologram=True)
     kw = dict(carrier=trap, mask=MaskSpec(0.04, "disc", "hann"), empty_hologram=None,
-              reference_correction="none", unwrapping="none")
+              reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     with pytest.raises(ValueError, match="OBJECT hologram"):
         reconstruct_sideband(Hobj, **kw)
     res = reconstruct_sideband(Hobj, **kw, trap_demonstration=True)

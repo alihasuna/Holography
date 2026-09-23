@@ -87,6 +87,7 @@ def reconstruct(phi: np.ndarray, shift, sideband: str = "correct", phi_rel: floa
     mask = MaskSpec(car.carrier_magnitude_cycles_per_A / 3.0, "disc", "hann")
     res = reconstruct_sideband(H, carrier=car, mask=mask, empty_hologram=None,
                                reference_correction="none", unwrapping="none",
+                               object_min_visibility=0.05,   # A2c R1: declared minimum
                                trap_demonstration=(sideband != "correct"))  # S3: explicit opt-in
     return res, ref.metadata["valid_mask"], car
 

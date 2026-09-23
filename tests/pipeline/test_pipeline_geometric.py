@@ -175,8 +175,13 @@ def test_outside_b4_scope_is_refused(tmp_path):
     d["sections"]["structure"]["staircase"]["value"]["terrace_widths_periods"] = [20, 20, 20]
     cfg = load_pipeline_dict(d, variant=None, allow_test_only=True)
     from reflection_holo.forward.geometric import OutsideB4ScopeError
-    with pytest.raises(OutsideB4ScopeError, match="B4"):
+    from reflection_holo.pipeline.engines import build_structure, run_geometric
+    # a pipeline run refuses TEST_ONLY values (A2c G3), so the engine refusal is checked on the
+    # engine adapter the run calls
+    with pytest.raises(PipelineConfigError, match="TEST_ONLY"):
         run(cfg, tmp_path / "b4")
+    with pytest.raises(OutsideB4ScopeError, match="B4"):
+        run_geometric(build_structure(cfg), cfg)
 
 
 def test_output_directory_is_never_overwritten(smoke):

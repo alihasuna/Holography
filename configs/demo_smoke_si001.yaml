@@ -30,12 +30,16 @@ cfg_b:
       value: Si
       unit: none
       label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
       item: 11
       source: "docs/06 item 11, partly supplied by Ali 2026-09-22 (the surface is Si(001))"
     surface_normal_hkl:
       value: [0, 0, 1]
       unit: none
       label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
       item: 11
       source: "docs/06 item 11, supplied by Ali 2026-09-22 (Si(001))"
     beam_azimuth_uvw:
@@ -50,6 +54,8 @@ cfg_b:
       value: 200.0
       unit: keV
       label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
       item: 1
       source: "docs/06 item 1, supplied by Ali 2026-09-22: 200 keV for all reflection holography work; 300 keV is never used"
     lattice_parameter:
@@ -147,6 +153,8 @@ cfg_b:
       value: ion-milled
       unit: none
       label: PROJECT_INPUT
+      supplied_by: Ali
+      supplied_on: "2026-09-22"
       item: 12
       source: "docs/06 item 12, partly supplied by Ali 2026-09-22 (the surface is ion-milled)"
     surface_preparation_details:

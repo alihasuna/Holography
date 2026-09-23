@@ -48,9 +48,10 @@ from typing import Any
 
 from reflection_holo.geometry.errors import GeometryError
 from reflection_holo.geometry.specular import specular_condition_for
-from reflection_holo.io.config import (SUPPLIER_DATE_RE, UNITS, ConfigError, LoadedConfig,
+from reflection_holo.io.config import (SUPPLY_KEYS, UNITS, ConfigError, LoadedConfig,
                                        MissingProjectInputError, assumption_registry,
-                                       canonical_sha256, load_config_dict, load_yaml_unique)
+                                       canonical_sha256, check_supply, demo_only_stand_ins,
+                                       load_config_dict, load_yaml_unique)
 from reflection_holo.io.labels import EVIDENCE_LABELS, TEST_ONLY_LABEL, require_evidence_label
 
 PIPELINE_SCHEMA = 1
@@ -62,7 +63,7 @@ PIPELINE_UNITS.update({"e/px": ("dose_per_pixel", 1.0), "counts/e": ("gain", 1.0
 CANONICAL = {"length": "A", "angle": "rad", "energy": "keV", "potential": "V", "none": "none",
              "dose_per_pixel": "e/px", "gain": "counts/e"}
 RECORD_KEYS_REQUIRED = ("value", "label", "source", "unit")
-RECORD_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note")
+RECORD_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note") + SUPPLY_KEYS
 TOP_KEYS_REQUIRED = ("pipeline_schema", "run_name", "purpose", "description", "cfg_b", "sections")
 TOP_KEYS_OPTIONAL = ("variants",)
 ENGINES = ("geometric", "multislice")
@@ -181,6 +182,7 @@ class Record:
     stands_in_for_item: int | None
     assumption_id: str | None
     note: str | None
+    supply: dict | None = None            # {supplied_by, supplied_on} of a supplied PROJECT_INPUT
 
 
 @dataclass
@@ -210,7 +212,20 @@ class PipelineConfig:
         return v.canonical_value if isinstance(v, Record) else v
 
     def records(self) -> list[Record]:
-        return [v for sec in self.sections.values() for v in sec.values() if isinstance(v, Record)]
+        """Every Record of the sections, including those nested in engine parameter mappings
+        (sections.engine.multislice.physical_absorption, potential_mip)."""
+        return _all_records(self.sections)
+
+
+def _all_records(sections: dict) -> list[Record]:
+    out = []
+    for sec in sections.values():
+        for v in sec.values():
+            if isinstance(v, Record):
+                out.append(v)
+            elif isinstance(v, dict):
+                out.extend(w for w in v.values() if isinstance(w, Record))
+    return out
 
 
 # --------------------------------------------------------------------------------------------------
@@ -311,7 +326,16 @@ def _check_record_kind(where: str, kind: str, v, dim: str):
         if not (isinstance(v, dict) and v):
             bad("a non-empty mapping (handed to the engine)")
     elif kind == "reconstruction":
-        _check_mapping(where, v, RECON_KEYS)
+        if not isinstance(v, dict):
+            bad("a mapping")
+        none = v.get("reference_correction") == "none"
+        if none and "object_min_visibility" not in v:
+            _fail(where, "reference_correction 'none' requires object_min_visibility (the minimum "
+                         "local fringe visibility of the OBJECT hologram, (0, 1]; A2c residual R1)")
+        if not none and "object_min_visibility" in v:
+            _fail(where, "object_min_visibility applies only to reference_correction 'none'")
+        keys = dict(RECON_KEYS, object_min_visibility="fraction") if none else RECON_KEYS
+        _check_mapping(where, v, keys)
     elif kind == "quantification":
         _check_mapping(where, v, QUANT_KEYS)
     else:  # pragma: no cover
@@ -371,17 +395,7 @@ def _gate_record(section: str, name: str, spec: dict, rec, *, allow_test_only: b
         if item != want:
             _fail(where, f"must name its docs/06 item ('item: {want}'), got {item!r}")
         if label == "PROJECT_INPUT":
-            if value is not None:
-                m = SUPPLIER_DATE_RE.search(source)
-                ok = m is not None
-                if ok:
-                    try:
-                        _dt.date.fromisoformat(m.group("date"))
-                    except ValueError:
-                        ok = False
-                if not ok:
-                    _fail(where, f"PROJECT_INPUT item {want} has a value, so its source must name "
-                                 f"the supplier and the date, 'supplied by <name> <YYYY-MM-DD>'")
+            pass                                  # supply record checked below (A2c G2)
         elif label == "ASSUMPTION":
             if sfi != want:
                 _fail(where, f"an ASSUMPTION standing in for PROJECT_INPUT item {want} must carry "
@@ -392,6 +406,7 @@ def _gate_record(section: str, name: str, spec: dict, rec, *, allow_test_only: b
         elif label != TEST_ONLY_LABEL:
             _fail(where, f"is PROJECT_INPUT item {want}: label {label} is not accepted (use "
                          f"PROJECT_INPUT, a registered ASSUMPTION, or TEST_ONLY in memory)")
+    supply = check_supply(where, label, value, rec, error=PipelineConfigError)
     dim, factor = _unit(where, spec["dimension"], rec["unit"])
     if value is None:
         if label not in ("PROJECT_INPUT", "UNVERIFIED"):
@@ -410,7 +425,8 @@ def _gate_record(section: str, name: str, spec: dict, rec, *, allow_test_only: b
         _fail(where, "note must be a string")
     return Record(section=section, name=name, value=copy.deepcopy(value), canonical_value=canonical,
                   canonical_unit=CANONICAL.get(dim, "none"), unit=rec["unit"], label=label,
-                  source=source, item=want, stands_in_for_item=sfi, assumption_id=aid, note=note)
+                  source=source, item=want, stands_in_for_item=sfi, assumption_id=aid, note=note,
+                  supply=supply)
 
 
 def _deep_merge(base: dict, over: dict) -> dict:
@@ -464,7 +480,8 @@ def _glancing_angle(rec: Record, cfg_b_params: dict, sections: dict) -> dict:
             V0 = float(vals["mean_inner_potential_V"])
             v0_rec = dict(value_V=V0, label=cfg_b_params["mean_inner_potential_V"].get("label"),
                           assumption_id=cfg_b_params["mean_inner_potential_V"].get("assumption_id"),
-                          source=cfg_b_params["mean_inner_potential_V"].get("source"))
+                          source=cfg_b_params["mean_inner_potential_V"].get("source"),
+                          parameter="cfg_b.mean_inner_potential_V")
         else:
             eng = sections["engine"]
             if eng["name"] != "multislice":
@@ -472,7 +489,16 @@ def _glancing_angle(rec: Record, cfg_b_params: dict, sections: dict) -> dict:
                                           "is only for the multislice engine")
             mip = eng["multislice"]["potential_mip"]
             V0 = float(mip.canonical_value)
-            v0_rec = dict(value_V=V0, label=mip.label, assumption_id=None, source=mip.source)
+            v0_rec = dict(value_V=V0, label=mip.label, assumption_id=None, source=mip.source,
+                          parameter="sections.engine.multislice.potential_mip")
+        if rec.label == "PROJECT_INPUT" and v0_rec["label"] != "PROJECT_INPUT":
+            raise PipelineConfigError(
+                f"sections.illumination.glancing_angle: the rule form computes the angle from V0 = "
+                f"{V0} V ({v0_rec['parameter']}, label {v0_rec['label']}"
+                f"{' ' + v0_rec['assumption_id'] if v0_rec['assumption_id'] else ''}), so the "
+                f"computed angle cannot carry the label PROJECT_INPUT (docs/06 items 7 and 20: an "
+                f"angle computed from an assumed V0 biases h by about 1 %/V); supply the measured "
+                f"angle as a number, or label the rule by the stand-in it is (audit A3 M2)")
         try:
             sc = specular_condition_for(tuple(hkl), tuple(vals["surface_normal_hkl"]),
                                         E_keV=float(vals["beam_energy_keV"]), V0_V=V0,
@@ -501,6 +527,8 @@ def _cfg_b_with_angle(cfg_b: dict, ga: dict, rec: Record) -> dict:
     entry = dict(value=ga["value_rad"] * 1.0e3, unit="mrad", label=rec.label, item=7)
     if rec.label == "ASSUMPTION":
         entry.update(stands_in_for_item=7, assumption_id=rec.assumption_id)
+    if rec.supply is not None:                     # the supply record travels with the value
+        entry.update(rec.supply)
     src = rec.source
     if ga["rule"] is not None:
         src = (f"{rec.source}; computed by the pipeline: {ga['computed_by']}"
@@ -583,19 +611,11 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
     cfg_b = load_config_dict(cfg_b_full, level="run", allow_test_only=allow_test_only)
     if cfg_b.config_id != "CFG-B":
         raise PipelineConfigError("cfg_b must be a CFG-B configuration")
-    test_only = cfg_b.test_only or any(
-        isinstance(v, Record) and v.label == TEST_ONLY_LABEL
-        for s in sections.values() for v in s.values())
+    records = _all_records(sections)
+    test_only = cfg_b.test_only or any(r.label == TEST_ONLY_LABEL for r in records)
+    _refuse_unused_physical_inputs(cfg_b, sections, ga)
     if data["purpose"] == "comparison":
-        stand_ins = [f"{r.section}.{r.name} (item {r.item})" for s in sections.values()
-                     for r in s.values() if isinstance(r, Record) and r.label == "ASSUMPTION"
-                     and r.item in BLOCKING_ITEMS]
-        stand_ins += [f"cfg_b.{p.name} (item {p.item})" for p in cfg_b.parameters.values()
-                      if p.label == "ASSUMPTION" and p.item in BLOCKING_ITEMS]
-        if stand_ins or test_only:
-            raise PipelineConfigError(
-                f"purpose 'comparison' refuses ASSUMPTION stand-ins for blocking PROJECT_INPUT "
-                f"items and TEST_ONLY values: {stand_ins or 'TEST_ONLY present'}")
+        _comparison_gate(cfg_b, records, test_only)
     resolved = {k: v for k, v in data.items() if k != "variants"}
     resolved["sections"] = sections_raw
     resolved["cfg_b"] = cfg_b_full
@@ -606,6 +626,77 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
                           source_path=source_path, sha256_file=sha256_file,
                           sha256_resolved=canonical_sha256(resolved), test_only=test_only,
                           raw=copy.deepcopy(data))
+
+
+def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict) -> None:
+    """Inputs that matter physically but that no engine path of the pipeline represents are
+    REFUSED rather than accepted and ignored (audit A3 M6; docs/05 criterion 5; docs/06 item 12
+    "must be modelled rather than ignored"). Items that do not change the simulated physics and are
+    not used on a path are listed by ``list_inputs`` as "SUPPLIED, NOT USED on this path"."""
+    conv, _ = cfg_b.quantity("convergence_semi_angle")
+    if conv != 0.0:
+        raise PipelineConfigError(
+            f"cfg_b.convergence_semi_angle = {cfg_b.value('convergence_semi_angle')} "
+            f"{cfg_b.parameters['convergence_semi_angle'].unit} (docs/06 item 3): no engine path "
+            f"models convergent illumination (partial-coherence ensembles NOT IMPLEMENTED; the "
+            f"multislice path would run a plane wave and ignore it), so a non-zero value is "
+            f"refused rather than accepted and not used (audit A3 M6)")
+    prep = cfg_b.value("surface_preparation_details")
+    if isinstance(prep, dict):
+        if prep.get("overlayer", "none") != "none":
+            raise PipelineConfigError(
+                f"cfg_b.surface_preparation_details.overlayer = {prep.get('overlayer')!r} (docs/06 "
+                f"item 12): no engine builds an overlayer (the structure builder records it only; "
+                f"the geometric model and B4 exclude one), and docs/06 item 12 says it must be "
+                f"modelled rather than ignored: refused (audit A3 M6)")
+        if prep.get("termination", "bulk") != "bulk":
+            raise PipelineConfigError(
+                f"cfg_b.surface_preparation_details.termination = {prep.get('termination')!r}: only "
+                f"bulk-terminated terraces are built (the 2x1 reconstruction is NOT IMPLEMENTED): "
+                f"refused (audit A3 M6)")
+    pat = cfg_b.value("pattern_geometry")
+    if pat != {"features": "none"}:
+        raise PipelineConfigError(
+            f"cfg_b.pattern_geometry = {pat!r} (docs/06 item 13): the pipeline's structure and "
+            f"engines build atomic steps only, no patterned mesa or trench; only "
+            f"{{features: none}} is accepted, anything else would be ignored: refused (audit A3 M6)")
+    if ga.get("rule") is not None:
+        target = cfg_b.value("target_reflection_hkl")
+        if list(target) != list(ga["reflection_hkl"]):
+            raise PipelineConfigError(
+                f"the glancing-angle rule uses reflection {tuple(ga['reflection_hkl'])} but the "
+                f"target reflection (docs/06 item 9, cfg_b.target_reflection_hkl) is "
+                f"{tuple(target)}: the angle would be computed for a reflection other than the "
+                f"declared working condition: refused (audit A3 M6)")
+
+
+def _comparison_gate(cfg_b: LoadedConfig, records: list[Record], test_only: bool) -> None:
+    """purpose 'comparison' refuses (audit A3 M2): every registered DEMO stand-in (registry
+    demo_only, B19-B32) whatever its docs/06 item; any ASSUMPTION standing in for a blocking item;
+    TEST_ONLY values. The remaining ASSUMPTIONs are listed in the run summary."""
+    demo = demo_only_stand_ins()
+    bad = [f"sections.{r.section}.{r.name} (item {r.item}, {r.assumption_id})" for r in records
+           if r.label == "ASSUMPTION" and (r.assumption_id in demo or r.item in BLOCKING_ITEMS)]
+    bad += [f"cfg_b.{p.name} (item {p.item}, {p.assumption_id})" for p in cfg_b.parameters.values()
+            if p.label == "ASSUMPTION" and (p.assumption_id in demo or p.item in BLOCKING_ITEMS)]
+    if bad or test_only:
+        raise PipelineConfigError(
+            f"purpose 'comparison' refuses every demo stand-in ({', '.join(sorted(demo))}), every "
+            f"ASSUMPTION standing in for a blocking PROJECT_INPUT item and TEST_ONLY values: "
+            f"{bad or 'TEST_ONLY present'} (audit A3 M2)")
+
+
+def assumptions_in_use(cfg: "PipelineConfig") -> list[dict]:
+    """Every ASSUMPTION-labelled value of the run (CFG-B parameters and pipeline records) with its
+    model_assumptions row, for the run summary (audit A3 M2)."""
+    demo = demo_only_stand_ins()
+    out = [dict(parameter=f"cfg_b.{p.name}", item=p.item, assumption_id=p.assumption_id,
+                demo_only=p.assumption_id in demo, source=p.source)
+           for p in cfg.cfg_b.parameters.values() if p.label == "ASSUMPTION"]
+    out += [dict(parameter=f"sections.{r.section}.{r.name}", item=r.item,
+                 assumption_id=r.assumption_id, demo_only=r.assumption_id in demo, source=r.source)
+            for r in cfg.records() if r.label == "ASSUMPTION"]
+    return out
 
 
 def _check_engine(sections: dict, *, allow_test_only: bool) -> None:
@@ -710,9 +801,51 @@ NOT_USED = {
 }
 
 
+def _path_usage(parameter: str, data: dict, sections: dict) -> str | None:
+    """None if the parameter is used on the selected path, else the reason it is NOT USED there
+    (audit A3 M6, m2). Physically relevant inputs that no path represents (convergence, overlayer,
+    pattern geometry, a rule reflection other than item 9) are refused by the gate instead."""
+    eng = (sections.get("engine") or {}).get("name")
+    ga = ((sections.get("illumination") or {}).get("glancing_angle") or {}).get("value")
+    rule = isinstance(ga, dict)
+    v0_src = ga.get("V0_source") if rule else None
+    params = (data.get("cfg_b") or {}).get("parameters") or {}
+    ref_model = (params.get("reference_model") or {}).get("value")
+    reasons = {
+        "cfg_b.mean_inner_potential_V": (
+            None if rule and v0_src == "cfg_b.mean_inner_potential_V" else
+            "the glancing angle is typed, so V0 is not used" if not rule else
+            "the glancing angle and the engine potential use "
+            "sections.engine.multislice.potential_mip (listed below), not this V0"),
+        "cfg_b.target_reflection_hkl": (
+            None if rule else "the glancing angle is typed; the target reflection is not used"),
+        "cfg_b.second_reflection_hkl": "one working condition is simulated per run",
+        "cfg_b.recommended_reflections_hkl": "one working condition is simulated per run",
+        "cfg_b.step_types": ("the steps are those of sections.structure.staircase (item 11); the "
+                             "list of observables is not used"),
+        "cfg_b.surface_preparation_method": ("the structure uses surface_preparation_details "
+                                             "(termination, overlayer), not the method"),
+        "cfg_b.reconstruction_method": ("the reconstruction uses "
+                                        "sections.reconstruction.processing"),
+        "sections.reference.aperture_passage": ("recorded only: the intrinsic 2 theta_ext "
+                                                "inclination of an R1 reference and its "
+                                                "compensation are NOT IMPLEMENTED"),
+        "sections.reference.shift": (None if ref_model == "R2" else
+                                     "the shift belongs to an R2 reference; this run uses "
+                                     f"{ref_model}"),
+    }
+    if parameter == "sections.engine.multislice.potential_mip":
+        return None
+    return reasons.get(parameter)
+
+
 def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
-    """Every PROJECT_INPUT item 1-22 with the parameters that carry it and their status, WITHOUT
-    failing on a missing one (placeholder-level view; ``load_pipeline_dict`` is the run gate)."""
+    """Every PROJECT_INPUT item 1-22 with the parameters that carry it, their status and whether
+    the selected path uses them, WITHOUT failing on a missing one (placeholder-level view;
+    ``load_pipeline_dict`` is the run gate). A supplied value or stand-in that the path does not use
+    is shown as "..., NOT USED on this path" with the reason (audit A3 M6); for the multislice
+    engine the V0 actually used (sections.engine.multislice.potential_mip) is listed under item 20
+    (audit A3 m2)."""
     sections = resolve_variant(data, variant)
     rows = []
     cfg_params = (data.get("cfg_b") or {}).get("parameters") or {}
@@ -724,37 +857,52 @@ def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
         p = cfg_params.get(name)
         if name == "glancing_angle_ext":
             continue
-        rows.append(_row(item, f"cfg_b.{name}", p, required=name in SCHEMAS["CFG-B"]["required"]))
+        where = f"cfg_b.{name}"
+        rows.append(_row(item, where, p, required=name in SCHEMAS["CFG-B"]["required"],
+                         unused=_path_usage(where, data, sections)))
     for sec, schema in SECTIONS.items():
         for name, spec in schema.items():
             if spec["type"] != "record" or spec["item"] is None:
                 continue
             p = (sections.get(sec) or {}).get(name)
-            rows.append(_row(spec["item"], f"sections.{sec}.{name}", p,
-                             required=not spec["optional"]))
+            where = f"sections.{sec}.{name}"
+            rows.append(_row(spec["item"], where, p, required=not spec["optional"],
+                             unused=_path_usage(where, data, sections)))
     eng = (sections.get("engine") or {})
     if eng.get("name") == "multislice":
-        p = (eng.get("multislice") or {}).get("physical_absorption")
-        rows.append(_row(21, "sections.engine.multislice.physical_absorption", p, required=True))
+        m = eng.get("multislice") or {}
+        rows.append(_row(21, "sections.engine.multislice.physical_absorption",
+                         m.get("physical_absorption"), required=True, unused=None))
+        mip = m.get("potential_mip")
+        if isinstance(mip, dict):
+            rows.append(dict(item=20, parameter="sections.engine.multislice.potential_mip",
+                             status=f"{mip.get('label')}, USED (V0 of the engine potential and of "
+                                    f"the glancing angle)",
+                             value=mip.get("value"), detail=mip.get("source"), used=True))
     items_seen = {r["item"] for r in rows}
     for item, why in NOT_USED.items():
         if item not in items_seen:
-            rows.append(dict(item=item, parameter="-", status="NOT USED", value=None, detail=why))
+            rows.append(dict(item=item, parameter="-", status="NOT USED", value=None, detail=why,
+                             used=False))
     return sorted(rows, key=lambda r: (r["item"], r["parameter"]))
 
 
-def _row(item: int, where: str, p, *, required: bool) -> dict:
+def _row(item: int, where: str, p, *, required: bool, unused: str | None) -> dict:
     if p is None:
         return dict(item=item, parameter=where, status="MISSING" if required else "absent (optional)",
-                    value=None, detail="absent")
+                    value=None, detail="absent", used=False)
     label = p.get("label")
     v = p.get("value")
     if v is None:
         st = "MISSING" if label == "PROJECT_INPUT" else f"null ({label})"
-        return dict(item=item, parameter=where, status=st, value=None, detail=p.get("source"))
+        return dict(item=item, parameter=where, status=st, value=None, detail=p.get("source"),
+                    used=False)
     if label == "PROJECT_INPUT":
-        m = SUPPLIER_DATE_RE.search(str(p.get("source", "")))
-        st = f"SUPPLIED ({m.group('who')} {m.group('date')})" if m else "INVALID (no supplier/date)"
+        try:
+            sup = check_supply(where, label, v, p)
+            st = f"SUPPLIED ({sup['supplied_by']} {sup['supplied_on']})"
+        except ConfigError:
+            st = "INVALID (no valid supplied_by/supplied_on)"
     elif label == "ASSUMPTION":
         reg = assumption_registry()
         ok = item in reg.get(str(p.get("assumption_id")), ())
@@ -762,15 +910,23 @@ def _row(item: int, where: str, p, *, required: bool) -> dict:
               else f"INVALID (assumption_id {p.get('assumption_id')!r} not registered for item {item})")
     else:
         st = f"{label}"
-    return dict(item=item, parameter=where, status=st, value=v, detail=p.get("source"))
+    detail = p.get("source")
+    if unused is not None:
+        st = ("SUPPLIED, NOT USED on this path" if st.startswith("SUPPLIED") else
+              f"{st}, NOT USED on this path")
+        detail = f"NOT USED on this path: {unused}"
+    return dict(item=item, parameter=where, status=st, value=v, detail=detail,
+                used=unused is None)
 
 
 def format_inputs(rows: list[dict]) -> str:
-    lines = [f"{'item':>4}  {'status':<34} {'parameter':<46} value"]
+    lines = [f"{'item':>4}  {'status':<50} {'parameter':<46} value"]
     for r in rows:
-        val = json.dumps(r["value"], sort_keys=True) if r["value"] is not None else "-"
+        val = json.dumps(r["value"], sort_keys=True, default=str) if r["value"] is not None else "-"
         if len(val) > 60:
             val = val[:57] + "..."
-        lines.append(f"{r['item']:>4}  {r['status']:<34} {r['parameter']:<46} {val}")
+        lines.append(f"{r['item']:>4}  {r['status']:<50} {r['parameter']:<46} {val}")
+        if not r.get("used", True) and str(r.get("detail", "")).startswith("NOT USED"):
+            lines.append(f"{'':>4}  -> {r['detail']}")
     return "\n".join(lines)
 

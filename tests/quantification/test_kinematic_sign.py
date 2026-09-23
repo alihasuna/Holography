@@ -35,7 +35,7 @@ TH = specular_condition_for((0, 0, 8), (0, 0, 1), E_keV=BEAM_ENERGY_SUPPLIED_KEV
 L_ATT = 10.0
 TOL = 1e-6
 SIGMAS = dict(sigma_phi_rad=0.01, sigma_theta_in_rad=0.05e-3, sigma_theta_out_rad=0.05e-3,
-              sigma_wavelength_rel=1e-6)          # TEST_ONLY
+              sigma_wavelength_rel=1e-6, angle_errors="independent")          # TEST_ONLY
 
 
 def born_ratio(structure, step):

@@ -53,6 +53,22 @@ if [ ! -x "$PY" ]; then
   exit 2
 fi
 
+# the manifest must identify the code: check the git state before submitting and before any
+# computation (audit A3 M5); RH_ALLOW_NO_GIT=1 records the package-tree hash instead
+NOGIT_ARGS=()
+if ! git -C "$REPO" rev-parse HEAD >/dev/null 2>&1; then
+  if [ "${RH_ALLOW_NO_GIT:-0}" = "1" ]; then
+    echo "WARNING: $REPO has no usable git state; RH_ALLOW_NO_GIT=1: the run records the failure" >&2
+    echo "         and the package-tree hash in its manifest" >&2
+    NOGIT_ARGS=(--allow-no-git)
+  else
+    echo "ERROR: $REPO has no usable git state (git rev-parse HEAD failed); the pipeline would" >&2
+    echo "       refuse the run. Run from a git clone, or export RH_ALLOW_NO_GIT=1 to record the" >&2
+    echo "       package-tree hash instead (audit A3 M5)." >&2
+    exit 2
+  fi
+fi
+
 VARIANT_ARGS=()
 if [ -n "$VARIANT" ]; then VARIANT_ARGS=(--variant "$VARIANT"); fi
 
@@ -82,7 +98,7 @@ if [ -z "${SLURM_JOB_ID:-}" ]; then
   if [ "$GPU" != "none" ]; then GRES=(--gres="$GPU"); fi
   exec sbatch --account="$ACCOUNT" --partition="$PARTITION" --time="$TIME_LIMIT" "${GRES[@]}" \
        --cpus-per-task="$CPUS" --mem="$MEM" \
-       --export=ALL,RH_ACCOUNT="$ACCOUNT",RH_PARTITION="$PARTITION",RH_TIME_LIMIT="$TIME_LIMIT",RH_GPU="$GPU",RH_MODE="$MODE",RH_CONFIG="$CONFIG",RH_VARIANT="$VARIANT",RH_REPO="$REPO",RH_CPUS="$CPUS" \
+       --export=ALL,RH_ACCOUNT="$ACCOUNT",RH_PARTITION="$PARTITION",RH_TIME_LIMIT="$TIME_LIMIT",RH_GPU="$GPU",RH_MODE="$MODE",RH_CONFIG="$CONFIG",RH_VARIANT="$VARIANT",RH_REPO="$REPO",RH_CPUS="$CPUS",RH_ALLOW_NO_GIT="${RH_ALLOW_NO_GIT:-0}" \
        "$0"
 fi
 
@@ -103,7 +119,7 @@ DRYRUN_TXT="reflholo_${SLURM_JOB_ID}_dryrun.txt"
 "$PY" -m reflection_holo.pipeline dry-run --config "$CONFIG" "${VARIANT_ARGS[@]}" > "$DRYRUN_TXT"
 head -n 12 "$DRYRUN_TXT"
 set +e
-"$PY" -m reflection_holo.pipeline run --config "$CONFIG" "${VARIANT_ARGS[@]}" --out "$OUT"
+"$PY" -m reflection_holo.pipeline run --config "$CONFIG" "${VARIANT_ARGS[@]}" "${NOGIT_ARGS[@]}" --out "$OUT"
 status=$?
 set -e
 if [ -d "$OUT" ]; then cp "$DRYRUN_TXT" "$OUT/" || true; fi

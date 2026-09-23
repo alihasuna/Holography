@@ -86,6 +86,43 @@ def git_state(root: Path | None = None) -> dict:
                     error=f"{type(exc).__name__}: {exc}")
 
 
+class GitStateError(RuntimeError):
+    """The git state of the repository is unavailable and the caller did not state allow_no_git."""
+
+
+def package_tree_sha256(root: Path | None = None) -> dict:
+    """SHA-256 over the package source tree reflection_holo/ (every *.py and *.yaml file, sorted by
+    relative path; path + NUL + SHA-256(content) of each), so that a run without git still
+    identifies the code that ran (audit A3 M5)."""
+    pkg = (Path(root) if root is not None else repository_root()) / "reflection_holo"
+    files = sorted(p for p in pkg.rglob("*") if p.is_file() and p.suffix in (".py", ".yaml")
+                   and "__pycache__" not in p.parts)
+    h = hashlib.sha256()
+    for f in files:
+        rel = f.relative_to(pkg).as_posix()
+        h.update(rel.encode() + b"\0")
+        h.update(bytes.fromhex(sha256_file(f)))
+    return dict(sha256=h.hexdigest(), n_files=len(files), root=str(pkg),
+                rule="sha256 over sorted relative path + NUL + sha256(content) of *.py, *.yaml")
+
+
+def require_git_state(*, allow_no_git: bool) -> dict:
+    """The git state (``git_state``) checked BEFORE a run computes anything (audit A3 M5): raises
+    GitStateError when git is unavailable unless allow_no_git is True (then the error is recorded
+    with the package-tree hash)."""
+    repo = git_state()
+    if repo["error"] is not None:
+        if not allow_no_git:
+            raise GitStateError(f"git state of the repository unavailable ({repo['error']}): the "
+                                f"manifest could not identify the code that ran, so the run is "
+                                f"refused before any computation; pass --allow-no-git "
+                                f"(allow_no_git=True) to record the failure and the package-tree "
+                                f"hash instead (audit A3 M5)")
+        repo["allowed_without_git"] = True
+    repo["package_tree"] = package_tree_sha256()
+    return repo
+
+
 def thread_check(thread_count: int) -> str:
     """Compare the declared thread count with the BLAS/OpenMP environment variables (audit A2 m8).
     The package does not set them: numpy's BLAS is initialised at import time."""
@@ -177,10 +214,11 @@ def build_manifest(*, run_name: str, config, input_paths, seeds: Mapping[str, An
     repo = git_state()
     if repo["error"] is not None:
         if not allow_no_git:
-            raise RuntimeError(f"git state of the repository unavailable ({repo['error']}): the "
-                               f"manifest cannot identify the code that ran; pass allow_no_git=True "
-                               f"to record the failure explicitly (audit A2 m8)")
+            raise GitStateError(f"git state of the repository unavailable ({repo['error']}): the "
+                                f"manifest cannot identify the code that ran; pass allow_no_git=True "
+                                f"to record the failure explicitly (audit A2 m8)")
         repo["allowed_without_git"] = True
+    repo["package_tree"] = package_tree_sha256()
 
     inputs = []
     for ip in input_paths:

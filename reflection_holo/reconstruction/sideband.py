@@ -42,7 +42,10 @@ Procedure
    same mask centred on q = 0 (for I = A + B cos(...), w = B/2 and D = A, so V = B/A). Where
    V < V_min (or D <= 0) the corrected phase and amplitude are NaN and ``valid_mask`` is False, with
    a RuntimeWarning. The criterion is absolute: it does not depend on how much of the field has
-   fringes. With "none", exact zeros of |w_obj| are treated the same way. The reference's own
+   fringes. With "none" the caller declares ``object_min_visibility`` instead (REQUIRED there, refused
+   with "divide_empty"; A2c residual R1): the same visibility computed from the OBJECT hologram,
+   V_obj = 2 |w_obj| / D_obj, and V_obj < V_min (or D_obj <= 0, or |w_obj| = 0) is invalid, so a
+   fringe-free area is not passed as valid without an empty hologram. The reference's own
    validity (the R2 ``valid_mask`` of the hologram metadata) is ANDed into ``valid_mask``; those
    values are kept but flagged.
 6. Unwrapping (declared): "none" or "itoh_raster" (Itoh path integration; re-audit A2b N5). The
@@ -527,6 +530,7 @@ def _sign_check(hologram: Hologram, qs: tuple[float, float]) -> str:
 def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation, mask: MaskSpec,
                          empty_hologram: Hologram | None, reference_correction: str,
                          unwrapping: str, empty_min_visibility: float | None = None,
+                         object_min_visibility: float | None = None,
                          trap_demonstration: bool = False) -> SidebandResult:
     """Sideband reconstruction with every processing choice declared (module docstring).
 
@@ -536,7 +540,9 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
 
     ``empty_min_visibility`` (0 < V_min <= 1, the minimum local fringe visibility of the EMPTY
     hologram) must be declared with reference_correction="divide_empty" and must not be given
-    otherwise (step 5; A2b N6).
+    otherwise (step 5; A2b N6). ``object_min_visibility`` (0 < V_min <= 1, the minimum local fringe
+    visibility of the OBJECT hologram) must be declared with reference_correction="none" and must not
+    be given otherwise (step 5; A2c residual R1).
 
     Refused (ValueError): a carrier located on an OBJECT hologram (the brightest-bin trap, audit
     A2 m7) and, for simulated holograms that record their reference carrier, a sideband that is the
@@ -573,10 +579,22 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
         vmin = float(empty_min_visibility)
         if not (np.isfinite(vmin) and 0.0 < vmin <= 1.0):
             raise ValueError(f"empty_min_visibility must lie in (0, 1]; got {empty_min_visibility!r}")
+        if object_min_visibility is not None:
+            raise ValueError("object_min_visibility applies only to reference_correction='none' "
+                             "(with 'divide_empty' the empty hologram's visibility is used)")
     elif empty_hologram is not None:
         raise ValueError("empty_hologram given but reference_correction='none': declare the correction")
     elif empty_min_visibility is not None:
         raise ValueError("empty_min_visibility applies only to reference_correction='divide_empty'")
+    else:
+        if object_min_visibility is None:
+            raise ValueError("reference_correction='none' requires a declared object_min_visibility "
+                             "(minimum local fringe visibility of the OBJECT hologram; PROJECT_INPUT "
+                             "item 19): without an empty hologram a fringe-free area would otherwise "
+                             "pass as valid (A2c residual R1)")
+        vmin = float(object_min_visibility)
+        if not (np.isfinite(vmin) and 0.0 < vmin <= 1.0):
+            raise ValueError(f"object_min_visibility must lie in (0, 1]; got {object_min_visibility!r}")
 
     qs = carrier.sideband_centre_cycles_per_A
     sign_check = _sign_check(object_hologram, qs)
@@ -615,9 +633,17 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
         if (~undefined).any():
             vis_median = float(np.median(vis[~undefined]))
     else:
-        undefined = amp_raw == 0.0
+        W_dc = _mask_values(grid, (0.0, 0.0), mask)            # the same mask centred on q = 0
+        dc = np.real(np.fft.ifft2(np.fft.fft2(object_hologram.intensity) * W_dc))
+        vis = np.zeros(grid.shape)
+        pos = dc > 0.0
+        vis[pos] = 2.0 * amp_raw[pos] / dc[pos]
+        undefined = ~(vis >= vmin) | (amp_raw == 0.0)
         w = np.where(undefined, np.nan + 1j * np.nan, w_obj)
-        what = "object-hologram sideband amplitude exactly 0 (phase undefined)"
+        what = (f"an object-hologram sideband visibility 2|w_obj|/D below the declared minimum "
+                f"{vmin:g} (or a zero object sideband)")
+        if (~undefined).any():
+            vis_median = float(np.median(vis[~undefined]))
     n_undef = int(undefined.sum())
     if n_undef:
         warnings.warn(f"{n_undef} of {undefined.size} pixels have {what}: phase and amplitude set "
@@ -646,6 +672,8 @@ def reconstruct_sideband(object_hologram: Hologram, *, carrier: CarrierLocation,
               "resolution_definition": "1/R (SM12: about three fringe spacings for R = |q_c|/3)",
               "validity": {"empty_min_visibility": (vmin if reference_correction == "divide_empty"
                                                     else None),
+                           "object_min_visibility": (vmin if reference_correction == "none"
+                                                     else None),
                            "visibility_median_valid": vis_median,
                            "n_invalid_amplitude": n_undef, "reference_masks": reference_masks,
                            "n_invalid_total": int((~valid).sum())},

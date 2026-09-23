@@ -72,7 +72,7 @@ def test_half_plane_search_returns_phi_o_minus_phi_r(q_ref):
         c = locate_carrier(emp, search)
         assert np.allclose(c.sideband_centre_cycles_per_A, guess, atol=1e-12)
         res = reconstruct_sideband(obj, carrier=c, mask=mask, empty_hologram=None,
-                                   reference_correction="none", unwrapping="none")
+                                   reference_correction="none", object_min_visibility=0.05, unwrapping="none")
         assert abs(np.median(res.wrapped_phase) - 0.5) <= T25_TOL_RAD
         assert res.parameters["sideband_declaration"] == DECL
     assert res.sideband_sign_check.startswith("unknown")
@@ -106,9 +106,9 @@ def test_conjugate_sideband_on_a_simulated_hologram_raises():
     mask = MaskSpec(0.125 / 3, "disc", "hann")
     with pytest.raises(ValueError, match="CONJUGATE"):
         reconstruct_sideband(H, carrier=c, mask=mask, empty_hologram=None,
-                             reference_correction="none", unwrapping="none")
+                             reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     res = reconstruct_sideband(H, carrier=c, mask=mask, empty_hologram=None,
-                               reference_correction="none", unwrapping="none",
+                               reference_correction="none", object_min_visibility=0.05, unwrapping="none",
                                trap_demonstration=True)
     assert res.sideband_sign_check.startswith("CONJUGATE")
     assert abs(np.median(res.wrapped_phase) + 0.5) <= T25_TOL_RAD

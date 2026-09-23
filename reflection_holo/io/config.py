@@ -25,7 +25,14 @@ and optionally
 
 Labels on a parameter whose schema names a docs/06 item (re-audit A2b N1). Only three states:
   * PROJECT_INPUT, null (the input is missing: listed at placeholder level, fails at run level), or
-    with a value whose source names the supplier and the date, "supplied by <name> <YYYY-MM-DD>";
+    with a value and the two STRUCTURED fields (A2c G2; they replace the former free-text rule
+    "supplied by <name> <YYYY-MM-DD>" in the source)
+        supplied_by  the person who supplied the value (a non-empty name; placeholders such as
+                     "nobody", "unknown", "the simulation" and negations "not ..." are refused)
+        supplied_on  the ISO date "YYYY-MM-DD" (a YAML date is accepted) of the supply, a valid date
+                     not in the future (compared with the current date at UTC+14, the latest
+                     calendar date anywhere);
+    both fields are refused on any other parameter;
   * ASSUMPTION with stands_in_for_item = item and an assumption_id registered for that item;
   * TEST_ONLY, accepted only from in-memory test fixtures (allow_test_only=True; never from a file,
     and recorded as test_only).
@@ -59,7 +66,12 @@ every level; CFG-A and CFG-B must state it (null fails at every level). CFG-O's 
 (null) until the body of P01 is read.
 Materials (audit A2 m10): surface_material must be a canonical element symbol, and the one of its
 configuration: "Si" for CFG-A and CFG-B, "Pt" for CFG-O; any other spelling fails, so the silicon
-cross-checks cannot be skipped. Crystallographic cross-checks for silicon configurations: the
+cross-checks cannot be skipped. Defining values (A2c G1, PINNED): a configuration is identified by
+its geometry (docs/05 section 2), so CFG-A must have surface (1,-1,1), azimuth [1,1,0] and material
+Si, and CFG-B surface (0,0,1); any other value is refused (an experiment cannot be declared as the
+CFG-A benchmark to skip the CFG-B gate). The imaging inputs of CFG-A (glancing angle, convergence,
+aperture, pixel size, reference trajectory, reconstruction method) carry their docs/06 items as in
+CFG-B, so they pass the same PROJECT_INPUT gate. Crystallographic cross-checks for silicon configurations: the
 azimuth must lie in the surface plane (reflection_holo.geometry.frames.surface_frame); a target
 reflection must be on the specular rod, allowed (forbidden-reflection guard, SM02) and accessible
 (SM04, SM06); every reflection listed as forbidden must indeed have F = 0.
@@ -94,7 +106,11 @@ CONFIG_IDS = {"CFG-A": "si111_cleaved_110azimuth", "CFG-B": "si001_patterned",
               "CFG-O": "osakabe_1988_reproduction"}
 N_PROJECT_INPUT_ITEMS = 22
 PARAM_KEYS_REQUIRED = ("value", "label", "source", "unit")
-PARAM_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note")
+SUPPLY_KEYS = ("supplied_by", "supplied_on")                 # A2c G2: structured supply record
+PARAM_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note") + SUPPLY_KEYS
+NON_SUPPLIERS = ("nobody", "no one", "noone", "none", "unknown", "anonymous", "n/a", "na", "tbd",
+                 "todo", "simulation", "the simulation", "pipeline", "the pipeline", "code",
+                 "the code", "default", "assumption", "not supplied", "auto", "automatic")
 TOP_KEYS = ("schema_version", "config_id", "name", "status", "description", "parameters")
 REFERENCE_TRAJECTORIES = ("vacuum_beside_sample", "reflected_flat_area",
                           "transmitted_thin_region")        # docs/06 item 15
@@ -164,11 +180,13 @@ SCHEMAS: dict[str, dict[str, Any]] = {
                   "target_reflection_hkl": None, "recommended_reflections_hkl": None,
                   "forbidden_rod_reflections_hkl": None, "step_types": None,
                   "step_translations": None, "step_edge_orientations": None},
+        # imaging inputs of a CFG-A hologram simulation: the same docs/06 items as CFG-B, so they
+        # pass the same PROJECT_INPUT gate (A2c G1)
         optional={"second_reflection_hkl": None, "not_recommended_reflections_hkl": None,
-                  "glancing_angle_ext": None, "convergence_semi_angle": None,
-                  "objective_aperture_semi_angle": None, "image_pixel_size": None,
-                  "reference_trajectory": None, "reference_model": None,
-                  "reconstruction_method": None}),
+                  "glancing_angle_ext": 7, "convergence_semi_angle": 3,
+                  "objective_aperture_semi_angle": 4, "image_pixel_size": 5,
+                  "reference_trajectory": 15, "reference_model": None,
+                  "reconstruction_method": 19}),
     "CFG-B": dict(
         material="Si",
         required={"surface_material": 11, "surface_normal_hkl": 11, "beam_azimuth_uvw": 8,
@@ -188,6 +206,15 @@ SCHEMAS: dict[str, dict[str, Any]] = {
                   "glancing_angle_ext": None, "step_types": None, "height_sensitivity": None,
                   "reference_model": None, "reconstruction_method": None},
         optional={}),
+}
+
+
+# Defining values of each configuration (A2c G1): any other value is refused.
+PINNED: dict[str, dict[str, Any]] = {
+    "CFG-A": {"surface_material": "Si", "surface_normal_hkl": [1, -1, 1],
+              "beam_azimuth_uvw": [1, 1, 0]},
+    "CFG-B": {"surface_material": "Si", "surface_normal_hkl": [0, 0, 1]},
+    "CFG-O": {"surface_material": "Pt"},
 }
 
 
@@ -237,6 +264,7 @@ class Parameter:
     assumption_id: str | None = None
     canonical_value: Any = None           # value converted through UNITS (None when null)
     canonical_unit: str = "none"
+    supply: dict | None = None            # {supplied_by, supplied_on} of a supplied PROJECT_INPUT
 
 
 @dataclass
@@ -302,8 +330,62 @@ def canonical_sha256(data: dict) -> str:
     """SHA-256 of the canonical JSON form (sorted keys, no whitespace) of a configuration.
     Source map: no row (software requirement, docs/05 sections 0 and 3); evidence label: not
     applicable (no physical claim)."""
-    blob = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    blob = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+                      default=_json_date)
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def _json_date(x):
+    if isinstance(x, _dt.date):                    # a YAML date (supplied_on)
+        return x.isoformat()
+    raise TypeError(f"not JSON serialisable: {type(x).__name__}")
+
+
+def latest_today() -> _dt.date:
+    """The latest calendar date anywhere on Earth now (UTC+14): a supply date after it is in the
+    future everywhere."""
+    return (_dt.datetime.now(_dt.timezone.utc) + _dt.timedelta(hours=14)).date()
+
+
+def check_supply(where: str, label: str, value, spec: dict, *, error=None) -> dict | None:
+    """Structured supply record of a PROJECT_INPUT with a value (A2c G2): returns
+    {supplied_by, supplied_on (ISO string)}; refuses missing, empty, placeholder or negated
+    suppliers, invalid dates and dates in the future; refuses the fields on anything else.
+    Source map: no row; evidence label: not applicable (configuration policy)."""
+    err = error or ConfigError
+    present = [k for k in SUPPLY_KEYS if k in spec]
+    if not (label == "PROJECT_INPUT" and value is not None):
+        if present:
+            raise err(f"{where}: {present} are only for a PROJECT_INPUT with a value (label "
+                      f"{label}{', value null' if value is None else ''}; A2c G2)")
+        return None
+    missing = [k for k in SUPPLY_KEYS if k not in spec]
+    if missing:
+        raise err(f"{where}: a PROJECT_INPUT with a value must state who supplied it and when, in "
+                  f"the structured fields 'supplied_by: <name>' and 'supplied_on: <YYYY-MM-DD>' "
+                  f"(missing {missing}; the free-text 'supplied by' rule is retired, A2c G2)")
+    who = spec["supplied_by"]
+    if not isinstance(who, str) or not who.strip():
+        raise err(f"{where}: supplied_by must be a non-empty name, got {who!r}")
+    low = " ".join(who.strip().lower().split())
+    if low in NON_SUPPLIERS or low.startswith(("not ", "no ", "nobody")):
+        raise err(f"{where}: supplied_by {who!r} does not name a person who supplied the value "
+                  f"(A2c G2)")
+    when = spec["supplied_on"]
+    if isinstance(when, _dt.datetime):
+        raise err(f"{where}: supplied_on must be a date 'YYYY-MM-DD', not a date-time")
+    if isinstance(when, _dt.date):
+        day = when
+    elif isinstance(when, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", when):
+        try:
+            day = _dt.date.fromisoformat(when)
+        except ValueError:
+            raise err(f"{where}: supplied_on {when!r} is not a valid date") from None
+    else:
+        raise err(f"{where}: supplied_on must be an ISO date 'YYYY-MM-DD', got {when!r}")
+    if day > latest_today():
+        raise err(f"{where}: supplied_on {day.isoformat()} is in the future (A2c G2)")
+    return dict(supplied_by=who.strip(), supplied_on=day.isoformat())
 
 
 @functools.lru_cache(maxsize=1)
@@ -315,8 +397,10 @@ def _registry_cached() -> tuple:
         raise ConfigError(f"assumption registry {REGISTRY_RESOURCE} unreadable ({exc})") from exc
     data = load_yaml_unique(text)
     if not isinstance(data, dict) or data.get("schema_version") != 1 \
-            or not isinstance(data.get("stand_ins"), dict) or set(data) != {"schema_version", "stand_ins"}:
-        raise ConfigError(f"{REGISTRY_RESOURCE}: expected {{schema_version: 1, stand_ins: {{...}}}}")
+            or not isinstance(data.get("stand_ins"), dict) \
+            or set(data) != {"schema_version", "stand_ins", "demo_only"}:
+        raise ConfigError(f"{REGISTRY_RESOURCE}: expected {{schema_version: 1, stand_ins: {{...}}, "
+                          f"demo_only: [...]}}")
     out = []
     for aid, items in data["stand_ins"].items():
         if not (isinstance(aid, str) and re.fullmatch(r"B\d+", aid)):
@@ -325,14 +409,25 @@ def _registry_cached() -> tuple:
                 and all(_is_int(i) and 1 <= i <= N_PROJECT_INPUT_ITEMS for i in items)):
             raise ConfigError(f"{REGISTRY_RESOURCE}: {aid} must map to docs/06 item numbers")
         out.append((aid, tuple(items)))
-    return tuple(out)
+    demo = data["demo_only"]
+    if not (isinstance(demo, list) and all(isinstance(a, str) and a in data["stand_ins"]
+                                           for a in demo) and len(set(demo)) == len(demo)):
+        raise ConfigError(f"{REGISTRY_RESOURCE}: demo_only must list distinct ids of stand_ins")
+    return tuple(out), tuple(demo)
 
 
 def assumption_registry() -> dict[str, tuple[int, ...]]:
     """model_assumptions row id -> the docs/06 items it may stand in for (package data
     reflection_holo/io/assumption_registry.yaml). Source map: no row; evidence label: not
     applicable (configuration policy, A2b N1)."""
-    return dict(_registry_cached())
+    return dict(_registry_cached()[0])
+
+
+def demo_only_stand_ins() -> frozenset[str]:
+    """The registered stand-ins that only demonstration runs may use (registry key demo_only):
+    a pipeline run with purpose "comparison" refuses each of them, whatever the docs/06 item
+    (audit A3 M2)."""
+    return frozenset(_registry_cached()[1])
 
 
 def _is_int(v) -> bool:
@@ -474,21 +569,10 @@ def _parse_parameter(cid: str, name: str, spec, allow_test_only: bool) -> Parame
     sfi = spec.get("stands_in_for_item")
     aid = spec.get("assumption_id")
     value = spec["value"]
+    supply = check_supply(f"{cid}: parameter {name}", label, value, spec)
     if schema_item is not None:
         if label == "PROJECT_INPUT":
-            if value is not None:
-                m = SUPPLIER_DATE_RE.search(source)
-                ok = m is not None
-                if ok:
-                    try:
-                        _dt.date.fromisoformat(m.group("date"))
-                    except ValueError:
-                        ok = False
-                if not ok:
-                    raise ConfigError(
-                        f"{cid}: PROJECT_INPUT {name} (docs/06 item {schema_item}) has a value, so its "
-                        f"source must name the supplier and the date, 'supplied by <name> "
-                        f"<YYYY-MM-DD>'; got {source!r} (A2b N1)")
+            pass                                  # supply record checked above (A2c G2)
         elif label == "ASSUMPTION":
             if sfi is None:
                 raise ConfigError(
@@ -527,12 +611,19 @@ def _parse_parameter(cid: str, name: str, spec, allow_test_only: bool) -> Parame
                               f"PROJECT_INPUT or an UNVERIFIED field may be null")
     else:
         _check_kind(cid, name, kind, value)
+        pinned = PINNED.get(cid, {})
+        if name in pinned and value != pinned[name]:
+            raise ConfigError(
+                f"{cid}: parameter {name} is {value!r}, but {cid} is defined by {name} = "
+                f"{pinned[name]!r} (docs/05 section 2): a configuration with another geometry is "
+                f"not {cid} and cannot use its gate (A2c G1)")
     note = spec.get("note")
     if note is not None and not isinstance(note, str):
         raise ConfigError(f"{cid}: parameter {name}: note must be a string")
     return Parameter(name=name, value=value, label=label, source=source, unit=unit, item=item,
                      note=note, stands_in_for_item=sfi, assumption_id=aid,
-                     canonical_value=_convert(kind, value, factor), canonical_unit=canonical_unit)
+                     canonical_value=_convert(kind, value, factor), canonical_unit=canonical_unit,
+                     supply=supply)
 
 
 def _cross_checks(cid: str, params: dict[str, Parameter]) -> None:

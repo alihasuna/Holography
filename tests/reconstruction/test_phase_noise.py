@@ -52,7 +52,7 @@ def test_phase_noise_matches_sqrt2_over_mu_sqrtN(mu_target, counts, apodisation)
     devs = []
     for h in noisy[1:]:
         res = reconstruct_sideband(h, carrier=carrier, mask=mask, empty_hologram=None,
-                                   reference_correction="none", unwrapping="none")
+                                   reference_correction="none", object_min_visibility=0.05, unwrapping="none")
         devs.append(wrap_to_pi(res.wrapped_phase - PHI_O).ravel())
     sigma_meas = float(np.sqrt(np.mean(np.concatenate(devs) ** 2)))
     pred = sideband_phase_noise(mu, counts, res.mask)

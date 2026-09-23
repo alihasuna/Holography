@@ -16,8 +16,9 @@ stand_ins:
   B17: [9]     # CFG-B working reflection (0,0,8), second condition (0,0,12); docs/06 item 9
   B18: [14]    # CFG-B observables: a/4 and a/2 steps, patterned mesas and trenches; docs/06 item 14
   # Phase 3 demo stand-ins (report docs/agent_reports/P1_pipeline.md; the rows are proposed there and
-  # added to docs/model_assumptions.md by the orchestrator). Used by configs/demo_*.yaml only; a
-  # pipeline run with purpose "comparison" refuses stand-ins for blocking items.
+  # added to docs/model_assumptions.md by the orchestrator). Used by configs/demo_*.yaml only; they
+  # are listed under demo_only below, and a pipeline run with purpose "comparison" refuses every
+  # one of them, whatever the item (audit A3 M2).
   B19: [7]     # glancing angle = external angle of the (0,0,8) internal Bragg condition (computed), sigma 0.1 mrad
   B20: [8]     # beam azimuth exactly [100] (a/4 steps inside the B4 scope)
   B21: [3]     # plane-wave illumination (convergence semi-angle 0)
@@ -32,3 +33,6 @@ stand_ins:
   B30: [21]    # absorptive potential of the multislice demos (none)
   B31: [1]     # beam-energy stability: relative wavelength uncertainty 1e-5 (sigma)
   B32: [7]     # multislice runs: glancing angle (and every refraction angle) from the MIP of the potential used (Kirkland IAM 13.903 V, report D3)
+# Demo-only stand-ins (audit A3 M2): refused by every pipeline run with purpose "comparison",
+# whatever the docs/06 item. Every id listed here must be a key of stand_ins.
+demo_only: [B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32]

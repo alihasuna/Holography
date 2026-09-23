@@ -99,7 +99,7 @@ def test_r2_valid_mask_reaches_the_result_through_ensemble_and_noise():
     assert Hn.metadata["valid_mask"] is not H1.metadata["valid_mask"]       # no shared state
     c = locate_carrier(H1, CarrierSearch((0.0, -0.125), 0.06, 0.03, "none", SIM_SIDEBAND))
     res = reconstruct_sideband(He, carrier=c, mask=MaskSpec(0.04, "disc", "hann"),
-                               empty_hologram=None, reference_correction="none", unwrapping="none")
+                               empty_hologram=None, reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     assert np.array_equal(res.valid_mask, want)
     assert not res.valid_mask.flags.writeable
 
@@ -136,7 +136,7 @@ def test_threshold_is_declared_when_dividing():
                              reference_correction="divide_empty", unwrapping="none")
     with pytest.raises(ValueError, match="empty_min_visibility"):
         reconstruct_sideband(H, carrier=c, mask=mask, empty_hologram=None,
-                             reference_correction="none", unwrapping="none",
+                             reference_correction="none", object_min_visibility=0.05, unwrapping="none",
                              empty_min_visibility=0.1)
     for bad in (0.0, -0.1, 1.5, np.nan):          # domain (0, 1] of a visibility (round 2, N6)
         with pytest.raises(ValueError, match="empty_min_visibility"):
@@ -150,6 +150,6 @@ def test_zero_object_sideband_without_correction_is_nan():
     Hz = Hologram(np.full(g.shape, 2.0), g, "object", {}, None)
     with pytest.warns(RuntimeWarning, match="object-hologram sideband"):
         res = reconstruct_sideband(Hz, carrier=c, mask=MaskSpec(0.04, "disc", "none"),
-                                   empty_hologram=None, reference_correction="none",
+                                   empty_hologram=None, reference_correction="none", object_min_visibility=0.05,
                                    unwrapping="none")
     assert not res.valid_mask.any() and np.all(np.isnan(res.wrapped_phase))

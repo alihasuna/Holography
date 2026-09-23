@@ -45,7 +45,7 @@ def _reconstruct():
     carrier = locate_carrier(H_flat, CarrierSearch((-Q[0], -Q[1]), 0.5 * Q[1], 0.05, "none", SIM_SIDEBAND))
     mask = MaskSpec(carrier.carrier_magnitude_cycles_per_A / 3.0, "disc", "hann")
     res = reconstruct_sideband(H, carrier=carrier, mask=mask, empty_hologram=None,
-                               reference_correction="none", unwrapping="none")
+                               reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     return grid, phi, ref, res
 
 
@@ -110,7 +110,7 @@ def test_r2_step_strip_sign_and_width(shift):
                              content="flat_region")
     carrier = locate_carrier(H_f, CarrierSearch((-Q[0], -Q[1]), 0.5 * Q[1], 0.05, "none", SIM_SIDEBAND))
     res = reconstruct_sideband(H, carrier=carrier, mask=MaskSpec(Q[1] / 3.0, "disc", "hann"),
-                               empty_hologram=None, reference_correction="none", unwrapping="none")
+                               empty_hologram=None, reference_correction="none", object_min_visibility=0.05, unwrapping="none")
     s_n = int(shift[0])                                     # n.s, n = +axis 0 (towards the upper terrace)
     lo, hi = (STEP_ROW - s_n, STEP_ROW) if s_n > 0 else (STEP_ROW, STEP_ROW - s_n)
     want = -np.sign(s_n) * STEP
