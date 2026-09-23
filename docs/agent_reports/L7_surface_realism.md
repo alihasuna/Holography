@@ -1,6 +1,6 @@
 # L7 - Surface realism for the Si(001) reflection-holography simulation (literature)
 
-Prepared: 2026-09-23 by agent L7 (literature). Status: IN PROGRESS (written incrementally).
+Prepared: 2026-09-23 by agent L7 (literature). Status: COMPLETE (written incrementally; sections in the order written: 0, 3, 1, 2, 4, 5-9).
 Branch `claude/electron-holography-orchestration-nakd7r`. No repository file other than this report and
 `docs/agent_reports/L7_new_refs.bib` is edited; nothing is committed or pushed.
 Raw downloads are kept outside the repository in
@@ -28,6 +28,8 @@ code refusing the dimer termination and overlayer atoms (`reflection_holo/struct
 | NDL Digital Collections (`dl.ndl.go.jp`), NDL Search (`ndlsearch.ndl.go.jp`) | pages reachable; restricted items return `checkResult NG` on the IIIF manifest |
 | Osaka University repository OUKA (`ir.library.osaka-u.ac.jp`) | works |
 | Query script | `l7/jp_search.py`, queries `l7/jp_queries*.json`, raw responses cached in `l7/jp_cache/`, printed output `l7/jp_out*.txt` |
+| Verification pass | several PDF reads early in the session had their page images trimmed from the working context afterwards ("media removed"); every fact taken from those files (J-a to J-f, J-k, R3, R4, R6, R7) was re-checked against page images rendered with PyMuPDF 1.28.2 (installed in a scratch venv) or against the PDF text layer; corrections are applied in place (Burgers-vector note, Horio's cleaning method and fixed parameters, Ogino locator) |
+| Hosts refusing automated access (not bypassed) | IOPscience (Radware captcha; "not registered" access block), pubs.aip.org and academic.oup.com (Cloudflare "Just a moment"), journals.iucr.org (Cloudflare), cambridge.org ("Temporary Disruption"), research.utwente.nl file links (Cloudflare; the ris.utwente.nl file host served the same files), Tokyo Tech T2R2 over http (403; https worked) |
 
 ## 3. Reflection-holography sources in the Japanese databases (task 3; written first because it was never searched before)
 
@@ -105,7 +107,7 @@ Quotations are transcribed from the page images (spacing normalised); translatio
 * Phase ambiguity (J-a sec. 3-2): "一般にはステップでの、位相差の整数部分は観測されなかった" (in general the integer part of
   the step phase was not observed); around a dislocation the integer part was recovered by following fringe continuity
   from the core. This is the published statement of the 2π-ambiguity that assumption B16 addresses.
-* GaAs(110) (J-b): screw dislocation with b = a/2[101] ("[iOl]" in the OCR; bar position not legible); "干渉縞1本のずれは、
+* GaAs(110) (J-b): screw dislocation with Burgers vector "b=a/2[101]" (as printed); "干渉縞1本のずれは、
   0.5Åの高さの変位に対応する" (one fringe = 0.5 Å height). DERIVED_HERE: equals d_880 = a/(8√2) = 0.4997 Å for
   a = 5.653 Å, consistent with the (880) reflection of P02E's caption at the kinematic Bragg condition without refraction.
 
@@ -119,7 +121,9 @@ Quotations are transcribed from the page images (spacing normalised); translatio
 | 4 | P03 Banzhof and Herrmann, Ultramicroscopy 48, 475 (1993) | NO | CiNii record only. New related lead J-l (EUREM 88, p. 263), UNVERIFIED. |
 | 15 | Suzuki et al. JJAP 40, 2527 (2001) | NO | Tokyo Tech T2R2 record `CTT100448344` is metadata only (vol. 40, no. 4, pp. 2527-2532; no file); J-d and J-e give the conference versions (read). |
 | 16 | Osakabe et al. Ultramicroscopy 48, 483 (1993); Osakabe, Surf. Sci. 298, 345 (1993) | NO | CiNii records only (crid 1870025018705594240 for the former). |
-| 17 | Herring, Proc. MSA 53, 116 (1995) | NO | not in J-STAGE or CiNii. |
+| 17 | Herring, Proc. MSA 53, 116 (1995) | NO | not in J-STAGE or CiNii; the Cambridge Core landing page (DOI 10.1017/s0424820100136957) answered HTTP 400 "Temporary Disruption" on 2026-09-23 (host unreadable, as in L4). |
+| (P23) | Yagi, "Reflection electron microscopy", J. Appl. Cryst. 20, 147-160 (1987), DOI 10.1107/s0021889887086916 | NO (here) | OpenAlex: closed; journals.iucr.org served a Cloudflare challenge (not bypassed). The open Japanese review D9 (Yagi, Tanishiro, Takayanagi 1986) covers the same REM practice and was read instead. |
+| (L4 5.1) | Tanishiro, Hyomen Kagaku 24, 166 (2003) | YES (J-STAGE) | L4 read only the English captions; the Japanese body is now read from rendered page images (sec. 2 and 5): 200 kV, UHV 10⁻⁹ Pa, Si(111)7×7 at 750 °C, (444) at 0.8°, and a measured step phase of 7π (section 4.1). |
 | 18 | Takeguchi, Harada, Shimizu, J. Electron Microsc. (1990) | NO (body) | volume 39(4), pp. 269-272 now METADATA_VERIFIED (J-i). The author's thesis abstract (J-f) is open and read. |
 | new | Osakabe thesis 1995, ch. 4 (J-g) | NO (NDL remote copy possible) | highest-value new request |
 | new | Osakabe, Kotai Butsuri 25(9), 591-596 (1990) (J-h) | NO | library request |
@@ -136,7 +140,7 @@ Quotations are transcribed from the page images (spacing normalised); translatio
 | R4 | T. Shirasawa, S. Mizuno, H. Tochihara, "Si(001), Ge(001)表面における c(4x2)構造の解析と c(4x2)-p(2x1)相転移の臨界現象", 27aYB-8, JPS 概要集 61(1-4), 865 (2006), DOI 10.11316/jpsgaiyo.61.1.4.0_865_1 | OPEN (J-STAGE); read; SHA-256 97c0a727...23f | SECTION_READ (p. 865, 27aYB-8) |
 | R5 | T. Shirasawa, S. Mizuno, H. Tochihara, "Structural Modification of Si(001)-c(4x2) Induced by Electron Beam at Low Temperatures", Hyomen Kagaku 26(8), 480-485 (2005), DOI 10.1380/jsssj.26.480 | OPEN (J-STAGE); read in full; SHA-256 9b7d8a4b...7cc1 | SECTION_READ (abstract; sec. 1, p. 480; sec. 5) |
 | R6 | K. Hayashi, A. Kawasuso, A. Ichimiya, "Adsorption of Oxygen on Si(001) Surfaces Studied by Reflection High-Energy Positron Diffraction", e-J. Surf. Sci. Nanotech. 4, 510-513 (2006), DOI 10.1380/ejssnt.2006.510 | OPEN; read in full; SHA-256 cb465cb7...14bc | SECTION_READ (Fig. 4 and its tables, p. 512) |
-| R7 | T. Ogino, H. Hibino, Y. Homma, "シリコン表面の原子ステップ配列制御", Oyo Buturi 66(12), 1289-1297 (1997), DOI 10.11470/oubutsu1932.66.1289 | OPEN; read in full; SHA-256 6ff4a1db...0570 | SECTION_READ (p. 1289 sec. 1; p. 1293 sec. 3.1). Mostly Si(111); gives the step heights only |
+| R7 | T. Ogino, H. Hibino, Y. Homma, "シリコン表面の原子ステップ配列制御", Oyo Buturi 66(12), 1289-1297 (1997), DOI 10.11470/oubutsu1932.66.1289 | OPEN; read in full; SHA-256 6ff4a1db...0570 | SECTION_READ (p. 1289, sec. 1: "(001)面では0.136nm, (111)面では0.314nm"). Mostly Si(111); used here for the step heights only |
 
 Closed or not attempted (identity METADATA_VERIFIED by Crossref on 2026-09-23; OpenAlex `open_access` = closed for each; content UNVERIFIED): D. J. Chadi, PRL 59, 1691 (1987), 10.1103/physrevlett.59.1691; H. Over et al., PRB 55, 4731 (1997) (LEED of Si(001)-(2x1)), 10.1103/physrevb.55.4731; R. Felici et al., "Room temperature Si(001)-(2x1) reconstruction solved by X-ray diffraction", Surf. Sci. 375, 55 (1997), 10.1016/s0039-6028(97)80005-2; M. Takahasi et al., "Surface X-ray diffraction study on the Si(001)2x1 structure", Surf. Sci. 338, L846 (1995), 10.1016/0039-6028(95)00663-x; T. Shirasawa et al., Surf. Sci. 600, 815 (2006) (LEED of c(4x2), 8 layers), 10.1016/j.susc.2005.11.031; T. Tabata et al., Surf. Sci. 179, L63 (1987), 10.1016/0039-6028(87)90114-2; T. Abukawa et al., PRB 62, 16069 (2000), 10.1103/physrevb.62.16069; O. L. Alerhand et al., PRL 64, 2406 (1990), 10.1103/physrevlett.64.2406; E. Pehlke and J. Tersoff, PRL 67, 465 and 1290 (1991); P. E. Wierenga et al., PRL 59, 2169 (1987); B. S. Swartzentruber et al., PRL 65, 1913 (1990); T. Shirasawa et al., PRL 94, 195502 (2005).
 
@@ -152,7 +156,7 @@ Dimer geometry (T = 0 DFT, R1):
 Room-temperature structure (R3, R4, R5):
 * R4 (p. 865): "ダイマーの傾斜の向きは室温では頻繁に変化しており、みかけの周期は p(2x1) になる"; below the transition the c(4x2) forms; LEED I-V at 80 K determined atom positions "表面から8原子層まで"; c(4x2)-p(2x1) transition at 205 ± 3 K for Si(001) (276 ± 6 K for Ge(001)), 2-D Ising exponents. (The 8-layer coordinates are in Surf. Sci. 600, 815, closed.)
 * R5 (p. 480): near room temperature the dimers are tilted and fluctuate by thermally activated flip-flop, STM sees apparently symmetric dimers, LEED shows streaks (loss of inter-row order); "約150 K以下では flip-flop 運動は凍結し" the c(4x2) forms. Electron-beam-induced disordering of c(4x2) occurs only below about 40 K (abstract), so it is irrelevant at room temperature.
-* R3 (abstract; sec. V, p. 385): many-beam RHEED rocking curves (10 kV, [1-10] azimuth, UHV 1e-7 Pa, sample flashed to about 1200 °C, p. 381) fitted with a "projected potential approach" that superimposes the time-averaged up and down atoms of each flipping dimer (sec. III, p. 382): at RT the dimers are "fundamentally the same as that for the static Si(001)c(4x2) surface"; az − bz = 0.71 Å, α = 18.1° (Table I "Present": rAB 2.28 Å, az 1.38, bz 0.67, xCD 3.60, yCC' 3.60, yDD' 4.08 Å, heights relative to the second layer, a0 = 3.84 Å); at 880 K 0.43 Å and 10.9°, at 1031 K 0.29 Å and 7.4°. R3 Table I also reprints the c(4x2) parameters of CTDS (α 18 ± 1°, rAB 2.28 Å), R1 (18.8°, 2.29 Å), PED (18.6 ± 1°, 2.26 Å) and SXRD (Felici 1997; 20 ± 3°, 2.67 Å). R3 notes that the RT SXRD of Takahasi et al. gives az − bz = 0.87 Å and one-beam RHEED 0.6 Å (sec. V). R3 used a 10 % imaginary potential and a Debye vibration amplitude of 0.07 Å at RT (p. 383): model choices of that paper, not measured absorption.
+* R3 (abstract; sec. V, p. 385): many-beam RHEED rocking curves (10 kV, [1-10] azimuth, UHV 1×10⁻⁷ Pa, commercial wafer "cut within ±0.1°", surface "repeatedly cleaned by direct current heating up to ca. 1200 °C", p. 381) fitted with a "projected potential approach" in which "the flipping up and down Si atoms of the asymmetric dimers are superimposed on each other" (sec. III, p. 382): at RT the dimers are "fundamentally the same as that for the static Si(001)c(4x2) surface"; az − bz = 0.71 Å, α = 18.1° (Table I "Present": rAB 2.28 Å, az 1.38, bz 0.67, xCD 3.60, yCC' 3.60, yDD' 4.08 Å, heights relative to the second layer, a0 = 3.84 Å); at 880 K 0.43 Å and 10.9°, at 1031 K 0.29 Å and 7.4° (sec. V, p. 385). Caveat (p. 382): the "Present" row is not a free refinement: r_AB = 2.28 Å, all back bonds 2.33 Å and the second-layer x-shifts 0.12 Å (taken from R1) are fixed, deeper layers are ideal, and one relaxation parameter R is fitted (R = 0 best at RT, p. 383). R3 Table I also reprints the c(4x2) parameters of CTDS (α 18 ± 1°, rAB 2.28 Å), R1 (18.8°, 2.29 Å), PED (18.6 ± 1°, 2.26 Å) and SXRD (Felici 1997; 20 ± 3°, 2.67 Å). R3 notes that the RT SXRD of Takahasi et al. gives az − bz = 0.87 Å and one-beam RHEED 0.6 Å (sec. V). R3 used a 10 % imaginary potential and a Debye vibration amplitude of 0.07 Å at RT (p. 383): model choices of that paper, not measured absorption.
 * R3 (p. 383): the 2x1 and 1x2 domains on adjacent terraces were summed "not with respect to coherency but to intensity, because the averaged terrace width is considered to be almost equal to or larger than the coherence length for the incident electron beam".
 * R6 (Fig. 4, p. 512): RHEPD at 110 K, the unoxidised Si(001) region modelled with asymmetric dimers, vertical spacings 0.8 Å (between the two dimer atoms) and 0.7 Å (to the next layer), with per-atom Debye parameters B = 1.01 Å² (top) and 0.22 Å² (lower) used in the positron calculation. Not transferable to 200 keV electrons as absorption values.
 
@@ -358,3 +362,214 @@ REM practice and ion damage (D9-D11):
   620 nm (H2 section 3 gives 1240 Å for 10 Å). D8 shows that 0.8 nm of oxide still transmits weak
   Si(001) 1×1 RHEED reflections under a strong amorphous background.
 
+## 4. Published reflection-holography and REM step phases on Si (task 4)
+
+### 4.1 The one measured step phase on silicon found: Tanishiro 2003 (Tokyo Tech), Si(111)7×7, 200 kV
+
+Source: Y. Tanishiro, "REM-RHEEDにおけるエネルギー損失分光：Ωフィルターによるエネルギーフィルタリング" (Electron Energy
+Loss Spectroscopy in REM-RHEED: Energy Filtering by Omega-type Energy Filter), Hyomen Kagaku 24(3), 166-173 (2003), DOI
+10.1380/jsssj.24.166 (TANISHIRO2003 in references.bib). OPEN on J-STAGE
+(`https://www.jstage.jst.go.jp/article/jsssj/24/3/24_3_166/_pdf/-char/en`, SHA-256 8e1e97f4...3157). L4 could read only
+the English captions (the embedded Japanese fonts did not decode); the pages were rendered here with PyMuPDF at 140 dpi
+and read as images. Label: SECTION_READ (sec. 2 p. 167; sec. 5 p. 170; p. 171; Figs. 4-5). Transcriptions:
+* Conditions (sec. 2, p. 167): "加速電圧 200 kV のショットキー型電界放出型電子銃とオメガ型エネルギーフィルターを搭載した
+  高分解能・超高真空電子顕微鏡を用いた。試料近傍の圧力は 10⁻⁹ Pa 台である。" "通電加熱により清浄化を行った Si(111)7×7 表
+  面を 750℃ で観察した。電子線を［110］方向から入射角 0.8 度で入射し,(444) ブラッグ反射がほぼ鏡面反射となる条件で観察し
+  た。" The REM image was formed with the (00) specular spot and the (±2/7 0) spots in the objective aperture; the
+  electron biprism sits in the imaging lens system on the specimen side of the omega filter and overlaps REM images
+  reflected from different regions of the surface.
+* Arrangement (sec. 5, p. 170): "試料表面の平坦部分からの REM 像を参照波,対象領域からの REM 像を物体波として重ね合わせる
+  と,反射電子ホログラムを作成できる。" (reference = REM image of a flat part of the surface: type R2 of B5.)
+* Step phase (sec. 5, p. 170, about Fig. 4(a), unfiltered hologram of Si(111)7×7): "大きな矢印で示したステップのコントラ
+  ストが見られるが,そこを横切るときに,キャリアフリンジはシフトしている。対象領域の表面の高さがステップの両側で変化し,
+  電子波の位相が 7π だけ変化しているためであることが確かめられた。" (the carrier fringes shift where they cross the
+  step; it was confirmed that this is because the surface height changes across the step and the electron-wave phase
+  changes by 7π.) The step height, the sign convention and the method of establishing 7π (fringe counting or
+  reconstruction) are not stated.
+* Coherence (pp. 170-171): maximum hologram width with visible carrier fringes about 60 nm unfiltered, above 80 nm
+  no-loss (10 eV slit), 30-40 nm for one-plasmon loss; fringe visibility 0.4, 0.3, 0.1 and below 0.1 at energy losses
+  0, 5.6, 11.4, 12.6 eV with a 2 eV slit; θ_E = ΔE/2E = 3×10⁻⁵ rad at 11.3 eV.
+* Consistency check (DERIVED_HERE): for a single-bilayer Si(111) step h = a/√3 = 3.1356 Å (a = 5.431 Å) at 200 kV
+  (λ = 0.025079 Å), 2k sinθ h = 6.98π at the stated 0.8° (13.96 mrad). At the internal (444) Bragg condition with
+  V0 = 12 V (relativistic factor 1.164 included) the external angle is 13.64 mrad (the repository's 13.6 mrad, docs/06
+  item 13) and Osakabe's refraction formula (J-a) gives 6.82π; the kinematic 2πn with n = 4 would be 8π. The printed
+  7π is therefore consistent with the geometric phase at the external angle and with refraction reducing 8π, to within
+  what "7π" resolves. This is the only published step phase on silicon found; it is a Si(111), not a Si(001),
+  benchmark, and it is the closest published comparison point for the project (same group arrangement R2, same 200 kV).
+
+### 4.2 Other items bearing on step phases
+
+| Item | What it gives | Label |
+|---|---|---|
+| Osakabe 1990 JPS abstract (J-a, p. 452) | Pt(111) 2.3 Å monatomic step, phase difference "約0.5λ", explained by the refraction formula; the integer part of the step phase generally not observed | SECTION_READ |
+| Suzuki et al. 2000 (J-d; also Denshi Kenbikyo 35 Suppl. 1, p. 219, 2000, JSM annual meeting abstract 18-IV-915, read in the J-STAGE supplement PDF `kenbikyo1950/35/Supplement1/35_Supplement1_184`, page 36 of 95; SHA-256 4dd22309...2015) | Si(111)7×7: "A Phase shift of the reflected electron waves around a step was observed in phase images reconstructed from holograms formed using elastic electrons"; no value; biprism Fresnel fringes must be removed for accurate work | SECTION_READ |
+| D9 (Yagi, Tanishiro, Takayanagi 1986, p. 1042) | REM step contrast: off the Bragg condition a step shows black/white contrast explained by a strain field (about 10⁻⁴) at the step; "このひずみ場によってステップ両側からの反射波の間に,2π g·h (=2π×整数) に付加的な位相差が生じ,これがフレネル縞の白黒のコントラストを決定している" (the strain adds a phase to 2π g·h between the waves reflected on the two sides of the step, which sets the black/white Fresnel contrast), citing Kajiyama, Takayanagi, Tanishiro, Yagi, Proc. 11th ICEM Kyoto 1986, Vol. 2, p. 1343 (not read). Also: in REM a uniform step contrast usually means unit height; the direct proof is a step ending at a screw dislocation | SECTION_READ (statement by D9 about ref. 64) |
+| Takeguchi 1993 thesis abstract (J-f) | Si(111) reflection holograms formed with Bragg-reflected waves; no phase value in the abstract | SECTION_READ (abstract) |
+| P09 (L5) | Au(111) π, Pt(111) 0.9π step phases | +ABSTRACT(PubMed) (L5) |
+| McCoy and Maksym, Surf. Sci. 310, 217 (1994), "Multiple scattering calculations of step contrast in REM images of the Si(001) surface", DOI 10.1016/0039-6028(94)91386-2; and Surf. Sci. 297, 113 (1993), DOI 10.1016/0039-6028(93)90254-h | the only Si(001) step-contrast calculations found; closed; no abstract in Elsevier coredata, OpenAlex or Semantic Scholar | METADATA_VERIFIED (Crossref); content UNVERIFIED |
+
+Answer (task 4): no measured step phase on Si(001) was found in any source searched (J-STAGE, CiNii, Crossref,
+OpenAlex, Semantic Scholar, plus L4's citation graph). One measured value exists for Si(111)7×7 (7π, Tanishiro 2003,
+conditions above) and one for Pt(111) (about 0.5λ, Osakabe 1990 abstract). A paper on Si(001) can cite Tanishiro 2003 as
+the published silicon precedent and must state that Si(001) step phases have not been reported.
+
+## 5. Table of surface-model parameters
+
+"Open?" = whether the source was readable here without Ali. Values in the "DERIVED_HERE" rows are computed in this
+report from the sourced inputs (a = 5.431 Å, 200 keV, λ = 0.025079 Å, k = 250.53 Å⁻¹, C_E = 0.007288 rad V⁻¹ nm⁻¹,
+repository (0,0,8) external angle 16.1347 mrad = ASSUMPTION B32).
+
+| Parameter | Value | Source | Locator | Label | Open? |
+|---|---|---|---|---|---|
+| Si(001) single-layer step height | a/4 = 1.3575 Å ("0.136nm"; "d ... (=1.36 Å)") | R2; R7 | R2 Fig. 1 caption, p. 601 below Eq. (19); R7 p. 1289 | SECTION_READ (value DERIVED_HERE from a) | open |
+| Double-layer step height | a/2 = 2.7155 Å | from the above | - | DERIVED_HERE | - |
+| Surface lattice constant | 3.84 Å (a/√2 = 3.840 Å) | R2; R3 | R2 Fig. 1 caption; R3 p. 382 | SECTION_READ | open |
+| Terrace width vs miscut | L = d/tan θ (1555.9 Å at 0.05°, 155.6 Å at 0.5°, 77.8 Å at 1° for d = a/4) | R2 | p. 595 below Eq. (1) | SECTION_READ; numbers DERIVED_HERE | open |
+| Step types | SA (along upper-terrace dimer rows, smooth), SB (perpendicular, kinked), alternating on [110]-miscut surfaces; 2×1 ↔ 1×2 rotation at each single-layer step; only DB double steps observed | R2 | pp. 594, 600 | SECTION_READ | open |
+| Single- vs double-layer regime (annealed) | single-layer below about 1°; coexistence 1-4°; double-layer above about 4° (DB fraction rises from about 1.5° to nearly 100 % at 5-6°); model predicts about 2° | R2 | pp. 594, 600-601; Fig. 8 | SECTION_READ | open |
+| Step formation energies, measured | SA 0.052-0.064, SB 0.12-0.18, DA 0.30, DB 0.092-0.10 eV per 2a | R2 | Table II, p. 597 | SECTION_READ | open |
+| Step formation energies, Chadi 1987 (tight binding) | SA 0.02, SB 0.30, DA 1.08, DB 0.10 eV per 2a | R2 citing Chadi | Table I, p. 596 | SECTION_READ of R2; Chadi's paper UNVERIFIED (closed) | Chadi closed |
+| Step structure frozen at RT | freeze-in 750-875 K | R2 | p. 596 | SECTION_READ | open |
+| Dimer geometry, T = 0 LDA, five layers | full displacement tables for p(2×1)s, p(2×1)a, p(2×2), c(4×2) | R1 | Tables III-IV (transcribed in 1.4) | SECTION_READ; bond lengths REPRODUCED | open |
+| Dimer bond length (LDA) | 2.23 (p(2×1)s), 2.26 (p(2×1)a), 2.28 (p(2×2)), 2.29 Å (c(4×2)); bulk 2.35 Å | R1 | Fig. 18, pp. 14516-14517 | SECTION_READ + REPRODUCED | open |
+| Buckling angle (LDA) | 18.3° (p(2×1)a); 18.9°/19.3° (p(2×2)); 18.7°/18.9° (c(4×2)) | R1 | pp. 14516-14517 | SECTION_READ + REPRODUCED | open |
+| RT dimer (many-beam RHEED, flip-flop average) | α = 18.1°, a_z − b_z = 0.71 Å (r_AB fixed at 2.28 Å); 880 K 0.43 Å/10.9°; 1031 K 0.29 Å/7.4° | R3 | Table I; sec. V, p. 385 | SECTION_READ | open |
+| RT buckling, other methods | SXRD 0.87 Å (Takahasi 1995); one-beam RHEED 0.6 Å (Makita 1991); RT TED and GIXD fits with uniform p(2×1): about 5° and 7° | R3 citing; R1 citing | R3 p. 385; R1 p. 14518 | SECTION_READ of R3/R1 (second-hand) | originals closed |
+| c(4×2) ↔ p(2×1) transition | 205 ± 3 K (2-D Ising); flip-flop frozen below about 150 K | R4; R5 | R4 p. 865; R5 p. 480 | SECTION_READ | open |
+| Reconstruction energies (LDA) | ideal→p(2×1)s 1.8 ± 0.1; →p(2×1)a 0.12 ± 0.01; →p(2×2) 0.048 ± 0.018; →c(4×2) 0.003 ± 0.013 eV/dimer | R1 | Fig. 16 | SECTION_READ | open |
+| a-Si density | 1.8 ± 0.1 % below c-Si, 4.90×10²² atoms/cm³; 1-2 % below c-Si (several measurements) | Custer 1994 (abstract); D4 | OpenAlex record of 10.1063/1.111121; D4 p. 2 | +ABSTRACT(index); D4 SECTION_READ | Custer closed; D4 open |
+| a-Si density in g/cm³ | 2.285-2.287 (c-Si 2.329) | from the above | - | DERIVED_HERE | - |
+| Thin SiO2 on Si(100), XRR | 2.11-2.28 g/cm³ (plasma oxides, 4.5-7 nm); layered 2.03/2.14/2.19 g/cm³ | D7 | Tables 2-3 | SECTION_READ | open |
+| Native-oxide density | not found open | - | - | UNVERIFIED | - |
+| Native oxide on HF-last Si(100), clean-room air (23.7 °C, 42 % RH) | stepwise 5.4 → 7.6 Å (n-Si); 5.6 Å (4 d); 6.7 Å (7 d); 8.2 Å (73 d) | D1 | Fig. 1 text p. 1273; Tables I, III; Fig. 8 | SECTION_READ | open |
+| Native oxide, dry air (< 0.1 ppm H2O) | 1.7 Å after 7 d | D1 | Table I | SECTION_READ | open |
+| Oxide thickness convention | "thermal-oxide-equivalent" (atomic density assumed equal to thermal oxide) | D1 | sec. II p. 1273 | SECTION_READ | open |
+| Hydrocarbon contamination on SiO2 in air | 0.1-0.2 nm; regrowth 0.005-0.013 nm/h | D6 | abstract; p. 266 | SECTION_READ | open |
+| Amorphous layer vs Ga+ FIB energy (sidewall) | ≈22 nm (30 keV), ≈7 (8), ≈4 (5), ≈1 nm (2 keV); plus crystal-distortion layer (to ≈29 nm at 30 keV; amorphous/total ≈75 % for Si) | D2 | pp. 4-5, 7; Fig. 2 | SECTION_READ (accepted manuscript) | open |
+| Amorphous layer, low-kV Ga+ polish | 1.4 nm (2 kV), 4.6 nm (5 kV); linear in energy; ∝ cos(incidence); ±50 % for ±5° at 80° | D3 | Fig. 2c-d; sec. 6 | SECTION_READ (preprint) | open |
+| 30 keV Ga+ damage (reviews) | 20-30 nm | D3 abstract; Kato 2004 abstract | - | SECTION_READ; +ABSTRACT(index) | Kato closed |
+| Broad-beam Ar+ | 7 nm after 3 keV Ar+, 20 μA, 4° tilt (from ≈20 nm after 30 keV FIB) | Kato, Kohno, Saka 1999 | abstract in OpenAlex record of 10.1116/1.581795 | +ABSTRACT(index) | closed |
+| Low-energy Ar+ (0.1-1 keV) amorphous thickness vs angle | not found open | Barna et al. 1998, 1999 | - | UNVERIFIED | closed (upload) |
+| REM after ion irradiation | surface image lost (strain); recovery on annealing starting at steps; wide terraces need higher T | D9 | p. 1048, sec. 4.3.5 | SECTION_READ | open |
+| RHEED through 0.8 nm chemical oxide on Si(001) | weak 1×1 reflections on an intense amorphous background | D8 | p. 46, Fig. 1(a) | SECTION_READ | open |
+| Measured REH step phase, Si(111)7×7, 200 kV, (444), 0.8° | 7π | Tanishiro 2003 | p. 170, sec. 5 | SECTION_READ | open |
+| Measured REH step phase, Pt(111) 2.3 Å | about 0.5λ | J-a | p. 452 | SECTION_READ | open |
+| Hitachi REH beam collimation | opening angle < 10⁻⁶ rad; coherence several μm | J-a | p. 452 sec. 3-2 | SECTION_READ | open |
+| Tokyo Tech REH hologram width with fringes | ≈60 nm unfiltered, > 80 nm no-loss; 30-40 nm one-plasmon | Tanishiro 2003 | p. 170 | SECTION_READ | open |
+| Phase per Å of overlayer thickness (in + out, grazing) | 2 C_E V_ov / sin θ = 0.0903 rad Å⁻¹ V⁻¹ (projected); refraction form 0.086 rad Å⁻¹ at V_ov = 10 V | this report | 6.2 | DERIVED_HERE (V_ov unsourced) | - |
+
+## 6. Surface scenarios a paper on an ion-milled Si(001) sample must cover
+
+### 6.1 Scenarios (each is an ASSUMPTION until Ali's item-12 answers select one)
+
+| # | Scenario | Surface model the simulation needs | Sources that bound it | What it needs from Ali (item 12) |
+|---|---|---|---|---|
+| S0 | Bulk-terminated, clean (current B3/B26) | none new | - | nothing; reference limit only. Not physical for any real preparation (every Si(001) surface prepared in UHV reconstructs, R1-R5) |
+| S1 | Ion-milled, then cleaned in situ in UHV by DC/flash heating to about 1200 °C (the preparation of every REM and reflection-holography study of Si found: J-d/J-e, J-f, D11, R3, R5) | 2×1 buckled dimers, time-averaged flip-flop at RT (R3 projected potential, or frozen snapshots of R1 Table III/IV geometries); SA/SB single-layer steps with 2×1 ↔ 1×2 alternation; DB steps only if the local miscut exceeds a few degrees (R2) | R1-R5, R2 (miscut regimes), D9 (anneal recovery from steps), D10 (regrowth difficulty after amorphisation; rough surface at high T) | whether the specimen is heated in situ, temperature and time; microscope vacuum at the specimen; RHEED evidence (half-order 2×1 streaks); miscut angle and direction (item 11); whether the ion-milled pattern survives the anneal |
+| S2 | Ion-milled, then in-situ sputter + anneal (surface-science cleaning, e.g. low-energy Ar+ plus anneal) | as S1 plus residual roughness and point defects; possibly incomplete recovery on wide terraces | D9 sec. 4.3.5 | sputter energy/angle/dose, anneal temperature/time, RHEED/REM evidence |
+| S3 | Ion-milled, exposed to air, observed without in-situ cleaning in a conventional microscope (specimen vacuum about 10⁻⁵ Pa, D9 p. 1038) | amorphous Si from the final milling step (≈1 nm after 2 keV Ga+ to ≈22 nm after 30 keV Ga+ at grazing FIB incidence, D2/D3; Ar+ values closed) + native oxide 0.5-1 nm (D1, if a-Si oxidises like HF-last Si: ASSUMPTION) + 0.1-0.2 nm hydrocarbon (D6); crystal-distortion layer below the a-Si (D2); a rough a-Si/c-Si interface; no dimer reconstruction at the buried interface | D1-D3, D6, D8, D9 p. 1040, Kato 1999/2004 abstracts | ion species, energy, incidence angle, current and time of the FINAL milling step and of any low-energy clean-up; time in air and storage atmosphere; any HF dip; microscope vacuum; any beam shower or plasma cleaning; ideally a cross-sectional TEM of a witness piece milled identically, giving the a-Si, oxide and distortion thicknesses directly (measurement beats citation here) |
+| S4 | Ion-milled, HF-dipped (oxide removed, H-terminated), loaded within minutes | a-Si (HF does not remove it: ASSUMPTION, not sourced here) with ≈2-4 Å of regrown oxide equivalent at loading (D1 Fig. 1 initial values 1.9-4.4 Å) | D1, D5 | HF concentration and time, rinse, delay to vacuum, vacuum level |
+
+### 6.2 What each scenario does to the step observable (DERIVED_HERE)
+
+* S1/S2 (reconstructed, clean): B4's cancellation for a/4 steps rests on the two terraces being related by the d-glide
+  at an exact <100> azimuth. With 2×1 domains rotating by 90° at each single-layer step (R2), whether the reconstructed
+  upper terrace is the glide image of the lower one must be checked with the R1 coordinates in the builder; at <110>
+  the dimer rows are parallel to the beam on one terrace and perpendicular on the next, so a residual δ is expected. The
+  a/2 (DB) step joins terraces of the same domain and stays clean. Frozen snapshots versus R3's averaged potential is a
+  sensitivity test the paper should report.
+* S3 (overlayer): a uniform, conformal overlayer shifts both terraces equally and leaves the geometric step phase
+  2 k sinθ h unchanged, but its amorphous structure adds random phase and amplitude noise; a NON-conformal overlayer
+  (thickness t varying by Δt across or along the step) adds Δφ ≈ 2 C_E V_ov Δt / sin θ = 0.090 rad per Å per volt of
+  overlayer mean inner potential at the repository's 16.13 mrad; with V_ov of order 10 V (placeholder, unsourced; item
+  20-type input needed for SiO2 and a-Si) this is about 0.9 rad per Å of thickness change (0.86 rad with the refraction
+  formula). The geometric step phases at this angle are 2 k sinθ h = 10.98 rad (a/4) and 21.95 rad (a/2). An
+  overlayer that is non-uniform at the ångström level therefore produces phase changes comparable to the step phase
+  itself; this is the strongest reason the paper must either measure the overlayer (S3 witness cross-section) or show
+  that the sample is in S1/S2. The path length through the overlayer is 124 t (in and out), so absorption and diffuse
+  scattering in the overlayer also reduce the specular amplitude (D8: 0.8 nm of oxide already gives a strong amorphous
+  background in RHEED; D10: specular fading is not a direct measure of amorphisation).
+* S3 also changes what a "step" is: the crystalline steps lie under the a-Si at the amorphous/crystalline interface,
+  which D2/D3 show to be rough on the nm scale after FIB; whether a/4 and a/2 steps survive milling at all is not
+  established by any source read (the REM literature (D9, D10) says the REM step image disappears after ion
+  irradiation until annealed).
+* Engine consequences (H2 N4-N6): S1/S2 need the `dimer_2x1` option implemented from R1 Tables III-IV (sourced now) and a
+  time-averaging choice; S3/S4 need a sourced amorphous structure (D4's 216-atom a-Si model is in its supplement, open
+  but not retrieved here; no open SiO2 model was sought in this session), multi-species potentials (O, C, H) and
+  mean inner potentials, and the pipeline overlayer gate lifted.
+
+### 6.3 Checklist to send to Ali (PROJECT_INPUT item 12)
+
+1. Milling tool and final step: FIB (Ga+ or Xe+) or broad-beam Ar+ (PIPS-type); ion energy, incidence angle to the
+   surface, current, time; any low-energy clean-up step and its energy/angle.
+2. After milling: time in air, storage (vacuum, N2, air), any HF dip, any plasma or beam-shower cleaning.
+3. In the microscope: vacuum at the specimen during holography (UHV or about 10⁻⁵ Pa), any in-situ heating (temperature,
+   time), any RHEED pattern recorded (2×1 half-order streaks or an amorphous background).
+4. A cross-sectional TEM (or XRR/ellipsometry) of a witness piece milled identically: a-Si thickness, oxide thickness,
+   distortion layer, interface roughness.
+5. Miscut angle and direction (item 11) and whether single- or double-layer steps are expected from STM/AFM or REM.
+
+## 7. Updated upload list (priority order for the surface-realism goal)
+
+Items found OPEN in this session need no upload and are listed at the end. Items of docs/07 not touched here (B01-B15,
+C01-C03, P05, P06, P31, the Si mean-inner-potential papers) keep their docs/07 status.
+
+| Priority | Item | Exact locator | Why | Status |
+|---|---|---|---|---|
+| 1 | Osakabe, doctoral thesis (Tokyo Tech, 1995), 電子線ホログラフィー干渉法による極限的計測, ch. 4 "反射型電子線ホログラフィー干渉計測法の開発と表面地形観察への応用" and App. B | NDL call no. UT51-95-T584, DOI 10.11501/3104578; NDL remote photocopy is allowed ("遠隔複写可否 可") | the full Hitachi arrangement, phase relation (sec. "結晶表面からの反射電子の位相"), energies, angles and measured phases in one document; replaces much of P01/P02/P08 | CLOSED online (NDL in-library / Japan-resident transmission only) |
+| 2 | P01 Osakabe et al., JJAP 27, L1772 (1988) | DOI 10.1143/JJAP.27.L1772 | energy, reflection order, angle for the Pt(111) 0.5λ result (J-a) | CLOSED (unchanged) |
+| 3 | Suzuki, Tanishiro, Ishiguro, Minoda, Yagi, JJAP 40, 2527-2532 (2001) | DOI 10.1143/jjap.40.2527 | the Tokyo Tech Si(111) REH paper; may give how the 7π step phase (Tanishiro 2003) was established | CLOSED (T2R2 metadata only) |
+| 4 | Barna, Pécz, Menyhard, Ultramicroscopy 70, 161-171 (1998) (and Micron 30, 267-276 (1999)) | DOI 10.1016/s0304-3991(97)00120-4; 10.1016/s0968-4328(99)00011-6 | a-Si thickness versus Ar+ energy and angle for low-energy broad-beam milling (no open source found) | CLOSED |
+| 5 | Experimental Si(001) coordinates: Over et al., PRB 55, 4731 (1997) (LEED 2×1) and/or Shirasawa, Mizuno, Tochihara, Surf. Sci. 600, 815 (2006) (LEED c(4×2), 8 layers); RT SXRD: Takahasi et al., Surf. Sci. 338, L846 (1995), Felici et al., Surf. Sci. 375, 55 (1997) | DOIs 10.1103/physrevb.55.4731; 10.1016/j.susc.2005.11.031; 10.1016/0039-6028(95)00663-x; 10.1016/s0039-6028(97)80005-2 | experimental counterparts to R1's LDA tables for the dimer_2x1 option | CLOSED |
+| 6 | Kato, Kohno, Saka, JVST A 17, 1201 (1999); Kato, J. Electron Microsc. 53, 451 (2004) | DOIs 10.1116/1.581795; 10.1093/jmicro/dfh080 | upgrade the index abstracts (Ar+ BIB 3 keV/4° → 7 nm; 30 keV FIB 20-30 nm) | CLOSED (AIP/OUP Cloudflare) |
+| 7 | McCoy and Maksym, Surf. Sci. 310, 217 (1994); Surf. Sci. 297, 113 (1993) | DOIs 10.1016/0039-6028(94)91386-2; 10.1016/0039-6028(93)90254-h | the only dynamical step-contrast calculations for Si(001) found | CLOSED, no abstract anywhere |
+| 8 | Custer et al., APL 64, 437 (1994) | DOI 10.1063/1.111121 | a-Si density (upgrade the index abstract) | CLOSED |
+| 9 | Claverie et al., Microsc. Res. Tech. 20, 352 (1992) | DOI 10.1002/jemt.1070200406 | REM/RHEED of noble-gas-bombarded Si(111) | CLOSED (PubMed abstract read) |
+| 10 | Proc. 11th ICEM Kyoto 1986, Vol. 2: Ogawa et al., p. 1349 (REM of ion-irradiated Si); Kajiyama et al., p. 1343 (REM step phase and strain) | printed proceedings (no DOI found) | primary sources behind D9's statements | library request |
+| 11 | Osakabe, 固体物理 25(9), 591-596 (1990) | NDL digitised, in-library only | the Hitachi review | library request |
+| 12 | Banzhof et al., Proc. 9th EUREM, York 1988, p. 263 | printed proceedings | Au/Pt step phase versus reflection order (cited by J-a) | library request |
+| 13 | Chadi, PRL 59, 1691 (1987) | DOI 10.1103/physrevlett.59.1691 | only if the paper cites Chadi directly; R2 reprints the values | CLOSED |
+| 14 | P08, P02, P03, Osakabe 1993 (Ultramicroscopy 48, 483; Surf. Sci. 298, 345), Herring 1995 | as docs/07 | lower priority now that J-a/J-b give the Hitachi arrangement | CLOSED (unchanged) |
+| 15 | Takeguchi thesis (Osaka 1993), full text | hdl 11094/38196; NDL DOI 10.11501/3065914 | Osaka UHV REHM instrument details | CLOSED (abstract read) |
+| 16 | Inoue et al. 1987, Kahata and Yagi 1989 (JJAP), full texts | DOIs 10.1143/jjap.26.l293; 10.1143/jjap.28.l858 | UHV-REM of Si(001) steps and domains | CLOSED (abstracts read) |
+
+Found OPEN in this session (no upload needed): R1 Ramstad 1995, R2 Zandvliet 2000, R3 Horio 2014, R4-R7, D1 Morita
+1990, D2 Uzuhashi 2024 (AM), D3 Pastewka 2009 (preprint), D4 Pedersen 2017, D5-D9, J-a to J-e, J-k, Tanishiro 2003
+body, Takeguchi thesis abstract. Open but not retrieved (browser download enough): D4's supplementary a-Si coordinates
+(IOP captcha).
+
+## 8. Answers in brief, facts versus inferences
+
+Facts (with the locators above):
+1. Si(001) at room temperature is a 2×1 (apparent p(2×1)) surface of rapidly flip-flopping buckled dimers; the c(4×2)
+   order sets in below 205 ± 3 K (R4, R5, R1 p. 14518). Sourced coordinates for all four dimer arrangements (LDA, five
+   layers) are R1 Tables III-IV (transcribed in 1.4, checked by REPRODUCED bond lengths and angles). An RT experimental
+   dimer geometry (α = 18.1°, 0.71 Å buckling, r_AB fixed 2.28 Å) is R3. Experimental full-coordinate LEED/SXRD papers are
+   closed.
+2. Steps: SA/SB alternate on single-layer-stepped surfaces with 90° domain rotation; DB steps dominate only above about
+   4° miscut (coexistence 1-4°) on annealed surfaces; L = d/tan θ; measured step energies in R2 Table II.
+3. Ion damage in Si: Ga+ FIB amorphous layers ≈22 nm at 30 keV to ≈1 nm at 2 keV, with a further crystal-distortion
+   layer (D2); thickness linear in energy and in cos(incidence) at grazing incidence (D3). Native oxide on HF-last
+   Si(100) in clean-room air grows layer by layer to about 0.6-0.8 nm in days to months (D1). a-Si is 1-2 % less dense
+   than c-Si (D4; Custer abstract 1.8 ± 0.1 %). Thin thermal-type SiO2 on Si: 2.1-2.3 g/cm³ by XRR (D7).
+4. All REM and reflection-holography work on Si found was done on UHV-cleaned surfaces (flash or DC heating); ion
+   irradiation destroys the REM surface image until annealing (D9), and recovery after amorphisation is difficult (D10).
+5. Reflection holography in the Japanese literature: Hitachi used the specular Bragg beam, an image-side biprism and a
+   self-reference on a defect-free region (J-a, J-b); its phase relation is 2K⊥Δz with a kinematic refraction
+   correction √((2πn)² − (2kd)² V0/E) (J-a). The Tokyo Tech group measured a 7π step phase on Si(111)7×7 at 200 kV,
+   (444), 0.8° (Tanishiro 2003). No Si(001) step phase has been published in any source found.
+
+Inferences (DERIVED_HERE): the 7π value equals 2k sinθ h (6.98π) at the stated angle; a paper on an ion-milled sample
+must establish which scenario (S1-S4) applies; an ångström-level non-uniform overlayer changes the phase by about
+0.09 rad Å⁻¹ V⁻¹ (≈0.9 rad/Å for V_ov ≈ 10 V, an unsourced placeholder), comparable to the step phase; whether a/4 steps
+survive milling is not established by any source read.
+
+## 9. New BibTeX entries
+
+Written to `docs/agent_reports/L7_new_refs.bib` (not merged into `docs/references.bib`). Every DOI there was
+resolved on 2026-09-23 against Crossref (`https://api.crossref.org/works/<doi>`, no mailto) or, for JaLC-registered
+DOIs, the JaLC API (`https://api.japanlinkcenter.org/dois/<doi>`); fields are copied from those records and each note
+states the label and what was read. The file also proposes the missing volume/issue/pages for TAKEGUCHI1990 from the
+NDL/CiNii record (J-i).
+
+Status: COMPLETE for this session (2026-09-23).
