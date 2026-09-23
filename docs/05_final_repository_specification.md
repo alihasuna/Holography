@@ -203,7 +203,12 @@ multislice engine is validated by a ladder that needs no new reading:
    momentum); this isolates the propagator and the boundary treatment from the lattice.
 2. Bragg-case Bloch-wave two-beam solution for one allowed reflection, which gives `arg A` in closed
    form across the Darwin plateau; the multislice must reproduce the phase sweep, not only the width.
-3. Null tests with an exact expected phase: a step of exactly `h_2pi` gives zero phase step; a
+3. Null tests with an exact expected phase (Phase 3, report M2 section 10: a whole-crystal translation of a
+   flat atomistic terrace reproduces `-(k_out - k_in).R` within 1.1e-3 rad when the beam moves with the
+   crystal, but gives +0.569 rad with the beam fixed, because the reflection has not built up by the exit
+   plane; every multislice setting used for step phases must first pass this fixed-beam translation check,
+   with a sourced absorption (item 21) and a cell several build-up lengths longer than the first-contact
+   point, and terraces wide enough to resolve): a step of exactly `h_2pi` gives zero phase step; a
    lattice-translation step at an exact vacuum Bragg angle gives zero; reversing the step reverses the sign.
 
 Agreement between the geometric-phase model and the multislice near a step is a consistency check
@@ -360,6 +365,14 @@ no visibility check is made; on uniform tilt grids aliases above `h_max` are fla
 noise-declaration sensitivity of B16 (the phase uncertainties must be measured, not guessed); the
 R1/R3 aperture passage is recorded but has no effect; the thread count is recorded, not enforced.
 These are scheduled for the Phase 3 fix round.
+
+Phase 3 (2026-09-23): the multislice engine M2 (`reflection_holo/forward/multislice`, report M2)
+passes ladder rungs 1 and 3 on continuum models and the moving-beam translation test on atoms, but
+atomistic step phases are NOT usable: with a fixed beam the finite cell leaves the reflection unconverged
+(+0.569 rad for a pure translation of a flat terrace; build-up scale of order 1600 A along the beam at the
+(0,0,8) Bragg peak without absorption). The end-to-end pipeline (report P1) with the geometric engine
+recovers the demo step heights; with the multislice engine it runs but returns no heights. A 17-point
+HPC null-test study is in `scripts/hpc/null_test_study/`.
 
 Not implemented at 017761d: the reflection forward model (M2) and the geometric-phase model of section
 4.5 (both are being built in Phase 3 under `reflection_holo/forward/`); dark-field aperture selection, projection along `k_out`, magnification and

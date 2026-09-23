@@ -143,3 +143,112 @@ limited or conditional effect), Nit.
   e.g. a `correlated=True` path in `sensitivity_uncertainty_rad_per_A`, and use it both in
   `lattice_branch` and `height_from_phase`; add a unit test with sigma_in = sigma_out.
 
+### M5 (Major, operational). The SLURM job dies at random before the run when PYTHONUNBUFFERED is set: `dry-run | head -12` under `set -euo pipefail`
+
+* Where: `scripts/hpc/run_pipeline.slurm:20` (`set -euo pipefail`) with `:100`
+  (`"$PY" -m reflection_holo.pipeline dry-run ... | head -12`).
+* What is wrong: `head` exits after 12 lines; if Python writes after that (unbuffered stdout: each
+  `print` is one or two `write` calls), it gets EPIPE, raises `BrokenPipeError` and exits 1;
+  `pipefail` makes the pipeline fail and `set -e` ends the job before `run` is reached. With
+  buffered stdout the whole dry-run output (4.6 kB for the HPC demo) is one write at exit, so the
+  race is (almost) never lost; many HPC job templates export `PYTHONUNBUFFERED=1` (this sandbox
+  does).
+* Reproduction (my first simulated job-mode run died this way):
+  ```
+  SLURM_JOB_ID=4242 RH_OUT=$S/slurm_job_smoke RH_MODE=smoke RH_ACCOUNT=a RH_PARTITION=p \
+    RH_TIME_LIMIT=00:10:00 RH_GPU=none bash scripts/hpc/run_pipeline.slurm      -> exit 1
+    File ".../reflection_holo/pipeline/__main__.py", line 91, in main
+      print(json.dumps(rep, indent=1, default=str)[:4000])
+  BrokenPipeError: [Errno 32] Broken pipe
+  # 60 repetitions of: bash -c 'set -euo pipefail; venv/bin/python -m reflection_holo.pipeline
+  #   dry-run --config configs/demo_smoke_si001.yaml | head -12 > /dev/null'
+  PYTHONUNBUFFERED=1: 26 / 60 failed
+  PYTHONUNBUFFERED unset: 0 / 60 failed
+  ```
+  On the GPU job this happens after the 46 s dry-run and before any propagation; no result, no
+  summary, exit 1.
+* Fix: do not truncate with `head` under `pipefail` (write the dry-run to a file in `$OUT`, or
+  `... | head -12 || true`, or `set +o pipefail` around it); also handle `BrokenPipeError` in
+  `__main__.py`.
+
+### M6 (Major). Without `.git` the whole simulation runs, then the manifest refuses: no summary, no manifest, unlabelled arrays left behind
+
+* Where: `reflection_holo/pipeline/run.py:441` (`arrays.npz` written) and `:501` (quicklooks)
+  before `:503-519` (`build_manifest`, which raises `RuntimeError` without git unless
+  `allow_no_git`); `reflection_holo/pipeline/__main__.py:113-121` does not catch it;
+  `scripts/hpc/run_pipeline.slurm:101` never passes `--allow-no-git` and never checks the git
+  state before submitting.
+* What is wrong: the git check is the last step. A tree copied without `.git` (README_HPC section
+  1 warns, but rsync/scp copies are common) spends the full engine time (18.8 min CPU for the HPC
+  demo per P1) and then exits 1 with a traceback, leaving `arrays.npz` and PNGs without
+  `summary.json`, `manifest.json` or any purpose label in the arrays.
+* Reproduction (copy of `reflection_holo/` and `configs/` in `$S/nogit`, no `.git`):
+  ```
+  PYTHONPATH=$S/nogit venv/bin/python -m reflection_holo.pipeline run \
+      --config configs/demo_smoke_si001.yaml --out $S/nogit_out1          -> exit 1
+  RuntimeError: git state of the repository unavailable (CalledProcessError: ... rev-parse HEAD ...
+  ls $S/nogit_out1 -> arrays.npz quicklook_detector.png quicklook_exit_wave.png
+  ```
+  With `--allow-no-git` the run completes and the manifest records the error and
+  `allowed_without_git: true` (verified).
+* Fix: call `git_state()` (or build the manifest skeleton) in `run()` before the structure is
+  built and refuse there; in the SLURM script check `git -C "$REPO" rev-parse HEAD` in submission
+  mode; when running without git, hash the package source tree instead so the code is still
+  identified.
+
+### M7 (Major). Supplied PROJECT_INPUT values that the run cannot represent are accepted, not applied, and listed as SUPPLIED
+
+* Where: `reflection_holo/pipeline/run.py:185-201` and `engines.py:161-215` (the multislice path
+  never reads `convergence_semi_angle`, item 3, and builds no overlayer, item 12);
+  `pipeline/` never reads `cfg_b.pattern_geometry` (item 13) or `cfg_b.target_reflection_hkl`
+  (item 9) (`grep` counts: 0 references each); the glancing-angle rule uses its own
+  `reflection_hkl` (`config.py:449`) with no consistency check against item 9.
+* What is wrong: the geometric engine refuses a non-zero convergence and an overlayer
+  (`forward/geometric/model.py:193-209`), but the other paths run with the input silently
+  replaced by the default the engine happens to have (plane wave, clean surface, no pattern,
+  (0,0,8)). The summary's `inputs` table then shows the item as SUPPLIED with its value, so the
+  output claims an input it did not use. This is the situation of docs/05 criterion 5 ("no result
+  depends on a default silently substituted"), and docs/06 item 12 says the overlayer "must be
+  modelled rather than ignored".
+* Reproductions (`$S/repro_convergence.py`, `$S/repro_ignored_inputs.py`, `$S/repro_item9.py`;
+  fabricated "supplied by Auditor 2026-09-23" values):
+  ```
+  convergence 0.5 mrad (item 3), geometric:  REFUSED OutsideB4ScopeError: illumination 'convergent' ...
+  convergence 0.5 mrad (item 3), multislice_tiny: RAN. engine multislice; item 3 in summary:
+      [{'item': 3, ..., 'status': 'SUPPLIED (Auditor 2026-09-23)', 'value': 0.5, ...}]
+      'convergen' mentioned in engine record/params: False
+  pattern_geometry {features: [mesa 10 nm x 200 nm]} (item 13), geometric: RAN, heights
+      [(0, 1, 2.7156), (1, 2, -1.3576), (2, 0, -1.3580)]
+  overlayer SiO2 10 A (item 12), multislice_tiny: RAN (engine multislice)
+  target_reflection_hkl [0, 0, 12] SUPPLIED (item 9): gate PASSED; angle computed for [0, 0, 8] = 16.474333 mrad
+  ```
+  Not triggered by the two demo configurations (plane wave, no overlayer, no pattern, (0,0,8)
+  in both places), so tonight's demo outputs are not affected.
+* Fix: in the pipeline gate, per engine, refuse what is not implemented: convergence != 0 (both
+  engines until partial-coherence ensembles exist), overlayer != none (multislice as well),
+  `pattern_geometry.features != none`; require the rule's `reflection_hkl` to equal
+  `target_reflection_hkl` (or take it from there).
+
+### Addendum to M1 (raises it to Blocker for tonight's multislice run): the lattice constraint accepts phases that carry no height information
+
+* Where: `reflection_holo/pipeline/quantify.py:89-110` (`lattice_branch`: "resolved" when exactly
+  one of the 5 lattice heights |n| <= 2 lies within 3 sigma_h of a candidate).
+* Evidence (`$S/branch_power.py`, the pipeline's own `lattice_branch`, demo settings, uniform
+  random wrapped phases, i.e. a phase with no height in it):
+  ```
+  smoke B19 sigma_phi 0.003 rad (sigma_h(a/4) ~ 0.0058 A): resolved 28.4%, ambiguous 0.0%, inconsistent 71.6%
+  smoke B19 sigma_phi 0.100 rad (sigma_h(a/4) ~ 0.0134 A): resolved 57.8%, ambiguous 0.0%, inconsistent 42.2%
+  HPC B32 sigma_phi 0.003 rad (sigma_h(a/4) ~ 0.0060 A): resolved 11.6%, ambiguous 8.1%, inconsistent 80.3%
+  HPC B32 sigma_phi 0.100 rad (sigma_h(a/4) ~ 0.0137 A): resolved 32.0%, ambiguous 12.8%, inconsistent 55.1%
+  HPC B32 sigma_phi 0.290 rad (sigma_h(a/4) ~ 0.0364 A): resolved 65.5%, ambiguous 34.5%, inconsistent 0.0%
+  ```
+  P1 (report item 7) already saw it: the first HPC multislice run returned the a/4 down-step as
+  "resolved" h = +1.4272 +- 0.0355 A (built -1.3577 A, wrong sign). The second run's refusal
+  ("inconsistent") is luck of the draw, not a guarantee, and the GPU run (complex64, cupy) is a
+  different numerical path. With M1, a resolved branch is printed as a height even though the
+  same run's no-step control fails.
+* Fix for tonight (no code change needed to be safe): treat every multislice height as invalid
+  when the printed no-step control is "NOT PASSED". Code fix: M1's gate, plus report the
+  resolved-by-chance rate of the constraint for the run's sigma (the numbers above) next to the
+  decision.
+

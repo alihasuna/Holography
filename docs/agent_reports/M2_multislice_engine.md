@@ -334,3 +334,144 @@ modified by another agent (entries B19 to B22 added; the test expects only B1, B
 * MIP: the Kirkland IAM gives 13.903 V, not the sourced V0; no correction applied (D3 blocker 5).
 * Sub-slice (finite) projection of the potential and step edges transverse to the beam in the
   continuum cells: not implemented.
+
+## 10. Atomistic null-test diagnosis
+
+Task (orchestrator, after commit 1a1e850): diagnose the failed a/2 null test of section 5. Cases:
+`tests/forward/null_test_cases.py`; test: `tests/forward/test_atomistic_translation.py`; HPC study:
+`scripts/hpc/null_test_study/`. All runs: Si(001) [110] (TEST_ONLY azimuth), Kirkland potential,
+(0,0,8) angle 16.1347 mrad from the potential's MIP unless stated, sheet beam 8 A, grid pixel
+<= 0.13 A, dz = p/4, complex64, 4 threads (shared CPU).
+
+### 10.1 Whole-crystal translation (step 1)
+
+Construction: a flat terrace A and the same crystal translated by the builder's a/2 translation
+vector R = (2.71545, -1.92011, -1.92011) A (slab frame; normal component a/2), wrapped in the
+periodic y and z of the builder; verified to equal the builder's crystal with two more layers
+(max deviation 2.6e-13 A over 19 224 atoms). Identical box, grid, absorbers and measurement
+(specular component at f_c = sin(theta)/lambda, aperture 0.2 1/A, all x and y). Expected phase
+difference `-(k_out - k_in).R = -2 k sin(theta) R_x = -21.9522 rad` (wrapped -3.1027) with the
+engine's k (the y and z components of R do not contribute for the specular beam). When only the
+beam ENVELOPE is moved with the crystal, the carrier stays referenced to x = 0: the incident field
+then differs from the exactly translated one by exp(+i k_in,x R_x), which leaves the expected
+difference unchanged (DERIVED_HERE).
+
+| configuration | Delta_phi (rad) | error vs -(k_out - k_in).R | amplitude ratio B/A |
+|---|---|---|---|
+| beam fixed (as in any step geometry) | -2.53410 | +0.569 | 0.951 |
+| beam envelope translated with the crystal (fully covariant) | -3.10158 | +1.1e-3 | 1.0024 |
+
+The fully covariant configuration passes within the rung-3 tolerance (1.0e-2 rad): the engine and
+the measurement are translation-covariant; there is NO engine bug. The fixed-beam configuration
+reproduces the smoke-run step discrepancy (+0.58 rad) WITHOUT any step edge. A refuted hypothesis
+on the way: leakage of the internal upward Bragg wave (f = 0.737 1/A, 0.094 1/A from f_c) through
+the all-x sum; restricting the sum to the vacuum made the error larger and window-dependent (+0.66
+rad at 2 A, +1.10 rad at 4 A above the surface), i.e. the reflected field has not separated from
+the surface at the exit plane.
+
+### 10.2 Cause: the reflection has not converged along z (contact-point dependence)
+
+With the beam fixed, the upper crystal is met (a/2)/tan(theta) = 168 A earlier; the specular output
+then differs whenever it still depends on the distance between the contact point and the exit
+plane. Fixed-beam translation error versus cell length beyond the minimum build-up (D = 20 A) and
+absorption (proportional ratio; non-zero values TEST_ONLY for item 21):
+
+| angle | absorption | +0 A | +1000 A | +2500 A | +5000 A |
+|---|---|---|---|---|---|
+| 16.13 mrad, (0,0,8) Bragg | 0 | +0.569 (0.951) | +0.519 (0.964) | -0.056 (1.058) | -0.136 (1.101) |
+| 16.13 mrad, (0,0,8) Bragg | 0.1 | +0.356 (0.953) | | +0.024 (0.981) | +0.017 (1.014) |
+| 12 mrad (off Bragg) | 0 | +0.061 (1.311) | | | |
+| 20 mrad (off Bragg) | 0 | +0.704 (4.59) | | +0.051 (1.134) | |
+| 20 mrad (off Bragg) | 0.1 | -1.63 (22.1; reflection ~1e-2 of Bragg) | | -0.001 (1.006) | |
+
+(error in rad, B/A amplitude ratio in brackets). Without absorption the error does not converge
+(it oscillates in sign up to 6600 A); with absorption it decays towards zero with cell length
+(to 1.7e-2 rad at +5000 A on the Bragg peak, 1e-3 rad at +2500 A off it). Interpretation
+(DERIVED_HERE, consistent with but not proven by the data): every layer sends a reflected wave back
+that re-emerges 2 d / tan(theta_int) downstream; without absorption the contributions of deep
+layers never stop arriving, and at the (0,0,8) peak the build-up scale is set by the extinction:
+V_g(008) ~ 0.84 V (Kirkland f_e at s = 0.74 1/A ~ 0.35 A, estimate), xi_g = pi/(sigma V_g) ~ 5100 A,
+penetration ~ xi_g sin(theta_B)/pi ~ 30 A, i.e. ~1600 A along z per e-fold. The smoke cell (about
+1100 A after first contact, the minimum allowed by the D >= 20 A assertion) is far shorter.
+
+### 10.3 Step phase in a converged cell (step 2, limited by the container)
+
+a/2 step, edges parallel to the beam, terraces only 15.4 A wide (4 periods; wider terraces exceed
+the few-minute budget here), windows 6 A wide centred d = 3.84 or 7.68 A from the step edge:
+
+```
+20mrad abs0.1 +2500 w4: grid 1029x240 N=3802 geo(wrapped)=-2.0778 t=136s
+   aperture 0.1 d=3.84: dphi=-1.1599 residual=+9.18e-01 up/low=0.747
+   aperture 0.1 d=7.68: dphi=-2.0335 residual=+4.43e-02 up/low=1.515
+   aperture 0.2 d=3.84: dphi=-1.2882 residual=+7.90e-01 up/low=0.696
+   aperture 0.2 d=7.68: dphi=-1.8173 residual=+2.61e-01 up/low=1.417
+20mrad abs0 L0 w4: grid 648x240 N=1198 geo(wrapped)=-2.0778 t=17s
+   aperture 0.1 d=3.84: dphi=+1.4426 residual=-2.76e+00 up/low=8.162
+   aperture 0.1 d=7.68: dphi=-2.1527 residual=-7.49e-02 up/low=0.803
+   aperture 0.2 d=3.84: dphi=+1.1953 residual=-3.01e+00 up/low=17.006
+   aperture 0.2 d=7.68: dphi=-1.9324 residual=+1.45e-01 up/low=0.853
+Bragg abs0.1 +5000 w4: grid 1260x240 N=6642 geo(wrapped)=-3.1027 t=268s
+   aperture 0.1 d=3.84: dphi=-3.0975 residual=+5.20e-03 up/low=1.511
+   aperture 0.1 d=7.68: dphi=-2.8785 residual=+2.24e-01 up/low=0.952
+   aperture 0.2 d=3.84: dphi=-2.8489 residual=+2.54e-01 up/low=1.500
+   aperture 0.2 d=7.68: dphi=-2.9217 residual=+1.81e-01 up/low=1.019
+```
+On 15 A terraces the step phase depends on the window position and on the aperture by up to
+0.9 rad and the terrace amplitudes differ by up to 50 %, even where the flat translation has
+converged: the terraces are narrower than the lateral extent of the step-edge disturbance and than
+the aperture's resolution (1/0.1 = 10 A). Convergence with terrace width (30.7, 61, 123 A), window
+distance and aperture at a converged cell length is NOT RUN here (estimates below); steps
+transverse to the beam are NOT RUN (the terrace assignment of the overlapping reflected beams
+needs a ray-traced x-window with the shadow and blocked-view strips, not written). Whether a
+residual remains on wide terraces (a candidate dynamical edge effect) is therefore OPEN.
+
+### 10.4 Consequences for tonight's HPC run
+
+* No engine bug; do not change the engine. The a/2 null test failed because the cell was built at
+  the minimum build-up and without absorption; the geometry assertion D >= 20 A (docs/05 4.3
+  item 4) is necessary but far from sufficient for step phases.
+* No atomistic step phase is usable tonight: convergence requires a non-zero physical absorption
+  (PROJECT_INPUT item 21, still not supplied; zero absorption never converged), cells several
+  thousand A beyond the minimum, and terraces much wider than 15 A; each production setting must
+  first pass the fixed-beam translation check (|error| <= 1e-2 rad, |B/A - 1| <= 1e-2) and the
+  terrace-width study. Until then use the geometric-phase model (B4) for step phases.
+
+### 10.5 New test and HPC study
+
+* `tests/forward/test_atomistic_translation.py`: translated set equals the builder's crystal
+  (1e-9 A); covariant translation within 1e-2 rad and amplitude within 1e-2 (the engine pass
+  criterion); fixed-beam translation at the minimum build-up differs by more than 1e-2 rad
+  (documents the finite-cell behaviour; not an engine criterion).
+* `tests/forward/null_test_cases.py`: long cells are built as ONE z-period through the builder
+  (all its assertions) and tiled along z, exact for edges parallel to the beam (verified identical
+  to a direct 30-period build including layer and terrace indices); needed because the builder
+  peaks at ~4.7 GB per 84 000 atoms (the 10 000 A cells were killed by the 15 GB container).
+* `scripts/hpc/null_test_study/{run_study.py, study.yaml, README.md}`: 17 points (fixed-beam
+  translation versus length 0 to 20 000 A with absorption 0, 0.05, 0.1; off-Bragg 12 and 20 mrad;
+  covariant control; a/2 steps with 30.7, 61, 123 A terraces, window distances 4 to 32 A, apertures
+  0.1 and 0.2 1/A, absorption 0 and 0.1, on and off the Bragg peak, +5000 and +10 000 A). Every
+  point writes a JSON result and a manifest. Expected runtime per point from `estimate_resources`
+  (`--estimate`; CPU = 4 threads, measured components x 1.5; GPU = ASSUMPTION model, not measured):
+
+```
+tfix_bragg_abs0_L0: grid 640x60, 1434 slices, 19224 atoms, engine arrays 4 MB, CPU ~8 s (x1.5 calibration), GPU ~0.3 s (ASSUMPTION model)
+tfix_bragg_abs0_L10k: grid 1875x60, 11850 slices, 159840 atoms, engine arrays 16 MB, CPU ~173 s (x1.5 calibration), GPU ~3.7 s (ASSUMPTION model)
+tfix_bragg_abs0_L20k: grid 3125x60, 22266 slices, 300456 atoms, engine arrays 29 MB, CPU ~606 s (x1.5 calibration), GPU ~9.5 s (ASSUMPTION model)
+tfix_bragg_abs05_L0: grid 640x60, 1434 slices, 19224 atoms, engine arrays 4 MB, CPU ~7 s (x1.5 calibration), GPU ~0.3 s (ASSUMPTION model)
+tfix_bragg_abs05_L5k: grid 1260x60, 6642 slices, 89532 atoms, engine arrays 10 MB, CPU ~58 s (x1.5 calibration), GPU ~1.7 s (ASSUMPTION model)
+tfix_bragg_abs05_L10k: grid 1875x60, 11850 slices, 159840 atoms, engine arrays 16 MB, CPU ~178 s (x1.5 calibration), GPU ~3.7 s (ASSUMPTION model)
+tfix_bragg_abs10_L5k: grid 1260x60, 6642 slices, 89532 atoms, engine arrays 10 MB, CPU ~53 s (x1.5 calibration), GPU ~1.7 s (ASSUMPTION model)
+tfix_bragg_abs10_L10k: grid 1875x60, 11850 slices, 159840 atoms, engine arrays 16 MB, CPU ~150 s (x1.5 calibration), GPU ~3.7 s (ASSUMPTION model)
+tfix_off12_abs10_L5k: grid 1120x60, 7010 slices, 94500 atoms, engine arrays 10 MB, CPU ~52 s (x1.5 calibration), GPU ~1.7 s (ASSUMPTION model)
+tfix_off20_abs10_L5k: grid 1440x60, 6406 slices, 86346 atoms, engine arrays 11 MB, CPU ~67 s (x1.5 calibration), GPU ~1.7 s (ASSUMPTION model)
+tmov_bragg_abs10_L10k: grid 1875x60, 11850 slices, 159840 atoms, engine arrays 16 MB, CPU ~210 s (x1.5 calibration), GPU ~3.7 s (ASSUMPTION model)
+step_w8_bragg_abs10_L5k: grid 1260x480, 6642 slices, 742784 atoms, engine arrays 82 MB, CPU ~216 s (x1.5 calibration), GPU ~4.3 s (ASSUMPTION model)
+step_w16_bragg_abs10_L5k: grid 1260x960, 6642 slices, 1485568 atoms, engine arrays 167 MB, CPU ~517 s (x1.5 calibration), GPU ~9.6 s (ASSUMPTION model)
+step_w32_bragg_abs10_L5k: grid 1260x1920, 6642 slices, 2971136 atoms, engine arrays 340 MB, CPU ~1319 s (x1.5 calibration), GPU ~22.8 s (ASSUMPTION model)
+step_w16_bragg_abs0_L5k: grid 1260x960, 6642 slices, 1485568 atoms, engine arrays 167 MB, CPU ~479 s (x1.5 calibration), GPU ~9.6 s (ASSUMPTION model)
+step_w16_off20_abs10_L5k: grid 1440x960, 6406 slices, 1432704 atoms, engine arrays 177 MB, CPU ~531 s (x1.5 calibration), GPU ~10.7 s (ASSUMPTION model)
+step_w16_bragg_abs10_L10k: grid 1875x960, 11850 slices, 2652160 atoms, engine arrays 267 MB, CPU ~1213 s (x1.5 calibration), GPU ~26.0 s (ASSUMPTION model)
+```
+  Total about 1.6 h CPU (4 threads) or a few minutes on one GPU (model). Translation points count
+  two runs. The cupy backend has never been executed: check the first point against the
+  in-container value (+0.569 rad) before trusting GPU results.

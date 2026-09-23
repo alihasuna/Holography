@@ -30,12 +30,38 @@ def theta_0008() -> float:
                                         a_A=A_SI_A).theta_ext)
 
 
-def _structure(staircase, periods, sub):
+def _build(staircase, periods, sub):
     return build_si001_terraces(azimuth_uvw=(1, 1, 0), azimuth_label=AZ_LABEL,
                                 staircase=staircase, edge_periods=periods, substrate_layers=sub,
                                 first_terrace_backbond_uvw=(1, 1, 0), termination="bulk",
                                 overlayer=None, vacuum_above_A=10.0, lattice_parameter_A=A_SI_A,
                                 lattice_parameter_label="ASSUMPTION B2")
+
+
+def _structure(staircase, periods, sub, *, tile_above=400):
+    """Builder result; for edges parallel to the beam and more than tile_above periods, ONE period
+    along z is built (all builder assertions run on it) and tiled along z: exact, because such a
+    crystal is periodic along z with the in-plane period (the builder's own z periodicity). This
+    avoids the builder's ~55 kB per atom peak memory (4.7 GB for 84 000 atoms)."""
+    if staircase.edges != "parallel" or periods <= tile_above:
+        return _build(staircase, periods, sub)
+    import hashlib
+    one = _build(staircase, 1, sub)
+    n = one.n_atoms
+    shift = np.repeat(np.arange(periods), n) * P
+    pos = np.tile(one.positions_A, (periods, 1))
+    pos[:, 2] += shift
+    cell = one.cell_A.copy()
+    cell[2, 2] = periods * P
+    md = dict(one.metadata)
+    md["edge_periods"] = periods
+    md["atom_count"] = int(n * periods)
+    md["positions_sha256"] = hashlib.sha256(np.ascontiguousarray(pos, "<f8").tobytes()).hexdigest()
+    md["tiled_along_z"] = dict(periods=periods, from_verified_build_of_periods=1,
+                               note="exact: the crystal is periodic along z (edges parallel)")
+    return dataclasses.replace(one, positions_A=pos, species=np.tile(one.species, periods),
+                               cell_A=cell, layer_index=np.tile(one.layer_index, periods),
+                               terrace_index=np.tile(one.terrace_index, periods), metadata=md)
 
 
 def _params(cell, theta, *, max_pixel=0.13, precision="complex64", buildup=20.0, dz=P / 4):
@@ -75,7 +101,7 @@ def translation_pair(*, theta, width_periods=2, H=8.0, edge=2.0, gap=2.0, buildu
     # the builder's a/2 translation vector R (slab frame), from a stepped build of the same lattice
     st = Staircase(edges="parallel", terrace_layers=(0, 2), terrace_widths=(1, 1),
                    boundary_step_layers=-2)
-    R = np.array(_structure(st, 2, 6).metadata["steps"][0]["relation"]["t_slab_A"])
+    R = np.array(_build(st, 2, 6).metadata["steps"][0]["relation"]["t_slab_A"])
     assert abs(R[0] - 2 * Q) < 1e-9
     L = np.diag(sA.cell_A)
     moved = sA.positions_A + R
