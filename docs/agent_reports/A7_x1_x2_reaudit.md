@@ -1,6 +1,7 @@
 # A7 - Re-audit of fix rounds X1 (A5 findings) and X2 (A6 findings) at 685e434
 
-Agent A7, 2026-09-24. Status: IN PROGRESS (written incrementally; sections 1-2 added after the checks of 3-4).
+Agent A7, 2026-09-24. Status: FINAL (2026-09-24, 05:36 UTC; written incrementally, with sections 1-2 added after the
+checks of sections 3-4).
 
 Scope: commit 685e434, detached worktree
 `/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/a7_wt` (`<wt>`
@@ -18,6 +19,8 @@ not part of the repository). A5's scripts `<sp>/a5/`, A6's scripts `<sp>/` (scra
 * 05:00-05:20: X2 findings re-checked (section 4), A6's scripts rerun (through a wrapper where X2
   made `amp_floor_rel` a required keyword).
 * 05:20: sections 1-2 (verdict tables, ranked findings) and 5-8 written.
+* 05:25-05:33: optional L10k read-out proofs and R2-B run (section 5).
+* 05:35: worktree removed (section 8).
 
 ## 1. Verdict
 
@@ -505,8 +508,8 @@ All suites pass in the worktree (section 5).
 
 ### n1-n9
 
-* n1 FIXED (docstring). n2 FIXED (the pixel-centre assertion is added to the optional R2-B, which
-  was not run here). n3 FIXED (the fingerprint above shows the periodic cKDTree check, True for all
+* n1 FIXED (docstring). n2 FIXED (the pixel-centre assertion is added to the optional R2-B; run
+  here with RH_RUNG2_R2B=1, it passes at x_s = 265.000 A, section 5). n3 FIXED (the fingerprint above shows the periodic cKDTree check, True for all
   11 pairs). n4 FIXED (test passes). n9 FIXED (reference at K = 2 pi f; R2-A perturbations rerun
   below). n5 FIXED except README_ALLIANCE.md:15-16 (declined, still stale). n6, n7 and n8 were
   DECLINED legitimately: n6 is a docs line count, n7 was outside the orchestrator's kit scope (the
@@ -548,7 +551,7 @@ suites. The worktree has no outputs/, and the outputs/ guard of tests/conftest.p
 | tests/pipeline | 05:05:00-05:08:11 | `94 passed in 189.31s (0:03:09)` |
 | tests/io | 05:08:11-05:08:13 | `128 passed in 1.20s` |
 | tests/hpc (kit, emulated jobs, `venv` symlink in the worktree) | 05:08:13-05:11:30, load 2.8 -> 3.5 | `117 passed, 5 skipped in 195.91s (0:03:15)` (`SKIPPED [5] ... shellcheck not installed`) |
-| optional: `RH_NULL_READOUT_LONG=1 RH_RUNG2_R2B=1 pytest -q -s tests/forward/test_null_readout_known_answer.py tests/forward/test_rung2_bragg.py -k "L10k or r2b"` | see section 6 | see section 6 |
+| optional: `RH_NULL_READOUT_LONG=1 RH_RUNG2_R2B=1 pytest -q -s tests/forward/test_null_readout_known_answer.py tests/forward/test_rung2_bragg.py -k "L10k or r2b"` | 05:25:29-05:32:54, load 1.4 -> 1.1 | `3 passed, 10 deselected in 443.30s (0:07:23)`. L10k r 0.1: "fixed beam: converged beyond 2500.0 A ... (12 included bin(s) beyond ...); lit-end limit 9254.5 A (margin 1768.2 A)", moved beam 18 bins; r 0.05: fixed "converged beyond 3000.0 A ... (11 ...)", moved 18 bins; smallest bin / largest 0.297, 0.299, 0.206, 0.206 (all as X2). R2-B: "max \|dR\| = 1.120e-02 (T_B = 0.03)", "x_s 265.000 A" (the n2 pixel-centre assertion passes) |
 
 A6's R2-A perturbation driver, unchanged, against the fixed code (n9 changed the reference
 evaluation; `<sp>/r2a_perturb.py <name> <wt>`):
@@ -611,3 +614,14 @@ evaluation; `<sp>/r2a_perturb.py <name> <wt>`):
 
 ## 8. Cleanup
 
+* `rm <wt>/venv` (the symlink only); `git -C <wt> status --short` was empty before removal;
+  `git -C /home/user/Holography worktree remove <wt>`; `git worktree prune`. `git worktree list` now
+  shows only `/home/user/Holography`.
+* Removed A7's scratch exports and run directories (`<sp7>/a1ef2a0_tree`, `<sp7>/t67f3bf5`,
+  `<sp7>/pt_*`, `<sp7>/member_jobs`, `<sp7>/rs_out_*`). The scripts and logs named above stay in
+  `<sp7>`, outside the repository.
+* The branch head moved during this audit, through the orchestrator's snapshot and summary commits
+  up to 6d30f10. `git diff --stat 685e434 6d30f10 -- reflection_holo tests configs scripts
+  tools/plots tools/hpc` is empty, so the audited code is unchanged at the current head.
+* No code was modified, nothing was installed, committed or pushed, and nothing was written under
+  outputs/. The only repository file written is this report.

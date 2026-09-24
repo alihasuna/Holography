@@ -19,7 +19,11 @@ Files written by E10: this report, `tools/review/e10_recompute.py` and its saved
 Raw downloads are kept outside the repository in
 `/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/e10/` (called `e10/`).
 Every web page and PDF quoted below was downloaded again by E10 through the session proxy on 2026-09-24
-(no form submitted, no personal data sent). L9's copies in `l9/` were used only to compare hashes.
+(no form submitted, no personal data sent). L9's scratch copies in `l9/` were used only to compare hashes.
+Independence: L9's three scripts are part of the material under review and were read (and rerun) before E10 wrote
+its own; E10's digitiser therefore uses a deliberately different calibration (spines plus grid, jointly) and curve
+tracing (colour-difference classes, column tracking), and the phase-noise derivation, the Monte Carlo and the B29,
+demo and sideband-weighting numbers have no counterpart in L9's code.
 
 Severity scale (as E6/E9): BLOCKER (must be fixed before anything is adopted), MAJOR (must be fixed or
 re-worded before the affected item is adopted), MINOR (fix when adopting), NIT.
