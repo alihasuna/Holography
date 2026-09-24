@@ -1,0 +1,288 @@
+tools/review/e9_recompute.py - E9 review of L8 (oxide overlayer); all lengths in A unless stated
+
+====================================================================================================
+A. Constants (CODATA 2018 / SI-2019; docs/physics_conventions.md)
+====================================================================================================
+  lambda(200 keV): 0.02507934 A
+  k = 2 pi/lambda: 250.5323 rad/A
+  sigma(200 keV): 7.2884010e-04 rad V^-1 A^-1
+  K_F = h^2/(2 pi m0 e): 47.87765 V A^2
+  theta (B32): 16.1347 mrad
+  k_perp = k sin(theta): 4.04209 rad/A
+  path factor 2/sin(theta) (in + out), 1/sin(theta) (one pass, = nm of path per nm of layer): 123.962, 61.981
+  2 k sigma (k_perp^2 shift per volt): 0.365196 A^-2 V^-1
+  k^2 Delta per volt (exact, at 10.34 V)/10.34: 0.365199 A^-2 V^-1
+
+====================================================================================================
+B. Electronic absorptive potential V' = 1/(2 sigma Lambda) and r = V'/V0 (L8 1.3, 8)
+====================================================================================================
+  V' for Lambda = 1780.0 A [Lee 2000 a-SiO2, no obj. aperture (178 nm)]: 0.3854 V
+  V' for Lambda = 1705.0 A [Iakoubovskii 2008 SiO2 (crystalline) x 1.1 (170.5 nm)]: 0.4024 V
+  V' for Lambda = 1550.0 A [Iakoubovskii 2008 SiO2 (crystalline, 155 nm)]: 0.4426 V
+  V' for Lambda = 1740.0 A [Lee 2000 lower 1-sigma (174 nm)]: 0.3943 V
+  V' for Lambda = 1820.0 A [Lee 2000 upper 1-sigma (182 nm)]: 0.3769 V
+  r = V'/V0 at V0 = 10.1 V for Lambda = 1780 / 1705 / 1550 A: 0.0382, 0.0398, 0.0438
+  r = V'/V0 at V0 = 10.34 V for Lambda = 1780 / 1705 / 1550 A: 0.0373, 0.0389, 0.0428
+  r = V'/V0 at V0 = 10.8 V for Lambda = 1780 / 1705 / 1550 A: 0.0357, 0.0373, 0.0410
+  r = V'/V0 at V0 = 11.5 V for Lambda = 1780 / 1705 / 1550 A: 0.0335, 0.0350, 0.0385
+  r at the nominal 0.40 V / 10.34 V: 0.0387
+  r range 0.385 V/11.5 V .. 0.443 V/10.1 V: 0.0335, 0.0439
+
+====================================================================================================
+C. Refraction into the oxide (exact relativistic Delta; parallel k conserved)
+====================================================================================================
+  V = 10.000 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 5.81837e-05, 17.8467, 4.47107, 112.071, 56.0357
+  V = 10.100 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 5.87656e-05, 17.863, 4.47515, 111.969, 55.9846
+  V = 10.340 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 6.0162e-05, 17.902, 4.48493, 111.725, 55.8626
+  V = 10.800 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 6.28385e-05, 17.9766, 4.50362, 111.262, 55.6308
+  V = 11.500 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 6.69114e-05, 18.0895, 4.53192, 110.567, 55.2836
+  V = 11.900 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 6.92387e-05, 18.1537, 4.548, 110.176, 55.0881
+  V = 12.000 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 6.98206e-05, 18.1697, 4.55202, 110.079, 55.0396
+  V = 13.600 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 7.91301e-05, 18.4241, 4.61575, 108.56, 54.2798
+  V = 13.903 V: Delta, theta_in (mrad), k'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in): 8.08931e-05, 18.4719, 4.62773, 108.279, 54.1394
+
+====================================================================================================
+D. Specular attenuation by a continuum layer, in + out (L8 3.3: "0.20-0.29 at 2 nm")
+====================================================================================================
+  intensity factor exp(-path/Lambda); path = 2t/sin(theta) (no refraction) or 2t/sin(theta_in);
+  the "complex k" column is exp(-4 Im(k'_perp) t) with k'_perp for V + iV' (exact form).
+  t = 1.0 nm, Lambda = 1550 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.4494, 0.4856, 0.4864, 0.4900, 0.4864
+  t = 1.0 nm, Lambda = 1705 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.4833, 0.5186, 0.5193, 0.5228, 0.5193
+  t = 1.0 nm, Lambda = 1780 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.4984, 0.5331, 0.5338, 0.5373, 0.5338
+  t = 1.5 nm, Lambda = 1550 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.3013, 0.3384, 0.3392, 0.3430, 0.3392
+  t = 1.5 nm, Lambda = 1705 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.3360, 0.3734, 0.3742, 0.3780, 0.3742
+  t = 1.5 nm, Lambda = 1780 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.3518, 0.3892, 0.3900, 0.3939, 0.3900
+  t = 2.0 nm, Lambda = 1550 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.2020, 0.2358, 0.2365, 0.2401, 0.2366
+  t = 2.0 nm, Lambda = 1705 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.2336, 0.2689, 0.2697, 0.2734, 0.2697
+  t = 2.0 nm, Lambda = 1780 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.2484, 0.2842, 0.2850, 0.2887, 0.2850
+  t = 3.0 nm, Lambda = 1550 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.0908, 0.1145, 0.1150, 0.1177, 0.1151
+  t = 3.0 nm, Lambda = 1705 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.1129, 0.1394, 0.1400, 0.1429, 0.1400
+  t = 3.0 nm, Lambda = 1780 A: I(no refr.), I(V=10.1), I(10.34), I(11.5), I(complex k, 10.34 V): 0.1238, 0.1515, 0.1521, 0.1551, 0.1521
+  t = 1.0 nm: range with refraction (Lambda 1550-1780, V 10.1-11.5): 0.486, 0.537
+  t = 1.0 nm: range with refraction, amorphous Lambda only (1705-1780): 0.519, 0.537
+  t = 1.0 nm: range without refraction (Lambda 1550-1780): 0.449, 0.498
+  t = 1.0 nm: amplitude range with refraction: 0.697, 0.733
+  t = 1.0 nm: 1/intensity (reduction factor), with refraction: 1.86, 2.06
+  t = 2.0 nm: range with refraction (Lambda 1550-1780, V 10.1-11.5): 0.236, 0.289
+  t = 2.0 nm: range with refraction, amorphous Lambda only (1705-1780): 0.269, 0.289
+  t = 2.0 nm: range without refraction (Lambda 1550-1780): 0.202, 0.248
+  t = 2.0 nm: amplitude range with refraction: 0.486, 0.537
+  t = 2.0 nm: 1/intensity (reduction factor), with refraction: 3.46, 4.24
+  t = 3.0 nm: range with refraction (Lambda 1550-1780, V 10.1-11.5): 0.115, 0.155
+  t = 3.0 nm: range with refraction, amorphous Lambda only (1705-1780): 0.139, 0.155
+  t = 3.0 nm: range without refraction (Lambda 1550-1780): 0.091, 0.124
+  t = 3.0 nm: amplitude range with refraction: 0.338, 0.394
+  t = 3.0 nm: 1/intensity (reduction factor), with refraction: 6.45, 8.73
+  a-Si under the oxide, Lambda(Si) = 1450 A (Iakoubovskii Table I value for c-Si):
+  a-Si t = 1.0 nm: I(no refr.), I(V = 11.9 V), I(V = 13.6 V): 0.4253, 0.4677, 0.4730
+  a-Si t = 2.0 nm: I(no refr.), I(V = 11.9 V), I(V = 13.6 V): 0.1809, 0.2188, 0.2237
+  a-Si t = 3.0 nm: I(no refr.), I(V = 11.9 V), I(V = 13.6 V): 0.0769, 0.1023, 0.1058
+  a-Si t = 5.0 nm: I(no refr.), I(V = 11.9 V), I(V = 13.6 V): 0.0139, 0.0224, 0.0237
+  O1 (Lee 2000 p. 1130) validity of the bulk IMFP picture: t/Lambda > 0.1 (below it surface excitations
+  are significant). Layer thickness normal to the surface over Lambda:
+  t = 1.0 nm: t/Lambda for Lambda = 1780 / 1550 A: 0.0056, 0.0065
+  t = 2.0 nm: t/Lambda for Lambda = 1780 / 1550 A: 0.0112, 0.0129
+  t = 3.0 nm: t/Lambda for Lambda = 1780 / 1550 A: 0.0169, 0.0194
+
+====================================================================================================
+E. Phase consequences for the step measurement (E6 M4 formalism; exp(+ikr); magnitudes)
+====================================================================================================
+  a/4, a/2 (a = 5.4309 A, B2): 1.357725, 2.715450 A
+  conformal (or no) layer: step phase 2 k_perp h for a/4, a/2: 10.9761, 21.9522 rad
+  same with a = 5.431 A (L7/L8 value): 10.9763, 21.9526 rad
+  wrap period lambda/(2 sin theta): 0.7772 A
+  V = 10.000: top-surface term 2(k'-k) (rad/A), projected 2 sigma V/sin (rad/A), apparent height per A: 0.8580, 0.9035, 0.1061
+  V = 10.000: planarising a/4 phase 2 k' h (a=5.4309 / 5.431), excess over conformal (rad), apparent height excess (A): 12.1410, 12.1412, 1.1649, 0.1441
+  V = 10.100: top-surface term 2(k'-k) (rad/A), projected 2 sigma V/sin (rad/A), apparent height per A: 0.8661, 0.9125, 0.1071
+  V = 10.100: planarising a/4 phase 2 k' h (a=5.4309 / 5.431), excess over conformal (rad), apparent height excess (A): 12.1521, 12.1523, 1.1760, 0.1455
+  V = 10.340: top-surface term 2(k'-k) (rad/A), projected 2 sigma V/sin (rad/A), apparent height per A: 0.8857, 0.9342, 0.1096
+  V = 10.340: planarising a/4 phase 2 k' h (a=5.4309 / 5.431), excess over conformal (rad), apparent height excess (A): 12.1786, 12.1788, 1.2025, 0.1488
+  V = 10.800: top-surface term 2(k'-k) (rad/A), projected 2 sigma V/sin (rad/A), apparent height per A: 0.9231, 0.9758, 0.1142
+  V = 10.800: planarising a/4 phase 2 k' h (a=5.4309 / 5.431), excess over conformal (rad), apparent height excess (A): 12.2294, 12.2296, 1.2533, 0.1550
+  V = 11.500: top-surface term 2(k'-k) (rad/A), projected 2 sigma V/sin (rad/A), apparent height per A: 0.9797, 1.0390, 0.1212
+  V = 11.500: planarising a/4 phase 2 k' h (a=5.4309 / 5.431), excess over conformal (rad), apparent height excess (A): 12.3062, 12.3064, 1.3301, 0.1645
+  V = 13.903: top-surface term 2(k'-k) (rad/A), projected 2 sigma V/sin (rad/A), apparent height per A: 1.1713, 1.2561, 0.1449
+  V = 13.903: planarising a/4 phase 2 k' h (a=5.4309 / 5.431), excess over conformal (rad), apparent height excess (A): 12.5664, 12.5666, 1.5903, 0.1967
+  GROWN oxide: a thickness difference dt between two terraces consumes f*dt more Si (the interface
+  drops by f*dt) and raises the top by (1-f)*dt. Extra step phase = [2 k' - 2 k (1-f)] dt;
+  apparent height per A of oxide = f + (k'/k - 1). f from section F.
+  f = 0.4214, V = 10.1: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.27280, 0.52854, 0.00234, 0.18920, 0.07973, 0.05872
+  f = 0.4214, V = 10.34: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.29236, 0.53096, 0.00233, 0.18834, 0.07937, 0.05846
+  f = 0.4214, V = 11.5: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.38633, 0.54258, 0.00228, 0.18430, 0.07767, 0.05720
+  f = 0.4415, V = 10.1: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.43529, 0.54864, 0.00225, 0.18227, 0.08047, 0.05927
+  f = 0.4415, V = 10.34: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.45486, 0.55106, 0.00224, 0.18147, 0.08012, 0.05901
+  f = 0.4415, V = 11.5: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.54882, 0.56268, 0.00220, 0.17772, 0.07846, 0.05779
+  f = 0.4616, V = 10.1: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.59778, 0.56874, 0.00217, 0.17583, 0.08116, 0.05978
+  f = 0.4616, V = 10.34: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.61735, 0.57116, 0.00217, 0.17508, 0.08082, 0.05952
+  f = 0.4616, V = 11.5: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), interface offset f*dt for 0.1 A (A), same / (a/4): 4.71131, 0.58278, 0.00212, 0.17159, 0.07921, 0.05834
+  top-surface-only variation (deposited layer, density change, contamination; interface fixed):
+  V = 10.1: dt for 0.01 rad (A), dt for 0.1 A apparent height (A): 0.01155, 0.93337
+  V = 10.34: dt for 0.01 rad (A), dt for 0.1 A apparent height (A): 0.01129, 0.91275
+  V = 11.5: dt for 0.01 rad (A), dt for 0.1 A apparent height (A): 0.01021, 0.82521
+  one extra CONSUMED Si layer (a/4) on one terrace: oxide dt = (a/4)/f; interface step changes by a/4;
+  f = 0.4415, V = 10.34: dt (A), top-surface shift (1-f)dt (A), extra phase (rad), in units of the a/4 phase: 3.0753, 1.7175, 13.6998, 1.2482
+  number of Si layers consumed under a conformal oxide, f(2.20) t_ox/(a/4), f = 0.4415:
+  t_ox = 1.0 nm: consumed depth (A), layers: 4.415, 3.252
+  t_ox = 1.5 nm: consumed depth (A), layers: 6.623, 4.878
+  t_ox = 2.0 nm: consumed depth (A), layers: 8.830, 6.504
+  t_ox = 3.0 nm: consumed depth (A), layers: 13.245, 9.755
+  planar (x-only) absorbing mask on a stepped cell (E6 m12) applied to the oxide term: an extra slab of
+  thickness h crossed in + out at the internal angle; amplitude factor exp(-sigma V' 2h/sin(theta_in)):
+  V'_ox = 0.385 V: amplitude factor for a/4, a/2: 0.9583, 0.9184
+  V'_ox = 0.4 V: amplitude factor for a/4, a/2: 0.9567, 0.9154
+  V'_ox = 0.443 V: amplitude factor for a/4, a/2: 0.9522, 0.9067
+
+====================================================================================================
+F. Si consumed per oxide thickness (Si atoms conserved; L8 3.3 "0.44 t_ox")
+====================================================================================================
+  rho(c-Si) at a = 5.4309 / 5.431 A: 2.3292, 2.3291 g/cm^3
+  rho_ox = 2.07: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4154, 2.4072, 8.3084, 11.6916
+  rho_ox = 2.1: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4214, 2.3728, 8.4288, 11.5712
+  rho_ox = 2.18: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4375, 2.2857, 8.7499, 11.2501
+  rho_ox = 2.183: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4381, 2.2826, 8.7619, 11.2381
+  rho_ox = 2.2: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4415, 2.2650, 8.8301, 11.1699
+  rho_ox = 2.27: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4556, 2.1951, 9.1111, 10.8889
+  rho_ox = 2.28: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4576, 2.1855, 9.1512, 10.8488
+  rho_ox = 2.3: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4616, 2.1665, 9.2315, 10.7685
+  rho_ox = 2.311: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A): 0.4638, 2.1562, 9.2757, 10.7243
+  a-Si at 0.98 of the c-Si density, rho_ox = 2.20: f, oxide thickness that consumes 1 nm of it (nm): 0.4505, 2.2197
+  a-Si at 0.99 of the c-Si density, rho_ox = 2.20: f, oxide thickness that consumes 1 nm of it (nm): 0.4460, 2.2423
+
+====================================================================================================
+G. Kirkland independent-atom mean inner potential of SiO2 (abTEM 1.0.10 parameter table)
+====================================================================================================
+  abTEM version 1.0.10; table /home/user/Holography/venv/lib/python3.11/site-packages/abtem/parametrizations/data/kirkland.json
+  Si: a = [1.06543892, 0.120143691, 0.180915263], b = [1.04118455, 68.7113368, 0.0887533926], c = [1.1206562, 0.0305452816, 1.59963502], d = [3.70062619, 0.214097897, 9.99096638]; f_e(0) = sum a/b + sum c: 5.8142839 A
+  Si: integral of V d^3r = K_F f_e(0): 278.3742 V A^3
+  O: a = [0.339969204, 0.307570172, 0.130369072], b = [0.38157028, 0.381571436, 19.1919745], c = [0.0883326058, 0.1965867, 0.00099622], d = [0.760635525, 2.07401094, 0.0303266869]; f_e(0) = sum a/b + sum c: 1.9897443 A
+  O: integral of V d^3r = K_F f_e(0): 95.2643 V A^3
+  Si: abTEM scattering_factor(k=0) (black box), abTEM potential radial integral (V A^3), engine AtomicPotential.scattering_factor(Z=14, 0) (V A^3): 5.81428, 278.37424, 278.37423
+  O: abTEM scattering_factor(k=0) (black box), abTEM potential radial integral (V A^3), engine AtomicPotential.scattering_factor(Z=8, 0) (V A^3): 1.98974, 95.26427, 95.26427
+  K_F (f_Si + 2 f_O) per SiO2 formula unit: 468.9028 V A^3
+  rho = 2.07: n_SiO2 (1/A^3), V0(IAM): 0.02075, 9.72844
+  rho = 2.1: n_SiO2 (1/A^3), V0(IAM): 0.02105, 9.86943
+  rho = 2.18: n_SiO2 (1/A^3), V0(IAM): 0.02185, 10.24541
+  rho = 2.183: n_SiO2 (1/A^3), V0(IAM): 0.02188, 10.25951
+  rho = 2.2: n_SiO2 (1/A^3), V0(IAM): 0.02205, 10.33940
+  rho = 2.27: n_SiO2 (1/A^3), V0(IAM): 0.02275, 10.66838
+  rho = 2.3: n_SiO2 (1/A^3), V0(IAM): 0.02305, 10.80937
+  rho = 2.311: n_SiO2 (1/A^3), V0(IAM): 0.02316, 10.86107
+  dV0/drho (V per g/cm^3) and for +-0.1 g/cm^3: 4.6997, 0.4700
+  Si check: 8 K_F f_Si / a^3 (a = 5.4309 A; B32 13.903 V): 13.9028 V
+  measured a-SiO2: 10.1 +- 0.6 V (Wang 1997 via C02 p. 772), 11.5 +- 0.3 V (Lee 2000 p. 1131); difference, combined 1-sigma, ratio: 1.400, 0.671, 2.087
+  IAM(2.20) minus 10.1 V and minus 11.5 V: 0.239, -1.161 V
+
+====================================================================================================
+H. Yamamura-Tawara threshold (NIFS-DATA-23 p. 7 Eq. (18), p. 8 Eq. (19), Table 1 p. 14: U_s(Si) = 4.63 eV)
+====================================================================================================
+  Ar on Si: gamma, E_th: 0.9696, 31.9937 (E_th in eV)
+  O on Si: gamma, E_th: 0.9248, 21.2622 (E_th in eV)
+  O (M = 16.00) on Si: gamma, E_th: 0.9248, 21.2626 (E_th in eV)
+  Ar (M = 39.95) on Si: gamma, E_th: 0.9696, 31.9940 (E_th in eV)
+  O2+ ion splitting into two O at equal energy: threshold per ion 2 E_th(O): 42.52 eV
+
+====================================================================================================
+I. Periodic tiling of an amorphous cube of side L (L8 5.3: "0.195 mrad inside the 3 mrad aperture")
+====================================================================================================
+  L = 128.716 A: transverse (across-beam) rod spacing lambda/L (mrad); along-beam n=-1 Laue circle radius (mrad), its closest approach to the specular spot (mrad); n=+1 exists?: 0.1948, 25.4954, 9.3607, 0.0000
+  L = 168.39 A: transverse (across-beam) rod spacing lambda/L (mrad); along-beam n=-1 Laue circle radius (mrad), its closest approach to the specular spot (mrad); n=+1 exists?: 0.1489, 23.6263, 7.4916, 0.0000
+  L = 10.8577 A: transverse (across-beam) rod spacing lambda/L (mrad); along-beam n=-1 Laue circle radius (mrad), its closest approach to the specular spot (mrad); n=+1 exists?: 2.3098, 69.8568, 53.7221, 0.0000
+  along-beam period L above which the n=-1 circle enters a 3 mrad aperture (A): 474.1
+  H2 transverse cell width 86.9 A (16 x a/sqrt2 x ...): own rod spacing lambda/W (mrad): 0.2886
+
+====================================================================================================
+J. Si inelastic MFP -> V' (L8 1.3 cross-check of B6 (ii))
+====================================================================================================
+  Lambda = 1450 A [c-Si total, Iakoubovskii Table I (calibration value)]: V': 0.4731 V
+  Lambda = 1680 A [c-Si plasmon part, Iakoubovskii Table I]: V': 0.4083 V
+  Lambda = 1050 A [Mendis 2019 plasmon MFP as stated by Mendis 2024 (UNVERIFIED)]: V': 0.6534 V
+  Lambda = 830 A [Malis estimate in Mendis 2024]: V': 0.8265 V
+
+====================================================================================================
+K. Lee et al. 2000 phase check (p. 1131: 2.73 pi at t = 113 nm, holography at 300 kV)
+====================================================================================================
+  sigma(300 keV): 6.526161e-03 rad V^-1 nm^-1
+  sigma U t for U = 11.5 V, t = 113 nm (rad, units of pi): 8.4807, 2.6995
+  U implied by 2.73 pi at 113 nm: 11.630 V
+
+====================================================================================================
+L. E9 figure readings (E9 digitisation of the rendered figures; DERIVED_HERE, reading uncertainty stated)
+====================================================================================================
+  Kitajima 1994 Fig. 16 (p. 823), delta-Delta in degrees at 600 s and at ~9900 s; reading +-0.1 deg:
+  curve a (200 W): dD(600 s), dD(9900 s), fraction, bound on thickness at 600 s if linear (nm, x <1.5 nm): 1.450, 3.420, 0.424, 0.636
+  curve b (300 W): dD(600 s), dD(9900 s), fraction, bound on thickness at 600 s if linear (nm, x <1.5 nm): 2.260, 4.010, 0.564, 0.845
+  curve c (500 W): dD(600 s), dD(9900 s), fraction, bound on thickness at 600 s if linear (nm, x <1.5 nm): 2.710, 4.010, 0.676, 1.014
+  Robinson et al. 2004 Fig. 4 (p. 372), change in apparent thickness (A) vs minutes; reading +-0.3 A:
+   0.20 min -8.20; 0.42 min -10.10; 0.94 min -7.60; 1.31 min -9.40; 1.98 min -6.90; 2.97 min -9.00; 3.98 min -5.70; 6.01 min -5.40; 7.97 min -4.70; 9.99 min -4.05; 11.93 min -1.35; 15.95 min -2.40
+  early points (0.2-3 min): min, max: -10.10, -6.90 A
+  growth at 10 min relative to early min/max (A): 6.05, 2.85
+  growth at 12 and 16 min relative to early min/max (A): 8.75, 5.55, 7.70, 4.50
+
+====================================================================================================
+M. Oxide-thickness routes after the 10 min clean (L8 2.3 and 8)
+====================================================================================================
+  XPS thermal-oxide-equivalent route: native 0.5-1.0 nm (Morita Fig. 1) + plasma 0.4-1.0 nm: 0.9, 2.0 nm
+  same with the n-Si subset 0.5-0.8 nm: 0.9, 1.8 nm
+  ellipsometric route: native 1.6-1.9 nm (Robinson p. 370) + plasma 0.4-1.0 nm: 2.0, 2.9 nm
+  union of both routes, midpoint: 0.90, 2.90, 1.90 nm
+  P4-only plasma growth (0.4-0.6 nm) on the XPS route: 0.9, 1.6 nm
+
+====================================================================================================
+N. Specular Fresnel reflection of the continuum layer itself (vacuum/oxide and oxide/Si steps)
+====================================================================================================
+  V_ox = 10.1: r(vac/ox), |r|^2, r(ox/Si at 13.903 V), |r|^2, (1-r12^2)^2: -0.05085, 0.00259, -0.01676, 0.00028, 0.99484
+  V_ox = 10.34: r(vac/ox), |r|^2, r(ox/Si at 13.903 V), |r|^2, (1-r12^2)^2: -0.05193, 0.00270, -0.01567, 0.00025, 0.99461
+  V_ox = 11.5: r(vac/ox), |r|^2, r(ox/Si at 13.903 V), |r|^2, (1-r12^2)^2: -0.05713, 0.00326, -0.01046, 0.00011, 0.99348
+  graded top edge (erf profile, Gaussian gradient of s.d. w): |r| suppressed by exp(-(q w)^2/2), q = k1 + k2
+  q = k_perp(vac) + k_perp(ox, 10.34 V): 8.5270 1/A
+  w = 0.05 A: suppression of |r|, |r|^2 after suppression: 9.131e-01, 2.249e-03
+  w = 0.1 A: suppression of |r|, |r|^2 after suppression: 6.952e-01, 1.304e-03
+  w = 0.25 A: suppression of |r|, |r|^2 after suppression: 1.031e-01, 2.866e-05
+  w = 0.5 A: suppression of |r|, |r|^2 after suppression: 1.129e-04, 3.440e-11
+  w = 1.0 A: suppression of |r|, |r|^2 after suppression: 1.626e-16, 7.134e-35
+  w = 1.35 A: suppression of |r|, |r|^2 after suppression: 1.678e-29, 7.599e-61
+  sharp-edged layer (V_ox = 10.34 V) against the crystal specular reflectivity attenuated by a 2 nm oxide (x 0.27):
+  S5 4.1 [100] (0,0,8) peak, DT static, r = 0.1: |R|^2, attenuated, |r_F|^2/attenuated, amplitude ratio rho, max phase perturbation asin(rho) (rad; 99 = rho > 1, Fresnel term dominates): 0.07977, 0.02154, 0.1252, 0.3539, 0.3617
+  P2 two-beam max |R| = 0.5423 at r = 0.05: |R|^2, attenuated, |r_F|^2/attenuated, amplitude ratio rho, max phase perturbation asin(rho) (rad; 99 = rho > 1, Fresnel term dominates): 0.2941, 0.0794, 0.03397, 0.1843, 0.1854
+  S5 4.1 [110] near-zero at 16.20 mrad: |R|^2, attenuated, |r_F|^2/attenuated, amplitude ratio rho, max phase perturbation asin(rho) (rad; 99 = rho > 1, Fresnel term dominates): 0.00034, 9.18e-05, 29.38, 5.42, 99
+
+====================================================================================================
+O. Zenodo 10.5281/zenodo.10419194 structures (E9 extraction; minimum-image, all Si atoms)
+====================================================================================================
+  ace_4.in.data: 139968 atoms, masses {1: 15.999, 2: 28.085}, tilt lines 0, box [128.71634924057568, 128.71634924057568, 128.71634924057568] A
+  N_Si, N_O, O/Si, density (g/cm^3): 46656, 93312, 2, 2.1828
+  Si-O cutoff 1.9 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0010, 0.9977, 0.0006, 0.0016
+  Si-O cutoff 2.0 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0012, 0.9978, 0.0005, 0.0017
+  Si-O cutoff 2.2 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0012, 0.9978, 0.0005, 0.0017
+  Si-O cutoff 2.4 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0013, 0.9978, 0.0005, 0.0017
+  mean and s.d. of the 4 nearest Si-O distances (A): 1.6190, 0.0368
+  all Si-O pairs closer than 2.0 A: number, mean, s.d. (A): 186678.0000, 1.6189, 0.0322
+  IAM V0 of this model (V): 10.2586
+  hybrid.out.data: 331776 atoms, masses {1: 15.999, 2: 28.085}, tilt lines 0, box [168.39031668402274, 168.39031668402274, 168.39031668402274] A
+  N_Si, N_O, O/Si, density (g/cm^3): 1.1059e+05, 2.2118e+05, 2, 2.3109
+  Si-O cutoff 1.9 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0007, 0.9990, 0.0002, 0.0008
+  Si-O cutoff 2.0 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0009, 0.9990, 0.0000, 0.0009
+  Si-O cutoff 2.2 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0009, 0.9990, 0.0000, 0.0010
+  Si-O cutoff 2.4 A: mean coordination, fraction fourfold, fraction 3, fraction 5: 4.0009, 0.9990, 0.0000, 0.0010
+  mean and s.d. of the 4 nearest Si-O distances (A): 1.6174, 0.0319
+  all Si-O pairs closer than 2.0 A: number, mean, s.d. (A): 442470.0000, 1.6175, 0.0319
+  IAM V0 of this model (V): 10.8606
+
+====================================================================================================
+P. Combination with B38 (surface-plasmon zero-loss fraction exp(-1.246) of E6/B38)
+====================================================================================================
+  B38 zero-loss fraction (clean Si(111)7x7 transfer, not an oxide-covered surface): 0.2877
+  product with an oxide factor 0.24: 0.0690
+  product with an oxide factor 0.27: 0.0777
+  product with an oxide factor 0.29: 0.0834
+
+====================================================================================================
+Q. 1-D paraxial split-step multislice test of the layer-edge reflection (same algorithm class as the engine:
+====================================================================================================
+  t = exp(+i sigma V dz), P = exp(-i pi lambda dz q^2); a Gaussian packet at the glancing angle hits a
+  potential step V_ox (x < 0) or an erf-graded step of width w; reflected power = |r|^2)
+  V_ox = 10.34 V, w = 0.0 A: multislice |r|^2, analytic |r_F|^2 exp(-(q w)^2), steps (dz = 2 A): 2.7039e-03, 2.6972e-03, 5.1130e+03
+  V_ox = 10.34 V, w = 0.1 A: multislice |r|^2, analytic |r_F|^2 exp(-(q w)^2), steps (dz = 2 A): 1.3067e-03, 1.3036e-03, 5.1130e+03
+  V_ox = 10.34 V, w = 0.25 A: multislice |r|^2, analytic |r_F|^2 exp(-(q w)^2), steps (dz = 2 A): 3.1126e-05, 2.8662e-05, 5.1130e+03
+  sharp edge, dz = 1.0 A: multislice |r|^2 (convergence check): 2.6998e-03
+  sharp edge, dz = 4.0 A: multislice |r|^2 (convergence check): 2.7121e-03

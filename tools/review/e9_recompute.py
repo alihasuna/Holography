@@ -102,7 +102,7 @@ def main(zdir=None):
     pr('K_F = h^2/(2 pi m0 e)', K_F, '{:.5f}', 'V A^2')
     pr('theta (B32)', THETA * 1e3, '{:.4f}', 'mrad')
     pr('k_perp = k sin(theta)', KPERP, '{:.5f}', 'rad/A')
-    pr('path factor 2/sin(theta)', 2 / math.sin(THETA), '{:.3f}')
+    pr('path factor 2/sin(theta) (in + out), 1/sin(theta) (one pass, = nm of path per nm of layer)', [2 / math.sin(THETA), 1 / math.sin(THETA)], '{:.3f}')
     pr('2 k sigma (k_perp^2 shift per volt)', 2 * K * SIG, '{:.6f}', 'A^-2 V^-1')
     pr('k^2 Delta per volt (exact, at 10.34 V)/10.34', K ** 2 * delta_exact(10.34, T) / 10.34, '{:.6f}', 'A^-2 V^-1')
 
@@ -126,8 +126,8 @@ def main(zdir=None):
         d = delta_exact(V, T)
         s2 = (math.sin(THETA) ** 2 + d) / (1 + d)
         kp = kperp_in(V).real
-        pr(f'V = {V:6.3f} V: Delta, theta_in (mrad), k\'_perp (1/A), 2/sin(theta_in)',
-           [d, math.asin(math.sqrt(s2)) * 1e3, kp, 2 / math.sqrt(s2)], '{:.6g}')
+        pr(f'V = {V:6.3f} V: Delta, theta_in (mrad), k\'_perp (1/A), 2/sin(theta_in), 1/sin(theta_in)',
+           [d, math.asin(math.sqrt(s2)) * 1e3, kp, 2 / math.sqrt(s2), 1 / math.sqrt(s2)], '{:.6g}')
 
     section('D. Specular attenuation by a continuum layer, in + out (L8 3.3: "0.20-0.29 at 2 nm")')
     print('  intensity factor exp(-path/Lambda); path = 2t/sin(theta) (no refraction) or 2t/sin(theta_in);')
@@ -179,6 +179,8 @@ def main(zdir=None):
     for t_nm in (1.0, 2.0, 3.0):
         pr(f't = {t_nm} nm: t/Lambda for Lambda = 1780 / 1550 A', [t_nm * 10 / 1780.0, t_nm * 10 / 1550.0], '{:.4f}')
 
+    rho_si_c = 8 * M_SI / NA / (A_SI * 1e-8) ** 3
+    fval = {rho: (rho / M_SIO2) / (rho_si_c / M_SI) for rho in (2.10, 2.20, 2.30)}
     section('E. Phase consequences for the step measurement (E6 M4 formalism; exp(+ikr); magnitudes)')
     h4, h2 = A_SI / 4, A_SI / 2
     h4_l8 = 5.431 / 4
@@ -197,29 +199,36 @@ def main(zdir=None):
     print('  GROWN oxide: a thickness difference dt between two terraces consumes f*dt more Si (the interface')
     print('  drops by f*dt) and raises the top by (1-f)*dt. Extra step phase = [2 k\' - 2 k (1-f)] dt;')
     print('  apparent height per A of oxide = f + (k\'/k - 1). f from section F.')
-    for f in (0.4215, 0.4416, 0.4618):
+    for f in (round(fval[2.10], 4), round(fval[2.20], 4), round(fval[2.30], 4)):
         for V in (10.1, 10.34, 11.5):
             kp = kperp_in(V).real
             per = 2 * kp - 2 * KPERP * (1 - f)
             app = per / (2 * KPERP)
-            pr(f'f = {f}, V = {V}: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A)',
-               [per, app, 0.01 / per, 0.1 / app], '{:.5f}')
+            pr(f'f = {f}, V = {V}: rad per A of dt, apparent A per A, dt for 0.01 rad (A), dt for 0.1 A height (A), '
+               f'interface offset f*dt for 0.1 A (A), same / (a/4)',
+               [per, app, 0.01 / per, 0.1 / app, f * 0.1 / app, f * 0.1 / app / h4], '{:.5f}')
     print('  top-surface-only variation (deposited layer, density change, contamination; interface fixed):')
     for V in (10.1, 10.34, 11.5):
         kp = kperp_in(V).real
         per = 2 * (kp - KPERP)
         pr(f'V = {V}: dt for 0.01 rad (A), dt for 0.1 A apparent height (A)', [0.01 / per, 0.1 / (per / (2 * KPERP))], '{:.5f}')
     print('  one extra CONSUMED Si layer (a/4) on one terrace: oxide dt = (a/4)/f; interface step changes by a/4;')
-    for f in (0.4416,):
+    for f in (round(fval[2.20], 4),):
         dt = h4 / f
         for V in (10.34,):
             kp = kperp_in(V).real
             pr(f'f = {f}, V = {V}: dt (A), top-surface shift (1-f)dt (A), extra phase (rad), in units of the a/4 phase',
                [dt, (1 - f) * dt, (2 * kp - 2 * KPERP * (1 - f)) * dt, (2 * kp - 2 * KPERP * (1 - f)) * dt / (2 * KPERP * h4)],
                '{:.4f}')
-    print('  number of Si layers consumed under a conformal oxide, 0.4416 t_ox/(a/4):')
+    print(f'  number of Si layers consumed under a conformal oxide, f(2.20) t_ox/(a/4), f = {fval[2.20]:.4f}:')
     for t_nm in (1.0, 1.5, 2.0, 3.0):
-        pr(f't_ox = {t_nm} nm: consumed depth (A), layers', [0.4416 * t_nm * 10, 0.4416 * t_nm * 10 / h4], '{:.3f}')
+        pr(f't_ox = {t_nm} nm: consumed depth (A), layers', [fval[2.20] * t_nm * 10, fval[2.20] * t_nm * 10 / h4], '{:.3f}')
+
+    print('  planar (x-only) absorbing mask on a stepped cell (E6 m12) applied to the oxide term: an extra slab of')
+    print('  thickness h crossed in + out at the internal angle; amplitude factor exp(-sigma V\' 2h/sin(theta_in)):')
+    d = delta_exact(10.34, T); s_in = math.sqrt((math.sin(THETA) ** 2 + d) / (1 + d))
+    for Vi in (0.385, 0.40, 0.443):
+        pr(f"V'_ox = {Vi} V: amplitude factor for a/4, a/2", [math.exp(-SIG * Vi * 2 * h4 / s_in), math.exp(-SIG * Vi * 2 * h2 / s_in)], '{:.4f}')
 
     section('F. Si consumed per oxide thickness (Si atoms conserved; L8 3.3 "0.44 t_ox")')
     rho_si = 8 * M_SI / NA / (A_SI * 1e-8) ** 3
@@ -229,6 +238,9 @@ def main(zdir=None):
         f = (rho / M_SIO2) / (rho_si / M_SI)
         pr(f'rho_ox = {rho}: f = d_Si/t_ox, volume expansion 1/f, interface drop and top rise for 2 nm (A)',
            [f, 1 / f, 20 * f, 20 * (1 - f)], '{:.4f}')
+    for frac in (0.98, 0.99):
+        f = (2.20 / M_SIO2) / (frac * rho_si / M_SI)
+        pr(f'a-Si at {frac} of the c-Si density, rho_ox = 2.20: f, oxide thickness that consumes 1 nm of it (nm)', [f, 1 / f], '{:.4f}')
 
     section('G. Kirkland independent-atom mean inner potential of SiO2 (abTEM 1.0.10 parameter table)')
     import abtem
@@ -245,12 +257,21 @@ def main(zdir=None):
     # black-box checks: abTEM's own function at k = 0, and a real-space radial integral of abTEM's V(r)
     from abtem.parametrizations import KirklandParametrization
     kp_ = KirklandParametrization()
-    for el in ('Si', 'O'):
+    # the engine's own method (reflection_holo/forward/multislice/potentials.py AtomicPotential.scattering_factor,
+    # symbol map {14: 'Si', 8: 'O'} as set in its __init__), called on a stub holding the Kirkland parameterisation
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+    from reflection_holo.forward.multislice.potentials import AtomicPotential
+    stub = type('EngineStub', (), {})()
+    stub._param = kp_
+    stub._symbols = {14: 'Si', 8: 'O'}
+    for el, Z in (('Si', 14), ('O', 8)):
         fk = kp_.scattering_factor(el)(np.array([0.0]))[0]
         V = kp_.potential(el)
         r = np.concatenate([np.linspace(1e-6, 0.05, 20001), np.linspace(0.05, 40.0, 400001)[1:]])
         integ = np.trapezoid(4 * np.pi * r ** 2 * V(r), r)
-        pr(f'{el}: abTEM scattering_factor(k=0) (black box), abTEM potential radial integral (V A^3)', [fk, integ], '{:.5f}')
+        eng = float(AtomicPotential.scattering_factor(stub, Z, np.array([0.0]))[0])
+        pr(f'{el}: abTEM scattering_factor(k=0) (black box), abTEM potential radial integral (V A^3), '
+           f'engine AtomicPotential.scattering_factor(Z={Z}, 0) (V A^3)', [fk, integ, eng], '{:.5f}')
     per_fu = K_F * (f0['Si'] + 2 * f0['O'])
     pr('K_F (f_Si + 2 f_O) per SiO2 formula unit', per_fu, '{:.4f}', 'V A^3')
     for rho in (2.07, 2.10, 2.18, 2.183, 2.20, 2.27, 2.30, 2.311):
@@ -329,6 +350,21 @@ def main(zdir=None):
         r12 = (k1 - k2) / (k1 + k2)
         r23 = (k2 - k3) / (k2 + k3)
         pr(f'V_ox = {Vox}: r(vac/ox), |r|^2, r(ox/Si at 13.903 V), |r|^2, (1-r12^2)^2', [r12, r12 ** 2, r23, r23 ** 2, (1 - r12 ** 2) ** 2], '{:.5f}')
+    print('  graded top edge (erf profile, Gaussian gradient of s.d. w): |r| suppressed by exp(-(q w)^2/2), q = k1 + k2')
+    k1 = KPERP; k2 = kperp_in(10.34).real; q = k1 + k2
+    r12 = (k1 - k2) / (k1 + k2)
+    pr('q = k_perp(vac) + k_perp(ox, 10.34 V)', q, '{:.4f}', '1/A')
+    for w in (0.05, 0.1, 0.25, 0.5, 1.0, 1.35):
+        sup = math.exp(-(q * w) ** 2 / 2)
+        pr(f'w = {w} A: suppression of |r|, |r|^2 after suppression', [sup, (r12 * sup) ** 2], '{:.3e}')
+    print('  sharp-edged layer (V_ox = 10.34 V) against the crystal specular reflectivity attenuated by a 2 nm oxide (x 0.27):')
+    for lab, R2 in (('S5 4.1 [100] (0,0,8) peak, DT static, r = 0.1', 0.07977), ('P2 two-beam max |R| = 0.5423 at r = 0.05', 0.5423 ** 2),
+                    ('S5 4.1 [110] near-zero at 16.20 mrad', 3.4e-4)):
+        att = R2 * 0.27
+        ratio_I = r12 ** 2 / att
+        rho_ = math.sqrt(ratio_I)
+        pr(f'{lab}: |R|^2, attenuated, |r_F|^2/attenuated, amplitude ratio rho, max phase perturbation asin(rho) (rad; 99 = rho > 1, Fresnel term dominates)',
+           [R2, att, ratio_I, rho_, math.asin(rho_) if rho_ < 1 else 99.0], '{:.4g}')
 
     section('O. Zenodo 10.5281/zenodo.10419194 structures (E9 extraction; minimum-image, all Si atoms)')
     if zdir and os.path.isdir(zdir):
@@ -374,6 +410,9 @@ def main(zdir=None):
                    [float(np.mean(nb)), frac4, float(np.mean(nb == 3)), float(np.mean(nb == 5))], '{:.4f}')
             dd, _ = tO.query(si, k=4)
             pr('mean and s.d. of the 4 nearest Si-O distances (A)', [float(dd.mean()), float(dd.std())], '{:.4f}')
+            dp, _ = tO.query(si, k=8, distance_upper_bound=2.0)
+            dp = dp[np.isfinite(dp)]
+            pr('all Si-O pairs closer than 2.0 A: number, mean, s.d. (A)', [float(dp.size), float(dp.mean()), float(dp.std())], '{:.4f}')
             n = nSi / (vol)  # per A^3
             V0 = (nSi * K_F * f0['Si'] + nO * K_F * f0['O']) / vol
             pr('IAM V0 of this model (V)', V0, '{:.4f}')
@@ -385,6 +424,36 @@ def main(zdir=None):
     pr('B38 zero-loss fraction (clean Si(111)7x7 transfer, not an oxide-covered surface)', zl_sp, '{:.4f}')
     for Iox in (0.24, 0.27, 0.29):
         pr(f'product with an oxide factor {Iox}', zl_sp * Iox, '{:.4f}')
+
+    section('Q. 1-D paraxial split-step multislice test of the layer-edge reflection (same algorithm class as the engine:')
+    print('  t = exp(+i sigma V dz), P = exp(-i pi lambda dz q^2); a Gaussian packet at the glancing angle hits a')
+    print('  potential step V_ox (x < 0) or an erf-graded step of width w; reflected power = |r|^2)')
+    from scipy.special import erf as _erf
+
+    def split_step(Vox, w, dz=2.0, x0=60.0, width=15.0, N=2 ** 14, dx=0.02):
+        x = (np.arange(N) - N // 2) * dx
+        q_ = np.fft.fftfreq(N, d=dx)
+        Vx = np.where(x < 0, Vox, 0.0) if w == 0 else Vox * 0.5 * (1 - _erf(x / (math.sqrt(2) * w)))
+        mask = np.ones(N); edge = 40.0
+        lo_ = x < x[0] + edge; hi_ = x > x[-1] - edge
+        mask[lo_] = np.sin(0.5 * np.pi * (x[lo_] - x[0]) / edge) ** 2
+        mask[hi_] = np.sin(0.5 * np.pi * (x[-1] - x[hi_]) / edge) ** 2
+        psi = np.exp(-((x - x0) / width) ** 2) * np.exp(-1j * K * math.sin(THETA) * x)
+        n0 = np.sum(abs(psi) ** 2)
+        tr = np.exp(1j * SIG * Vx * dz); Pr = np.exp(-1j * math.pi * LAM * dz * q_ ** 2)
+        nsteps = int((2 * x0 + 3 * width) / math.sin(THETA) / dz)
+        for _ in range(nsteps):
+            psi = np.fft.ifft(Pr * np.fft.fft(tr * psi)) * mask
+        Psi = np.fft.fft(psi)
+        return float(np.sum(abs(Psi[q_ > 0]) ** 2) / N / n0), nsteps
+    k1 = KPERP; k2 = kperp_in(10.34).real; rF = (k1 - k2) / (k1 + k2)
+    for w in (0.0, 0.1, 0.25):
+        R_, ns = split_step(10.34, w)
+        pr(f'V_ox = 10.34 V, w = {w} A: multislice |r|^2, analytic |r_F|^2 exp(-(q w)^2), steps (dz = 2 A)',
+           [R_, rF ** 2 * math.exp(-((k1 + k2) * w) ** 2), ns], '{:.4e}')
+    for dz_ in (1.0, 4.0):
+        R_, ns = split_step(10.34, 0.0, dz=dz_)
+        pr(f'sharp edge, dz = {dz_} A: multislice |r|^2 (convergence check)', R_, '{:.4e}')
 
 
 if __name__ == '__main__':

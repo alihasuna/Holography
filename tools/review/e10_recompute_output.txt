@@ -1,0 +1,132 @@
+E10 recompute, interpreter: /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/pdfenv/bin/python numpy 2.4.6
+
+=== A. Inputs quoted from the sources
+D6 Table 1 (p. 5), 200 keV, Si, low threshold: {'MTF_N': 0.01, 'DQE0': 0.8, 'DQE_halfN': 0.17, 'DQE_N': 0.0}
+D6 Eq. (1) (p. 3): ESF_fit(x) = A/2 (1 + erf((mu - x)/sigma)); MTF = |FT(d ESF_fit/dx)|
+  => MTF(w) = exp(-(pi sigma w)^2) exactly (a Gaussian), for every threshold and energy
+pitch 55.0 um; omega_N = 0.5 cycles/pixel = 9.091 cycles/mm
+
+=== B. Independent digitisation of D6 Fig. 8(a),(b)
+calibration: bottom spine row 436.5 grid rows (1.0..0.2) [91.0, 159.5, 229.0, 299.5, 368.0] y(row) = [-0.002888  1.262278]
+  panel a: spines (84.5, 466.0), grid cols [161.5, 237.0, 313.0, 390.0], x(col) = [ 0.002623 -0.222157] right spine at x = 1.0001
+  panel b: spines (594.5, 974.5), grid cols [671.5, 747.0, 823.0, 900.0], x(col) = [ 0.002623 -1.559846] right spine at x = 0.9962
+curves: digitised now from /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/e10/pdf/Paton2021_gla.pdf
+w/w_N: [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
+  Fig. 8(a) square_pixel : [None, None, None, 0.994, 0.985, 0.976, 0.965, 0.952, 0.936, 0.919, 0.901, 0.881, 0.858, 0.835, 0.81, 0.786, 0.759, 0.729, 0.699, 0.669, 0.641]
+  Fig. 8(a) TH0_58.3keV  : [None, 0.981, 0.953, 0.9, 0.826, 0.741, 0.65, 0.556, 0.464, 0.376, 0.297, 0.23, 0.175, 0.13, 0.095, 0.07, 0.048, 0.035, 0.023, 0.017, 0.013]
+  Fig. 8(a) TH0_117.1keV : [0.999, 0.997, 0.989, 0.978, 0.96, 0.939, 0.913, 0.882, 0.849, 0.813, 0.773, 0.733, 0.692, 0.649, 0.605, 0.566, 0.524, 0.482, 0.441, 0.4, 0.365]
+  Fig. 8(b) square_pixel : [0.999, 0.998, 0.994, 0.982, 0.969, 0.95, 0.927, 0.904, 0.875, 0.845, 0.811, 0.774, 0.736, 0.699, 0.659, 0.617, 0.576, 0.533, 0.49, 0.448, None]
+  Fig. 8(b) TH0_12.4keV  : [0.787, 0.748, 0.755, 0.669, 0.612, 0.54, 0.459, 0.376, 0.3, 0.23, 0.168, 0.121, 0.082, 0.056, 0.036, 0.026, None, None, None, None, None]
+  Fig. 8(b) TH0_58.3keV  : [0.597, 0.61, 0.576, 0.511, 0.432, 0.355, 0.276, 0.204, 0.147, 0.101, 0.065, 0.041, 0.03, 0.023, None, None, None, None, None, None, None]
+  Fig. 8(b) TH0_117.1keV : [0.025, 0.023, 0.022, 0.022, 0.022, 0.022, 0.022, 0.02, 0.019, 0.017, 0.016, 0.015, 0.013, 0.013, 0.013, 0.012, 0.012, 0.01, 0.01, 0.01, None]
+validation against the square-pixel curves (D6 p. 4: MTF = sinc, DQE = sinc^2):
+  w = 0.25: MTF digitised 0.976, sinc 0.974; DQE digitised 0.95, sinc^2 0.950
+  w = 0.50: MTF digitised 0.901, sinc 0.900; DQE digitised 0.811, sinc^2 0.811
+  w = 0.75: MTF digitised 0.786, sinc 0.784; DQE digitised 0.617, sinc^2 0.615
+  w = 0.95: MTF digitised 0.669, sinc 0.668; DQE digitised 0.448, sinc^2 0.446
+  w = 1.00: MTF digitised 0.641, sinc 0.637; DQE digitised None, sinc^2 0.405
+validation against Table 1: MTF(w_N) digitised 0.013 (Table 0.01); DQE(0) digitised 0.787 (Table 0.80; the curve is noisy below 0.1 w_N); DQE(0.5 w_N) digitised 0.168 (Table 0.17)
+E10 vs L9 digitisation: max |diff| MTF (58.3 keV) 0.004 over 20 points; DQE (12.4 keV) 0.013 over 16 points (largest at w = 0, the noisy end)
+  DQE excluding w = 0: max |diff| 0.004
+
+=== C. Functional form of the 200 keV Si MTF
+Gaussian fit, linear LSQ (0.05-0.95 w_N, 19 pts): w0 = 0.4558 w_N, rms residual 0.0028
+Gaussian fit, L9 method (log LSQ, MTF > 0.03): w0 = 0.4590 w_N
+stretched exponential: a = 0.4557 w_N, n = 2.000, rms residual 0.0028 (n = 2 is a Gaussian)
+residuals (digitised - Gaussian, linear fit): ['0.05:-0.007', '0.10:-0.000', '0.15:+0.003', '0.20:+0.001', '0.25:+0.001', '0.30:+0.002', '0.35:+0.001', '0.40:+0.001', '0.45:-0.001', '0.50:-0.003', '0.55:-0.003', '0.60:-0.002', '0.65:-0.001', '0.70:+0.000', '0.75:+0.003', '0.80:+0.002', '0.85:+0.004', '0.90:+0.003', '0.95:+0.004']
+  linear LSQ: q0 = 0.2279 cycles/px; Gaussian PSF s.d. 0.988 px = 54.3 um; D6 Eq. (1) erf width sigma = 1.397 px = 76.8 um; MTF(w_N) = 0.0081
+  L9 log LSQ: q0 = 0.2295 cycles/px; Gaussian PSF s.d. 0.981 px = 53.9 um; D6 Eq. (1) erf width sigma = 1.387 px = 76.3 um; MTF(w_N) = 0.0087
+Table-1-only Gaussian (D6 Eq. (1) + MTF(w_N) = 0.01, rounding interval [0.005, 0.015)):
+  w = 0.25: MTF = 0.750 (range 0.718 - 0.769)
+  w = 0.5: MTF = 0.316 (range 0.266 - 0.350)
+  implied Gaussian PSF s.d. from MTF(w_N) = 0.01: 0.966 px (range 0.923 - 1.036 px)
+117.1 keV curve, Gaussian log-LSQ: w0 = 0.993 w_N, max |resid| 0.004 (also Gaussian by construction)
+
+=== D. Fringe-contrast factor MTF(q_c) (p pixels per fringe: w = 2/p in w_N units)
+ p  | w/w_N | MTF digitised (58.3 keV curve) | Gaussian fit | Table-1 Gaussian [range] | square-pixel sinc
+  3 | 0.667 | 0.117 | 0.118 | 0.129 [0.095, 0.155] | 0.827
+  4 | 0.500 | 0.298 | 0.300 | 0.316 [0.266, 0.350] | 0.900
+  5 | 0.400 | 0.463 | 0.463 | 0.479 [0.428, 0.511] | 0.935
+  6 | 0.333 | 0.587 | 0.586 | 0.599 [0.555, 0.627] | 0.955
+  8 | 0.250 | 0.741 | 0.740 | 0.750 [0.718, 0.769] | 0.974
+ 10 | 0.200 | 0.826 | 0.825 | 0.832 [0.809, 0.845] | 0.984
+ 12 | 0.167 | 0.877 | 0.875 | 0.880 [0.863, 0.890] | 0.989
+ 16 | 0.125 | 0.928 | 0.928 | 0.931 [0.921, 0.936] | 0.994
+ 17 | 0.118 | 0.937 | 0.936 | 0.938 [0.929, 0.944] | 0.994
+ 20 | 0.100 | 0.954 | 0.953 | 0.955 [0.948, 0.959] | 0.996
+(the 12.4 keV MTF curve lies under the 58.3 keV curve, which is drawn on top; its visible edge reads 0.28 at 0.5 w_N, i.e. the L9 'mean of the two' 0.288 is biased low by the occlusion)
+
+=== E. Phase noise with a detector of given MTF and DQE
+Derivation (DERIVED_HERE). Incident electrons per pixel n(r) = nbar [1 + mu cos(2 pi q_c.r + phi)]
+(mu = incident, specimen-plane contrast). Output counts d_j: mean g nbar [1 + mu MTF(q_c) cos(...)],
+noise power spectrum NPS(q) (digital, aliasing included). Sideband estimate over M pixels:
+c = (1/M) sum_j d_j exp(-2 pi i q_c.r_j):  <c> = g nbar mu MTF(q_c) e^{i phi} / 2,  var(c) = NPS(q_c) / M,
+split equally between the two quadratures. Hence
+  sigma_phi = sqrt(NPS(q_c) / (2M)) / (g nbar mu MTF(q_c) / 2).
+With D6 Eq. (3), DQE(q) = g^2 nbar MTF(q)^2 / NPS(q):
+  sigma_phi = sqrt(2) / (mu sqrt(M nbar DQE(q_c))) = sqrt(2) / (mu sqrt(N DQE(q_c))),  N = M nbar incident.
+The MTF cancels when mu is the INCIDENT contrast: relative to a DQE = 1 detector at the same dose the factor
+is 1/sqrt(DQE(q_c)); it is NOT 1/(MTF sqrt(DQE)). Written with the MEASURED contrast mu_m = mu MTF(q_c)
+and the measured counts N_c = g N (what an experimentalist reads off the hologram):
+  sigma_phi = sqrt(2) / (mu_m sqrt(N_c)) * sqrt(g NNPS(q_c) / DQE(0)),   NNPS = NPS / NPS(0).
+ p  | DQE(q_c) dig. | 1/sqrt(DQE) | vs ideal square pixel sqrt(sinc^2/DQE) | wrong: 1/MTF | wrong: 1/(MTF sqrt(DQE)) | sqrt(NNPS/DQE0)
+  4 | 0.170 | 2.42 | 2.18 | 3.36 | 8.14 | 0.721
+  5 | 0.300 | 1.82 | 1.71 | 2.16 | 3.94 | 0.845
+  6 | 0.400 | 1.58 | 1.51 | 1.70 | 2.69 | 0.929
+  8 | 0.540 | 1.36 | 1.33 | 1.35 | 1.84 | 1.008
+ 10 | 0.612 | 1.28 | 1.26 | 1.21 | 1.55 | 1.056
+ 12 | 0.654 | 1.24 | 1.22 | 1.14 | 1.41 | 1.084
+ 16 | 0.712 | 1.19 | 1.18 | 1.08 | 1.28 | 1.100
+Table 1 only, 4 px/fringe: DQE(0.5 w_N) = 0.17 -> 1/sqrt = 2.425 (rounding interval [0.165, 0.175): 2.390 - 2.462)
+
+=== F. Monte Carlo check of the phase-noise formula (1-D compound-Poisson counting detector)
+detector model: P(m=1..4) = [0.45, 0.3, 0.15, 0.1], E[m] = 1.900, E[m^2] = 4.600, E[m]^2/E[m^2] = 0.7848; count displacement s.d. 0.95 px; line of 1024 px; nbar = 20.0 e/px; incident contrast mu = 0.8
+flat fields (3000): gain g = 1.8998 counts/e (E[m] = 1.900); NPS(0) from 64-px bins 90.56, from 256-px bins 91.19 (nbar E[m^2] = 92.00); DQE(0) = g^2 nbar / NPS(0) = 0.7970 (64 px), 0.7916 (256 px); L9 I3.3 E[m]^2/E[m^2] = 0.7848
+ 4 px/fringe (q_c = 0.25 cycles/px): MTF measured 0.2956 (model 0.2957); NPS(q_c) 43.21; DQE(q_c) 0.1460
+   sigma_phi measured 0.03184 rad (3000 realisations, s.e. ~0.00041); formula sqrt(2)/(mu sqrt(N DQE)) 0.03233 (ratio 0.985)
+   ideal DQE = 1 value 0.01235 -> measured/ideal 2.578 vs 1/sqrt(DQE) 2.617; the MTF-type scaling 1/(MTF sqrt(DQE)) would give 0.10935 (ratio 0.291); naive Poisson with measured contrast and counts 0.03031 (ratio 1.050)
+ 8 px/fringe (q_c = 0.125 cycles/px): MTF measured 0.7378 (model 0.7377); NPS(q_c) 67.17; DQE(q_c) 0.5850
+   sigma_phi measured 0.01608 rad (3000 realisations, s.e. ~0.00021); formula sqrt(2)/(mu sqrt(N DQE)) 0.01615 (ratio 0.995)
+   ideal DQE = 1 value 0.01235 -> measured/ideal 1.301 vs 1/sqrt(DQE) 1.307; the MTF-type scaling 1/(MTF sqrt(DQE)) would give 0.02189 (ratio 0.735); naive Poisson with measured contrast and counts 0.01215 (ratio 1.324)
+control, point-sampled Poisson (DQE = 1, the present code): ['q_c 0.25: measured 0.01239, formula 0.01235', 'q_c 0.125: measured 0.01224, formula 0.01235']
+
+=== G. Effective DQE over a Hann disc mask of radius |q_c|/3 (B29), 2-D, isotropic D6 curves
+ 4 px/fringe: mask spans 0.333-0.667 w_N; NNPS at q_c 0.423, Hann^2-weighted mean 0.426; DQE(q_c) 0.170 -> effective 0.169; phase-noise factor 2.42 -> 2.43
+ 8 px/fringe: mask spans 0.167-0.333 w_N; NNPS at q_c 0.812, Hann^2-weighted mean 0.809; DQE(q_c) 0.540 -> effective 0.542; phase-noise factor 1.36 -> 1.36
+
+=== H. B29 minimum empty-hologram visibility V_min = 0.5 against the detector MTF
+measured visibility V = mu_inc * MTF(q_c) (the centre band has MTF(0) = 1); V >= 0.5 needs mu_inc >= 0.5/MTF
+  4 px/fringe: MTF 0.298 (Gaussian 0.300); mu_inc needed 1.680; V at mu = 1: 0.298 (FAIL); V with the B38 R1 factor 0.536: 0.160 (FAIL)
+  5 px/fringe: MTF 0.463 (Gaussian 0.463); mu_inc needed 1.080; V at mu = 1: 0.463 (FAIL); V with the B38 R1 factor 0.536: 0.248 (FAIL)
+  6 px/fringe: MTF 0.587 (Gaussian 0.586); mu_inc needed 0.851; V at mu = 1: 0.587 (pass); V with the B38 R1 factor 0.536: 0.315 (FAIL)
+  8 px/fringe: MTF 0.741 (Gaussian 0.740); mu_inc needed 0.675; V at mu = 1: 0.741 (pass); V with the B38 R1 factor 0.536: 0.397 (FAIL)
+ 10 px/fringe: MTF 0.826 (Gaussian 0.825); mu_inc needed 0.605; V at mu = 1: 0.826 (pass); V with the B38 R1 factor 0.536: 0.443 (FAIL)
+ 12 px/fringe: MTF 0.877 (Gaussian 0.875); mu_inc needed 0.570; V at mu = 1: 0.877 (pass); V with the B38 R1 factor 0.536: 0.470 (FAIL)
+ 16 px/fringe: MTF 0.928 (Gaussian 0.928); mu_inc needed 0.539; V at mu = 1: 0.928 (pass); V with the B38 R1 factor 0.536: 0.497 (FAIL)
+ 17 px/fringe: MTF 0.937 (Gaussian 0.936); mu_inc needed 0.534; V at mu = 1: 0.937 (pass); V with the B38 R1 factor 0.536: 0.502 (pass)
+ 20 px/fringe: MTF 0.954 (Gaussian 0.953); mu_inc needed 0.524; V at mu = 1: 0.954 (pass); V with the B38 R1 factor 0.536: 0.511 (pass)
+threshold (Gaussian fit): V >= 0.5 at mu = 1 needs p >= 5.27 px/fringe; with the B38 factor 0.536 needs MTF >= 0.9328, i.e. p >= 16.6 px/fringe
+
+=== I. Demo configuration arithmetic (B23, B28)
+lambda(200 keV) = 0.025079 A; 3 mrad aperture band = 0.1196 cycles/A
+B23/B28 now: pixel 0.5 A, carrier 2.0 A -> 4 px/fringe; q_c = 0.500 cycles/A, mask |q_c|/3 = 0.1667 cycles/A >= band 0.1196: True
+ (a) keep carrier 2.0 A, pixel 0.25 A: 8 px/fringe; mask 0.1667 cycles/A vs band 0.1196: object band inside the mask; M = 6e+05 at 15 um pitch, 2.2e+06 at 55 um; detector Nyquist 2.00 cycles/A
+ (b) keep pixel 0.5 A, carrier 4.0 A: 8 px/fringe; mask 0.0833 cycles/A vs band 0.1196: object band NOT inside the mask (B28 rationale broken); M = 3e+05 at 15 um pitch, 1.1e+06 at 55 um; detector Nyquist 1.00 cycles/A
+largest carrier spacing keeping the 3 mrad band inside |q_c|/3: 2.787 A; at 8 px/fringe the pixel must then be <= 0.3483 A
+same field with pixel 0.25 A: ROI [512, 128] -> [1024, 256] (4x the detector pixels)
+
+=== J. Asymmetric weighting of the sideband by the MTF (not removed by dividing by the empty hologram)
+ 4 px/fringe: MTF(q_c - R)/MTF(q_c) = 1.951, MTF(q_c + R)/MTF(q_c) = 0.392 (ratio across the mask 4.97)
+ 8 px/fringe: MTF(q_c - R)/MTF(q_c) = 1.182, MTF(q_c + R)/MTF(q_c) = 0.791 (ratio across the mask 1.49)
+
+=== K. L9's remaining numbers
+NNPS = DQE(0) MTF^2 / DQE (D6 Eq. (6)): ['0.2: 0.892', '0.25: 0.813', '0.3: 0.735', '0.4: 0.571', '0.5: 0.416', '0.6: 0.297']
+1/sin(16.1347 mrad) = 61.981
+ carrier 2.0 A at 8 px/fringe: pixel 0.2500 A, M = 2.2e+06; along-beam surface per pixel 15.50 A; 256 px: 0.397 um along, 6.4 nm across
+ carrier 2.0 A at 4 px/fringe: pixel 0.5000 A, M = 1.1e+06; along-beam surface per pixel 30.99 A; 256 px: 0.793 um along, 12.8 nm across
+ carrier 10.0 A at 8 px/fringe: pixel 1.2500 A, M = 4.4e+05; along-beam surface per pixel 77.48 A; 256 px: 1.983 um along, 32.0 nm across
+ carrier 50.0 A at 8 px/fringe: pixel 6.2500 A, M = 8.8e+04; along-beam surface per pixel 387.38 A; 256 px: 9.917 um along, 160.0 nm across
+B23 0.5 A pixel with a 55 um pitch: M = 1.1e+06
+counter maxima: {1: 1, 6: 63, 12: 4095, 24: 16777215}
+I3.6: 256/8 = 32 fringes; resolution ~3 fringes = 24 px; 256/24 = 10.7 elements
+H1 brightness 2.9e8 - 2.9e9 A cm^-2 sr^-1 = 2.9e+12 - 2.9e+13 A m^-2 sr^-1
