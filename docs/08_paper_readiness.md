@@ -1,6 +1,6 @@
 # Paper readiness: what must be true before a simulation result is citable
 
-Status: revision 1, 2026-09-24 (Phase 4). Maintained by the orchestrator; every entry points to the
+Status: revision 1, 2026-09-24 (Phase 4); row 2.6 updated and row 2.11 added after audits A9-A10 (review E11 n10). Maintained by the orchestrator; every entry points to the
 report, test or script that establishes it. A result enters a paper only when every row it depends on
 is DONE (or its gap is stated in the paper as a limitation with its size). Numbers are not repeated
 here; they are in the cited reports and scripts. Labels as in `docs/physics_conventions.md` and the
@@ -35,11 +35,12 @@ it), NEEDS UPLOAD (a closed source must be read).
 | 2.3 | Absorption without double counting | PARTIAL (rule fixed: frozen phonons or Bird-King, never both; electronic value bracketed) | B6, SM29 |
 | 2.4 | Surface plasmons and partial coherence of loss electrons | DONE for the model (R1/R2 factors, noise); the value is a stand-in | E3, A5, B38, B39 |
 | 2.5 | Surface reconstruction (Si(001) 2x1 family, flip-flop at room temperature) | DONE for the builder (sourced coordinates); effect on the step phase: OPEN (sensitivity study) | E2, A5, B3, B37 |
-| 2.6 | Oxide or amorphous overlayer of an ion-milled surface | PARTIAL (continuum layer implemented in both engines, report E4, audit pending; atomistic amorphous layer OPEN). REQUIRED (item 12: oxide-covered). Sourced ranges exist (L8 with E9: thickness 1-3 nm ASSUMPTION, inner potential 10.1-11.5 V measured and 10.34 V IAM, absorption 0 or 0.39-0.44 V, graded edge required); continuum layer being implemented (E4); open atomistic a-SiO2 model exists (Erhard et al. 2024, CC BY 4.0). Only the conformal case converts to heights; a thickness difference between terraces biases heights by 0.53-0.58 A per A | B7, SM32, SM33; E9 |
+| 2.6 | Oxide or amorphous overlayer of an ion-milled surface | PARTIAL (continuum layer implemented in both engines, reports E4, X4, X5; audits A8, A9b, A10b: final for the B41 demo path; the comparison-run label policy is being fixed after A10b (X6); for a sub-layer thickness difference between terraces the atomistic and geometric engines disagree, so such atomistic cells are refused (B12); atomistic amorphous layer OPEN). REQUIRED (item 12: oxide-covered). Sourced ranges exist (L8 with E9: thickness 1-3 nm ASSUMPTION, inner potential 10.1-11.5 V measured and 10.34 V IAM, absorption 0 or 0.39-0.44 V, graded edge required); continuum layer implemented (E4, X4, X5); open atomistic a-SiO2 model exists (Erhard et al. 2024, CC BY 4.0). Only the conformal case converts to heights; a thickness difference between terraces biases heights by 0.53-0.58 A per A | B7, SM32, SM33; E9 |
 | 2.7 | Convergent illumination (ensemble of directions) | DONE for the model; members runnable as cluster jobs | E3, A5, B40 |
 | 2.8 | Monotonic (vicinal) staircase | OPEN (only up-down staircases are periodic) | H2 N6 |
 | 2.9 | Microscope optics: biprism Fresnel fringes, drift, detector MTF, lens transfer | OPEN | docs/05 section 5 |
 | 2.10 | Working angle from a simulated rocking curve at the actual azimuth | OPEN (flat-strip rocking curve on the cluster) | H2 section 7, N11 |
+| 2.11 | Sensitivity below the surface (buried void, demo B42) | DEMO ONLY (report T3, analysis T4 and T5; audits A9a, A10a; A11 pending): in a 1499 A cell a void under a 5 A cap changes the vacuum-side beam; deeper caps need a longer cell (the signal surfaces far downstream), a dose model and convergence before any claim | B42; T3, T4, T5 |
 
 ## 3. Numerical convergence (each setting shown not to change the answer)
 
