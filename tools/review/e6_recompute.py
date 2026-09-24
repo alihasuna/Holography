@@ -341,6 +341,9 @@ pr("  same / pi  (the internal kinematic value 2 pi h/d_008 = 4 pi)", 2 * kpo_ia
 pr("a/4 step phase spread conformal (10.976) -> planarising V_ov = V0 (rad); in height (A)",
    f"{2 * kpo_iam * A_B2 / 4 - 2 * kp * A_B2 / 4:.3f}; {(2 * kpo_iam * A_B2 / 4 - 2 * kp * A_B2 / 4) / (2 * kp):.4f}")
 pr("crystal-topography leverage 2 k_perp (rad per A of height)", 2 * kp, "{:.3f}")
+slab_path = 2 * (A_B2 / 4) / st
+pr("planar-mask trap: path through a misplaced a/4 slab, 2 h/sin(theta) (A)", slab_path, "{:.1f}")
+pr("  amplitude factor exp(-sigma V' path) for V' = 0.6534 V", math.exp(-sig * (1 / (2 * sig * 1050)) * slab_path), "{:.4f}")
 for ep in (16.7, 17.0):
     pr(f"bulk-plasmon surface (begrenzungs) length v/omega_p at 200 keV, hbar omega_p = {ep} eV (nm)",
        v200 / (ep * E / HBAR) * 1e9, "{:.2f}")

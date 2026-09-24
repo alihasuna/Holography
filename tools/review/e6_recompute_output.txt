@@ -157,6 +157,8 @@ V_ov = 13.903 V (= engine V0): buried a/4 step, flat-topped overlayer 2 k'_perp 
   same / pi  (the internal kinematic value 2 pi h/d_008 = 4 pi)            4.0000
 a/4 step phase spread conformal (10.976) -> planarising V_ov = V0 (rad); in height (A) 1.590; 0.1967
 crystal-topography leverage 2 k_perp (rad per A of height)                 8.084
+planar-mask trap: path through a misplaced a/4 slab, 2 h/sin(theta) (A)    168.3
+  amplitude factor exp(-sigma V' path) for V' = 0.6534 V                   0.9230
 bulk-plasmon surface (begrenzungs) length v/omega_p at 200 keV, hbar omega_p = 16.7 eV (nm) 8.22
 bulk-plasmon surface (begrenzungs) length v/omega_p at 200 keV, hbar omega_p = 17.0 eV (nm) 8.07
 wrap period lambda/(2 sin theta) (A)                                       0.7772
