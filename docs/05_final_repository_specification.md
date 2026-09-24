@@ -186,15 +186,37 @@ unmaintained since January 2026).
 A surface-parallel-slicing dynamical RHEED solver (Ichimiya-type; the open-source `sim-trhepd-rheed`
 implements it) or a Bragg-case Bloch-wave solver provides rocking curves `|A(theta)|^2` for the flat
 surface of each configuration: peak positions calibrate refraction and the angle scale; widths and
-resonance features test absorption and boundary handling. `sim-trhepd-rheed`, as vendored for the P49
-benchmark, and its P49 fork `trhepd-opt` (GPL-3.0) compute the complex reflection amplitudes but write
-only intensities (SECTION_READ of the code, L2 rows D19, D19b; the current upstream release was not
-checked); exposing `arg A` is a small output change. P49 (Kudo, Yamamoto and Hoshi) recasts the
-boundary-value problem as a matrix initial-value problem for the full (non-paraxial) Schroedinger
-equation and returns the complex amplitude `rho(0)` (preprint Eq. (36)); it validates intensities
-only, and its notation implies an `exp(+i omega t)` time factor, so its phases must be conjugated
-before comparison with this repository's convention (DERIVED_HERE, UNVERIFIED until rung 1 below is
-run). Source map SM19.
+resonance features test absorption and boundary handling. `sim-trhepd-rheed` (the P49 benchmark copy
+and the current upstream `d98d6252`) and its P49 fork `trhepd-opt` (GPL-3.0) compute the complex
+reflection matrix but write only intensities; a small output patch, kept outside this repository,
+exposes it (report S5). P49 (Kudo, Yamamoto and Hoshi) recasts the boundary-value problem as a matrix
+initial-value problem for the full (non-paraxial) Schroedinger equation and returns `rho(0)` (preprint
+Eq. (36)); it validates intensities only. The PRINTED notation of P49 corresponds to an
+`exp(+i omega t)` time factor, so an amplitude evaluated from those printed formulas is the complex
+conjugate of this repository's R (DERIVED_HERE, L2 D-I3). The CODES do not follow that notation:
+upstream `sim-trhepd-rheed` returns R = (upward)/(downward) at the top of its slice region in this
+repository's `exp(+i k.r - i omega t)` convention (REPRODUCED: S5 one-beam RK4; E8 independent
+transfer matrices, 7e-12), and `trhepd-opt` maps its integration variables back to the same quantity
+(DERIVED_HERE from code reading, E8, not run). No conjugation is applied to either code. The in-plane
+(lateral) Fourier sign convention is not tested by a flat bulk-terminated Si(001) surface, which has a
+two-fold axis along the normal; it needs a surface without that symmetry (E8 M4). Source map SM19.
+
+Result of the comparison (reports S5 and E8, `tools/validation/rheed_solver_compare.py`,
+`tools/review/e8_recompute.py`): with the solver's own Doyle-Turner potential, flat Si(001), 200 keV,
+the engine's phase agrees with the solver's to about 0.03 rad over the rocking range at [100] and
+[110] (22 of 23 and 15 of 15 angles inside S5's a priori tolerance; the (0,0,8) peak within 0.018 mrad,
+phase sweep within 0.006 rad). The phase test has power (a conjugated engine fails 19 of 23 angles, a
+0.02 A plane shift 12 of 23); the amplitude tolerance does not (E8 M2). The engine's |R| is 3-5 % low
+at the peak at a 0.13 A pixel; E8 attributes it to (i) the 2/3 band limit at 0.13 A (-2.5 % in |R|,
+-0.027 rad; the first along-beam (Laue) ring at 3.881 1/A enters the 2/3 band only when 1/(3 dx) exceeds it) and (ii) the
+along-beam couplings the engine contains and the solver's rod row averages out (-2.19 % at 0.13 A,
+-3.44 % at 0.065 A, about -0.021 rad in phase), so the comparison is not like-for-like along the beam
+(E8 M1). With the along-beam-averaged potential the engine converges to the solver as the pixel shrinks
+(+0.20 % in |R|, -0.002 rad at 16.2 mrad). Consequence for production: at dx = 0.13 A the ABSOLUTE
+reflection phase carries a band-limit error of about -0.03 rad (also -0.028 rad on the rung-2
+continuum case at 0.13 A, E8); whether the STEP phase (a difference of two terraces) converges at
+0.13 A must be measured (dx study of the flat-strip convergence runs) before a production pixel is
+fixed.
 
 Because the measurand is a phase, intensity agreement is not sufficient. The reflection PHASE of the
 multislice engine is validated by a ladder that needs no new reading:
@@ -425,7 +447,9 @@ PROJECT_INPUT items 2, 6, 10, 11 (miscut, terrace widths, terrace types), 16, 17
 * Whether abTEM's propagator-shear tilt is accurate at 24 to 48 mrad (report D3: 0.074 rad specular-beam
   shear error over 889 A at 24 mrad; at 48 mrad the specular beam leaves the 2/3 band at 0.13 A pixels);
   abTEM 1.0.10 has no absorptive potential except a hand-built complex64 array (D3).
-* Whether the current upstream `sim-trhepd-rheed` release writes complex amplitudes (the vendored copy
-  and the P49 fork compute them and write intensities only), and the sign convention of P49's phases.
+* Answered (S5, E8): the current upstream `sim-trhepd-rheed` also writes intensities only; both codes'
+  amplitudes are in this repository's convention (no conjugation). Open: the lateral sign convention
+  (needs a surface without a two-fold axis along the normal) and the pixel at which the step phase is
+  converged (E8 M3).
 * The dynamical residual threshold of acceptance criterion 3 (0.1 rad proposed, ASSUMPTION).
 * All PROJECT_INPUT items in `docs/06_project_inputs_required.md`.
