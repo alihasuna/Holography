@@ -11,7 +11,15 @@
 - One of the main topics of the meeting was simulating dislocations.
 - Details: _to be added_
 
-### 2. Other feedback
+### 2. Sample preparation: metal mask before ion milling
+
+- Proposed route: use the patterned photoresist as the mask for a gold or aluminium deposition,
+  then remove the photoresist, then ion mill.
+- In other words, the deposited metal (not the resist) becomes the mask during ion milling.
+- Background: in the 17 Sep 2026 ion-mill session on the REMCAL patterned Si piece, resist
+  appeared to remain after the strip (Morphika: `lab/2026-09-17/ion-mill-strip-residue`).
+
+### 3. Other feedback
 
 - _to be added_
 
