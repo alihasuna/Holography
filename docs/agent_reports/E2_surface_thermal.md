@@ -1,7 +1,7 @@
 # E2 - Si(001) reconstructions, reconstructed steps and the sourced thermal displacement
 
-Agent E2, 2026-09-24. Branch `claude/electron-holography-orchestration-nakd7r`. Status: IN PROGRESS
-(written incrementally; sections 1-4 final, section 5 filled as the runs finish). Nothing committed
+Agent E2, 2026-09-24. Branch `claude/electron-holography-orchestration-nakd7r`. Status: FINAL
+(written incrementally). Nothing committed
 or pushed by E2 (the orchestrator's snapshot commits 7e80d33 and 9c9613d picked up in-progress
 copies). No file under docs/ other than this report is edited;
 `reflection_holo/forward/multislice/potentials.py` (agent E1) is read only.
@@ -283,3 +283,27 @@ Runs:
     `assert 156.6944045809978 < 120.0` (`SMOKE: build 11.9 s, propagation 144.4 s, total 156.7 s,
     peak RSS 841 MB`; load average 10.4-12.8): the wall-time assertion under load; rerun alone
     below. Not touched by E2 (bulk termination, static lattice).
+* Full suite `venv/bin/python -m pytest -q`: `2 failed, 1128 passed, 6 skipped, 12 warnings in
+  1606.72s (0:26:46)`; the same two failures: `test_smoke_atomistic_a2_step_0008`
+  (`assert 158.1218507859994 < 120.0`, load average ~13) and
+  `test_registry_ids_exist_in_model_assumptions` (`AssertionError: B36`).
+* `tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008` alone (load average
+  9.6): `SMOKE: build 8.7 s, propagation 89.8 s, total 98.6 s, peak RSS 807 MB`, `1 passed in
+  98.67s`.
+* The thermal demo variant end to end (`pipeline.run`, 2 realisations): 57 s alone.
+
+## 6. NOT RUN / not done
+
+* No physics study: the effect of the reconstructions (static p(2x1)s/a, p(2x2), c(4x2)) and of the
+  flip-flop ensemble on the a/4 and a/2 step phases at (0,0,8) against the bulk termination (the
+  B37 sensitivity test, L7 1.3 options a-c) was NOT RUN; nor the convergence of the flip-flop plus
+  frozen-phonon coherent average in the number of realisations (E6 m10).
+* The flip-flop ensemble through `pipeline.run` from a configuration file: not possible, no
+  registered item-12 stand-in states a clean reconstructed surface (B26 states bulk). Exercised
+  through the pipeline's structure and engine adapters with an in-memory TEST_ONLY item 12.
+* R3's superposed (projected) potential of both buckling states: not implemented.
+* Reconstruction on the half-torus feature: refused (section 2). Riser relaxation: none.
+* GPU/HPC variants with B35 or a reconstruction: NOT RUN (no GPU here).
+* docs/model_assumptions.md rows B35-B37, the B3/B4 revisions, docs/05:347-348 and the docs/06
+  item 23 row: for the orchestrator (section 4); until then the doc-consistency test fails.
+

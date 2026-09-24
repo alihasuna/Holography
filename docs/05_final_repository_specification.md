@@ -345,9 +345,9 @@ code audit A2 (state 7874c85), re-audit A2b (state d35b751), verification A2c of
   assertions (a) to (g) (lattice sites, no duplicate boundary plane, bulk nearest-neighbour distance,
   exact a/4 and a/2 heights, periodic staircase continuity, screw, glide or translation relation found
   on the built atoms, right-handed frame) and records per a/4 step whether B4 applies (SM26); patterned
-  mesas and trenches as height profiles with both strips. The 2x1 reconstruction raises
-  NotImplementedError (source now read: Ramstad et al. 1995 Tables III-IV, L7/E6; implementation in
-  report E2); overlayer and pattern geometry are required PROJECT_INPUT
+  mesas and trenches as height profiles with both strips. Si(001) reconstructions from Ramstad et
+  al. 1995 Tables III-IV (p(2x1)s, p(2x1)a, p(2x2), c(4x2), flip-flop ensemble B37) are options of the
+  staircase builder (report E2); they are refused on the half-torus; overlayer and pattern geometry are required PROJECT_INPUT
   arguments; atomistic mesas, trenches and overlayer are not built.
 * Section 5, synthetic data only: `optics/` (hologram intensity, R1/R2/R3 references, ensemble average
   after squaring, Poisson noise with seed) and `reconstruction/` (carrier located on an empty or
