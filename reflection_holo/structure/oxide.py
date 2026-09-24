@@ -1,6 +1,7 @@
 """Continuum oxide overlayer on Si(001) (PROJECT_INPUT item 12; report E4 after L8 section 8 as
 corrected by the adversarial review E9, M1-M5; numbers cited as lines of
-tools/review/e9_recompute_output.txt, "out:N"; corrections after the audit A8, report X4).
+tools/review/e9_recompute_output.txt, "out:N"; corrections after the audit A8, report X4, and after
+the audit A9b, report X5, whose numbers are printed by the scripts in tools/review/x5/).
 
 Model (every physical parameter is a REQUIRED field of :class:`ContinuumOxideSpec` with its own
 label; nothing has a default):
@@ -22,12 +23,16 @@ label; nothing has a default):
   0.98-0.99).
 * the crystal below x_c. An ATOMISTIC crystal loses its top N whole (001) layers; N (the consumed
   layer count) is a REQUIRED integer and must be the whole-layer count nearest to the continuum
-  depth: |N a/4 - (f t + t_a)| <= a/8 (asserted). The distance of f t + t_a from the rounding
-  boundary (N +- 1/2) a/4 is recorded; closer than MIN_ROUNDING_MARGIN_LAYERS the count (and at
-  <110> its parity, i.e. the terrace type at a buried a/4 step, E9 section 3 item 2) depends on
-  digits of the density or thickness below their stated precision, and the specification is
-  REFUSED unless ``rounding_boundary_acknowledged`` is True (audit A8 m4; an acknowledgement that
-  is not needed is refused rather than ignored).
+  depth: |N a/4 - (f t + t_a)| <= a/8 (asserted). N is DERIVED by this rule from the thickness,
+  density and a-Si labels: its label is DERIVED_HERE (TEST_ONLY in tests), never PROJECT_INPUT
+  (audit A9b M2). The distance of f t + t_a from the rounding boundary (N +- 1/2) a/4 is recorded;
+  closer than MIN_ROUNDING_MARGIN_LAYERS (an ARBITRARY numerical guard, audit A9b m2: it does not
+  make the count robust against the uncertainty of a witness measurement; for that see
+  consumed_count_interval, used by the pipeline's comparison gate) the count (and at <110> its
+  parity, i.e. the terrace type at a buried a/4 step, E9 section 3 item 2) depends on the last
+  digits of the density or thickness, and the specification is REFUSED unless
+  ``rounding_boundary_acknowledged`` is True (audit A8 m4; an acknowledgement that is not needed is
+  refused rather than ignored).
 * REFERENCE SURFACE (audit A8 M2): the pre-oxidation surface H_s of an ATOMISTIC terrace is its Si
   equivalent boundary, half a layer spacing (a/8) above its top atomic plane (Si atoms conserved:
   each (001) layer occupies a/4 centred on its plane); that of a CONTINUUM terrace is its boundary.
@@ -41,14 +46,21 @@ label; nothing has a default):
   overrides of the thickness and of the consumed-layer count exist for the grown-oxide sensitivity
   (E9 section 3 items 4-5: 4.27-4.71 rad per A of thickness difference, out:109-117; one extra
   consumed layer 13.70 rad, out:123); a structure with overrides that differ is NOT conformal.
+  The two engines do NOT agree for a non-conformal layer on an ATOMISTIC crystal
+  (NONCONFORMAL_SUBLAYER, audit A9b M1): the atomistic crystal loses whole layers only, so the
+  multislice does not represent the grown-oxide term of a sub-layer thickness difference, while the
+  geometric engine applies the continuum rate; an atomistic multislice cell whose terraces carry
+  different thicknesses is refused (forward.cell.build_reflection_cell) unless
+  ``nonconformal_sublayer_acknowledged`` is True with a TEST_ONLY overrides label.
 * the vacuum edge is GRADED: the layer's real and imaginary potential are multiplied by
   E(x; x_t, w_v), E(x; x0, w) = erfc((x - x0) / (sqrt(2) w)) / 2 (an erf profile whose gradient is
   a Gaussian of standard deviation w: the definition of E9 out:236-243). w_v >= 0.5 A (E9 M4: a
   sharp 10.34 V edge reflects |r|^2 = 2.70e-3 by itself, out:234). EDGE_W05_REFLECTIVITY: at
-  w = 0.5 A the exact 1-D reflectivity of the edge is |r|^2 = 1.95e-9 at 16.1347 mrad (|r| x 8.5e-4
-  of the sharp edge; transfer matrix converged in step and span, audit A8 C6); E9's Born factor
-  exp(-(q w)^2), out:241, gives 3.4e-11 (57 times lower) and is an underestimate; the multislice
-  engine reproduces the exact value (1.835e-9 against 1.8345e-9 at its central bin 16.1751 mrad).
+  w = 0.5 A the exact 1-D reflectivity of the edge is |r|^2 = 1.9545e-9 at 16.1347 mrad
+  (|r| x 8.513e-4 of the sharp edge; ODE and transfer matrix converged in step and span, audits A8
+  C6 and A9b C2, tools/review/x5/a9b_c2_edge.py); E9's Born factor exp(-(q w)^2), out:241, gives
+  3.44e-11 (56.8 times lower) and is an underestimate; the multislice engine reproduces the exact
+  value at its central bin 16.1751 mrad (1.8350e-9 against 1.8345e-9).
   A smaller width is refused unless ``sharp_edge_test_flag`` is True with a TEST_ONLY vacuum-edge
   label (validation of the Fresnel term only).
 * the oxide/crystal (or oxide/a-Si, a-Si/crystal) transition is GRADED with the same profile of
@@ -65,7 +77,9 @@ Not represented (stated, not silently assumed): elastic diffuse scattering by th
 (the atomistic layer of L8 section 5 would produce it), charging (item 22), a carbon layer, the
 denser transition layer (Hattori), TDS absorption in the layer, surface and interface plasmons
 beyond the uniform V'_ox (E9 M1: the product with B38 is not a sourced quantity), partially
-consumed atomic layers (the interface overlap or gap above).
+consumed atomic layers (the interface overlap or gap above), and, for a non-conformal layer on an
+atomistic crystal, the grown-oxide term of a sub-layer thickness difference in the multislice
+(NONCONFORMAL_SUBLAYER).
 """
 from __future__ import annotations
 
@@ -82,21 +96,31 @@ from reflection_holo.io.labels import require_evidence_label
 MODEL_NAME = "continuum_oxide"
 LABEL_PREFIXES = ("PROJECT_INPUT", "ASSUMPTION", "TEST_ONLY")
 ZERO_LABEL_PREFIXES = ("ASSUMPTION", "TEST_ONLY")      # V'_ox = 0, V'_a = 0 (not measurements)
+# audit A9b M2: the consumed-layer count is computed by the nearest-count rule from the thickness,
+# density and a-Si values; it is DERIVED_HERE (TEST_ONLY in tests), never a PROJECT_INPUT
+DERIVED_LABEL_KEYS = ("consumed_layers",)
+DERIVED_LABEL_PREFIXES = ("DERIVED_HERE", "TEST_ONLY")
 MIN_VACUUM_EDGE_WIDTH_A = 0.5          # E9 M4 ("graded over at least 0.5 A")
 MIN_INTERFACE_WIDTH_A = 0.5            # E9 M4 ("the vacuum edge and oxide/Si transition"), A8 m5
-# A8 m4: the consumed-layer count must lie at least this far (in layers of a/4) from its rounding
-# boundary (N +- 1/2) a/4, unless acknowledged. 0.05 layer = 0.068 A of consumed depth: at
-# t_ox = 2 nm and 2.20 g/cm^3 the count then survives a thickness change of 0.15 A or a density
-# change of 0.8 % (0.017 g/cm^3), the precision to which item-12 values are stated (DERIVED_HERE,
-# a stated rule); the B41 2.0 nm stand-in lies 0.0036 layer from the boundary (count 7 becomes 6
-# at 2.19877 g/cm^3, audit A8 C5).
+# A8 m4, A9b m2: the consumed-layer count must lie at least this far (in layers of a/4) from its
+# rounding boundary (N +- 1/2) a/4, unless acknowledged. 0.05 layer is an ARBITRARY NUMERICAL GUARD
+# (no measured precision stands behind it; no item-12 value exists yet): 0.068 A of consumed
+# depth, i.e. at t_ox = 2 nm and 2.20 g/cm^3 a thickness change of 0.1538 A or a density change of
+# 0.769 % (0.0169 g/cm^3). It does NOT make the count or its parity robust: a witness-thickness
+# uncertainty of +-1 A moves the continuum depth by +-0.325 layer, a density uncertainty of
+# +-0.05 g/cm^3 at 2 nm by +-0.148 layer (tools/review/x5/x5_oxide_numbers.py); comparison runs
+# therefore state the item-12 uncertainties and are refused when the interval spans a count
+# boundary unless both parities are acknowledged (consumed_count_interval; pipeline.config). The
+# B41 2.0 nm stand-in lies 0.0036 layer from the boundary (count 7 becomes 6 at 2.19877 g/cm^3,
+# -0.056 %; audit A8 C5).
 MIN_ROUNDING_MARGIN_LAYERS = 0.05
 EDGE_W05_REFLECTIVITY = (
-    "vacuum edge graded over w = 0.5 A: exact 1-D reflectivity |r|^2 = 1.95e-9 at 16.1347 mrad "
-    "(|r| x 8.5e-4 of the sharp edge's 2.70e-3; transfer matrix converged in step and span, audit "
-    "A8 C6); E9's Born factor exp(-(q w)^2) (out:241) gives 3.4e-11, 57 times lower (an "
-    "underestimate); the multislice engine reproduces the exact value (1.835e-9 against 1.8345e-9 "
-    "at its central bin, 16.1751 mrad)")
+    "vacuum edge graded over w = 0.5 A: exact 1-D reflectivity |r|^2 = 1.9545e-9 at 16.1347 mrad "
+    "(|r| x 8.513e-4 of the sharp edge's 2.697e-3; ODE and transfer matrix converged in step and "
+    "span, audits A8 C6 and A9b C2, tools/review/x5/a9b_c2_edge.py); E9's Born factor "
+    "exp(-(q w)^2) (out:241) gives 3.44e-11, 56.8 times lower (an underestimate); at the multislice "
+    "engine's central bin 16.1751 mrad the exact value is 1.8345e-9 (58.4 times the Born factor) "
+    "and the engine gives 1.8350e-9 (tests/forward/test_oxide_multislice.py)")
 LABEL_KEYS = ("thickness", "density", "consumed_layers", "V_real", "V_imag", "vacuum_edge",
               "interface", "amorphous_si")
 LABEL_KEYS_AMORPHOUS_POTENTIAL = ("amorphous_si_potential",)
@@ -117,12 +141,37 @@ INTERFACE_OVERLAP_RULE = (
     "layer overlaps the kept atomistic crystal's top half-layer slab, negative = a gap between them; "
     "= f t + t_a - N a/4 for an atomistic crystal (bounded by a/8 by the count rule), 0 for a "
     "continuum crystal (it ends at x_c); measured on the engine's potential by "
-    "tests/forward/test_oxide_multislice_a8_fixes.py (audit A8 M2)")
+    "tests/forward/test_oxide_multislice_a8_fixes.py (audit A8 M2). A gap is a dip of the "
+    "potential inside the stack (audit A9b m4): for B41 at 2.0 nm (gap 0.674 A) the laterally "
+    "averaged potential falls to 4.84 V, 0.96 A above the kept top atomic plane; its own Born "
+    "reflectivity at q = 2 k'_ox is |r|^2 = 1.7e-12, and in the 1-D (0,0,8) reflection at 16.1347 "
+    "mrad it changes |r| by -0.05 % and the phase by +0.023 rad against a stack joined to the "
+    "crystal, common to every terrace of a conformal layer (1.5 nm, gap 0.166 A: +0.01 %, "
+    "+0.009 rad; 1-D laterally averaged model, tools/review/x5/a9b_c3_gap.py); for a non-conformal "
+    "layer the gap differs per terrace (NONCONFORMAL_SUBLAYER)")
+# audit A9b M1 (tools/review/x5/a9b_c4_nonconformal.py: 1-D laterally averaged model, DERIVED_HERE,
+# an estimate, at the B41 values V_ox 10.34 V, 2.20 g/cm^3, 16.1347 mrad)
+SUBLAYER_RATE_DIFFERENCE_RAD_PER_A = (3.58, 3.61)       # geometric minus multislice, printed range
+NONCONFORMAL_SUBLAYER = (
+    "NON-CONFORMAL layer on an ATOMISTIC crystal: the engines disagree (audit A9b M1). The atomistic "
+    "crystal loses whole layers only, so while the thickness changes by less than one consumed "
+    "layer the multislice crystal does not move (only the layer top and the layer/crystal gap "
+    "move) and a sub-layer thickness difference gives about 0.85-0.87 rad/A (0.8455, 0.8729, "
+    "0.8599 rad/A in a 1-D laterally averaged model, close to the top-surface rate 2 (k'_ox - k) = "
+    "0.886 rad/A), whereas the geometric engine applies the continuum grown-oxide rate "
+    "2 k'_ox - 2 k (1 - f) = 4.4549 rad/A to any thickness difference (one consumed layer = "
+    "13.6998 rad = 3.0752 A of oxide): the engines differ by 3.58-3.61 rad per A of sub-layer "
+    "thickness difference (mod 2 pi), e.g. 2.23 rad against 0.42-0.44 rad for 0.5 A at a fixed "
+    "count (V_ox 10.34 V, 2.20 g/cm^3, 16.1347 mrad; tools/review/x5/a9b_c4_nonconformal.py). "
+    "The sub-layer thickness difference of two terraces is Dt - DN (a/4)/f. A propagated "
+    "two-terrace multislice was not run")
 NOT_REPRESENTED = (
     "elastic diffuse scattering by the amorphous network (continuum layer); charging (item 22); "
     "carbon; the denser transition layer (Hattori 2001); TDS absorption in the layer; surface and "
     "interface plasmons beyond the uniform V'_ox (E9 M1: not to be multiplied with B38); partially "
-    "consumed atomic layers (the interface overlap or gap of an atomistic crystal, <= a/8)")
+    "consumed atomic layers (the interface overlap or gap of an atomistic crystal, <= a/8); in the "
+    "multislice, the grown-oxide term of a sub-layer thickness difference between terraces of an "
+    "atomistic crystal: " + NONCONFORMAL_SUBLAYER)
 
 
 class OxideSpecError(ValueError):
@@ -158,10 +207,18 @@ class ContinuumOxideSpec:
                               closer than MIN_ROUNDING_MARGIN_LAYERS to the rounding boundary of
                               its consumed-layer count (audit A8 m4; checked by terrace_stacks,
                               which knows the lattice parameter); False otherwise
+    nonconformal_sublayer_acknowledged
+                              True only with per-terrace thicknesses that differ and a TEST_ONLY
+                              overrides label: acknowledges that the atomistic multislice does not
+                              represent the grown-oxide term of a sub-layer thickness difference
+                              (NONCONFORMAL_SUBLAYER; audit A9b M1); without it
+                              forward.cell.build_reflection_cell refuses such a cell; False
+                              otherwise (an acknowledgement that is not needed is refused)
     labels                    mapping with exactly the keys LABEL_KEYS, plus
                               "amorphous_si_potential" when t_a > 0 and "overrides" when an
                               override is given; each value a label starting with PROJECT_INPUT,
-                              ASSUMPTION or TEST_ONLY
+                              ASSUMPTION or TEST_ONLY, except consumed_layers: DERIVED_HERE (or
+                              TEST_ONLY), never PROJECT_INPUT (audit A9b M2)
     """
     material: str
     thickness_A: float
@@ -179,6 +236,7 @@ class ContinuumOxideSpec:
     sharp_edge_test_flag: bool
     sharp_interface_test_flag: bool
     rounding_boundary_acknowledged: bool
+    nonconformal_sublayer_acknowledged: bool
     labels: Mapping[str, str]
 
 
@@ -225,6 +283,18 @@ def validate_spec(spec: ContinuumOxideSpec) -> dict:
                              f"label per physical parameter; no default), got {sorted(got)}")
     labels = {}
     for k in sorted(want):
+        if k in DERIVED_LABEL_KEYS:
+            lab = spec.labels[k]
+            if isinstance(lab, str) and lab.startswith(("PROJECT_INPUT", "ASSUMPTION")):
+                raise OxideSpecError(
+                    f"continuum oxide {k}: label {lab!r} refused: the consumed-layer count is "
+                    f"computed by the nearest-count rule from the thickness, density and a-Si "
+                    f"values and is labelled DERIVED_HERE (TEST_ONLY in tests); it never carries "
+                    f"PROJECT_INPUT or ASSUMPTION (audit A9b M2)")
+            labels[k] = require_evidence_label(lab, f"continuum oxide {k} (derived)",
+                                               accepted=DERIVED_LABEL_PREFIXES, qualified=True,
+                                               error=OxideSpecError)
+            continue
         labels[k] = require_evidence_label(spec.labels[k], f"continuum oxide {k} (item 12)",
                                            accepted=LABEL_PREFIXES, qualified=True,
                                            error=OxideSpecError)
@@ -254,7 +324,8 @@ def validate_spec(spec: ContinuumOxideSpec) -> dict:
             f"vacuum_edge_width_A = {w_v} A: the vacuum edge of the continuum layer must be graded "
             f"over at least {MIN_VACUUM_EDGE_WIDTH_A} A (E9 M4: a sharp 10.34 V edge reflects "
             f"|r|^2 = 2.70e-3 by itself, tools/review/e9_recompute_output.txt line 234; graded "
-            f"over 0.5 A its exact 1-D reflectivity is 1.95e-9, |r| x 8.5e-4, audit A8 C6); a "
+            f"over 0.5 A its exact 1-D reflectivity is 1.9545e-9, |r| x 8.513e-4, audits A8 C6 "
+            f"and A9b C2); a "
             f"narrower edge needs sharp_edge_test_flag with a TEST_ONLY label")
     w_i = _num(spec.interface_width_A, "interface_width_A", nonneg=True)
     if not isinstance(spec.sharp_interface_test_flag, bool):
@@ -308,6 +379,20 @@ def validate_spec(spec: ContinuumOxideSpec) -> dict:
             raise OxideSpecError("terrace_consumed_layers must be None or a non-empty tuple (one "
                                  "count per terrace)")
         tn = tuple(_int(v, "terrace_consumed_layers entry") for v in spec.terrace_consumed_layers)
+    ack_nc = spec.nonconformal_sublayer_acknowledged
+    if not isinstance(ack_nc, bool):
+        raise OxideSpecError("nonconformal_sublayer_acknowledged must be True or False (stated; "
+                             "audit A9b M1)")
+    if ack_nc:
+        if tt is None or len({round(v, 12) for v in tt}) < 2:
+            raise OxideSpecError(
+                "nonconformal_sublayer_acknowledged = True, but the terraces carry one thickness: "
+                "the acknowledgement is not needed; refused rather than ignored (audit A9b M1)")
+        if not labels["overrides"].startswith("TEST_ONLY"):
+            raise OxideSpecError(
+                "nonconformal_sublayer_acknowledged = True is accepted only with a TEST_ONLY "
+                "overrides label: the atomistic multislice does not represent the grown-oxide term "
+                "of a sub-layer thickness difference (audit A9b M1; NONCONFORMAL_SUBLAYER)")
     return dict(model=MODEL_NAME, material=spec.material, thickness_A=t, density_g_cm3=rho,
                 consumed_layers=N, V_real_V=V, V_imag_V=Vi, vacuum_edge_width_A=w_v,
                 interface_width_A=w_i, amorphous_si_thickness_A=t_a, amorphous_si_V_real_V=Va,
@@ -316,12 +401,78 @@ def validate_spec(spec: ContinuumOxideSpec) -> dict:
                 sharp_edge_test_flag=bool(spec.sharp_edge_test_flag),
                 sharp_interface_test_flag=bool(spec.sharp_interface_test_flag),
                 rounding_boundary_acknowledged=bool(spec.rounding_boundary_acknowledged),
+                nonconformal_sublayer_acknowledged=bool(ack_nc),
                 amorphous_si_zero=(None if t_a > 0 else
                                    "a measured zero (below the detection limit of the witness "
                                    "measurement)" if labels["amorphous_si"].startswith(
                                        "PROJECT_INPUT") else
                                    "the optimistic bound (E9 M5), " + labels["amorphous_si"]),
-                labels=labels)
+                labels=labels, label=headline_label(labels))
+
+
+def headline_label(labels: Mapping[str, str]) -> str:
+    """The record's headline label (audit A9b n1): the per-parameter label when every parameter
+    carries the same one; otherwise "mixed (<classes>)", the distinct label classes (the evidence
+    label, with the model_assumptions id of an ASSUMPTION), so that the headline never reads
+    PROJECT_INPUT while some parameter is not one. The per-parameter labels are in ``labels``."""
+    vals = [labels[k] for k in sorted(labels)]
+    if len(set(vals)) == 1:
+        return vals[0]
+
+    def cls(v: str) -> str:
+        w = v.replace(":", " ").split()
+        return " ".join(w[:2]) if w[0] == "ASSUMPTION" and len(w) > 1 else w[0]
+    return ("mixed (" + ", ".join(sorted({cls(v) for v in vals})) + "); per-parameter labels in "
+            "'labels'")
+
+
+def nearest_consumed_layers(*, thickness_A: float, density_g_cm3: float,
+                            amorphous_si_thickness_A: float, a_A: float) -> int:
+    """The consumed-layer count DERIVED by the nearest-count rule (audit A9b M2): the whole number of
+    a/4 layers nearest to the continuum depth f t + t_a (an exact tie rounds up; such a count lies
+    on its rounding boundary and is refused by terrace_stacks unless acknowledged)."""
+    a = _num(a_A, "a_A", positive=True)
+    t = _num(thickness_A, "thickness_A", positive=True)
+    t_a = _num(amorphous_si_thickness_A, "amorphous_si_thickness_A", nonneg=True)
+    depth = consumed_si_fraction(density_g_cm3, a) * t + t_a
+    return int(math.floor(depth / (a / 4.0) + 0.5))
+
+
+def consumed_count_interval(*, thickness_A: float, thickness_uncertainty_A: float,
+                            density_g_cm3: float, density_uncertainty_g_cm3: float,
+                            amorphous_si_thickness_A: float, a_A: float) -> dict:
+    """Consumed-layer counts over the item-12 uncertainty box (audit A9b m2): the continuum depth
+    f(rho) t + t_a increases with t and rho, so its extremes are at (t - u_t, rho - u_rho) and
+    (t + u_t, rho + u_rho); the count spans a rounding boundary when the nearest counts at the two
+    extremes differ, and then both parities (at <110> both terrace types at a buried a/4 step,
+    E9 section 3 item 2) are consistent with the measurement. The a-Si thickness is taken at its
+    value (its uncertainty is not an input). Uncertainties must be > 0 and smaller than the value
+    (a measurement states one)."""
+    a = _num(a_A, "a_A", positive=True)
+    q = a / 4.0
+    t = _num(thickness_A, "thickness_A", positive=True)
+    ut = _num(thickness_uncertainty_A, "thickness_uncertainty_A (item 12)", positive=True)
+    rho = _num(density_g_cm3, "density_g_cm3", positive=True)
+    ur = _num(density_uncertainty_g_cm3, "density_uncertainty_g_cm3 (item 12)", positive=True)
+    t_a = _num(amorphous_si_thickness_A, "amorphous_si_thickness_A", nonneg=True)
+    if not ut < t:
+        raise OxideSpecError(f"thickness_uncertainty_A = {ut} must be smaller than the thickness "
+                             f"{t} A")
+    if not ur < rho:
+        raise OxideSpecError(f"density_uncertainty_g_cm3 = {ur} must be smaller than the density "
+                             f"{rho} g/cm^3")
+    lo = consumed_si_fraction(rho - ur, a) * (t - ut) + t_a
+    hi = consumed_si_fraction(rho + ur, a) * (t + ut) + t_a
+    n_lo = int(math.floor(lo / q + 0.5))
+    n_hi = int(math.floor(hi / q + 0.5))
+    counts = list(range(n_lo, n_hi + 1))
+    return dict(continuum_layers_min=float(lo / q), continuum_layers_max=float(hi / q),
+                counts=counts, parities=sorted({"even" if n % 2 == 0 else "odd" for n in counts}),
+                spans_boundary=bool(n_hi != n_lo),
+                box=dict(thickness_A=[t - ut, t + ut], density_g_cm3=[rho - ur, rho + ur],
+                         amorphous_si_thickness_A=t_a),
+                rule=("nearest whole count of (f(rho) t + t_a)/(a/4) at the two corners of the "
+                      "uncertainty box (t -+ u_t, rho -+ u_rho); audit A9b m2"))
 
 
 def spec_sha256(spec: ContinuumOxideSpec) -> str:
@@ -475,7 +626,7 @@ def terrace_stacks(spec: ContinuumOxideSpec, *, terrace_heights_A, a_A: float,
     conformal = len({round(p["thickness_A"], 12) for p in per}) == 1 and \
         len({p["consumed_layers"] for p in per}) == 1
     margin_min = min(p["rounding_margin_layers"] for p in per)
-    record = dict(rec, value=MODEL_NAME, label=rec["labels"]["thickness"],
+    record = dict(rec, value=MODEL_NAME, label=headline_label(rec["labels"]),
                   project_input="item 12", spec_sha256=spec_sha256(spec),
                   consumed_si_fraction_f=f, silicon_density_g_cm3=silicon_density_g_cm3(a),
                   lattice_parameter_A=a, layer_spacing_A=q, crystal=crystal,
@@ -501,10 +652,15 @@ def terrace_stacks(spec: ContinuumOxideSpec, *, terrace_heights_A, a_A: float,
                                   f"{p['count_changes_at_thickness_A']:.4f} A (to "
                                   f"{p['count_changes_to']})" for p in near)
                       + "; at <110> the terrace type at a buried a/4 step (the parity of the "
-                        "count) then depends on digits of the density or thickness below their "
-                        "stated precision (audit A8 m4)") if near else
+                        "count) then depends on the last digits of the density or thickness "
+                        "(audit A8 m4)") if near else
                   f"every count at least {MIN_ROUNDING_MARGIN_LAYERS} layer from its rounding "
                   f"boundary",
+                  rounding_margin_rule=(
+                      f"{MIN_ROUNDING_MARGIN_LAYERS} layer is an arbitrary numerical guard (audit "
+                      f"A9b m2): it does not make the count or its parity robust against the "
+                      f"uncertainty of the item-12 thickness and density (consumed_count_interval; "
+                      f"the pipeline's comparison runs require those uncertainties)"),
                   edge_reflectivity_w05=EDGE_W05_REFLECTIVITY,
                   profile=("V(x) = (V + iV') [E(x; x_t, w_v) - E(x; x_i, w_i)] (+ a-Si between x_c "
                            "and x_i); E(x; x0, w) = erfc((x - x0)/(sqrt(2) w))/2, point-sampled at "
@@ -512,8 +668,8 @@ def terrace_stacks(spec: ContinuumOxideSpec, *, terrace_heights_A, a_A: float,
                            "step"),
                   elastic_diffuse="not represented (continuum layer)",
                   not_represented=NOT_REPRESENTED,
-                  sources=("L8 section 8 as corrected by E9 M1-M5 and audit A8; numbers: "
-                           "tools/review/e9_recompute_output.txt"))
+                  sources=("L8 section 8 as corrected by E9 M1-M5 and audits A8, A9b; numbers: "
+                           "tools/review/e9_recompute_output.txt, tools/review/x5/"))
     return dict(record=record, per_terrace=per, conformal=bool(conformal), f=f, q=q)
 
 
@@ -530,7 +686,7 @@ def stack_phase_terms(per_terrace: dict, *, k_perp_vac: float, k_perp_ox: comple
     with complex normal wavevectors (V + iV'); the real parts are phases, the imaginary parts the
     in+out attenuation (amplitude exp(-Im)). The reflection is taken at the continuum crystal
     boundary x_c; multiple reflections at the graded edges are neglected (graded over >= 0.5 A: the
-    vacuum edge reflects |r|^2 = 1.95e-9, EDGE_W05_REFLECTIVITY). Returns the two terms and their
+    vacuum edge reflects |r|^2 = 1.9545e-9, EDGE_W05_REFLECTIVITY). Returns the two terms and their
     sum (complex, rad)."""
     H = per_terrace["pre_oxidation_surface_x_A"]
     x_t, x_i, x_c = (per_terrace["top_x_A"], per_terrace["interface_x_A"],

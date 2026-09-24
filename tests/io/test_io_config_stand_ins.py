@@ -117,8 +117,11 @@ def test_registry_is_package_data_mapping_ids_to_items():
     assert {"B38", "B39", "B40"} <= C.demo_only_stand_ins()
     assert "B41" in C.demo_only_stand_ins()
     assert "B42" in C.demo_only_stand_ins()
-    # report E2: rows cited by code that stand in for no docs/06 item (never an assumption_id)
-    assert set(C.model_assumption_rows()) == {"B35", "B37"}
+    # report E2: rows cited by code that stand in for no docs/06 item (never an assumption_id);
+    # report X5 (audit A9b M2): B43, the continuum-oxide model parameters (a per-parameter label
+    # of the item-12 record, pipeline.config.OXIDE_MODEL_ROWS; never a record's assumption_id)
+    assert set(C.model_assumption_rows()) == {"B35", "B37", "B43"}
+    assert "B43" not in C.demo_only_stand_ins()
     assert not set(C.model_assumption_rows()) & set(reg)
     assert not any(k.startswith("A") for k in reg)            # inherited A-rows never stand in
     assert "B2" not in reg                                    # the lattice parameter is no stand-in

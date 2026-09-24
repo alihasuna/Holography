@@ -1,0 +1,9 @@
+k = 250.5323 1/A, lambda = 0.02507934 A
+--- theta 16.1347 mrad: k1 4.042088, k2 4.484934, sharp Fresnel |r|^2 2.697179e-03
+  w 0.1: ODE |r|^2 1.30644e-03 (span 12: 1.30644e-03); TM step 0.004: 1.30632e-03; TM step 0.002: 1.30641e-03; TM step 0.001: 1.30643e-03; |r|/|r_sharp| 6.9597e-01; Born 1.3036e-03; exact/Born 1.00
+  w 0.5: ODE |r|^2 1.95454e-09 (span 12: 1.95454e-09); TM step 0.004: 1.95444e-09; TM step 0.002: 1.95451e-09; TM step 0.001: 1.95453e-09; |r|/|r_sharp| 8.5127e-04; Born 3.4396e-11; exact/Born 56.82
+--- theta 16.1751 mrad: k1 4.052209, k2 4.494057, sharp Fresnel |r|^2 2.672969e-03
+  w 0.1: ODE |r|^2 1.29046e-03 (span 12: 1.29046e-03); TM step 0.004: 1.29033e-03; TM step 0.002: 1.29043e-03; TM step 0.001: 1.29045e-03; |r|/|r_sharp| 6.9482e-01; Born 1.2876e-03; exact/Born 1.00
+  w 0.5: ODE |r|^2 1.83454e-09 (span 12: 1.83454e-09); TM step 0.004: 1.83444e-09; TM step 0.002: 1.83452e-09; TM step 0.001: 1.83453e-09; |r|/|r_sharp| 8.2845e-04; Born 3.1399e-11; exact/Born 58.43
+QUOTE w 0.5 A at 16.1347 mrad: exact |r|^2 = 1.9545e-09; |r|/|r_sharp| = 8.513e-04 (sharp edge |r|^2 2.697e-03); Born factor |r|^2 = 3.44e-11; exact/Born = 56.8
+QUOTE w 0.5 A at the central bin 16.1751 mrad: exact |r|^2 = 1.8345e-09; exact/Born = 58.4

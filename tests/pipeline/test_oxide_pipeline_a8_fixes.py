@@ -28,6 +28,10 @@ from conftest_pipeline import SMOKE
 
 SUPPLY = dict(label="PROJECT_INPUT", supplied_by="Auditor", supplied_on="2026-09-24",
               source="TEST: fabricated supply to exercise the gate")
+# report X5 (audit A9b M2): the consumed-layer count is labelled DERIVED_HERE in every record (it is
+# computed by the code), so the per-parameter fixtures state that label for it
+DERIVED = dict(consumed_layers="DERIVED_HERE")
+TEST_ONLY_LABELS = dict({k: "TEST_ONLY" for k in ox.LABEL_KEYS}, **DERIVED)
 
 
 @pytest.fixture(scope="module")
@@ -68,16 +72,27 @@ def test_measured_zero_a_si_in_a_supplied_record():
     assert spec.labels["amorphous_si"] == (
         "PROJECT_INPUT item 12 (TEST: fabricated supply to exercise the gate)")
     assert spec.labels["V_real"] == "ASSUMPTION B41 (stands in for PROJECT_INPUT item 12)"
+    # report X5 (audit A9b M2): the count is DERIVED_HERE from the thickness/density/a-Si labels
+    assert spec.labels["consumed_layers"].startswith("DERIVED_HERE (consumed-layer count computed")
     rows = [a for a in assumptions_in_use(cfg) if a["parameter"].startswith(
         "cfg_b.surface_preparation_details.overlayer.")]
     assert {a["parameter"].rsplit(".", 1)[1] for a in rows} == set(ox.LABEL_KEYS) - {
-        "amorphous_si", "thickness"}
+        "amorphous_si", "thickness", "consumed_layers"}
     assert all(a["assumption_id"] == "B41" and a["demo_only"] for a in rows)
 
 
 def test_comparison_refuses_per_parameter_stand_ins(smoke):
-    d = _variant(smoke, record=SUPPLY, labels={k: "PROJECT_INPUT" for k in ox.LABEL_KEYS
-                                               if k != "V_real"})
+    # report X5 (audit A9b M2, m2): the fixture states the new required fields of a comparison run
+    # (the count DERIVED_HERE, measurement records of the PROJECT_INPUT model parameters, the
+    # item-12 uncertainties with the both-parities acknowledgement: 2.0 nm lies 0.0036 layer from
+    # the boundary, so any uncertainty spans it)
+    d = _variant(smoke, record=SUPPLY,
+                 labels=dict({k: "PROJECT_INPUT" for k in ox.LABEL_KEYS if k != "V_real"},
+                             **DERIVED),
+                 measurements={k: "TEST: fabricated statement of a measurement"
+                               for k in ("V_imag", "vacuum_edge", "interface")},
+                 thickness_uncertainty_A=1.0, density_uncertainty_g_cm3=0.05,
+                 both_parities_acknowledged=True)
     d["purpose"] = "comparison"
     with pytest.raises((PipelineConfigError, MissingProjectInputError),
                        match=r"overlayer\.V_real \(item 12, B41\)"):
@@ -114,7 +129,7 @@ def test_label_keys_must_be_exact(smoke, change):
 
 def test_per_parameter_test_only_needs_an_in_memory_test_only_record(smoke):
     d = _variant(smoke, record=dict(label="TEST_ONLY", source="TEST: fabricated"),
-                 labels={k: "TEST_ONLY" for k in ox.LABEL_KEYS})
+                 labels=TEST_ONLY_LABELS)
     cfg = load_pipeline_dict(d, variant="oxide_2p0nm", allow_test_only=True)
     assert cfg.test_only is True
     with pytest.raises(ConfigError, match="TEST_ONLY"):
@@ -125,7 +140,9 @@ def test_list_inputs_shows_one_row_per_parameter(smoke):
     rows = {r["parameter"]: r for r in list_inputs(smoke, variant="oxide_2p0nm")}
     for k in ox.LABEL_KEYS:
         r = rows[f"cfg_b.surface_preparation_details.overlayer.{k}"]
-        assert r["item"] == 12 and r["status"] == "ASSUMPTION B41"
+        # report X5 (audit A9b M2): the count is DERIVED_HERE, every other parameter B41
+        assert r["item"] == 12 and r["status"] == (
+            "DERIVED_HERE" if k == "consumed_layers" else "ASSUMPTION B41")
     assert rows["cfg_b.surface_preparation_details.overlayer.thickness"]["value"] == 20.0
 
 
@@ -152,14 +169,14 @@ def test_b41_with_no_overlayer_is_refused(smoke):
     (dict(vacuum_edge_width_A=0.6), "vacuum_edge_width_A"),
     (dict(interface_width_A=0.8), "interface_width_A"),
     (dict(material="amorphous Si"), "material"),
+    # report X5 (audit A9b n2), changed on purpose: the row's other pair (1.5 nm, 5) was accepted in
+    # a 2.0 nm variant; the row assigns 2.0 nm to it, so it is refused now (the pair itself is
+    # accepted at the base and in the 1.5 nm variants: test_oxide_pipeline_a9b_fixes.py)
     (dict(thickness_A=15.0, consumed_layers=5, rounding_boundary_acknowledged=False,
-          V_real_V=10.34), None),
+          V_real_V=10.34), "for variant 'oxide_2p0nm'"),
 ])
 def test_b41_values_outside_its_row_are_refused(smoke, over, match):
     d = _variant(smoke, **over)
-    if match is None:                              # the row's other pair (1.5 nm, 5): accepted
-        load_pipeline_dict(d, variant="oxide_2p0nm")
-        return
     with pytest.raises(PipelineConfigError, match=f"stand-in B41.*{match}"):
         load_pipeline_dict(d, variant="oxide_2p0nm")
 
@@ -171,7 +188,11 @@ def test_b41_row_table_matches_the_shipped_variants(smoke):
         over = _rec(smoke, v)["value"]["overlayer"]
         assert (over["thickness_A"], over["consumed_layers"]) in row["thickness_and_count"]
         assert over["V_imag_V"] in row["V_imag_V"] and over["density_g_cm3"] in row["density_g_cm3"]
-        assert set(over["labels"].values()) == {"ASSUMPTION B41"}
+        # report X5: the count is DERIVED_HERE (A9b M2), the thickness tied to the variant (A9b n2)
+        labels = dict(over["labels"])                  # (a copy: the fixture is module-scoped)
+        assert labels.pop("consumed_layers") == "DERIVED_HERE"
+        assert set(labels.values()) == {"ASSUMPTION B41"}
+        assert (over["thickness_A"], over["consumed_layers"]) == row["variants"][v]
 
 
 # --------------------------------------------------------------------------------------------------
@@ -195,7 +216,7 @@ def test_rounding_boundary_acknowledgement_in_the_variants(smoke):
 @pytest.mark.parametrize("w_i", [0.0, 0.3])
 def test_sharp_interface_is_refused(smoke, w_i):
     d = _variant(smoke, record=dict(label="TEST_ONLY", source="TEST: fabricated"),
-                 labels={k: "TEST_ONLY" for k in ox.LABEL_KEYS}, interface_width_A=w_i)
+                 labels=TEST_ONLY_LABELS, interface_width_A=w_i)
     with pytest.raises(PipelineConfigError, match="graded over at least 0.5"):
         load_pipeline_dict(d, variant="oxide_2p0nm", allow_test_only=True)
 

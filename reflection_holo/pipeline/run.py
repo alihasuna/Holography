@@ -57,7 +57,8 @@ from reflection_holo.optics.projection import project_along_k_out
 from reflection_holo.pipeline import convergence as CV
 from reflection_holo.pipeline import quantify as Q
 from reflection_holo.pipeline.config import (PipelineConfig, PipelineConfigError, Record,
-                                             assumptions_in_use, list_inputs, load_pipeline_file)
+                                             assumptions_in_use, list_inputs, load_pipeline_file,
+                                             oxide_item12_record)
 from reflection_holo.pipeline.engines import (_label, build_structure, require_engine,
                                               run_geometric, run_multislice)
 from reflection_holo.provenance.manifest import build_manifest, require_git_state
@@ -733,6 +734,9 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     array_index = {k: dict(axes=v[1], units=v[2], plane=v[3], shape=list(np.shape(v[0])),
                            dtype=str(np.asarray(v[0]).dtype)) for k, v in arrays.items()}
     ga = dict(cfg.glancing_angle)
+    # item 12 as declared (audit A9b M2: labels, model-row values with their declared bracket,
+    # uncertainties and count interval); None without a continuum oxide
+    oxide_item12 = oxide_item12_record(cfg.cfg_b)
     summary = dict(
         purpose=cfg.purpose, banner=PURPOSE_BANNER.format(purpose=cfg.purpose),
         height_verdict=height_verdict,
@@ -743,6 +747,7 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
                     cfg_b_sha256_canonical=cfg.cfg_b.sha256_canonical),
         inputs=list_inputs(cfg.raw, variant=cfg.variant),
         assumptions_in_use=assumptions_in_use(cfg),
+        oxide_item12=oxide_item12,
         beam_energy_keV=BEAM_ENERGY_SUPPLIED_KEV, wavelength_A=lam,
         glancing_angle=dict(ga, value_mrad=theta * 1e3),
         mean_inner_potentials=dict(
@@ -816,7 +821,8 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
                    pipeline_config_sha256_resolved=cfg.sha256_resolved,
                    structure_positions_sha256=structure.metadata["positions_sha256"],
                    glancing_angle=ga, engine_label=engine_record.get("label"),
-                   git_preflight=git_preflight, height_verdict=height_verdict),
+                   git_preflight=git_preflight, height_verdict=height_verdict,
+                   oxide_item12=oxide_item12),
         allow_no_git=allow_no_git)
     with open(out / "manifest.json", "x", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2)

@@ -1,0 +1,47 @@
+STATUS: TEST_ONLY numerical diagnostic (T4, fix of A9a M-1); small cell with a smaller void than B42; UNVALIDATED engine: UNVALIDATED: of the docs/05 4.4 ladder, rung 1 (refraction-only analytic limit) and rung 2 test R2-A (laterally uniform periodic continuum potential, Bragg-case (0,0,8) amplitude and phase across the plateau against the exact semi-infinite solution, TEST_ONLY absorption r = 0.1 and 0.05, both propagators; P2 report section 8, tests/forward/test_rung2_bragg.py) pass in tests/forward; rung 3 has passed ONLY for the continuum null tests and the atomistic MOVED-beam translation: the atomistic FIXED-beam translation check that docs/05 4.4 item 3 requires before any step-phase run has NOT passed; R2-B (r = 0) is optional and qualitative; the abTEM cross-check (transmission and reflection-like configurations) was NOT RUN; the flat-surface rocking-curve comparison with an independent dynamical solver (sim-trhepd-rheed, flat Si(001), [100] and [110], TEST_ONLY r = 0.1; reports S5, E8) was RUN: with the solver's own potential the phase differs by a median of 0.014 rad ([100]) and 0.017 rad ([110]), up to 0.05 rad at five other angles (0.051-0.075 rad) and 0.398 rad at [100] 15.0 mrad where |R|^2 is about 1e-5 (tools/plots/phase4_figures_solver_output.txt), but the comparison is not like-for-like along the beam and its amplitude tolerance has no power (E8 M1, M2): not an amplitude validation
+cells built in 29.2 s: depth 66 layers, flat 473616 atoms; cap 20: 472907 atoms (709 removed), cap 30: 472938 atoms (678 removed); peak RSS 1290 MB
+grid 1225 x 560 (dx 0.12919, dy 0.12607 A), 1124 slices of 1.3577 A, theta 16.1347 mrad, MIP 13.9028 V; engine assertions and F1-F5 passed for every cell (F5: cap 20 True, cap 30 True)
+CPU estimate 1152 s (engine estimate x 1.5 x (1 + 7 waves) / 2); limit --max-cpu-seconds 3000 s
+cap 20: 38 slices hold removed atoms (slices 738-775)
+cap 30: 38 slices hold removed atoms (slices 738-775)
+cap 20: projected potential of non-void slices [20, 553, 1123, 737, 776] bitwise equal to the flat cell's: True
+cap 30: projected potential of non-void slices [20, 553, 1123, 737, 776] bitwise equal to the flat cell's: True
+loop check (first slices, flat, slices 0-11): bitwise equal to engine.propagate_slices: True
+loop check (void slices, full, slices 736-747): bitwise equal to engine.propagate_slices: True
+tail statistics over the void slices: 27.1 s
+waves reused from /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t4/m1_px013/waves_px0.13_caps20-30.npz (no propagation)
+Kirkland projected potential of one Si atom (abTEM function, V A): {'0.5A': 76.1161298711875, '5A': 0.0018968095015881653, '7A': 3.807241259845751e-05}; sigma 7.2884e-04 rad/(V A): sigma V(5 A) = 1.38e-06 rad, sigma V(7 A) = 2.77e-08 rad (the physical change of t beyond the local band)
+
+=== cap 20 A (R 20 A, r 6 A), A_ref 0.1761; P = x_rel 7.63-8.47 A (+2.5 A); two-beam x_V -9.00 A, steepest-row x_V16 2.66 A
+  full : P max |F(D)|/A_ref 9.693e-05, rms 5.230e-05, vacuum-origin P max 7.208e-05; E max 2.585e-03; peak x_rel -20.43 A, fraction in vacuum 0.04
+         max over x_rel bands (ring y band): 0.50-3.00 7.43e-05, 3.00-5.00 8.20e-05, 7.63-8.47 9.69e-05, 11.00-13.00 6.68e-05, 14.00-21.00 5.52e-05
+  local: P max |F(D)|/A_ref 5.314e-05, rms 2.209e-05, vacuum-origin P max 3.412e-07; E max 2.583e-03; peak x_rel -20.43 A, fraction in vacuum 0.03
+         max over x_rel bands (ring y band): 0.50-3.00 6.05e-05, 3.00-5.00 4.99e-05, 7.63-8.47 4.01e-05, 11.00-13.00 4.45e-05, 14.00-21.00 4.55e-05
+  tails: P max |F(D)|/A_ref 7.155e-05, rms 4.891e-05, vacuum-origin P max 7.205e-05; E max 6.282e-06; peak x_rel +7.99 A, fraction in vacuum 0.77
+         max over x_rel bands (ring y band): 0.50-3.00 4.95e-05, 3.00-5.00 4.97e-05, 7.63-8.47 7.15e-05, 11.00-13.00 2.57e-05, 14.00-21.00 1.13e-05
+  ratios at P, total part: max tails/full 0.738, local/full 0.548; rms tails/full 0.935, local/full 0.422 -> NOT CONFIRMED  [the criterion of this run]
+  ratios at P, vacuum_origin part: max tails/full 1.000, local/full 0.005; rms tails/full 0.999, local/full 0.003 -> CONFIRMED  [not the criterion of this run]
+  linearity residual |F(D_full) - F(D_local) - F(D_tails)| / A_ref, max over P: 3.55e-09
+  tail amplitude |t_void - t_flat| (x_rel 0.5-20.0 A over the ring's y band, void slices): max 3.534e-04, rms 6.036e-05 (before the band limit: max 6.867e-04); max in the tails region 8.508e-04, in the local band 3.774e-01
+  Fourier components of d along x in the window (rms over y), max over void slices: g = 0: 5.751e-07, g = (0,0,4): 5.414e-06, g = (0,0,8): 8.295e-06; rms over void slices: 0: 4.881e-07, (0,0,4): 2.977e-06, (0,0,8): 6.025e-06
+  verdict (total criterion of this run, stated before it ran): NOT CONFIRMED
+
+=== cap 30 A (R 20 A, r 6 A), A_ref 0.1761; P = x_rel 7.63-8.47 A (+2.5 A); two-beam x_V -17.73 A, steepest-row x_V16 -0.25 A
+  full : P max |F(D)|/A_ref 2.629e-05, rms 1.779e-05, vacuum-origin P max 2.733e-05; E max 3.317e-05; peak x_rel +3.47 A, fraction in vacuum 0.34
+         max over x_rel bands (ring y band): 0.50-3.00 3.09e-05, 3.00-5.00 3.10e-05, 7.63-8.47 2.60e-05, 11.00-13.00 9.12e-06, 14.00-21.00 4.45e-06
+  local: P max |F(D)|/A_ref 1.190e-06, rms 6.711e-07, vacuum-origin P max 6.765e-09; E max 3.291e-05; peak x_rel -34.25 A, fraction in vacuum 0.04
+         max over x_rel bands (ring y band): 0.50-3.00 1.40e-06, 3.00-5.00 1.28e-06, 7.63-8.47 1.14e-06, 11.00-13.00 1.13e-06, 14.00-21.00 9.98e-07
+  tails: P max |F(D)|/A_ref 2.656e-05, rms 1.779e-05, vacuum-origin P max 2.733e-05; E max 2.063e-06; peak x_rel +3.60 A, fraction in vacuum 0.59
+         max over x_rel bands (ring y band): 0.50-3.00 3.08e-05, 3.00-5.00 3.13e-05, 7.63-8.47 2.66e-05, 11.00-13.00 9.35e-06, 14.00-21.00 4.34e-06
+  ratios at P, total part: max tails/full 1.010, local/full 0.045; rms tails/full 1.000, local/full 0.038 -> CONFIRMED  [the criterion of this run]
+  ratios at P, vacuum_origin part: max tails/full 1.000, local/full 0.000; rms tails/full 1.000, local/full 0.000 -> CONFIRMED  [not the criterion of this run]
+  linearity residual |F(D_full) - F(D_local) - F(D_tails)| / A_ref, max over P: 6.93e-10
+  tail amplitude |t_void - t_flat| (x_rel 0.5-20.0 A over the ring's y band, void slices): max 2.749e-04, rms 4.738e-05 (before the band limit: max 3.405e-04); max in the tails region 8.487e-04, in the local band 3.767e-01
+  Fourier components of d along x in the window (rms over y), max over void slices: g = 0: 4.945e-07, g = (0,0,4): 3.913e-06, g = (0,0,8): 6.398e-06; rms over void slices: 0: 3.742e-07, (0,0,4): 2.249e-06, (0,0,8): 4.872e-06
+  verdict (total criterion of this run, stated before it ran): CONFIRMED
+
+cap 20 / cap 30: P max (full) ratio 3.686, P rms ratio 2.940; tail amplitude ratio max 1.286, rms 1.274; end-face E max ratio 77.927
+cap 20 / cap 30: P vacuum-origin max ratio 2.637, rms 2.754; tail Fourier components (rms over void slices) ratio: 0 1.305, (0,0,4) 1.324, (0,0,8) 1.237
+
+OVERALL VERDICT for this run (px0.13_caps20-30, total criterion): NOT CONFIRMED
+manifest /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t4/m1_px013/outputs/manifests/t4_m1_px0.13_caps20-30_20260924T103230Z.json; waves /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t4/m1_px013/waves_px0.13_caps20-30.npz; summary /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t4/m1_px013/summary_px0.13_caps20-30.json; total 74.9 s, peak RSS 1290 MB

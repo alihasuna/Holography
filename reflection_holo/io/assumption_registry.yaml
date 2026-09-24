@@ -8,8 +8,11 @@
 #   B2     the lattice parameter: no docs/06 item names it and no schema gives lattice_parameter a
 #          docs/06 item, so B2 stands in for nothing (the configurations cite B2 in the source text);
 #   B3-B16 not values of any configuration parameter with a docs/06 item;
-#   B35, B37 model rows (key model_rows below): cited by code, standing in for no docs/06 item
-#          (B37 requires B35: enforced by the pipeline gate and by forward.dimer_ensemble).
+#   B35, B37, B43 model rows (key model_rows below): cited by code, standing in for no docs/06
+#          item (B37 requires B35: enforced by the pipeline gate and by forward.dimer_ensemble;
+#          B43, report X5 after audit A9b M2: the model parameters of the continuum oxide, admitted
+#          by the pipeline as per-parameter labels of the item-12 record and by comparison runs,
+#          pipeline.config.OXIDE_MODEL_ROWS).
 # tests/io/test_io_config_stand_ins.py checks that every ID below is a row of
 # docs/model_assumptions.md (skipped where docs/ is absent).
 schema_version: 1
@@ -67,3 +70,7 @@ model_rows:
   # the only room-temperature model for which B4 holds on a/4 steps, on average (static buckled
   # tables depend on the buckling registry, a model choice; audit A5 F1).
   B37: "p(2x1)a dimer flip-flop ensemble (model choice, not a source): each dimer cell of Ramstad et al. 1995 Table III in the p(2x1)a state or its mirror image with probability 1/2, independently, per realisation; reflection_holo.structure.reconstruction, reflection_holo.forward.dimer_ensemble"
+  # Report docs/agent_reports/X5_a9b_fixes.md (audit A9b M2; row proposed there, added to
+  # docs/model_assumptions.md by the orchestrator). NOT demo-only and NOT a stand-in for a
+  # PROJECT_INPUT: the model parameters of the continuum oxide in any run, comparison runs included.
+  B43: "continuum-oxide MODEL parameters (E9 M1, M4): V_ox 10.34 V (independent-atom value at 2.20 g/cm^3) with the declared sensitivity bracket 10.1-11.5 V (measured span); V'_ox 0.40 V with the declared bracket 0 or 0.39-0.44 V (model values from inelastic mean free paths, not bounds); vacuum-edge and oxide/Si interface widths 0.5 A each (a numerical requirement, not a measured roughness); the bracket is recorded in every run's manifest; pipeline.config.OXIDE_MODEL_ROWS"

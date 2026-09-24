@@ -783,7 +783,7 @@ def _overlayer_option(overlayer, vacuum_above_A: float) -> dict:
     if isinstance(overlayer, ox.ContinuumOxideSpec):
         # spec-level checks now; the per-terrace stack after the terraces are known (_apply_oxide)
         rec = ox.validate_spec(overlayer)
-        return dict(rec, value=ox.MODEL_NAME, label=rec["labels"]["thickness"],
+        return dict(rec, value=ox.MODEL_NAME, label=ox.headline_label(rec["labels"]),
                     project_input="item 12")
     if not isinstance(overlayer, OverlayerSpec):
         raise TypeError("overlayer must be an OverlayerSpec, a ContinuumOxideSpec or None "
@@ -820,7 +820,11 @@ B4_OXIDE_CONFORMAL = ("with a CONFORMAL continuum oxide (equal thickness and con
                       "(E9 m4)")
 B4_OXIDE_GROWN = ("NOT conformal (thickness or consumed-layer count differ): the step phase carries "
                   "the grown-oxide and top-surface terms of the continuum layer (E9 section 3 items "
-                  "3-5), added by the geometric engine; B4 below refers to the buried crystal step")
+                  "3-5), added by the geometric engine; B4 below refers to the buried crystal step. "
+                  "A multislice run of this ATOMISTIC structure does not carry the grown-oxide term "
+                  "of the sub-layer part of the thickness difference (the crystal loses whole "
+                  "layers only; step record multislice_sublayer_note; audit A9b M1): "
+                  + ox.NONCONFORMAL_SUBLAYER)
 B4_OXIDE_PARITY = ("at <110> the terrace type at each buried a/4 step, hence the sign of the "
                    "residual delta, depends on the parity of the consumed-layer count (E9 section 3 "
                    "item 2; R3 p. 88)")
@@ -915,6 +919,26 @@ def _apply_oxide(spec, *, rs, rc, layer, terr, tops, steps, axes, q, a, az, fram
         rec["model_assumption_B4_overlayer"] = (
             (B4_OXIDE_CONFORMAL if conf else B4_OXIDE_GROWN)
             + ("; " + B4_OXIDE_PARITY if tuple(az) in _AZIMUTHS["<110>"] else ""))
+        if not conf:
+            # audit A9b M1: the size of the engines' disagreement at THIS step (the sub-layer part
+            # of the thickness difference, Dt - DN (a/4)/f, is not represented by the atomistic
+            # multislice; tools/review/x5/a9b_c4_nonconformal.py)
+            f_ = float(st["f"])
+            dt = float(pt[B]["thickness_A"] - pt[A]["thickness_A"])
+            dn = int(N[B] - N[A])
+            sub = float(dt - dn * q / f_)
+            lo, hi = ox.SUBLAYER_RATE_DIFFERENCE_RAD_PER_A
+            rec.update(
+                thickness_difference_A=dt, consumed_layer_difference=dn,
+                sublayer_thickness_difference_A=sub,
+                multislice_sublayer_note=(
+                    f"sub-layer thickness difference Dt - DN (a/4)/f = {dt:+.4f} - ({dn:+d}) x "
+                    f"{q / f_:.4f} = {sub:+.4f} A: its grown-oxide term is applied by the geometric "
+                    f"engine but not represented by a multislice of this atomistic structure; at "
+                    f"the B41 values (V_ox 10.34 V, 2.20 g/cm^3, 16.1347 mrad) the engines differ by "
+                    f"about {lo * abs(sub):.2f}-{hi * abs(sub):.2f} rad (mod 2 pi) at this step "
+                    f"(DERIVED_HERE, 1-D model estimate; structure.oxide.NONCONFORMAL_SUBLAYER; "
+                    f"audit A9b M1)"))
         s["overlayer"] = rec
     passed = [
         "(o1) continuum oxide: the top N_k whole layers of every terrace removed (count asserted)",

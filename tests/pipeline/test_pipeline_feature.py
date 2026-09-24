@@ -229,6 +229,36 @@ def test_feature_refused_without_a_registered_stand_in():
         load_pipeline_dict(e, variant=None)
 
 
+@pytest.mark.parametrize("name", ["demo_hpc_si001.yaml", "demo_convergence_si001.yaml"])
+def test_no_feature_route_refuses_a_feature_stand_in(name):
+    """Audit A9a m-3 (agent T4): a staircase configuration (no sections.structure.feature) whose
+    cfg_b.pattern_geometry {features: none} carried a FEATURE stand-in (B33 trench, B34 ridge, B42
+    buried void) was accepted and recorded that row as its item-13 stand-in. Refused now; B27 (no
+    feature) is still accepted."""
+    d = read_pipeline_file(REPO / "configs" / name)
+    assert d["cfg_b"]["parameters"]["pattern_geometry"]["assumption_id"] == "B27"
+    load_pipeline_dict(copy.deepcopy(d), variant=None)                    # the demo passes
+    for aid in ("B33", "B34", "B42"):
+        e = copy.deepcopy(d)
+        e["cfg_b"]["parameters"]["pattern_geometry"]["assumption_id"] = aid
+        with pytest.raises(PipelineConfigError, match=f"under stand-in {aid}"):
+            load_pipeline_dict(e, variant=None)
+
+
+def test_no_demo_configuration_labels_no_feature_with_a_feature_stand_in():
+    """Every demo configuration without a feature declares B27 on pattern_geometry, so none relies
+    on the route closed by the A9a m-3 fix (read from the files; nothing is run)."""
+    seen = 0
+    for path in sorted((REPO / "configs").glob("demo_*.yaml")):
+        d = read_pipeline_file(path)
+        p13 = d["cfg_b"]["parameters"]["pattern_geometry"]
+        if "feature" not in d["sections"]["structure"]:
+            seen += 1
+            assert p13["value"] == {"features": "none"}, path.name
+            assert p13.get("assumption_id") == "B27", path.name
+    assert seen >= 3
+
+
 def test_feature_path_consistency_rules():
     d = read_pipeline_file(TRENCH)
     cases = []

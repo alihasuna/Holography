@@ -1,0 +1,15 @@
+T3 run  : /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried/ms_flat_test_only_r0.1/outputs/exit_waves/torus_buried_flat_r010_r0000.npz
+T4 rerun: /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t4/ms_flat_r010_rerun_HEAD/outputs/exit_waves/torus_buried_flat_r010_r0000.npz
+T3 run manifest torus_buried_flat_r010_20260924T083229Z.json: commit 39b6151de0d46862fe1618bfa27f08034177184f, dirty True, diff_head_sha256 51b28fdb03000319a0d9708dd27f5011bdd3deaa52e36c6520c4d3e42c4be5a5, package_tree e63b9a4067bb2ddaee91a0f0aaf4ea5227feb806cdbda00eda6372e4ccd7423a (79 files), timestamp 2026-09-24T08:32:29+00:00, threads 2 (consistent: OMP_NUM_THREADS=2, OPENBLAS_NUM_THREADS=2, MKL_NUM_THREADS=2, NUMEXPR_NUM_THREADS=2)
+T4 rerun manifest torus_buried_flat_r010_20260924T101231Z.json: commit dc4eb7f4e233d70d761e70fc6aba74ada1e26124, dirty False, diff_head_sha256 None, package_tree 7f3b2851e348f8ddd16bcb6ffe61bce484b06d20c90019ab4088ab6ff00d9548 (79 files), timestamp 2026-09-24T10:12:31+00:00, threads 2 (consistent: OMP_NUM_THREADS=2, OPENBLAS_NUM_THREADS=2, MKL_NUM_THREADS=2, NUMEXPR_NUM_THREADS=2)
+grid, plane, energy, angle identical: True ((1323, 1134), dx 0.127826 A, dy 0.129307 A, 200 keV)
+structure positions bitwise identical: True (1102896 atoms)
+exit wave dtype complex128 / complex128; sha256 a199ef5ca699665a / a199ef5ca699665a
+exit waves bitwise equal: True; max |psi_T3 - psi_T4| = 0.000e+00 (max |psi| 1.2415)
+package tree of 39b6151 (T3's recorded engine commit): 520735b260798080fb93951a6d544b0e38273189e620732976304238392071fd (79 files)
+package tree of 4c4a78b (snapshot committing T3 + X4 edits): dd87f2560dbee40502216e356b1db7a7bf4156db1b067d98e97c03d4a3eebeb6 (79 files)
+package tree of dc4eb7f (commit of the T4 rerun (clean clone)): 7f3b2851e348f8ddd16bcb6ffe61bce484b06d20c90019ab4088ab6ff00d9548 (79 files)
+propagation-path files changed between 39b6151 and dc4eb7f: ['reflection_holo/forward/multislice/engine.py', 'reflection_holo/forward/multislice/overlayer.py', 'reflection_holo/forward/cell.py', 'reflection_holo/forward/feature_cell.py', 'reflection_holo/structure/features.py', 'reflection_holo/structure/shapes.py', 'reflection_holo/structure/si001.py', 'scripts/torus/run_torus_multislice.py']
+  all package files changed between 39b6151 and dc4eb7f: ['reflection_holo/forward/cell.py', 'reflection_holo/forward/feature_cell.py', 'reflection_holo/forward/geometric/model.py', 'reflection_holo/forward/multislice/engine.py', 'reflection_holo/forward/multislice/overlayer.py', 'reflection_holo/io/assumption_registry.yaml', 'reflection_holo/pipeline/config.py', 'reflection_holo/structure/features.py', 'reflection_holo/structure/oxide.py', 'reflection_holo/structure/shapes.py', 'reflection_holo/structure/si001.py']
+propagation-path files changed between 4c4a78b and dc4eb7f: none
+  all package files changed between 4c4a78b and dc4eb7f: ['reflection_holo/pipeline/config.py']

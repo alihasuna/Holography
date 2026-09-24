@@ -1,0 +1,8 @@
+2026-09-24T10:04:34Z START buried_flat_r010 rerun, commit dc4eb7f4e233d70d761e70fc6aba74ada1e26124, load 0.01 0.08 0.85
+2026-09-24T10:12:32Z END buried_flat_r010 rerun rc=0 wall=478 s, load 2.07 1.67 1.33
+2026-09-24T10:21:40Z START m1 px 0.13 caps 20 30 -> m1_px013, load 1.92 1.55 1.31
+2026-09-24T10:29:02Z END m1 px 0.13 rc=0 wall=442 s, load 5.74 4.27 2.66
+2026-09-24T10:31:15Z START m1 stage-1 analysis rerun (--reuse-waves --criterion total), load 1.76 3.30 2.51
+2026-09-24T10:32:31Z END m1 stage-1 analysis rerun
+2026-09-24T10:32:53Z START m1 stage 2 px 0.09 caps 20 30 (criterion vacuum_origin), load 4.41 3.73 2.74
+2026-09-24T10:47:50Z END m1 stage 2 px 0.09 rc=0 wall=897 s, load 5.78 5.20 4.16

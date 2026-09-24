@@ -560,7 +560,7 @@ variants:
             labels:                   # one label per parameter (audit A8 M1)
               thickness: ASSUMPTION B41
               density: ASSUMPTION B41
-              consumed_layers: ASSUMPTION B41
+              consumed_layers: DERIVED_HERE   # computed by the code from thickness, density and a-Si (audit A9b M2)
               V_real: ASSUMPTION B41
               V_imag: ASSUMPTION B41
               vacuum_edge: ASSUMPTION B41
@@ -601,7 +601,7 @@ variants:
             labels:                   # one label per parameter (audit A8 M1)
               thickness: ASSUMPTION B41
               density: ASSUMPTION B41
-              consumed_layers: ASSUMPTION B41
+              consumed_layers: DERIVED_HERE   # computed by the code from thickness, density and a-Si (audit A9b M2)
               V_real: ASSUMPTION B41
               V_imag: ASSUMPTION B41
               vacuum_edge: ASSUMPTION B41
@@ -622,7 +622,7 @@ variants:
     sections:
       structure:
         substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
-        vacuum_above_A: 20.0          # holds the top of the layer (11.85 A above the top atomic planes)
+        vacuum_above_A: 20.0          # holds the top of the layer ((1 - f) 15 + a/8 = 9.06 A above the top atomic planes; audit A9b n3)
     cfg_b_parameters:
       surface_preparation_details:
         value:
@@ -642,7 +642,7 @@ variants:
             labels:                   # one label per parameter (audit A8 M1)
               thickness: ASSUMPTION B41
               density: ASSUMPTION B41
-              consumed_layers: ASSUMPTION B41
+              consumed_layers: DERIVED_HERE   # computed by the code from thickness, density and a-Si (audit A9b M2)
               V_real: ASSUMPTION B41
               V_imag: ASSUMPTION B41
               vacuum_edge: ASSUMPTION B41
@@ -663,7 +663,7 @@ variants:
     sections:
       structure:
         substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
-        vacuum_above_A: 20.0          # holds the top of the layer (11.85 A above the top atomic planes)
+        vacuum_above_A: 20.0          # holds the top of the layer ((1 - f) 15 + a/8 = 9.06 A above the top atomic planes; audit A9b n3)
     cfg_b_parameters:
       surface_preparation_details:
         value:
@@ -683,7 +683,7 @@ variants:
             labels:                   # one label per parameter (audit A8 M1)
               thickness: ASSUMPTION B41
               density: ASSUMPTION B41
-              consumed_layers: ASSUMPTION B41
+              consumed_layers: DERIVED_HERE   # computed by the code from thickness, density and a-Si (audit A9b M2)
               V_real: ASSUMPTION B41
               V_imag: ASSUMPTION B41
               vacuum_edge: ASSUMPTION B41
@@ -791,7 +791,7 @@ variants:
             labels:                   # one label per parameter (audit A8 M1)
               thickness: ASSUMPTION B41
               density: ASSUMPTION B41
-              consumed_layers: ASSUMPTION B41
+              consumed_layers: DERIVED_HERE   # computed by the code from thickness, density and a-Si (audit A9b M2)
               V_real: ASSUMPTION B41
               V_imag: ASSUMPTION B41
               vacuum_edge: ASSUMPTION B41

@@ -1815,12 +1815,15 @@ def report_part4(S, cc, t_start) -> int:
               f"structure); largest slice: exponentials {row['ls']['exponentials_B'] / 1e9:.3f} GB, "
               f"pixel stage {row['ls']['pixel_stage_B'] / 1e9:.3f} GB; exit wave "
               f"{row['exit_bytes'] / 1e9:.3f} GB")
-        print(f"    with the continuum oxide (report E4; its layer arrays on this grid, terraces along "
-              f"{lay['oxide_layer']['staircase_axis']}, audit A8 m3): GPU device peak "
+        print(f"    with the continuum oxide, SAME-GRID LOWER BOUND (report E4; its layer arrays on "
+              f"this clean cell's grid, terraces along {lay['oxide_layer']['staircase_axis']}, "
+              f"audit A8 m3): GPU device peak "
               f"{row['dev_ox'] / 1e9:.3f} GB ({(row['dev_ox'] - row['dev']) / 1e9:+.3f} GB), host of "
               f"that run {row['host_ox'] / 1e9:.1f} GB, CPU job {row['mem_ox'] / 1e9:.3f} GB "
-              f"({(row['mem_ox'] - row['mem']) / 1e9:+.3f} GB); the cell's geometry change (vacuum "
-              f"for the layer top, consumed layers) is not included")
+              f"({(row['mem_ox'] - row['mem']) / 1e9:+.3f} GB); the geometry change of an oxide cell "
+              f"(the box grows by the layer stack in x; the run-in through the stack along z; the "
+              f"consumed layers) is not included, so these oxide figures are lower bounds (audit "
+              f"A9b m6)")
         (cf, cp), (gf, gp) = split_times(lay["nx"], lay["ny"], lay["N"], lay["nonempty"],
                                          lay["n_mean"], cc, precision)
         print(f"    per realisation: CPU {fmt_t(cpu)} (4 cores, {CPU_FACTOR_LABEL}; FFT+element-wise "
@@ -1992,13 +1995,15 @@ def report_part4(S, cc, t_start) -> int:
           "run-in to be computed on the cluster); V row: static run-in. Memory: engine.memory_model; "
           "GPU device peak UNVERIFIED on a GPU (lower bound); host and CPU-job figures include the "
           f"{STRUCTURE_B_PER_ATOM} B/atom builder structure. CPU: {CPU_FACTOR_LABEL}. Last "
-          "column: the same with the continuum oxide's layer arrays (report E4, audit A8 m3; the "
-          "production surface is oxide-covered, PROJECT_INPUT Ali 2026-09-24; same grid, the "
-          "cell's geometry change not included).")
+          "column: a SAME-GRID LOWER BOUND for the oxide-covered production surface (PROJECT_INPUT "
+          "Ali 2026-09-24): the continuum oxide's layer arrays on the clean cell's grid (report "
+          "E4, audit A8 m3); the geometry change of an oxide cell (the box grows by the layer "
+          "stack in x, the run-in through the stack along z) is not included, so the oxide "
+          "figures are lower bounds (audit A9b m6); the clean-surface columns are unchanged.")
     print("| scenario | extents x, y, z (A) | atoms | grid | slices | run-in (A) | GPU device peak "
           "(GB) | host, GPU run (GB) | CPU job peak (GB) | CPU time per realisation (4 cores, "
           f"x{CPU_FACTOR}) | GPU time per realisation (ASSUMPTION model) | realisations x angles | "
-          "total CPU / GPU | with oxide: GPU device / CPU job peak (GB) |")
+          "total CPU / GPU | with oxide, same-grid lower bound: GPU device / CPU job peak (GB) |")
     print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     print(f"| 1 study.yaml, 17 points ([110], reference) | {st['x'][0]:.0f}-{st['x'][1]:.0f} x "
           f"{st['y'][0]:.1f}-{st['y'][1]:.1f} x {st['z'][0]:.0f}-{st['z'][1]:.0f} | "

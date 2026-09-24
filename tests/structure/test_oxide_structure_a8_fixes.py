@@ -35,6 +35,7 @@ def spec(*, labels=None, raw_labels=None, **kw):
                 amorphous_si_V_imag_V=None, terrace_thickness_A=None, terrace_consumed_layers=None,
                 sharp_edge_test_flag=False, sharp_interface_test_flag=False,
                 rounding_boundary_acknowledged=True,
+                nonconformal_sublayer_acknowledged=False,     # audit A9b M1 (stated)
                 labels=(raw_labels if raw_labels is not None else
                         dict({k: L12 for k in ox.LABEL_KEYS}, **(labels or {}))))
     base.update(kw)
@@ -233,8 +234,10 @@ def test_buried_b4_statement_carries_its_note():
 
 
 def test_edge_reflectivity_text_is_the_exact_value():
-    """A8 m1: the recorded statement is the exact 1-D value, not E9's Born estimate."""
+    """A8 m1: the recorded statement is the exact 1-D value, not E9's Born estimate. Since report
+    X5 (audit A9b m3) the text quotes the digits printed by tools/review/x5/a9b_c2_edge.py
+    (1.9545e-9, formerly the rounded 1.95e-9)."""
     rec = stacks(spec())["record"]
-    assert "1.95e-9" in rec["edge_reflectivity_w05"] and "1.1e-4" not in str(rec)
-    with pytest.raises(ValueError, match="1.95e-9"):
+    assert "1.9545e-9" in rec["edge_reflectivity_w05"] and "1.1e-4" not in str(rec)
+    with pytest.raises(ValueError, match="1.9545e-9"):
         ox.validate_spec(spec(vacuum_edge_width_A=0.3))

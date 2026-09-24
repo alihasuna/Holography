@@ -47,9 +47,13 @@ same on every terrace and every step phase is unchanged (E9 section 3 item 1: 10
 21.9522 rad for a/2 at 16.1347 mrad, out:91); a thickness difference Dt of a grown oxide changes
 it by [2 k'_ox - 2 k_perp (1 - f)] Dt (4.27-4.71 rad/A, out:109-117), a top-surface-only change by
 2 (k'_ox - k_perp) Dt (0.866-0.980 rad/A, out:96-103). Multiple reflections at the graded edges are
-neglected (w >= 0.5 A: the exact 1-D reflectivity of the 0.5 A vacuum edge is |r|^2 = 1.95e-9 at
-16.1347 mrad, |r| x 8.5e-4 of the sharp edge, audit A8 C6, which the multislice engine reproduces;
-E9's Born factor, out:241, underestimates it 57-fold: structure.oxide.EDGE_W05_REFLECTIVITY). B4 is
+neglected (w >= 0.5 A: the exact 1-D reflectivity of the 0.5 A vacuum edge is |r|^2 = 1.9545e-9 at
+16.1347 mrad, |r| x 8.513e-4 of the sharp edge, audits A8 C6 and A9b C2, which the multislice engine
+reproduces; E9's Born factor, out:241, underestimates it 56.8-fold:
+structure.oxide.EDGE_W05_REFLECTIVITY). For a NON-CONFORMAL layer this engine applies the continuum
+grown-oxide rate to any thickness difference, which a multislice of the same atomistic structure
+does not represent for the sub-layer part (structure.oxide.NONCONFORMAL_SUBLAYER; audit A9b M1;
+this engine is unchanged). B4 is
 judged on the BURIED crystal step measured on the kept atoms by the builder (its relation changes
 with the consumed-layer counts; at <110> the parity of the consumed-layer count decides the terrace
 type, E9 section 3 item 2). The layer terms are referenced to the pre-oxidation surface (the Si

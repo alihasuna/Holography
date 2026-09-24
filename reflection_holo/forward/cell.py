@@ -102,6 +102,7 @@ def build_reflection_cell(structure, *, vacuum_above_A: float, depth_below_A: fl
         stacks = over["per_terrace"]
         tops = np.array([p["atomistic_crystal_top_x_A"] for p in stacks], float)
         layer_tops = np.array([p["top_x_A"] for p in stacks], float)
+        nonconformal = _nonconformal_sublayer(over)         # audit A9b M1 (refuses or records)
     else:
         tops = np.array([t["top_height_A"] for t in md["terrace_map"]], float)
     lowest, highest = float(tops.min()), float(tops.max())
@@ -164,6 +165,8 @@ def build_reflection_cell(structure, *, vacuum_above_A: float, depth_below_A: fl
             highest_surface_x_A=float(layer_tops.max() - bottom),
             overlayer=_oxide_layout(over, [tt["oxide"] for tt in terraces], terraces, s_axis,
                                     vac=vac, dep=dep))
+        if nonconformal is not None:
+            layout["overlayer"]["nonconformal_sublayer"] = nonconformal
     meta = dict(schema="reflection_holo.forward.cell/1",
                 builder="reflection_holo.forward.cell.build_reflection_cell",
                 kind="atomic",
@@ -231,6 +234,37 @@ OXIDE_SURFACE_SEMANTICS = (
     "the layer (where the beam first meets matter), used by the docs/05 4.3 assertions; "
     "depth_below_A is measured below the lowest crystal surface; vacuum_above_A above the highest "
     "top of the layer")
+
+
+def _nonconformal_sublayer(record: dict) -> dict | None:
+    """Audit A9b M1: an ATOMISTIC multislice cell whose terraces carry different oxide thicknesses
+    does not represent the grown-oxide term of the sub-layer part of the thickness differences (the
+    crystal loses whole layers only), while the geometric engine applies it
+    (structure.oxide.NONCONFORMAL_SUBLAYER). Refused unless the specification states
+    nonconformal_sublayer_acknowledged = True (TEST_ONLY overrides label, checked by
+    structure.oxide.validate_spec); then the statement and its size are recorded. None for one
+    thickness on every terrace."""
+    from reflection_holo.structure import oxide as ox
+    per = record["per_terrace"]
+    thick = sorted({round(float(p["thickness_A"]), 12) for p in per})
+    if len(thick) < 2:
+        return None
+    f = float(record["consumed_si_fraction_f"])
+    quant = [float(p["interface_quantisation_A"]) for p in per]
+    sub = (max(quant) - min(quant)) / f          # largest sub-layer thickness difference (A)
+    lo, hi = ox.SUBLAYER_RATE_DIFFERENCE_RAD_PER_A
+    size = (f"terrace thicknesses {thick} A; largest sub-layer thickness difference "
+            f"{sub:.4f} A, i.e. about {lo * sub:.2f}-{hi * sub:.2f} rad (mod 2 pi) between the "
+            f"engines at the B41 values")
+    if record["nonconformal_sublayer_acknowledged"] is not True:
+        raise ox.OxideSpecError(
+            f"atomistic multislice cell with a NON-CONFORMAL continuum oxide ({size}): "
+            f"{ox.NONCONFORMAL_SUBLAYER}. Refused unless the specification states "
+            f"nonconformal_sublayer_acknowledged = True with a TEST_ONLY overrides label (audit A9b "
+            f"M1)")
+    return dict(acknowledged=True, label=record["labels"]["overrides"], size=size,
+                largest_sublayer_thickness_difference_A=float(sub),
+                statement=ox.NONCONFORMAL_SUBLAYER)
 
 
 def _oxide_stack_in_cell(stack: dict, shift: float) -> dict:

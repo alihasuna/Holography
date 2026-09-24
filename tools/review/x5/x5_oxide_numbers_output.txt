@@ -1,0 +1,32 @@
+a = 5.4309 A (B2), a/4 = 1.357725 A, a/8 = 0.678863 A; rho_Si = 2.329195 g/cm^3; f(2.20) = 0.441507 (code), 0.441507 (first principles)
+
+== A9b m2: the 0.05-layer guard (MIN_ROUNDING_MARGIN_LAYERS = 0.05) at t_ox = 20 A, 2.20 g/cm^3
+  0.05 layer = 0.0679 A (= 0.068 A) of consumed depth = 0.1538 A of thickness at f(2.20) = 0.769 % of the density = 0.0169 g/cm^3
+  thickness +-0.5 A -> continuum depth +-0.221 A = +-0.163 layer
+  thickness +-1.0 A -> continuum depth +-0.442 A = +-0.325 layer
+  thickness +-2.0 A -> continuum depth +-0.883 A = +-0.650 layer
+  density +-0.03 g/cm^3 at 20 A -> +-0.089 layer
+  density +-0.05 g/cm^3 at 20 A -> +-0.148 layer
+  density +-0.1 g/cm^3 at 20 A -> +-0.296 layer
+
+== A9b m2: the B41 counts and their rounding boundaries (structure.oxide.rounding_margin)
+  t 20.0 A, N 7: continuum 6.5036 layers, margin 0.0036 layer (0.0049 A); the count becomes 6 at 2.19877 g/cm^3 (-0.056 %) or 19.9888 A; near the boundary: True
+  t 15.0 A, N 5: continuum 4.8777 layers, margin 0.3777 layer (0.5128 A); the count becomes 4 at 2.02963 g/cm^3 (-7.744 %) or 13.8384 A; near the boundary: False
+
+== A9b m2: consumed-layer count over an uncertainty box (structure.oxide.consumed_count_interval; illustrative uncertainties, TEST values)
+  t 20.0 +- 0.1 A, rho 2.20 +- 0.01 g/cm^3: 6.442-6.566 layers -> counts [6, 7] (even, odd); spans a boundary: True
+  t 20.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3: 6.255-6.757 layers -> counts [6, 7] (even, odd); spans a boundary: True
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3: 6.038-6.984 layers -> counts [6, 7] (even, odd); spans a boundary: True
+  t 20.0 +- 2.0 A, rho 2.20 +- 0.1 g/cm^3: 5.587-7.479 layers -> counts [6, 7] (even, odd); spans a boundary: True
+  t 15.0 +- 0.1 A, rho 2.20 +- 0.01 g/cm^3: 4.823-4.933 layers -> counts [5] (odd); spans a boundary: False
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3: 4.651-5.109 layers -> counts [5] (odd); spans a boundary: False
+  t 15.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3: 4.449-5.321 layers -> counts [4, 5] (even, odd); spans a boundary: True
+  t 15.0 +- 2.0 A, rho 2.20 +- 0.1 g/cm^3: 4.035-5.779 layers -> counts [4, 5, 6] (even, odd); spans a boundary: True
+
+== A9b M2: consumed-layer counts DERIVED by the code (structure.oxide.nearest_consumed_layers)
+  t 20.0 A, 2.20 g/cm^3, no a-Si: 7
+  t 15.0 A, 2.20 g/cm^3, no a-Si: 5
+
+== A9b n3: the top of the layer above the top atomic planes, (1 - f) t + a/8
+  t 20.0 A: (1 - 0.441507) x 20.0 + 0.678863 = 11.8487 A (= 11.85 A)
+  t 15.0 A: (1 - 0.441507) x 15.0 + 0.678863 = 9.0563 A (= 9.06 A)

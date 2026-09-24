@@ -176,7 +176,11 @@ def test_spec_built_by_the_pipeline_carries_the_record_label(smoke):
     cfg = load_pipeline_dict(smoke, variant="oxide_1p5nm")
     spec = oxide_spec_from_config(cfg.cfg_b)
     assert isinstance(spec, ContinuumOxideSpec)
-    assert set(spec.labels.values()) == {"ASSUMPTION B41 (stands in for PROJECT_INPUT item 12)"}
+    # report X5 (audit A9b M2), changed on purpose: the consumed-layer count is DERIVED_HERE (from
+    # the B41 labels of the thickness, density and a-Si), every other parameter carries B41
+    labels = dict(spec.labels)
+    assert labels.pop("consumed_layers").startswith("DERIVED_HERE (consumed-layer count computed")
+    assert set(labels.values()) == {"ASSUMPTION B41 (stands in for PROJECT_INPUT item 12)"}
     assert spec.terrace_thickness_A is None and spec.sharp_edge_test_flag is False
     assert (spec.thickness_A, spec.consumed_layers) == (15.0, 5)
 
