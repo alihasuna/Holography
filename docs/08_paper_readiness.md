@@ -61,7 +61,7 @@ it), NEEDS UPLOAD (a closed source must be read).
 | 4.1 | Rung 1: refraction-only slab against the analytic result | DONE | M2 |
 | 4.2 | Rung 2: Bragg-case reflection (amplitude and phase across the plateau) against an exact 1D solution | DONE (R2-A passes; fails for every deliberate engine break) | P2, E7, E1, A6 |
 | 4.3 | Rung 3: null tests | PARTIAL: continuum null tests and the atomistic moved-beam translation pass; the atomistic fixed-beam check has NOT passed | M2, A6 S-1 |
-| 4.4 | Independent dynamical solver (sim-trhepd-rheed), flat Si(001) | PARTIAL: phase within about 0.03 rad with the solver's own potential; not like-for-like along the beam; the amplitude tolerance has no power | S5, E8 |
+| 4.4 | Independent dynamical solver (sim-trhepd-rheed), flat Si(001) | PARTIAL: with the solver's own potential the phase differs by a median of 0.014 rad ([100]) and 0.017 rad ([110]), up to 0.075 rad at weakly reflecting angles (`tools/plots/phase4_figures_solver_output.txt`); not like-for-like along the beam; the amplitude tolerance has no power | S5, E8 |
 | 4.5 | abTEM cross-check | OPEN | docs/05 4.4 |
 | 4.6 | Reproduction of a published result | OPEN: Tanishiro 2003 (7 pi step phase, Si(111), 200 kV) is open and a candidate; Osakabe 1988 needs uploads | L7, E6; docs/07 |
 | 4.7 | Lateral (in-plane) sign convention | OPEN (needs a surface without a two-fold axis along the normal) | E8 M4 |

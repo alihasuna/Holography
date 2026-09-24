@@ -1,0 +1,8 @@
+[100]: 23 engine angles; max |d arg| 0.398 rad; median |d arg| 0.014 rad; d|R|/|R| -0.134 to +0.188
+   [100] 15.00 mrad: |R|^2 solver 0.00001 engine 0.00001, d arg -0.398 rad
+   [100] 16.70 mrad: |R|^2 solver 0.01089 engine 0.00970, d arg +0.055 rad
+[110]: 15 engine angles; max |d arg| 0.075 rad; median |d arg| 0.017 rad; d|R|/|R| -0.193 to +0.091
+   [110] 14.00 mrad: |R|^2 solver 0.01495 engine 0.01221, d arg +0.058 rad
+   [110] 17.00 mrad: |R|^2 solver 0.00171 engine 0.00111, d arg +0.056 rad
+   [110] 17.60 mrad: |R|^2 solver 0.04389 engine 0.03593, d arg -0.075 rad
+   [110] 20.00 mrad: |R|^2 solver 0.00194 engine 0.00152, d arg -0.051 rad

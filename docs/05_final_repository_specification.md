@@ -203,8 +203,11 @@ two-fold axis along the normal; it needs a surface without that symmetry (E8 M4)
 
 Result of the comparison (reports S5 and E8, `tools/validation/rheed_solver_compare.py`,
 `tools/review/e8_recompute.py`): with the solver's own Doyle-Turner potential, flat Si(001), 200 keV,
-the engine's phase agrees with the solver's to about 0.03 rad over the rocking range at [100] and
-[110] (22 of 23 and 15 of 15 angles inside S5's a priori tolerance; the (0,0,8) peak within 0.018 mrad,
+the engine's phase differs from the solver's by a median of 0.014 rad at [100] (23 angles) and 0.017 rad
+at [110] (15 angles), by up to 0.075 rad at weakly reflecting angles, and by 0.398 rad at 15.0 mrad
+where |R|^2 is about 1e-5 and the phase is nearly undefined (`tools/plots/phase4_figures.py`, output
+`tools/plots/phase4_figures_solver_output.txt`) (22 of 23 and 15 of 15 angles inside S5's a priori
+tolerance; the (0,0,8) peak within 0.018 mrad,
 phase sweep within 0.006 rad). The phase test has power (a conjugated engine fails 19 of 23 angles, a
 0.02 A plane shift 12 of 23); the amplitude tolerance does not (E8 M2). The engine's |R| is 3-5 % low
 at the peak at a 0.13 A pixel; E8 attributes it to (i) the 2/3 band limit at 0.13 A (-2.5 % in |R|,
