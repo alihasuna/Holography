@@ -216,3 +216,30 @@ and device peak) equal to the engine's `estimate_resources`. `T2_res_element` no
   numbers they need.
 * `scripts/hpc/null_test_study/run_study.py`: its `--estimate` line said "engine arrays"; it now
   prints the numpy peak and the GPU device peak (lower bound).
+
+## 5. Tests run (verbatim counts)
+
+Machine shared with other agents throughout (1-min load 14-22 on 4 cores: S5 engine runs, P2
+rung-2 run, H6's gpu_sanity with this tool's --measure mode).
+
+* `venv/bin/python -m pytest -q tests/forward/test_memory_model.py` -> `8 passed in 27.02s`
+* `venv/bin/python -m pytest -q tests/forward/test_band_working_reflection.py` -> `10 passed in 5.40s`
+* `venv/bin/python -m pytest -q tests/forward` -> `1 failed, 63 passed in 589.81s (0:09:49)`;
+  the failure: `FAILED tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008`,
+  `E       assert 155.22981277600047 < 120.0` (the test's wall-clock limit; "SMOKE: build 11.4 s,
+  propagation 143.5 s, total 155.2 s, peak RSS 828 MB"; the geometry, band, finiteness and manifest
+  assertions come after the timing assertion and were therefore not reached in this run).
+* `venv/bin/python -m pytest -q tests/hpc` -> `109 passed, 5 skipped in 396.44s (0:06:36)`
+  (`SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed`)
+* `venv/bin/python -m pytest -q` (full suite) -> `1 failed, 905 passed, 5 skipped, 12 warnings in
+  1541.86s (0:25:41)`; the same single failure: `FAILED
+  tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008`, `E       assert
+  202.92326317900006 < 120.0` ("SMOKE: build 13.9 s, propagation 188.6 s, total 202.9 s, peak RSS
+  836 MB"). The 120 s limit was not changed. My edits do not touch the propagation path
+  (`propagate_slices`, the potential and the propagators are unchanged; the band assertion adds a
+  loop over one reflection); see the timing comparison below.
+* `venv/bin/python tools/hpc/supercell_sizing.py` -> 60/60 checks, exit 0 (section 3).
+* Pipeline dry runs (section 2): demo_hpc_si001 exit 4 (cupy absent; geometry and band checks
+  passed), demo_smoke_si001 --variant multislice_tiny exit 0.
+* `run_study.py --estimate --only step_w32_bragg_abs10_L5k` -> "memory peak 527 MB (numpy/CPU; GPU
+  device 227 MB, lower bound)" (the pre-H7 accounting printed 340 MB).
