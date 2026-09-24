@@ -21,3 +21,6 @@ alliance_setup_*.log
 
 # run locks of tools/validation (report S5)
 tools/validation/*.lock
+
+# per-user Claude Code settings (for example the ~/.ssh deny rules of LOCAL_SESSION_PROMPT.md)
+.claude/settings.local.json
