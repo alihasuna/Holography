@@ -31,17 +31,22 @@ theta = 16.1347 mrad (B32), path factor 2 / sin(theta) = 124.0.
 
 ## 0. Log of hosts and access
 
-| Time (UTC) | Host / service | Result |
+| Time (UTC, from file timestamps) | Host / service | Result |
 |---|---|---|
 | 04:00 | Crossref API `api.crossref.org/works` and `/works/<doi>` (no mailto; User-Agent "L8-literature-check/1.0") | works; JSON cached in `l8/crossref/` |
 | 04:00 | OpenAlex `api.openalex.org/works/doi:<doi>` | works (single-record lookups); used for OA status only; its abstract index is `+ABSTRACT(index)` (not evidence) |
 | 04:01 | Europe PMC REST (`www.ebi.ac.uk/europepmc/webservices/rest/search`) | works; abstracts cached as `l8/epmc_*.json` |
 | 04:02 | link.springer.com (Applied Microscopy 2026 article) | redirected to a Springer cookie/IdP page; springeropen host answered 404 "Application Unavailable"; Crossref abstract read instead (the paper is about in-column plasma cleaning, not specimen oxidation; not used further) |
+| 04:03 | physics.byu.edu | serves the SVC 2004 proceedings paper of Robinson, Allred et al. (read) |
 | 04:04 | J-STAGE (article pages and PDFs), J-STAGE WebAPI, CiNii Research | work (script `l8/jp_search.py`, copied from L7; queries `l8/jp_q*.json`, output `l8/jp_out*.txt`) |
 | 04:05 | rafaldb.com (R. E. Dunin-Borkowski's publication page) | serves the author copy of the Springer Handbook of Microscopy chapter 16 (read) |
 | 04:06 | NIMS MDR (`mdr.nims.go.jp`) | serves the green copy of Iakoubovskii et al. PRB 77, 104102 (2008) (read) |
-| 04:08 | pubs.aip.org (APL, JAP) | HTTP 403 Cloudflare "Just a moment..." (not bypassed); affects Rau et al. 1996 and Wang et al. 1997 |
-| 04:03 | physics.byu.edu | serves the SVC 2004 proceedings paper of Robinson, Allred et al. (read) |
+| 04:07 | pubs.aip.org (APL, JAP) | HTTP 403 Cloudflare "Just a moment..." (not bypassed); affects Rau et al. 1996 and Wang et al. 1997 |
+| 04:10 | fischione.com | product pages and PDF documents served (read) |
+| 04:11 | nifs-repository.repo.nii.ac.jp; inis.iaea.org | NIFS repository served NIFS-DATA-23; the INIS record returned an empty reply (not needed further) |
+| 04:18 | ro.uow.edu.au (figshare API `api.figshare.com`, `ndownloader.figshare.com`) | record page returned HTTP 202 with no body; the figshare API and file host served the accepted manuscript of Mitchell 2015 |
+| 04:23 | zenodo.org API and file host (HTTP range requests); api.datacite.org | work; the 9.35 GB `results.zip` was not downloaded, only its central directory and selected members |
+| 04:33 | arXiv OAI-PMH (`oaipmh.arxiv.org`; `export.arxiv.org/oai2` redirects there) | works |
 
 PDF tools: PyMuPDF 1.28.2 in the scratch venv `scratchpad/pdfenv`; scanned pages rendered at 130-150 dpi and read
 as images (files in `l8/render/`).
@@ -55,7 +60,7 @@ as images (files in `l8/render/`).
 | O1 | C.-W. Lee, Y. Ikematsu, D. Shindo, "Thickness Measurement of Amorphous SiO2 by EELS and Electron Holography", Mater. Trans. JIM 41(9), 1129-1131 (2000), DOI 10.2320/matertrans1989.41.1129 | OPEN (J-STAGE, "diamond" OA): `https://www.jstage.jst.go.jp/article/matertrans1989/41/9/41_9_1129/_pdf/-char/en`; scanned, no text layer; all 3 pages read as rendered images; SHA-256 d1d25bcd8ad588da9a50e551082ca3311e4b8ef58e3a00e5383cf4b1d27e51d5 | SECTION_READ (abstract; sec. 2; sec. 3 pp. 1130-1131; Figs. 2, 5; sec. 4) + METADATA_VERIFIED (Crossref) |
 | O2 | R. E. Dunin-Borkowski, A. Kovacs, T. Kasama, M. R. McCartney, D. J. Smith, "Electron Holography", ch. 16 in P. W. Hawkes, J. C. H. Spence (eds.), Springer Handbook of Microscopy (Springer, 2019), pp. 767-818, DOI 10.1007/978-3-030-00069-1_16 | Author copy on the first author's site: `https://rafaldb.com/papers/B-2019-Science-of-Microscopy-Electron-holography.pdf` (52 pages); SHA-256 695e05e3ccea0055fce570aa44239c90c0d5ef88febcc334d5725c0ac6514445; p. 772 read as a rendered image; reference list read in the text layer. OpenAlex lists the chapter as closed; the author copy was read. This is [C02] of references.bib (instruction-file reference C02, until now unread): its author copy is OPEN here | SECTION_READ (sec. 16.2, p. 772-773; refs. 16.60-16.66, 16.76-16.82) + METADATA_VERIFIED (Crossref) |
 | O3 | K. Iakoubovskii, K. Mitsuishi, Y. Nakayama, K. Furuya, "Mean free path of inelastic electron scattering in elemental solids and oxides using transmission electron microscopy: Atomic number dependent oscillatory behavior", Phys. Rev. B 77, 104102 (2008), DOI 10.1103/PhysRevB.77.104102 | OPEN (green): NIMS MDR `https://mdr.nims.go.jp/filesets/a245390a-da00-4f5e-a2a0-14b4ad052df0/download` (APS typeset pages, 7 pages); SHA-256 34ef97d0d31b56c6a4c8653283c1409cce0f26570ee91bb68a9c909d49669844 | SECTION_READ (abstract; sec. II; sec. III A; Table I, p. 104102-4 as a rendered image) + METADATA_VERIFIED (Crossref) |
-| O4 | W. D. Rau, F. H. Baumann, J. A. Rentschler, P. K. Roy, A. Ourmazd, "Characterization of stacked gate oxides by electron holography", Appl. Phys. Lett. 68, 3410-3412 (1996), DOI 10.1063/1.115776 | CLOSED (OpenAlex closed; pubs.aip.org Cloudflare 403). Only the OpenAlex abstract index was seen | METADATA_VERIFIED (Crossref) + ABSTRACT(index) only: content UNVERIFIED |
+| O4 | W. D. Rau, F. H. Baumann, J. A. Rentschler, P. K. Roy, A. Ourmazd, "Characterization of stacked gate oxides by electron holography", Appl. Phys. Lett. 68, 3410-3412 (1996), DOI 10.1063/1.115776 | CLOSED (OpenAlex closed; pubs.aip.org Cloudflare 403). Only the OpenAlex abstract index was seen | METADATA_VERIFIED (Crossref) +ABSTRACT(index); content UNVERIFIED |
 | O5 | Y. C. Wang, T. M. Chou, M. Libera, T. F. Kelly, APL 70, 1296 (1997) (WANG97, already in references.bib) | CLOSED (pubs.aip.org 403). Its SiO2 value is read here second-hand in O2 | METADATA_VERIFIED (references.bib); value SECTION_READ of O2's statement only |
 | O6 | A. Basha, G. Levi, T. Amrani, Y. Li, G. Ankonina, P. Shekhter, L. Kornblum, I. Goldfarb, A. Kohn, "Elastic and inelastic mean free paths for scattering of fast electrons in thin-film oxides", Ultramicroscopy 240, 113570 (2022), DOI 10.1016/j.ultramic.2022.113570 | CLOSED (OpenAlex closed); abstract read in Europe PMC (PMID 35700667; `l8/epmc_35700667.json`, SHA-256 3310931d...acc) | +ABSTRACT(PubMed) + METADATA_VERIFIED (Crossref) |
 
@@ -113,10 +118,12 @@ Inelastic mean free path (IMFP) at 200 keV:
   inelastic (all losses, large collection angle) values, i.e. an upper bound for what removes electrons from a 3 mrad
   dark-field aperture in the coherent channel: plasmon-loss electrons stay inside the aperture (characteristic angle
   well below 1 mrad) and are partly coherent (E6 M2, Tanishiro 2003), so the same caveat as for Si (E6 M3) applies.
-* Cross-check of L6's Si electronic term (outside this task, reported because it bears on item 21): O3 gives, at 200
-  keV and 20 mrad, lambda(Si) = 1450 A (total) and lambda_P(Si) = 1680 A; O6 gives 1450 ± 100 A at 157 mrad. These
-  correspond to V' = 0.473 V (total) and 0.408 V (plasmon), below L6's 0.653 V (Mendis 2019's 1050 A, UNVERIFIED).
-  The bracket 0 / 0.65 V of B6 (ii) is not contradicted, but its upper end is above both measured totals.
+* Cross-check of L6's Si electronic term (outside this task, reported because it bears on item 21): O3 uses
+  lambda(c-Si) = 1450 A (200 keV, 20 mrad) as its "well-calibrated" reference value (its refs. 8, 12-15, not read) and
+  lists lambda_P(Si) = 1680 A; O6 measured 1450 ± 100 A at 157 mrad (abstract). These correspond to V' = 0.473 V
+  (total) and 0.408 V (plasmon), below L6's 0.653 V (Mendis 2019's 1050 A plasmon MFP, UNVERIFIED). The bracket
+  0 / 0.65 V of B6 (ii) is not contradicted, but its upper end is above both totals; the difference should be resolved
+  when Mendis 2019 is read (L6 upload 1).
 * Elastic scattering by the amorphous network out of the 3 mrad aperture is a second loss channel of the specular wave
   that an atomistic overlayer produces explicitly but a continuum layer does not. O6 measured elastic MFPs of thermal
   and CVD SiO2 at 200 keV versus collection angle (abstract); the numbers are in the closed body. Until then the
@@ -132,10 +139,10 @@ Inelastic mean free path (IMFP) at 200 keV:
 | P2 | T. C. Isabell, P. E. Fischione, C. O'Keefe, M. U. Guruz, V. P. Dravid, "Plasma Cleaning and Its Applications for Electron Microscopy", Microsc. Microanal. 5(2), 126-135 (1999), DOI 10.1017/S1431927699000094 | CLOSED (OpenAlex closed); abstract read in Europe PMC (PMID 10341012; `l8/epmc_isabell1999.json`, SHA-256 13a6d360...afc) | +ABSTRACT(PubMed) + METADATA_VERIFIED (Crossref) |
 | P3 | M. Kitajima, "Ellipsometric Study on Plasma Oxidation of Silicon" (シリコンのプラズマ酸化の偏光解析研究; review in Japanese), J. Vac. Soc. Jpn. (Shinku) 37(10), 815-825 (1994), DOI 10.3131/jvsj.37.815 | OPEN (J-STAGE): `https://www.jstage.jst.go.jp/article/jvsj1958/37/10/37_10_815/_pdf/-char/ja`; read in full (text layer; p. 823 read as a rendered image); SHA-256 7af71bf3898d379e366c27f36f247105c90462c0317faedc7273c62347c90009 | SECTION_READ (secs. 2-10, Figs. 3, 6, 15, 16, 18) + METADATA_VERIFIED (Crossref) |
 | P4 | R. E. Robinson, R. L. Sandberg, D. D. Allred, A. L. Jackson, J. E. Johnson, W. Evans, T. Doughty, A. E. Baker, K. Adamson, A. Jacquier, "Removing Surface Contaminants from Silicon Wafers to Facilitate EUV Optical Characterization", Society of Vacuum Coaters, 47th Annual Technical Conference Proceedings (Dallas, 24-29 April 2004), pp. 368-376 (no DOI found in Crossref) | OPEN (author group's site): `https://physics.byu.edu/faculty/allred/docs/svc04.pdf`; read in full; SHA-256 99574c40268d5c47c89f6ed16fc65284b11739ba58a518ebe140c23c3f9a6172 | SECTION_READ (pp. 370-373, Figs. 4-5); bibliographic data from the PDF itself only (no registry record) |
-| P5 | D. R. G. Mitchell, "Contamination mitigation strategies for scanning transmission electron microscopy", Micron 73, 36-46 (2015), DOI 10.1016/j.micron.2015.03.013 | Accepted manuscript at University of Wollongong Research Online (figshare 27792012; licence "Copyright - All rights reserved", file openly downloadable): `https://ndownloader.figshare.com/files/50561283`; SHA-256 f6b4c5c4eb893f23926d7dc408add3e093d8f3746fb4e406fc3dfd0a62a55d3f | SECTION_READ (AM secs. 2, 3.4, 3.6, 3.7, 4; AM pages 3, 5-6, 8-10, 12, 14) + METADATA_VERIFIED (Crossref) |
+| P5 | D. R. G. Mitchell, "Contamination mitigation strategies for scanning transmission electron microscopy", Micron 73, 36-46 (2015), DOI 10.1016/j.micron.2015.03.013 | Accepted manuscript at University of Wollongong Research Online (figshare 27792012; licence "Copyright - All rights reserved", file openly downloadable): `https://ndownloader.figshare.com/files/50561283`; SHA-256 f6b4c5c4eb893f23926d7dc408add3e093d8f3746fb4e406fc3dfd0a62a55d3f | SECTION_READ (AM secs. 2, 3.4, 3.6, 3.7, 4; AM pages 3, 6, 8-11, 13; page numbers are the AM's "Page n of 21") + METADATA_VERIFIED (Crossref) |
 | P6 | Y. Yamamura, H. Tawara, "Energy dependence of ion-induced sputtering yields from monatomic solids at normal incidence", At. Data Nucl. Data Tables 62(2), 149-253 (1996), DOI 10.1006/adnd.1996.0005; read as the report NIFS-DATA-23 (National Institute for Fusion Science, 1995) | OPEN (NIFS repository, hdl 10655/0002000175): `https://nifs-repository.repo.nii.ac.jp/record/2000175/files/NIFS-DATA-023.pdf`; scanned; pp. 3-7 and 14 read as rendered images; SHA-256 4b34eaebc581767f58b874db5767ef38a49ecfff8ad5ecf38bd9e542e0201ac3 | SECTION_READ (report pp. 5-7, Eqs. (9), (18), (19); Table 1 p. 14) + METADATA_VERIFIED (Crossref, journal version; the report and the journal version are assumed to carry the same Eq. (18) and Table 1: ASSUMPTION) |
 | P7 | N. Luhmann et al., "Effect of oxygen plasma on nanomechanical silicon nitride resonators", arXiv:1706.02957v1 (2017) | OPEN (arXiv PDF); SHA-256 aa400ae88607e65dd8afbd52a59c0028196dc00a16f953e8dddbd34a6cd3bd11 | SECTION_READ (abstract; sec. II; sec. III pp. 2-4). Silicon NITRIDE, not Si: context only |
-| P8 | S. Hata (Crossref lists one author; CiNii lists H. Sosiati, S. Hata, N. Kuwano, M. Itakura, T. Nakano et al.), "Removing focused ion-beam damages on transmission electron microscopy specimens by using a plasma cleaner", J. Electron Microsc. 55(1), 23-26 (2006), DOI 10.1093/jmicro/dfl001 | CLOSED; not in Europe PMC; only the OpenAlex abstract index seen | METADATA_VERIFIED (Crossref, CiNii) + ABSTRACT(index) only: content UNVERIFIED (upload item) |
+| P8 | S. Hata (Crossref lists one author; CiNii lists H. Sosiati, S. Hata, N. Kuwano, M. Itakura, T. Nakano et al.), "Removing focused ion-beam damages on transmission electron microscopy specimens by using a plasma cleaner", J. Electron Microsc. 55(1), 23-26 (2006), DOI 10.1093/jmicro/dfl001 | CLOSED; not in Europe PMC; only the OpenAlex abstract index seen | METADATA_VERIFIED (Crossref, CiNii) +ABSTRACT(index); content UNVERIFIED (upload item 4) |
 
 ### 2.2 Facts extracted
 
@@ -168,7 +175,7 @@ Room-temperature plasma oxidation of Si (P3, review with the author's own RF wor
   ellipsometry).
 * p. 818, sec. 5: "プラズマ酸化中の膜厚変化は，酸化初期を除き，酸化時間の1/2乗で変化することが確かめられている" (apart
   from the initial stage the thickness grows as t^(1/2)); for thick films (> 2-3 nm) O- transport through the oxide
-  limits the rate (p. 820, sec. 9-10).
+  limits the rate (p. 816 sec. 2; pp. 823-824 sec. 10).
 * p. 820: under -20 V bias growth tends to stop at about 5 nm (Hess et al., as cited); activation energies 0.19, 0.4,
   0.25 eV (Joseph, Kimura, Vinckier, as cited): weak temperature dependence.
 * pp. 820-821, sec. 7: at room temperature, 2 Pa O2, RF 300 and 500 W, Si(111) oxidises faster than Si(100) at all
@@ -204,14 +211,15 @@ O2 plasma on native-oxide-covered Si wafers (P4):
 Carbon removal on ion-milled Si (P5):
 * AM p. 3, sec. 2: a JEOL EC-52000IC air plasma, DC 310 V, specimen about 1 cm outside the glow ("very gentle
   cleaning conditions"), 1.1 C temperature rise after 1 h.
-* AM p. 9, sec. 3.6: "Plasmas containing oxidising species have been shown to be very effective at removing both
+* AM p. 8, sec. 3.6: "Plasmas containing oxidising species have been shown to be very effective at removing both
   hydrocarbons and any previously deposited carbon contamination. Air, pure oxygen, oxygen/argon and oxygen/hydrogen
   mixtures have all been used." "where valence state is being studied, oxidation may occur". Carbon film removal rate
   "approximately 5nm.hr-1" in this cleaner.
-* AM pp. 9-10 and 12 (Fig. 10b): on an ion-milled Si DRAM cross-section the contamination deposited in a 30 s scan at
+* AM p. 9 (sec. 3.6, Fig. 10b): on an ion-milled Si DRAM cross-section the contamination deposited in a 30 s scan at
   20 Mx "decreases exponentially with plasma cleaning time and can be completely eliminated by plasma cleaning for 60
-  mins"; "Contamination was still significant after 10mins of plasma cleaning with 22.5nm of carbon deposited within a
-  30s scan". AM p. 10: "Higher power cleaners or those using oxygen-based plasmas may operate more rapidly".
+  mins"; AM p. 11 (sec. 3.7): "Contamination was still significant after 10mins of plasma cleaning with 22.5nm of carbon
+  deposited within a 30s scan". AM p. 10: "Higher power cleaners or those using oxygen-based plasmas may operate more
+  rapidly".
 * AM p. 9: "Low voltage milling (<500eV) is very effective final polishing step to remove amorphous/oxide and
   beam-damaged layers" (citing Mehrtens et al. 2012; not read).
 
@@ -274,7 +282,7 @@ What an amorphous oxide does to the reflected beam (electron energies 10-200 keV
   "酸化膜の存在にもかかわらず界面平坦性についての情報が鏡面反射スポット強度I(0,0)に強く反映される" (despite the oxide, the
   interface flatness is strongly reflected in the specular intensity I(0,0)). R4 p. 543 (549 C, 2.8e-6 Torr O2):
   I(0,0) falls almost linearly with oxide coverage to about 50 % coverage, then recovers (sub-monolayer oxidation;
-  roughness, not absorption, dominates at this stage).
+  inference: roughness, not absorption, dominates at this stage).
 * R2 p. 849 (Fig. 6): during first-layer oxidation of Si(001) the specular spot intensity (off-Bragg condition) falls
   from about 350 (clean) to a minimum at 0.5 ML and recovers to about 100 when the first layer is oxidised; "界面が酸化膜
   により下層に埋め込まれるため，3周期以降のRHEED強度の振動現象を観測することはできなかった" (oscillations beyond the third period
@@ -301,8 +309,8 @@ Does oxidation keep the step structure? (all on UHV-clean or HF-last surfaces, t
   表面にも保存されている". Summary (p. 251-252, Fig. 3): (1) the initial atomic steps are preserved at the interface
   AND at the oxide surface; (2) interface steps do not move laterally; (3) terraces appear uniform in SREM. Mechanism:
   random 2-D nucleation of oxide islands below 10 nm and their lateral growth (p. 252).
-* R1 p. 252: a 48 nm oxide grown at 900 C in a furnace on a UHV-prepared Si(111) (0.3 nm cap) still shows "明瞭な
-  ステップとテラス構造" at the interface, steps not moved; terrace contrast non-uniform, i.e. atomic-scale roughness
+* R1 p. 252: a 48 nm oxide grown at 900 C in a furnace on a UHV-prepared Si(111) (0.3 nm cap), imaged after HF thinning
+  to below about 1 nm, still shows "明瞭なステップとテラス構造" at the interface, steps not moved; terrace contrast non-uniform, i.e. atomic-scale roughness
   within terraces; RHEED (1,1) spot-profile fit: 2-D oxide nuclei of 5 nm diameter and one atomic layer thick.
 * R1 p. 253 and R2 p. 848, Fig. 3: on Si(001)-2x1 the 2x1 streaks and the SREM terrace contrast vanish on O2 exposure,
   then the terrace contrast reappears (room temperature, 2e-6 Torr, 3 min) and reverses with each further oxidised
@@ -338,9 +346,10 @@ Does oxidation keep the step structure? (all on UHV-clean or HF-last surfaces, t
   treats a room-temperature plasma oxide on an ion-milled surface; P3 (section 2) reports an ion-damaged (a-Si + SiO2)
   interlayer for plasma oxidation. The conformal model is therefore the sourced default for an oxide on a stepped
   crystalline surface (ASSUMPTION for Ali's surface), and the planarising model is the bracket.
-* Terrace-type dependence under oxide: R2 Fig. 4 and R3 p. 88 show, at 30 kV and a <110>-type azimuth, that the
-  specular reflectivity of an oxide-covered Si(001) depends on whether the interfacial bonds are parallel or
-  perpendicular to the beam. This is the reflectivity difference that B4 says cancels only at an exact <100> azimuth
+* Terrace-type dependence under oxide: R2 Fig. 4 and R3 p. 88 show that the specular reflectivity of an oxide-covered
+  Si(001) depends on whether the interfacial bonds are parallel or perpendicular to the beam (SREM at 30 kV, R3; the
+  energy of the R2 Fig. 4 calculation is not stated in the pages read; the azimuth is a <110> type, inferred from the
+  parallel/perpendicular wording of R2 p. 847 and R3 p. 88). This is the reflectivity difference that B4 says cancels only at an exact <100> azimuth
   (bonds at 45 deg on both terraces). It supports B4's statement that an overlayer and a <110> azimuth produce a
   residual delta, and gives a first-hand measurement-plus-calculation precedent for it (at 30 kV, not 200 kV).
 * Visibility of steps under oxide: at 30 kV the interface steps and terraces are imaged through oxides of up to "a few
@@ -357,6 +366,10 @@ Does oxidation keep the step structure? (all on UHV-clean or HF-last surfaces, t
   with Lambda(Si) = 1450 A (O3), 2 nm of a-Si gives 0.18 and 5 nm 0.014 in intensity; tens of nm of FIB a-Si (L7 D2)
   would extinguish the specular beam. A measurable specular hologram on Ali's sample therefore itself indicates that the
   total damaged-plus-oxide layer is at most a few nm (inference).
+* Gap: no MEASURED attenuation of the specular (Bragg) intensity versus oxide thickness at 100-200 keV was found in the
+  sources searched (J-STAGE and CiNii queries `l8/jp_q1.json` to `jp_q3.json`, Crossref and web searches); R4's 10 keV
+  data are sub-monolayer and roughness-dominated, R2 Fig. 6 gives only the first-layer behaviour. The numbers above are
+  therefore a model, and item 21's energy-filtered measurement on Ali's sample is the check.
 
 ## 4. Density, stoichiometry and interface layer of thin oxides on Si (task 2, second part)
 
@@ -400,7 +413,7 @@ Does oxidation keep the step structure? (all on UHV-clean or HF-last surfaces, t
   1.0.10, called through the repository venv) gives F_Si(0) = 278.374 and F_O(0) = 95.264 V A^3, hence V0(a-SiO2) =
   n_SiO2 (F_Si + 2 F_O) = 9.87, 10.25, 10.34, 10.67, 10.81 V at 2.10, 2.18, 2.20, 2.27, 2.30 g/cm^3 (the same calculation
   gives 13.902 V for Si at a = 5.431 A, the engine's B32 value, which checks the method). Unlike Si (IAM 13.90 V against
-  about 12.0-12.5 V measured), the IAM value for a-SiO2 at 2.2 g/cm^3 (10.34 V) lies INSIDE the measured range 10.1-11.5 V
+  12.1 ± 1.3 V measured by Wang 1997 via O2, and 12.48 ± 0.22 V at abstract level, L6), the IAM value for a-SiO2 at 2.2 g/cm^3 (10.34 V) lies INSIDE the measured range 10.1-11.5 V
   (O1, O2). A density error of ± 0.1 g/cm^3 moves the IAM value by about ± 0.47 V.
 
 ## 5. An openly available atomistic amorphous SiO2 model (task 2, atomistic overlayer)
@@ -440,8 +453,8 @@ Does oxidation keep the step structure? (all on UHV-clean or HF-last surfaces, t
 
 * Best open atomistic a-SiO2 found: A2's ACE model (CC BY 4.0, 12.9 nm cube, 2.18 g/cm^3, inside the sourced thin-oxide
   range 2.07-2.30). A 1-3 nm slab cut from it (normal along any cube axis) gives 12.9 nm x 12.9 nm of distinct
-  amorphous structure; the engine's IAM V0 for it is 10.25 V (section 4.3). The hybrid (CHIK) model is denser (2.31)
-  and would give 10.8 V; it is the high-density bracket.
+  amorphous structure; the engine's IAM V0 for it is 10.25 V (section 4.3). The hybrid (CHIK) model is denser (2.311 g/cm^3)
+  and would give about 10.86 V; it is the high-density bracket.
 * The engine's supercell is much longer along the beam than 12.9 nm (H2). Tiling the cube periodically imposes a 12.9 nm
   period on the amorphous layer, i.e. artificial diffraction at multiples of lambda / 12.87 nm = 0.195 mrad, inside
   the 3 mrad aperture. Mitigation options (ASSUMPTION, to be tested): tile with random rotations/translations per tile,
@@ -461,10 +474,10 @@ Does oxidation keep the step structure? (all on UHV-clean or HF-last surfaces, t
 * No source read measures charging of a 1-3 nm oxide on conducting Si under a grazing electron beam. The SREM/REM/RHEED
   studies of oxidised Si read here (R1-R5, L7 D8) image through oxides of up to a few nm (and R5 through none thicker
   than a native regrowth) without reporting charging; absence of a report is not evidence of absence.
-* O2 p. 773: measurements of V0 by holography may be affected by "specimen charging [16.77-82]" (refs. read in O2's
-  list: Lloyd et al. 1997; McCartney et al., APL 80, 3213 (2002); Downing, McCartney, Glaeser, MAM 10, 783 (2004);
-  McCartney, J. Electron Microsc. 54, 239 (2005); Dunin-Borkowski et al., Ultramicroscopy 103, 67 (2005)); none read
-  (closed, UNVERIFIED).
+* O2 p. 773: measurements of V0 by holography may be affected by "specimen charging [16.77-82]" (refs. 16.77-16.81 as
+  listed in O2: Lloyd et al. 1997; McCartney et al., APL 80, 3213 (2002); Downing, McCartney, Glaeser, MAM 10, 783
+  (2004); McCartney, J. Electron Microsc. 54, 239 (2005); Dunin-Borkowski et al., Ultramicroscopy 103, 67 (2005); 16.82
+  is incomplete in the text layer); none read (closed, UNVERIFIED).
 * Inference (DERIVED_HERE, ASSUMPTION-level): a 1-3 nm SiO2 on doped Si passes charge by tunnelling, unlike the thick
   insulators for which charging is known in holography; the magnitude of any residual surface charge under the
   footprint current is not sourced. B8 and item 22 stand: the phase drift versus dose/time on a flat region of Ali's
@@ -479,7 +492,7 @@ Units: A = angstrom. "open?" = readable here without Ali. DERIVED_HERE rows are 
 |---|---|---|---|---|---|---|
 | MIP of amorphous SiO2 | 11.5 ± 0.3 V | a-SiO2 spheres 220-270 nm, off-axis holography at 300 kV | Lee, Ikematsu, Shindo 2000 (O1) | p. 1131, Fig. 5, concl. (2) | SECTION_READ | open |
 | MIP of amorphous SiO2 | 10.1 ± 0.6 V | amorphous SiO2 layers on 20-40 nm Si spheres (layer thickness not stated in O2) | Wang et al. 1997 via Dunin-Borkowski et al. 2019 (O2 = C02) | O2 p. 772 | SECTION_READ of O2's statement; Wang 1997 UNVERIFIED | O2 open (author copy); Wang closed |
-| MIP of thermal/deposited gate oxides | (index only) | stacked gate oxides on Si | Rau et al. 1996 (O4) | - | UNVERIFIED (index abstract only) | closed |
+| MIP of thermal/deposited gate oxides | not read | stacked gate oxides on Si | Rau et al. 1996 (O4) | - | UNVERIFIED (+ABSTRACT(index) only) | closed (upload 2) |
 | MIP of a-Si, c-Si (same study) | 11.9 ± 0.9 V; 12.1 ± 1.3 V | Si nanospheres | Wang 1997 via O2 | O2 p. 772 | SECTION_READ of O2 | O2 open |
 | IAM MIP of a-SiO2 (engine's Kirkland) | 9.87 / 10.25 / 10.34 / 10.67 / 10.81 V | 2.10 / 2.18 / 2.20 / 2.27 / 2.30 g/cm^3 | abTEM 1.0.10 KirklandParametrization, F_Si(0) 278.374, F_O(0) 95.264 V A^3 | section 4.3 | DERIVED_HERE (parameterisation UNVERIFIED, SM17) | - |
 | Total inelastic MFP, a-SiO2, 200 keV | 178 ± 4 nm | no objective aperture, omega filter, 30 particles | O1 | abstract; p. 1130 | SECTION_READ | open |
@@ -510,7 +523,7 @@ Units: A = angstrom. "open?" = readable here without Ali. DERIVED_HERE rows are 
 | RT plasma oxide on bare Si | < 1.5 nm after 10^4 s; t^(1/2) growth; about 40-70 % of the final delta at 600 s | low-density RF O2, 2 Pa, 200-500 W | Kitajima 1994 (P3) | pp. 818, 822-823, Fig. 16 | SECTION_READ (+ figure reading DERIVED_HERE) | open |
 | Plasma-oxide interface damage | (a-Si + SiO2) interlayer, 3/4 formed in seconds; a-Si fraction 50-75 % | ECR/RF O2 plasma | P3 (Hu et al. as cited) | pp. 821-822 | SECTION_READ of P3 | open |
 | O2 plasma on native-oxide Si | native 1.6-1.9 nm; +0.4-0.6 nm in 10 min, +0.7-0.8 nm in 12-16 min; no carbon by XPS | 250 W, 0.120 Torr O2 | Robinson et al. 2004 (P4) | pp. 371-373, Fig. 4 | SECTION_READ (+ figure reading) | open |
-| Hydrocarbon removal from ion-milled Si | still significant after 10 min, gone after 60 min | gentle air plasma (JEOL, DC 310 V, specimen outside glow) | Mitchell 2015 (P5) | AM pp. 9-10, 12 | SECTION_READ | open (AM) |
+| Hydrocarbon removal from ion-milled Si | still significant after 10 min, gone after 60 min | gentle air plasma (JEOL, DC 310 V, specimen outside glow) | Mitchell 2015 (P5) | AM pp. 8-11 | SECTION_READ | open (AM) |
 | a-SiO2 atomistic model (open) | 139,968 atoms, 128.716 A cube, 2.183 g/cm^3, O/Si 2.000, 99.8 % fourfold Si, Si-O 1.619 A | ACE potential, melt-quench 1e12 K/s, 0 bar | Erhard et al. 2024 (A1) data, Zenodo 10.5281/zenodo.10419194 (A2), CC BY 4.0 | `results/SiO2/ace/4.in.data` | SECTION_READ (A1, A2) + REPRODUCED (numbers) | open |
 | a-SiO2 atomistic model (open, denser) | 331,776 atoms, 168.390 A cube, 2.311 g/cm^3 | CHIK quench + ACE equilibration | A2 | `results/SiO2/hybrid/hybrid.out.data` | as above | open |
 | a-SiO2/c-Si(001) small interface cells | 25 cells, 160 atoms, 10.86 x 10.86 x 23.40 A | SCAN DFT data | A2 | `results/SiO/interfaces/interfaces/a-SiO2_c-Si/` | SECTION_READ (one cell inspected) | open |
@@ -528,7 +541,7 @@ convention, the crystal interface moved into the Si by 0.44 t_ox relative to the
 | t_ox | 2.0 nm | 1.0-3.0 nm | Native 0.5-1 nm (Morita) or up to 1.6-1.9 nm (ellipsometric) before the clean; a 10 min O2-containing plasma adds under about 0.6-1.0 nm (low-density RF, P3 figure reading) to about 0.4-0.6 nm (250 W O2, P4); total about 1.5-3 nm, widened to 1-3 nm for the unknown cleaner power and O2 fraction. ASSUMPTION built from SECTION_READ inputs; replace by the witness measurement (PROJECT_INPUT). |
 | V_ox (MIP) | 10.34 V (engine IAM at 2.20 g/cm^3) for runs that must match an atomistic layer; 10.8 V as the literature centre | 10.1-11.5 V | Measured 10.1 ± 0.6 V (oxide layers on Si nanospheres) and 11.5 ± 0.3 V (a-SiO2 spheres); the engine IAM at the sourced density lies inside this range (section 4.3), so, unlike Si (B32), no IAM systematic outside the measured range has to be carried for the oxide. SECTION_READ (values) + DERIVED_HERE (IAM). |
 | V'_ox (electronic absorption), uniform in the layer | 0.40 V (r_ox = V'_ox / V_ox = 0.039 at 10.34 V) | 0.38-0.44 V (r_ox 0.033-0.044); plus a 0 V run | From measured total IMFPs 178 ± 4 nm (amorphous, O1) and 155 nm x 1.1 (O3). Upper bound for loss from the coherent channel (plasmon losses partly coherent, E6 M2). DERIVED_HERE from SECTION_READ. |
-| TDS absorption in the oxide | none in frozen-phonon runs | - | as L6 7.2 / B6 (i): not added on top of explicit atoms; for a continuum layer there are no phonons, and the TDS part is small compared with 0.40 V for a light amorphous solid (not sourced; ASSUMPTION) |
+| TDS absorption in the oxide | none in frozen-phonon runs | - | as L6 7.2 / B6 (i): not added on top of explicit atoms; for a continuum layer a TDS absorptive term is not included (ASSUMPTION; it could be computed for Si and O with the Thomas et al. 2024 code as in L6 1.5, not done here) |
 | Elastic diffuse scattering out of the 3 mrad aperture | not represented in the continuum layer | - | unsourced (Basha 2022 closed); the atomistic layer produces it explicitly; the continuum-vs-atomistic comparison measures it |
 | Density (for the atomistic layer and the IAM value) | 2.20 g/cm^3 | 2.07-2.30 g/cm^3 | X1 Table 1, L7 D7, A2 model 2.18. |
 | Interface | abrupt, bulk-terminated Si under the oxide | optional 1 nm transition layer with +5 % density (R6) in a second run | R1, R2, R6; plasma damage interlayer (P3) and ion-milling a-Si are separate layers (below). |
@@ -565,7 +578,7 @@ same t_ox and density so that the difference measures only the effect of the amo
 |---|---|---|---|---|
 | 1 | Basha, Levi, Amrani, Li, Ankonina, Shekhter, Kornblum, Goldfarb, Kohn, Ultramicroscopy 240, 113570 (2022) | DOI 10.1016/j.ultramic.2022.113570; the SiO2 (thermal, CVD) rows of the elastic and inelastic MFP tables/figures versus collection angle at 200 keV | elastic diffuse loss of the continuum layer; IMFP at small collection angle | CLOSED (Europe PMC abstract read) |
 | 2 | Rau, Baumann, Rentschler, Roy, Ourmazd, APL 68, 3410 (1996) | DOI 10.1063/1.115776; MIP values and method | MIP of thermal and deposited oxide layers on Si by holography: the closest analogue of Ali's oxide | CLOSED (AIP Cloudflare) |
-| 3 | Wang, Chou, Libera, Kelly, APL 70, 1296 (1997) | DOI 10.1063/1.118556 (WANG97) | conditions of the 10.1 ± 0.6 V native-oxide value (energy, thickness model, density) | CLOSED |
+| 3 | Wang, Chou, Libera, Kelly, APL 70, 1296 (1997) | DOI 10.1063/1.118556 (WANG97) | conditions of the 10.1 ± 0.6 V value for oxide layers on Si nanospheres (energy, layer thickness, thickness model, density) | CLOSED |
 | 4 | Sosiati/Hata et al., J. Electron Microsc. 55, 23-26 (2006) | DOI 10.1093/jmicro/dfl001 | effect of a plasma cleaner on FIB damage layers (thinning/oxidation vs time and conditions) | CLOSED (index abstract only) |
 | 5 | Isabell, Fischione, O'Keefe, Guruz, Dravid, Microsc. Microanal. 5, 126-135 (1999) | DOI 10.1017/S1431927699000094 | the Fischione O2/Ar cleaner's effect on specimens; whether Si oxidation was measured | CLOSED (PubMed abstract read) |
 | 6 | Tinoco et al., Microelectron. Reliab. 43, 895 (2003) and Thin Solid Films 496, 546 (2006) | DOIs 10.1016/s0026-2714(03)00098-2; 10.1016/j.tsf.2005.08.351 | room-temperature plasma oxidation of Si: thickness versus time, power, gas (power law) | CLOSED |
