@@ -34,6 +34,13 @@ Abbreviations: WT = the audit worktree at 83fa75f; SP = the session scratchpad
 | C10 | `PY SP/a8/a8_gate.py`, `PY SP/a8/a8_gate2.py` -> `a8_gate*.out` (in-memory configuration probes) | item (7) | section 7 |
 | C11 | `PY SP/a8/a8_memory.py` -> `a8_memory.out` (tracemalloc vs engine.memory_model, with and without the layer) | item (10) | section 10 |
 | C12 | `PY SP/a8/a8_b4text.py` -> `a8_b4text.out` (buried relations, parity at [100]/[110]) | item (2) | section 2 |
+| C13 | `PY SP/a8/a8_mutate.py --files=<structure, geometric, pipeline oxide tests> M0 M2 M3 M4c M6 M9 M10 M11` -> `mut_batch1.out`, `mut/*.log` | item (3) mutations (copies without git) | section 3.3 |
+| C14 | `SP/a8/run_mut2.sh` (`a8_mutate.py M0 M6` on all oxide files; `a8_mutate.py --files=tests/forward/test_oxide_multislice.py M1 M4 M4b M5 M5b M7 M8 M12 M13`; copies made throw-away git repositories) -> `mut_batch2a.out`, `mut_batch2b.out` | item (3) | section 3.3 |
+| C15 | `git -C SP/a8/base_54de605 init` + commit (throw-away, scratch only); `PY SP/a8/a8_bitid_pipe.py <base> <npz>`; `PY SP/a8/a8_bitid_compare.py bitid_base_merged.npz bitid_wt.npz` -> `a8_bitid_compare.out` | item (6) | section 6 |
+| C16 | `PY SP/a8/a8_smoke_d.py 0 3000` -> `a8_smoke_d.out` | item (5) | section 5 |
+| C17 | `PY SP/a8/a8_flat_c.py 3000 6000` -> `a8_flat_c.out` | item (4) | section 4 |
+| C18 | `PY SP/a8/a8_smoke_d2.py 0` -> `a8_smoke_d2.out`, `smoke2_*.npz` | item (5), read-out | section 5 |
+| C19 | WT: `PY -m pytest -q -p no:cacheprovider` (full suite) -> `SP/a8/pytest_full.txt` | full suite | section 11 |
 
 ## 1. Physics of the layer (item 1)
 
@@ -254,3 +261,105 @@ which is common-mode for a conformal layer but, at [110] where the attenuated cr
 is about 9e-5 (E9 out:247), would dominate the specular beam; with an atomistic crystal the sharp
 step sits at x_i, up to a/4 away from the atoms (section 2). Fix: enforce >= 0.5 A for the interface
 too (flag + TEST_ONLY below), or record why a sharp interface is acceptable.
+
+### 3.2 Are the tolerances a priori and meaningful?
+
+* Structure and geometric tests compare with E9 lines at their printed precision (plus the stated
+  f-rounding bound); the geometric engine's own terms are pinned by the finite-difference tests at
+  1e-9 against `oxide_phase_rates`, which is pinned to E9. A priori and meaningful.
+* Multislice (a): sharp edge |err - model| <= 3.5e-3 and phase <= 1e-3 rad are the rung-1
+  tolerances (a priori); measured 5.9e-5 and 6e-5 rad. w = 0.1 A within 1 % of the Born factor:
+  the engine is within 0.11 % of Born and 0.005 % of the exact 1-D value (C6), so the budget holds
+  with a factor 9. w = 0.5 A: ratio <= 1e-3; measured 6.9e-7 (a factor 1400 margin); the test
+  cannot distinguish w = 0.35 A from 0.5 A, but the w = 0.1 A test pins the width convention
+  (mutation M5b).
+* Multislice (c) and (d) assert no physics (E9 M1; smoke). The absorption magnitude in the layer is
+  pinned only by the potential-construction test (imaginary part = 0.40 V at rtol 1e-9), not by any
+  propagated run.
+
+### 3.3 Mutation tests (C13, C14: `PY SP/a8/a8_mutate.py [--files=...] <names>`; each mutation
+applied to a scratch copy of WT made into a throw-away git repository, never to WT; the flat (c)
+and smoke (d) tests deselected; control M0 = no mutation: 125 passed)
+
+| mutation | what | result | caught by |
+|---|---|---|---|
+| M1 | V'_ox sign flipped in the multislice layer (gain) | 2 failed | test_layer_follows_the_surface..., test_amorphous_si_layer... |
+| M2 | V'_ox sign flipped in k'_perp (geometric) | 3 failed | conformal a/4, a/2 (amplitude > 1), zero-loss 0.2850 (got 3.51) |
+| M3 | f = 0 in the stack (non-consuming layer) | 12 failed | E9 stack/count tests, builder, engine differentials, multislice dry run |
+| M4 | layer mirrored below the interface | 5 failed | all three edge tests, surface-following, a-Si |
+| M4b | planar mask (terrace 0's layer everywhere) | 1 failed | test_layer_follows_the_surface_not_a_planar_mask |
+| M4c | sign of the top-surface term | 5 failed | conformal (amplitude), differentials, zero loss |
+| M5 | edges never graded | 2 failed | w = 0.1 A and w = 0.5 A tests |
+| M5b | erfc(x/w)/2 instead of erfc(x/(sqrt2 w))/2 | 1 failed | w = 0.1 A test only |
+| M6 | conformal = equal thickness only | 0 failed | none (benign: with the nearest-count rule equal thickness implies equal count except at an exact tie) |
+| M7 | layer in the entrance vacuum | 1 failed | surface-following test (W[:10] = 0) |
+| M8 | V'_ox dropped in the multislice | 2 failed | potential-construction tests |
+| M9 | count rule relaxed to +-1.5 layers | 2 failed | refusal tests (structure, pipeline) |
+| M10 | B41 removed from `demo_only` | 0 failed | none (benign: item 12 is blocking, so any ASSUMPTION for it is refused in comparison runs and the message still names B41) |
+| M11 | variant CFG-B records ignored | 8 failed | every B41 variant test |
+| M12 | layer angles not in the band assertion | 1 failed | test_setup_records_what_the_layer_changes |
+| M13 | overlayer build-up assertion ignores the stack | 0 failed | none: no test builds a cell that is too short for the layer (finding A8-m6, MINOR) |
+
+(The first batch ran in copies without git; the pipeline end-to-end test then failed on the git
+preflight in every copy including the control. Those rows count only the other failures; the
+second batch, with git, confirms the control and M6.)
+
+The four breakages the task names (wrong sign of V'_ox, f = 0, layer on the wrong side, edge not
+graded) each fail at least one test: CONFIRMED. Finding A8-m6 (MINOR): the new docs/05 4.3
+assertion `item4_buildup_length_through_overlayer` (`cell.py:408-419`) has no refusal test; a
+version that ignores the stack passes the whole oxide suite.
+
+## 6. Bit-identity without an overlayer (item 6; C8, C15)
+
+`SP/a8/a8_bitid.py` run on a `git archive` of 54de605 (E4's starting commit) and on WT, every case
+without an overlayer: rung 1 (continuum, flat), rung 3 (continuum a/4 step), rung 2 (periodic
+continuum, r = 0.1), the atomistic smoke ([110], a/2, Kirkland), the null-test translation pair A
+and B (M2 cell, [110]) and the null-test [100] step case, the builder positions and metadata and
+the reflection cells for [100]/[110] x parallel/transverse x bulk/p(2x1)s, the geometric engine at
+[100], and the pipeline arrays (arrays.npz) of the base demo (geometric) and `multislice_tiny`
+(the pipeline part for 54de605 run from a throw-away git repository of the archive, because the
+multislice manifest refuses a tree without git; C15 `a8_bitid_pipe.py`). Result
+(`SP/a8/a8_bitid_compare.out`):
+
+    arrays: 76 vs 76; same keys: True
+    arrays bitwise identical: 74 of 76  (the other two, trace_source_z_A of both pipeline runs,
+                                         contain NaN; their bytes are identical)
+    metadata entries equal: 26 of 26  (exit-wave, builder and cell metadata, timing and
+                                       package_version removed)
+
+CONFIRMED: without a layer nothing changes, including the null-test cases.
+
+## 5. The smoke result (d): +1.878 rad against the geometric +1.590 rad (item 5; C16, C18)
+
+Same helpers as E4 (`tests/forward/oxide_cases.atomistic_case`: [100], a/4 step, parallel edges, two
+terraces 4 periods = 21.7 A wide, Kirkland, r = 0.1; `length_for_oxide` so that every run has the
+SAME box, grid and length), read-out as the E4 test (aperture 0.5 1/A, central halves). Deviation
+= Delta_phi - (-2 k_perp a/4, wrapped = +1.5902 rad):
+
+| cell length | layer 0.40 V | layer 0 V | clean, beam 2 A above the crystal | clean, beam launched at the oxide runs' height |
+|---|---|---|---|---|
+| 2577 A (E4's) | +0.2881 (amp 0.124/0.100) | +0.1900 (0.227/0.207) | -0.7350 (0.557/0.671) | -0.3760 (0.209/0.238) |
+| 5575 A (+3000) | -0.5081 (0.500/0.571) | -0.5475 (0.958/1.063) | -0.5010 (0.843/0.961) | -0.5396 (0.865/0.975) |
+
+* E4's number is reproduced exactly (+1.8784 rad, +0.2881).
+* At E4's length the result is not a property of the layer: the clean crystal in the same box
+  deviates by -0.74 rad (-0.38 rad with the same launch height), and the value moves by 0.8 rad
+  when the cell is 3000 A longer. At 5575 A all four runs agree within 0.05 rad (-0.50 to
+  -0.55 rad): the conformal layer changes the a/4 step phase by at most about 0.05 rad there,
+  consistent with E9 section 3 item 1. The common -0.5 rad is the clean crystal's own
+  finite-cell / narrow-terrace deviation (the atomistic fixed-beam gate has not passed; "as
+  without a layer", as E4 says).
+* The read-out at 2577 A is also ill-conditioned (C18, `a8_smoke_regions*.out`): inside the
+  central half of one 21.7 A terrace the per-column specular component varies in amplitude by a
+  factor 3-9 and in phase by 104-234 deg (layer: 155 and 234 deg; clean: 104 and 134 deg); moving the region boundary by one pixel column changes the deviation from
+  +0.2881 to +0.2538 rad, margins 0.20-0.40 W give +0.17 to +0.31 rad (layer) and -0.09 to
+  -0.63 rad (clean); aperture 0.03 1/A gives +0.90 rad.
+* Ruled out as causes: the layer's own reflection (|r| = 4.4e-5 at w = 0.5 A, section 3.1, against
+  a crystal amplitude of 0.1-1: at most 5e-4 rad) and the moved interface (common to both
+  terraces for a conformal layer; the buried relations are asserted on the atoms, C12).
+* The absorption-only amplitude ratio at 5575 A is 0.500/0.958 = 0.522 and 0.571/1.063 = 0.537
+  (model 0.521).
+
+Verdict: the 0.288 rad is a build-up (cell-length) and narrow-terrace artefact of the short cell,
+shared with the layer-free crystal, not an effect of the layer. E4 was right not to interpret it;
+its report should state the layer-free deviation in the same box (-0.74 rad) next to it.
