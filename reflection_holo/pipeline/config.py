@@ -67,18 +67,33 @@ Label policy of item 12 (audit A9b M2, orchestrator's decision; report X5):
   spec carries "DERIVED_HERE (... from thickness: <label>; density: <label>; amorphous_si: <label>)";
   the stated value must equal the derived count; it never carries PROJECT_INPUT.
 * V_ox, V'_ox and the two edge widths are MODEL parameters (E9 M1, M4): in any run they carry
-  either "PROJECT_INPUT", then ``measurements.<key>`` must state what was measured and how (the gate
-  cannot verify it but requires it), or "ASSUMPTION B43", the registered NON-DEMO model row
-  (``OXIDE_MODEL_ROWS``; registry model_rows; not a stand-in for a PROJECT_INPUT), which a comparison
-  run admits; B43 vouches for its nominal values and its declared sensitivity-bracket ends only, and
-  every run records them with the bracket (``oxide_item12_record``, manifest and summary). Running
-  the bracket ends is not required by the gate.
+  either "PROJECT_INPUT", then ``measurements.<key>`` must be the structured record {method,
+  instrument, date (ISO YYYY-MM-DD, not after the run's date), reference (where the result is
+  recorded)} (MEASUREMENT_RECORD_KEYS; re-audit A10b M2), or "ASSUMPTION B43", the registered
+  NON-DEMO model row (``OXIDE_MODEL_ROWS``; registry model_rows; not a stand-in for a
+  PROJECT_INPUT), which a comparison run admits; B43 vouches for its nominal values and its
+  declared sensitivity-bracket ends only, and every run records them with the bracket
+  (``oxide_item12_record``, manifest and summary). Running the bracket ends is not required by the
+  gate. The a-Si potentials, when labelled PROJECT_INPUT, need the same record (re-audit A10b m1;
+  no model row covers them). The gate cannot verify a measurement record, only require one: it
+  refuses fields that are plainly not a record (placeholders, negations such as "not measured",
+  "model", "assumption", "independent-atom", model_assumptions row ids, "?", fewer than
+  MEASUREMENT_MIN_ALNUM letters or digits, an invalid or future date).
 * thickness and density (and the a-Si thickness) stay PROJECT_INPUT in comparison runs; there the
-  record also states ``thickness_uncertainty_A``, ``density_uncertainty_g_cm3`` and
-  ``both_parities_acknowledged`` (all three or none in other runs); when the count interval over the
-  uncertainty box spans a rounding boundary (structure.oxide.consumed_count_interval) the run is
-  refused unless both_parities_acknowledged is True (both parities must then be run), and an
-  unneeded acknowledgement is refused (audit A9b m2).
+  record also states ``thickness_uncertainty_A``, ``density_uncertainty_g_cm3``,
+  ``amorphous_si_thickness_uncertainty_A`` (for a measured zero: its detection limit) and
+  ``uncertainty_kind`` ("standard": the count interval uses +- 2 u, about 95 % coverage for a
+  normally distributed quantity; "half_width": +- u) (all four or none in other runs; zero or
+  negative uncertainties refused; audit A9b m2, re-audit A10b m2, m3, n2). When the count interval
+  (structure.oxide.item12_count_interval) spans a rounding boundary the record must state
+  ``consumed_layers_parity``: "lower" or "upper"; the run then builds that count of the interval
+  (both are consistent with the stated uncertainties), labelled DERIVED_HERE with the qualifier
+  "parity variant <lower|upper> of an interval spanning a boundary", and records the interval, the
+  variant and that the other variant is a SEPARATE run (item-12 record, manifest and summary). No
+  thickness is altered. The key is refused when the interval spans no boundary (the count is then
+  the nearest count) and with any value outside {lower, upper}; an interval of more than two counts
+  is refused (lower and upper would not cover the counts between them). This run does not run the
+  other variant, and the gate does not check that it was run (re-audit A10b M1).
 """
 from __future__ import annotations
 
@@ -1007,14 +1022,43 @@ OXIDE_KEYS = ("model", "material", "thickness_A", "density_g_cm3", "consumed_lay
               "V_imag_V", "vacuum_edge_width_A", "interface_width_A", "amorphous_si_thickness_A",
               "rounding_boundary_acknowledged", "labels")
 OXIDE_KEYS_AMORPHOUS = ("amorphous_si_V_real_V", "amorphous_si_V_imag_V")
-# audit A9b M2 / m2: optional keys of the item-12 record (required in the cases stated in the module
-# docstring; never filled in by default)
+# audit A9b M2 / m2, re-audit A10b M1, m2, m3 (report X6): optional keys of the item-12 record
+# (required in the cases stated in the module docstring; never filled in by default)
 OXIDE_UNCERTAINTY_KEYS = ("thickness_uncertainty_A", "density_uncertainty_g_cm3",
-                          "both_parities_acknowledged")
-OXIDE_KEYS_OPTIONAL = ("measurements",) + OXIDE_UNCERTAINTY_KEYS
+                          "amorphous_si_thickness_uncertainty_A", "uncertainty_kind")
+OXIDE_PARITY_KEY = "consumed_layers_parity"          # lower | upper (re-audit A10b M1)
+OXIDE_KEYS_OPTIONAL = ("measurements",) + OXIDE_UNCERTAINTY_KEYS + (OXIDE_PARITY_KEY,)
+OXIDE_KEYS_RETIRED = {"both_parities_acknowledged": (
+    "retired by report X6 (re-audit A10b M1): an acknowledgement ran nothing; when the count "
+    "interval spans a rounding boundary state consumed_layers_parity: lower | upper (the other "
+    "variant is a separate run)")}
 OXIDE_MODEL_PARAMETERS = ("V_real", "V_imag", "vacuum_edge", "interface")   # E9 M1, M4 (A9b M2)
+# the parameters that need a structured measurement record when labelled PROJECT_INPUT: the model
+# parameters and the a-Si potentials (re-audit A10b m1; no model row covers the a-Si potentials)
+OXIDE_RECORDED_PARAMETERS = OXIDE_MODEL_PARAMETERS + ("amorphous_si_potential",)
 OXIDE_DERIVED_LABEL = "DERIVED_HERE"      # consumed_layers (A9b M2)
-_MEASUREMENT_PLACEHOLDERS = ("measured", "measurement", "yes", "true", "witness", "tem", "xps")
+# re-audit A10b M2 (orchestrator's decision; report X6): the measurement record of a PROJECT_INPUT
+# model parameter. The gate cannot verify a record, only require one: it refuses a record that is
+# plainly not one (a placeholder, a negation, a model or row reference, fewer than
+# MEASUREMENT_MIN_ALNUM letters or digits, an invalid or future date).
+MEASUREMENT_RECORD_KEYS = ("method", "instrument", "date", "reference")
+MEASUREMENT_MIN_ALNUM = 3                 # a minimum form, not a check of content
+_MEASUREMENT_REFUSED = tuple(re.compile(p, re.IGNORECASE) for p in (
+    r"\bnot\s+(?:yet\s+|been\s+)?(?:measured|available|applicable|known|stated|supplied|"
+    r"determined|recorded|done)\b",
+    r"\bnever\s+measured\b", r"\bno\s+(?:measurement|record|data|reference|instrument|method)\b",
+    r"\bun(?:measured|known|specified|available|determined|verified)\b",
+    r"\bt\.?\s?b\.?\s?[acd]\b", r"\bn\s*/\s*a\b", r"\bnone\b", r"\bnil\b", r"\bnull\b",
+    r"\bto\s*-?\s*do\b", r"\bassum", r"\bmodel", r"\bindependent[\s-]*atom", r"\biam\b",
+    r"\bB\d{1,3}\b", r"\bnominal\b", r"\bplaceholder\b", r"\bpending\b", r"\bto\s+be\s+\w+",
+    r"\bdefault\b", r"\bsimulat", r"\bcalculat", r"\btheoret", r"\bliterature\b",
+    r"\bsee\s+above\b", r"\bditto\b", r"\bidem\b", r"\bdummy\b", r"\bx{3,}\b", r"\?"))
+# a bare number with an optional short unit ("10.34 V", "0.5 A", "2026"): a value, not a record field
+_MEASUREMENT_BARE_VALUE = re.compile(r"\s*[-+]?\d+(?:[.,]\d+)?(?:[eE][-+]?\d+)?\s*"
+                                     r"(?:[A-Za-z]{1,3}(?:[/^]?[A-Za-z0-9]{1,3})?)?\s*\.?\s*")
+_MEASUREMENT_PLACEHOLDERS = ("measured", "measurement", "measurements", "yes", "no", "true",
+                             "false", "ok", "done", "witness", "same", "various", "other", "etc",
+                             "misc")
 OXIDE_STAND_INS_CLEAN = ("B26",)          # item-12 stand-ins whose row states NO overlayer
 # the configuration values each per-parameter label covers (structure.oxide.LABEL_KEYS; A8 M1)
 OXIDE_LABEL_VALUES = {"thickness": ("thickness_A",), "density": ("density_g_cm3",),
@@ -1171,22 +1215,81 @@ def oxide_parameter_labels(p12, over: dict) -> dict:
     return out
 
 
+_MEASUREMENT_CANNOT_VERIFY = ("the gate cannot verify a measurement record, only require one "
+                              "(re-audit A10b M2)")
+
+
+def _measurement_text(where: str, field_: str, v) -> str:
+    """One text field (method, instrument, reference) of a measurement record (re-audit A10b M2):
+    a string with at least MEASUREMENT_MIN_ALNUM letters or digits, not a placeholder, a negation, a
+    model or model_assumptions-row reference (_MEASUREMENT_REFUSED, case-insensitive)."""
+    what = (f"{where}.{field_} = {v!r}: must state the {field_} of a measurement on the witness "
+            f"piece; {_MEASUREMENT_CANNOT_VERIFY}, and it refuses a record that is plainly not "
+            f"one")
+    if not isinstance(v, str):
+        raise PipelineConfigError(f"{what} (a string is required)")
+    alnum = re.sub(r"[^0-9A-Za-z]", "", v)
+    if len(alnum) < MEASUREMENT_MIN_ALNUM:
+        raise PipelineConfigError(f"{what} (at least {MEASUREMENT_MIN_ALNUM} letters or digits)")
+    if _MEASUREMENT_BARE_VALUE.fullmatch(v):
+        raise PipelineConfigError(f"{what} (a bare number or value is not a {field_})")
+    low = alnum.lower()
+    words = " ".join(re.sub(r"[^0-9a-z/]+", " ", v.lower()).split())
+    if low in _MEASUREMENT_PLACEHOLDERS or words in NON_SUPPLIERS or low in {
+            re.sub(r"[^0-9a-z]", "", s) for s in NON_SUPPLIERS}:
+        raise PipelineConfigError(f"{what} (a placeholder)")
+    for pat in _MEASUREMENT_REFUSED:
+        m = pat.search(v)
+        if m:
+            raise PipelineConfigError(
+                f"{what} (it contains {m.group(0)!r}: a placeholder, a negation, or a model or "
+                f"model_assumptions-row reference; an unmeasured model value is labelled "
+                f"'ASSUMPTION B43' where that row covers it)")
+    return v.strip()
+
+
+def _measurement_date(where: str, v) -> str:
+    """The date of a measurement record: ISO YYYY-MM-DD, a valid date not after the run's date
+    (io.config.latest_today, as for supplied_on)."""
+    from reflection_holo.io.config import latest_today
+    if isinstance(v, _dt.datetime):
+        raise PipelineConfigError(f"{where}.date = {v!r}: a date 'YYYY-MM-DD', not a date-time")
+    if isinstance(v, _dt.date):
+        day = v
+    elif isinstance(v, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
+        try:
+            day = _dt.date.fromisoformat(v)
+        except ValueError:
+            raise PipelineConfigError(f"{where}.date = {v!r} is not a valid date") from None
+    else:
+        raise PipelineConfigError(f"{where}.date must be an ISO date 'YYYY-MM-DD' (the day of the "
+                                  f"measurement), got {v!r}; {_MEASUREMENT_CANNOT_VERIFY}")
+    if day > latest_today():
+        raise PipelineConfigError(f"{where}.date = {day.isoformat()} is in the future relative to "
+                                  f"the run; {_MEASUREMENT_CANNOT_VERIFY}")
+    return day.isoformat()
+
+
 def _oxide_measurements(over: dict, plabels: dict) -> dict:
-    """The measurement records of the item-12 record (audit A9b M2): a MODEL parameter
-    (OXIDE_MODEL_PARAMETERS) labelled PROJECT_INPUT needs ``measurements.<key>``, a statement of what
-    was measured and how (the gate cannot verify it but requires it); a record for any other key is
-    refused rather than ignored. Returns {key: statement}."""
+    """The measurement records of the item-12 record (audit A9b M2; structured since report X6,
+    re-audit A10b M2, m1): every parameter of OXIDE_RECORDED_PARAMETERS (V_ox, V'_ox, the two edge
+    widths, the a-Si potentials) labelled PROJECT_INPUT needs ``measurements.<key>`` =
+    {method, instrument, date, reference} (MEASUREMENT_RECORD_KEYS; reference: where the result is
+    recorded). The gate cannot verify a record, only require one; it refuses what is plainly not
+    one. A record for any other key is refused rather than ignored. Returns {key: record}."""
     where = "cfg_b.surface_preparation_details.overlayer.measurements (docs/06 item 12)"
-    need = sorted(k for k in OXIDE_MODEL_PARAMETERS if plabels[k]["label"] == "PROJECT_INPUT")
+    need = sorted(k for k in OXIDE_RECORDED_PARAMETERS
+                  if k in plabels and plabels[k]["label"] == "PROJECT_INPUT")
     meas = over.get("measurements")
     if meas is None:
         if need:
             raise PipelineConfigError(
                 f"{where}: the model parameters {need} are labelled PROJECT_INPUT, so each needs a "
-                f"measurement record measurements.<key> stating what was measured on the witness "
-                f"piece and how (E9 M1, M4: V_ox, V'_ox and the edge widths are model values "
-                f"unless measured; audit A9b M2); otherwise label them 'ASSUMPTION B43' (model "
-                f"row)")
+                f"measurement record measurements.<key> = {{{', '.join(MEASUREMENT_RECORD_KEYS)}}} "
+                f"of the measurement on the witness piece (E9 M1, M4: V_ox, V'_ox, the edge widths "
+                f"and the a-Si potentials are model values unless measured; audit A9b M2, re-audit "
+                f"A10b M2, m1); {_MEASUREMENT_CANNOT_VERIFY}; otherwise label V_ox, V'_ox and the "
+                f"widths 'ASSUMPTION B43' (model row)")
         return {}
     if not isinstance(meas, dict) or set(meas) != set(need):
         got = sorted(meas) if isinstance(meas, dict) else meas
@@ -1194,16 +1297,29 @@ def _oxide_measurements(over: dict, plabels: dict) -> dict:
             f"{where}: exactly the model parameters labelled PROJECT_INPUT ({need}) carry a "
             f"measurement record, got {got!r}; a record for a parameter that is not a "
             f"PROJECT_INPUT model parameter is refused rather than ignored (audit A9b M2)")
-    for k, v in meas.items():
-        low = " ".join(v.strip().lower().split()) if isinstance(v, str) else ""
-        if not low or low in _MEASUREMENT_PLACEHOLDERS or low in NON_SUPPLIERS:
+    out = {}
+    for k in sorted(meas):
+        rec = meas[k]
+        w = f"{where}.{k}"
+        if not isinstance(rec, dict) or set(rec) != set(MEASUREMENT_RECORD_KEYS):
+            got = sorted(rec) if isinstance(rec, dict) else rec
             raise PipelineConfigError(
-                f"{where}.{k} = {v!r}: must state what was measured and how (quantity, method, "
-                f"instrument or reference), not a placeholder (audit A9b M2)")
-    return dict(meas)
+                f"{w}: a measurement record is the mapping "
+                f"{{{', '.join(MEASUREMENT_RECORD_KEYS)}}} (method, instrument, date YYYY-MM-DD, "
+                f"reference = where the result is recorded; every key required, no other), got "
+                f"{got!r}; {_MEASUREMENT_CANNOT_VERIFY}")
+        out[k] = dict(method=_measurement_text(w, "method", rec["method"]),
+                      instrument=_measurement_text(w, "instrument", rec["instrument"]),
+                      date=_measurement_date(w, rec["date"]),
+                      reference=_measurement_text(w, "reference", rec["reference"]))
+    return out
 
 
-def _qualified_parameter_label(p12, lab: dict, *, measurement: str | None = None) -> str:
+def _measurement_statement(rec: dict) -> str:
+    return "; ".join(f"{k} {rec[k]}" for k in MEASUREMENT_RECORD_KEYS)
+
+
+def _qualified_parameter_label(p12, lab: dict, *, measurement: dict | None = None) -> str:
     if lab["label"] == "ASSUMPTION" and lab.get("model_row"):
         return (f"ASSUMPTION {lab['assumption_id']} (model row, not a stand-in for a "
                 f"PROJECT_INPUT; audit A9b M2)")
@@ -1211,17 +1327,30 @@ def _qualified_parameter_label(p12, lab: dict, *, measurement: str | None = None
         return f"ASSUMPTION {lab['assumption_id']} (stands in for PROJECT_INPUT item 12)"
     if lab["label"] == "PROJECT_INPUT":
         if measurement is not None:
-            return f"PROJECT_INPUT item 12 ({p12.source}; measured: {measurement})"
+            return (f"PROJECT_INPUT item 12 ({p12.source}; measured: "
+                    f"{_measurement_statement(measurement)})")
         return f"PROJECT_INPUT item 12 ({p12.source})"
     return f"{lab['label']} ({p12.source})"
 
 
-def _derived_count_label(labels: dict) -> str:
-    """Qualified label of the consumed-layer count (audit A9b M2)."""
-    return ("DERIVED_HERE (consumed-layer count computed by the code: the nearest whole count of "
-            "(f t + t_a)/(a/4), structure.oxide; from thickness: " + labels["thickness"]
-            + "; density: " + labels["density"] + "; amorphous_si: " + labels["amorphous_si"]
-            + ")")
+def _derived_count_label(labels: dict, variant: dict | None = None) -> str:
+    """Qualified label of the consumed-layer count (audit A9b M2); a parity variant carries the
+    qualifier structure.oxide.parity_variant_qualifier (re-audit A10b M1)."""
+    from reflection_holo.structure import oxide as ox
+    if variant is None:
+        how = "the nearest whole count of (f t + t_a)/(a/4), structure.oxide"
+    else:
+        ci = variant["interval"]
+        how = (f"{ox.parity_variant_qualifier(variant['parity'])}: the {variant['parity']} count "
+               f"{variant['count']} of the item-12 count interval {ci['counts']} (continuum depth "
+               f"{ci['continuum_layers_min']:.3f}-{ci['continuum_layers_max']:.3f} layers of a/4 "
+               f"over {ci['coverage']}); the nearest count at the stated values is "
+               f"{ci['nearest_count']}; the other variant ({variant['other_variant']['parity']}, "
+               f"count {variant['other_variant']['count']}) is a separate run; the thickness is "
+               f"not altered; structure.oxide.item12_count_interval")
+    return ("DERIVED_HERE (consumed-layer count computed by the code: " + how
+            + "; from thickness: " + labels["thickness"] + "; density: " + labels["density"]
+            + "; amorphous_si: " + labels["amorphous_si"] + ")")
 
 
 def oxide_spec_from_config(cfg_b: LoadedConfig):
@@ -1238,6 +1367,9 @@ def oxide_spec_from_config(cfg_b: LoadedConfig):
             f"{where} = {over!r}: only 'none' or a complete continuum oxide {{model: "
             f"{OXIDE_MODEL}, ...}} is represented by the engines (report E4); refused rather than "
             f"ignored (audit A3 M6)")
+    retired = sorted(set(over) & set(OXIDE_KEYS_RETIRED))
+    if retired:
+        raise PipelineConfigError(f"{where}: {retired[0]} is {OXIDE_KEYS_RETIRED[retired[0]]}")
     want = set(OXIDE_KEYS) | (set(OXIDE_KEYS_AMORPHOUS) if _oxide_amorphous(over) else set())
     if not want <= set(over) or set(over) - want - set(OXIDE_KEYS_OPTIONAL):
         raise PipelineConfigError(
@@ -1250,7 +1382,8 @@ def oxide_spec_from_config(cfg_b: LoadedConfig):
     meas = _oxide_measurements(over, plabels)
     labels = {k: _qualified_parameter_label(p12, v, measurement=meas.get(k))
               for k, v in plabels.items() if v["label"] != OXIDE_DERIVED_LABEL}
-    labels["consumed_layers"] = _derived_count_label(labels)
+    variant = _oxide_count_variant(cfg_b, over)
+    labels["consumed_layers"] = _derived_count_label(labels, variant)
     try:
         spec = ox.ContinuumOxideSpec(
             material=over["material"], thickness_A=over["thickness_A"],
@@ -1265,11 +1398,107 @@ def oxide_spec_from_config(cfg_b: LoadedConfig):
             sharp_interface_test_flag=False,
             rounding_boundary_acknowledged=over["rounding_boundary_acknowledged"],
             nonconformal_sublayer_acknowledged=False,           # conformal only (no overrides)
+            consumed_layers_parity_variant=(None if variant is None else dict(
+                parity=variant["parity"], uncertainty_kind=over["uncertainty_kind"],
+                **{k: over[k] for k in ("thickness_uncertainty_A", "density_uncertainty_g_cm3",
+                                        "amorphous_si_thickness_uncertainty_A")})),
             labels=labels)
         ox.validate_spec(spec)
     except (ValueError, TypeError) as exc:
         raise PipelineConfigError(f"{where}: {exc}") from exc
     return spec
+
+
+def _oxide_lattice_parameter_A(cfg_b: LoadedConfig) -> float:
+    a_A, unit = cfg_b.quantity("lattice_parameter")
+    if unit != "A":
+        raise PipelineConfigError("cfg_b.lattice_parameter must be in A")
+    return float(a_A)
+
+
+def _oxide_count_variant(cfg_b: LoadedConfig, over: dict) -> dict | None:
+    """Item-12 uncertainties and the consumed-layer count interval (audit A9b m2; report X6 after
+    re-audit A10b M1, m2, m3, n2). The keys OXIDE_UNCERTAINTY_KEYS are stated all or none, and all
+    in a comparison run (oxide_comparison_reasons; no default); refused under a stand-in thickness,
+    density or a-Si thickness (their rows state no uncertainty); uncertainty_kind "standard"
+    (+- 2 u, about 95 % coverage for a normal distribution) or "half_width" (+- u); zero or
+    negative uncertainties refused. When the interval (structure.oxide.item12_count_interval)
+    spans a rounding boundary the record must state consumed_layers_parity: lower | upper, and the
+    run builds that count of the interval (the other is a separate run); an interval of more than
+    two counts is refused; the key is refused when the interval spans no boundary (the count is
+    then the nearest one) or when no uncertainties are stated. Returns None or the variant record
+    of structure.oxide (parity, count, interval, other_variant, note)."""
+    from reflection_holo.structure import oxide as ox
+    where = "cfg_b.surface_preparation_details.overlayer (docs/06 item 12)"
+    got = [k for k in OXIDE_UNCERTAINTY_KEYS if k in over]
+    if not got:
+        if OXIDE_PARITY_KEY in over:
+            raise PipelineConfigError(
+                f"{where}: {OXIDE_PARITY_KEY} = {over[OXIDE_PARITY_KEY]!r} without the item-12 "
+                f"uncertainties {list(OXIDE_UNCERTAINTY_KEYS)}: a parity variant is a count of the "
+                f"interval over the stated uncertainties; refused (re-audit A10b M1)")
+        return None             # purpose "comparison": oxide_comparison_reasons names the absence
+    if len(got) != len(OXIDE_UNCERTAINTY_KEYS):
+        raise PipelineConfigError(f"{where}: state all of {list(OXIDE_UNCERTAINTY_KEYS)} or none "
+                                  f"(got {got}; audit A9b m2, re-audit A10b m2, m3)")
+    labs = over["labels"]
+    stand = [k for k in ("thickness", "density", "amorphous_si")
+             if isinstance(labs.get(k), str) and labs[k].startswith("ASSUMPTION")]
+    if stand:
+        raise PipelineConfigError(
+            f"{where}: {stand} are stand-ins whose rows state no uncertainty; the uncertainties "
+            f"belong to measured item-12 values (audit A9b m2); refused rather than ignored")
+    kind = over["uncertainty_kind"]
+    if kind not in ox.UNCERTAINTY_KINDS:
+        raise PipelineConfigError(
+            f"{where}: uncertainty_kind must be one of {list(ox.UNCERTAINTY_KINDS)}: 'standard' "
+            f"(one standard uncertainty; the interval is {ox.COVERAGE_STATEMENT['standard']}) or "
+            f"'half_width' (the interval is {ox.COVERAGE_STATEMENT['half_width']}); got {kind!r} "
+            f"(re-audit A10b m2; no default)")
+    try:
+        ci = ox.item12_count_interval(
+            thickness_A=over["thickness_A"],
+            thickness_uncertainty_A=over["thickness_uncertainty_A"],
+            density_g_cm3=over["density_g_cm3"],
+            density_uncertainty_g_cm3=over["density_uncertainty_g_cm3"],
+            amorphous_si_thickness_A=over["amorphous_si_thickness_A"],
+            amorphous_si_thickness_uncertainty_A=over["amorphous_si_thickness_uncertainty_A"],
+            uncertainty_kind=kind, a_A=_oxide_lattice_parameter_A(cfg_b))
+    except ValueError as exc:
+        raise PipelineConfigError(f"{where}: {exc}") from exc
+    span = (f"over the item-12 uncertainties ({ci['coverage']}: thickness "
+            f"{ci['box']['thickness_A']} A, density {ci['box']['density_g_cm3']} g/cm^3, a-Si "
+            f"{ci['box']['amorphous_si_thickness_A']} A) the continuum depth spans "
+            f"{ci['continuum_layers_min']:.3f}-{ci['continuum_layers_max']:.3f} layers of a/4 and "
+            f"the consumed-layer count may be any of {ci['counts']}")
+    parity = over.get(OXIDE_PARITY_KEY)
+    if not ci["spans_boundary"]:
+        if OXIDE_PARITY_KEY in over:
+            raise PipelineConfigError(
+                f"{where}: {OXIDE_PARITY_KEY} = {parity!r}, but {span}: the interval spans no "
+                f"rounding boundary, the count is the nearest count; refused rather than ignored "
+                f"(re-audit A10b M1)")
+        return None
+    if OXIDE_PARITY_KEY not in over or parity not in ox.PARITY_VARIANTS:
+        stated = (f"got {OXIDE_PARITY_KEY} = {parity!r}" if OXIDE_PARITY_KEY in over else
+                  f"{OXIDE_PARITY_KEY} is not stated (no default)")
+        raise PipelineConfigError(
+            f"{where}: {span} ({' and '.join(ci['parities'])} parity; at <110> the terrace type at "
+            f"a buried a/4 step differs, E9 section 3 item 2). State {OXIDE_PARITY_KEY}: one of "
+            f"{list(ox.PARITY_VARIANTS)}; the run builds that count of the interval (DERIVED_HERE, "
+            f"parity variant) and the other variant is a separate run; {stated} (re-audit A10b "
+            f"M1)")
+    if len(ci["counts"]) != 2:
+        raise PipelineConfigError(
+            f"{where}: {span}: more than one rounding boundary; the lower and upper counts would "
+            f"not cover the counts between them, so a parity variant is defined for an interval "
+            f"of two counts only: refused (re-audit A10b M1, report X6; depth half-widths in "
+            f"layers: " + ", ".join(f"{k} {x:.3f}" for k, x in
+                                    ci["depth_half_width_layers"].items()) + ")")
+    idx = ox.PARITY_VARIANTS.index(parity)
+    other = ox.PARITY_VARIANTS[1 - idx]
+    return dict(parity=parity, count=ci["counts"][idx], interval=ci,
+                other_variant=dict(parity=other, count=ci["counts"][1 - idx]))
 
 
 def _same(a, b) -> bool:
@@ -1365,25 +1594,31 @@ def _check_overlayer(cfg_b: LoadedConfig, prep: dict, sections: dict, *,
     except ValueError as exc:
         raise PipelineConfigError(f"{where}: {exc}") from exc
     over = prep["overlayer"]
-    derived = ox.nearest_consumed_layers(thickness_A=over["thickness_A"],
-                                         density_g_cm3=over["density_g_cm3"],
-                                         amorphous_si_thickness_A=over["amorphous_si_thickness_A"],
-                                         a_A=float(a_A))
+    count_variant = _oxide_count_variant(cfg_b, over)
+    if count_variant is None:
+        derived = ox.nearest_consumed_layers(
+            thickness_A=over["thickness_A"], density_g_cm3=over["density_g_cm3"],
+            amorphous_si_thickness_A=over["amorphous_si_thickness_A"], a_A=float(a_A))
+        rule = "the nearest whole count of (f t + t_a)/(a/4)"
+    else:                                                    # re-audit A10b M1
+        derived = count_variant["count"]
+        rule = (f"the {count_variant['parity']} count of the item-12 count interval "
+                f"{count_variant['interval']['counts']}")
     if over["consumed_layers"] != derived:                 # audit A9b M2
         raise PipelineConfigError(
             f"{where}: consumed_layers = {over['consumed_layers']!r} is not the count derived by "
-            f"the code ({derived}, the nearest whole count of (f t + t_a)/(a/4)); a stated value is "
-            f"accepted only if it equals the derived count (audit A9b M2)")
+            f"the code ({derived}, {rule}); a stated value is accepted only if it equals the "
+            f"derived count (audit A9b M2)")
     _check_oxide_stand_in_values(p12, prep, over, oxide_parameter_labels(p12, over),
                                  "cfg_b.surface_preparation_details.overlayer (docs/06 item 12)",
                                  variant=variant)
-    _check_oxide_uncertainties(over, float(a_A))
 
 
 def oxide_comparison_reasons(cfg_b: LoadedConfig) -> list[str]:
     """Why a comparison run cannot take this item-12 record beyond its labels (audit A9b m2; named
     together with every other reason in the ONE error of _comparison_gate): a continuum oxide
-    without the item-12 uncertainties of the witness thickness and density."""
+    without the item-12 uncertainties of the witness thickness, density and a-Si thickness and
+    their kind (re-audit A10b m2, m3)."""
     prep = cfg_b.value("surface_preparation_details")
     over = prep.get("overlayer") if isinstance(prep, dict) else None
     if not isinstance(over, dict) or over.get("model") != OXIDE_MODEL:
@@ -1391,62 +1626,13 @@ def oxide_comparison_reasons(cfg_b: LoadedConfig) -> list[str]:
     if all(k in over for k in OXIDE_UNCERTAINTY_KEYS):
         return []
     return [f"purpose 'comparison' needs the item-12 uncertainties "
-            f"{list(OXIDE_UNCERTAINTY_KEYS[:2])} of the witness thickness and density and "
-            f"both_parities_acknowledged (stated True or False) in "
+            f"{list(OXIDE_UNCERTAINTY_KEYS[:3])} of the witness thickness, density and a-Si "
+            f"thickness and their uncertainty_kind (standard or half_width) in "
             f"cfg_b.surface_preparation_details.overlayer: the 0.05-layer margin is an arbitrary "
             f"numerical guard and does not make the consumed-layer count or its parity robust "
-            f"(audit A9b m2; docs/06 item 12); no default"]
-
-
-def _check_oxide_uncertainties(over: dict, a_A: float) -> None:
-    """Item-12 uncertainties of the thickness and density and the count interval (audit A9b m2):
-    all three keys of OXIDE_UNCERTAINTY_KEYS or none; REQUIRED in a comparison run (no default;
-    oxide_comparison_reasons);
-    refused under a stand-in (its row states no uncertainty); when the consumed-layer count over the
-    uncertainty box spans a rounding boundary the run is refused unless both_parities_acknowledged
-    is True (both parities must then be run; the gate cannot run them), and an acknowledgement that
-    is not needed is refused."""
-    from reflection_holo.structure import oxide as ox
-    where = "cfg_b.surface_preparation_details.overlayer (docs/06 item 12)"
-    got = [k for k in OXIDE_UNCERTAINTY_KEYS if k in over]
-    if not got:
-        return                  # purpose "comparison": oxide_comparison_reasons names the absence
-    if len(got) != len(OXIDE_UNCERTAINTY_KEYS):
-        raise PipelineConfigError(f"{where}: state all of {list(OXIDE_UNCERTAINTY_KEYS)} or none "
-                                  f"(got {got}; audit A9b m2)")
-    labs = over["labels"]
-    stand = [k for k in ("thickness", "density")
-             if isinstance(labs.get(k), str) and labs[k].startswith("ASSUMPTION")]
-    if stand:
-        raise PipelineConfigError(
-            f"{where}: {stand} are stand-ins whose rows state no uncertainty; the uncertainties "
-            f"belong to measured item-12 values (audit A9b m2); refused rather than ignored")
-    ack = over["both_parities_acknowledged"]
-    if not isinstance(ack, bool):
-        raise PipelineConfigError(f"{where}: both_parities_acknowledged must be True or False "
-                                  f"(stated; audit A9b m2), got {ack!r}")
-    try:
-        ci = ox.consumed_count_interval(
-            thickness_A=over["thickness_A"], thickness_uncertainty_A=over["thickness_uncertainty_A"],
-            density_g_cm3=over["density_g_cm3"],
-            density_uncertainty_g_cm3=over["density_uncertainty_g_cm3"],
-            amorphous_si_thickness_A=over["amorphous_si_thickness_A"], a_A=a_A)
-    except ValueError as exc:
-        raise PipelineConfigError(f"{where}: {exc}") from exc
-    if ci["spans_boundary"] and not ack:
-        raise PipelineConfigError(
-            f"{where}: over the item-12 uncertainty box (thickness {ci['box']['thickness_A']} A, "
-            f"density {ci['box']['density_g_cm3']} g/cm^3) the continuum depth spans "
-            f"{ci['continuum_layers_min']:.3f}-{ci['continuum_layers_max']:.3f} layers of a/4: the "
-            f"consumed-layer count may be any of {ci['counts']} ({' and '.join(ci['parities'])} "
-            f"parity; at <110> the terrace type at a buried a/4 step differs, E9 section 3 item "
-            f"2). Refused unless both_parities_acknowledged = True (both parities must then be "
-            f"run; audit A9b m2)")
-    if ack and not ci["spans_boundary"]:
-        raise PipelineConfigError(
-            f"{where}: both_parities_acknowledged = True, but the count is {ci['counts']} over the "
-            f"whole uncertainty box: the acknowledgement is not needed; refused rather than "
-            f"ignored (audit A9b m2)")
+            f"(audit A9b m2, re-audit A10b m2, m3; docs/06 item 12); when the count interval spans "
+            f"a rounding boundary also {OXIDE_PARITY_KEY} (lower or upper; re-audit A10b M1); no "
+            f"default"]
 
 
 def oxide_parameter_assumptions(cfg_b: LoadedConfig) -> list[dict]:
@@ -1468,7 +1654,9 @@ def oxide_item12_record(cfg_b: LoadedConfig) -> dict | None:
     model row (OXIDE_MODEL_ROWS) its value, the row's nominal value, whether the run uses the
     nominal value or a bracket end, and the declared bracket (the gate does not require the bracket
     ends to be run); the item-12 uncertainties with the consumed-layer count interval; the
-    measurement records. None without a continuum oxide."""
+    consumed-layer count with its parity variant, the interval, the other variant and the fact that
+    it is a separate run (re-audit A10b M1); the structured measurement records (A10b M2). None
+    without a continuum oxide."""
     from reflection_holo.structure import oxide as ox
     prep = cfg_b.value("surface_preparation_details")
     over = prep.get("overlayer") if isinstance(prep, dict) else None
@@ -1492,18 +1680,53 @@ def oxide_item12_record(cfg_b: LoadedConfig) -> dict | None:
                                "covers only the value above (audit A9b M2)")))
     unc = None
     if all(k in over for k in OXIDE_UNCERTAINTY_KEYS):
-        a_A, _unit = cfg_b.quantity("lattice_parameter")
         unc = dict({k: over[k] for k in OXIDE_UNCERTAINTY_KEYS},
-                   count_interval=ox.consumed_count_interval(
+                   count_interval=ox.item12_count_interval(
                        thickness_A=over["thickness_A"],
                        thickness_uncertainty_A=over["thickness_uncertainty_A"],
                        density_g_cm3=over["density_g_cm3"],
                        density_uncertainty_g_cm3=over["density_uncertainty_g_cm3"],
                        amorphous_si_thickness_A=over["amorphous_si_thickness_A"],
-                       a_A=float(a_A)))
+                       amorphous_si_thickness_uncertainty_A=over[
+                           "amorphous_si_thickness_uncertainty_A"],
+                       uncertainty_kind=over["uncertainty_kind"],
+                       a_A=_oxide_lattice_parameter_A(cfg_b)))
+    cv = _oxide_count_variant(cfg_b, over)
+    if cv is None:
+        count = dict(count=int(spec.consumed_layers), derived_by="the nearest whole count of "
+                     "(f t + t_a)/(a/4) at the stated values", parity_variant=None,
+                     note=("no parity variant: no item-12 uncertainties stated" if unc is None
+                           else "no parity variant: the count interval spans no rounding "
+                                "boundary"))
+    else:                                                    # re-audit A10b M1
+        n, other = cv["count"], cv["other_variant"]
+        count = dict(
+            count=int(n), derived_by=f"the {cv['parity']} count of the item-12 count interval",
+            parity_variant=dict(
+                variant=cv["parity"], count=int(n), count_parity=ox.count_parity(n),
+                qualifier=ox.parity_variant_qualifier(cv["parity"]),
+                interval_counts=list(cv["interval"]["counts"]),
+                nearest_count=cv["interval"]["nearest_count"],
+                is_nearest_count=bool(n == cv["interval"]["nearest_count"]),
+                other_variant=dict(variant=other["parity"], count=int(other["count"]),
+                                   count_parity=ox.count_parity(other["count"])),
+                other_variant_run=("the other variant is a SEPARATE run: this run builds only "
+                                   "the count above; the gate does not check that the other "
+                                   "variant was run, and a result is not quoted before both "
+                                   "variants are compared"),
+                thickness_altered=False),
+            note=("parity variant of an interval spanning a boundary (re-audit A10b M1, report "
+                  "X6): the thickness, density and a-Si values are the stated ones; when the "
+                  "count is not the nearest one the continuum layer overlaps (lower) or leaves a "
+                  "gap to (upper) the kept crystal by more than a/8 (structure record "
+                  "interface_overlap_A)"))
     return dict(labels=dict(spec.labels), headline_label=ox.headline_label(spec.labels),
-                model_rows=rows, uncertainties=unc,
-                measurements=dict(over.get("measurements") or {}),
+                model_rows=rows, uncertainties=unc, consumed_layers=count,
+                measurements=_oxide_measurements(over, plabels),
+                measurement_rule=(f"every PROJECT_INPUT parameter of "
+                                  f"{list(OXIDE_RECORDED_PARAMETERS)} carries a record "
+                                  f"{{{', '.join(MEASUREMENT_RECORD_KEYS)}}}; "
+                                  f"{_MEASUREMENT_CANNOT_VERIFY}"),
                 rounding_margin_rule=(f"{ox.MIN_ROUNDING_MARGIN_LAYERS} layer is an arbitrary "
                                       f"numerical guard (audit A9b m2)"))
 

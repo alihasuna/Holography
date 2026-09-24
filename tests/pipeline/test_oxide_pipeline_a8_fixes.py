@@ -84,15 +84,19 @@ def test_measured_zero_a_si_in_a_supplied_record():
 def test_comparison_refuses_per_parameter_stand_ins(smoke):
     # report X5 (audit A9b M2, m2): the fixture states the new required fields of a comparison run
     # (the count DERIVED_HERE, measurement records of the PROJECT_INPUT model parameters, the
-    # item-12 uncertainties with the both-parities acknowledgement: 2.0 nm lies 0.0036 layer from
-    # the boundary, so any uncertainty spans it)
+    # item-12 uncertainties: 2.0 nm lies 0.0036 layer from the boundary, so any uncertainty spans
+    # it); report X6 (re-audit A10b M1, M2, m2, m3): structured records, the a-Si uncertainty and
+    # the uncertainty kind, and the parity variant that replaced the both-parities acknowledgement
+    rec = dict(method="TEST: fabricated statement of a measurement method",
+               instrument="TEST: fabricated instrument", date="2026-09-20",
+               reference="TEST: fabricated laboratory record")
     d = _variant(smoke, record=SUPPLY,
                  labels=dict({k: "PROJECT_INPUT" for k in ox.LABEL_KEYS if k != "V_real"},
                              **DERIVED),
-                 measurements={k: "TEST: fabricated statement of a measurement"
-                               for k in ("V_imag", "vacuum_edge", "interface")},
+                 measurements={k: rec for k in ("V_imag", "vacuum_edge", "interface")},
                  thickness_uncertainty_A=1.0, density_uncertainty_g_cm3=0.05,
-                 both_parities_acknowledged=True)
+                 amorphous_si_thickness_uncertainty_A=0.1, uncertainty_kind="half_width",
+                 consumed_layers_parity="upper")
     d["purpose"] = "comparison"
     with pytest.raises((PipelineConfigError, MissingProjectInputError),
                        match=r"overlayer\.V_real \(item 12, B41\)"):

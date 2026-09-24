@@ -238,24 +238,27 @@ OXIDE_SURFACE_SEMANTICS = (
 
 def _nonconformal_sublayer(record: dict) -> dict | None:
     """Audit A9b M1: an ATOMISTIC multislice cell whose terraces carry different oxide thicknesses
-    does not represent the grown-oxide term of the sub-layer part of the thickness differences (the
+    (or different consumed-layer counts) does not represent the grown-oxide term of the sub-layer
+    part of the thickness differences (the
     crystal loses whole layers only), while the geometric engine applies it
     (structure.oxide.NONCONFORMAL_SUBLAYER). Refused unless the specification states
     nonconformal_sublayer_acknowledged = True (TEST_ONLY overrides label, checked by
-    structure.oxide.validate_spec); then the statement and its size are recorded. None for one
-    thickness on every terrace."""
+    structure.oxide.validate_spec); then the statement and its size are recorded. Also refused:
+    ONE thickness with different consumed-layer counts (possible at the rounding tie; re-audit A10b
+    n1). None for one thickness and one count on every terrace."""
     from reflection_holo.structure import oxide as ox
     per = record["per_terrace"]
     thick = sorted({round(float(p["thickness_A"]), 12) for p in per})
-    if len(thick) < 2:
+    counts = sorted({int(p["consumed_layers"]) for p in per})
+    if len(thick) < 2 and len(counts) < 2:
         return None
     f = float(record["consumed_si_fraction_f"])
     quant = [float(p["interface_quantisation_A"]) for p in per]
     sub = (max(quant) - min(quant)) / f          # largest sub-layer thickness difference (A)
     lo, hi = ox.SUBLAYER_RATE_DIFFERENCE_RAD_PER_A
-    size = (f"terrace thicknesses {thick} A; largest sub-layer thickness difference "
-            f"{sub:.4f} A, i.e. about {lo * sub:.2f}-{hi * sub:.2f} rad (mod 2 pi) between the "
-            f"engines at the B41 values")
+    size = (f"terrace thicknesses {thick} A, consumed-layer counts {counts}; largest sub-layer "
+            f"thickness difference {sub:.4f} A, i.e. about {lo * sub:.2f}-{hi * sub:.2f} rad "
+            f"(mod 2 pi) between the engines at the B41 values")
     if record["nonconformal_sublayer_acknowledged"] is not True:
         raise ox.OxideSpecError(
             f"atomistic multislice cell with a NON-CONFORMAL continuum oxide ({size}): "

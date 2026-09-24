@@ -43,6 +43,7 @@ def spec(*, labels=None, **kw):
                 amorphous_si_V_imag_V=None, terrace_thickness_A=None, terrace_consumed_layers=None,
                 sharp_edge_test_flag=False, sharp_interface_test_flag=False,
                 rounding_boundary_acknowledged=True, nonconformal_sublayer_acknowledged=False,
+                consumed_layers_parity_variant=None,          # re-audit A10b M1 (stated)
                 labels=lab)
     base.update(kw)
     return ox.ContinuumOxideSpec(**base)

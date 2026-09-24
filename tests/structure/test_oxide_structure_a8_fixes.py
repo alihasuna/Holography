@@ -36,6 +36,7 @@ def spec(*, labels=None, raw_labels=None, **kw):
                 sharp_edge_test_flag=False, sharp_interface_test_flag=False,
                 rounding_boundary_acknowledged=True,
                 nonconformal_sublayer_acknowledged=False,     # audit A9b M1 (stated)
+                consumed_layers_parity_variant=None,          # re-audit A10b M1 (stated)
                 labels=(raw_labels if raw_labels is not None else
                         dict({k: L12 for k in ox.LABEL_KEYS}, **(labels or {}))))
     base.update(kw)

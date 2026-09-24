@@ -10,8 +10,11 @@ A9b M2  (a) consumed_layers is computed by the code and labelled DERIVED_HERE (f
         (d) the headline label is "mixed (...)" for mixed labels (A9b n1).
 A9b m1  per-parameter ids outside OXIDE_STAND_IN_ROWS / OXIDE_MODEL_ROWS (B26 in particular) refused.
 A9b m2  comparison runs need the item-12 uncertainties of thickness and density; a count interval
-        that spans a rounding boundary is refused unless both parities are acknowledged; an unneeded
-        acknowledgement is refused.
+        that spans a rounding boundary needs a parity variant (consumed_layers_parity: lower or
+        upper; report X6 after re-audit A10b M1, which retired X5's both_parities_acknowledged); the
+        key is refused when no boundary is spanned. Since report X6 the uncertainties also include
+        the a-Si thickness and their kind, and the measurement records are structured (re-audit
+        A10b M2, m1-m3; tests/pipeline/test_oxide_pipeline_a10b_fixes.py).
 A9b n2  the B41 thickness is tied to its variant. n3, m6: the texts of the demo configuration and
         of the sizing tool.
 
@@ -39,7 +42,13 @@ MEASURED = dict(thickness="PROJECT_INPUT", density="PROJECT_INPUT", amorphous_si
                 consumed_layers="DERIVED_HERE")
 B43 = {k: "ASSUMPTION B43" for k in ("V_real", "V_imag", "vacuum_edge", "interface")}
 TEST_ONLY_LABELS = dict({k: "TEST_ONLY" for k in ox.LABEL_KEYS}, consumed_layers="DERIVED_HERE")
-UNC_2NM = dict(thickness_uncertainty_A=1.0, density_uncertainty_g_cm3=0.05)
+# report X6 (re-audit A10b m2, m3): the uncertainties include the a-Si thickness and their kind
+UNC_2NM = dict(thickness_uncertainty_A=1.0, density_uncertainty_g_cm3=0.05,
+               amorphous_si_thickness_uncertainty_A=0.1, uncertainty_kind="half_width")
+# report X6 (re-audit A10b M2): a structured measurement record (fabricated TEST values)
+MEAS_REC = dict(method="TEST: fabricated off-axis electron holography of a witness wedge",
+                instrument="TEST: fabricated microscope", date="2026-09-20",
+                reference="TEST: fabricated laboratory record 1")
 
 
 @pytest.fixture(scope="module")
@@ -171,17 +180,25 @@ def test_measurement_record_for_project_input_model_parameters(smoke):
     labels["V_real"] = "PROJECT_INPUT"
     d = _variant(smoke, record=SUPPLY, labels=labels)
     assert "needs a measurement record" in _refusal(d)
-    for bad in ("measured", "  ", "TBD"):
-        d = _variant(smoke, record=SUPPLY, labels=labels, measurements=dict(V_real=bad))
-        assert "must state what was measured and how" in _refusal(d)
+    # report X6 (re-audit A10b M2): the placeholders of X5's test, now as fields of the structured
+    # record (every field); X5's free-text form is refused as a whole
+    for field in ("method", "instrument", "reference"):
+        for bad in ("measured", "  ", "TBD"):
+            d = _variant(smoke, record=SUPPLY, labels=labels,
+                         measurements=dict(V_real=dict(MEAS_REC, **{field: bad})))
+            assert f"must state the {field} of a measurement" in _refusal(d)
     d = _variant(smoke, record=SUPPLY, labels=labels,
-                 measurements=dict(V_real="TEST: fabricated", V_imag="TEST: fabricated"))
+                 measurements=dict(V_real="TEST: fabricated off-axis electron holography"))
+    assert "a measurement record is the mapping {method, instrument, date, reference}" in \
+        _refusal(d)
+    d = _variant(smoke, record=SUPPLY, labels=labels,
+                 measurements=dict(V_real=MEAS_REC, V_imag=MEAS_REC))
     assert "exactly the model parameters labelled PROJECT_INPUT" in _refusal(d)
-    text = "TEST: fabricated off-axis electron holography of the witness oxide"
     cfg = load_pipeline_dict(_variant(smoke, record=SUPPLY, labels=labels,
-                                      measurements=dict(V_real=text)), variant="oxide_2p0nm")
+                                      measurements=dict(V_real=MEAS_REC)), variant="oxide_2p0nm")
+    text = "; ".join(f"{k} {MEAS_REC[k]}" for k in ("method", "instrument", "date", "reference"))
     assert oxide_spec_from_config(cfg.cfg_b).labels["V_real"].endswith(f"measured: {text})")
-    assert oxide_item12_record(cfg.cfg_b)["measurements"] == dict(V_real=text)
+    assert oxide_item12_record(cfg.cfg_b)["measurements"] == dict(V_real=MEAS_REC)
 
 
 def test_comparison_admits_the_model_row(smoke):
@@ -189,7 +206,7 @@ def test_comparison_admits_the_model_row(smoke):
     PROJECT_INPUT, the model parameters carry B43 and the uncertainties are stated; the run is
     still refused by the comparison gate for the demo's OTHER stand-ins, and no oxide entry is
     named. Control: V_real under the demo stand-in B41 is named."""
-    d = _measured_b43(smoke, both_parities_acknowledged=True, **UNC_2NM)
+    d = _measured_b43(smoke, consumed_layers_parity="upper", **UNC_2NM)      # report X6
     d["purpose"] = "comparison"
     msg = _refusal(d)
     assert "purpose 'comparison' refuses every demo stand-in" in msg
@@ -222,36 +239,45 @@ def test_comparison_needs_the_uncertainties(smoke):
     assert "needs the item-12 uncertainties" in _refusal(d)
 
 
-def test_interval_across_a_boundary_needs_both_parities(smoke):
-    d = _variant(smoke, record=TEST_REC, labels=TEST_ONLY_LABELS, both_parities_acknowledged=False,
-                 **UNC_2NM)
+def test_interval_across_a_boundary_needs_a_parity_variant(smoke):
+    # report X6 (re-audit A10b M1): X5's both_parities_acknowledged is retired; the run states which
+    # count of the interval it builds
+    d = _variant(smoke, record=TEST_REC, labels=TEST_ONLY_LABELS, **UNC_2NM)
     msg = _refusal(d, allow_test_only=True)
-    assert "may be any of [6, 7] (even and odd parity" in msg and "both parities" in msg
+    assert "may be any of [6, 7] (even and odd parity" in msg
+    assert "State consumed_layers_parity: one of ['lower', 'upper']" in msg
     d = _variant(smoke, record=TEST_REC, labels=TEST_ONLY_LABELS, both_parities_acknowledged=True,
+                 **UNC_2NM)
+    assert "both_parities_acknowledged is retired by report X6" in _refusal(d, allow_test_only=True)
+    d = _variant(smoke, record=TEST_REC, labels=TEST_ONLY_LABELS, consumed_layers_parity="upper",
                  **UNC_2NM)
     cfg = load_pipeline_dict(d, variant="oxide_2p0nm", allow_test_only=True)
     ci = oxide_item12_record(cfg.cfg_b)["uncertainties"]["count_interval"]
     assert ci["counts"] == [6, 7] and ci["spans_boundary"] is True
 
 
-def test_unneeded_both_parities_acknowledgement_is_refused(smoke):
-    unc = dict(thickness_uncertainty_A=0.5, density_uncertainty_g_cm3=0.03)
-    d = _variant(smoke, "oxide_1p5nm", record=TEST_REC, labels=TEST_ONLY_LABELS,
-                 both_parities_acknowledged=True, **unc)
-    assert "not needed" in _refusal(d, "oxide_1p5nm", allow_test_only=True)
-    d = _variant(smoke, "oxide_1p5nm", record=TEST_REC, labels=TEST_ONLY_LABELS,
-                 both_parities_acknowledged=False, **unc)
+def test_unneeded_parity_variant_is_refused(smoke):
+    # report X6 (re-audit A10b M1): replaces X5's unneeded-acknowledgement test
+    unc = dict(thickness_uncertainty_A=0.5, density_uncertainty_g_cm3=0.03,
+               amorphous_si_thickness_uncertainty_A=0.1, uncertainty_kind="half_width")
+    for parity in ("lower", "upper"):
+        d = _variant(smoke, "oxide_1p5nm", record=TEST_REC, labels=TEST_ONLY_LABELS,
+                     consumed_layers_parity=parity, **unc)
+        assert "spans no rounding boundary, the count is the nearest count" in _refusal(
+            d, "oxide_1p5nm", allow_test_only=True)
+    d = _variant(smoke, "oxide_1p5nm", record=TEST_REC, labels=TEST_ONLY_LABELS, **unc)
     load_pipeline_dict(d, variant="oxide_1p5nm", allow_test_only=True)
 
 
 @pytest.mark.parametrize("over,labels,match", [
     (dict(thickness_uncertainty_A=1.0), TEST_ONLY_LABELS, "state all of"),
-    (dict(UNC_2NM, both_parities_acknowledged="yes"), TEST_ONLY_LABELS, "True or False"),
-    (dict(UNC_2NM, thickness_uncertainty_A=0.0, both_parities_acknowledged=True),
+    (dict(UNC_2NM, consumed_layers_parity="yes"), TEST_ONLY_LABELS,
+     "got consumed_layers_parity = 'yes'"),                                   # report X6
+    (dict(UNC_2NM, thickness_uncertainty_A=0.0, consumed_layers_parity="upper"),
      TEST_ONLY_LABELS, "thickness_uncertainty_A"),
-    (dict(UNC_2NM, density_uncertainty_g_cm3="0.05", both_parities_acknowledged=True),
+    (dict(UNC_2NM, density_uncertainty_g_cm3="0.05", consumed_layers_parity="upper"),
      TEST_ONLY_LABELS, "number"),
-    (dict(UNC_2NM, both_parities_acknowledged=True), None, "rows state no uncertainty"),
+    (dict(UNC_2NM, consumed_layers_parity="upper"), None, "rows state no uncertainty"),
 ])
 def test_uncertainty_refusals(smoke, over, labels, match):
     d = _variant(smoke, record=TEST_REC if labels else None, labels=labels, **over)

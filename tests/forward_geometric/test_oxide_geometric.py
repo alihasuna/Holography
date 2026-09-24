@@ -49,6 +49,7 @@ def spec(**kw):
                 amorphous_si_V_imag_V=None, terrace_thickness_A=None, terrace_consumed_layers=None,
                 sharp_edge_test_flag=False, sharp_interface_test_flag=False,
                 nonconformal_sublayer_acknowledged=False,     # audit A9b M1 (stated)
+                consumed_layers_parity_variant=None,          # re-audit A10b M1 (stated)
                 labels={k: L12 for k in ox.LABEL_KEYS})
     if kw.get("terrace_thickness_A") is not None or kw.get("terrace_consumed_layers") is not None:
         base["labels"] = dict(base["labels"], overrides=L12)

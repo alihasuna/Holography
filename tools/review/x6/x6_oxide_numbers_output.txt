@@ -1,0 +1,35 @@
+a = 5.4309 A (B2), a/4 = 1.357725 A, a/8 = 0.678863 A, 1.5 a/4 = 2.0366 A; f(2.20) = 0.441507 (code), 0.441507 (first principles)
+
+== A10b m3: depth per unit of each item-12 quantity (layers of a/4), at 20 A, 2.20 g/cm^3
+  a-Si thickness: 1 A of a-Si = 1 A of depth = 0.7365 layer per A
+  oxide thickness: f(2.20) = 0.4415 A of depth per A = 0.3252 layer per A
+  density: +-0.05 g/cm^3 at 20 A = +-0.1478 layer
+  ratio a-Si / oxide thickness per A: 2.26
+
+== A10b m2: coverage of the factor k = STANDARD_COVERAGE_FACTOR = 2.0 for a normally distributed quantity
+  P(|x - mu| <= 2.0 sigma) = erf(2.0/sqrt(2)) = 95.45 % (about 95 %)
+  standard: +- 2 standard uncertainties (coverage factor k = 2: about 95 % coverage for a normally distributed quantity)
+  half_width: +- the stated half-width (coverage as stated by the supplier)
+
+== A10b m2, m3: item12_count_interval for illustrative uncertainties (TEST values)
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 5.587-7.626 layers (nominal 6.5036, nearest 7) -> counts [6, 7, 8]; depth half-ranges: thickness 0.6504, density 0.2956, a-Si 0.0737 layer (clipped at 0); parity variant REFUSED (more than one boundary)
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 6.038-7.058 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.3252, density 0.1478, a-Si 0.0368 layer (clipped at 0); parity variant lower 6 / upper 7
+  t 20.0 +- 0.1 A, rho 2.20 +- 0.01 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 6.380-6.776 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.0650, density 0.0591, a-Si 0.0737 layer (clipped at 0); parity variant lower 6 / upper 7
+  t 20.0 +- 0.1 A, rho 2.20 +- 0.01 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 6.442-6.640 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.0325, density 0.0296, a-Si 0.0368 layer (clipped at 0); parity variant lower 6 / upper 7
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 1.0 A, standard: 5.587-8.952 layers (nominal 6.5036, nearest 7) -> counts [6, 7, 8, 9]; depth half-ranges: thickness 0.6504, density 0.2956, a-Si 0.7365 layer (clipped at 0); parity variant REFUSED (more than one boundary)
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 1.0 A, half_width: 6.038-7.721 layers (nominal 6.5036, nearest 7) -> counts [6, 7, 8]; depth half-ranges: thickness 0.3252, density 0.1478, a-Si 0.3683 layer (clipped at 0); parity variant REFUSED (more than one boundary)
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 4.428-5.492 layers (nominal 4.8777, nearest 5) -> counts [4, 5]; depth half-ranges: thickness 0.3252, density 0.1330, a-Si 0.0737 layer (clipped at 0); parity variant lower 4 / upper 5
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 4.651-5.183 layers (nominal 4.8777, nearest 5) -> counts [5]; depth half-ranges: thickness 0.1626, density 0.0665, a-Si 0.0368 layer (clipped at 0); parity variant not needed
+  t 15.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 4.035-5.927 layers (nominal 4.8777, nearest 5) -> counts [4, 5, 6]; depth half-ranges: thickness 0.6504, density 0.2217, a-Si 0.0737 layer (clipped at 0); parity variant REFUSED (more than one boundary)
+  t 15.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 4.449-5.395 layers (nominal 4.8777, nearest 5) -> counts [4, 5]; depth half-ranges: thickness 0.3252, density 0.1109, a-Si 0.0368 layer (clipped at 0); parity variant lower 4 / upper 5
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 1.0 A, standard: 4.428-6.818 layers (nominal 4.8777, nearest 5) -> counts [4, 5, 6, 7]; depth half-ranges: thickness 0.3252, density 0.1330, a-Si 0.7365 layer (clipped at 0); parity variant REFUSED (more than one boundary)
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 1.0 A, half_width: 4.651-5.846 layers (nominal 4.8777, nearest 5) -> counts [5, 6]; depth half-ranges: thickness 0.1626, density 0.0665, a-Si 0.3683 layer (clipped at 0); parity variant lower 5 / upper 6
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 5.0 +- 0.5 A, standard: 7.374-9.764 layers (nominal 8.5604, nearest 9) -> counts [7, 8, 9, 10]; depth half-ranges: thickness 0.3252, density 0.1330, a-Si 0.7365 layer (clipped at 0); parity variant REFUSED (more than one boundary)
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 5.0 +- 0.5 A, half_width: 7.965-9.160 layers (nominal 8.5604, nearest 9) -> counts [8, 9]; depth half-ranges: thickness 0.1626, density 0.0665, a-Si 0.3683 layer (clipped at 0); parity variant lower 8 / upper 9
+
+== A10b M1: parity variants of the 2.0 nm interval (thickness not altered)
+  lower variant, count 6 (even): f t - N a/4 = 8.8301 - 8.1463 = +0.6838 A = +0.5036 layer (overlap; |value| > a/8 = 0.6789 A)
+  upper variant, count 7 (odd): f t - N a/4 = 8.8301 - 9.5041 = -0.6739 A = -0.4964 layer (gap; |value| <= a/8 = 0.6789 A)
+
+== A10b n1: one thickness, two counts at the rounding tie
+  t = 6.5 (a/4)/f = 19.988820 A: counts 6 and 7 both pass |N a/4 - f t| <= a/8 + 1e-9 A; sub-layer thickness difference (a/4)/f = 3.0752 A, i.e. about 11.01-11.10 rad between the engines (the 1-D estimate of A9b C4)

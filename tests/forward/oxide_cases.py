@@ -43,11 +43,12 @@ def near_rounding_boundary(*, t_A, N, rho, t_a, tt=None, tn=None) -> bool:
 
 def oxide_spec(*, t_A=20.0, N=7, V=V_OX, Vi=0.40, w_v=0.5, w_i=0.5, rho=2.20, t_a=0.0,
                Va=None, Vai=None, tt=None, tn=None, flag=False, iflag=False, ack=None,
-               nc_ack=False, labels=None) -> ContinuumOxideSpec:
+               nc_ack=False, parity_variant=None, labels=None) -> ContinuumOxideSpec:
     """flag / iflag: the TEST_ONLY sharp vacuum-edge / interface flags (stated by the caller);
     ack: rounding_boundary_acknowledged, by default stated exactly when needed
     (near_rounding_boundary); nc_ack: nonconformal_sublayer_acknowledged (audit A9b M1; stated by
-    the caller)."""
+    the caller); parity_variant: consumed_layers_parity_variant (re-audit A10b M1; stated by the
+    caller, None by default here, i.e. the nearest count)."""
     lab = {k: L12 for k in LABEL_KEYS}
     if t_a > 0:
         lab["amorphous_si_potential"] = L12
@@ -64,7 +65,8 @@ def oxide_spec(*, t_A=20.0, N=7, V=V_OX, Vi=0.40, w_v=0.5, w_i=0.5, rho=2.20, t_
                               terrace_thickness_A=tt, terrace_consumed_layers=tn,
                               sharp_edge_test_flag=flag, sharp_interface_test_flag=iflag,
                               rounding_boundary_acknowledged=ack,
-                              nonconformal_sublayer_acknowledged=nc_ack, labels=lab)
+                              nonconformal_sublayer_acknowledged=nc_ack,
+                              consumed_layers_parity_variant=parity_variant, labels=lab)
 
 
 def oxide_only_case(*, w_v, dx, dz=1.0, propagator="exact", H=48.0, edge=8.0, gap=2.0,
