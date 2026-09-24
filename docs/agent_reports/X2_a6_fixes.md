@@ -58,20 +58,25 @@ Proof on A6's exactly translation-covariant continuum case with the study's beam
 (`tests/forward/test_null_readout_known_answer.py`, new; case = A6's `resolved_known_answer.py`:
 ContinuumPeriodicPotential V0 13.902843 V, V_008 1.035742 V, 16.134773 mrad, Fresnel, complex128,
 dx 0.025 A, dz 1 A, clean depth 100 A, R = (a/2, 0, 0); beam and `surface_resolved` block read from
-study_depth100.yaml; L = the L_z of the study's L5k/L10k [110] points rounded to whole slices):
+study_depth100.yaml; L = the L_z of the study's L5k/L10k [110] points rounded to whole slices).
+Summary lines of the run, verbatim (the per-bin rows are in the log):
 
 ```
 RH_NULL_READOUT_LONG=1 venv/bin/python -m pytest -q -s -p no:cacheprovider tests/forward/test_null_readout_known_answer.py -k "L10k or L5k"
 continuum r 0.1, L 6377.0 A, H 97.184 A, edge 2.0, gap 2.0, nx 15592: 3 runs in 46 s
   fixed beam: converged beyond 2500.0 A from the later contact (4 included bin(s) beyond, all within tolerance); lit-end limit 5031.6 A (margin 991.1 A)
   moved beam: converged beyond 0.0 A from the later contact (9 included bin(s) beyond, all within tolerance); lit-end limit 5031.6 A (margin 991.1 A)
+  smallest bin |E_A| / largest: 0.285 (amplitude floor 0.05)
+  smallest bin |E_A| / largest: 0.286 (amplitude floor 0.05)
 continuum r 0.1, L 11377.0 A, H 177.865 A, edge 2.0, gap 2.0, nx 22047: 3 runs in 117 s
   fixed beam: converged beyond 2500.0 A from the later contact (12 included bin(s) beyond, all within tolerance); lit-end limit 9254.5 A (margin 1768.2 A)
   moved beam: converged beyond 0.0 A from the later contact (18 included bin(s) beyond, all within tolerance); lit-end limit 9254.5 A (margin 1768.2 A)
   smallest bin |E_A| / largest: 0.297 (amplitude floor 0.05)
+  smallest bin |E_A| / largest: 0.299 (amplitude floor 0.05)
 continuum r 0.05, L 11377.0 A, H 177.865 A, edge 2.0, gap 2.0, nx 22047: 3 runs in 117 s
   fixed beam: converged beyond 3000.0 A from the later contact (11 included bin(s) beyond, all within tolerance); lit-end limit 9254.5 A (margin 1768.2 A)
   moved beam: converged beyond 0.0 A from the later contact (18 included bin(s) beyond, all within tolerance); lit-end limit 9254.5 A (margin 1768.2 A)
+  smallest bin |E_A| / largest: 0.206 (amplitude floor 0.05)
   smallest bin |E_A| / largest: 0.206 (amplitude floor 0.05)
 3 passed, 2 deselected in 284.34s (0:04:44)
 ```
@@ -129,7 +134,10 @@ behaviour changes on purpose (orchestrator: no None from a single last bin):
 `test_unconverged_last_bin_gives_none` (`converged_beyond_A is None`) became
 `test_unconverged_last_bin_gives_not_converged`: every included bin fails, `converged is False`,
 `n_bins_beyond == 0`, `converged_beyond_A` = end of the last included bin, verdict "NOT converged".
-Real engine exit waves (`tests/forward/test_null_readout_known_answer.py`), default suite:
+Real engine exit waves (`tests/forward/test_null_readout_known_answer.py`), default suite; excerpt
+of the verbatim output (the fixed-beam rows d 0-2000 A, all failing as expected, and the per-bin
+rows of the moved beam and of the third case are omitted here; full log
+`<scratch>/x2/known_answer_run1.log`):
 
 ```
 venv/bin/python -m pytest -q -s -p no:cacheprovider tests/forward/test_null_readout_known_answer.py   (03:33 UTC, load 1.8)
@@ -253,11 +261,12 @@ NEGATIVE CONTROL of device_peak_ge_H5_blocked_model_* (A6 Z-1): the engine's dev
 61/61 checks pass; runtime 26 s
 ```
 
-Observation (not a defect): for these 11 rows the engine model's device peak is set by the pixel
-stage of the potential construction, not by the exponential stage (an exploratory run with the
-engine's MEM_EXP_B_PER_ELEMENT set to 16, 8 and 0 left every row's model unchanged; model/bound
-1.230-1.553, `<scratch>/x2/z1_explore.py`), so the new check detects an under-count of that stage
-or of the residents larger than 19-35 % per row, not a 32 -> 16 B slip in the exponential transient.
+Observation (not a defect): for every row of the report the engine model's device peak is set by
+the pixel stage of the potential construction, not by the exponential stage (exploratory run over
+the 23 distinct memory_row calls of the report, `<scratch>/x2/z1_explore.py`: with the engine's
+MEM_EXP_B_PER_ELEMENT set to 16, 8 or 0 no model value changed; model/bound 1.230-1.553), so the new
+check detects an under-count of that stage or of the residents larger than 19-36 % per row, not a
+32 -> 16 B slip in the exponential transient.
 The other differences of the saved output against the previous one are the run record (commit,
 load) and the live CPU calibration line (426.815 s -> 594.458 s, timed under the current load).
 
