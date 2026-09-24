@@ -218,6 +218,11 @@ def test_feature_refused_without_a_registered_stand_in():
         e["cfg_b"]["parameters"]["pattern_geometry"]["assumption_id"] = other
         with pytest.raises(PipelineConfigError, match="stand-in"):
             load_pipeline_dict(e, variant=None)
+    e = copy.deepcopy(d)                                                  # the buried-void row (T3)
+    e["sections"]["structure"]["feature"]["assumption_id"] = "B42"
+    e["cfg_b"]["parameters"]["pattern_geometry"]["assumption_id"] = "B42"
+    with pytest.raises(PipelineConfigError, match="B42 states a buried_void"):
+        load_pipeline_dict(e, variant=None)
     e = copy.deepcopy(d)
     e["purpose"] = "comparison"
     with pytest.raises(PipelineConfigError, match="B33"):

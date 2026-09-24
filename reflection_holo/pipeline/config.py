@@ -226,7 +226,7 @@ PATTERN_FROM_FEATURE = "sections.structure.feature"
 # The registry maps stand-in ids to docs/06 items only. Item-13 stand-ins whose model_assumptions
 # row states something else than the declared feature are refused here (agent T2): B27 states that
 # there is NO feature; B33 is the demo trench, B34 the demo ridge (proposed rows, report T2).
-FEATURE_STAND_IN_SUB_KIND = {"B27": None, "B33": "trench", "B34": "ridge"}
+FEATURE_STAND_IN_SUB_KIND = {"B27": None, "B33": "trench", "B34": "ridge", "B42": "buried_void"}
 APERTURE_PASSAGES = ("second_aperture_hole", "condenser_biprism_pretilt", "no_aperture")
 
 
