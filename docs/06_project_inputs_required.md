@@ -7,12 +7,14 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 ## A. Microscope and beam
 
+SUPPLIED (PROJECT_INPUT, Ali, 2026-09-24): the microscope is the Hitachi HF-3300 at the University of Victoria, operated at 200 keV for this work (item 1). Its published specifications (source, biprisms, energy spread, energy filter if any) are being sourced (report L9).
+
 1. SUPPLIED (PROJECT_INPUT, Ali, 2026-09-22): the accelerating voltage is 200 keV for all reflection holography work; 300 keV is never used. Its stability (drift during a hologram series) is still to be supplied.
 2. Energy spread (FWHM, eV) and effective source size or measured spatial-coherence width at the specimen. (Energy spread is a minor effect: below 0.004 rad of step phase over the whole allowed rod, even for a 10 nm step at 0.7 eV.)
 3. (blocking) Illumination convergence semi-angle at the specimen (mrad) for holography and for REM imaging. The step phase changes by `(4 pi h/lambda) cos(theta)` per radian of incidence angle, so the convergence produces an irreducible phase spread: 1 rad of spread at 0.64 mrad for a 3.1 A bilayer, 0.20 mrad for a 1 nm step, 0.020 mrad for a 10 nm step (200 keV). This decides whether nanometre-scale features can show any phase contrast at all. Revision 5: state also the angular profile of the source (uniform disc or other); a convergence ensemble is implemented (report E3), and with an R1 vacuum reference the coherent field is confined to a band around the zero-path-difference line whose width scales as lambda/alpha.
 4. (blocking) Objective-aperture semi-angle (mrad) and which reflected beam it selects: the specular (00) rod at which Bragg order, a surface-resonance condition, or a non-specular rod/bulk reflection.
 5. (blocking) Image pixel size at the detector (nm/pixel, both axes) and the magnification for holograms.
-6. Detector: type, MTF or its published parameters, gain, dose per hologram (electrons/pixel), exposure time, drift during exposure (drift enters the model as a coherent envelope loss, not as noise).
+6. Detector: type, MTF or its published parameters, gain, dose per hologram (electrons/pixel), exposure time, drift during exposure (drift enters the model as a coherent envelope loss, not as noise). PARTLY SUPPLIED (PROJECT_INPUT, Ali, 2026-09-24): the detector is a Medipix-based hybrid-pixel counting detector from Quantum Detectors (Ali: "midi pixel by quantum detectors"; exact model, e.g. MerlinEM, to be confirmed); its published pixel pitch, MTF/DQE at 200 kV and counting mode are being sourced (report L9). Still to be supplied: operating mode (counter depth, frame time), dose per hologram, exposure, drift.
 
 ## B. Reflection geometry, per experiment
 

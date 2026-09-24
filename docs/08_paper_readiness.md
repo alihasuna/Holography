@@ -16,7 +16,7 @@ it), NEEDS UPLOAD (a closed source must be read).
 | 1.1 | Glancing angle and its calibration (item 7) | Sets the height scale; a measured angle removes the mean inner potential from heights | NEEDS ALI | docs/06 item 7; model_assumptions B1 |
 | 1.2 | Beam azimuth and its accuracy (item 8) | Exact [100] makes bulk-terminated a/4 steps geometric; (0,0,8) is then a four-beam case | NEEDS ALI | B4, B20; H2 section 2.2 |
 | 1.3 | Convergence semi-angle and source profile (item 3) | Phase spread; with an R1 reference it confines the coherent field | NEEDS ALI (ensemble implemented, E3) | B10, B40; E3 |
-| 1.4 | Aperture, detector, magnification, dose (items 4-6) | Resolution, noise, which beam is imaged | NEEDS ALI | docs/06 A |
+| 1.4 | Aperture, detector, magnification, dose (items 4-6) | Resolution, noise, which beam is imaged | PARTLY SUPPLIED (2026-09-24: Hitachi HF-3300 at UVic; Quantum Detectors Medipix-based detector); NEEDS ALI: aperture, magnification, dose, detector mode | docs/06 A; L9 |
 | 1.5 | Miscut and terrace widths (item 11) | Fixes the across-beam cell size and whether a converged measuring window exists | NEEDS ALI | H2/H7 sizing, `tools/hpc/supercell_sizing_output.txt` |
 | 1.6 | Sample preparation, vacuum, anneal; witness cross-section (item 12) | Decides the surface model (UHV-clean vs oxide/amorphous overlayer) | PARTLY SUPPLIED (2026-09-24: air-exposed, O2/Ar plasma clean about 10 min, so oxide-covered); still NEEDS ALI: milling parameters, plasma power, time to imaging, microscope vacuum, witness cross-section | B7; L7 section 6 |
 | 1.7 | Reference-wave path, separation, fringe spacing (items 15-16) | R1 vs R2 changes the loss factor and the coherence limits | NEEDS ALI | B5, B38-B40; E3 |
