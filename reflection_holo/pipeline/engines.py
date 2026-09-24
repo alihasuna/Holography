@@ -23,6 +23,8 @@ Engines (``sections.engine.name``):
       waves, engine_manifest = multislice.simulate(cell, potential=pot, beam=beam, params=params,
                                                    realisations, seed, outputs_root, ...)
 
+  A structure built with a continuum oxide (cfg_b.surface_preparation_details.overlayer, item 12;
+  report E4) wraps the potential in multislice.ContinuumOxidePotential(pot, oxide=spec).
   The mean inner potential of the potential actually used (``potentials.
   potential_mean_inner_potential_V``) must equal the value with which the glancing angle was
   computed (``sections.engine.multislice.potential_mip``, report D3 F16) to 5e-4 V, or the run
@@ -45,8 +47,8 @@ from reflection_holo.forward.geometric.height_field import (HeightField, HeightF
                                                             require_b4_scope_height_field)
 from reflection_holo.optics.darkfield import validate_exit_wave
 from reflection_holo.forward.dimer_ensemble import DimerFlipFlopPotential
-from reflection_holo.pipeline.config import (THERMAL_MODEL_B35, PipelineConfig, PipelineConfigError,
-                                             Record)
+from reflection_holo.pipeline.config import (OXIDE_MODEL, THERMAL_MODEL_B35, PipelineConfig,
+                                             PipelineConfigError, Record, oxide_spec_from_config)
 from reflection_holo.structure import OverlayerSpec, Staircase, build_si001_terraces, thermal
 from reflection_holo.structure.reconstruction import FLIPFLOP
 from reflection_holo.structure.features import FEATURE_RECONSTRUCTION_REFUSAL
@@ -55,7 +57,7 @@ from reflection_holo.structure.shapes import HalfTorus
 MULTISLICE_MODULE = "reflection_holo.forward.multislice"
 CELL_MODULE = "reflection_holo.forward.cell"
 MULTISLICE_NAMES = ("AtomicPotential", "PhysicalAbsorption", "FrozenPhonons", "SheetBeam",
-                    "MultisliceParams", "NumericalAbsorber", "simulate")
+                    "MultisliceParams", "NumericalAbsorber", "simulate", "ContinuumOxidePotential")
 CELL_NAMES = ("build_reflection_cell",)
 MIP_FUNCTION = ("reflection_holo.forward.multislice.potentials", "potential_mean_inner_potential_V")
 MIP_TOL_V = 5e-4
@@ -93,6 +95,8 @@ def build_structure(cfg: PipelineConfig):
     lab12 = _label(b.parameters["surface_preparation_details"])
     if over == "none":
         overlayer = None
+    elif isinstance(over, dict) and over.get("model") == OXIDE_MODEL:
+        overlayer = oxide_spec_from_config(b)            # continuum oxide (report E4)
     elif isinstance(over, dict):
         overlayer = OverlayerSpec(material=over["material"], thickness_A=over["thickness_A"],
                                   density_g_cm3=over["density_g_cm3"], label=lab12)
@@ -317,6 +321,10 @@ def multislice_objects(structure, cfg: PipelineConfig, *, require_backend: bool)
                              frozen_phonons=fp, static_lattice_label=static)
     if structure.metadata["options"]["termination"]["value"] == FLIPFLOP:
         pot = DimerFlipFlopPotential(pot, structure)
+    if structure.metadata["options"]["overlayer"].get("value") == OXIDE_MODEL:
+        # continuum oxide (report E4): the layer's potential on top of the crystal's; the MIP
+        # check below stays the crystal's (B32)
+        pot = ms.ContinuumOxidePotential(pot, oxide=oxide_spec_from_config(cfg.cfg_b))
     mip = float(getattr(potmod, MIP_FUNCTION[1])(pot))
     mip_cfg = float(m["potential_mip"].canonical_value)
     mip_check = dict(potential_mip_V=mip, configured_potential_mip_V=mip_cfg,

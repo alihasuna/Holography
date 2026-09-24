@@ -29,8 +29,19 @@ the Si(001) dimer reconstructions p(2x1)s, p(2x1)a, p(2x2) and c(4x2) of Ramstad
 1995 Tables III-IV (SECTION_READ; T = 0 geometries, their use at the specimen temperature is an
 ASSUMPTION) and the "p(2x1)a flip-flop ensemble" (ASSUMPTION B37, a model choice, not a source), all
 in ``reconstruction.py``; amorphous SiO2/damage overlayer (thickness and density are PROJECT_INPUT
-item 12, required; declared region only, atomistic content NOT IMPLEMENTED); step-riser relaxation
-none (ASSUMPTION).
+item 12, required; declared region only, atomistic content NOT IMPLEMENTED); the CONTINUUM OXIDE
+of ``oxide.ContinuumOxideSpec`` (report E4 after L8/E9: every terrace loses its top N whole
+consumed layers, the continuum layer's stack is recorded per terrace for the engines, assertions
+(o1) to (o4) below); step-riser relaxation none (ASSUMPTION).
+
+Continuum oxide (report E4): assertions (a) to (g) run on the IDEAL (pre-oxidation) sites; then the
+top N_k layers of every terrace are removed and (o1) the removed count equals N_k whole layers of
+the terrace, (o2) the measured top kept layer of every terrace is layer tops_k - N_k, (o3) the
+relation between neighbouring BURIED terraces is measured on the kept atoms (pure lattice
+translation for an even buried layer difference, 90-degree screw for an odd one, none for a flat
+buried interface; E9 section 3 items 2 and 5), and (o4) the top-layer back-bond axis of every
+buried terrace is measured (the terrace type at the buried interface: each consumed layer swaps it,
+E9 section 3 item 2, R3 p. 88).
 
 With a reconstruction, assertions (a) to (g) run unchanged on the IDEAL sites (the bulk truncation
 that is then reconstructed); the reconstructed atoms are checked by (r1) to (r6)
@@ -54,6 +65,7 @@ from reflection_holo.geometry.frames import SurfaceFrame, surface_frame
 from reflection_holo.io.labels import require_evidence_label
 
 from . import checks
+from . import oxide as ox
 from . import reconstruction as recon
 from .checks import POSITION_TOL_A, WINDOW_TOL_A, StructureAssertionError
 from .lattice import (diamond_sites_quarter, is_fcc_translation, nearest_neighbour_distance_A,
@@ -766,9 +778,14 @@ def _overlayer_option(overlayer, vacuum_above_A: float) -> dict:
         return dict(value=None, label="ASSUMPTION B7",
                     note="clean surface; the real surface is ion-milled (PROJECT_INPUT item 12) "
                          "and carries an oxide/damage layer that this structure omits")
+    if isinstance(overlayer, ox.ContinuumOxideSpec):
+        # spec-level checks now; the per-terrace stack after the terraces are known (_apply_oxide)
+        rec = ox.validate_spec(overlayer)
+        return dict(rec, value=ox.MODEL_NAME, label=rec["labels"]["thickness"],
+                    project_input="item 12")
     if not isinstance(overlayer, OverlayerSpec):
-        raise TypeError("overlayer must be an OverlayerSpec or None (explicit clean surface, "
-                        "ASSUMPTION B7)")
+        raise TypeError("overlayer must be an OverlayerSpec, a ContinuumOxideSpec or None "
+                        "(explicit clean surface, ASSUMPTION B7)")
     require_evidence_label(overlayer.label, "overlayer (PROJECT_INPUT item 12)",
                            accepted=LABEL_PREFIXES, qualified=True)
     if not isinstance(overlayer.material, str) or not overlayer.material.strip():
@@ -791,10 +808,121 @@ def _overlayer_option(overlayer, vacuum_above_A: float) -> dict:
                 atoms_placed=0)
 
 
+B4_OXIDE_FLAT = ("flat buried interface (equal kept top layers): no crystal step; the phase "
+                 "difference is the layer terms only (E9 section 3 items 4-5)")
+B4_OXIDE_CONFORMAL = ("with a CONFORMAL continuum oxide (equal thickness and consumed-layer count on "
+                      "both terraces) the upper terrace's whole stack (crystal, interface, layer, "
+                      "vacuum edge) is the lower one mapped by the crystal relation of the buried "
+                      "step, so the specular step phase is 2 k_perp h with vacuum wavevectors "
+                      "(E9 section 3 item 1); conformality is an ASSUMPTION for Ali's surface "
+                      "(E9 m4)")
+B4_OXIDE_GROWN = ("NOT conformal (thickness or consumed-layer count differ): the step phase carries "
+                  "the grown-oxide and top-surface terms of the continuum layer (E9 section 3 items "
+                  "3-5), added by the geometric engine; B4 below refers to the buried crystal step")
+B4_OXIDE_PARITY = ("at <110> the terrace type at each buried a/4 step, hence the sign of the "
+                   "residual delta, depends on the parity of the consumed-layer count (E9 section 3 "
+                   "item 2; R3 p. 88)")
+
+
+def _apply_oxide(spec, *, rs, rc, layer, terr, tops, steps, axes, q, a, az, frame, x_top,
+                 vacuum_above_A, atoms_per_layer, per, expected):
+    """Remove the consumed layers of every terrace and run assertions (o1)-(o4) (module docstring;
+    report E4). Returns the kept (rs, rc, layer, terr) and the oxide record."""
+    H = [float(tops[k] * q) for k in range(len(tops))]
+    st = ox.terrace_stacks(spec, terrace_heights_A=H, a_A=a)
+    pt = st["per_terrace"]
+    N = np.array([p["consumed_layers"] for p in pt], dtype=np.int64)
+    top_max = max(p["top_x_A"] for p in pt)
+    if not top_max < x_top + vacuum_above_A:
+        raise ValueError(f"vacuum_above_A = {vacuum_above_A} A cannot hold the continuum oxide: "
+                         f"its top reaches x = {top_max:.4f} A, the box ends at "
+                         f"{x_top + vacuum_above_A:.4f} A")
+    kept_top = tops - N
+    if np.any(kept_top + 1 < _MIN_SUBSTRATE_LAYERS):
+        raise ValueError(f"substrate_layers too small for {int(N.max())} consumed layers: every "
+                         f"terrace must keep at least {_MIN_SUBSTRATE_LAYERS} crystal layers (the "
+                         f"buried-relation check (o3) compares four)")
+    keep = layer <= kept_top[terr]
+    removed = np.bincount(terr[~keep], minlength=len(tops))
+    want = N * np.asarray(atoms_per_layer, dtype=np.int64)
+    if not np.array_equal(removed, want):                                     # (o1)
+        raise StructureAssertionError(f"(o1) removed atoms per terrace {removed.tolist()} != "
+                                      f"consumed layers x atoms per layer {want.tolist()}")
+    rs, rc, layer, terr = rs[keep], rc[keep], layer[keep], terr[keep]
+    expected_kept = int(expected) - int(want.sum())
+    if rs.shape[0] != expected_kept:
+        raise StructureAssertionError(f"(o1) {rs.shape[0]} atoms kept, expected {expected_kept}")
+    measured = np.array([rs[terr == k, 0].max() for k in range(len(tops))])
+    if np.max(np.abs(measured - kept_top * q)) > POSITION_TOL_A:             # (o2)
+        raise StructureAssertionError("(o2) measured kept top layers differ from tops - N")
+    for k, p in enumerate(pt):
+        if abs(measured[k] - p["atomistic_crystal_top_x_A"]) > POSITION_TOL_A:
+            raise StructureAssertionError(f"(o2) terrace {k}: kept top at {measured[k]:.9f} A, "
+                                          f"stack record {p['atomistic_crystal_top_x_A']:.9f} A")
+        p.update(kept_top_layer_index=int(kept_top[k]), measured_crystal_top_x_A=float(measured[k]),
+                 removed_atoms=int(removed[k]))
+    pairs = neighbour_pairs(rs, per, 1.05 * nearest_neighbour_distance_A(a))
+    buried_axes = _measure_backbond_axes(layer, terr, kept_top, pairs, frame, a,
+                                         POSITION_TOL_A)                      # (o4)
+    for k, p in enumerate(pt):
+        ax = buried_axes[k]
+        ax_slab = frame.to_slab(np.array(ax, float) / np.sqrt(2.0))
+        p.update(buried_backbond_axis_crystal=list(ax),
+                 buried_backbond_angle_to_beam_deg=float(np.degrees(np.arctan2(
+                     abs(ax_slab[1]), abs(ax_slab[2])))),
+                 buried_terrace_type_swapped=bool(tuple(ax) != tuple(axes[k])),
+                 buried_terrace_type_note="each consumed layer swaps the interfacial terrace type "
+                                          "(E9 section 3 item 2; R3 p. 88); measured on the kept "
+                                          "atoms")
+    for s in steps:                                                          # (o3)
+        A, B = s["from_terrace"], s["to_terrace"]
+        dl = int(kept_top[B] - kept_top[A])
+        conf = (pt[A]["thickness_A"] == pt[B]["thickness_A"]
+                and pt[A]["consumed_layers"] == pt[B]["consumed_layers"])
+        rec = dict(conformal_at_step=bool(conf), thickness_A=[pt[A]["thickness_A"],
+                                                              pt[B]["thickness_A"]],
+                   consumed_layers=[int(N[A]), int(N[B])], buried_delta_layers=dl,
+                   buried_height_A=float(dl * q))
+        if dl == 0:
+            rec.update(buried_relation="none", buried_b4=B4_OXIDE_FLAT)
+        else:
+            selA = (terr == A) & (layer >= kept_top[A] - 3)
+            selB = (terr == B) & (layer >= kept_top[B] - 3)
+            rel = find_terrace_relations(rc[selA], kept_top[A] - layer[selA], rc[selB],
+                                         kept_top[B] - layer[selB], a)
+            kind = classify_relation(rel, 2 if dl % 2 == 0 else 1, buried_axes[A],
+                                     buried_axes[B], a)
+            mirrors = [r["operation"] for r in rel if r["operation"] in _MIRROR_NORMALS
+                       and r["lattice_symmetry"]
+                       and int(np.dot(_MIRROR_NORMALS[r["operation"]], az)) == 0]
+            rec.update(buried_relation=kind, buried_b4=b4_statement(kind, az, mirrors),
+                       buried_incidence_plane_mirror_operations=sorted(set(mirrors)),
+                       buried_operations_found=sorted({r["operation"] for r in rel}))
+            if conf and (kind != s["type"] or rec["buried_b4"]
+                         != s["relation"]["model_assumption_B4"]):
+                raise StructureAssertionError(
+                    f"(o3) step {s['index']}: conformal oxide, but the buried relation ({kind}) "
+                    f"differs from the ideal one ({s['type']})")
+        rec["model_assumption_B4_overlayer"] = (
+            (B4_OXIDE_CONFORMAL if conf else B4_OXIDE_GROWN)
+            + ("; " + B4_OXIDE_PARITY if tuple(az) in _AZIMUTHS["<110>"] else ""))
+        s["overlayer"] = rec
+    passed = [
+        "(o1) continuum oxide: the top N_k whole layers of every terrace removed (count asserted)",
+        "(o2) measured kept top layer of every terrace = tops_k - N_k",
+        "(o3) relation between neighbouring buried terraces measured on the kept atoms (translation "
+        "for an even, screw for an odd buried layer difference; equal to the ideal relation for a "
+        "conformal oxide)",
+        "(o4) top-layer back-bond axis of every buried terrace measured (terrace type at the buried "
+        "interface)"]
+    return rs, rc, layer, terr, dict(record=st["record"], per_terrace=pt, passed=passed,
+                                     expected_kept=expected_kept)
+
+
 def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircase,
                          edge_periods: int, substrate_layers: int,
                          first_terrace_backbond_uvw, termination: str,
-                         overlayer: OverlayerSpec | None,
+                         overlayer: "OverlayerSpec | ox.ContinuumOxideSpec | None",
                          vacuum_above_A: float, lattice_parameter_A: float,
                          lattice_parameter_label: str) -> Si001Structure:
     """Build a bulk-terminated Si(001) terrace staircase and run assertions (a) to (g).
@@ -817,8 +945,10 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                                  'p(2x1)a flip-flop ensemble' (ASSUMPTION B37); 'dimer_2x1' is
                                  refused as ambiguous (NotImplementedError); a reconstruction
                                  needs substrate_layers >= reconstruction.MIN_SUBSTRATE_LAYERS
-    overlayer                    :class:`OverlayerSpec` (PROJECT_INPUT item 12) or None (explicit
-                                 clean surface, ASSUMPTION B7)
+    overlayer                    :class:`OverlayerSpec` (PROJECT_INPUT item 12; declared region
+                                 only), :class:`oxide.ContinuumOxideSpec` (continuum oxide grown
+                                 from the crystal: consumed layers removed, stack recorded; report
+                                 E4), or None (explicit clean surface, ASSUMPTION B7)
     vacuum_above_A               vacuum above the highest top layer inside the (non-periodic) x box
     lattice_parameter_A, lattice_parameter_label
                                  the lattice parameter (A) and its evidence label, e.g.
@@ -1044,6 +1174,19 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                 "precision 0.001 A)")
         rs = rec.ideal_positions_A + rec.displacement_A
 
+    # --- continuum oxide: consumed layers removed, stack recorded (report E4; (o1)-(o4)) ------
+    oxide_rec = None
+    ideal_count = int(rs.shape[0])
+    if opt_over["value"] == ox.MODEL_NAME:
+        rs, rc, layer, terr, oxide_rec = _apply_oxide(
+            overlayer, rs=rs, rc=rc, layer=layer, terr=terr, tops=tops, steps=steps, axes=axes,
+            q=q, a=a, az=az, frame=frame, x_top=x_top, vacuum_above_A=vacuum_above_A,
+            atoms_per_layer=atoms_per_layer_per_cell * edge_periods * widths, per=per,
+            expected=expected)
+        opt_over.update(oxide_rec["record"])
+        opt_over["per_terrace"] = oxide_rec["per_terrace"]
+        passed += oxide_rec["passed"]
+
     # --- metadata -----------------------------------------------------------------------------
     terrace_map = []
     for k in range(len(widths)):
@@ -1062,6 +1205,13 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
             continuous_with_terrace_0_across_boundary=bool(
                 k == len(widths) - 1 and len(widths) > 1 and staircase.boundary_step_layers == 0),
         ))
+        if oxide_rec is not None:
+            terrace_map[-1].update(
+                oxide=oxide_rec["per_terrace"][k],
+                n_atoms_after_consumption=int(np.count_nonzero(terr == k)),
+                top_height_note="top_height_A is the ideal PRE-OXIDATION top-layer plane (the "
+                                "reference plane of the continuum oxide); the crystal's kept top "
+                                "layer is oxide.atomistic_crystal_top_x_A")
         if rec is not None:
             terrace_map[-1].update(
                 reconstruction=rec.metadata["terraces"][k],
@@ -1113,12 +1263,15 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                                        "model_assumptions row yet; B4 notes the riser region"),
         ),
         substrate_layers=substrate_layers, edge_periods=edge_periods,
-        atom_count=int(rs.shape[0]), expected_atom_count=expected,
+        atom_count=int(rs.shape[0]),
+        expected_atom_count=(expected if oxide_rec is None else oxide_rec["expected_kept"]),
         tolerances_A=dict(position=POSITION_TOL_A, window=WINDOW_TOL_A,
                           duplicate_distance=checks.DUPLICATE_DIST_A),
         assertions_passed=passed,
         positions_sha256=pos_hash,
     )
+    if oxide_rec is not None:
+        metadata["ideal_atom_count_before_consumption"] = ideal_count
     if opt_over["value"] == "declared_region":
         opt_over["per_terrace_x_range_A"] = [[float(tops[k] * q),
                                               float(tops[k] * q + opt_over["thickness_A"])]

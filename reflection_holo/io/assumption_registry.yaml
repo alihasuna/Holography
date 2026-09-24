@@ -47,10 +47,13 @@ stand_ins:
   B38: [21]    # demo stand-in surface-plasmon excitation number of the object path, n = 1.246 per specular reflection (E6's scripted 1/sin(theta) transfer of Tanishiro 2003 p. 167 to 16.1347 mrad, DERIVED_HERE, tools/review/e6_recompute_output.txt: zero-loss amplitude exp(-n/2) = 0.536); docs/06 item 21 (energy-filtered EELS of the specular beam at the working angle)
   B39: [16]    # demo stand-in mutual visibility of the loss electrons of the two arms, V_loss = 0.1 (Tanishiro 2003 p. 171 via E6, one-plasmon-loss hologram of an R2 arrangement); docs/06 item 16; declared with an R2 reference only (no effect, hence refused, with R1/R3; audit A5 F10)
   B40: [3, 16] # demo convergent illumination (uniform disc, semi-angle per configuration) and, for an R1 reference, the object-reference separation D0; docs/06 items 3 and 16
+  # Report docs/agent_reports/E4_oxide_overlayer.md (row proposed there, added to
+  # docs/model_assumptions.md by the orchestrator; L8 section 8 as corrected by E9). Demo only.
+  B41: [12]    # demo continuum oxide on the bulk-terminated staircase: conformal, t_ox 1.5 or 2.0 nm (thermal-oxide equivalent at 2.20 g/cm^3), V_ox 10.34 V (IAM at 2.20 g/cm^3, E9 out:166), V'_ox 0.40 V or 0 V, vacuum edge and interface graded 0.5 A (E9 M4), a-Si 0 nm (optimistic bound, E9 M5); variants of configs/demo_smoke_si001.yaml only; docs/06 item 12
 # Demo-only stand-ins (audit A3 M2): refused by every pipeline run with purpose "comparison",
 # whatever the docs/06 item. Every id listed here must be a key of stand_ins.
 demo_only: [B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34, B36,
-            B38, B39, B40]
+            B38, B39, B40, B41]
 # Rows the code cites as model assumptions or sourced models that stand in for NO docs/06 item
 # (report E2). They are not accepted as assumption_id of a configuration parameter; they are listed
 # so that tests/io checks that each is a row of docs/model_assumptions.md.

@@ -531,3 +531,225 @@ variants:
           stands_in_for_item: 21
           assumption_id: B38
           source: "demo stand-in B38: mean number of surface-plasmon excitations of the object path per specular reflection, 1.246 = 1.44 x sin(0.8 deg)/sin(16.1347 mrad): E6's 1/sin(theta) transfer (DERIVED_HERE, tools/review/e6_recompute_output.txt section F, line 119: 1.246, zero-loss amplitude exp(-n/2) = 0.536) of the 200 kV measurement on Si(111)7x7 at 0.8 deg, (444) (Tanishiro 2003 p. 167, SECTION_READ by E6) to Si(001) at the (0,0,8) condition; surface, temperature and Bragg condition differ (ASSUMPTION); the laboratory value is an energy-filtered EELS of the specular beam at the working angle (a new request under PROJECT_INPUT item 21, not supplied)"
+  oxide_2p0nm:
+    description: >-
+      The base (geometric) demo under the continuum oxide of stand-in B41 (report E4): t_ox 2.0 nm,
+      V_ox 10.34 V, V'_ox 0.4 V, graded 0.5 A edges, no amorphous Si. The conformal layer leaves
+      every step phase unchanged (E9 section 3 item 1) and multiplies the reflected amplitude by the
+      zero-loss model value exp(-2 Im k'_perp t) (E9 M1); not comparable to experiment.
+    sections:
+      structure:
+        substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
+        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+    cfg_b_parameters:
+      surface_preparation_details:
+        value:
+          termination: bulk
+          overlayer:
+            model: continuum_oxide
+            material: amorphous SiO2
+            thickness_A: 20.0
+            density_g_cm3: 2.20
+            consumed_layers: 7
+            V_real_V: 10.34
+            V_imag_V: 0.4
+            vacuum_edge_width_A: 0.5
+            interface_width_A: 0.5
+            amorphous_si_thickness_A: 0.0
+        unit: none
+        label: ASSUMPTION
+        item: 12
+        stands_in_for_item: 12
+        assumption_id: B41
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+  oxide_2p0nm_no_absorption:
+    description: >-
+      The base (geometric) demo under the continuum oxide of stand-in B41 (report E4): t_ox 2.0 nm,
+      V_ox 10.34 V, V'_ox 0.0 V, graded 0.5 A edges, no amorphous Si. The conformal layer leaves
+      every step phase unchanged (E9 section 3 item 1) and multiplies the reflected amplitude by the
+      zero-loss model value exp(-2 Im k'_perp t) (E9 M1); not comparable to experiment.
+    sections:
+      structure:
+        substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
+        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+    cfg_b_parameters:
+      surface_preparation_details:
+        value:
+          termination: bulk
+          overlayer:
+            model: continuum_oxide
+            material: amorphous SiO2
+            thickness_A: 20.0
+            density_g_cm3: 2.20
+            consumed_layers: 7
+            V_real_V: 10.34
+            V_imag_V: 0.0
+            vacuum_edge_width_A: 0.5
+            interface_width_A: 0.5
+            amorphous_si_thickness_A: 0.0
+        unit: none
+        label: ASSUMPTION
+        item: 12
+        stands_in_for_item: 12
+        assumption_id: B41
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.0 V (no electronic absorption in the layer, stated), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+  oxide_1p5nm:
+    description: >-
+      The base (geometric) demo under the continuum oxide of stand-in B41 (report E4): t_ox 1.5 nm,
+      V_ox 10.34 V, V'_ox 0.4 V, graded 0.5 A edges, no amorphous Si. The conformal layer leaves
+      every step phase unchanged (E9 section 3 item 1) and multiplies the reflected amplitude by the
+      zero-loss model value exp(-2 Im k'_perp t) (E9 M1); not comparable to experiment.
+    sections:
+      structure:
+        substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
+        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+    cfg_b_parameters:
+      surface_preparation_details:
+        value:
+          termination: bulk
+          overlayer:
+            model: continuum_oxide
+            material: amorphous SiO2
+            thickness_A: 15.0
+            density_g_cm3: 2.20
+            consumed_layers: 5
+            V_real_V: 10.34
+            V_imag_V: 0.4
+            vacuum_edge_width_A: 0.5
+            interface_width_A: 0.5
+            amorphous_si_thickness_A: 0.0
+        unit: none
+        label: ASSUMPTION
+        item: 12
+        stands_in_for_item: 12
+        assumption_id: B41
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 15.0 A thermal-oxide equivalent at 2.20 g/cm^3 (1.5 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 6.62 A and consumed_layers = 5 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+  oxide_1p5nm_no_absorption:
+    description: >-
+      The base (geometric) demo under the continuum oxide of stand-in B41 (report E4): t_ox 1.5 nm,
+      V_ox 10.34 V, V'_ox 0.0 V, graded 0.5 A edges, no amorphous Si. The conformal layer leaves
+      every step phase unchanged (E9 section 3 item 1) and multiplies the reflected amplitude by the
+      zero-loss model value exp(-2 Im k'_perp t) (E9 M1); not comparable to experiment.
+    sections:
+      structure:
+        substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
+        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+    cfg_b_parameters:
+      surface_preparation_details:
+        value:
+          termination: bulk
+          overlayer:
+            model: continuum_oxide
+            material: amorphous SiO2
+            thickness_A: 15.0
+            density_g_cm3: 2.20
+            consumed_layers: 5
+            V_real_V: 10.34
+            V_imag_V: 0.0
+            vacuum_edge_width_A: 0.5
+            interface_width_A: 0.5
+            amorphous_si_thickness_A: 0.0
+        unit: none
+        label: ASSUMPTION
+        item: 12
+        stands_in_for_item: 12
+        assumption_id: B41
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 15.0 A thermal-oxide equivalent at 2.20 g/cm^3 (1.5 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 6.62 A and consumed_layers = 5 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.0 V (no electronic absorption in the layer, stated), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+  multislice_tiny_oxide_2p0nm:
+    description: >-
+      The multislice_tiny smoke variant under the 2.0 nm continuum oxide of stand-in B41 (report E4;
+      forward.multislice.ContinuumOxidePotential on the Kirkland Si crystal whose top 7 layers are
+      consumed). The terraces are 180 lattice periods long so that the refracted ray crosses the
+      layer and reaches the build-up depth in the crystal before the exit plane (overlayer build-up
+      assertion). UNVALIDATED engine (the atomistic fixed-beam translation gate has not passed): a
+      smoke test of the interface, not a physics result.
+    sections:
+      structure:
+        staircase:
+          value:
+            edges: transverse
+            terrace_layers: [0, 2, 1]
+            terrace_widths_periods: [180, 180, 180]
+            boundary_step_layers: -1
+            first_terrace_backbond_uvw: [1, 1, 0]
+          unit: none
+          label: ASSUMPTION
+          item: 11
+          stands_in_for_item: 11
+          assumption_id: B25
+          source: "demo stand-in B25 (multislice oxide variant): terraces 180 lattice periods long; PROJECT_INPUT item 11 not supplied"
+        edge_periods: 2
+        substrate_layers: 34
+        vacuum_above_A: 20.0
+      cell:
+        periods_along_beam: 1
+        multislice:
+          vacuum_above_A: 60.0
+          depth_below_A: 32.0
+          bulk_absorber_A: 10.0
+          top_absorber_A: 10.0
+          entrance_vacuum_z_A: 20.365875
+      engine:
+        name: multislice
+        multislice:
+          parameterisation: kirkland
+          physical_absorption:
+            value: {model: proportional, ratio: 0.0}
+            unit: none
+            label: ASSUMPTION
+            item: 21
+            stands_in_for_item: 21
+            assumption_id: B30
+            source: "demo stand-in B30: no physical absorption of the crystal (imaginary potential zero; B6 not represented); the layer's own V'_ox is part of B41; PROJECT_INPUT item 21 not supplied"
+          frozen_phonons: none
+          static_lattice_label: "ASSUMPTION (demo): static lattice, no frozen-phonon ensemble"
+          potential_mip:
+            value: 13.903
+            unit: V
+            label: REPRODUCED
+            source: "docs/agent_reports/D3_abtem_potential_provenance.md section 7 and F16: mean inner potential of the Kirkland independent-atom potential of Si at a = 5.4309 A (tools/provenance_checks/abtem_mip.py); asserted against forward.multislice.potentials.potential_mean_inner_potential_V at run time (the crystal's MIP; the layer does not change it, report E4)"
+          sheet_beam: {height_A: 8.0, edge_A: 2.0, x_bottom_above_highest_surface_A: 1.0}
+          nx: 576
+          ny: 48
+          dz_A: 1.357725
+          propagator: exact
+          band_limit: "2/3"
+          backend: numpy
+          precision: complex128
+          absorber: {strength_V: 100.0, profile: sin2}
+          buildup_depth_A: 20.0
+          n_realisations: 1
+          seed: null
+          save_exit_waves: false
+      illumination:
+        glancing_angle:
+          value: {rule: internal_bragg_external_angle, reflection_hkl: [0, 0, 8], V0_source: sections.engine.multislice.potential_mip}
+          unit: none
+          label: ASSUMPTION
+          item: 7
+          stands_in_for_item: 7
+          assumption_id: B32
+          source: "demo stand-in B32: the external glancing angle of the (0,0,8) internal Bragg condition computed with the mean inner potential of the crystal potential actually used by the multislice engine (Kirkland IAM, 13.903 V); PROJECT_INPUT item 7 not supplied (blocking)"
+      detector:
+        roi_shape: [40, 16]
+    cfg_b_parameters:
+      surface_preparation_details:
+        value:
+          termination: bulk
+          overlayer:
+            model: continuum_oxide
+            material: amorphous SiO2
+            thickness_A: 20.0
+            density_g_cm3: 2.20
+            consumed_layers: 7
+            V_real_V: 10.34
+            V_imag_V: 0.4
+            vacuum_edge_width_A: 0.5
+            interface_width_A: 0.5
+            amorphous_si_thickness_A: 0.0
+        unit: none
+        label: ASSUMPTION
+        item: 12
+        stands_in_for_item: 12
+        assumption_id: B41
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"

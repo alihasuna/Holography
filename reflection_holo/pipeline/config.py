@@ -14,7 +14,8 @@ File layout (YAML; duplicate keys refused anywhere, ``io.config.load_yaml_unique
             parameters: {...}}                         # a CFG-B configuration (io.config schema)
     sections: {structure, cell, engine, illumination, optics, reference, detector,
                reconstruction, quantification, runtime, outputs}
-    variants: {<name>: {description, sections: {...partial overrides...}}}     # optional
+    variants: {<name>: {description, sections: {...partial overrides...},
+                        cfg_b_parameters: {<name>: <whole CFG-B record>}}}      # optional
 
 The ``cfg_b`` block is validated by ``reflection_holo.io.config.load_config_dict(level="run")``,
 after the pipeline has inserted the glancing angle it computes (``illumination.glancing_angle``,
@@ -34,7 +35,18 @@ Units: io.config.UNITS plus three pipeline units (``PIPELINE_UNITS``): "e/px" (d
 (gain) and "deg" (angle). Values are converted to A, rad, keV, V.
 
 Variants (``--variant``) deep-merge a partial ``sections`` mapping over the base; a variant is an
-explicit choice of the caller, recorded in every output.
+explicit choice of the caller, recorded in every output. A variant may also REPLACE whole CFG-B
+parameter records (``cfg_b_parameters``, report E4: e.g. the continuum-oxide stand-in B41 of item
+12 on top of a clean base); every replaced record passes the same CFG-B gate, and the resolved
+CFG-B block is hashed and recorded.
+
+Overlayer (docs/06 item 12; report E4): cfg_b.surface_preparation_details.overlayer is "none" or a
+complete continuum oxide {model: continuum_oxide, material, thickness_A, density_g_cm3,
+consumed_layers, V_real_V, V_imag_V, vacuum_edge_width_A, interface_width_A,
+amorphous_si_thickness_A (+ amorphous_si_V_real_V, amorphous_si_V_imag_V when > 0)}, every key
+REQUIRED and carrying the record's label (``OXIDE_KEYS``; structure.oxide.ContinuumOxideSpec);
+anything else is refused (audit A3 M6). The pipeline builds conformal layers only (no per-terrace
+overrides), on the staircase path, with the bulk termination.
 """
 from __future__ import annotations
 
@@ -511,17 +523,51 @@ def _deep_merge(base: dict, over: dict) -> dict:
     return out
 
 
-def resolve_variant(data: dict, variant: str | None) -> dict:
-    """Base sections, or the base deep-merged with ``variants[variant].sections``."""
-    if variant is None:
-        return copy.deepcopy(data["sections"])
+VARIANT_KEYS = {"description", "sections"}
+VARIANT_KEYS_OPTIONAL = {"cfg_b_parameters"}
+
+
+def _variant(data: dict, variant: str) -> dict:
     variants = data.get("variants") or {}
     if variant not in variants:
         raise PipelineConfigError(f"unknown variant {variant!r}; defined: {sorted(variants)}")
     v = variants[variant]
-    if not isinstance(v, dict) or set(v) != {"description", "sections"}:
-        raise PipelineConfigError(f"variant {variant!r} must be {{description, sections}}")
+    if not isinstance(v, dict) or not VARIANT_KEYS <= set(v) or \
+            set(v) - VARIANT_KEYS - VARIANT_KEYS_OPTIONAL:
+        raise PipelineConfigError(f"variant {variant!r} must be {{description, sections}} "
+                                  f"(optionally cfg_b_parameters)")
+    return v
+
+
+def resolve_variant(data: dict, variant: str | None) -> dict:
+    """Base sections, or the base deep-merged with ``variants[variant].sections``."""
+    if variant is None:
+        return copy.deepcopy(data["sections"])
+    v = _variant(data, variant)
     return _deep_merge(data["sections"], v["sections"])
+
+
+def resolve_variant_cfg_b(data: dict, variant: str | None) -> dict:
+    """The CFG-B block of the base, with the whole parameter records of
+    ``variants[variant].cfg_b_parameters`` replacing the base's (report E4). Each replacement must
+    be a record mapping; it passes the CFG-B gate like any other."""
+    cfg_b = copy.deepcopy(data["cfg_b"])
+    if variant is None:
+        return cfg_b
+    over = _variant(data, variant).get("cfg_b_parameters")
+    if over is None:
+        return cfg_b
+    if not isinstance(over, dict) or not over:
+        raise PipelineConfigError(f"variant {variant!r}: cfg_b_parameters must be a non-empty "
+                                  f"mapping of whole CFG-B records")
+    if not isinstance(cfg_b, dict) or not isinstance(cfg_b.get("parameters"), dict):
+        raise PipelineConfigError("cfg_b.parameters must be a mapping")
+    for name, rec in over.items():
+        if not isinstance(rec, dict) or not {"value", "label"} <= set(rec):
+            raise PipelineConfigError(f"variant {variant!r}: cfg_b_parameters.{name} must be a "
+                                      f"whole record {{value, unit, label, source, ...}}")
+        cfg_b["parameters"][name] = copy.deepcopy(rec)
+    return cfg_b
 
 
 def _glancing_angle(rec: Record, cfg_b_params: dict, sections: dict) -> dict:
@@ -678,9 +724,9 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
     _check_structure(sections)
     _check_engine(sections, allow_test_only=allow_test_only)
     ga_rec = sections["illumination"]["glancing_angle"]
-    cfg_b_raw = data["cfg_b"]
-    if not isinstance(cfg_b_raw, dict):
+    if not isinstance(data["cfg_b"], dict):
         raise PipelineConfigError("cfg_b must be a CFG-B configuration mapping")
+    cfg_b_raw = resolve_variant_cfg_b(data, variant)
     ga = _glancing_angle(ga_rec, cfg_b_raw.get("parameters") or {}, sections)
     cfg_b_full = _cfg_b_with_angle(cfg_b_raw, ga, ga_rec)
     cfg_b = load_config_dict(cfg_b_full, level="run", allow_test_only=allow_test_only)
@@ -862,11 +908,7 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
     prep = cfg_b.value("surface_preparation_details")
     if isinstance(prep, dict):
         if prep.get("overlayer", "none") != "none":
-            raise PipelineConfigError(
-                f"cfg_b.surface_preparation_details.overlayer = {prep.get('overlayer')!r} (docs/06 "
-                f"item 12): no engine builds an overlayer (the structure builder records it only; "
-                f"the geometric model and B4 exclude one), and docs/06 item 12 says it must be "
-                f"modelled rather than ignored: refused (audit A3 M6)")
+            _check_overlayer(cfg_b, prep, sections)
         _check_termination(cfg_b, prep, sections)
     pat = cfg_b.value("pattern_geometry")
     feat = sections["structure"].get("feature")
@@ -898,6 +940,98 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
                 f"target reflection (docs/06 item 9, cfg_b.target_reflection_hkl) is "
                 f"{tuple(target)}: the angle would be computed for a reflection other than the "
                 f"declared working condition: refused (audit A3 M6)")
+
+
+OXIDE_MODEL = "continuum_oxide"
+OXIDE_KEYS = ("model", "material", "thickness_A", "density_g_cm3", "consumed_layers", "V_real_V",
+              "V_imag_V", "vacuum_edge_width_A", "interface_width_A", "amorphous_si_thickness_A")
+OXIDE_KEYS_AMORPHOUS = ("amorphous_si_V_real_V", "amorphous_si_V_imag_V")
+OXIDE_STAND_INS_CLEAN = ("B26",)          # item-12 stand-ins whose row states NO overlayer
+
+
+def qualified_label(p, item: int | None) -> str:
+    """Qualified evidence label of a CFG-B parameter or a Record (as pipeline.engines._label)."""
+    lab = p.label
+    aid = getattr(p, "assumption_id", None)
+    if lab == "ASSUMPTION" and aid:
+        return f"ASSUMPTION {aid} (stands in for PROJECT_INPUT item {item})"
+    if lab == "PROJECT_INPUT":
+        return f"PROJECT_INPUT item {item} ({p.source})"
+    return f"{lab} ({p.source})"
+
+
+def oxide_spec_from_config(cfg_b: LoadedConfig):
+    """structure.oxide.ContinuumOxideSpec of cfg_b.surface_preparation_details.overlayer (item 12;
+    report E4), every parameter carrying the record's qualified label; conformal (no per-terrace
+    overrides), sharp_edge_test_flag False. Raises PipelineConfigError naming item 12."""
+    from reflection_holo.structure import oxide as ox
+    prep = cfg_b.value("surface_preparation_details")
+    over = prep.get("overlayer") if isinstance(prep, dict) else None
+    where = "cfg_b.surface_preparation_details.overlayer (docs/06 item 12)"
+    if not isinstance(over, dict) or over.get("model") != OXIDE_MODEL:
+        raise PipelineConfigError(
+            f"{where} = {over!r}: only 'none' or a complete continuum oxide {{model: "
+            f"{OXIDE_MODEL}, ...}} is represented by the engines (report E4); refused rather than "
+            f"ignored (audit A3 M6)")
+    t_a = over.get("amorphous_si_thickness_A")
+    want = set(OXIDE_KEYS) | (set(OXIDE_KEYS_AMORPHOUS)
+                              if isinstance(t_a, (int, float)) and t_a > 0 else set())
+    if set(over) != want:
+        raise PipelineConfigError(
+            f"{where}: the continuum oxide needs exactly the keys {sorted(want)} (every physical "
+            f"parameter REQUIRED; no default), got {sorted(over)}; missing "
+            f"{sorted(want - set(over))}, unknown {sorted(set(over) - want)}")
+    p12 = cfg_b.parameters["surface_preparation_details"]
+    lab = qualified_label(p12, 12)
+    labels = {k: lab for k in ox.LABEL_KEYS}
+    if t_a is not None and t_a > 0:
+        labels["amorphous_si_potential"] = lab
+    try:
+        spec = ox.ContinuumOxideSpec(
+            material=over["material"], thickness_A=over["thickness_A"],
+            density_g_cm3=over["density_g_cm3"], consumed_layers=over["consumed_layers"],
+            V_real_V=over["V_real_V"], V_imag_V=over["V_imag_V"],
+            vacuum_edge_width_A=over["vacuum_edge_width_A"],
+            interface_width_A=over["interface_width_A"],
+            amorphous_si_thickness_A=over["amorphous_si_thickness_A"],
+            amorphous_si_V_real_V=over.get("amorphous_si_V_real_V"),
+            amorphous_si_V_imag_V=over.get("amorphous_si_V_imag_V"),
+            terrace_thickness_A=None, terrace_consumed_layers=None, sharp_edge_test_flag=False,
+            labels=labels)
+        ox.validate_spec(spec)
+    except (ValueError, TypeError) as exc:
+        raise PipelineConfigError(f"{where}: {exc}") from exc
+    return spec
+
+
+def _check_overlayer(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
+    """Gate of a declared overlayer (item 12; report E4): a complete continuum oxide
+    (oxide_spec_from_config), not under a stand-in whose row states a clean surface (B26), on the
+    staircase path (the feature path builds clean bulk-terminated surfaces only) with the bulk
+    termination (a reconstruction under an overlayer is NOT IMPLEMENTED). The consumed-layer count
+    is checked against the lattice parameter here (structure.oxide.terrace_stacks)."""
+    from reflection_holo.structure import oxide as ox
+    where = f"cfg_b.surface_preparation_details.overlayer = {prep.get('overlayer')!r}"
+    p12 = cfg_b.parameters["surface_preparation_details"]
+    if p12.label == "ASSUMPTION" and getattr(p12, "assumption_id", None) in OXIDE_STAND_INS_CLEAN:
+        raise PipelineConfigError(f"{where} (docs/06 item 12): stand-in "
+                                  f"{p12.assumption_id} states a clean surface without oxide; an "
+                                  f"overlayer needs its own declaration (e.g. B41)")
+    spec = oxide_spec_from_config(cfg_b)
+    if "feature" in sections["structure"]:
+        raise PipelineConfigError(f"{where}: the feature path builds clean, bulk-terminated "
+                                  f"surfaces only; the continuum oxide is built on the staircase "
+                                  f"path (report E4): refused rather than ignored")
+    if prep.get("termination", "bulk") != "bulk":
+        raise PipelineConfigError(f"{where}: a reconstruction under an overlayer is NOT "
+                                  f"IMPLEMENTED (a buried interface is not a clean surface)")
+    a_A, unit = cfg_b.quantity("lattice_parameter")
+    if unit != "A":
+        raise PipelineConfigError("cfg_b.lattice_parameter must be in A")
+    try:
+        ox.terrace_stacks(spec, terrace_heights_A=[0.0], a_A=float(a_A))
+    except ValueError as exc:
+        raise PipelineConfigError(f"{where}: {exc}") from exc
 
 
 def _check_termination(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
@@ -1286,6 +1420,8 @@ def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
     engine the V0 actually used (sections.engine.multislice.potential_mip) is listed under item 20
     (audit A3 m2)."""
     sections = resolve_variant(data, variant)
+    if isinstance(data.get("cfg_b"), dict):              # variant CFG-B records (report E4)
+        data = dict(data, cfg_b=resolve_variant_cfg_b(data, variant))
     rows = []
     cfg_params = (data.get("cfg_b") or {}).get("parameters") or {}
     from reflection_holo.io.config import SCHEMAS

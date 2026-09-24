@@ -140,3 +140,30 @@ def theta_ext_from_int_rad(theta_int_rad, E_keV: float, V0_V: float):
             f"(E = {E_keV} keV, V0 = {V0_V} V): the beam cannot leave the crystal")
     out = np.arcsin(np.clip(np.sqrt(arg) / k, -1.0, 1.0))
     return float(out) if np.ndim(out) == 0 else out
+
+
+def refraction_delta_complex(E_keV: float, V_real_V: float, V_imag_V: float) -> complex:
+    """Delta = (k_int^2 - k^2)/k^2 for a complex potential U = V + i V' (V' >= 0 absorbing):
+    the exact relativistic form V/E_eff written as the polynomial U (2 T + U + 2 m_e c^2) /
+    (T (T + 2 m_e c^2)) (identical to refraction_delta for V' = 0; the form of
+    tools/review/e9_recompute.py delta_exact, report E9). Report E4, DERIVED_HERE."""
+    T = _T_eV(E_keV)
+    V = _check_V0(V_real_V)
+    Vi = float(V_imag_V)
+    if not np.isfinite(Vi) or Vi < 0.0:
+        raise ValueError(f"imaginary potential must be finite and >= 0 V, got {V_imag_V!r}")
+    U = complex(V, Vi)
+    return U * (2.0 * T + U + 2.0 * M_E_C2_EV) / (T * (T + 2.0 * M_E_C2_EV))
+
+
+def k_perp_in_layer_per_A(theta_ext_rad: float, E_keV: float, V_real_V: float,
+                          V_imag_V: float) -> complex:
+    """Surface-normal wavevector (rad/A) inside a laterally uniform layer of potential V + i V'
+    for a beam at the external glancing angle theta_ext (surface-parallel wavevector conserved):
+    k'_perp = k sqrt(sin^2 theta_ext + Delta(V + iV')); Im k'_perp > 0 for V' > 0 (amplitude decay
+    exp(-Im k'_perp d) over a normal distance d). Report E4 (E9 section 3, out:34-42), DERIVED_HERE."""
+    th = float(theta_ext_rad)
+    if not (np.isfinite(th) and 0.0 < th < np.pi / 2):
+        raise ValueError("the glancing angle must lie in (0, pi/2) rad")
+    d = refraction_delta_complex(E_keV, V_real_V, V_imag_V)
+    return complex(k_ang_per_A(E_keV) * np.sqrt(complex(np.sin(th) ** 2) + d))

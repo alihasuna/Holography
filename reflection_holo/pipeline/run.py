@@ -80,7 +80,9 @@ NOT_IMPLEMENTED = [
     "rocking-series branch resolution in the pipeline (the joint lattice constraint is used)",
     "quantification of an R2 (differential) phase: R2 runs form and reconstruct the holograms, "
     "every height is withheld (audit A3 M1)",
-    "patterned mesas/trenches and overlayers in the engines",
+    "patterned mesas/trenches in the engines; overlayers other than the conformal continuum oxide "
+    "(report E4): the atomistic amorphous layer, per-terrace overrides in the pipeline, the oxide "
+    "on the feature path, amorphous-network diffuse scattering, carbon, the transition layer",
 ]
 PURPOSE_BANNER = "purpose: {purpose}"
 

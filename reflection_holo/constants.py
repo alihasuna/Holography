@@ -35,6 +35,14 @@ A_SI_A = 5.4309                      # A
 # PROJECT_INPUT item 20. Never a function default: pass it explicitly and record the label.
 V0_SI_ASSUMPTION_V = 12.0            # V
 
+# --- Molar masses and the Avogadro constant (report E4: Si consumed by a grown oxide) --------------
+# Si atoms are conserved when the oxide grows: f = n_SiO2 / n_Si = (rho_ox / M_SiO2) / (rho_Si / M_Si)
+# with rho_Si = 8 M_Si / (N_A a^3) (E9 section 3; tools/review/e9_recompute.py lines 45-47 use the
+# same standard atomic weights). Constants, not PROJECT_INPUTs; the oxide density is an input.
+AVOGADRO_PER_MOL = 6.022_140_76e23   # 1/mol  SI-2019 exact definition
+M_SI_G_PER_MOL = 28.0855             # g/mol  IUPAC standard atomic weight of Si (abridged)
+M_O_G_PER_MOL = 15.9994              # g/mol  IUPAC standard atomic weight of O (abridged)
+
 # Diamond-cubic 8-atom conventional basis, fractional coordinates (source map SM02).
 DIAMOND_BASIS = np.array([
     [0.00, 0.00, 0.00], [0.50, 0.50, 0.00],

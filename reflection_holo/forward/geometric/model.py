@@ -32,11 +32,30 @@ What it computes (DERIVED_HERE; source map SM03, SM07; model_assumptions B4, B9,
 Status codes of the ray trace (``STATUS``): 0 lit terrace top, 1 terrace top in the illumination
 shadow, 2 riser face, 3 below the local surface (inside the crystal at the exit plane; not
 modelled), 4 source upstream of the field of view.
+
+Continuum oxide (report E4; structure.oxide, after L8 section 8 and E9 M1-M5): a structure built
+with a ContinuumOxideSpec is accepted. The phase of terrace k becomes
+
+    phi_k = -(k_out - k_in).R_k + Re[T_k + I_k],
+    T_k = 2 (k'_ox - k_perp) (x_t - H_k)                         top-surface term
+    I_k = 2 k'_ox (H_k - x_i) + 2 k'_a (x_i - x_c)                grown-oxide (interface) term
+
+(structure.oxide.stack_phase_terms; E6 M4 formalism as E9 section 3), k'_perp complex for V + iV'
+(geometry.refraction.k_perp_in_layer_per_A), and the amplitude is multiplied by exp(-Im[T_k + I_k])
+(the in+out zero-loss attenuation: a MODEL value, E9 M1). For a conformal layer T_k + I_k is the
+same on every terrace and every step phase is unchanged (E9 section 3 item 1: 10.9761 rad for a/4,
+21.9522 rad for a/2 at 16.1347 mrad, out:91); a thickness difference Dt of a grown oxide changes
+it by [2 k'_ox - 2 k_perp (1 - f)] Dt (4.27-4.71 rad/A, out:109-117), a top-surface-only change by
+2 (k'_ox - k_perp) Dt (0.866-0.980 rad/A, out:96-103). Multiple reflections at the graded edges are
+neglected (w >= 0.5 A: |r| suppressed by 1.1e-4, out:241). B4 is judged on the BURIED crystal step
+measured on the kept atoms by the builder (its relation changes with the consumed-layer counts;
+at <110> the parity of the consumed-layer count decides the terrace type, E9 section 3 item 2).
+The ray trace uses the tops of the layer (x_t) as the surface. Without an oxide nothing changes.
 """
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 import numpy as np
@@ -44,11 +63,13 @@ import numpy as np
 from reflection_holo.constants import BEAM_ENERGY_SUPPLIED_KEV, TWO_PI
 from reflection_holo.forward.contracts import ExitWave
 from reflection_holo.geometry import projection
+from reflection_holo.geometry.refraction import k_perp_in_layer_per_A
 from reflection_holo.geometry.specular import beam_wavevectors_slab
 from reflection_holo.geometry.wavelength import k_ang_per_A, wavelength_A
 from reflection_holo.io.labels import require_evidence_label
 from reflection_holo.quantification.invisibility import detect_invisibility
 from reflection_holo.quantification.shadow import shadow_masks
+from reflection_holo.structure import oxide as ox
 from reflection_holo.structure.si001 import B4_A4_100, B4_TRANSLATION
 
 GEOMETRIC_LABEL = "geometric model, no dynamical amplitude, B4 scope applies"
@@ -203,6 +224,8 @@ def require_b4_scope(model: TerraceModel, *, illumination: str, beam: str) -> li
         raise OutsideB4ScopeError(f"termination {term!r}: only the bulk termination (B3) is in "
                                   f"the B4 scope")
     over = model.options.get("overlayer", {}).get("value")
+    if over == ox.MODEL_NAME:
+        return _require_b4_scope_oxide(model)
     if over is not None:
         raise OutsideB4ScopeError(
             "an overlayer is declared: the geometric model has no overlayer and B4 does not apply "
@@ -221,6 +244,107 @@ def require_b4_scope(model: TerraceModel, *, illumination: str, beam: str) -> li
         out.append(dict(step=s["index"], type=s["type"], height_A=s["height_A"],
                         model_assumption_B4=b4))
     return out
+
+
+def _require_b4_scope_oxide(model: TerraceModel) -> list[dict]:
+    """B4 scope under a continuum oxide (report E4): judged on the BURIED crystal step of every
+    step, measured on the kept atoms by the builder (assertion (o3)): a buried screw (odd buried
+    layer difference) only with the in-scope <100> statement; a buried translation; or no buried
+    step. The layer terms are added by geometric_exit_wave."""
+    out = []
+    for s in model.steps:
+        ov = s.get("overlayer")
+        if ov is None:
+            raise ValueError("builder metadata: a step without its continuum-oxide record")
+        kind, b4 = ov["buried_relation"], ov["buried_b4"]
+        if kind == "screw" and b4 != B4_A4_100:
+            raise OutsideB4ScopeError(
+                f"step {s['index']} (terraces {s['from_terrace']} -> {s['to_terrace']}, azimuth "
+                f"{list(model.azimuth_uvw)}): the BURIED crystal step under the oxide is an a/4 "
+                f"(screw) step ({ov['buried_delta_layers']:+d} layers; consumed layers "
+                f"{ov['consumed_layers']}): B4 {b4}; at <110> its terrace type depends on the "
+                f"parity of the consumed-layer count (E9 section 3 item 2). The geometric phase is "
+                f"not valid; use a dynamical engine (docs/05 sections 0 item 3 and 4.5; SM26)")
+        if kind == "translation" and b4 != B4_TRANSLATION:
+            raise OutsideB4ScopeError(f"step {s['index']}: unexpected buried B4 statement {b4!r}")
+        if kind not in ("screw", "translation", "none"):
+            raise OutsideB4ScopeError(f"step {s['index']}: unknown buried relation {kind!r}")
+        out.append(dict(step=s["index"], type=s["type"], height_A=s["height_A"],
+                        model_assumption_B4=s["relation"]["model_assumption_B4"],
+                        buried_relation=kind, buried_delta_layers=ov["buried_delta_layers"],
+                        buried_b4=b4, conformal_at_step=ov["conformal_at_step"],
+                        model_assumption_B4_overlayer=ov["model_assumption_B4_overlayer"]))
+    return out
+
+
+def oxide_phase_rates(*, theta_ext_rad: float, energy_keV: float, V_real_V: float,
+                      V_imag_V: float, f: float, layer_spacing_A: float) -> dict:
+    """Phase sensitivities of a continuum layer at the specular condition (E9 section 3 items 3-5;
+    DERIVED_HERE, report E4): top-surface term 2 (k'_ox - k_perp) per A of a non-consuming
+    thickness change; grown-oxide term 2 k'_ox - 2 k_perp (1 - f) per A of a grown thickness
+    difference; one extra consumed layer (a/4) = (a/4)/f of oxide. Real parts are phases (rad),
+    imaginary parts in+out attenuation exponents."""
+    th = float(theta_ext_rad)
+    k = k_ang_per_A(energy_keV)
+    kp = k * math.sin(th)
+    ko = k_perp_in_layer_per_A(th, energy_keV, V_real_V, V_imag_V)
+    top = 2.0 * (ko - kp)
+    grown = 2.0 * ko - 2.0 * kp * (1.0 - f)
+    dt_layer = layer_spacing_A / f
+    return dict(k_perp_vacuum_per_A=kp, k_perp_layer_per_A=[ko.real, ko.imag],
+                top_surface_rad_per_A=top.real, grown_oxide_rad_per_A=grown.real,
+                apparent_height_per_A_grown=grown.real / (2.0 * kp),
+                apparent_height_per_A_top=top.real / (2.0 * kp),
+                one_consumed_layer_oxide_A=dt_layer,
+                one_consumed_layer_rad=grown.real * dt_layer,
+                conformal_step_rad_per_A_of_height=2.0 * kp, f=f,
+                source="E9 section 3 items 3-5 (tools/review/e9_recompute_output.txt out:96-123)")
+
+
+def _oxide_terms(model: TerraceModel, *, theta_ext_rad: float, energy_keV: float) -> dict | None:
+    """Per-terrace layer terms of the module docstring (None without a continuum oxide)."""
+    rec = model.options.get("overlayer", {})
+    if rec.get("value") != ox.MODEL_NAME:
+        return None
+    per = rec["per_terrace"]
+    if len(per) != model.n_terraces:
+        raise ValueError("builder metadata: one oxide stack per terrace expected")
+    for k, p in enumerate(per):
+        if abs(p["pre_oxidation_plane_x_A"] - model.heights_A[k]) > _HEIGHT_TOL_A:
+            raise ValueError("builder metadata: the oxide reference plane is not the terrace's "
+                             "top-layer plane")
+    k = k_ang_per_A(energy_keV)
+    kp = k * math.sin(theta_ext_rad)
+    ko = k_perp_in_layer_per_A(theta_ext_rad, energy_keV, rec["V_real_V"], rec["V_imag_V"])
+    ka = (k_perp_in_layer_per_A(theta_ext_rad, energy_keV, rec["amorphous_si_V_real_V"],
+                                rec["amorphous_si_V_imag_V"])
+          if rec["amorphous_si_thickness_A"] > 0 else None)
+    terms = [ox.stack_phase_terms(p, k_perp_vac=kp, k_perp_ox=ko, k_perp_asi=ka) for p in per]
+    tot = np.array([t["total"] for t in terms], dtype=np.complex128)
+    tops = np.array([p["top_x_A"] for p in per], float)
+    rises = np.array([p["top_rise_A"] for p in per], float)
+    return dict(total=tot, tops=tops, rises=rises,
+                uniform_rise=bool(np.ptp(rises) <= _HEIGHT_TOL_A),
+                record=dict(
+                    model=ox.MODEL_NAME, spec_sha256=rec["spec_sha256"],
+                    conformal=bool(rec["conformal"]), k_perp_layer_per_A=[ko.real, ko.imag],
+                    k_perp_amorphous_si_per_A=None if ka is None else [ka.real, ka.imag],
+                    per_terrace=[dict(index=i, top_surface_term_rad=t["top_surface"].real,
+                                      interface_term_rad=t["interface"].real,
+                                      layer_phase_rad=t["total"].real,
+                                      zero_loss_amplitude=float(math.exp(-t["total"].imag)),
+                                      top_x_A=float(tops[i]))
+                                 for i, t in enumerate(terms)],
+                    rates=oxide_phase_rates(theta_ext_rad=theta_ext_rad, energy_keV=energy_keV,
+                                            V_real_V=rec["V_real_V"], V_imag_V=rec["V_imag_V"],
+                                            f=rec["consumed_si_fraction_f"],
+                                            layer_spacing_A=rec["layer_spacing_A"]),
+                    phase_formula=("phi_k = -(k_out - k_in).R_k + Re[T_k + I_k]; amplitude x "
+                                   "exp(-Im[T_k + I_k]) (module docstring; E9 section 3)"),
+                    zero_loss_label="MODEL value (bulk-IMFP absorptive potential), not a bound "
+                                    "(E9 M1); not to be multiplied with B38",
+                    multiple_reflections="neglected (graded edges, E9 out:241)",
+                    ray_trace_surface="tops of the layer x_t"))
 
 
 # --------------------------------------------------------------------------------------------------
@@ -410,7 +534,14 @@ def geometric_exit_wave(model: TerraceModel, *, energy_keV: float, theta_in_ext_
     periods = params.periods_along_beam
     L = field_length_A(model, periods)
     dx, dy = params.exit_plane_pixel_A
-    H = np.asarray(model.heights_A)
+    oxide = _oxide_terms(model, theta_ext_rad=th, energy_keV=energy_keV)
+    trace_model, x_off = model, 0.0
+    if oxide is not None:                   # the ray trace sees the tops of the layer (report E4)
+        if oxide["uniform_rise"]:
+            x_off = float(oxide["rises"][0])
+        else:
+            trace_model = replace(model, heights_A=tuple(float(v) for v in oxide["tops"]))
+    H = np.asarray(trace_model.heights_A) + x_off
     x_lo = float(H.min()) - params.x_margin_A
     x_hi = float(H.max()) + L * math.tan(th_out) + params.x_margin_A
     nx = int(math.ceil((x_hi - x_lo) / dx)) + 1
@@ -421,9 +552,9 @@ def geometric_exit_wave(model: TerraceModel, *, energy_keV: float, theta_in_ext_
         raise ValueError(f"exit-plane pixel dx = {dx} A cannot sample the reflected carrier "
                          f"sin(theta)/lambda = {q_band:.4f} cycles/A (Nyquist {0.5 / dx:.4f})")
     X, Y = np.meshgrid(x, y, indexing="ij")
-    layout = FieldLayout(field_length_A=L, z_start_A=0.0, x_offset_A=0.0, periods=periods,
+    layout = FieldLayout(field_length_A=L, z_start_A=0.0, x_offset_A=x_off, periods=periods,
                          upstream="periodic")
-    tr = trace_exit_points(model, X, Y, layout=layout, theta_in_ext_rad=th,
+    tr = trace_exit_points(trace_model, X, Y, layout=layout, theta_in_ext_rad=th,
                            theta_out_ext_rad=th_out)
     lit = tr["status"] == STATUS["lit"]
     # R_k of each lit source (terrace k in period p): R_k + p R_period
@@ -432,7 +563,12 @@ def geometric_exit_wave(model: TerraceModel, *, energy_keV: float, theta_in_ext_
     terrace_phase = -(Rk @ q)
     carrier = k_out[0] * X                    # exp(i k_out,z z) omitted: envelope convention
     psi = np.zeros(X.shape, dtype=np.complex128)
-    psi[lit] = params.reflectivity_amplitude * np.exp(1j * (carrier[lit] + terrace_phase[lit]))
+    if oxide is None:
+        psi[lit] = params.reflectivity_amplitude * np.exp(1j * (carrier[lit] + terrace_phase[lit]))
+    else:                                     # continuum oxide: layer terms per source terrace
+        lay_t = oxide["total"][np.clip(tr["source_terrace"], 0, None)]
+        psi[lit] = params.reflectivity_amplitude * np.exp(
+            1j * (carrier[lit] + terrace_phase[lit] + lay_t[lit].real) - lay_t[lit].imag)
     steps = []
     for s in model.steps:
         rec = dict(index=s["index"], from_terrace=s["from_terrace"], to_terrace=s["to_terrace"],
@@ -441,6 +577,11 @@ def geometric_exit_wave(model: TerraceModel, *, energy_keV: float, theta_in_ext_
                    upper_terrace_upstream=s.get("upper_terrace_upstream"),
                    model_assumption_B4=s["relation"]["model_assumption_B4"],
                    step_phase_rad=float(-(np.asarray(s["relation"]["t_slab_A"]) @ q)))
+        if oxide is not None:
+            A_, B_ = s["from_terrace"], s["to_terrace"]
+            rec["overlayer"] = dict(s["overlayer"])
+            rec["step_phase_with_overlayer_rad"] = float(
+                rec["step_phase_rad"] + oxide["total"][B_].real - oxide["total"][A_].real)
         if model.edges == "transverse":
             L_sh = projection.shadow_length_A(abs(s["height_A"]), th if s["upper_terrace_upstream"]
                                               else th_out)
@@ -469,6 +610,10 @@ def geometric_exit_wave(model: TerraceModel, *, energy_keV: float, theta_in_ext_
         terrace_heights_A=list(model.heights_A), terrace_R_A=model.R_A.tolist(),
         R_period_A=model.R_period_A.tolist(),
         terrace_phase_rad=[float(-(r @ q)) for r in model.R_A],
+        **({} if oxide is None else dict(
+            overlayer=oxide["record"],
+            terrace_phase_with_overlayer_rad=[float(-(r @ q) + oxide["total"][i].real)
+                                              for i, r in enumerate(model.R_A)])),
         phase_formula="-(k_out - k_in).R_k (SM03, exp(+ik.r)); R_k from the relations measured "
                       "on the atoms",
         field_of_view=dict(edges=model.edges, periods_along_beam=periods, length_along_beam_A=L,

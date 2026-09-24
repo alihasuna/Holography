@@ -226,9 +226,24 @@ def reflection_setup(cell: ReflectionCell, *, potential, beam: SheetBeam,
     # harmonics ARE its definition: they are asserted inside the band like working reflections
     harm = (dict(potential.band_harmonics_per_A())
             if hasattr(potential, "band_harmonics_per_A") else {})
+    angles = dict(incident_ext=th_in, outgoing_ext=th_out, incident_int=th_int_in,
+                  outgoing_int=th_int_out)
+    # continuum oxide (report E4): a cell built with the layer needs the layer's potential (its
+    # consumed crystal layers are gone), and the layer's own internal angles join the band check
+    ov = None
+    if (cell.metadata.get("layout") or {}).get("overlayer") is not None:
+        if not hasattr(potential, "overlayer_setup"):
+            raise ValueError("the cell carries a continuum oxide (its consumed crystal layers are "
+                             "removed): the potential must be multislice.ContinuumOxidePotential "
+                             "wrapping the crystal potential")
+        ov = potential.overlayer_setup(grid=grid, energy_keV=params.energy_keV,
+                                       theta_in_ext_rad=th_in, theta_out_ext_rad=th_out)
+        angles.update(incident_int_layer=ov["internal_angle_in_layer_in_rad"],
+                      outgoing_int_layer=ov["internal_angle_in_layer_out_rad"])
+    elif hasattr(potential, "overlayer_setup"):
+        raise ValueError("ContinuumOxidePotential on a cell without a continuum oxide")
     band = check_band(grid, rule=params.band_limit, wavelength_A=bc["wavelength_A"],
-                      angles_rad=dict(incident_ext=th_in, outgoing_ext=th_out,
-                                      incident_int=th_int_in, outgoing_int=th_int_out),
+                      angles_rad=angles,
                       reflections_per_A={**{k: v[:2] for k, v in refl.items()}, **harm})
     for k, v in refl.items():
         band["working_reflections"][k]["g_z_per_A"] = v[2]
@@ -254,9 +269,12 @@ def reflection_setup(cell: ReflectionCell, *, potential, beam: SheetBeam,
                                     beam_x_bottom_A=beam.x_bottom_A, theta_in_ext_rad=th_in,
                                     theta_out_ext_rad=th_out, theta_int_rad=th_int_in,
                                     buildup_depth_A=params.buildup_depth_A)
-    return dict(bc=bc, grid=grid, n_slices=n, commensurability=comm, V0_potential_V=V0,
-                theta_int_in_rad=th_int_in, theta_int_out_rad=th_int_out, band=band, geometry=geo,
-                bloch_fy_per_A=fb)
+    out = dict(bc=bc, grid=grid, n_slices=n, commensurability=comm, V0_potential_V=V0,
+               theta_int_in_rad=th_int_in, theta_int_out_rad=th_int_out, band=band, geometry=geo,
+               bloch_fy_per_A=fb)
+    if ov is not None:
+        out["overlayer"] = ov
+    return out
 
 
 def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params: MultisliceParams,
@@ -349,6 +367,10 @@ def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params:
         timing_s=dict(setup=t_setup - t_start, propagation=t_end - t_setup,
                       total=t_end - t_start),
     )
+    if "overlayer" in s:                   # continuum oxide (report E4): what the layer changes
+        meta["overlayer"] = s["overlayer"]
+        meta["mean_inner_potential_V"]["overlayer_treatment"] = s["overlayer"][
+            "mean_inner_potential_treatment"]
     brec = bloch_record(beam, lam)
     if brec is not None:                   # TiltedSheetBeam: psi is the Bloch envelope (report E3)
         meta["bloch"] = brec

@@ -37,6 +37,7 @@ from .physics import beam_constants, interaction_constant_rad_per_VA, require_be
 from .potentials import (AtomicPotential, ContinuumPeriodicPotential, ContinuumTerracePotential,
                          FrozenPhonons, NumericalAbsorber, PhysicalAbsorption, absorber_profile_V,
                          potential_mean_inner_potential_V)
+from .overlayer import ContinuumOxidePotential
 from .propagator import propagate, propagator_kernel, propagator_phase
 
 __all__ = [
@@ -49,7 +50,8 @@ __all__ = [
     "BAND_LIMIT_RULES", "Grid", "band_limit_mask", "check_band", "fft_friendly",
     "grid_shape_for_pixel", "make_grid", "SheetBeam", "sheet_beam_wave",
     "beam_constants", "interaction_constant_rad_per_VA", "require_beam_energy",
-    "AtomicPotential", "ContinuumPeriodicPotential", "ContinuumTerracePotential", "FrozenPhonons",
+    "AtomicPotential", "ContinuumOxidePotential", "ContinuumPeriodicPotential",
+    "ContinuumTerracePotential", "FrozenPhonons",
     "NumericalAbsorber",
     "PhysicalAbsorption", "absorber_profile_V", "potential_mean_inner_potential_V", "propagate", "propagator_kernel",
     "propagator_phase",
