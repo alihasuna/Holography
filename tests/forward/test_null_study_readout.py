@@ -291,3 +291,20 @@ def test_study_files_carry_the_required_keys():
             ("step_parallel", "110")} <= kinds
     assert any(p["kind"] == "translation_fixed_beam" and p["azimuth"] == "100"
                and p["theta"] == "bragg_0008_mip" for p in pts)
+    # X2 (A6 N-1/N-3): the sheet beam is explicit in every point of both files; study.yaml keeps
+    # the legacy M2 beam; study_depth100.yaml lights every cell to the exit plane (H2 2.6 formula,
+    # recomputed here from the cell length and the angle)
+    beam = ("beam_height_A", "beam_edge_A", "beam_gap_A")
+    assert all(all(k in p for k in beam) for p in old["points"] + pts)
+    assert all((p["beam_height_A"], p["beam_edge_A"], p["beam_gap_A"]) == (8.0, 2.0, 2.0)
+               for p in old["points"])
+    for p in pts:
+        th = ntc.theta_0008() if p["theta"] == "bragg_0008_mip" else float(p["theta"]) * 1e-3
+        Lz = ntc.cell_length_z_A(theta=th, azimuth=p["azimuth"], gap=p["beam_gap_A"],
+                                 extra_A=float(p["extra_length_A"]))
+        assert p["beam_height_A"] == ntc.sheet_height_lit_to_exit_A(L_z_A=Lz, theta=th,
+                                                                    gap=p["beam_gap_A"]), p["name"]
+        assert (p["beam_edge_A"], p["beam_gap_A"]) == (2.0, 2.0)
+    sr = new["surface_resolved"]
+    assert sr["exit_excl_A"] == 1115.5 and sr["amp_floor_rel"] == 0.05
+    assert (sr["tol_phase_rad"], sr["tol_amp"]) == (0.01, 0.01)

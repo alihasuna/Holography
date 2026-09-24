@@ -6,6 +6,10 @@ peak plus 48 B/atom of builder structure (192 B/atom in total) and is compared w
 `--need-gpu-mem-gb` stays the explicit override. The dry-run report must be the one of the
 configuration and variant being submitted (SHA-256). The pipeline writes that report with
 `dry-run --report-json` and the kit's dry-run job asks for it.
+X2 (audit A6 K-1, K-2): the report (schema /2) carries the engine code's SHA-256 and the kit refuses
+a report of other engine code; an explicit --need-gpu-mem-gb BELOW the derived need is refused
+unless --accept-need-below-dry-run is given (recorded). E1's assertion that 30 GB against a derived
+50 GB is accepted therefore now holds only with that flag (intentional change).
 
 Fake login node and Slurm from test_alliance_kit (nothing touches a cluster, no GPU)."""
 from __future__ import annotations
@@ -23,8 +27,15 @@ CFG = "configs/demo_hpc_si001.yaml"                  # a cupy multislice configu
 A = ["--account", "def-testpi", "--time", "01:00:00"]
 
 
+def _engine_sha():
+    sys.path.insert(0, str(REPO / "scripts" / "hpc" / "alliance"))
+    import kit
+    return kit.engine_code_sha256(REPO)["sha256"]
+
+
 def _report(path: Path, *, dev=25e9, host=3.0e9, n_atoms=10_000_000, config=CFG, variant=None,
-            backend="cupy", schema="reflholo_pipeline_dry_run_report/1", multislice=True):
+            backend="cupy", schema="reflholo_pipeline_dry_run_report/2", multislice=True,
+            engine_sha="current"):
     cpath = (REPO / config).resolve()
     rep = dict(engine="multislice", backend=dict(name=backend, available=False, status="no GPU"))
     if multislice:
@@ -32,9 +43,12 @@ def _report(path: Path, *, dev=25e9, host=3.0e9, n_atoms=10_000_000, config=CFG,
                                  precision="complex64",
                                  memory_bytes=dict(total=int(dev * 1.5), device_peak_cupy=int(dev),
                                                    host_peak_cupy=int(host)))
-    path.write_text(json.dumps(dict(schema=schema, config_path=str(cpath),
-                                    config_sha256=hashlib.sha256(cpath.read_bytes()).hexdigest(),
-                                    variant=variant, report=rep)))
+    d = dict(schema=schema, config_path=str(cpath),
+             config_sha256=hashlib.sha256(cpath.read_bytes()).hexdigest(), variant=variant,
+             report=rep)
+    if engine_sha is not None:
+        d["engine_code"] = dict(sha256=_engine_sha() if engine_sha == "current" else engine_sha)
+    path.write_text(json.dumps(d))
     return path
 
 
@@ -68,12 +82,42 @@ def test_margin_is_required_and_explicit_need_overrides(tmp_path):
     assert r.returncode == 2 and "applies with --gpu-mem-from-dry-run only" in r.stderr
     r = kit.submit(*base, "--gpu-mem-from-dry-run", str(rep), "--gpu-mem-margin", "-0.1")
     assert r.returncode == 2 and "must be a fraction >= 0" in r.stderr
-    r = kit.submit(*base, "--gpu-mem-from-dry-run", str(rep), "--gpu-mem-margin", "1.0",
-                   "--need-gpu-mem-gb", "30")
+    below = [*base, "--gpu-mem-from-dry-run", str(rep), "--gpu-mem-margin", "1.0",
+             "--need-gpu-mem-gb", "30"]                       # 30 GB < the derived 50 GB
+    r = kit.submit(*below)                                    # A6 K-2: refused without the flag
+    assert r.returncode == 2 and "--need-gpu-mem-gb 30 is below the 50.000 GB derived from the " \
+                                 "dry run" in r.stderr and "--accept-need-below-dry-run" in r.stderr
+    r = kit.submit(*below, "--accept-need-below-dry-run")
     assert r.returncode == 0, r.stderr
     assert "--need-gpu-mem-gb 30 given explicitly: it overrides the 50.000 GB derived" in r.stderr
+    assert "WARNING: --need-gpu-mem-gb 30 is BELOW the 50.000 GB derived" in r.stderr
+    r = kit.submit(*base, "--gpu-mem-from-dry-run", str(rep), "--gpu-mem-margin", "0.5",
+                   "--need-gpu-mem-gb", "39")                # above the derived 37.5 GB: no flag
+    assert r.returncode == 0 and "overrides the 37.500 GB derived" in r.stderr, r.stderr
+    assert "BELOW" not in r.stderr
     r = kit.submit(*base, "--need-gpu-mem-gb", "45")           # the override alone, as before
     assert r.returncode == 2 and "< the 45.0 GB you need (" in r.stderr
+    for extra in (["--need-gpu-mem-gb", "30"],
+                  ["--gpu-mem-from-dry-run", str(rep), "--gpu-mem-margin", "1.0"]):
+        r = kit.submit(*base, *extra, "--accept-need-below-dry-run")
+        assert r.returncode == 2 and "applies only with both" in r.stderr, r.stderr
+
+
+def test_accepted_override_below_the_derived_need_is_recorded(tmp_path):
+    kit = Kit(tmp_path, "rorqual")
+    kit.gpu_pass()
+    rep = _report(tmp_path / "dry_run_report.json")
+    r = kit.submit("pipeline", *A, "--config", CFG, "--gpu-instance", "3g.40gb", "--cpus", "8",
+                   "--gpu-mem-from-dry-run", str(rep), "--gpu-mem-margin", "1.0",
+                   "--need-gpu-mem-gb", "30", "--accept-need-below-dry-run", "--mem", "16G",
+                   dry=False)
+    assert r.returncode == 0, r.stderr
+    sent = (kit.root / "sbatch_args.txt").read_text().splitlines()
+    plan = json.loads(Path(export_vars(["sbatch"] + sent)["RH_SUBMISSION_RECORD"]).read_text())
+    g = plan["gpu_memory_need"]
+    assert g["explicit_need_gb"] == 30.0 and abs(g["need_gb"] - 50.0) < 1e-9
+    assert g["explicit_below_derived"] is True and g["accept_need_below_dry_run"] is True
+    assert g["used"] == "overridden by --need-gpu-mem-gb 30"
 
 
 def test_report_must_belong_to_this_configuration(tmp_path):
@@ -88,6 +132,14 @@ def test_report_must_belong_to_this_configuration(tmp_path):
     assert r.returncode == 2 and "was made for variant" in r.stderr
     r = kit.submit(*base, str(_report(tmp_path / "s.json", schema="something/1")))
     assert r.returncode == 2 and "schema" in r.stderr
+    r = kit.submit(*base, str(_report(tmp_path / "old.json",               # E1's schema: refused
+                                      schema="reflholo_pipeline_dry_run_report/1")))
+    assert r.returncode == 2 and "schema" in r.stderr
+    # A6 K-1: a report made with other engine code, or without the engine code's hash, is refused
+    r = kit.submit(*base, str(_report(tmp_path / "e.json", engine_sha="0" * 64)))
+    assert r.returncode == 2 and "was made with engine code 000000000000" in r.stderr, r.stderr
+    r = kit.submit(*base, str(_report(tmp_path / "e0.json", engine_sha=None)))
+    assert r.returncode == 2 and "was made with engine code None" in r.stderr, r.stderr
     r = kit.submit(*base, str(_report(tmp_path / "n.json", backend="numpy")))
     assert r.returncode == 2 and "cupy run only" in r.stderr
     r = kit.submit(*base, str(_report(tmp_path / "g.json", multislice=False)))
@@ -131,6 +183,7 @@ def test_host_memory_is_compared_with_mem_and_recorded(tmp_path):
     assert abs(g["need_gb"] - 37.5) < 1e-9 and g["used"].startswith("derived")
     assert g["host_need_B"] == need and g["host_mem_requested_B"] == 16 * 2**30
     assert g["source_sha256"] == hashlib.sha256(rep.read_bytes()).hexdigest()
+    assert g["engine_code_sha256"] == _engine_sha()
 
 
 def test_pipeline_dry_run_writes_the_report_json(tmp_path):
@@ -142,8 +195,11 @@ def test_pipeline_dry_run_writes_the_report_json(tmp_path):
     assert p.returncode in (0, 4), p.stdout[-2000:] + p.stderr[-2000:]
     d = json.loads(out.read_text())
     cfg = (REPO / "configs" / "demo_smoke_si001.yaml").resolve()
-    assert d["schema"] == "reflholo_pipeline_dry_run_report/1" and d["variant"] == "multislice_tiny"
+    # schema /1 -> /2 (X2, A6 K-1: intentional change): the report carries the engine code's hash,
+    # computed by the pipeline exactly as the kit computes it
+    assert d["schema"] == "reflholo_pipeline_dry_run_report/2" and d["variant"] == "multislice_tiny"
     assert d["config_sha256"] == hashlib.sha256(cfg.read_bytes()).hexdigest()
+    assert d["engine_code"]["sha256"] == _engine_sha()
     mb = d["report"]["multislice"]["memory_bytes"]
     assert int(mb["device_peak_cupy"]) > 0 and int(mb["host_peak_cupy"]) > 0
     assert int(d["report"]["multislice"]["n_atoms"]) > 0
@@ -156,6 +212,7 @@ def test_emulated_dry_run_job_writes_the_report(tmp_path):
     assert r.returncode == 0, (r.stdout, r.stderr)
     (jd,) = _jobdirs(kit, "dry-run_900001_*")
     d = json.loads((jd / "dry_run" / "dry_run_report.json").read_text())
-    assert d["schema"] == "reflholo_pipeline_dry_run_report/1"
+    assert d["schema"] == "reflholo_pipeline_dry_run_report/2"          # X2 (A6 K-1)
+    assert d["engine_code"]["sha256"] == _engine_sha()
     res = json.loads((jd / "dry_run" / "dry_run_resources.json").read_text())
     assert res["report_json"].endswith("dry_run_report.json")

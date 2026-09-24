@@ -728,11 +728,12 @@ def study_point_checks():
                                 label=("ASSUMPTION: no absorption" if r == 0 else TEST_ABS))
         if kind == "t":
             pair = translation_pair(theta=theta, width_periods=wp, extra_A=extra, absorption=ab, precision="complex64",
-                                    clean_depth_A=21.0, azimuth="110")
+                                    clean_depth_A=21.0, azimuth="110", H=8.0, edge=2.0, gap=2.0)
             cell, prm, nrun = pair["A"][0], pair["params"], 2
         else:
             cell, _, _, prm = step_case(theta=theta, width_periods=wp, extra_A=extra, absorption=ab,
-                                        precision="complex64", clean_depth_A=21.0, azimuth="110")
+                                        precision="complex64", clean_depth_A=21.0, azimuth="110",
+                                        H=8.0, edge=2.0, gap=2.0)
             nrun = 1
         est = estimate_resources(cell, prm, realisations=nrun, calibrate_cpu=False)
         dzs = prm.dz_A

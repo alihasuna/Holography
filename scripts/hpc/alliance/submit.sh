@@ -30,7 +30,10 @@
 #           --need-gpu-mem-gb X                   (refuse an instance with less GPU memory)
 #           --gpu-mem-from-dry-run PATH --gpu-mem-margin F   (pipeline, cupy: X = the dry-run job's
 #                                                  device peak x (1 + F), derivation printed; the
-#                                                  margin is required; --need-gpu-mem-gb overrides)
+#                                                  margin is required; the report must come from
+#                                                  this engine code; a larger --need-gpu-mem-gb
+#                                                  overrides, a smaller one is refused unless
+#                                                  --accept-need-below-dry-run is given, recorded)
 #           --cpus N  --mem SIZE                  (GPU jobs: default = the wiki's recommended
 #                                                  cores and memory per GPU instance)
 #           --scratch DIR                         (default $SCRATCH; outputs go to DIR/reflholo)
@@ -54,11 +57,12 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1; shift ;;
     --scratch) [ $# -ge 2 ] || die 2 "--scratch needs a directory"; SCR="$2"; shift 2 ;;
-    --serial|--array|--any-account-prefix|--skip-gpu-check-gate) PLAN_ARGS+=("$1"); shift ;;
+    --serial|--array|--any-account-prefix|--skip-gpu-check-gate|--accept-need-below-dry-run)
+      PLAN_ARGS+=("$1"); shift ;;
     --account|--time|--config|--variant|--study|--only|--array-throttle|--kinds|--gpu-instance|\
     --need-gpu-mem-gb|--gpu-mem-from-dry-run|--gpu-mem-margin|--cpus|--mem)
       [ $# -ge 2 ] || die 2 "$1 needs a value"; PLAN_ARGS+=("$1" "$2"); shift 2 ;;
-    -h|--help) sed -n '2,41p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -h|--help) sed -n '2,44p' "${BASH_SOURCE[0]}"; exit 0 ;;
     *) die 2 "unknown option $1 (see the header of $0)" ;;
   esac
 done

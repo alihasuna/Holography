@@ -140,6 +140,8 @@ def test_r2a_realised_potential_and_band_record():
 def test_r2b_optional_qualitative_darwin_sweep_vacuum_readout():
     res = rung2_measure(0.0, dx=0.025, propagator="fresnel", readout_window_above_A=60.0, **R2B,
                         **COMMON)
+    # E7 M1 as in _run (A6 n2, X2): x_s on a pixel centre of this grid too
+    assert abs(res["x_s_in_pixels"] - round(res["x_s_in_pixels"])) < 1e-6, res["x_s_in_pixels"]
     sel = np.abs(res["eta"]) <= ETA_B
     d = np.abs(res["r"][sel] - res["R_ref"][sel])
     print(f"\nR2-B (optional, qualitative) r = 0: {sel.sum()} bins |eta| <= {ETA_B}, max |dR| = "

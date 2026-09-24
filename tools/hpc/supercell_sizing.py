@@ -607,6 +607,20 @@ def memory_row(nx, ny, N, n_max, n_atoms, n_species=1, precision="complex64"):
                 cpu_job=mm["numpy"]["peak"] + st, structure=st)
 
 
+def h5_blocked_device_bound(nx, ny, n, precision, block_rows):
+    """H5's measured device model (H5 M4: 48 B/px + the structure-factor exponential stage, from
+    tracemalloc on the UNBLOCKED code) with the exponential stage of the BLOCKED code (report E1;
+    E1's proposal, audit A6 Z-1): E(m) = 32 m n for m <= 2 B rows, cb m n + 32 B n otherwise (the
+    complex128 argument and result of one block of B rows plus the preallocated working-precision
+    result); the Ey stage also holds the Ex result, cb nx n (H5: 8 nx n for complex64). Written here
+    from that description, independently of engine._exp_stage_B."""
+    cb = np.dtype(precision).itemsize
+
+    def E(m):
+        return 32 * m * n if m <= 2 * block_rows else cb * m * n + 32 * block_rows * n
+    return 48 * nx * ny + max(E(nx), cb * nx * n + E(ny))
+
+
 def replica_gpu_s(nx, ny, N, nonempty, n_mean, precision="complex64"):
     """engine.estimate_resources' GPU model (constants engine.GPU_ASSUMED: ASSUMPTION)."""
     g = GPU_ASSUMED
@@ -1480,7 +1494,9 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
                                     move_beam=p["kind"] == "translation_moved_beam",
                                     clean_depth_A=float(p["clean_depth_A"]),
                                     azimuth=str(p["azimuth"]),
-                                    tile_above_periods=int(study["build"]["tile_above_periods"]))
+                                    tile_above_periods=int(study["build"]["tile_above_periods"]),
+                                    H=float(p["beam_height_A"]), edge=float(p["beam_edge_A"]),
+                                    gap=float(p["beam_gap_A"]))
             cell, params, nrun = pair["A"][0], pair["params"], 2
         else:
             cell, _, _, params = step_case(theta=thp, width_periods=int(p["width_periods"]),
@@ -1489,7 +1505,10 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
                                            clean_depth_A=float(p["clean_depth_A"]),
                                            azimuth=str(p["azimuth"]),
                                            tile_above_periods=int(
-                                               study["build"]["tile_above_periods"]))
+                                               study["build"]["tile_above_periods"]),
+                                           H=float(p["beam_height_A"]),
+                                           edge=float(p["beam_edge_A"]),
+                                           gap=float(p["beam_gap_A"]))
             nrun = 1
         est = estimate_resources(cell, params, realisations=nrun, calibrate_cpu=False)
         g = est["grid"]
@@ -1721,6 +1740,8 @@ def report_part4(S, cc, t_start) -> int:
     M = B29_MARGIN_RES * ds_res
     meas_len = N_MEAS_RES * ds_res
     rows = []
+    neg = []                     # negative control of the device-peak check (A6 Z-1)
+    from reflection_holo.forward.multislice import potentials as _pot
 
     def add(label, lay, n_real, n_ang, note, precision="complex64"):
         mr = memory_row(lay["nx"], lay["ny"], lay["N"], lay["n_max"], lay["n_atoms"],
@@ -1733,16 +1754,26 @@ def report_part4(S, cc, t_start) -> int:
         check(f"engine_rules_{label}", ok, f"{lay['engine_rules']}")
         npx, nx_, ny_, nm_ = lay["nx"] * lay["ny"], lay["nx"], lay["ny"], lay["n_max"]
         # H5 M4 measured 48 B/px + max(32 nx n, 8 nx n + 32 ny n) on the UNBLOCKED structure-factor
-        # code; report E1 builds the exponentials in blocks (potential byte-identical), so only the
-        # pixel term of H5's model still bounds the device peak from below. The unblocked value is
-        # printed for reference (orchestrator, after E1).
+        # code; report E1 builds the exponentials in blocks (potential byte-identical). The check
+        # compares the engine's device peak with H5's model WITH THE BLOCKED STAGE (E1's proposal;
+        # X2 after audit A6 Z-1, which found the former check `device >= 48 px` vacuous: the model
+        # never falls below 84 B/px). The unblocked value is printed for reference.
         h5_dev = 48 * npx + max(32 * nx_ * nm_, 8 * nx_ * nm_ + 32 * ny_ * nm_)
-        check(f"device_peak_ge_H5_pixel_term_{label}", mr["device"] >= 48 * npx,
-              f"model device peak {mr['device'] / 1e9:.3f} GB >= H5's pixel term "
-              f"{48 * npx / 1e9:.3f} GB (48 B/px); H5's unblocked model {h5_dev / 1e9:.3f} GB "
-              f"applies to the code before E1's blocked structure factors")
+        blk = int(_pot.EXP_BLOCK_ROWS)
+        h5_blk = h5_blocked_device_bound(nx_, ny_, nm_, precision, blk)
+        check(f"device_peak_ge_H5_blocked_model_{label}", mr["device"] >= h5_blk,
+              f"model device peak {mr['device'] / 1e9:.3f} GB >= H5's measured model with the "
+              f"blocked exponential stage {h5_blk / 1e9:.3f} GB (48 B/px + max(E(nx), cb nx n + "
+              f"E(ny)), E blocked above {2 * blk} rows; ratio {mr['device'] / h5_blk:.2f}); H5's "
+              f"unblocked model {h5_dev / 1e9:.3f} GB applies to the code before E1's blocked "
+              f"structure factors")
+        cbn = np.dtype(precision).itemsize
+        neg.append(dict(label=label, bound=h5_blk, px=npx,
+                        dev_without_potential_stage=int(sum(mr["model"]["loop_residents"].values())
+                                                        + 5 * cbn * npx)))
         row = dict(label=label, lay=lay, mem=mr["cpu_job"], dev=mr["device"],
-                   host=mr["host_cupy"], h5_dev=h5_dev, gpu=gpu, cpu=cpu, n_real=n_real,
+                   host=mr["host_cupy"], h5_dev=h5_dev, h5_blk=h5_blk, gpu=gpu, cpu=cpu,
+                   n_real=n_real,
                    n_ang=n_ang, note=note, exit_bytes=8 * lay["nx"] * lay["ny"],
                    ls=mr["model"]["largest_slice"])
         rows.append(row)
@@ -1765,7 +1796,8 @@ def report_part4(S, cc, t_start) -> int:
               f"{lay['n_mean']:.0f})")
         print(f"    memory per realisation (engine.memory_model): GPU device peak "
               f"{row['dev'] / 1e9:.3f} GB (cupy; UNVERIFIED on a GPU, lower bound: cuFFT/cuBLAS "
-              f"workspaces and the pool not included; H5's measured model {h5_dev / 1e9:.3f} GB); host "
+              f"workspaces and the pool not included; H5's measured model {h5_blk / 1e9:.3f} GB "
+              f"with the blocked stage, {h5_dev / 1e9:.3f} GB unblocked); host "
               f"of that run {row['host'] / 1e9:.1f} GB; a CPU (numpy) job needs "
               f"{row['mem'] / 1e9:.1f} GB (both with the {STRUCTURE_B_PER_ATOM} B/atom builder "
               f"structure); largest slice: exponentials {row['ls']['exponentials_B'] / 1e9:.3f} GB, "
@@ -1940,6 +1972,24 @@ def report_part4(S, cc, t_start) -> int:
     big = [rw for rw in rows if rw["dev"] > 10e9]
     print(f"GPU instances: rows whose device peak exceeds 10 GB (a 1g.10gb / 2g.10gb MIG instance is "
           f"too small even before the library workspaces): {[rw['label'] for rw in big]}")
+
+    # negative control (A6 Z-1): the device-peak check above must be able to fail. Perturbed model:
+    # the engine's device peak WITHOUT the potential-construction stage (loop residents + the 5
+    # arrays of the transmission/propagation step), an omission of the kind H5 M4 found (the
+    # potential-construction temporaries were missing from the engine's accounting)
+    nf = [q for q in neg if q["dev_without_potential_stage"] < q["bound"]]
+    no = [q for q in neg if q["dev_without_potential_stage"] < 48 * q["px"]]
+    ex = max(nf, key=lambda q: q["bound"] - q["dev_without_potential_stage"]) if nf else None
+    print(f"NEGATIVE CONTROL of device_peak_ge_H5_blocked_model_* (A6 Z-1): the engine's device "
+          f"model with the potential-construction stage removed (loop residents + 5 cb px) fails "
+          f"H5's blocked bound for {len(nf)} of {len(neg)} scenario rows"
+          + (f" (e.g. {ex['label']}: {ex['dev_without_potential_stage'] / 1e9:.3f} GB < "
+             f"{ex['bound'] / 1e9:.3f} GB)" if ex else "")
+          + f"; the former check device >= 48 px fails for {len(no)} of them (it cannot fail: "
+            f"the model has >= 84 B/px for complex64)")
+    check("negative_control_device_peak_check_can_fail", len(nf) > 0,
+          f"{len(nf)} of {len(neg)} rows fail the blocked H5 bound with the potential stage removed "
+          f"(must be > 0); the former 48 px check: {len(no)} fail")
 
     # --------------------------------------------------------------------------------------------
     hdr("15. Self-checks")

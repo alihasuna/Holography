@@ -96,7 +96,10 @@ def test_full_run_bit_identical_with_blocks(cell, monkeypatch):
 
 
 def test_default_block_is_used_only_where_it_saves_memory():
-    """Unblocked up to 2 * EXP_BLOCK_ROWS rows (32 m n <= cb m n + 32 B n there for cb <= 16)."""
+    """Unblocked up to 2 * EXP_BLOCK_ROWS rows. (X2, audit A6 B-1: E1's reason "32 m n <= cb m n +
+    32 B n there for cb <= 16" holds for complex128 but not for complex64 above 4B/3 = 1365 rows,
+    where the blocked form would need less; measured 32.00 against 24.00 B per element at 2048
+    rows. The choice is unchanged; this test pins it and the model's accounting of it.)"""
     assert potentials.EXP_BLOCK_ROWS == 1024
     for cb in (8, 16):
         for m in (100, 2048, 2049, 24000):

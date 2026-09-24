@@ -4,8 +4,8 @@ reference) and a small grazing-incidence multislice run at 200 keV.
 
 STATUS OF EVERY OUTPUT: UNVALIDATED. The reflection has not converged along the beam in a cell of
 this length (finite-cell build-up), there is no physical absorption (ASSUMPTION B30), and the
-engine's rung 2 and abTEM cross-check were not run (docs/agent_reports/M2_multislice_engine.md
-section 10). Demo stand-ins: azimuth [100] (B20), feature geometry (B33 trench, B34 ridge; PROJECT_INPUT
+engine is UNVALIDATED for atomistic reflection (engine.VALIDATION_STATUS: the atomistic fixed-beam
+null test of rung 3 has not passed, the abTEM cross-check was not run). Demo stand-ins: azimuth [100] (B20), feature geometry (B33 trench, B34 ridge; PROJECT_INPUT
 item 13), glancing angle from the engine's mean inner potential (B32), lattice parameter (B2).
 
 Usage (threads fixed by the environment so the manifest's thread check is consistent):

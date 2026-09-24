@@ -275,11 +275,15 @@ def rung2_measure(r, *, readout_window_above_A=None, **kw):
     res = flat_reflection_coefficient(ew_r, psi0, x_surface_A=xs, propagator=params.propagator,
                                       rel_threshold=0.05)
     model = "exact" if params.propagator == "fresnel" else "engine_exact_propagator"
-    th_b = np.arcsin(lam * res["f_per_A"])
-    R_ref = ref.reflection_amplitude(th_b, E_KEV, V0_R2, [V008_R2], rung2_g_per_A(), float(r),
-                                     plane_offset_A=0.0, model=model)
-    p = ref.darwin_plateau(E_KEV, V0_R2, V008_R2, rung2_g_per_A())
+    th_b = np.arcsin(lam * res["f_per_A"])            # for display only
     K = 2 * np.pi * res["f_per_A"]
+    # the reference at the bin's own normal wavevector K = 2 pi f (P2's reflection_amplitude_K):
+    # the engine's wavelength does not enter the reference (audit A6 n9, X2; before, the angle
+    # asin(lambda f) was formed with the engine's lambda and converted back with P2's k)
+    R_ref = np.array([ref.reflection_amplitude_K(float(Kb), E_KEV, V0_R2, [V008_R2],
+                                                 rung2_g_per_A(), float(r), plane_offset_A=0.0,
+                                                 model=model) for Kb in K])
+    p = ref.darwin_plateau(E_KEV, V0_R2, V008_R2, rung2_g_per_A())
     eta = (K**2 - p["K_centre"] ** 2) / p["Ug"]
     dx_eng = cell.extent_x_A / params.nx                 # the engine's derived pixel
     return dict(f_per_A=res["f_per_A"], theta_rad=th_b, eta=eta, r=res["r"], R_ref=np.asarray(R_ref),

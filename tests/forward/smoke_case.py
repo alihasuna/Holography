@@ -1,6 +1,8 @@
 """Atomistic smoke case (not a test module): Si(001), [110] azimuth, a/2 (double-layer) step with
 edges PARALLEL to the beam, specular (0,0,8) condition at 200 keV, Kirkland independent-atom
-potential, static lattice. UNVALIDATED: rung 2 and the abTEM cross-check were not run.
+potential, static lattice. UNVALIDATED (engine.VALIDATION_STATUS): rung 2 test R2-A passes on a
+continuum potential, but the atomistic fixed-beam translation check of rung 3 (docs/05 4.4 item 3,
+required before step phases) has not passed and the abTEM cross-check was not run.
 
 TEST_ONLY stand-ins: azimuth (item 8), terrace widths (item 11), incidence angle (item 7; taken as
 the external angle of the (0,0,8) internal Bragg condition computed with the mean inner potential

@@ -310,7 +310,7 @@ atoms). Size it in a CPU job instead:
 bash scripts/hpc/alliance/submit.sh nibi dry-run --config <H2 config> --account def-XXX --time 01:00:00 --mem <SIZE>
 bash scripts/hpc/alliance/submit.sh nibi pipeline --config <H2 config> --account def-XXX --time 06:00:00 \
      [--gpu-instance full|3g.40gb|...] [--need-gpu-mem-gb <from dry-run>] [--cpus N] [--mem SIZE]
-     [--gpu-mem-from-dry-run <dry-run job dir> --gpu-mem-margin <fraction>]
+     [--gpu-mem-from-dry-run <dry-run job dir> --gpu-mem-margin <fraction> [--accept-need-below-dry-run]]
 bash scripts/hpc/alliance/submit.sh nibi null-study --study <H2 study.yaml> --account def-XXX --time 02:00:00
 ```
 
@@ -330,9 +330,13 @@ off the dry run by hand, `--gpu-mem-from-dry-run <dry-run job dir or its dry_run
 LOWER BOUND: cuFFT/cuBLAS workspaces and the cupy pool are not modelled, no GPU was available to
 measure them) times (1 + margin); the margin has no default. The derivation is printed and recorded
 in the submission record, the dry-run report must be the one of the same configuration and variant
-(SHA-256 checked), the host memory of the GPU run (cupy host peak + 48 B/atom of builder structure,
-192 B/atom in total, H7) is compared with `--mem`, and an explicit `--need-gpu-mem-gb` overrides the
-derived value. MIG instances per
+(SHA-256 checked) and of the same engine code (the report records the SHA-256 of the multislice
+package, the kit compares it with the clone's: a dry run made before a memory-model change is
+refused; report schema `reflholo_pipeline_dry_run_report/2`), the host memory of the GPU run (cupy
+host peak + 48 B/atom of builder structure, 192 B/atom in total, H7) is compared with `--mem`, and
+an explicit `--need-gpu-mem-gb` above the derived value overrides it; one BELOW it is refused unless
+`--accept-need-below-dry-run` is also given (then a WARNING is printed and the override is recorded
+in the submission record). MIG instances per
 cluster (one per job, Multi-Instance_GPU § Limitations): Fir/Nibi/Rorqual 1g.10gb, 2g.20gb,
 3g.40gb; Narval 1g.5gb, 2g.10gb, 3g.20gb; Trillium none.
 

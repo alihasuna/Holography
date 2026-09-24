@@ -19,12 +19,52 @@
 #    H2's specular_column (y average, sin^2 vacuum window from x_s + x_cut_A over taper_A, band pass
 #    radius_per_A about f_c, demodulation), surface point z_s = L_z - (x - x_s)/tan(theta), A and B
 #    compared in the same z_s bins of bin_A from the later bottom-edge contact to L_z - exit_excl_A;
-#    per-bin err_rad and amp_ratio, converged_beyond_A for |err| <= tol_phase_rad and
-#    |amp - 1| <= tol_amp (the README criteria). The x-summed M2 measurement is still written.
+#    per-bin err_rad and amp_ratio against |err| <= tol_phase_rad and |amp - 1| <= tol_amp (the
+#    README criteria). The x-summed M2 measurement is still written.
+#  * SHEET BEAM LIT TO THE EXIT PLANE (X2, audit A6 N-1): the read-out maps exit-plane height to the
+#    surface point and presumes the surface lit up to the exit plane (H2 2.4). With the former 8 A
+#    beam only ~500 A were lit and the far bins read a decaying tail (A6: amp ratio 0.15-11.9 for an
+#    exactly covariant crystal). Every point here therefore has, with gap = beam_gap_A = 2 A and
+#    edge = beam_edge_A = 2 A,
+#        beam_height_A = H = L_z tan(theta) - gap - a/2 - 1 A     (H2 2.6; rounded down to 1e-3 A)
+#        L_z = 10 dz + N P,  dz = P/4,  N = ceil((L_need - 10 dz)/P),
+#        L_need = (gap + a/2)/tan(theta) + D/tan(theta_int) + extra_length_A,  D = 20 A,
+#    P = a/sqrt(2) ([110]) or a ([100]), a = 5.431 A, theta_int the refracted angle with the MIP:
+#    the top edge meets the LOWER surface (the fixed-beam crystal A, or the lower terrace; a/2
+#    below the surface the beam is referenced to) 1 A in height, i.e. 1 A/tan(theta) = 62 A,
+#    before the exit plane (the upper surface, and A in the moved-beam case, 230 A before it)
+#    (null_test_cases.cell_length_z_A and sheet_height_lit_to_exit_A; tests/forward/
+#    test_null_study_readout.py recomputes every H of this file). The vacuum (engine item 2:
+#    > H + L_z tan(theta)) roughly doubles; the step points get the same beam, so that their L5k/L10k
+#    lengths are lit (their read-out stays M2's x-summed y-window measurement);
+#  * verdict of the read-out (X2, A6 N-2): bins ending beyond the LIT-END LIMIT (end of the fully lit
+#    core of A or B minus radius_per_A lambda L_z / tan(theta), the top-edge Fresnel fringes inside
+#    the read-out band; null_test_cases.lit_strip) or with |E_A| or |E_B| below amp_floor_rel x
+#    the largest bin amplitude are reported with the reason and excluded; converged_beyond_A is the
+#    first distance beyond which every included bin passes, `converged` says whether an included
+#    bin lies beyond it. run_study.py refuses a translation point whose beam meets either crystal
+#    before L_z - exit_excl_A (check_lit_to_exit).
+#    exit_excl_A = 1115.5 A: H2 2.6's exit margin of 3 image resolution elements (371.8 A each;
+#    covers the 500 A of exit-plane contamination H2 2.4 measured), as A6 recommends (was 750 A).
+#    amp_floor_rel = 0.05: on A6's exactly covariant continuum case (moved beam, whose ratio is
+#    exact up to the sub-pixel shift; A6's 8 A beam runs, 38 bins) the per-bin ratio left the 1e-2
+#    criteria only in bins whose |E_A| was <= 2.1e-3 of the largest bin (1e-5 to 1.6e-4 absolute:
+#    the noise floor); every bin above 2.3e-3 of it stayed within 3.4e-3 rad and 8.1e-3 in
+#    amplitude, above 1e-2 of it within 2.0e-3 rad and 1.9e-3; 0.05 is 24 times above the highest
+#    failing bin. In a strip lit
+#    to the exit plane every bin after the contact is >= 0.2 of the largest (X2 runs with this beam:
+#    0.21 at r = 0.05, 0.29 at r = 0.1), so the floor removes only unlit or decayed tails. The
+#    criteria tol_phase_rad, tol_amp are unchanged. Checked with this beam and this block on A6's
+#    exactly covariant continuum case at the L_z of the L5k and L10k points (X2 report;
+#    tests/forward/test_null_readout_known_answer.py): fixed beam converged beyond 2500 A (r = 0.1)
+#    and 3000 A (r = 0.05), moved beam within the criteria in every bin.
 #  * build.tile_above_periods = 0: every flat terrace / parallel step is ONE verified period tiled
 #    along z (exact; keeps the host build memory low for the deeper cells).
 # extra_length_A: cell length beyond the minimum build-up assertion (D = 20 A).
-# Engine status: UNVALIDATED (rungs 1, 2 R2-A, 3 pass; abTEM cross-check not run).
+# Engine status: UNVALIDATED. Rungs 1 and 2 (R2-A) pass; rung 3 has passed ONLY for the continuum
+# null tests and the atomistic MOVED-beam translation: the atomistic FIXED-beam translation check
+# that docs/05 4.4 item 3 requires before any step-phase run has NOT passed (it is what this study
+# is for); the abTEM cross-check is not run.
 build:
   tile_above_periods: 0
 surface_resolved:
@@ -33,9 +73,10 @@ surface_resolved:
   taper_A: 3.0
   min_height_A: 5.0
   bin_A: 500.0
-  exit_excl_A: 750.0
+  exit_excl_A: 1115.5
   tol_phase_rad: 0.01
   tol_amp: 0.01
+  amp_floor_rel: 0.05
 runtime:
   backend: cupy          # numpy on CPU nodes (then set threads to cpus-per-task)
   threads: 8

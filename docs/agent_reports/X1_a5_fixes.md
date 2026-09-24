@@ -1,11 +1,12 @@
 # X1 - Fixes of the A5 audit findings (E2/E3 code)
 
-Agent X1, 2026-09-24. Status: IN PROGRESS (written incrementally).
+Agent X1, 2026-09-24. Status: FINAL (written incrementally).
 
 Scope: apply docs/agent_reports/A5_e2_e3_audit.md (F1-F11 and the NITs that concern code) to the
 code of E2 and E3, with the orchestrator's decisions. Code under audit unchanged since f4ce75e at the
 start (`git diff --stat f4ce75e HEAD -- reflection_holo tests configs scripts` empty). Nothing
-committed or pushed. Not edited: `reflection_holo/forward/multislice/potentials.py`, null-test
+committed or pushed by X1 (the orchestrator's snapshot commits 2e187ab, b6e06bf and 63d8889 picked
+up in-progress copies of this work). Not edited: `reflection_holo/forward/multislice/potentials.py`, null-test
 files, `scripts/hpc/alliance/`, docs/ (except this report), the E2/E3 reports.
 
 ## 0. Log
@@ -69,16 +70,16 @@ Line numbers are those of the working tree at the end of this task.
 
 ### F2 (MAJOR) static lattice accepted in comparison runs: FIXED
 
-* `pipeline/config.py:697-710` (`load_pipeline_dict`, comparison branch): purpose "comparison" refuses
-  `frozen_phonons: none` whatever its label; the message names item 23, the Debye-Waller factor
+* `pipeline/config.py:697-710` (`load_pipeline_dict`, comparison branch): purpose "comparison"
+  refuses `frozen_phonons: none` whatever its label; the message names item 23, the Debye-Waller factor
   (1.0 vs 0.772 at (0,0,8)) and B35. All comparison refusals (fixed u, static lattice, demo
   stand-ins, TEST_ONLY) are now reported in ONE error (`_comparison_gate(..., reasons=)`), so the
   message names item 23 even when demo stand-ins are also present (A5's last line;
   `_comparison_gate` l. 947).
 * Demo runs: `static_lattice_label` must start with ASSUMPTION (TEST_ONLY in memory) when
   `frozen_phonons: none`, and must be null otherwise (refused rather than ignored)
-  (`_check_frozen_phonons` l. 1114-1140). The demo files already carry "ASSUMPTION (demo): static lattice ..."
-  and keep working.
+  (`_check_frozen_phonons` l. 1114-1140). The demo files already carry "ASSUMPTION (demo): static
+  lattice ..." and keep working.
 * Tests: `test_comparison_refuses_a_static_lattice_naming_item_23`,
   `test_static_lattice_needs_an_assumption_label_and_a_label_needs_a_static_lattice`
   (tests/pipeline/test_e2_thermal_reconstruction.py).
@@ -100,17 +101,16 @@ Line numbers are those of the working tree at the end of this task.
 ### F4 (MINOR) reconstruction on a too-thin substrate: FIXED
 
 * `reconstruction.py:112` `MIN_SUBSTRATE_LAYERS = RECONSTRUCTED_DEPTH + 3` (= 8), checked at
-  `si001.py:860`: the 5 tabulated layers,
-  the bulk layer bonded to them, one bulk layer that (r6) checks at d_nn, the bottom layer. The
-  builder refuses a reconstruction on fewer layers (ValueError); bulk keeps its minimum 4. (r6)
+  `si001.py:860`: the 5 tabulated layers, the bulk layer bonded to them, one bulk layer that (r6)
+  checks at d_nn, the bottom layer. The builder refuses a reconstruction on fewer layers (ValueError); bulk keeps its minimum 4. (r6)
   "not applicable" became an assertion error (unreachable; `si001.py:753`).
 * Scratch `x1/nit_mutation.py`: 4, 5, 6, 7 layers REFUSED; 8 BUILT with 16 interior atoms
   checked. Test `test_reconstruction_needs_the_minimum_substrate`.
 
 ### F5 (MINOR) R2 design extent not conservative: FIXED (re-derived)
 
-* Derivation (docstring of `pipeline/convergence.py::design_extent`, l. 76; code l. 113-125): with dk_in = k (t_a e_a +
-  t_b e_b) - k (1 - sqrt(1 - t^2)) b0 and dk_out = mirror(dk_in) exactly, the R2 member phase
+* Derivation (docstring of `pipeline/convergence.py::design_extent`, l. 76; code l. 113-125):
+  with dk_in = k (t_a e_a + t_b e_b) - k (1 - sqrt(1 - t^2)) b0 and dk_out = mirror(dk_in) exactly, the R2 member phase
   flat_mirror(Q, x_m) - flat_mirror(Q + (dx, s_y, 0), x_m') = k [t_a (s_u - 2 c dh) - t_b s_y]
   + k (1 - sqrt(1 - t^2)) s (dx + 2 dh), dx = -s_u/c, |dh| <= h_max. Hence
   |E|_max = sqrt((|s_u| + 2 c h_max)^2 + s_y^2) (A5's formula) and the curvature bound gains the
@@ -125,10 +125,9 @@ Line numbers are those of the working tree at the end of this task.
 ### F6 (MINOR) member assembly: FIXED
 
 * `pipeline/convergence.py`: `run_member_job` (l. 262; record l. 307-316) writes
-  `engine_manifest_sha256`, `seed`, `n_realisations`, `code` (commit,
-  dirty, package-tree SHA-256; `code_identity` l. 323). `load_member_jobs(..., code_state=)`
-  (l. 332) refuses: realisations other
-  than exactly 0..n-1; waves or records with another seed; a missing, edited (SHA-256) or foreign
+  `engine_manifest_sha256`, `seed`, `n_realisations`, `code` (commit, dirty, package-tree SHA-256;
+  `code_identity` l. 323). `load_member_jobs(..., code_state=)` (l. 332) refuses: realisations
+  other than exactly 0..n-1; waves or records with another seed; a missing, edited (SHA-256) or foreign
   engine manifest (member index, seeds, realisation count, commit and package tree compared with
   the record); different CODE across the members or with the assembling run (its git pre-flight,
   passed from `run.py`). The code that ran is identified by the package-tree SHA-256 (every
@@ -148,15 +147,15 @@ Line numbers are those of the working tree at the end of this task.
 
 ### F7 (MINOR) R2 without shift -> KeyError: FIXED
 
-* `pipeline/config.py::_check_reference` (l. 733-757): an R2 run without `sections.reference.shift` raises
-  MissingProjectInputError naming item 16 at the gate (every path: plane wave and convergence),
+* `pipeline/config.py::_check_reference` (l. 733-757): an R2 run without
+  `sections.reference.shift` raises MissingProjectInputError naming item 16 at the gate (every path: plane wave and convergence),
   CLI exit 3; `list_inputs` shows the shift MISSING for R2. `design_extent` refuses clearly too.
 * Test `test_r2_without_its_shift_is_a_missing_project_input_before_any_engine_run`.
 
 ### F8 (MINOR) sqrt(2) for the complex disc integrand: FIXED
 
-* `optics/coherence.py::radial_error_bound` (l. 169): disc branch multiplies by sqrt(2) when kappa != 0.
-  Derivation (module docstring): the one-point remainder holds for real functions; for h = u + i w
+* `optics/coherence.py::radial_error_bound` (l. 169): the disc branch multiplies by sqrt(2) when
+  kappa != 0. Derivation (module docstring): the one-point remainder holds for real functions; for h = u + i w
   it applies to u and w separately, |R[h]| = (R[u]^2 + R[w]^2)^(1/2) <= sqrt(2) C_n max|h^(2n)|
   since |u^(2n)|, |w^(2n)| <= |h^(2n)|. kappa = 0: h = J0 real, factor 1.
 * Test `test_disc_radial_bound_carries_sqrt2_for_the_complex_integrand` (tests/optics/
@@ -165,7 +164,8 @@ Line numbers are those of the working tree at the end of this task.
 
 ### F9 (MINOR) report numbers: corrected numbers listed (E2/E3 reports not edited)
 
-Printed by `tools/review/x1_a5_numbers.py` (new; saved output `tools/review/x1_a5_numbers_output.txt`):
+Printed by `tools/review/x1_a5_numbers.py` (new; saved output
+`tools/review/x1_a5_numbers_output.txt`):
 
 * E3 section 2.4 "v = 0.3, tolerance 1e-2 needs 1 x 4": the code gives `1 x 3 = 3 members, bound
   1.154e-03` (curvature 0; unchanged by F8). The other example reproduces: `v = 3.0, tolerance
@@ -185,10 +185,11 @@ Printed by `tools/review/x1_a5_numbers.py` (new; saved output `tools/review/x1_a
 
 ### F10 (MINOR) V_loss required on every path: FIXED
 
-* `sections.optics.loss_electron_visibility` is optional in the schema (`config.py:144`); `_check_reference`
-  requires it for R2 (MissingProjectInputError item 16) and refuses it for R1/R3 (no effect).
-  `optics.inelastic.SurfacePlasmonLoss` (l. 119-136, 220) accepts `loss_visibility=None` only where it cannot enter
-  (L_O L_R = 0 or a zero-loss filter; otherwise ValueError), and the R1 intensities stay bit for
+* `sections.optics.loss_electron_visibility` is optional in the schema (`config.py:144`);
+  `_check_reference` requires it for R2 (MissingProjectInputError item 16) and refuses it for
+  R1/R3 (no effect). `optics.inelastic.SurfacePlasmonLoss` (l. 119-136, 220) accepts
+  `loss_visibility=None` only where it cannot enter (L_O L_R = 0 or a zero-loss filter; otherwise
+  ValueError), and the R1 intensities stay bit for
   bit (the cross term was an exact zero). The five R1 demo files no longer declare B39.
   `list_inputs`: R1 "NOT USED on this path", R2 "MISSING" if absent.
 * CHANGED assertions: `test_plasmon_loss_records_are_required_and_gated` (E3) no longer expects
@@ -200,8 +201,8 @@ Printed by `tools/review/x1_a5_numbers.py` (new; saved output `tools/review/x1_a
 ### F11 (MINOR) stale rows, B37 needs B35 only in the pipeline: FIXED (code), rows for the orchestrator
 
 * `forward/dimer_ensemble.py:68`: `DimerFlipFlopPotential` calls
-  `structure.thermal.require_b35_frozen_phonons` (`thermal.py:121`): the label must be thermal's B35 label and the
-  rms displacement must equal u(T) at the recorded T exactly; A7's fixed u and a forged label are
+  `structure.thermal.require_b35_frozen_phonons` (`thermal.py:121`): the label must be thermal's
+  B35 label and the rms displacement must equal u(T) at the recorded T exactly; A7's fixed u and a forged label are
   refused. Test `test_flipflop_potential_refuses_frozen_phonons_other_than_B35`.
 * Registry comments only (`reflection_holo/io/assumption_registry.yaml`): B30 (also n = 0 on
   every demo), B38 (1.246, 0.536), B39 (R2 only), B35/B37 (B37 requires B35, enforced twice;
@@ -212,8 +213,8 @@ Printed by `tools/review/x1_a5_numbers.py` (new; saved output `tools/review/x1_a
 
 ### F12 (NITs)
 
-* (r2) not asserted: FIXED. `_assert_reconstruction` (`si001.py:657-670`) compares the reconstruction's sites with the
-  checked ideal sites and the count with assertion (b)'s expected count; the duplicate check uses
+* (r2) not asserted: FIXED. `_assert_reconstruction` (`si001.py:657-670`) compares the
+  reconstruction's sites with the checked ideal sites and the count with assertion (b)'s expected count; the duplicate check uses
   the expected count. Test `test_builder_asserts_the_atom_count_r2` (an atom dropped: refused).
 * c(4x2) with the p(2x2) registry passed the builder: FIXED. New assertion (r3b)
   `si001._assert_buckling_phases` (l. 594; neighbour search by the repository's cell list,
@@ -224,7 +225,8 @@ Printed by `tools/review/x1_a5_numbers.py` (new; saved output `tools/review/x1_a
   `test_builder_catches_a_c4x2_built_with_the_p2x2_registry`).
 * Flip-flop states of realisations >= 1: FIXED in the pipeline (engine.py is E1's and was not
   edited): `engines.flip_flop_states` puts the states of every realisation (and member) in the
-  run record `dimer_flip_flop_states` (`engines.py:357`, 410; `convergence.py:231`); asserted in `test_flipflop_configurations_per_realisation`.
+  run record `dimer_flip_flop_states` (`engines.py:357`, 410; `convergence.py:231`); asserted in
+  `test_flipflop_configurations_per_realisation`.
 * numpy float32 temperature: FIXED (`thermal.py:67`: numbers.Real, not bool).
   Test `test_numpy_floating_temperatures_are_accepted_and_bools_refused`.
 * D0 definition: FIXED in code (docstring of `optics.coherence.r1_reference_member_phase`: the
@@ -263,12 +265,15 @@ stated; no existing test or tolerance was weakened):
   k eps |Q| = 5.6e-11 rad, so the exact comparison was below the precision of the check. The
   assertion now allows 4 k eps |Q| = 2.2e-10 rad (stated in the test; 1e-3 of kappa); the odd
   part keeps its 1e-9 relative bound.
-* same test, first gate demonstration: `ValueError: declared quadrature (uniform_disc, n_radial =
-  1, n_azimuthal = 4) has the error bound 1.548e-02 > tolerance 1.000e-02 for the design phase
-  extent v = 1.138 rad (kappa = 0 rad) ...`: the test took the "former" extent from
-  `v_coherence_rad`, which after F5 already contains the step term; it now recomputes the former
-  rule k alpha |s|. An earlier variant failed because the sqrt(2) of F8 raised the bound at
-  kappa > 0 (1.083e-02 at the former extent); the F5 demonstration uses kappa = 0 in both calls.
+* same test, gate demonstration (the call that must PASS at the former extent), twice:
+  `ValueError: declared quadrature (uniform_disc, n_radial = 1, n_azimuthal = 4) has the error
+  bound 1.827e-02 > tolerance 1.000e-02 for the design phase extent v = 1.138 rad (kappa =
+  9.18e-07 rad) ...` and, with kappa set to 0, `... has the error bound 1.548e-02 > tolerance
+  1.000e-02 for the design phase extent v = 1.138 rad (kappa = 0 rad) ...`. Cause: the test took
+  the former extent from `v_coherence_rad`, which after F5 already contains the step term; it now
+  recomputes the former rule k alpha |s| (1.0021 rad). kappa = 0 stays in both calls: at the
+  design kappa the sqrt(2) of F8 alone lifts the 1 x 4 bound at the former extent to 1.083e-02
+  (computed separately), so kappa = 0 isolates F5.
 
 Runs (final code unless stated):
 
@@ -281,3 +286,42 @@ Runs (final code unless stated):
 | 5 | `pytest -q tests/pipeline/test_e3_convergence_losses.py` (after the F6 refinement) | `11 passed in 33.56s` |
 | 6 | E2/E3 modules: tests/structure/{test_si001_reconstruction,test_thermal,test_si001_options}.py, tests/pipeline/test_e2_thermal_reconstruction.py, tests/forward/test_convergence_members.py, tests/optics/{test_coherence,test_inelastic,test_darkfield_bloch}.py, tests/pipeline/test_e3_convergence_losses.py | `234 passed in 91.12s (0:01:31)` |
 | 7 | `pytest -q tests/io tests/structure tests/optics tests/pipeline` | `570 passed in 193.08s (0:03:13)` |
+| 8 | `venv/bin/python -m pytest -q` (full suite, final X1 code; X2 was editing kit and engine files at the same time) | `6 failed, 1154 passed, 6 skipped, 12 warnings in 776.78s (0:12:56)`; all six in `tests/hpc/test_kit_gpu_mem_from_dry_run.py` (`test_derived_need_is_printed_and_selects_the_refusal`, `test_margin_is_required_and_explicit_need_overrides`, `test_report_must_belong_to_this_configuration`, `test_host_memory_is_compared_with_mem_and_recorded`, `test_pipeline_dry_run_writes_the_report_json`, `test_emulated_dry_run_job_writes_the_report`), e.g. `REFUSED: .../dry_run_report.json: schema 'reflholo_pipeline_dry_run_report/1', expected 'reflholo_pipeline_dry_run_report/2'` and `AssertionError: assert 'reflholo_pip..._run_report/2' == 'reflholo_pip..._run_report/1'`: X2's half-applied schema change (A6 K-1) in `reflection_holo/pipeline/__main__.py`, `scripts/hpc/alliance/kit.py` and that test file, none of them touched by X1 |
+| 9 | `pytest -q tests/hpc/test_kit_gpu_mem_from_dry_run.py` alone, right after | `8 passed in 16.58s` |
+| 10 | worktree at 63d8889 (contains the new `.gitignore`), `venv` symlink: `git status --porcelain`; `git check-ignore -v venv` | clean; `.gitignore:7:/venv	venv` (worktree removed) |
+
+## 3. Declined, partly done, or left to others
+
+* F9: E2 and E3 reports not edited (instruction); corrected numbers in F9 above.
+* F11 and F1/F3/F10 doc rows (B3, B4, B6, B35, B37, B38, B39; docs/06 items 16, 23): orchestrator.
+  Registry changes are comments only.
+* Flip-flop and p(2x1)s take no buckling registry (DECLINED to require one): p(2x1)s is its own
+  mirror image (exact test); the flip-flop ensemble contains both states of every cell, so the
+  frame fixes only the labels of the draws; every static p(2x1)a registry is an exact member of
+  the ensemble (test). A registry given with either is refused rather than ignored.
+* Flip-flop states of realisations >= 1 are now in the pipeline's run record, NOT in the engine
+  manifest (`forward/multislice/engine.py` belongs to E1/A6; not edited).
+* Not an A5 finding, noted: the dimer PAIRING registry (origin shift 0 or 2 R1 units, "more
+  complete cells, tie: the first") is still a builder convention; it is an in-plane translation
+  of the pattern on a full terrace but decides which top atoms stay unpaired at <100> edges.
+* Not an A5 finding, noted: the GEOMETRIC engine has no thermal model either, and purpose
+  "comparison" does not refuse it on that ground (F2 covered the multislice frozen-phonon forms).
+* Concurrency: another agent (X2, A6 fixes) edited engine, potential, kit, null-study and forward
+  test files while runs 4 and 8 ran (run 8's six failures come from it); the orchestrator's
+  snapshot commits 2e187ab, b6e06bf and 63d8889 contain this task's code. E3's genuine member-job
+  test compares package trees, so a commit made between its jobs and its assembly does not refuse
+  (F6).
+
+## 4. NOT RUN
+
+* No GPU/cupy member run, no SLURM job array, no member jobs on different machines; the member
+  interface ran through E3's CPU test (2 members) and synthetic job sets.
+* No physics study: the effect of the buckling registry, of the static tables and of the
+  flip-flop ensemble on the a/4 step phase at (0,0,8) against bulk; the convergence of the
+  flip-flop plus phonon average; an R2 convergence run on a staircase (F5 is checked on the design
+  extent, not on an engine ensemble).
+* shellcheck (5 kit tests skipped: not installed).
+* The kit TESTS from a worktree ran at 2038454 with the ignore rule supplied through
+  `GIT_CONFIG_*` (that tree's `.gitignore` predates the change); on a worktree of 63d8889, which
+  contains the new `.gitignore` (and X2's half-applied kit changes), only the clean git status was
+  checked (run 10), the kit tests were not rerun there.

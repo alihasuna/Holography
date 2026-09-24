@@ -68,8 +68,12 @@ def _phase_factors(xp, f64, p, dtype):
     preallocated array of `dtype`: every element goes through the same operations, so the result is
     bit-identical, and the complex128 transient falls from 32 B x rows x n to 32 B x EXP_BLOCK_ROWS
     x n (H7's proposal; 11.7 GB -> 0.5 GB for the 2a_a2 row). Up to 2 * EXP_BLOCK_ROWS rows the
-    unblocked form needs less memory (32 B x rows x n against (cb x rows + 32 x EXP_BLOCK_ROWS) x n)
-    and is used."""
+    unblocked form is used: 32 B x rows x n against (cb x rows + 32 x EXP_BLOCK_ROWS) x n blocked.
+    That is the smaller of the two for complex128 (cb = 16) up to 2 * EXP_BLOCK_ROWS rows, but for
+    complex64 (cb = 8) only up to 4/3 EXP_BLOCK_ROWS = 1365 rows: from 1366 to 2048 rows the
+    unblocked stage needs up to 33 % more (tracemalloc, n = 2000: 32.00 against 24.00 B per element
+    at 2048 rows, 31.99 at 1366; X2, correcting E1's statement, audit A6 B-1). Kept as is (no
+    numerical effect; the memory model _exp_stage_B describes exactly this choice)."""
     m = int(f64.shape[0])
     blk = int(EXP_BLOCK_ROWS)
     if m <= 2 * blk:
@@ -412,8 +416,11 @@ class ContinuumPeriodicPotential:
     harmonics with V_n = 0 reproduce the rung-1 class bit for bit. The harmonics are POINT-SAMPLED
     at the pixel centres x_j (then represented exactly on the grid; cell-averaging them would
     multiply V_n by sinc(pi g dx), P2 8.1). x_s is the surface (truncation) plane of the cell's
-    single terrace; t_n >= 0 is the depth of a cosine maximum of harmonic n below x_s (t = 0: the
-    truncation plane is at a maximum, an atomic plane of a layer potential). r is the proportional
+    single terrace; t_n places a cosine maximum of harmonic n at x_s - t_n, i.e. t_n below x_s
+    (t = 0: the truncation plane is at a maximum, an atomic plane of a layer potential). Any finite
+    t_n is accepted: the cosine is periodic, so t_n and t_n + m/g_n (m integer, e.g. a negative
+    t_n) define the same potential (X2, audit A6 n1: the former "t_n >= 0" was a convention, not
+    enforced and not needed). r is the proportional
     physical absorption (PROJECT_INPUT item 21), applied to V0 and to every V_n.
 
     Required inputs (no defaults): V0_V with V0_label (PROJECT_INPUT item 20 or a labelled

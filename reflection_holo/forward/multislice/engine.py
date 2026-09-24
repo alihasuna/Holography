@@ -10,11 +10,15 @@ T_i = BL[ exp(+i sigma V_p,i(x, y)) exp(-sigma W(x) dz) ], V_p,i complex (imagin
 absorption, item 21), W the NUMERICAL absorber, BL the band-limit aperture. The output is the wave on
 the DECLARED exit plane z = L_z (no further propagation), one ExitWave per realisation.
 
-Status: UNVALIDATED for atomistic reflection. Ladder rungs 1 and 3 (M2 report) and rung 2 test
-R2-A (continuum periodic potential, Bragg-case (0,0,8) with absorption; tests/forward/
-test_rung2_bragg.py, docs/agent_reports/E1_engine_wave2a.md) pass; the abTEM cross-check and the
-atomistic flat-surface rocking curve against a dynamical solver are NOT RUN. The label is copied
-into every ExitWave.metadata["validation_status"].
+Status: UNVALIDATED for atomistic reflection. Ladder rung 1 (M2 report) and rung 2 test R2-A
+(continuum periodic potential, Bragg-case (0,0,8) with absorption; tests/forward/
+test_rung2_bragg.py, docs/agent_reports/E1_engine_wave2a.md) pass. Rung 3 has passed ONLY for the
+continuum null tests and the atomistic MOVED-beam translation; the atomistic FIXED-beam translation
+check that docs/05 4.4 item 3 requires before any step-phase run has NOT passed (audit A6 S-1). The
+abTEM cross-check is NOT RUN. The flat-surface rocking-curve comparison with an independent
+dynamical solver was RUN (reports S5, E8): phases within about 0.03 rad with the solver's own
+potential, not like-for-like along the beam and no amplitude validation (E8 M1, M2). The label is
+copied into every ExitWave.metadata["validation_status"].
 
 No function default stands in for a PROJECT_INPUT: MultisliceParams, SheetBeam, the potentials and
 the absorbers have required fields only.
@@ -45,13 +49,19 @@ from .propagator import PROPAGATORS, propagator_kernel
 
 ENGINE_NAME = "reflection_holo.forward.multislice"
 VALIDATION_STATUS = (
-    "UNVALIDATED: of the docs/05 4.4 ladder, rung 1 (refraction-only analytic limit), rung 2 test "
-    "R2-A (laterally uniform periodic continuum potential, Bragg-case (0,0,8) amplitude and phase "
-    "across the plateau against the exact semi-infinite solution, TEST_ONLY absorption r = 0.1 and "
-    "0.05, both propagators; P2 report section 8, tests/forward/test_rung2_bragg.py) and rung 3 "
-    "(continuum null tests) pass in tests/forward; R2-B (r = 0) is optional and qualitative; the "
-    "abTEM cross-check (transmission and reflection-like configurations) and the atomistic "
-    "flat-surface rocking curve against a dynamical solver were NOT RUN")
+    "UNVALIDATED: of the docs/05 4.4 ladder, rung 1 (refraction-only analytic limit) and rung 2 "
+    "test R2-A (laterally uniform periodic continuum potential, Bragg-case (0,0,8) amplitude and "
+    "phase across the plateau against the exact semi-infinite solution, TEST_ONLY absorption "
+    "r = 0.1 and 0.05, both propagators; P2 report section 8, tests/forward/test_rung2_bragg.py) "
+    "pass in tests/forward; rung 3 has passed ONLY for the continuum null tests and the atomistic "
+    "MOVED-beam translation: the atomistic FIXED-beam translation check that docs/05 4.4 item 3 "
+    "requires before any step-phase run has NOT passed; R2-B (r = 0) is optional and qualitative; "
+    "the abTEM cross-check (transmission and reflection-like configurations) was NOT RUN; the "
+    "flat-surface rocking-curve comparison with an independent dynamical solver (sim-trhepd-rheed, "
+    "flat Si(001), [100] and [110], TEST_ONLY r = 0.1; reports S5, E8) was RUN: with the solver's "
+    "own potential the phases agree within about 0.03 rad over the rocking range, but the "
+    "comparison is not like-for-like along the beam and its amplitude tolerance has no power "
+    "(E8 M1, M2): not an amplitude validation")
 PLANE_TEXT = "exit plane z = L_z (no further propagation)"
 
 

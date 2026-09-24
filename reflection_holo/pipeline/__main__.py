@@ -70,12 +70,44 @@ def _parser() -> argparse.ArgumentParser:
                    help="multislice: measure the FFT and potential costs on this machine")
     d.add_argument("--report-json", default=None,
                    help="also write the full dry-run report (with the configuration's path and "
-                        "SHA-256) to this JSON file; the Alliance kit reads the GPU memory need "
-                        "from it (kit.py --gpu-mem-from-dry-run)")
+                        "SHA-256 and the engine code's SHA-256) to this JSON file; the Alliance "
+                        "kit reads the GPU memory need from it (kit.py --gpu-mem-from-dry-run)")
     li = sub.add_parser("list-inputs", help="show every PROJECT_INPUT and its status")
     li.add_argument("--config", required=True)
     li.add_argument("--variant", default=None)
     return p
+
+
+DRY_RUN_REPORT_SCHEMA = "reflholo_pipeline_dry_run_report/2"
+ENGINE_CODE_DIR = "reflection_holo/forward/multislice"
+
+
+def engine_code_identity() -> dict:
+    """SHA-256 over every *.py file of the multislice engine package (relative path, NUL, size, NUL,
+    content; files sorted by path): the SAME definition as the Alliance kit's
+    engine_code_sha256 (scripts/hpc/alliance/kit.py; equality asserted in
+    tests/hpc/test_kit_gpu_mem_from_dry_run.py). The dry-run report carries it so that the kit
+    refuses a GPU memory need derived with other engine code, e.g. another memory model (audit A6
+    K-1, X2)."""
+    import hashlib
+    from pathlib import Path
+
+    import reflection_holo.forward.multislice as ms
+    base = Path(ms.__file__).resolve().parent
+    repo = base.parents[2]
+    files = sorted(q for q in base.rglob("*.py") if "__pycache__" not in q.parts)
+    h = hashlib.sha256()
+    rels = []
+    for q in files:
+        rel = q.relative_to(repo).as_posix()
+        data = q.read_bytes()
+        h.update(f"{rel}\0{len(data)}\0".encode())
+        h.update(data)
+        rels.append(rel)
+    if base.relative_to(repo).as_posix() != ENGINE_CODE_DIR:
+        raise RuntimeError(f"engine package at {base} is not {ENGINE_CODE_DIR} below a repository")
+    return dict(sha256=h.hexdigest(), files=rels, dirs=[ENGINE_CODE_DIR],
+                definition="as scripts/hpc/alliance/kit.py engine_code_sha256")
 
 
 def _human_bytes(n: float) -> str:
@@ -127,9 +159,10 @@ def main(argv: list[str] | None = None) -> int:
                 from pathlib import Path
                 cpath = Path(args.config).resolve()
                 Path(args.report_json).write_text(json.dumps(dict(
-                    schema="reflholo_pipeline_dry_run_report/1", config_path=str(cpath),
+                    schema=DRY_RUN_REPORT_SCHEMA, config_path=str(cpath),
                     config_sha256=hashlib.sha256(cpath.read_bytes()).hexdigest(),
-                    variant=args.variant, report=rep), indent=1, default=str))
+                    variant=args.variant, engine_code=engine_code_identity(), report=rep),
+                    indent=1, default=str))
             print(f"purpose: {cfg.purpose}")
             print(f"configuration valid (run level); engine {rep['engine']}; glancing angle "
                   f"{rep['glancing_angle_mrad']:.6f} mrad "

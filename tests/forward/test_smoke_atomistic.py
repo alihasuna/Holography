@@ -3,9 +3,10 @@ specular (0,0,8) condition at 200 keV (theta_ext computed with the mean inner po
 Kirkland potential actually used, 13.903 V), Kirkland independent-atom potential, static lattice,
 0.13 A-class pixels, 1/4 of the lattice period per slice, complex64, 4 threads.
 
-UNVALIDATED: rung 2 (two-beam Bragg-case phase sweep) and the abTEM cross-check were not run, so
-the step phase printed here is reported next to the geometric expectation and NOT asserted against
-it. Asserted: it finishes in under 2 minutes on this CPU, the geometry and band assertions pass, the
+UNVALIDATED (engine.VALIDATION_STATUS): the atomistic fixed-beam translation check of rung 3
+(docs/05 4.4 item 3, required before step phases) has not passed and the abTEM cross-check was not
+run (rung 2 test R2-A passes on a continuum potential), so the step phase printed here is reported
+next to the geometric expectation and NOT asserted against it. Asserted: it finishes in under 2 minutes on this CPU, the geometry and band assertions pass, the
 exit wave is finite and on the declared plane, and a manifest is written (to a temporary
 outputs/ directory)."""
 import json

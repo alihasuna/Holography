@@ -90,8 +90,11 @@ CPU_MEM_HINTS = {
 # memory pool are not modelled) times (1 + a margin the user states with --gpu-mem-margin; no
 # default), and the host memory of that GPU run: the model's cupy host peak (cell 32 B/atom +
 # realisation 112 B/atom + pixel arrays) plus the builder structure the pipeline keeps while it
-# realises, 48 B/atom (192 B/atom in total, H7 section 4; H5 measured 193).
-DRY_RUN_REPORT_SCHEMA = "reflholo_pipeline_dry_run_report/1"
+# realises, 48 B/atom (192 B/atom in total, H7 section 4; H5 measured 193). Schema /2 (X2, audit A6
+# K-1): the report carries the engine code's SHA-256 (engine_code_sha256 below), and a report of
+# other engine code (another memory model) is refused. An explicit --need-gpu-mem-gb BELOW the
+# derived need is refused unless --accept-need-below-dry-run is given (A6 K-2; recorded).
+DRY_RUN_REPORT_SCHEMA = "reflholo_pipeline_dry_run_report/2"
 STRUCTURE_B_PER_ATOM = 48
 _SLURM_MEM_UNIT_B = {"": 2**20, "K": 2**10, "M": 2**20, "G": 2**30, "T": 2**40}  # Slurm: MB default
 
@@ -335,10 +338,11 @@ def _under(path: Path, root: str | None) -> bool:
         return False
 
 
-def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str):
+def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str, repo: Path):
     """(record, NOTE lines): the GPU memory need derived from a `pipeline dry-run --report-json`
     file (or a directory holding dry_run_report.json, e.g. the dry-run job's dry_run/ directory)
-    of THIS configuration and variant (SHA-256 checked). Every step is printed."""
+    of THIS configuration and variant (SHA-256 checked) made with THIS engine code (the report's
+    engine_code.sha256 must equal engine_code_sha256(repo); A6 K-1). Every step is printed."""
     p = Path(path)
     if p.is_dir():
         cands = [p / "dry_run_report.json", p / "dry_run" / "dry_run_report.json"]
@@ -371,6 +375,12 @@ def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str)
                       f"({want[:12]}...): run the `dry-run` job of this configuration first")
     if (data.get("variant") or "") != (variant or ""):
         raise Refused(f"{p} was made for variant {data.get('variant')!r}, not {variant or None!r}")
+    eng_now = engine_code_sha256(repo)["sha256"]
+    eng_rep = (data.get("engine_code") or {}).get("sha256")
+    if eng_rep != eng_now:
+        raise Refused(f"{p} was made with engine code {str(eng_rep)[:12]}..., not with the engine "
+                      f"code of {repo} ({eng_now[:12]}...): its memory estimate may come from "
+                      f"another memory model; rerun the `dry-run` job with this code")
     rep = data.get("report") or {}
     ms = rep.get("multislice")
     if not isinstance(ms, dict) or "memory_bytes" not in ms:
@@ -387,15 +397,16 @@ def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str)
     need_B = dev * (1.0 + float(margin))
     host_B = host + STRUCTURE_B_PER_ATOM * n_atoms
     rec = dict(source=str(p), source_sha256=hashlib.sha256(raw).hexdigest(),
-               config_sha256=want, device_peak_cupy_B=dev, margin=float(margin),
+               config_sha256=want, engine_code_sha256=eng_now, device_peak_cupy_B=dev,
+               margin=float(margin),
                need_gb=need_B / 1e9, host_peak_cupy_B=host, n_atoms=n_atoms,
                structure_B_per_atom=STRUCTURE_B_PER_ATOM, host_need_B=host_B,
                label="engine.memory_model (UNVERIFIED on a GPU; device peak is a lower bound) + "
                      "stated margin; host + 48 B/atom builder structure (H7)")
     lines = [
         f"GPU memory from the dry run {p} (SHA-256 {rec['source_sha256'][:12]}..., configuration "
-        f"SHA-256 {want[:12]}... matches): grid {ms.get('grid')}, {n_atoms} atoms, precision "
-        f"{ms.get('precision')}",
+        f"SHA-256 {want[:12]}... and engine code {eng_now[:12]}... match): grid {ms.get('grid')}, "
+        f"{n_atoms} atoms, precision {ms.get('precision')}",
         f"  device peak of the cupy backend (engine.memory_model; UNVERIFIED on a GPU, a LOWER "
         f"BOUND: cuFFT/cuBLAS workspaces and the cupy pool are not modelled) = {dev} B = "
         f"{dev / 1e9:.3f} GB",
@@ -599,12 +610,17 @@ def make_plan(a) -> dict:
     gpu_need = None
     if a.gpu_mem_margin is not None and a.gpu_mem_from_dry_run is None:
         raise Refused("--gpu-mem-margin applies with --gpu-mem-from-dry-run only")
+    if a.accept_need_below_dry_run and (a.gpu_mem_from_dry_run is None
+                                        or a.need_gpu_mem_gb is None):
+        raise Refused("--accept-need-below-dry-run applies only with both --gpu-mem-from-dry-run "
+                      "and an explicit --need-gpu-mem-gb")
     if a.gpu_mem_from_dry_run is not None:
         if job["kind"] != "pipeline" or not needs_gpu:
             raise Refused("--gpu-mem-from-dry-run applies to a pipeline job of a cupy "
                           "configuration (pipeline, demo-gpu) only")
         gpu_need, lines = gpu_need_from_dry_run(a.gpu_mem_from_dry_run, margin=a.gpu_mem_margin,
-                                                config_path=config_path, variant=variant)
+                                                config_path=config_path, variant=variant,
+                                                repo=repo)
         notes.extend(lines)
 
     limit = val(prof["job_limit_queued_running"])
@@ -637,9 +653,23 @@ def make_plan(a) -> dict:
                 notes.append(f"GPU memory needed: {need:.3f} GB, derived from the dry run (above); "
                              f"{a.cluster} {inst_name} has {val(inst['gpu_mem_gb'])} GB")
             else:
+                below = need < gpu_need["need_gb"]
+                if below and not a.accept_need_below_dry_run:
+                    raise Refused(f"--need-gpu-mem-gb {need:g} is below the {gpu_need['need_gb']:.3f}"
+                                  f" GB derived from the dry run (device peak x (1 + margin), "
+                                  f"itself a lower bound): pass --accept-need-below-dry-run to "
+                                  f"override (recorded), or drop --need-gpu-mem-gb")
                 gpu_need["used"] = f"overridden by --need-gpu-mem-gb {need:g}"
+                gpu_need["explicit_need_gb"] = float(need)
+                gpu_need["explicit_below_derived"] = bool(below)
+                gpu_need["accept_need_below_dry_run"] = bool(a.accept_need_below_dry_run)
                 notes.append(f"--need-gpu-mem-gb {need:g} given explicitly: it overrides the "
                              f"{gpu_need['need_gb']:.3f} GB derived from the dry run")
+                if below:
+                    _warn(warnings, f"--need-gpu-mem-gb {need:g} is BELOW the {gpu_need['need_gb']:.3f}"
+                                    f" GB derived from the dry run; accepted by "
+                                    f"--accept-need-below-dry-run (recorded in the submission "
+                                    f"record)")
         if need is not None and val(inst["gpu_mem_gb"]) < need:
             how = ("" if a.need_gpu_mem_gb is not None else
                    " (derived from the dry run: device peak x (1 + margin), see the NOTE lines)")
@@ -958,6 +988,7 @@ def main(argv=None) -> int:
     p.add_argument("--need-gpu-mem-gb", type=float, default=None)
     p.add_argument("--gpu-mem-from-dry-run", default=None)
     p.add_argument("--gpu-mem-margin", type=float, default=None)
+    p.add_argument("--accept-need-below-dry-run", action="store_true")
     p.add_argument("--cpus", type=int, default=None)
     p.add_argument("--mem", default=None)
     p.add_argument("--any-account-prefix", action="store_true")

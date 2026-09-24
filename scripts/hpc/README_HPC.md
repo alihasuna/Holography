@@ -135,8 +135,10 @@ peaked at 3.6 GB RSS: H4 audit, 2026-09-23.)
 
 Not comparable to experiment: stand-ins for every blocking input; clean bulk-terminated surface
 (no oxide or damage layer); plane-wave illumination (no convergence, energy spread, drift,
-charging, biprism Fresnel fringes, detector MTF); the multislice engine is not yet validated
-against a dynamical reflection solver (docs/05 4.4 rung 2 and the abTEM cross-check NOT RUN), and
-its independent-atom mean inner potential (13.903 V) exceeds B1 (12.0 V) and the DFT value
+charging, biprism Fresnel fringes, detector MTF); the multislice engine is UNVALIDATED for
+atomistic reflection (engine.VALIDATION_STATUS: rung 2 test R2-A passes on a continuum potential;
+the atomistic fixed-beam null test of rung 3 has NOT passed; the abTEM cross-check NOT RUN; the
+flat-surface comparison with a dynamical solver, reports S5 and E8, agrees in phase within about
+0.03 rad but is not an amplitude validation), and its independent-atom mean inner potential (13.903 V) exceeds B1 (12.0 V) and the DFT value
 12.53 V. The tiny multislice variant is below the dark-field resolution along the beam, so its step
 heights are reported as not measurable by design.

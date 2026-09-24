@@ -14,14 +14,22 @@ Usage (repository root, venv from scripts/hpc/setup_env.sh):
 
 Every value in a study file is required (no defaults): per point also `clean_depth_A` (crystal
 between the lowest surface and the 15 A bulk absorber; study.yaml carries the LEGACY M2 value 21 A,
-shallower than the 24.5 A extinction depth, P2 6.5) and `azimuth` ("110" or "100"); at the top level
-`build.tile_above_periods` (flat terraces and parallel steps longer than this many periods are
-built as one verified period and tiled along z, exact; 400 in study.yaml as in M2). An optional
-top-level `surface_resolved` block (all keys of null_test_cases.RESOLVED_KEYS) adds the
-surface-position-resolved read-out of H2 section 2.4 to every translation point (N12); without it
-that read-out is not computed (and the result says so). TEST_ONLY labels mark stand-ins for
-PROJECT_INPUT items (azimuth item 8, angle item 7, absorption item 21). Status: UNVALIDATED engine
-(ladder rungs 1, 2 (R2-A) and 3 pass; the abTEM multislice cross-check not run).
+shallower than the 24.5 A extinction depth, P2 6.5), `azimuth` ("110" or "100") and the sheet beam
+`beam_height_A`, `beam_edge_A`, `beam_gap_A` (full height, sin^2 edge width, bottom edge above the
+highest surface at the entrance plane; study.yaml carries the LEGACY M2 beam 8/2/2 A, formerly a
+silent default; study_depth100.yaml a beam lit to the exit plane, H = L_z tan(theta) - gap - a/2 -
+1 A, H2 2.6; audit A6 N-1/N-3); at the top level `build.tile_above_periods` (flat terraces and
+parallel steps longer than this many periods are built as one verified period and tiled along z,
+exact; 400 in study.yaml as in M2). An optional top-level `surface_resolved` block (all keys of
+null_test_cases.RESOLVED_KEYS, including the amplitude floor `amp_floor_rel`) adds the
+surface-position-resolved read-out of H2 section 2.4 to every translation point (N12); a
+translation point whose beam meets either crystal before L_z - exit_excl_A is then refused
+(null_test_cases.check_lit_to_exit, also with --estimate); without the block that read-out is not
+computed (and the result says so). TEST_ONLY labels mark stand-ins for PROJECT_INPUT items (azimuth
+item 8, angle item 7, absorption item 21). Status: UNVALIDATED engine. Ladder rungs 1 and 2 (R2-A)
+pass; rung 3 has passed ONLY for the continuum null tests and the atomistic MOVED-beam translation:
+the atomistic FIXED-beam translation check that docs/05 4.4 item 3 requires before any step-phase
+run has NOT passed (this study is meant to test it); the abTEM multislice cross-check is not run.
 Study files: study.yaml (the M2 reproduction set, legacy clean depth), study_depth100.yaml (clean
 depth >= 100 A, r >= 0.05, [110] and exact [100], surface-resolved read-out; E1 wave 2a).
 """
@@ -39,8 +47,9 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "tests" / "forward"))
 
-from null_test_cases import (AZIMUTHS, RESOLVED_KEYS, run_translation, step_case,  # noqa: E402
-                             step_phase_rows, theta_0008, translation_pair)
+from null_test_cases import (AZIMUTHS, RESOLVED_KEYS, check_lit_to_exit,  # noqa: E402
+                             run_translation, step_case, step_phase_rows, theta_0008,
+                             translation_pair)
 from reflection_holo.forward.multislice import (PhysicalAbsorption, estimate_resources,  # noqa: E402
                                                 run_realisation)
 from reflection_holo.io.config import load_yaml_unique  # noqa: E402
@@ -53,7 +62,8 @@ STUDY_PURPOSE = ("engine null test with TEST_ONLY stand-ins read from the study 
 
 KINDS = ("translation_fixed_beam", "translation_moved_beam", "step_parallel")
 POINT_KEYS = ("name", "kind", "theta", "extra_length_A", "width_periods", "absorption_ratio",
-              "absorption_label", "precision", "clean_depth_A", "azimuth")
+              "absorption_label", "precision", "clean_depth_A", "azimuth", "beam_height_A",
+              "beam_edge_A", "beam_gap_A")
 RUNTIME_KEYS = ("backend", "threads")
 BUILD_KEYS = ("tile_above_periods",)
 STEP_KEYS = ("apertures_per_A", "window_offsets_A", "window_width_A")
@@ -76,7 +86,9 @@ def _build(p, rt, build):
     th = _theta(p["theta"])
     ab = _absorption(p)
     cellkw = dict(clean_depth_A=float(p["clean_depth_A"]), azimuth=str(p["azimuth"]),
-                  tile_above_periods=int(build["tile_above_periods"]))
+                  tile_above_periods=int(build["tile_above_periods"]),
+                  H=float(p["beam_height_A"]), edge=float(p["beam_edge_A"]),
+                  gap=float(p["beam_gap_A"]))
     if p["kind"].startswith("translation"):
         pair = translation_pair(theta=th, width_periods=int(p["width_periods"]),
                                 extra_A=float(p["extra_length_A"]), absorption=ab,
@@ -129,6 +141,9 @@ def main(argv=None):
             raise SystemExit(f"point {p['name']}: azimuth must be one of {tuple(AZIMUTHS)}")
         if not float(p["clean_depth_A"]) > 0:
             raise SystemExit(f"point {p['name']}: clean_depth_A must be > 0")
+        for k in ("beam_height_A", "beam_edge_A", "beam_gap_A"):
+            if isinstance(p[k], bool) or not float(p[k]) > 0:
+                raise SystemExit(f"point {p['name']}: {k} must be a number > 0")
         if a.only and p["name"] != a.only:
             continue
         path = out / "null_test_study" / f"{p['name']}.json"
@@ -139,12 +154,18 @@ def main(argv=None):
         if p["kind"].startswith("translation"):
             cell, params = obj["A"][0], obj["params"]
             n_runs = 2
+            if resolved is not None:                     # A6 N-1: lit up to the read-out window
+                try:
+                    check_lit_to_exit(obj, exit_excl_A=resolved["exit_excl_A"])
+                except ValueError as exc:
+                    raise SystemExit(f"point {p['name']}: {exc}") from None
         else:
             cell, params = obj[0], obj[3]
             n_runs = 1
         est = estimate_resources(cell, params, realisations=n_runs,
                                  calibrate_cpu=rt["backend"] == "numpy")
         line = (f"{p['name']}: [{p['azimuth']}] clean depth {float(p['clean_depth_A']):g} A, "
+                f"beam H {float(p['beam_height_A']):g} A, L_z {cell.length_z_A:.1f} A, "
                 f"grid {est['grid']['nx']}x{est['grid']['ny']}, {est['n_slices']} "
                 f"slices, {est['n_atoms']} atoms, memory peak "
                 f"{est['memory_bytes']['total'] / 1e6:.0f} MB (numpy/CPU; GPU device "
