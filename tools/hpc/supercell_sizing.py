@@ -1732,11 +1732,15 @@ def report_part4(S, cc, t_start) -> int:
         ok = all(lay["engine_rules"].values())
         check(f"engine_rules_{label}", ok, f"{lay['engine_rules']}")
         npx, nx_, ny_, nm_ = lay["nx"] * lay["ny"], lay["nx"], lay["ny"], lay["n_max"]
+        # H5 M4 measured 48 B/px + max(32 nx n, 8 nx n + 32 ny n) on the UNBLOCKED structure-factor
+        # code; report E1 builds the exponentials in blocks (potential byte-identical), so only the
+        # pixel term of H5's model still bounds the device peak from below. The unblocked value is
+        # printed for reference (orchestrator, after E1).
         h5_dev = 48 * npx + max(32 * nx_ * nm_, 8 * nx_ * nm_ + 32 * ny_ * nm_)
-        check(f"device_peak_ge_H5_model_{label}", mr["device"] >= h5_dev,
-              f"model device peak {mr['device'] / 1e9:.3f} GB >= H5's measured-model "
-              f"{h5_dev / 1e9:.3f} GB (48 B/px + max(32 nx n, 8 nx n + 32 ny n); the engine model "
-              f"adds the entrance wave and the pixel stage of the potential construction)")
+        check(f"device_peak_ge_H5_pixel_term_{label}", mr["device"] >= 48 * npx,
+              f"model device peak {mr['device'] / 1e9:.3f} GB >= H5's pixel term "
+              f"{48 * npx / 1e9:.3f} GB (48 B/px); H5's unblocked model {h5_dev / 1e9:.3f} GB "
+              f"applies to the code before E1's blocked structure factors")
         row = dict(label=label, lay=lay, mem=mr["cpu_job"], dev=mr["device"],
                    host=mr["host_cupy"], h5_dev=h5_dev, gpu=gpu, cpu=cpu, n_real=n_real,
                    n_ang=n_ang, note=note, exit_bytes=8 * lay["nx"] * lay["ny"],
