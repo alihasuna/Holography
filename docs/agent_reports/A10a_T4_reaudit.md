@@ -391,8 +391,9 @@ route") is correct (R8, section 2, item 5). Section 3 gives the text.
 4. **m-1.** Verified: bitwise equal exit waves, clean dc4eb7f clone, metadata differ in timing only
    (n-1).
 5. **m-3 and tests.**
-   - Each new test fails when its fix is reverted: m-3 check removed or narrowed, `2 failed`; (f)
-     buried branch off, `4 failed` (R8).
+   - Each test that guards a fix fails when that fix is reverted: m-3 check removed or narrowed,
+     `2 failed`; (f) buried branch off, `4 failed` (R8). The configuration-reading test cannot fail
+     on a revert (n-3).
    - The m-5 tests miss the analyse() wiring, the cap-5 reading line and the V16 angle (A10a-m3).
    - No route for a feature stand-in on a no-feature run is open today; a future item-13 id could open
      one (n-3).
@@ -460,7 +461,8 @@ The first column's gate sentence can stay as committed.
 >    Steeper beams in the simulation could carry some of it further out. The small vacuum-side
 >    change seen (at most 0.5 % of the reference amplitude) has not been attributed.
 > 4. At 20 and 30 A the two-beam estimate puts the signal 1080-1620 A downstream, beyond the cell.
->    The small difference seen above the ring (about 2e-4 of the reference amplitude) is most likely
+>    Steeper beams in the simulation surface sooner (about 300-460 A) but do not reach the vacuum
+>    above the ring. The small difference seen above the ring (about 2e-4 of the reference amplitude) is most likely
 >    a numerical artefact of the simulation. In a smaller test cell the same kind of difference was
 >    traced to numerical tails of the atomic potential, and it shrank 8- to 25-fold at a finer
 >    pixel. It was not re-checked in this cell.
@@ -470,5 +472,5 @@ The first column's gate sentence can stay as committed.
 Item 1 can stay as written.
 
 **Other text.** Wherever T4's section 2/4 wording, M1_ATTRIBUTION (buried_torus.py:88-92) or the
-reading line (buried_torus.py:441, "outside every in-band causal path") is quoted, apply A10a-m1 and
+reading line (buried_torus.py:441-442, "outside every in-band causal path") is quoted, apply A10a-m1 and
 A10a-m2.
