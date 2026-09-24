@@ -1,7 +1,7 @@
 # X6 - Fixes after the re-audit A10b of X5 (item-12 label policy of comparison runs)
 
 Agent X6, 2026-09-24. Branch `claude/electron-holography-orchestration-nakd7r`, HEAD cff596d when
-work started. Status: IN PROGRESS (written incrementally; final status at the end).
+work started. Status: FINAL (written incrementally; final status at the end).
 
 Input, read in full: `docs/agent_reports/A10b_X5_reaudit.md` with its scratch
 (`SP/a10b/`, SP = `/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad`),
@@ -166,77 +166,6 @@ The "about 11.01-11.10 rad" in the n1 refusal message is formatted at run time f
 `SUBLAYER_RATE_DIFFERENCE_RAD_PER_A` (3.58, 3.61; A9b C4, `tools/review/x5/a9b_c4_nonconformal.py`)
 times the sub-layer difference. It is not a constant.
 
-## 8. Proposed text for docs/06 item 12 and rows B7, B12, B43 (for the orchestrator)
-
-Base: the wording at HEAD, including the interim wording of 477fad5. B41 needs no change: the demo
-variants keep `rounding_boundary_acknowledged` and carry no uncertainties. Numbers:
-`tools/review/x6/x6_oxide_numbers_output.txt`.
-
-**docs/06 item 12.** Replace the passage from "for the oxide thickness AND its density, the
-uncertainty of each" up to "their bracket is recorded (audit A9b M2)." with:
-
-"for the oxide thickness, its density and the thickness of any amorphous Si under it (for a
-measured absence: the detection limit), the uncertainty of each and whether the three are standard
-uncertainties or interval half-widths (one kind for all). The simulation takes +- 2 standard
-uncertainties (about 95 % coverage for a normally distributed quantity) or +- the half-widths. At
-2 nm the consumed-layer count moves by 0.3252 layer per A of oxide thickness, 0.1478 layer per
-0.05 g/cm^3 of density and 0.7365 layer per A of amorphous Si
-(`tools/review/x6/x6_oxide_numbers_output.txt`). So the count, and at <110> the terrace type at a
-buried a/4 step, can change within the uncertainty. When the uncertainties admit two counts, each
-simulation run builds one of them (its lower or upper count, a stated choice), records that the
-other count is a separate run, and leaves the thickness unaltered. The code does not check that the
-other run was made; a result is not quoted before both runs are compared. When the uncertainties
-admit more than two counts, the run is refused (audit A9b m2; re-audit A10b M1, m2, m3; report X6).
-If the mean inner potential or the electronic absorption of the oxide, the width of its surface or
-interface grading, or the potential of the amorphous Si is measured, state for each the method, the
-instrument, the date (YYYY-MM-DD) and where the result is recorded. The simulation requires such a
-record but cannot verify it. Otherwise the model values of row B43 are used for the oxide and their
-bracket is recorded (audit A9b M2). The amorphous-Si potential has no model row, so a comparison
-run with amorphous Si needs its record (re-audit A10b M2, m1)."
-
-**B7.** Two replacements in the last sentences:
-* "(what was measured and how; the gate requires it but cannot verify it)" -> "(a structured
-  record: method, instrument, date, reference; the gate refuses placeholders, negations, model
-  and row references and future dates, but cannot verify a record, only require one; re-audit
-  A10b M2)".
-* "and a comparison run states the thickness and density uncertainties (a consumed-layer count
-  interval across a rounding boundary needs both parities, audit A9b m2; at 00851da this is only
-  acknowledged, not run, re-audit A10b M1, fix in progress)." -> "and a comparison run states the
-  uncertainties of the thickness, the density and the a-Si thickness and their kind (standard
-  uncertainties, taken as +- 2 u, about 95 % coverage, or half-widths). When the resulting
-  consumed-layer count interval spans one rounding boundary, the run states which of its two
-  counts it builds (`consumed_layers_parity`: lower or upper; DERIVED_HERE, 'parity variant
-  <lower|upper> of an interval spanning a boundary'; no thickness altered). It records that the
-  other count is a separate run, which the gate does not check. Intervals of more than two counts
-  are refused (audit A9b m2; re-audit A10b M1, m2, m3; report X6)."
-
-**B12.** Two replacements:
-* "comparison runs state the item-12 thickness and density uncertainties and need both parities
-  when the count interval spans a boundary, at 00851da acknowledged but not run, re-audit A10b
-  M1" -> "comparison runs state the item-12 uncertainties of thickness, density and a-Si thickness
-  with their kind. When the count interval spans one boundary, they build its lower or upper
-  count as a stated parity variant; the other count is a separate run that the gate does not
-  check. No thickness is altered, so the layer then overlaps or misses the kept crystal by more
-  than a/8, at most 1.5 a/4 = 2.0366 A (2.0 nm, lower variant: +0.6838 A), an effect not
-  computed. Intervals of more than two counts are refused (re-audit A10b M1, m2, m3; report X6)".
-* "an atomistic multislice cell whose terraces carry different thicknesses is refused unless
-  acknowledged (TEST_ONLY; audit A9b M1)" -> "an atomistic multislice cell whose terraces carry
-  different thicknesses, or different consumed-layer counts at one thickness (the rounding tie,
-  a sub-layer difference of (a/4)/f = 3.0752 A; re-audit A10b n1), is refused unless
-  acknowledged (TEST_ONLY; audit A9b M1)".
-
-**B43.** Two replacements:
-* "A value measured on the witness piece replaces a B43 value only as PROJECT_INPUT with a
-  measurement record (what was measured and how)." -> "A value measured on the witness piece
-  replaces a B43 value only as PROJECT_INPUT with a structured measurement record {method,
-  instrument, date YYYY-MM-DD, reference where the result is recorded}. The gate refuses
-  placeholders, negations ('not measured'), 'model', 'assumption', 'independent-atom', row ids,
-  bare values and future dates, but cannot verify a record, only require one (re-audit A10b M2;
-  report X6)."
-* "The a-Si potentials remain PROJECT_INPUT-only in comparison runs (report X5 section 9)." -> "B43
-  does not cover the a-Si potentials: in a comparison run they are PROJECT_INPUT with the same
-  measurement record (re-audit A10b m1; report X6)."
-
 ## 5. Reverting each fix makes a test fail (mutations)
 
 `tools/review/x6/mutate_x6.py --work SP/x6/mut` reverts each fix in a scratch copy of
@@ -311,3 +240,175 @@ outputs/, and the references are the saved runs in `SP/a10b/pipe`, `SP/x5/pipe` 
 
 The same check on the code before the last reorder (`SP/x6/d_bitid*.out`) gave the same result.
 `git status --short outputs/` was empty.
+
+## 7. Test runs (verbatim last lines)
+
+Command: `OMP_NUM_THREADS=2 PYTHONPATH=. venv/bin/python -m pytest -q -p no:cacheprovider -rfs`,
+run one after the other on the final code from 12:05:55 to 12:19:15 UTC. Logs are in `SP/x6/run_*.txt`.
+
+    oxide files (the 12 test_oxide_* files of structure, forward_geometric, pipeline and forward,
+      except the heavy tests/forward/test_oxide_multislice.py, which runs in the forward directory):
+                     477 passed in 22.08s
+    tests/structure: 451 passed in 32.22s
+    tests/io:        128 passed in 1.24s
+    tests/pipeline:  387 passed in 177.76s (0:02:57)
+    tests/forward:   SKIPPED [2] tests/forward/test_null_readout_known_answer.py:225: L10k study-beam proofs (about 6 min): RH_NULL_READOUT_LONG=1
+                     SKIPPED [1] tests/forward/test_rung2_bragg.py:138: R2-B (r = 0) is optional and qualitative (P2 8.4); RH_RUNG2_R2B=1
+                     191 passed, 3 skipped in 561.50s (0:09:21)
+
+The forward run collected T5's buried-torus test file as it was at that time. It is not mine and
+was not touched.
+
+Earlier runs, all on intermediate code:
+* baseline: 268 passed;
+* the 13 oxide files: 501 passed in 21.71s;
+* pre-migration: 8 failed, as intended (section 3);
+* the pipeline oxide files after the reorder: 253 passed in 8.77s.
+
+The committed scripts reproduce their saved outputs:
+* `x6_oxide_numbers.py`: rerun on the final code and diffed, identical;
+* `tools/review/x5/x5_oxide_numbers.py`: rerun and diffed, identical (X5's function is unchanged);
+* `mutate_x6.py`: run once on the final code (section 5);
+* `x6_demo_bitid.py`: run once on the final code (section 6).
+
+## 8. Proposed text for docs/06 item 12 and rows B7, B12, B43 (for the orchestrator)
+
+Base: the wording at HEAD, including the interim wording of 477fad5. B41 needs no change: the demo
+variants keep `rounding_boundary_acknowledged` and carry no uncertainties. Numbers:
+`tools/review/x6/x6_oxide_numbers_output.txt`.
+
+**docs/06 item 12.** Replace the passage from "for the oxide thickness AND its density, the
+uncertainty of each" up to "their bracket is recorded (audit A9b M2)." with:
+
+"for the oxide thickness, its density and the thickness of any amorphous Si under it (for a
+measured absence: the detection limit), the uncertainty of each and whether the three are standard
+uncertainties or interval half-widths (one kind for all). The simulation takes +- 2 standard
+uncertainties (about 95 % coverage for a normally distributed quantity) or +- the half-widths. At
+2 nm the consumed-layer count moves by 0.3252 layer per A of oxide thickness, 0.1478 layer per
+0.05 g/cm^3 of density and 0.7365 layer per A of amorphous Si
+(`tools/review/x6/x6_oxide_numbers_output.txt`). So the count, and at <110> the terrace type at a
+buried a/4 step, can change within the uncertainty. When the uncertainties admit two counts, each
+simulation run builds one of them (its lower or upper count, a stated choice), records that the
+other count is a separate run, and leaves the thickness unaltered. The code does not check that the
+other run was made; a result is not quoted before both runs are compared. When the uncertainties
+admit more than two counts, the run is refused (audit A9b m2; re-audit A10b M1, m2, m3; report X6).
+If the mean inner potential or the electronic absorption of the oxide, the width of its surface or
+interface grading, or the potential of the amorphous Si is measured, state for each the method, the
+instrument, the date (YYYY-MM-DD) and where the result is recorded. The simulation requires such a
+record but cannot verify it. Otherwise the model values of row B43 are used for the oxide and their
+bracket is recorded (audit A9b M2). The amorphous-Si potential has no model row, so a comparison
+run with amorphous Si needs its record (re-audit A10b M2, m1)."
+
+**B7.** Two replacements in the last sentences:
+* "(what was measured and how; the gate requires it but cannot verify it)" -> "(a structured
+  record: method, instrument, date, reference; the gate refuses placeholders, negations, model
+  and row references and future dates, but cannot verify a record, only require one; re-audit
+  A10b M2)".
+* "and a comparison run states the thickness and density uncertainties (a consumed-layer count
+  interval across a rounding boundary needs both parities, audit A9b m2; at 00851da this is only
+  acknowledged, not run, re-audit A10b M1, fix in progress)." -> "and a comparison run states the
+  uncertainties of the thickness, the density and the a-Si thickness and their kind (standard
+  uncertainties, taken as +- 2 u, about 95 % coverage, or half-widths). When the resulting
+  consumed-layer count interval spans one rounding boundary, the run states which of its two
+  counts it builds (`consumed_layers_parity`: lower or upper; DERIVED_HERE, 'parity variant
+  <lower|upper> of an interval spanning a boundary'; no thickness altered). It records that the
+  other count is a separate run, which the gate does not check. Intervals of more than two counts
+  are refused (audit A9b m2; re-audit A10b M1, m2, m3; report X6)."
+
+**B12.** Two replacements:
+* "comparison runs state the item-12 thickness and density uncertainties and need both parities
+  when the count interval spans a boundary, at 00851da acknowledged but not run, re-audit A10b
+  M1" -> "comparison runs state the item-12 uncertainties of thickness, density and a-Si thickness
+  with their kind. When the count interval spans one boundary, they build its lower or upper
+  count as a stated parity variant; the other count is a separate run that the gate does not
+  check. No thickness is altered, so the layer then overlaps or misses the kept crystal by more
+  than a/8, at most 1.5 a/4 = 2.0366 A (2.0 nm, lower variant: +0.6838 A), an effect not
+  computed. Intervals of more than two counts are refused (re-audit A10b M1, m2, m3; report X6)".
+* "an atomistic multislice cell whose terraces carry different thicknesses is refused unless
+  acknowledged (TEST_ONLY; audit A9b M1)" -> "an atomistic multislice cell whose terraces carry
+  different thicknesses, or different consumed-layer counts at one thickness (the rounding tie,
+  a sub-layer difference of (a/4)/f = 3.0752 A; re-audit A10b n1), is refused unless
+  acknowledged (TEST_ONLY; audit A9b M1)".
+
+**B43.** Two replacements:
+* "A value measured on the witness piece replaces a B43 value only as PROJECT_INPUT with a
+  measurement record (what was measured and how)." -> "A value measured on the witness piece
+  replaces a B43 value only as PROJECT_INPUT with a structured measurement record {method,
+  instrument, date YYYY-MM-DD, reference where the result is recorded}. The gate refuses
+  placeholders, negations ('not measured'), 'model', 'assumption', 'independent-atom', row ids,
+  bare values and future dates, but cannot verify a record, only require one (re-audit A10b M2;
+  report X6)."
+* "The a-Si potentials remain PROJECT_INPUT-only in comparison runs (report X5 section 9)." -> "B43
+  does not cover the a-Si potentials: in a comparison run they are PROJECT_INPUT with the same
+  measurement record (re-audit A10b m1; report X6)."
+
+## 9. NOT RUN, and what remains open
+
+NOT RUN:
+* The full test suite (the orchestrator runs it).
+* A pipeline run of the OTHER parity variant next to its partner, or any comparison of two variant
+  runs. The pipeline builds and records one variant per run. The run test builds only the lower
+  variant (geometric engine), and the gate does not check that the other variant was run.
+* The physics of a variant whose count is not the nearest one. Its overlap or gap exceeds a/8
+  (+0.6838 A for 2.0 nm, lower) and is recorded but not evaluated: no 1-D or multislice estimate
+  of its effect on |r| or the phase was made. A9b's C3 covers a 0.674 A gap only.
+* A multislice run of a parity variant (cell construction only, forward a10b tests); the [110]
+  multislice with the layer; the a-Si layer in propagation; cupy/GPU.
+* A comparison run with a real item-12 record: none exists. All comparison probes are in-memory
+  with fabricated TEST supply and measurement records. They are refused anyway for the demo's other
+  stand-ins, and the tests assert that no oxide entry is named.
+* A propagated two-terrace multislice of a non-conformal or two-count oxide. The n1 size
+  (11.01-11.10 rad) rests on A9b's 1-D estimate of 3.58-3.61 rad per A.
+
+Open, for the orchestrator:
+1. **Intervals of more than two counts are refused** (section 2). With the a-Si uncertainty
+   included this will be common: for example 2.0 nm with a-Si 0 +- 1 A as a half-width, or +-1 A
+   and +-0.05 g/cm^3 as standard uncertainties. Deciding how such a record is simulated (for
+   example a stated count of the interval, with each count a separate run) is needed before a
+   realistic item-12 record can be run.
+2. Whether a comparison result may be quoted from one variant. The record says "a result is not
+   quoted before both variants are compared", but nothing enforces or links the pair (A10b's
+   option (a) "link the pair in both manifests" was not in the decision).
+3. The measurement-record patterns fail closed and can refuse a genuine record ("model fit",
+   "found to be", an instrument named with "model"). The gate cannot verify a record, only require
+   one.
+4. Not in the decisions and unchanged:
+   * A10b-n2's exact-tie edge cases of the interval corners;
+   * a floor on uncertainties (only zero and negative values are refused);
+   * A10b-n3 (the engine value checked as a string);
+   * A10b-n5 (B43's V_ox at another measured density);
+   * A10b-n6 (no oxide cell in the sizing tool);
+   * the exact `==` of `si001.py` step thicknesses (section 2).
+5. The texts of docs/06 item 12 and rows B7, B12, B43 (section 8) are the orchestrator's.
+
+## Final status
+
+FINAL. HEAD f009be8, the orchestrator's snapshot, which includes this working tree. All six
+decisions are implemented:
+
+* **M1.** `both_parities_acknowledged` is retired. `consumed_layers_parity: lower | upper` is
+  required across a boundary and refused otherwise. The variant's count is labelled DERIVED_HERE
+  with "parity variant <lower|upper> of an interval spanning a boundary". The item-12 record,
+  manifest and summary give the interval, the variant and "the other variant is a SEPARATE run".
+  No thickness is altered. Intervals of more than two counts are refused, which is my addition
+  and needs a decision.
+* **M2 and m1.** The measurement record is structured {method, instrument, date, reference} for
+  V_ox, V'_ox, w_v, w_i and the a-Si potentials. Placeholders, negations, model and row
+  references, bare values and future dates are refused. Every error states that the gate cannot
+  verify a measurement record, only require one.
+* **m2 and n2.** `uncertainty_kind` is required: a standard uncertainty enters as +- 2 u (k = 2,
+  about 95 % coverage for a normally distributed quantity), a half-width as +- itself. Zero and
+  negative uncertainties are refused.
+* **m3.** The a-Si thickness uncertainty is in the interval: 0.7365 layer per A, printed.
+* **n1.** The cell guard also refuses different counts at one thickness.
+* **Decision 6.** The code strings are corrected, and texts are proposed for docs/06 item 12, B7,
+  B12 and B43.
+
+Evidence:
+* Each of the 31 reversions makes at least one test fail.
+* The B41 geometric and multislice demo arrays are bitwise identical to A10b's runs.
+* Tests: oxide files 477, structure 451, io 128 and pipeline 387 passed; forward 191 passed and
+  3 skipped.
+
+Rules kept: nothing committed by me; nothing written under outputs/; docs/ unchanged except this
+report; `scripts/hpc/alliance/` and T5's files untouched.
