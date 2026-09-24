@@ -93,6 +93,56 @@ def test_fixed_u_A7_form_still_accepted_for_demo_and_refused_for_comparison():
         load_pipeline_dict(d, variant=THERMAL)
 
 
+def test_comparison_refuses_a_static_lattice_naming_item_23():
+    """A5 F2: a static lattice (frozen_phonons none) is refused by purpose comparison whatever its
+    label (no Debye-Waller factor: 1.0 instead of 0.772 at (0,0,8)); the refusal names item 23,
+    together with the demo stand-ins of the file; demos keep their labelled static lattice."""
+    d = read_pipeline_file(SMOKE)
+    load_pipeline_dict(copy.deepcopy(d), variant="multislice_tiny")          # demo: accepted
+    d["purpose"] = "comparison"
+    with pytest.raises(PipelineConfigError) as e:
+        load_pipeline_dict(d, variant="multislice_tiny")
+    msg = str(e.value)
+    assert "frozen_phonons 'none'" in msg and "item 23" in msg and "0.772" in msg
+    assert "Debye-Waller" in msg and "B19" in msg                 # the demo stand-ins as well
+
+
+def test_static_lattice_needs_an_assumption_label_and_a_label_needs_a_static_lattice():
+    d = read_pipeline_file(SMOKE)
+    ms = d["variants"]["multislice_tiny"]["sections"]["engine"]["multislice"]
+    for bad in (None, "", "static lattice", "PROJECT_INPUT item 23"):
+        ms["static_lattice_label"] = bad
+        with pytest.raises(PipelineConfigError, match="static_lattice_label.*label"):
+            load_pipeline_dict(copy.deepcopy(d), variant="multislice_tiny")
+    d = read_pipeline_file(SMOKE)
+    _ms(d)["static_lattice_label"] = "ASSUMPTION (demo): static lattice"   # with B35 phonons
+    with pytest.raises(PipelineConfigError, match="refused rather than ignored"):
+        load_pipeline_dict(d, variant=THERMAL)
+
+
+def test_flipflop_potential_refuses_frozen_phonons_other_than_B35():
+    """A5 F11: B37 requires B35 in the engine path too (not only in the pipeline gate)."""
+    from types import SimpleNamespace
+    import sys
+    sys.path.insert(0, str(SMOKE.parents[1] / "tests" / "structure"))
+    from si001_test_inputs import build
+    from reflection_holo.forward.dimer_ensemble import DimerFlipFlopPotential
+    from reflection_holo.forward.multislice import FrozenPhonons
+    from reflection_holo.structure import Staircase, thermal
+    flat = Staircase(edges="transverse", terrace_layers=(0,), terrace_widths=(4,),
+                     boundary_step_layers=0)
+    s = build(flat, edge_periods=4, substrate_layers=8, termination=FLIP)
+    a7 = FrozenPhonons(rms_displacement_A=0.076, label="ASSUMPTION A7: 0.076 A per axis")
+    with pytest.raises(ValueError, match="B35"):
+        DimerFlipFlopPotential(SimpleNamespace(kind="atomic", frozen_phonons=a7), s)
+    good = thermal.frozen_phonon_arguments(specimen_temperature_K=295.5,
+                                           temperature_label="TEST_ONLY: item 23")
+    forged = FrozenPhonons(rms_displacement_A=0.076, label=good["label"])   # B35 label, A7 u
+    with pytest.raises(ValueError, match="not u"):
+        DimerFlipFlopPotential(SimpleNamespace(kind="atomic", frozen_phonons=forged), s)
+    assert thermal.require_b35_frozen_phonons(FrozenPhonons(**good), "test") == 295.5
+
+
 def test_comparison_refuses_the_B36_demo_temperature():
     d = read_pipeline_file(SMOKE)
     d["purpose"] = "comparison"
@@ -110,8 +160,15 @@ def test_reconstruction_accepted_only_on_the_multislice_staircase_path():
         load_pipeline_dict(copy.deepcopy(d), variant=None, allow_test_only=True)
     with pytest.raises(PipelineConfigError, match="needs frozen_phonons"):
         load_pipeline_dict(copy.deepcopy(d), variant="multislice_tiny", allow_test_only=True)
-    _termination(d, "c(4x2)")                                # static: any frozen-phonon setting
+    # a static BUCKLED table needs its buckling registry (audit A5 F1): the bare name is refused
+    _termination(d, "c(4x2)")
+    with pytest.raises(PipelineConfigError, match="buckling registry is a required"):
+        load_pipeline_dict(copy.deepcopy(d), variant="multislice_tiny", allow_test_only=True)
+    _termination(d, {"name": "c(4x2)", "buckling_registry": "+[010]"})   # static: any phonons
     load_pipeline_dict(copy.deepcopy(d), variant="multislice_tiny", allow_test_only=True)
+    _termination(d, {"name": FLIP, "buckling_registry": "+[010]"})
+    with pytest.raises(PipelineConfigError, match="refused rather than ignored"):
+        load_pipeline_dict(copy.deepcopy(d), variant=THERMAL, allow_test_only=True)
     _termination(d, "7x7")
     with pytest.raises(PipelineConfigError, match="not one of"):
         load_pipeline_dict(d, variant=THERMAL, allow_test_only=True)
@@ -173,6 +230,10 @@ def test_flipflop_configurations_per_realisation(tmp_path):
     st = [w.metadata["potential"]["realised"]["dimer_flip_flop"]["states_sha256"] for w in waves]
     assert st[0] == ff[0]["states_sha256"] and st[1] == ff[1]["states_sha256"]
     assert record["termination"]["value"] == FLIP
+    # the states of EVERY realisation are in the run record (A5 F12: not only realisation 0)
+    rs = record["dimer_flip_flop_states"]
+    assert [(x["realisation"], x["states_sha256"], x["states_packbits_hex"]) for x in rs] == \
+        [(r, f["states_sha256"], f["states_packbits_hex"]) for r, f in enumerate(ff[:2])]
     again = run_realisation(cell, potential=pot, beam=o["beam"], params=o["params"],
                             realisation=1, seed=seed)
     assert np.array_equal(again.psi, waves[1].psi)

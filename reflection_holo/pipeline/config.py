@@ -135,18 +135,20 @@ SECTIONS: dict[str, dict[str, dict]] = {
         "selected_beam": _rec(4, "none", "beam"),
         "projection_reference": _plain("enum", choices=PROJECTION_REFERENCES),
         "lens_transfer": _plain("enum", choices=("none",)),
-        # report E3 (E6 M1, M2): surface-plasmon losses in hologram formation, both REQUIRED:
-        # the mean excitation number of the object path per reflection (item 21: an
-        # energy-filtered EELS of the specular beam at the working angle; stand-in B38) and the
-        # mutual visibility of the loss electrons of the two arms (item 16; stand-in B39)
+        # report E3 (E6 M1, M2): surface-plasmon losses in hologram formation: the mean
+        # excitation number of the object path per reflection (item 21: an energy-filtered EELS of
+        # the specular beam at the working angle; stand-in B38), REQUIRED; the mutual visibility
+        # of the loss electrons of the two arms (item 16; stand-in B39), REQUIRED with an R2
+        # reference and refused with R1/R3, where it has no effect (``_check_reference``; A5 F10)
         "surface_plasmon_excitations": _rec(21, "none", "nonnegative"),
-        "loss_electron_visibility": _rec(16, "none", "unit_interval"),
+        "loss_electron_visibility": _rec(16, "none", "unit_interval", optional=True),
     },
     "reference": {
         "carrier_fringe_spacing": _rec(16, "length", "positive"),
         "carrier_direction": _rec(16, "angle", "finite"),
         "amplitude_ratio": _rec(16, "none", "positive"),
         "aperture_passage": _rec(15, "none", "aperture_passage"),
+        # the self-reference shift: REQUIRED with an R2 reference (``_check_reference``; A5 F7)
         "shift": _rec(16, "length", "pixel_pair", optional=True),
         # report E3: separation D0 (x, y, z; cell frame, A) from the reference-arm point to the
         # object-arm exit-plane point superposed by the biprism; required by an R1 convergence
@@ -689,14 +691,23 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
     _refuse_unused_physical_inputs(cfg_b, sections, ga)
     if data["purpose"] == "comparison":
         eng = sections["engine"]
-        if eng["name"] == "multislice" and isinstance(eng["multislice"]["frozen_phonons"], dict) \
-                and set(eng["multislice"]["frozen_phonons"]) == FIXED_U_KEYS:
-            raise PipelineConfigError(
+        fp = eng["multislice"]["frozen_phonons"] if eng["name"] == "multislice" else None
+        thermal_reasons = []
+        if isinstance(fp, dict) and set(fp) == FIXED_U_KEYS:
+            thermal_reasons.append(
                 "purpose 'comparison' refuses frozen phonons given as a fixed u (e.g. "
                 "model_assumptions A7, inherited, unsourced): the specimen temperature "
                 f"(PROJECT_INPUT item 23) must enter through {{model: {THERMAL_MODEL_B35}}} "
                 "(report E2)")
-        _comparison_gate(cfg_b, records, test_only)
+        if fp == "none":
+            thermal_reasons.append(
+                "purpose 'comparison' refuses frozen_phonons 'none' (a static lattice, whatever "
+                "its label): the specimen temperature (PROJECT_INPUT item 23) and the thermal "
+                "model are then not represented at all; a static lattice has no Debye-Waller "
+                "factor (amplitude 1.0 instead of exp(-B s^2) = 0.772 at (0,0,8) with B35 at "
+                "295.5 K). Use frozen_phonons {model: " + THERMAL_MODEL_B35 + "} with "
+                "sections.engine.multislice.specimen_temperature (item 23; audit A5 F2)")
+        _comparison_gate(cfg_b, records, test_only, reasons=thermal_reasons)
     resolved = {k: v for k, v in data.items() if k != "variants"}
     resolved["sections"] = sections_raw
     resolved["cfg_b"] = cfg_b_full
@@ -716,6 +727,35 @@ CONVERGENCE_KEYS = ("source_profile", "n_radial", "n_azimuthal", "line_azimuth_r
 # illumination (B40, report E3): a stand-in whose row contradicts the value is refused
 CONVERGENCE_STAND_IN_ZERO = {"B21": True, "B40": False}
 R1_PASSAGES_UNDER_CONVERGENCE = ("condenser_biprism_pretilt",)
+
+
+# records that are required or refused according to the reference model (audit A5 F7, F10)
+R2_ONLY_RECORDS = {("reference", "shift"): "the self-reference shift of an R2 reference",
+                   ("optics", "loss_electron_visibility"): (
+                       "the mutual visibility of the surface-plasmon-loss electrons of the two "
+                       "reflected arms of an R2 reference")}
+
+
+def _check_reference(cfg_b: LoadedConfig, sections: dict) -> None:
+    """Item-16 records that depend on the reference model: with R2 the shift and the loss-electron
+    visibility are REQUIRED (missing: MissingProjectInputError naming item 16, before any engine
+    run; A5 F7, F10); with a vacuum reference (R1, R3) the loss-electron visibility has no effect
+    (the reference arm carries no loss electron, optics.inelastic) and is refused rather than
+    ignored (the shift of an R1 run is listed as NOT USED, as before)."""
+    ref = cfg_b.value("reference_model")
+    if ref == "R2":
+        miss = [(sec, name) for (sec, name) in R2_ONLY_RECORDS if name not in sections[sec]]
+        if miss:
+            raise MissingProjectInputError(
+                "pipeline run refused, missing PROJECT_INPUT (docs/06_project_inputs_required.md): "
+                + "; ".join(f"item 16 (sections.{sec}.{name}: {R2_ONLY_RECORDS[(sec, name)]}, "
+                            f"required by an R2 reference)" for sec, name in miss),
+                [16] * len(miss), [f"{sec}.{name}" for sec, name in miss])
+    elif "loss_electron_visibility" in sections["optics"]:
+        raise PipelineConfigError(
+            f"sections.optics.loss_electron_visibility: with the vacuum reference {ref} the "
+            f"reference arm carries no surface-plasmon loss electron, so the value has no effect "
+            f"(optics.inelastic): refused rather than ignored (it is required for R2 only; A5 F10)")
 
 
 def _check_convergence(cfg_b: LoadedConfig, sections: dict, ga: dict) -> None:
@@ -817,6 +857,7 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
     REFUSED rather than accepted and ignored (audit A3 M6; docs/05 criterion 5; docs/06 item 12
     "must be modelled rather than ignored"). Items that do not change the simulated physics and are
     not used on a path are listed by ``list_inputs`` as "SUPPLIED, NOT USED on this path"."""
+    _check_reference(cfg_b, sections)
     _check_convergence(cfg_b, sections, ga)
     prep = cfg_b.value("surface_preparation_details")
     if isinstance(prep, dict):
@@ -861,6 +902,8 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
 
 def _check_termination(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
     """cfg_b.surface_preparation_details.termination (item 12; report E2): 'bulk' on every path;
+    a static buckled reconstruction as {name, buckling_registry} (the registry is a required model
+    choice, structure.si001.parse_termination; audit A5 F1);
     a sourced reconstruction (structure.reconstruction) only where it is represented, i.e. the
     multislice engine on the staircase path (the geometric engine has no atoms and refuses it, B4;
     the feature builder refuses it, structure.features.FEATURE_RECONSTRUCTION_REFUSAL); the
@@ -868,9 +911,14 @@ def _check_termination(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
     frozen-phonon generator at the specimen temperature, item 23). A stand-in whose row states a
     bulk termination (B26) cannot carry a reconstruction."""
     from reflection_holo.structure.reconstruction import FLIPFLOP
-    from reflection_holo.structure.si001 import TERMINATIONS
-    term = prep.get("termination", "bulk")
-    where = f"cfg_b.surface_preparation_details.termination = {term!r}"
+    from reflection_holo.structure.si001 import TERMINATIONS, parse_termination
+    raw = prep.get("termination", "bulk")
+    where = f"cfg_b.surface_preparation_details.termination = {raw!r}"
+    try:
+        # a static BUCKLED reconstruction needs {name, buckling_registry} (audit A5 F1)
+        term, _registry = parse_termination(raw)
+    except ValueError as exc:
+        raise PipelineConfigError(f"{where}: {exc}") from exc
     if term == "bulk":
         return
     if term not in TERMINATIONS:
@@ -896,20 +944,26 @@ def _check_termination(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
                                   f"a reconstruction needs its own declaration")
 
 
-def _comparison_gate(cfg_b: LoadedConfig, records: list[Record], test_only: bool) -> None:
+def _comparison_gate(cfg_b: LoadedConfig, records: list[Record], test_only: bool, *,
+                     reasons: list[str]) -> None:
     """purpose 'comparison' refuses (audit A3 M2): every registered DEMO stand-in (registry
     demo_only, B19-B32) whatever its docs/06 item; any ASSUMPTION standing in for a blocking item;
-    TEST_ONLY values. The remaining ASSUMPTIONs are listed in the run summary."""
+    TEST_ONLY values; and the thermal forms that do not represent item 23 (``reasons``, computed by
+    the caller: a fixed u or a static lattice; audit A5 F2). Every reason is named in ONE error.
+    The remaining ASSUMPTIONs are listed in the run summary."""
     demo = demo_only_stand_ins()
     bad = [f"sections.{r.section}.{r.name} (item {r.item}, {r.assumption_id})" for r in records
            if r.label == "ASSUMPTION" and (r.assumption_id in demo or r.item in BLOCKING_ITEMS)]
     bad += [f"cfg_b.{p.name} (item {p.item}, {p.assumption_id})" for p in cfg_b.parameters.values()
             if p.label == "ASSUMPTION" and (p.assumption_id in demo or p.item in BLOCKING_ITEMS)]
+    msgs = list(reasons)
     if bad or test_only:
-        raise PipelineConfigError(
+        msgs.append(
             f"purpose 'comparison' refuses every demo stand-in ({', '.join(sorted(demo))}), every "
             f"ASSUMPTION standing in for a blocking PROJECT_INPUT item and TEST_ONLY values: "
             f"{bad or 'TEST_ONLY present'} (audit A3 M2)")
+    if msgs:
+        raise PipelineConfigError("; AND ".join(msgs))
 
 
 def assumptions_in_use(cfg: "PipelineConfig") -> list[dict]:
@@ -1064,12 +1118,27 @@ def _check_frozen_phonons(m: dict, *, allow_test_only: bool) -> None:
     from reflection_holo.structure import thermal
     fp = m["frozen_phonons"]
     where = "sections.engine.multislice.specimen_temperature"
+    lab = m["static_lattice_label"]
     if fp == "none" or (isinstance(fp, dict) and set(fp) == FIXED_U_KEYS):
         if "specimen_temperature" in m:
             raise PipelineConfigError(
                 f"{where}: not used with frozen_phonons "
                 f"{'none (static lattice)' if fp == 'none' else 'given as a fixed u'}: refused "
                 f"rather than ignored (use frozen_phonons: {{model: {THERMAL_MODEL_B35}}})")
+    if fp == "none":
+        # a static lattice is an explicit ASSUMPTION (audit A5 F2; refused altogether by purpose
+        # "comparison", load_pipeline_dict)
+        require_evidence_label(
+            lab, "sections.engine.multislice.static_lattice_label (frozen_phonons 'none': a "
+                 "static lattice, no Debye-Waller factor, item 23 not represented)",
+            accepted=("ASSUMPTION",) + ((TEST_ONLY_LABEL,) if allow_test_only else ()),
+            qualified=True, error=PipelineConfigError)
+        return
+    if lab is not None:
+        raise PipelineConfigError(
+            "sections.engine.multislice.static_lattice_label applies to frozen_phonons 'none' "
+            "only (null otherwise): refused rather than ignored")
+    if isinstance(fp, dict) and set(fp) == FIXED_U_KEYS:
         return
     if not (isinstance(fp, dict) and set(fp) == {"model"} and fp["model"] == THERMAL_MODEL_B35):
         raise PipelineConfigError(
@@ -1171,6 +1240,18 @@ def _path_usage(parameter: str, data: dict, sections: dict) -> str | None:
     return reasons.get(parameter)
 
 
+def _r2_only_absent(parameter: str, data: dict, sections: dict) -> str | None:
+    """Why an R2-only record is absent on a non-R2 path, or None (A5 F7, F10)."""
+    params = (data.get("cfg_b") or {}).get("parameters") or {}
+    ref = (params.get("reference_model") or {}).get("value")
+    if ref == "R2":
+        return None
+    for (sec, name), what in R2_ONLY_RECORDS.items():
+        if parameter == f"sections.{sec}.{name}":
+            return f"{what}; this run uses {ref} (required with R2 only)"
+    return None
+
+
 def _loss_visibility_usage(ref_model, sections: dict) -> str | None:
     """Why the loss-electron visibility has no effect on this path, or None (report E3)."""
     if ref_model in ("R1", "R3"):
@@ -1224,12 +1305,16 @@ def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
                 continue
             p = (sections.get(sec) or {}).get(name)
             where = f"sections.{sec}.{name}"
-            why = _absent_reason(where, sections) if p is None else None
+            why = (_absent_reason(where, sections) or _r2_only_absent(where, data, sections)
+                   if p is None else None)
             if why is not None:
                 rows.append(dict(item=spec["item"], parameter=where, status="NOT USED on this path",
                                  value=None, detail=f"NOT USED on this path: {why}", used=False))
                 continue
-            rows.append(_row(spec["item"], where, p, required=not spec["optional"],
+            ref = (((data.get("cfg_b") or {}).get("parameters") or {}).get("reference_model")
+                   or {}).get("value")
+            required = not spec["optional"] or (ref == "R2" and (sec, name) in R2_ONLY_RECORDS)
+            rows.append(_row(spec["item"], where, p, required=required,
                              unused=_path_usage(where, data, sections)))
     eng = (sections.get("engine") or {})
     if eng.get("name") == "multislice":

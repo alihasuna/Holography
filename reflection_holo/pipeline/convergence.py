@@ -1,9 +1,10 @@
 """Convergence ensembles and surface-plasmon losses in the pipeline (report E3; H2 N3; E6 M1, M2).
 
 * Losses (both engines, every run): ``plasmon_loss`` builds the optics.inelastic model from the
-  REQUIRED records sections.optics.surface_plasmon_excitations (item 21; stand-in B38) and
-  sections.optics.loss_electron_visibility (item 16; stand-in B39) and the reference model (R1: the
-  reference arm carries no loss; R2: both arms carry n). The pipeline forms UNFILTERED holograms.
+  REQUIRED record sections.optics.surface_plasmon_excitations (item 21; stand-in B38), the record
+  sections.optics.loss_electron_visibility (item 16; stand-in B39; required with R2 only, absent
+  with R1, where it has no effect: A5 F10) and the reference model (R1: the reference arm carries
+  no loss; R2: both arms carry n). The pipeline forms UNFILTERED holograms.
 * Convergence (multislice engine only; gate in pipeline.config._check_convergence): the members of
   the declared quadrature (optics.coherence) are independent engine runs
   (forward.multislice.convergence.simulate_member), in this process or as separate jobs
@@ -44,13 +45,13 @@ def _label(rec) -> str:
 def plasmon_loss(cfg: PipelineConfig) -> SurfacePlasmonLoss:
     """The loss model of the run (optics.inelastic.for_reference_model), all inputs from records."""
     n = cfg.rec("optics", "surface_plasmon_excitations")
-    v = cfg.rec("optics", "loss_electron_visibility")
+    v = cfg.sections["optics"].get("loss_electron_visibility")   # R2 only (gate; A5 F10)
     return for_reference_model(cfg.cfg_b.value("reference_model"),
                                mean_excitations=float(n.canonical_value),
                                excitation_label=_label(n),
-                               loss_visibility=float(v.canonical_value),
-                               visibility_label=_label(v), energy_filter="none",
-                               energy_filter_label=ENERGY_FILTER_LABEL)
+                               loss_visibility=None if v is None else float(v.canonical_value),
+                               visibility_label=None if v is None else _label(v),
+                               energy_filter="none", energy_filter_label=ENERGY_FILTER_LABEL)
 
 
 # ------------------------------------------------------------------------------------------------
@@ -80,10 +81,17 @@ def design_extent(cfg: PipelineConfig, *, extent_x_A: float, length_z_A: float,
     * R1 (condenser-biprism pre-tilt): member phase k [t_a E_a + t_b E_b] - kappa_s with
       E_a = 2c (x - x_m) - 2s L_z - c D0_x + s D0_z, E_b = D0_y, kappa_s <= k alpha^2/2
       |mirror(b0).D0 - 2 s x_m| (x_m a surface height between the lowest and highest terrace);
-    * R2 (shift (s_u, s_y) on the detector, exit-plane dx = -s_u/cos(theta)): E = (-s_u, s_y),
-      kappa <= k alpha^2/2 s |dx|;
+    * R2 (shift (s_u, s_y) on the detector, exit-plane offset dQ = (dx, s_y, 0) with
+      dx = -s_u/cos(theta)): the member phase at a pixel is the object's member phase at Q minus
+      that at Q' = Q + dQ, each a flat mirror at the height x_m, x_m' of the terrace the ray left
+      (optics.coherence.flat_mirror_member_phase: dk_out,s . Q + 2 dk_in,s,x x_m). With
+      dk_in = k (t_a e_a + t_b e_b) - k (1 - sqrt(1 - t^2)) b0 and dk_out = mirror(dk_in) exactly,
+      the difference is k [t_a (s_u - 2 c dh) - t_b s_y] + k (1 - sqrt(1 - t^2)) s (dx + 2 dh),
+      dh = x_m - x_m' in [-h_max, h_max]: the SHIFT term and the STEP term ADD (audit A5 F5; before,
+      their maximum was taken). Hence |E|_max = sqrt((|s_u| + 2 c h_max)^2 + s_y^2) and
+      kappa <= k alpha^2/2 s (|s_u|/c + 2 h_max);
     * step phase: v_step = (4 pi h_max / lambda) cos(theta) alpha, h_max the highest minus the
-      lowest terrace (docs/03 section 4).
+      lowest terrace (docs/03 section 4); for R2 it is contained in k alpha |E|_max (2 k = 4 pi/lambda).
     v_design = max(k alpha |E|_max, v_step)."""
     th = float(cfg.glancing_angle["value_rad"])
     k = k_ang_per_A(BEAM_ENERGY_SUPPLIED_KEV)
@@ -103,11 +111,18 @@ def design_extent(cfg: PipelineConfig, *, extent_x_A: float, length_z_A: float,
         geometry = dict(reference="R1", separation_A=D0.tolist(),
                         E_a_range_A=[min(Ea), max(Ea)], E_b_A=float(D0[1]))
     elif ref == "R2":
-        sh = cfg.rec("reference", "shift").canonical_value
+        sh_rec = cfg.sections["reference"].get("shift")
+        if sh_rec is None or sh_rec.canonical_value is None:     # refused by the gate (A5 F7)
+            raise PipelineConfigError("an R2 convergence ensemble needs sections.reference.shift "
+                                      "(PROJECT_INPUT item 16)")
+        sh = sh_rec.canonical_value
         su, sy = float(sh["along_beam"]), float(sh["perpendicular"])
-        E_max = math.hypot(su, sy)
-        par = s * abs(su / c)
-        geometry = dict(reference="R2", shift_A=[su, sy])
+        h = heights[1] - heights[0]
+        E_max = math.hypot(abs(su) + 2.0 * c * h, sy)          # shift + step terms (A5 F5)
+        par = s * (abs(su / c) + 2.0 * h)
+        geometry = dict(reference="R2", shift_A=[su, sy],
+                        E_a_max_A=abs(su) + 2.0 * c * h, E_b_A=abs(sy),
+                        rule="the shift and the step phase add (A5 F5)")
     else:
         raise PipelineConfigError(f"reference model {ref!r} under convergence: R1 and R2 only")
     h_max = heights[1] - heights[0]
@@ -170,10 +185,11 @@ def _grid_key(w):
 
 
 def engine_members(structure, cfg: PipelineConfig, *, outputs_root, run_name: str,
-                   members_dir) -> tuple[dict, object, dict]:
+                   members_dir, code_state: dict | None) -> tuple[dict, object, dict]:
     """Exit waves of every member: computed here (members_dir None; one ``simulate_member`` per
-    member, each with its own engine manifest) or loaded from member jobs (``load_member_jobs``).
-    Returns ({member index: [ExitWave]}, cell, record)."""
+    member, each with its own engine manifest) or loaded from member jobs (``load_member_jobs``,
+    which needs ``code_state``, the assembling run's git pre-flight record: the members must have
+    run the same code; A5 F6). Returns ({member index: [ExitWave]}, cell, record)."""
     from reflection_holo.forward.multislice.convergence import (check_members, quadrature_sha256,
                                                                 simulate_member)
     from reflection_holo.pipeline.engines import multislice_objects
@@ -197,7 +213,8 @@ def engine_members(structure, cfg: PipelineConfig, *, outputs_root, run_name: st
             manifests[mem.index] = str(man)
         origin = "computed in this process"
     else:
-        waves, manifests = load_member_jobs(cfg, members_dir, q)
+        waves, manifests, member_code = load_member_jobs(cfg, members_dir, q,
+                                                         code_state=code_state)
         origin = f"loaded from member jobs in {members_dir}"
     g0 = None
     for mem in q.members():
@@ -208,7 +225,11 @@ def engine_members(structure, cfg: PipelineConfig, *, outputs_root, run_name: st
             elif _grid_key(w) != g0:
                 raise ValueError("exit waves of every member must share grid, origin and plane")
     w0 = waves[q.members()[0].index][0]
+    from reflection_holo.pipeline.engines import flip_flop_states
+    ff = [s for mem in q.members() for s in (flip_flop_states(waves[mem.index], mem.index) or [])]
     record = dict(engine_manifests={str(k): v for k, v in manifests.items()},
+                  dimer_flip_flop_states=ff or None,
+                  member_code=(None if members_dir is None else member_code),
                   mip_check=o["mip_check"], params=params.to_dict(),
                   central_beam=beam.describe(w0.metadata["beam"]["wavelength_A"]),
                   validation_status=w0.metadata.get("validation_status"),
@@ -289,28 +310,47 @@ def run_member_job(cfg: PipelineConfig, member_index: int, out_dir, *, allow_no_
                pipeline_config_sha256_resolved=cfg.sha256_resolved,
                pipeline_config_sha256_file=cfg.sha256_file, pipeline_config_path=src,
                variant=cfg.variant, run_name=cfg.run_name,
-               engine_manifest=str(Path(man).relative_to(out)), exit_waves=files,
-               git_preflight=git)
+               engine_manifest=str(Path(man).relative_to(out)),
+               engine_manifest_sha256=_sha256_file(Path(man)),
+               seed=m["seed"], n_realisations=int(m["n_realisations"]), exit_waves=files,
+               code=code_identity(git), git_preflight=git)
     with open(out / "member.json", "x", encoding="utf-8") as fh:
         json.dump(rec, fh, indent=2, default=str)
         fh.write("\n")
     return rec
 
 
-def load_member_jobs(cfg: PipelineConfig, members_dir, q: C.ConvergenceQuadrature
-                     ) -> tuple[dict, dict]:
+def code_identity(git: dict | None) -> dict:
+    """What identifies the code of a run for the member assembly (A5 F6): the commit (None without
+    git), the dirty flag and the SHA-256 of the package source tree (provenance.manifest.
+    package_tree_sha256, which also covers uncommitted changes of the package)."""
+    g = git or {}
+    return dict(commit=g.get("commit"), dirty=g.get("dirty"),
+                package_tree_sha256=(g.get("package_tree") or {}).get("sha256"))
+
+
+def load_member_jobs(cfg: PipelineConfig, members_dir, q: C.ConvergenceQuadrature, *,
+                     code_state: dict | None) -> tuple[dict, dict, dict]:
     """Load and assert the member jobs under members_dir (every */member.json): the same resolved
     configuration (SHA-256) and quadrature member identity, each member exactly once, every
-    exit-wave file unchanged (SHA-256) and read with its plane asserted (exitwave_io)."""
+    exit-wave file unchanged (SHA-256) and read with its plane asserted (exitwave_io), and (A5 F6)
+    for every member: the realisations exactly 0 .. n_realisations - 1 of the configuration, each
+    once, with the configured seed; the engine manifest present, unchanged (SHA-256 recorded by the
+    job), written for this member, with the configured seed and realisation count and the job's
+    commit and package-tree hash; ONE code identity (commit and package-tree SHA-256) across the
+    members, equal to that of the assembling run (``code_state``, its git pre-flight record; a
+    mix is refused). Returns (waves by member, manifest paths by member, code record)."""
     from reflection_holo.forward.multislice import PLANE_TEXT, load_exit_wave
     from reflection_holo.forward.multislice.convergence import quadrature_sha256
     root = Path(members_dir)
     th0 = float(cfg.glancing_angle["value_rad"])
     want_q = quadrature_sha256(q, th0)
+    m_cfg = cfg.value("engine", "multislice")
+    seed, n_real = m_cfg["seed"], int(m_cfg["n_realisations"])
     recs = sorted(root.glob("*/member.json"))
     if not recs:
         raise PipelineConfigError(f"no member job (*/member.json) under {root}")
-    waves, manifests = {}, {}
+    waves, manifests, codes = {}, {}, {}
     for rp in recs:
         r = json.loads(rp.read_text())
         where = str(rp)
@@ -325,19 +365,75 @@ def load_member_jobs(cfg: PipelineConfig, members_dir, q: C.ConvergenceQuadratur
         k = int(r["member"]["index"])
         if k in waves:
             raise PipelineConfigError(f"{where}: member {k} present twice")
+        for key in ("engine_manifest_sha256", "code", "seed", "n_realisations"):
+            if key not in r:
+                raise PipelineConfigError(f"{where}: lacks {key!r} (a member record written before "
+                                          f"the A5 F6 checks, or edited): rerun the member job")
+        if r["seed"] != seed or r["n_realisations"] != n_real:
+            raise PipelineConfigError(f"{where}: member {k} ran with seed {r['seed']!r} and "
+                                      f"{r['n_realisations']!r} realisations; the configuration "
+                                      f"has {seed!r} and {n_real}")
+        # the engine manifest: present, unchanged, of this member, same seed/realisations/code
+        mp = rp.parent / r["engine_manifest"]
+        if not mp.is_file():
+            raise PipelineConfigError(f"{where}: engine manifest {mp} missing")
+        if _sha256_file(mp) != r["engine_manifest_sha256"]:
+            raise PipelineConfigError(f"{mp}: SHA-256 differs from the member record")
+        man = json.loads(mp.read_text())
+        extra = man.get("extra") or {}
+        mk = (((extra.get("caller") or {}).get("convergence") or {}).get("member") or {}).get(
+            "index")
+        rc = extra.get("run_configuration") or {}
+        if mk != k:
+            raise PipelineConfigError(f"{mp}: engine manifest of member {mk!r}, not {k}")
+        if man.get("seeds") != {"frozen_phonons": seed} or rc.get("realisations") != n_real \
+                or rc.get("seed") != seed:
+            raise PipelineConfigError(f"{mp}: engine manifest records seeds {man.get('seeds')!r}, "
+                                      f"{rc.get('realisations')!r} realisations; the "
+                                      f"configuration has seed {seed!r}, {n_real} realisations")
+        code = dict(r["code"])
+        man_code = code_identity(man.get("repository"))
+        if (man_code["commit"], man_code["package_tree_sha256"]) != (
+                code.get("commit"), code.get("package_tree_sha256")):
+            raise PipelineConfigError(f"{where}: the member record's code {code} differs from its "
+                                      f"engine manifest's {man_code}")
+        codes[k] = code
         ws = []
         for f in r["exit_waves"]:
             p = rp.parent / f["path"]
             if _sha256_file(p) != f["sha256"]:
                 raise PipelineConfigError(f"{p}: SHA-256 differs from the member record")
             ws.append(load_exit_wave(p, expected_plane=PLANE_TEXT))
+        got = sorted(int(w.realisation) for w in ws)
+        if got != list(range(n_real)):
+            raise PipelineConfigError(f"{where}: member {k} has realisations {got}; the "
+                                      f"configuration needs exactly {list(range(n_real))}")
+        bad_seed = [w.realisation for w in ws if w.seed != seed]
+        if bad_seed:
+            raise PipelineConfigError(f"{where}: realisations {bad_seed} of member {k} carry "
+                                      f"another seed than the configured {seed!r}")
         waves[k] = sorted(ws, key=lambda w: w.realisation)
-        manifests[k] = str(rp.parent / r["engine_manifest"])
+        manifests[k] = str(mp)
     want = {m.index for m in q.members()}
     if set(waves) != want:
         raise PipelineConfigError(f"member jobs under {root}: have {sorted(waves)}, need every "
                                   f"member {sorted(want)}")
-    return waves, manifests
+    ids = {(c.get("commit"), c.get("package_tree_sha256")) for c in codes.values()}
+    if len(ids) != 1:
+        raise PipelineConfigError(f"member jobs under {root} ran different code (commit, package "
+                                  f"tree): { {k: (c.get('commit'), c.get('package_tree_sha256')) for k, c in sorted(codes.items())} }: "
+                                  f"a mix is refused (A5 F6)")
+    here = code_identity(code_state)
+    (commit, tree), = ids
+    if here["package_tree_sha256"] is None or tree != here["package_tree_sha256"] or (
+            commit is not None and here["commit"] is not None and commit != here["commit"]):
+        raise PipelineConfigError(f"member jobs under {root} ran code (commit {commit}, package "
+                                  f"tree {tree}) other than the assembling run's (commit "
+                                  f"{here['commit']}, package tree {here['package_tree_sha256']}): "
+                                  f"refused (A5 F6)")
+    return waves, manifests, dict(members=codes, assembling_run=here,
+                                  rule="one commit and package-tree SHA-256 across the members "
+                                       "and the assembling run (A5 F6)")
 
 
 # ------------------------------------------------------------------------------------------------

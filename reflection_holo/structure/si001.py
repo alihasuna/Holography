@@ -429,16 +429,49 @@ def _measure_backbond_axes(layer, terrace, tops, pairs, frame, a_A, tol_A):
 TERMINATIONS = ("bulk",) + recon.RECONSTRUCTIONS
 
 
-def _termination_option(termination: str) -> dict:
-    if termination == "bulk":
+def parse_termination(termination) -> tuple[str, str | None]:
+    """(name, buckling registry) of the builder's ``termination`` argument (audit A5 F1):
+
+    * "bulk", "p(2x1)s", "p(2x1)a flip-flop ensemble": the name (no registry);
+    * a static BUCKLED reconstruction: the mapping {"name": "p(2x1)a" | "p(2x2)" | "c(4x2)",
+      "buckling_registry": one of reconstruction.BUCKLING_REGISTRIES}; the bare name is REFUSED
+      (the registry is a required, explicit choice; reconstruction module docstring).
+    Anything else raises (ValueError; NotImplementedError for 'dimer_2x1')."""
+    if isinstance(termination, dict):
+        if set(termination) != {"name", "buckling_registry"}:
+            raise ValueError(f"termination given as a mapping must have exactly the keys "
+                             f"{{name, buckling_registry}}, got {sorted(termination)}")
+        name = termination["name"]
+        if name not in recon.BUCKLED_STATIC:
+            recon.check_buckling_registry(name, termination["buckling_registry"])  # raises
+            raise ValueError(f"termination mapping: {name!r} is not a static buckled "
+                             f"reconstruction {recon.BUCKLED_STATIC}")
+        return name, recon.check_buckling_registry(name, termination["buckling_registry"])
+    if isinstance(termination, str) and termination in recon.BUCKLED_STATIC:
+        recon.check_buckling_registry(termination, None)                            # raises
+    if not isinstance(termination, str):
+        raise ValueError(f"termination must be a string or {{name, buckling_registry}}, got "
+                         f"{termination!r}")
+    return termination, None
+
+
+def _termination_option(termination) -> dict:
+    name, registry = parse_termination(termination)
+    if name == "bulk":
         return dict(value="bulk", label="ASSUMPTION B3",
                     note="unreconstructed bulk truncation of the diamond lattice")
-    if termination in recon.STATIC_RECONSTRUCTIONS:
-        return dict(value=termination, label=recon.STATIC_LABEL,
-                    note=f"static {termination} dimer reconstruction of the five outermost layers "
-                         f"of every terrace (R1 T = 0 LDA geometry; at room temperature the "
-                         f"dimers flip-flop and c(4x2) order appears only below 205 K, L7 "
-                         f"section 1.2)")
+    if name in recon.STATIC_RECONSTRUCTIONS:
+        out = dict(value=name, label=recon.STATIC_LABEL,
+                   note=f"static {name} dimer reconstruction of the five outermost layers "
+                        f"of every terrace (R1 T = 0 LDA geometry; at room temperature the "
+                        f"dimers flip-flop and c(4x2) order appears only below 205 K, L7 "
+                        f"section 1.2)")
+        if registry is not None:
+            out.update(buckling_registry=registry,
+                       buckling_registry_label="MODEL CHOICE (explicit, required; not physics): "
+                                               + recon.BUCKLING_REGISTRY_NOTE)
+        return out
+    termination = name
     if termination == recon.FLIPFLOP:
         return dict(value=termination, label=recon.FLIPFLOP_LABEL,
                     note="the structure's positions are ONE member of the ensemble (every cell in "
@@ -460,17 +493,32 @@ B4_RECON_TRANSLATION = ("applies far from the riser: the reconstructed layers of
                         "are related by the pure lattice translation (up to an in-plane shift of "
                         "the pattern) to R1's printed precision, measured on the atoms")
 B4_RECON_A4_100 = ("B4 applies for the specular beam (and, with the in-plane glide term, for other "
-                   "beams in the incidence plane) of a plane wave on these STATIC reconstructed "
-                   "terraces: the incidence-plane glide maps the reconstructed layers of one "
-                   "terrace onto the other (up to an in-plane shift of the pattern) to R1's "
-                   "printed precision, measured on the atoms; not for beams leaving the incidence "
-                   "plane; the riser (not relaxed) and the azimuthal spread are not analysed")
+                   "beams in the incidence plane) of a plane wave on these static SYMMETRIC "
+                   "(unbuckled) p(2x1)s terraces: the incidence-plane glide maps the "
+                   "reconstructed layers of one terrace onto the other (up to an in-plane shift of "
+                   "the pattern) to R1's printed precision, measured on the atoms; the p(2x1)s "
+                   "table is its own mirror image, so no buckling registry enters; not for beams "
+                   "leaving the incidence plane; the riser (not relaxed) and the azimuthal spread "
+                   "are not analysed")
+B4_RECON_A4_BUCKLED = ("not guaranteed at any azimuth; depends on the buckling registry: on STATIC "
+                       "buckled reconstructed terraces (p(2x1)a, p(2x2), c(4x2)) whether the "
+                       "incidence-plane glide maps the reconstructed layers of one terrace onto "
+                       "the other is set by the buckling registry, an explicit model choice and "
+                       "not physics (both orientations are degenerate; no source read fixes a "
+                       "single-domain static terrace); the relation measured for the chosen "
+                       "registry is recorded in buckling_registry_relation, and the other "
+                       "registry axis gives the opposite result at this azimuth. The flip-flop "
+                       "ensemble (B37) is the only room-temperature model here for which B4 "
+                       "holds, and then on average only. Report the dynamical phase difference, "
+                       "not a height")
 B4_RECON_ENSEMBLE = ("applies to the ENSEMBLE AVERAGE only (DERIVED_HERE): the operation fixing the "
                      "beam maps every cell state of one terrace onto a cell state of the other "
                      "(measured on the atoms) and each state has probability 1/2 independently, so "
                      "the ensemble of one terrace is the image of the other's; a single "
                      "realisation is not symmetric (finite-ensemble residual of the coherent "
-                     "average)")
+                     "average). The flip-flop ensemble (B37) is the only room-temperature model "
+                     "here for which B4 holds (on average); static buckled terraces depend on the "
+                     "buckling registry")
 B4_RECON_NOT = ("does not apply: no operation fixing the beam maps the reconstructed layers of one "
                 "terrace onto the other (measured on the atoms); report the dynamical phase "
                 "difference, not a height")
@@ -495,6 +543,10 @@ def _b4_reconstructed(rec, s, ops, az, *, quarter, layer, terr, tops, frame, a_A
         return B4_RECON_NOT, measured
     if rec.mirror_displacement_A is None:
         ok = any(m["holds"] for m in measured)
+        if s["type"] == "screw" and rec.name in recon.BUCKLED_STATIC:
+            # the measured relation follows the buckling registry (a model choice): recorded as a
+            # measurement for that registry, never as the B4 verdict (audit A5 F1)
+            return B4_RECON_A4_BUCKLED, measured
         if not ok:
             return B4_RECON_NOT, measured
         return (B4_RECON_TRANSLATION if s["type"] == "translation" else B4_RECON_A4_100), measured
@@ -533,9 +585,89 @@ def step_edge_type(delta_layers: int, upper_row_axis_crystal, edge_axis_crystal)
             f"{kind}A nor {kind}B")
 
 
-def _assert_reconstruction(rec, *, layer, terr, tops, steps, axes, frame, per, a_A, groups):
+# expected buckling-phase relations of neighbouring dimers (R1 cells, L7 section 1.4): (along the
+# dimer row, between neighbouring rows); True = same buckling orientation. p(2x1)s has none.
+_BUCKLING_PHASES = {recon.P2X1A: (True, True), recon.FLIPFLOP: (True, True),
+                    recon.P2X2: (False, True), recon.C4X2: (False, False)}
+
+
+def _assert_buckling_phases(rec, pos, top_mask, terr, terr_group, per, a_A) -> dict:
+    """(r3b) Buckling orientation of every complete dimer measured on the atoms (sign of the height
+    difference between its atom on the +d side and its atom on the -d side, d the terrace's dimer-
+    bond axis), compared between neighbouring dimers along the row (centres 2u apart along the row
+    axis) and between neighbouring rows (4u apart along the bond axis), u = a sqrt(2)/4, under the
+    periodic boundaries: alternating along the row for p(2x2) and c(4x2), constant for p(2x1)a;
+    rows in phase for p(2x1)a and p(2x2), in antiphase for c(4x2) (A5 NIT F12: a c(4x2) built with
+    the p(2x2) registry is refused here, not only by a test)."""
+    want = _BUCKLING_PHASES.get(rec.name)
+    if want is None:
+        return dict(checked=False, reason="p(2x1)s: symmetric dimers, no buckling orientation")
+    u = a_A * np.sqrt(2.0) / 4.0
+    ideal = rec.ideal_positions_A
+    Ly, Lz = per[1], per[2]
+
+    def mi(v):
+        v = np.array(v, float)
+        v[..., 1] -= Ly * np.rint(v[..., 1] / Ly)
+        v[..., 2] -= Lz * np.rint(v[..., 2] / Lz)
+        return v
+
+    cells = {}
+    for i in np.nonzero(top_mask & (rec.cell_index >= 0))[0]:
+        cells.setdefault(int(rec.cell_index[i]), []).append(int(i))
+    n_pairs = {"row": 0, "neighbour_rows": 0}
+    for g in np.unique(terr_group):
+        ids = [c for c, v in cells.items() if len(v) == 2 and terr_group[v[0]] == g]
+        if not ids:
+            continue
+        tm = rec.metadata["terraces"][int(terr[cells[ids[0]][0]])]
+        dh = np.array(tm["dimer_bond_axis_slab"], float)
+        bh = np.array(tm["dimer_row_axis_slab"], float)
+        centre, sign = [], []
+        for c in ids:
+            i, j = cells[c]
+            dij = mi(ideal[j] - ideal[i])
+            plus, minus = (j, i) if dij @ dh > 0 else (i, j)
+            centre.append(ideal[i] + 0.5 * dij)
+            sign.append(np.sign(pos[plus, 0] - pos[minus, 0]))
+        centre = np.array(centre)
+        centre[:, 0] = 0.0                                   # in-plane neighbours only
+        sign = np.array(sign)
+        if np.any(sign == 0):
+            raise StructureAssertionError(f"(r3b) {rec.name}: a dimer without buckling")
+        # neighbouring centres within 4u (+0.1 A) under the periodic boundaries (linear in the
+        # number of cells: a cell list, no all-pairs array)
+        a_, b_, _, vec = neighbour_pairs(centre, per, 4.0 * u + 0.1)
+        for what, target, same in (("row", 2.0 * u * bh, want[0]),
+                                   ("neighbour_rows", 4.0 * u * dh, want[1])):
+            hit = np.linalg.norm(vec - target[None, :], axis=1) < 0.1
+            for x, y in zip(a_[hit], b_[hit]):
+                n_pairs[what] += 1
+                if (sign[x] == sign[y]) != same:
+                    raise StructureAssertionError(
+                        f"(r3b) {rec.name}: neighbouring dimers "
+                        f"{'along the row' if what == 'row' else 'of neighbouring rows'} are "
+                        f"{'in phase' if sign[x] == sign[y] else 'in antiphase'}, the table has "
+                        f"them {'in phase' if same else 'in antiphase'} (wrong pattern registry)")
+    return dict(checked=True, pairs_compared=n_pairs,
+                rule="along the row: " + ("same" if want[0] else "alternating")
+                     + "; neighbouring rows: " + ("in phase" if want[1] else "in antiphase"))
+
+
+def _assert_reconstruction(rec, *, layer, terr, tops, steps, axes, frame, per, a_A, groups,
+                           ideal_sites, expected_count):
     """(r1) to (r6) on the reconstructed atoms (module docstring). Returns the records."""
     name = rec.name
+    # (r2) composition and count unchanged: the reconstruction displaces the checked ideal sites
+    # (assertions (a)-(g)) and nothing else (audit A5 F12: asserted, no longer by construction)
+    if rec.ideal_positions_A.shape != np.asarray(ideal_sites).shape or not np.array_equal(
+            rec.ideal_positions_A, ideal_sites):
+        raise StructureAssertionError("(r2) the reconstruction's sites are not the checked ideal "
+                                      "sites")
+    if rec.displacement_A.shape != rec.ideal_positions_A.shape or len(rec.cell_index) != \
+            int(expected_count):
+        raise StructureAssertionError(f"(r2) {len(rec.cell_index)} reconstructed atoms, expected "
+                                      f"{int(expected_count)}")
     group_of_terrace = np.empty(len(tops), np.int64)
     for gi, g in enumerate(groups):
         group_of_terrace[g] = gi
@@ -598,8 +730,11 @@ def _assert_reconstruction(rec, *, layer, terr, tops, steps, axes, frame, per, a
         step_rec.append((s["index"], rotated))
     # (r5) no collision (reconstruction.assert_no_collision; every flip-flop configuration)
     out = dict(collision=recon.assert_no_collision(rec, group_of_atom, per, a_A))
-    # the repository's existing duplicate criterion (assertion (b)) on the reconstructed positions
-    checks.assert_no_duplicates_and_count(pos, per, len(pos))
+    # the repository's existing duplicate criterion (assertion (b)) on the reconstructed positions,
+    # with the expected count of assertion (b) (r2)
+    checks.assert_no_duplicates_and_count(pos, per, int(expected_count))
+    out["buckling_phases"] = _assert_buckling_phases(rec, pos, top_mask, terr, group_of_atom, per,
+                                                     a_A)
     # (r6) bulk interior below every reconstructed layer: unchanged and 4-coordinated at d_nn
     d_nn = nearest_neighbour_distance_A(a_A)
     interior = (layer >= 1) & (layer <= int(tops.min()) - recon.RECONSTRUCTED_DEPTH - 1)
@@ -614,9 +749,9 @@ def _assert_reconstruction(rec, *, layer, terr, tops, steps, axes, frame, per, a
                                           f"4-coordinated at d_nn after the reconstruction")
         out["interior_atoms_checked"] = int(interior.sum())
     else:
-        out["interior_atoms_checked"] = 0
-        out["interior_note"] = ("no layer lies below the reconstructed depth of the lowest "
-                                "terrace and above the bottom layer; (r6) not applicable")
+        # unreachable with substrate_layers >= reconstruction.MIN_SUBSTRATE_LAYERS (audit A5 F4)
+        raise StructureAssertionError("(r6) no bulk layer below the reconstructed depth of the "
+                                      "lowest terrace and above the bottom layer")
     out.update(measured_dimer_axes_crystal={int(k): list(v) for k, v in measured_axes.items()},
                measured_dimers=dict(
                    n=int(len(dim["i"])),
@@ -674,10 +809,14 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     substrate_layers             number of (001) layers of the lowest terrace (>= 4), bottom at x=0
     first_terrace_backbond_uvw   [1,1,0] or [1,-1,0]: top-layer back-bond axis of terrace 0 (fixes
                                  which of the two screw-related terrace types terrace 0 is)
-    termination                  'bulk' (ASSUMPTION B3); a static reconstruction 'p(2x1)s',
-                                 'p(2x1)a', 'p(2x2)', 'c(4x2)' (R1 Tables III-IV); or
+    termination                  'bulk' (ASSUMPTION B3); the static symmetric reconstruction
+                                 'p(2x1)s'; a static BUCKLED reconstruction as the mapping
+                                 {name: 'p(2x1)a' | 'p(2x2)' | 'c(4x2)', buckling_registry: one of
+                                 reconstruction.BUCKLING_REGISTRIES} (R1 Tables III-IV; the
+                                 registry is a required model choice, audit A5 F1); or
                                  'p(2x1)a flip-flop ensemble' (ASSUMPTION B37); 'dimer_2x1' is
-                                 refused as ambiguous (NotImplementedError)
+                                 refused as ambiguous (NotImplementedError); a reconstruction
+                                 needs substrate_layers >= reconstruction.MIN_SUBSTRATE_LAYERS
     overlayer                    :class:`OverlayerSpec` (PROJECT_INPUT item 12) or None (explicit
                                  clean surface, ASSUMPTION B7)
     vacuum_above_A               vacuum above the highest top layer inside the (non-periodic) x box
@@ -706,6 +845,7 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     checks.assert_frame(frame, NORMAL_HKL)                                   # (g)
 
     opt_term = _termination_option(termination)
+    term_name, buckling_registry = parse_termination(termination)
     vacuum_above_A = float(vacuum_above_A)
     if not (np.isfinite(vacuum_above_A) and vacuum_above_A > 0.0):
         raise ValueError("vacuum_above_A must be positive")
@@ -717,6 +857,12 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
         raise ValueError(f"substrate_layers must be an integer >= {_MIN_SUBSTRATE_LAYERS} (the "
                          f"terrace-relation check compares the top four layers)")
     edge_periods, substrate_layers = int(edge_periods), int(substrate_layers)
+    if term_name != "bulk" and substrate_layers < recon.MIN_SUBSTRATE_LAYERS:
+        raise ValueError(
+            f"termination {term_name!r} needs substrate_layers >= {recon.MIN_SUBSTRATE_LAYERS} "
+            f"(the {recon.RECONSTRUCTED_DEPTH} tabulated layers of R1, relaxed over bulk, the bulk "
+            f"layer bonded to them, one bulk layer checked by assertion (r6) and the bottom "
+            f"layer; reconstruction.MIN_SUBSTRATE_LAYERS), got {substrate_layers} (audit A5 F4)")
     axis0 = _axis_key(first_terrace_backbond_uvw)
 
     # --- geometry of the periodic cell --------------------------------------------------------
@@ -832,22 +978,27 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     # --- reconstruction of the five outermost layers of every terrace (reconstruction.py) ------
     rec = None
     recon_checks = None
-    if termination != "bulk":
+    if term_name != "bulk":
         if opt_over["value"] is not None:
             raise NotImplementedError("a reconstruction under a declared overlayer is NOT "
                                       "IMPLEMENTED (a buried interface is not a clean surface)")
         rec = recon.build_reconstruction(
-            termination, ideal_positions_A=rs, quarter=np.rint(rc / q).astype(np.int64),
+            term_name, buckling_registry=buckling_registry, ideal_positions_A=rs, quarter=np.rint(rc / q).astype(np.int64),
             layer=layer, terrace=terr, tops=tops, c0=c0, frame=frame, origin=origin, a_A=a, L=L,
             s_ax=s_ax, e_ax=e_ax, groups=_terrace_groups(t_rel))
         recon_checks = _assert_reconstruction(rec, layer=layer, terr=terr, tops=tops, steps=steps,
                                               axes=axes, frame=frame, per=per, a_A=a,
-                                              groups=_terrace_groups(t_rel))
+                                              groups=_terrace_groups(t_rel), ideal_sites=rs,
+                                              expected_count=expected)
         passed += [
             "(a)-(g) above were run on the ideal (bulk-truncated) sites before reconstruction",
             "(r1) displacements only in the five tabulated layers of complete dimer cells",
-            "(r2) composition and atom count unchanged by the reconstruction",
+            "(r2) composition and atom count unchanged by the reconstruction (the ideal sites "
+            "are the checked bulk truncation; the count is the expected count of assertion (b))",
             "(r3) every dimer (measured on the atoms) has the table's bond length and buckling",
+            "(r3b) buckling phases of the dimers measured on the atoms: alternating along every "
+            "dimer row for p(2x2) and c(4x2), constant for p(2x1)a; neighbouring rows in phase "
+            "(p(2x1)a, p(2x2)) or in antiphase (c(4x2))",
             "(r4) one dimer-bond axis per terrace, normal to its back-bond axis: rotated by 90 deg "
             "across every a/4 step, not across a/2 steps (measured on the atoms)",
             "(r5) terrace interiors: no distance shorter than the table's shortest dimer bond; "
@@ -863,7 +1014,7 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
             rot = {r["step"]: r["dimer_rows_rotated_90_deg"]
                    for r in recon_checks["step_rotation"]}
             s["reconstruction"] = dict(
-                termination=termination,
+                termination=term_name, buckling_registry=buckling_registry,
                 dimer_rows_rotated_90_deg=bool(rot[s["index"]]),
                 dimer_bond_axis_from=rec.metadata["terraces"][A]["dimer_bond_axis_crystal"],
                 dimer_bond_axis_to=rec.metadata["terraces"][B]["dimer_bond_axis_crystal"],
@@ -876,6 +1027,16 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                                              layer=layer, terr=terr, tops=tops, frame=frame, a_A=a)
             s["relation"]["model_assumption_B4"] = b4
             s["relation"]["reconstruction_relations"] = measured
+            if term_name in recon.BUCKLED_STATIC and s["type"] == "screw" and measured:
+                best_dev = [m_["max_deviation_A"] for m_ in measured
+                            if m_["max_deviation_A"] is not None]
+                s["relation"]["buckling_registry_relation"] = dict(
+                    buckling_registry=buckling_registry,
+                    incidence_plane_glide_maps_reconstructed_layers=bool(
+                        any(m_["holds"] for m_ in measured)),
+                    smallest_max_deviation_A=min(best_dev) if best_dev else None,
+                    note=("measured on the atoms FOR THIS REGISTRY (R1's printed precision "
+                          "0.001 A); not physics: " + recon.BUCKLING_REGISTRY_NOTE))
             s["relation"]["model_assumption_B4_note"] = (
                 "assertion (f) and the operations above are found on the IDEAL sites; "
                 "reconstruction_relations says whether each operation fixing the beam also maps "

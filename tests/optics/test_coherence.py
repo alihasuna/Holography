@@ -369,3 +369,33 @@ def test_r2_self_reference_coherence_depends_on_the_shift_only():
     assert abs(mu - float(C.disc_coherence_factor(v))) <= q.error_bound() + kappa_max
     Icheck = 2 + 2 * np.real(mu * np.exp(-2j * np.pi * Y / 12))
     assert np.max(np.abs(H.intensity[valid] - Icheck[valid])) <= 1e-12
+
+
+def test_disc_radial_bound_carries_sqrt2_for_the_complex_integrand():
+    """A5 F8: the Gauss-Legendre remainder with one intermediate point holds for a real function;
+    h(s) = J0(v sqrt s) exp(-i kappa s) is complex for kappa > 0, so the bound is sqrt(2) C_n
+    (2n)! min_R M(R)/R^(2n) (real and imaginary parts separately); for kappa = 0, h is real and the
+    factor is 1. Checked against an independent minimisation over R (scipy)."""
+    import math
+    from scipy import optimize, special
+    from reflection_holo.optics import coherence as C
+
+    def indep(n, v, kap):
+        lc = 4 * math.lgamma(n + 1) - math.log(2 * n + 1) - 2 * math.lgamma(2 * n + 1)
+
+        def f(logR):
+            R = math.exp(logR)
+            x = v * math.sqrt(1 + R)
+            return math.log(special.i0e(x)) + x + kap * R - 2 * n * logR   # log I0, no overflow
+        res = optimize.minimize_scalar(f, bounds=(math.log(1e-2), math.log(1e8)), method="bounded",
+                                       options=dict(xatol=1e-10))
+        return math.exp(lc + res.fun)
+
+    for n, v, kap in ((1, 0.3, 0.5), (2, 1.0, 2.0), (3, 3.0, 0.1), (4, 0.0, 5.0), (2, 2.0, 0.0),
+                      (5, 6.0, 0.0)):
+        b = C.radial_error_bound(n, v, kap, "uniform_disc")
+        ref = indep(n, v, kap) * (math.sqrt(2.0) if kap > 0 else 1.0)
+        if ref >= 2.0:
+            continue
+        # the code minimises on a grid of R: never below the true minimum, within 1e-3 of it
+        assert ref * (1 - 1e-9) <= b <= ref * (1 + 1e-3), (n, v, kap, b, ref)

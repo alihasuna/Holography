@@ -56,6 +56,11 @@ def test_r2_differential_phase_returns_no_height(tmp_path, shift):
     d["sections"]["reference"]["shift"] = dict(value=shift, unit="A", label="ASSUMPTION", item=16,
                                                stands_in_for_item=16, assumption_id="B28",
                                                source="TEST (A3 repro_r2.py): R2 shift")
+    # an R2 reference needs the loss-electron visibility (item 16; audit A5 F10; the R1 demo file
+    # no longer declares it): stand-in B39, without effect here (n = 0)
+    d["sections"]["optics"]["loss_electron_visibility"] = dict(
+        value=0.1, unit="none", label="ASSUMPTION", item=16, stands_in_for_item=16,
+        assumption_id="B39", source="TEST (A5 F10): R2 loss-electron visibility, stand-in B39")
     s = run(load_pipeline_dict(d, variant=None), tmp_path / "r2")
     for st in s["quantification"]["steps"]:
         assert st.get("height") is None, (st["built_height_A"], st.get("height"))

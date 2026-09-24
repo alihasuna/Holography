@@ -238,15 +238,7 @@ sections:
       item: 21
       stands_in_for_item: 21
       assumption_id: B30
-      source: "demo stand-in B30 (B6 not represented): NO surface-plasmon loss in this demo (n = 0, stated, not defaulted), so that its results stay those of the lossless model; the physical estimate is stand-in B38 (n = 1.25, variant plasmon_losses where defined; report E3); the laboratory value is an energy-filtered EELS of the specular beam at the working angle (a new request under PROJECT_INPUT item 21, not supplied)"
-    loss_electron_visibility:
-      value: 0.1
-      unit: none
-      label: ASSUMPTION
-      item: 16
-      stands_in_for_item: 16
-      assumption_id: B39
-      source: "demo stand-in B39: mutual fringe visibility of the plasmon-loss electrons of the two arms, 0.1 (one-plasmon-loss hologram of an R2 arrangement, Tanishiro 2003 p. 171, SECTION_READ by E6, M2); with an R1 vacuum reference the reference arm carries no loss electrons and this value has no effect (optics.inelastic, DERIVED_HERE); PROJECT_INPUT item 16 (object-reference separation) not supplied"
+      source: "demo stand-in B30 (B6 not represented): NO surface-plasmon loss in this demo (n = 0, stated, not defaulted), so that its results stay those of the lossless model; the physical estimate is stand-in B38 (n = 1.246, variant plasmon_losses where defined; report E3); the laboratory value is an energy-filtered EELS of the specular beam at the working angle (a new request under PROJECT_INPUT item 21, not supplied)"
   reference:
     carrier_fringe_spacing:
       value: 2.0

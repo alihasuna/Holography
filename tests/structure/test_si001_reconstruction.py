@@ -27,10 +27,22 @@ FLAT = Staircase(edges="transverse", terrace_layers=(0,), terrace_widths=(4,),
                  boundary_step_layers=0)
 
 
+# TEST choice of the buckling registry for the static buckled tables (a required, explicit model
+# choice of the builder, audit A5 F1); every registry is exercised by the registry tests below
+REG = "+[100]"
+
+
+def termination(term, registry=REG):
+    """The builder's termination argument: the mapping {name, buckling_registry} for a static
+    buckled table, the plain name otherwise."""
+    return dict(name=term, buckling_registry=registry) if term in R.BUCKLED_STATIC else term
+
+
 def rbuild(term, st=MIXED, azimuth=(1, 1, 0), edge_periods=4, substrate_layers=12,
-           backbond=(1, 1, 0)):
+           backbond=(1, 1, 0), registry=REG):
     return build(st, azimuth=azimuth, edge_periods=edge_periods,
-                 substrate_layers=substrate_layers, backbond=backbond, termination=term)
+                 substrate_layers=substrate_layers, backbond=backbond,
+                 termination=termination(term, registry))
 
 
 def top_mask(s):
@@ -364,18 +376,31 @@ from reflection_holo.structure import si001 as S  # noqa: E402
 
 @pytest.mark.parametrize("term,azimuth,a4_statement", [
     ("p(2x1)s", (1, 0, 0), S.B4_RECON_A4_100), ("p(2x1)s", (0, 1, 0), S.B4_RECON_A4_100),
-    ("p(2x1)a", (1, 0, 0), S.B4_RECON_A4_100), ("p(2x1)a", (0, 1, 0), S.B4_RECON_NOT),
-    ("p(2x2)", (1, 0, 0), S.B4_RECON_A4_100), ("p(2x2)", (0, 1, 0), S.B4_RECON_NOT),
-    ("c(4x2)", (1, 0, 0), S.B4_RECON_A4_100), ("c(4x2)", (0, 1, 0), S.B4_RECON_NOT),
+    ("p(2x1)a", (1, 0, 0), S.B4_RECON_A4_BUCKLED), ("p(2x1)a", (0, 1, 0), S.B4_RECON_A4_BUCKLED),
+    ("p(2x2)", (1, 0, 0), S.B4_RECON_A4_BUCKLED), ("p(2x2)", (0, 1, 0), S.B4_RECON_A4_BUCKLED),
+    ("c(4x2)", (1, 0, 0), S.B4_RECON_A4_BUCKLED), ("c(4x2)", (0, 1, 0), S.B4_RECON_A4_BUCKLED),
     ("p(2x1)a flip-flop ensemble", (1, 0, 0), S.B4_RECON_ENSEMBLE),
     ("p(2x1)a flip-flop ensemble", (0, 1, 0), S.B4_RECON_ENSEMBLE),
     ("p(2x1)s", (1, 1, 0), S.B4_A4_110), ("p(2x1)a flip-flop ensemble", (1, 1, 0), S.B4_A4_110)])
 def test_b4_statement_of_reconstructed_steps_is_measured(term, azimuth, a4_statement):
+    """Static BUCKLED tables: 'not guaranteed at any azimuth; depends on the buckling registry'
+    (audit A5 F1; before, [100] 'applies' and [010] 'does not apply' followed from a sign
+    convention); the measured relation for the registry is recorded separately."""
     s = rbuild(term, azimuth=azimuth)
     for st in s.metadata["steps"]:
         b4 = st["relation"]["model_assumption_B4"]
         if st["type"] == "screw":
             assert b4 == a4_statement
+            if term in R.BUCKLED_STATIC:
+                assert b4.startswith("not guaranteed at any azimuth; depends on the buckling "
+                                     "registry")
+                rel = st["relation"]["buckling_registry_relation"]
+                assert rel["buckling_registry"] == REG
+                assert rel["incidence_plane_glide_maps_reconstructed_layers"] is (
+                    tuple(azimuth) == (1, 0, 0))              # REG = +[100]: the (010) mirror
+                assert "not physics" in rel["note"]
+            else:
+                assert "buckling_registry_relation" not in st["relation"]
         else:
             ens = term.endswith("ensemble")
             assert b4 == (S.B4_RECON_ENSEMBLE if ens else S.B4_RECON_TRANSLATION)
@@ -387,9 +412,128 @@ def test_b4_statement_of_reconstructed_steps_is_measured(term, azimuth, a4_state
 
 
 def test_buckling_convention_breaks_the_glide_at_010_by_the_full_buckling():
-    """[010]: the (100) mirror reverses the buckling of a static p(2x1)a terrace; the mismatch is
-    the full dimer height difference (0.921 - 0.213 = 0.708 A), not a rounding effect."""
+    """Registry +[100] at [010]: the (100) mirror reverses the buckling of a static p(2x1)a
+    terrace; the mismatch is the full dimer height difference (0.921 - 0.213 = 0.708 A), not a
+    rounding effect."""
     s = rbuild("p(2x1)a", azimuth=(0, 1, 0))
     st = [x for x in s.metadata["steps"] if x["type"] == "screw"][0]
     dev = min(m["max_deviation_A"] for m in st["relation"]["reconstruction_relations"])
     assert dev == pytest.approx(0.921 - 0.213, abs=1e-9)
+
+
+# ---- buckling registry (audit A5 F1) -----------------------------------------------------------
+@pytest.mark.parametrize("term", ["p(2x1)a", "p(2x2)", "c(4x2)"])
+@pytest.mark.parametrize("registry", ["+[100]", "-[100]", "+[010]", "-[010]"])
+def test_both_registry_axes_build_and_the_measured_relation_swaps(term, registry):
+    """Every registry builds (assertions (a)-(g), (r1)-(r6)); the incidence-plane glide maps the
+    reconstructed layers of the a/4 terraces onto each other exactly at the <100> azimuth along the
+    registry axis ([100] for +-[100], [010] for +-[010]) and not at the other one (A5 F1: the
+    verdict swaps with the registry), while the B4 statement is the same for every registry."""
+    along = registry[1:]
+    for az in ((1, 0, 0), (0, 1, 0)):
+        s = rbuild(term, azimuth=az, registry=registry)
+        o = s.metadata["options"]
+        assert o["termination"]["buckling_registry"] == registry
+        assert o["dimer_reconstruction"]["buckling_registry"]["value"] == registry
+        assert "not physics" in o["dimer_reconstruction"]["buckling_registry"]["label"]
+        want = (az == (1, 0, 0)) == (along == "[100]")
+        screws = [x for x in s.metadata["steps"] if x["type"] == "screw"]
+        assert screws
+        for st in screws:
+            assert st["relation"]["model_assumption_B4"] == S.B4_RECON_A4_BUCKLED
+            rel = st["relation"]["buckling_registry_relation"]
+            assert rel["incidence_plane_glide_maps_reconstructed_layers"] is want
+            dev = rel["smallest_max_deviation_A"]
+            if want:
+                assert dev <= R.TABLE_PRECISION_A + 1e-9
+            else:                     # the full buckling (p(2x1)a) or the two-dimer asymmetry
+                assert dev > 10 * R.TABLE_PRECISION_A
+        if term == "p(2x1)a" and not want:
+            assert min(x["relation"]["buckling_registry_relation"]["smallest_max_deviation_A"]
+                       for x in screws) == pytest.approx(0.921 - 0.213, abs=1e-9)
+
+
+def test_buckled_reconstruction_requires_an_explicit_registry():
+    for bad in ("p(2x1)a", "p(2x2)", "c(4x2)"):
+        with pytest.raises(ValueError, match="buckling registry is a required"):
+            build(FLAT, edge_periods=4, substrate_layers=8, termination=bad)
+    for reg in (None, "", "[100]", "+[110]"):
+        with pytest.raises(ValueError, match="buckling registry is a required"):
+            build(FLAT, edge_periods=4, substrate_layers=8,
+                  termination=dict(name="p(2x1)a", buckling_registry=reg))
+    for name in ("p(2x1)s", "p(2x1)a flip-flop ensemble", "bulk"):
+        with pytest.raises(ValueError, match="refused rather than ignored"):
+            build(FLAT, edge_periods=4, substrate_layers=8,
+                  termination=dict(name=name, buckling_registry="+[100]"))
+    with pytest.raises(ValueError, match="exactly the keys"):
+        build(FLAT, edge_periods=4, substrate_layers=8,
+              termination=dict(name="p(2x1)a", buckling_registry="+[100]", extra=1))
+
+
+def test_p2x1s_is_its_own_mirror_image_and_takes_no_registry():
+    keys = np.array(list(R._TABLE_III))
+    k, l, m = keys.T
+    for name in ("p(2x1)s",):
+        assert np.array_equal(R.table_displacements(name, k, l, m, mirrored=True),
+                              R.table_displacements(name, k, l, m))
+    assert not np.array_equal(R.table_displacements("p(2x1)a", k, l, m, mirrored=True),
+                              R.table_displacements("p(2x1)a", k, l, m))
+    s = rbuild("p(2x1)s", azimuth=(1, 0, 0))
+    assert s.metadata["options"]["dimer_reconstruction"]["buckling_registry"]["value"] is None
+
+
+def test_static_registries_are_members_of_the_flipflop_ensemble():
+    """The flip-flop ensemble contains both states of every cell, so every static p(2x1)a
+    registry is one of its configurations (exactly): its registry-independence is not a claim."""
+    ff = rbuild("p(2x1)a flip-flop ensemble", azimuth=(1, 0, 0))
+    rec = ff.reconstruction
+    first = {}
+    for i in np.nonzero(rec.cell_index >= 0)[0]:
+        first.setdefault(int(rec.cell_index[i]), int(ff.terrace_index[i]))
+    for reg, D in R.BUCKLING_REGISTRIES.items():
+        st = rbuild("p(2x1)a", azimuth=(1, 0, 0), registry=reg)
+        flips = np.array([int(np.dot(rec.metadata["terraces"][first[c]]["dimer_bond_axis_crystal"],
+                                     D) < 0) for c in range(rec.n_cells)], np.uint8)
+        assert np.array_equal(rec.positions_for(flips), st.positions_A), reg
+
+
+def test_reconstruction_needs_the_minimum_substrate():
+    """A5 F4: R1 relaxes five layers OVER BULK; a thinner substrate is refused and (r6) always
+    checks at least one bulk layer."""
+    for sub in range(4, R.MIN_SUBSTRATE_LAYERS):
+        with pytest.raises(ValueError, match="substrate_layers >= 8"):
+            build(FLAT, edge_periods=4, substrate_layers=sub, termination="p(2x1)s")
+    s = build(FLAT, edge_periods=4, substrate_layers=R.MIN_SUBSTRATE_LAYERS, termination="p(2x1)s")
+    assert s.metadata["options"]["dimer_reconstruction"]["checks"]["interior_atoms_checked"] > 0
+    build(FLAT, edge_periods=4, substrate_layers=4, termination="bulk")     # bulk unchanged
+
+
+def test_builder_catches_a_c4x2_built_with_the_p2x2_registry(monkeypatch):
+    """A5 F12 mutation c4x2_as_p2x2 (the (4, 2) shift dropped): the builder's own (r3b) refuses
+    it (before, only test_c4x2_rows_in_antiphase_and_p2x2_rows_in_phase did)."""
+    real = R._reduce
+
+    def bad(name, k, l, m):
+        if R.TABLE_OF[name] == R.C4X2:
+            return np.mod(np.asarray(k), 4), np.mod(np.asarray(l), 4), np.asarray(m)
+        return real(name, k, l, m)
+
+    monkeypatch.setattr(R, "_reduce", bad)
+    with pytest.raises(StructureAssertionError, match=r"\(r3b\).*antiphase"):
+        rbuild("c(4x2)", st=FLAT)
+
+
+def test_builder_asserts_the_atom_count_r2(monkeypatch):
+    """(r2) is asserted (A5 F12): a reconstruction record that lost an atom is refused."""
+    import dataclasses
+    real = R.build_reconstruction
+
+    def lossy(*a, **k):
+        rec = real(*a, **k)
+        return dataclasses.replace(rec, ideal_positions_A=rec.ideal_positions_A[:-1],
+                                   displacement_A=rec.displacement_A[:-1],
+                                   cell_index=rec.cell_index[:-1])
+
+    monkeypatch.setattr(R, "build_reconstruction", lossy)
+    with pytest.raises(StructureAssertionError, match=r"\(r2\)"):
+        rbuild("p(2x1)s", st=FLAT)

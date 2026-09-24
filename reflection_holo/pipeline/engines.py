@@ -354,6 +354,22 @@ def multislice_objects(structure, cfg: PipelineConfig, *, require_backend: bool)
                 engine_params=m, thermal=thermal_record)
 
 
+def flip_flop_states(waves, member: int | None = None) -> list[dict] | None:
+    """The drawn flip-flop configuration of EVERY realisation (B37; audit A5 F12: the engine
+    manifest's run_configuration holds realisation 0 only, and the exit-wave files exist only with
+    save_exit_waves), for the run summary; None if the potential is not a flip-flop ensemble."""
+    out = []
+    for w in waves:
+        ff = (((w.metadata or {}).get("potential") or {}).get("realised") or {}).get(
+            "dimer_flip_flop")
+        if ff is not None:
+            out.append(dict(ff, realisation=int(w.realisation), seed=w.seed,
+                            **({} if member is None else dict(member=int(member)))))
+    if out and len(out) != len(waves):
+        raise ValueError("flip-flop states recorded for some realisations only")
+    return out or None
+
+
 def run_multislice(structure, cfg: PipelineConfig, *, outputs_root, run_name: str
                    ) -> tuple[list[ExitWave], ReflectionCell, dict]:
     """Multislice engine through the adapter of the module docstring. Returns the exit waves, the
@@ -391,6 +407,7 @@ def run_multislice(structure, cfg: PipelineConfig, *, outputs_root, run_name: st
     record = dict(engine_manifest=str(man), mip_check=o["mip_check"], params=params.to_dict(),
                   thermal_model=o["thermal"],
                   termination=structure.metadata["options"]["termination"],
+                  dimer_flip_flop_states=flip_flop_states(waves),
                   beam=beam.describe(waves[0].metadata["beam"]["wavelength_A"]),
                   validation_status=waves[0].metadata.get("validation_status"),
                   cell_layout=cell.metadata["layout"])

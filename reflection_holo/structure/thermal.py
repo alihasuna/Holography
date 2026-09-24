@@ -38,6 +38,8 @@ displacements miss phonon correlations; the single-site B is still the right inp
 from __future__ import annotations
 
 import math
+import numbers
+import re
 
 from reflection_holo.io.labels import require_evidence_label
 
@@ -61,7 +63,8 @@ class TemperatureOutOfRangeError(ValueError):
 
 
 def _temperature(T_K) -> float:
-    if isinstance(T_K, bool) or not isinstance(T_K, (int, float)):
+    # any real number (numpy float32/float64 and integers included; audit A5 F12), not a bool
+    if isinstance(T_K, bool) or not isinstance(T_K, numbers.Real):
         raise TypeError(f"specimen temperature must be a number in K, got {T_K!r}")
     T = float(T_K)
     if not math.isfinite(T):
@@ -110,6 +113,28 @@ def frozen_phonon_arguments(*, specimen_temperature_K, temperature_label: str) -
     label = (f"ASSUMPTION B35: u = {u:.6f} A per axis at T = {T} K; {MODEL}; {SOURCE}; "
              f"T: {temperature_label}")
     return dict(rms_displacement_A=u, label=label)
+
+
+_B35_LABEL = re.compile(r"ASSUMPTION B35: u = [0-9.]+ A per axis at T = ([^ ]+) K;")
+
+
+def require_b35_frozen_phonons(frozen_phonons, what: str) -> float:
+    """The specimen temperature of FrozenPhonons built by ``frozen_phonon_arguments`` (the sourced
+    model B35), or ValueError: the label must be this module's B35 label and the rms displacement
+    must equal u(T) at the temperature it records (exactly). Used where a model REQUIRES B35, e.g.
+    the flip-flop ensemble B37 (audit A5 F11: a fixed u such as A7 is refused there)."""
+    lab = getattr(frozen_phonons, "label", None)
+    m = _B35_LABEL.match(lab) if isinstance(lab, str) else None
+    if m is None:
+        raise ValueError(f"{what} requires frozen phonons of the sourced thermal model B35 "
+                         f"(structure.thermal.frozen_phonon_arguments at the specimen temperature, "
+                         f"PROJECT_INPUT item 23); got label {lab!r}")
+    T = _temperature(float(m.group(1)))
+    u = si_rms_displacement_per_axis_A(T)
+    if float(getattr(frozen_phonons, "rms_displacement_A")) != u:
+        raise ValueError(f"{what}: frozen phonons labelled B35 at T = {T} K carry "
+                         f"{frozen_phonons.rms_displacement_A!r} A, not u(T) = {u!r} A")
+    return T
 
 
 def describe(T_K) -> dict:

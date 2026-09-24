@@ -8,7 +8,8 @@
 #   B2     the lattice parameter: no docs/06 item names it and no schema gives lattice_parameter a
 #          docs/06 item, so B2 stands in for nothing (the configurations cite B2 in the source text);
 #   B3-B16 not values of any configuration parameter with a docs/06 item;
-#   B35, B37 model rows (key model_rows below): cited by code, standing in for no docs/06 item.
+#   B35, B37 model rows (key model_rows below): cited by code, standing in for no docs/06 item
+#          (B37 requires B35: enforced by the pipeline gate and by forward.dimer_ensemble).
 # tests/io/test_io_config_stand_ins.py checks that every ID below is a row of
 # docs/model_assumptions.md (skipped where docs/ is absent).
 schema_version: 1
@@ -31,7 +32,7 @@ stand_ins:
   B27: [13]    # no patterned features in the demo field of view
   B28: [15, 16]  # R1 vacuum reference beside the sample, condenser-biprism pre-tilt, carrier 2.0 A
   B29: [19]    # reconstruction and quantification processing choices of the demo
-  B30: [21]    # absorptive potential of the multislice demos (none)
+  B30: [21]    # no physical absorption in the multislice demos (absorptive potential none) AND no surface-plasmon loss in any demo, geometric ones included (sections.optics.surface_plasmon_excitations n = 0; B6 not represented; report E3)
   B31: [1]     # beam-energy stability: relative wavelength uncertainty 1e-5 (sigma)
   B32: [7]     # multislice runs: glancing angle (and every refraction angle) from the MIP of the potential used (Kirkland IAM 13.903 V, report D3)
   # Second smoke test (half-torus surface feature; report docs/agent_reports/T2_torus_pipeline.md,
@@ -43,8 +44,8 @@ stand_ins:
   B36: [23]    # demo stand-in specimen temperature 295.5 K (the reference temperature of Heacock et al. 2021); docs/06 item 23 (specimen temperature during holography)
   # Report docs/agent_reports/E3_coherence_inelastic.md (rows proposed there, added to
   # docs/model_assumptions.md by the orchestrator). Demo only.
-  B38: [21]    # demo stand-in surface-plasmon excitation number of the object path, n = 1.25 per specular reflection (E6's 1/sin(theta) transfer of Tanishiro 2003 p. 167 to 16.13 mrad, DERIVED_HERE); docs/06 item 21 (energy-filtered EELS of the specular beam at the working angle)
-  B39: [16]    # demo stand-in mutual visibility of the loss electrons of the two arms, V_loss = 0.1 (Tanishiro 2003 p. 171 via E6, one-plasmon-loss hologram of an R2 arrangement); docs/06 item 16
+  B38: [21]    # demo stand-in surface-plasmon excitation number of the object path, n = 1.246 per specular reflection (E6's scripted 1/sin(theta) transfer of Tanishiro 2003 p. 167 to 16.1347 mrad, DERIVED_HERE, tools/review/e6_recompute_output.txt: zero-loss amplitude exp(-n/2) = 0.536); docs/06 item 21 (energy-filtered EELS of the specular beam at the working angle)
+  B39: [16]    # demo stand-in mutual visibility of the loss electrons of the two arms, V_loss = 0.1 (Tanishiro 2003 p. 171 via E6, one-plasmon-loss hologram of an R2 arrangement); docs/06 item 16; declared with an R2 reference only (no effect, hence refused, with R1/R3; audit A5 F10)
   B40: [3, 16] # demo convergent illumination (uniform disc, semi-angle per configuration) and, for an R1 reference, the object-reference separation D0; docs/06 items 3 and 16
 # Demo-only stand-ins (audit A3 M2): refused by every pipeline run with purpose "comparison",
 # whatever the docs/06 item. Every id listed here must be a key of stand_ins.
@@ -55,4 +56,8 @@ demo_only: [B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32
 # so that tests/io checks that each is a row of docs/model_assumptions.md.
 model_rows:
   B35: "Si thermal displacement of the frozen-phonon model: B(T) = 0.4761 A^2 + 0.0014 A^2/K (T - 295.5 K), u = sqrt(B/(8 pi^2)) per axis (Heacock et al. 2021; linear extrapolation an ASSUMPTION for 273.15-323.15 K); reflection_holo.structure.thermal"
+  # B37 requires the frozen phonons of B35 (enforced by pipeline.config and by
+  # forward.dimer_ensemble.DimerFlipFlopPotential; the fixed u of A7 is refused; audit A5 F11); it is
+  # the only room-temperature model for which B4 holds on a/4 steps, on average (static buckled
+  # tables depend on the buckling registry, a model choice; audit A5 F1).
   B37: "p(2x1)a dimer flip-flop ensemble (model choice, not a source): each dimer cell of Ramstad et al. 1995 Table III in the p(2x1)a state or its mirror image with probability 1/2, independently, per realisation; reflection_holo.structure.reconstruction, reflection_holo.forward.dimer_ensemble"

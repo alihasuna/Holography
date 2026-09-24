@@ -1,0 +1,118 @@
+== A5 F9, E3 section 2.4: optics.coherence.minimal_quadrature (curvature 0)
+  v = 0.3, tolerance 0.01: 1 x 3 = 3 members, bound 1.154e-03
+  v = 3.0, tolerance 1e-06: 3 x 13 = 39 members, bound 6.212e-07
+
+== A5 F9, E2 sections 0 and 1.4: riser/edge minimum distance and the recorded riser_edge_largest_compression_of_dnn (= 1 - min/d_nn, d_nn = 2.3516 A); staircase (0, 2, 1) x 4 periods, 4 edge periods, 12 layers
+  p(2x1)s                     None    transverse (1, 1, 0): min 2.2339 A, recorded compression 0.0000
+  p(2x1)s                     None    transverse (1, 0, 0): min 2.2339 A, recorded compression 0.0000
+  p(2x1)s                     None    transverse (0, 1, 0): min 2.2339 A, recorded compression 0.0000
+  p(2x1)s                     None    parallel   (1, 1, 0): min 2.2409 A, recorded compression 0.0000
+  p(2x1)s                     None    parallel   (1, 0, 0): min 2.2339 A, recorded compression 0.0000
+  p(2x1)s                     None    parallel   (0, 1, 0): min 2.2339 A, recorded compression 0.0000
+  p(2x1)a                     +[100]  transverse (1, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     +[100]  transverse (1, 0, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     +[100]  transverse (0, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     +[100]  parallel   (1, 1, 0): min 2.2864 A, recorded compression 0.0000
+  p(2x1)a                     +[100]  parallel   (1, 0, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     +[100]  parallel   (0, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[100]  transverse (1, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[100]  transverse (1, 0, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[100]  transverse (0, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[100]  parallel   (1, 1, 0): min 2.2661 A, recorded compression 0.0000
+  p(2x1)a                     -[100]  parallel   (1, 0, 0): min 2.2086 A, recorded compression 0.0608
+  p(2x1)a                     -[100]  parallel   (0, 1, 0): min 2.2086 A, recorded compression 0.0608
+  p(2x1)a                     +[010]  transverse (1, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     +[010]  transverse (1, 0, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     +[010]  transverse (0, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     +[010]  parallel   (1, 1, 0): min 2.2661 A, recorded compression 0.0000
+  p(2x1)a                     +[010]  parallel   (1, 0, 0): min 2.2086 A, recorded compression 0.0608
+  p(2x1)a                     +[010]  parallel   (0, 1, 0): min 2.2086 A, recorded compression 0.0608
+  p(2x1)a                     -[010]  transverse (1, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[010]  transverse (1, 0, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[010]  transverse (0, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[010]  parallel   (1, 1, 0): min 2.2864 A, recorded compression 0.0000
+  p(2x1)a                     -[010]  parallel   (1, 0, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a                     -[010]  parallel   (0, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x2)                      +[100]  transverse (1, 1, 0): min 2.2147 A, recorded compression 0.0582
+  p(2x2)                      +[100]  transverse (1, 0, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      +[100]  transverse (0, 1, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      +[100]  parallel   (1, 1, 0): min 2.2165 A, recorded compression 0.0575
+  p(2x2)                      +[100]  parallel   (1, 0, 0): min 2.1822 A, recorded compression 0.0721
+  p(2x2)                      +[100]  parallel   (0, 1, 0): min 2.1814 A, recorded compression 0.0724
+  p(2x2)                      -[100]  transverse (1, 1, 0): min 2.2095 A, recorded compression 0.0605
+  p(2x2)                      -[100]  transverse (1, 0, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      -[100]  transverse (0, 1, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      -[100]  parallel   (1, 1, 0): min 2.2113 A, recorded compression 0.0597
+  p(2x2)                      -[100]  parallel   (1, 0, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      -[100]  parallel   (0, 1, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      +[010]  transverse (1, 1, 0): min 2.2147 A, recorded compression 0.0582
+  p(2x2)                      +[010]  transverse (1, 0, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      +[010]  transverse (0, 1, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      +[010]  parallel   (1, 1, 0): min 2.2113 A, recorded compression 0.0597
+  p(2x2)                      +[010]  parallel   (1, 0, 0): min 2.2201 A, recorded compression 0.0560
+  p(2x2)                      +[010]  parallel   (0, 1, 0): min 2.2113 A, recorded compression 0.0597
+  p(2x2)                      -[010]  transverse (1, 1, 0): min 2.2095 A, recorded compression 0.0605
+  p(2x2)                      -[010]  transverse (1, 0, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      -[010]  transverse (0, 1, 0): min 2.2224 A, recorded compression 0.0550
+  p(2x2)                      -[010]  parallel   (1, 1, 0): min 2.2165 A, recorded compression 0.0575
+  p(2x2)                      -[010]  parallel   (1, 0, 0): min 2.1822 A, recorded compression 0.0721
+  p(2x2)                      -[010]  parallel   (0, 1, 0): min 2.1814 A, recorded compression 0.0724
+  c(4x2)                      +[100]  transverse (1, 1, 0): min 2.2292 A, recorded compression 0.0521
+  c(4x2)                      +[100]  transverse (1, 0, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      +[100]  transverse (0, 1, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      +[100]  parallel   (1, 1, 0): min 2.2113 A, recorded compression 0.0597
+  c(4x2)                      +[100]  parallel   (1, 0, 0): min 2.2105 A, recorded compression 0.0600
+  c(4x2)                      +[100]  parallel   (0, 1, 0): min 2.2097 A, recorded compression 0.0604
+  c(4x2)                      -[100]  transverse (1, 1, 0): min 2.2061 A, recorded compression 0.0619
+  c(4x2)                      -[100]  transverse (1, 0, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      -[100]  transverse (0, 1, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      -[100]  parallel   (1, 1, 0): min 2.2240 A, recorded compression 0.0543
+  c(4x2)                      -[100]  parallel   (1, 0, 0): min 2.2061 A, recorded compression 0.0619
+  c(4x2)                      -[100]  parallel   (0, 1, 0): min 2.2071 A, recorded compression 0.0614
+  c(4x2)                      +[010]  transverse (1, 1, 0): min 2.2292 A, recorded compression 0.0521
+  c(4x2)                      +[010]  transverse (1, 0, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      +[010]  transverse (0, 1, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      +[010]  parallel   (1, 1, 0): min 2.2240 A, recorded compression 0.0543
+  c(4x2)                      +[010]  parallel   (1, 0, 0): min 2.2063 A, recorded compression 0.0618
+  c(4x2)                      +[010]  parallel   (0, 1, 0): min 2.2071 A, recorded compression 0.0614
+  c(4x2)                      -[010]  transverse (1, 1, 0): min 2.2061 A, recorded compression 0.0619
+  c(4x2)                      -[010]  transverse (1, 0, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      -[010]  transverse (0, 1, 0): min 2.2295 A, recorded compression 0.0519
+  c(4x2)                      -[010]  parallel   (1, 1, 0): min 2.2113 A, recorded compression 0.0597
+  c(4x2)                      -[010]  parallel   (1, 0, 0): min 2.2105 A, recorded compression 0.0600
+  c(4x2)                      -[010]  parallel   (0, 1, 0): min 2.2097 A, recorded compression 0.0604
+  p(2x1)a flip-flop ensemble  None    transverse (1, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a flip-flop ensemble  None    transverse (1, 0, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a flip-flop ensemble  None    transverse (0, 1, 0): min 2.2220 A, recorded compression 0.0551
+  p(2x1)a flip-flop ensemble  None    parallel   (1, 1, 0): min 2.2661 A, recorded compression 0.0000
+  p(2x1)a flip-flop ensemble  None    parallel   (1, 0, 0): min 2.2086 A, recorded compression 0.0608
+  p(2x1)a flip-flop ensemble  None    parallel   (0, 1, 0): min 2.2086 A, recorded compression 0.0608
+  smallest riser/edge distance per termination:
+    p(2x1)s                     2.2339 A: 1 - min/d_nn = 5.01 % (recorded 0.00 %; None, transverse, (0, 1, 0))
+    p(2x1)a                     2.2086 A: 1 - min/d_nn = 6.08 % (recorded 6.08 %; -[100], parallel, (0, 1, 0))
+    p(2x2)                      2.1814 A: 1 - min/d_nn = 7.24 % (recorded 7.24 %; +[100], parallel, (0, 1, 0))
+    c(4x2)                      2.2061 A: 1 - min/d_nn = 6.19 % (recorded 6.19 %; -[100], transverse, (1, 1, 0))
+    p(2x1)a flip-flop ensemble  2.2086 A: 1 - min/d_nn = 6.08 % (recorded 6.08 %; None, parallel, (0, 1, 0))
+  E2's quoted minima: 2.1759 A -> 1 - min/d_nn = 7.47 %
+  E2's quoted minima: 2.222 A -> 1 - min/d_nn = 5.51 %
+
+== A5 F1: incidence-plane relation of static buckled a/4 steps per buckling registry
+  p(2x1)a registry +[100]: (1, 0, 0): maps (0.000 A); (0, 1, 0): does not map (0.708 A)
+  p(2x1)a registry -[100]: (1, 0, 0): maps (0.000 A); (0, 1, 0): does not map (0.708 A)
+  p(2x1)a registry +[010]: (1, 0, 0): does not map (0.708 A); (0, 1, 0): maps (0.000 A)
+  p(2x1)a registry -[010]: (1, 0, 0): does not map (0.708 A); (0, 1, 0): maps (0.000 A)
+  p(2x2)  registry +[100]: (1, 0, 0): maps (0.001 A); (0, 1, 0): does not map (0.022 A)
+  p(2x2)  registry -[100]: (1, 0, 0): maps (0.001 A); (0, 1, 0): does not map (0.022 A)
+  p(2x2)  registry +[010]: (1, 0, 0): does not map (0.022 A); (0, 1, 0): maps (0.000 A)
+  p(2x2)  registry -[010]: (1, 0, 0): does not map (0.022 A); (0, 1, 0): maps (0.000 A)
+  c(4x2)  registry +[100]: (1, 0, 0): maps (0.001 A); (0, 1, 0): does not map (0.018 A)
+  c(4x2)  registry -[100]: (1, 0, 0): maps (0.001 A); (0, 1, 0): does not map (0.018 A)
+  c(4x2)  registry +[010]: (1, 0, 0): does not map (0.018 A); (0, 1, 0): maps (0.000 A)
+  c(4x2)  registry -[010]: (1, 0, 0): does not map (0.018 A); (0, 1, 0): maps (0.000 A)
+
+== A5 F3: zero-loss amplitude exp(-n/2)
+  n = 1.246160: exp(-n/2) = 0.53629, 1/exp(-n/2) = 1.8647, R2 with V_loss = 0.1: 0.3588
+  n = 1.246000: exp(-n/2) = 0.53633, 1/exp(-n/2) = 1.8645, R2 with V_loss = 0.1: 0.3589
+  n = 1.250000: exp(-n/2) = 0.53526, 1/exp(-n/2) = 1.8682, R2 with V_loss = 0.1: 0.3579
+
+numpy 2.4.6

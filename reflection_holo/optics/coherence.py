@@ -57,11 +57,15 @@ kappa:
          E_az  = 2 sum_{p>=1} (v/2)^(p m) / (p m)!   (m = n_azimuthal; the equispaced rule aliases
                  the Fourier orders +-p m of exp(i v rho cos(phi - psi)) = sum_n i^n J_n(v rho)
                  e^(i n (phi - psi)) onto the mean, and |J_n(x)| <= (x/2)^n / n!),
-         E_rad = C_n (2n)! M(R) / R^(2n) minimised over R > 0, the Gauss-Legendre remainder
+         E_rad = f_c C_n (2n)! M(R) / R^(2n) minimised over R > 0, the Gauss-Legendre remainder
                  (n!)^4 / ((2n + 1) ((2n)!)^3) f^(2n)(eta) on [0, 1] (n = n_radial) with the Cauchy
                  estimate |f^(2n)| <= (2n)! M(R) / R^(2n) for the radial integrand
                  h(s) = J0(v sqrt(s)) exp(-i kappa s), M(R) = I0(v sqrt(1 + R)) exp(kappa R)
-                 (|J0(v sqrt(z))| <= I0(v sqrt|z|));
+                 (|J0(v sqrt(z))| <= I0(v sqrt|z|)); f_c = 1 for kappa = 0 (h real) and sqrt(2) for
+                 kappa > 0: the remainder with ONE intermediate point eta holds for a REAL function;
+                 for h = u + i w it applies to u and w separately (points eta_u, eta_w), so
+                 |R[h]| = (R[u]^2 + R[w]^2)^(1/2) <= sqrt(2) C_n max |h^(2n)|, since
+                 |u^(2n)|, |w^(2n)| <= |h^(2n)| (audit A5 F8);
   line:  |Q - I| <= sqrt(2) C'_n (2n)! M(R) / R^(2n), C'_n = 2^(2n) (n!)^4 / ((2n + 1) ((2n)!)^3),
          M(R) = exp(v R + kappa (2 R + R^2)) (integrand exp(i (v xi - kappa xi^2)) on [-1, 1]).
 A floating-point floor of 8 eps per member (double precision) is added to both bounds.
@@ -161,7 +165,8 @@ def radial_error_bound(n: int, v: float, kappa: float, profile: str) -> float:
     if profile == "uniform_disc":
         logM = _log_i0(abs(v) * np.sqrt(1.0 + R)) + abs(kappa) * R
         lc = _log_gauss_constant(n, "disc")
-        extra = 0.0
+        # sqrt(2) for the complex integrand when kappa != 0 (module docstring; A5 F8); J0 is real
+        extra = 0.5 * math.log(2.0) if kappa != 0.0 else 0.0
     else:
         logM = abs(v) * R + abs(kappa) * (2.0 * R + R * R)
         lc = _log_gauss_constant(n, "line")
@@ -511,7 +516,11 @@ def r1_reference_member_phase(member: ConvergenceMember, *, k_rad_per_A: float, 
     detector pixels r (arrays of the detector shape) and D0 the separation, at the specimen, from the
     reference-arm point to the object-arm point that the biprism superposes (PROJECT_INPUT item 16);
     since dk_ref,s is perpendicular to the central outgoing direction to first order, D0 is defined
-    modulo that direction. Other aperture passages (second aperture hole, no aperture) leave the
+    modulo that direction. D0 is the EFFECTIVE separation of the unfolded geometry, not a distance
+    measured between two specimen points: the model anchors the condenser-biprism deflection
+    R_y(2 th0) at the cell origin, and anchoring it at a point P_d is equivalent to
+    D0 -> D0 + (P_d - R_y(2 th0) P_d) (audit A5 F12; the item-16 value must be stated in this
+    sense). Other aperture passages (second aperture hole, no aperture) leave the
     reference inclined to the imaging axis, so its image-plane phase depends on the conjugate plane:
     NOT IMPLEMENTED under convergence (refused)."""
     if aperture_passage not in REFERENCE_PASSAGES_UNDER_CONVERGENCE:

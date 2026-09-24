@@ -22,9 +22,11 @@ Mapping onto the repository lattice (DERIVED_HERE; lattice.py, diamond sites in 
   and R1's x (the dimer bond) is the other <110> axis. The dimer-row direction therefore follows the
   top layer's parity: it rotates by 90 degrees across every a/4 step and not across an a/2 step, as
   observed (Zandvliet, Rev. Mod. Phys. 72, 593 (2000) [ZANDVLIET2000], p. 594; L7 section 1.2);
-* x_hat_R = d_vec / sqrt2 with d_vec = [1,1,0] or [1,-1,0] (sign convention: positive crystal-x
-  component, the same for every terrace, so that terraces of the same orientation carry the same
-  buckling orientation); y_hat_R = [001] x x_hat_R (right-handed, z = outward normal [001]);
+* x_hat_R = d_vec / sqrt2 with d_vec = [1,1,0] or [1,-1,0], the dimer-bond direction with a
+  positive crystal-x component: the frame in which R1's table is READ (a labelling convention, not
+  physics); y_hat_R = [001] x x_hat_R (right-handed, z = outward normal [001]). Which buckling
+  orientation each terrace carries is NOT fixed by this frame: it is the BUCKLING REGISTRY below,
+  an explicit, required choice of the caller;
 * an atom at integer a/4 site n has R1 indices k = (n - n_O).d_vec / 2, l = (n - n_O).b_vec / 2,
   m = n3 - n3_top (integers for every diamond site; asserted), relative to a top-layer origin atom O
   chosen per terrace (``_choose_origin``). Tested on the R1 index set: every Table III/IV (k, l, m)
@@ -43,6 +45,26 @@ complete cells take the tabulated displacement; atoms of INCOMPLETE cells (at a 
 dimer partner is on the other side of the riser, which is unavoidable for step edges along <100>)
 keep their bulk sites: ASSUMPTION, an extension of the builder's "step-riser relaxation none" (R1
 gives no geometry for an unpaired edge atom, and none is invented). Their number is recorded.
+
+Buckling registry of the STATIC buckled tables (p(2x1)a, p(2x2), c(4x2); audit A5 F1, orchestrator
+decision). The ideal slab is symmetric under the {110} mirror through each dimer cell's mid-plane
+normal to the dimer bond, so each static buckled table exists in two degenerate orientations on a
+terrace: R1's table read in the frame above, or its mirror image (buckling reversed),
+d'(k, l, m) = diag(-1, 1, 1) d(reduce(2 - k, l, m)) (the same cells; the same operation as state 1
+of the flip-flop ensemble). No source read fixes which orientation a single-domain terrace carries,
+nor the relation between the two terrace types of a staircase (a real static buckled surface has
+domains). The builder therefore REQUIRES the registry (no default): the crystal direction
+D in BUCKLING_REGISTRIES = +[100], -[100], +[010], -[010]; a terrace whose d_vec has d_vec . D > 0
+carries the table, the others its mirror image. For p(2x1)a the up atom of every dimer then lies
+on the D side of the dimer centre (for p(2x2) and c(4x2) the up atom of the dimer at R1 sites
+(0, 0, 0)-(2, 0, 0)). Consequence, measured on the atoms (si001._b4_reconstructed): with D along
+[100] the two terrace types are related by the (010) mirror (the incidence-plane glide of a [100]
+beam), with D along [010] by the (100) mirror; the model_assumptions B4 verdict of an a/4 step at a
+<100> azimuth therefore SWAPS with the registry and is recorded as "not guaranteed at any azimuth;
+depends on the buckling registry". p(2x1)s is its own mirror image (tested), so it takes no
+registry; the flip-flop ensemble contains both states of every cell, so it takes none either (its
+state 0 is the table read in the frame above: a labelling of the draws that does not change the
+ensemble).
 
 Room temperature (L7 section 1.2): the dimers flip-flop; c(4x2) order appears only below 205 +- 3 K
 (Shirasawa, Mizuno, Tochihara, JPS 2006, p. 865, SECTION_READ in L7). R1's geometries are T = 0 LDA
@@ -82,10 +104,33 @@ TABLE_PRECISION_A = 0.001          # R1 prints the displacements to 0.001 A
 DIMER_SEARCH_CUTOFF_A = 3.0        # top-layer pairs closer than this are dimers (unpaired 3.84 A)
 RELATION_TOL_A = TABLE_PRECISION_A + 1e-9   # two independently rounded entries differ <= 0.001 A
 
+# Smallest substrate (layers of the lowest terrace) that carries a reconstruction (audit A5 F4): the
+# RECONSTRUCTED_DEPTH tabulated layers, the bulk layer bonded to them (its bonds to displaced atoms
+# are not at d_nn), at least one bulk layer that assertion (r6) checks to be 4-coordinated at d_nn,
+# and the bottom layer (under-coordinated, no crystal below). R1 relaxed five layers OVER BULK; a
+# thinner slab would displace its bottom layers with nothing under them (refused, not built).
+MIN_SUBSTRATE_LAYERS = RECONSTRUCTED_DEPTH + 3
+
 P2X1S, P2X1A, P2X2, C4X2 = "p(2x1)s", "p(2x1)a", "p(2x2)", "c(4x2)"
 FLIPFLOP = "p(2x1)a flip-flop ensemble"
 STATIC_RECONSTRUCTIONS = (P2X1S, P2X1A, P2X2, C4X2)
+BUCKLED_STATIC = (P2X1A, P2X2, C4X2)     # need the buckling registry (module docstring)
 RECONSTRUCTIONS = STATIC_RECONSTRUCTIONS + (FLIPFLOP,)
+# buckling registry (module docstring): the crystal direction D, a terrace carries R1's table if its
+# d_vec . D > 0 and the table's mirror image otherwise
+BUCKLING_REGISTRIES = {"+[100]": (1, 0, 0), "-[100]": (-1, 0, 0), "+[010]": (0, 1, 0),
+                       "-[010]": (0, -1, 0)}
+BUCKLING_REGISTRY_RULE = (
+    "a terrace whose dimer-bond axis d_vec (the one with a positive crystal-x component) has "
+    "d_vec . D > 0 carries R1's table read in the frame x_R = d_vec; the other terraces carry its "
+    "mirror image through each dimer cell's mid-plane normal to the dimer bond (buckling reversed, "
+    "same cells); for p(2x1)a the up atom of every dimer lies on the D side of the dimer centre")
+BUCKLING_REGISTRY_NOTE = (
+    "an explicit MODEL CHOICE, not physics: both orientations are degenerate and no source read "
+    "fixes which one a single-domain static terrace carries, nor the relation between the two "
+    "terrace types (a real static buckled surface has domains). With D along [100] the two terrace "
+    "types are related by the (010) mirror, with D along [010] by the (100) mirror, so the B4 "
+    "verdict of a/4 steps at a <100> azimuth swaps with the registry (audit A5 F1)")
 FLIPFLOP_LABEL = ("ASSUMPTION B37: p(2x1)a flip-flop ensemble, a MODEL CHOICE and not a source: "
                   "each dimer cell of R1 Table III takes the p(2x1)a displacements or their mirror "
                   "image (buckling reversed) with probability 1/2, independently, drawn per "
@@ -186,14 +231,14 @@ def _reduce(name: str, k, l, m):
 
 def table_displacements(name: str, k, l, m, mirrored: bool = False) -> np.ndarray:
     """R1 displacements (dx, dy, dz) in A in R1's frame for integer indices (arrays); ``mirrored``
-    gives the buckling-reversed state of the flip-flop model (module docstring). Raises if an index
-    triple is not a site of the table's cell (a bookkeeping error, never approximated)."""
+    gives the table's mirror image through the dimer cell's mid-plane x_R = u (buckling reversed):
+    d'(k, l, m) = diag(-1, 1, 1) d(reduce(2 - k, l, m)), the state 1 of the flip-flop model and the
+    reversed orientation of the buckling registry (module docstring). Raises if an index triple is
+    not a site of the table's cell (a bookkeeping error, never approximated)."""
     t = TABLE_OF[name]
-    if mirrored and t != P2X1A:
-        raise ValueError("only the p(2x1)a flip-flop model has a mirrored state")
-    kk, ll, mm = _reduce(name, k, l, m)
     if mirrored:
-        kk = np.mod(2 - kk, 4)
+        k = 2 - np.asarray(k)
+    kk, ll, mm = _reduce(name, k, l, m)
     tab = TABLES[t]
     out = np.zeros((kk.size, 3))
     for i, key in enumerate(zip(kk.ravel().tolist(), ll.ravel().tolist(), mm.ravel().tolist())):
@@ -346,16 +391,43 @@ def _complete_cells(n_top, key_top, n_O, d_vec, b_vec, frame, origin, a_A, L):
     return first[found], order[pos[found]]
 
 
-def build_reconstruction(name: str, *, ideal_positions_A, quarter, layer, terrace, tops, c0,
-                         frame, origin, a_A, L, s_ax, e_ax, groups) -> ReconstructionRecord:
+def check_buckling_registry(name: str, buckling_registry) -> str | None:
+    """The buckling registry of ``name`` (module docstring): REQUIRED (one of BUCKLING_REGISTRIES)
+    for the static buckled tables, refused rather than ignored for p(2x1)s (its own mirror image)
+    and for the flip-flop ensemble (both states of every cell). Returns the registry or None."""
+    if name in BUCKLED_STATIC:
+        if buckling_registry not in BUCKLING_REGISTRIES:
+            raise ValueError(
+                f"{name} is a static BUCKLED reconstruction: its buckling registry is a required, "
+                f"explicit choice (no default), one of {tuple(BUCKLING_REGISTRIES)} (the crystal "
+                f"direction D: {BUCKLING_REGISTRY_RULE}); got {buckling_registry!r}. It is "
+                f"{BUCKLING_REGISTRY_NOTE}")
+        return buckling_registry
+    if buckling_registry is not None:
+        why = ("p(2x1)s has symmetric dimers and is its own mirror image" if name == P2X1S else
+               "the flip-flop ensemble draws both buckling states of every cell"
+               if name == FLIPFLOP else "no reconstruction is built")
+        raise ValueError(f"a buckling registry ({buckling_registry!r}) applies only to the static "
+                         f"buckled reconstructions {BUCKLED_STATIC}; {name}: {why} (refused rather "
+                         f"than ignored)")
+    return None
+
+
+def build_reconstruction(name: str, *, buckling_registry, ideal_positions_A, quarter, layer,
+                         terrace, tops, c0, frame, origin, a_A, L, s_ax, e_ax,
+                         groups) -> ReconstructionRecord:
     """Displacements of the reconstruction ``name`` on the built terraces (module docstring).
 
-    quarter: (N, 3) integer a/4 crystal coordinates of the ideal sites; layer, terrace: builder
-    arrays; tops: top layer index per terrace; c0: crystal layer offset (n3 = layer + c0);
-    groups: lists of terrace indices forming one physical terrace (terraces 0 and n-1 joined across
-    the periodic cell edge when their heights are equal, or the single terrace of a flat cell)."""
+    buckling_registry: one of BUCKLING_REGISTRIES for the static buckled tables (required), None
+    otherwise (``check_buckling_registry``); quarter: (N, 3) integer a/4 crystal coordinates of the
+    ideal sites; layer, terrace: builder arrays; tops: top layer index per terrace; c0: crystal
+    layer offset (n3 = layer + c0); groups: lists of terrace indices forming one physical terrace
+    (terraces 0 and n-1 joined across the periodic cell edge when their heights are equal, or the
+    single terrace of a flat cell)."""
     if name not in RECONSTRUCTIONS:
         raise ValueError(f"unknown reconstruction {name!r}")
+    registry = check_buckling_registry(name, buckling_registry)
+    D = np.array(BUCKLING_REGISTRIES[registry]) if registry is not None else None
     t = TABLE_OF[name]
     pos = np.asarray(ideal_positions_A, float)
     N = pos.shape[0]
@@ -431,7 +503,9 @@ def build_reconstruction(name: str, *, ideal_positions_A, quarter, layer, terrac
         cell[sub] = ids
         first_atom_of_cell.extend(top_idx[f_idx].tolist())
         sub_ok = sub[ok]
-        dxyz = table_displacements(name, k[ok], l[ok], m[ok])
+        # buckling registry: this terrace carries the table or its mirror image (module docstring)
+        reversed_ = bool(D is not None and int(d_vec @ D) < 0)
+        dxyz = table_displacements(name, k[ok], l[ok], m[ok], mirrored=reversed_)
         d_hat = frame.to_slab(d_vec / np.sqrt(2.0))
         b_hat = frame.to_slab(b_vec / np.sqrt(2.0))
         x_hat = frame.to_slab(np.array([0.0, 0.0, 1.0]))
@@ -447,6 +521,9 @@ def build_reconstruction(name: str, *, ideal_positions_A, quarter, layer, terrac
                 dimer_bond_axis_crystal=d_vec.tolist(), dimer_row_axis_crystal=b_vec.tolist(),
                 dimer_bond_axis_slab=d_hat.tolist(), dimer_row_axis_slab=b_hat.tolist(),
                 origin_site_quarter=[int(v) for v in n_O], registry_shift_R1_units=int(shift),
+                buckling_state=("not applicable" if D is None else
+                                "mirror image of R1's table (buckling reversed)" if reversed_
+                                else "R1's table"),
                 complete_dimer_cells=int(len(f_idx)), top_layer_atoms=int(n_top_all),
                 unpaired_top_atoms_at_bulk_sites=int(n_top_all - n_paired),
                 atoms_at_bulk_sites_within_reconstructed_depth=int(np.count_nonzero(~ok)),
@@ -456,8 +533,21 @@ def build_reconstruction(name: str, *, ideal_positions_A, quarter, layer, terrac
     meta = dict(name=name, table=t, source=SOURCE,
                 label=FLIPFLOP_LABEL if name == FLIPFLOP else STATIC_LABEL,
                 frame_rule="R1 x = dimer bond = the <110> axis normal to the top layer's back-bond "
-                           "axis, sign: positive crystal-x component; R1 y = [001] x R1 x (dimer "
-                           "row, parallel to the back-bond axis); R1 z = outward normal [001]",
+                           "axis, read with a positive crystal-x component (the frame in which the "
+                           "table is read: a labelling convention; which terraces carry the table "
+                           "and which its mirror image is the buckling registry); R1 y = [001] x "
+                           "R1 x (dimer row, parallel to the back-bond axis); R1 z = outward "
+                           "normal [001]",
+                buckling_registry=(
+                    dict(value=registry, direction_D_crystal=list(BUCKLING_REGISTRIES[registry]),
+                         rule=BUCKLING_REGISTRY_RULE, note=BUCKLING_REGISTRY_NOTE,
+                         label="MODEL CHOICE (explicit, required; not physics)")
+                    if registry is not None else dict(
+                        value=None,
+                        note=("not applicable: p(2x1)s is its own mirror image" if name == P2X1S
+                              else "not applicable: the ensemble draws both states of every cell; "
+                                   "state 0 is R1's table read in the frame of frame_rule (a "
+                                   "labelling of the draws that does not change the ensemble)"))),
                 reconstructed_depth_layers=RECONSTRUCTED_DEPTH, edge_rule=EDGE_RULE,
                 pattern_lattice_R1_units=[list(v) for v in lat],
                 reference_dimers=reference_dimers(name, a_A),

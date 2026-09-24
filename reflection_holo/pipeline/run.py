@@ -498,7 +498,8 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
             member_waves, cell, rec = CV.engine_members(structure, cfg,
                                                         outputs_root=out / "outputs",
                                                         run_name=cfg.run_name,
-                                                        members_dir=members_dir)
+                                                        members_dir=members_dir,
+                                                        code_state=git_preflight)
             quad_members = CV.member_quadrature(cfg).members()
             waves = [w for mem in quad_members for w in member_waves[mem.index]]
             eng_manifest = rec["engine_manifests"]

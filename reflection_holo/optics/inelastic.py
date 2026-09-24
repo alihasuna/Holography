@@ -34,9 +34,10 @@ Consequences (DERIVED_HERE; tested in tests/optics/test_inelastic.py):
 * Fringe (sideband) amplitude factor F = e^(-(n_O + n_R)/2) + V_loss sqrt(L_O L_R) (unfiltered).
   - R1, vacuum reference (the reference arm does not reflect, n_R = 0, so L_R = 0): F = e^(-n/2)
     whatever V_loss: the loss electrons of the object arm are pure background (no reference-arm
-    electron shares their final plasmon state). E6's transfer n = 1.25 gives F = 0.536.
+    electron shares their final plasmon state). E6's transfer n = 1.246 gives F = 0.536
+    (exp(-0.625) = 0.535 at the rounded n = 1.25; A5 F3). V_loss is then not required.
   - R2, self-reference (both arms reflect from the same, uniform surface, n_O = n_R = n):
-    F = e^(-n) + V_loss (1 - e^(-n)); n = 1.25: 0.287 + 0.713 V_loss (0.358 at V_loss = 0.1).
+    F = e^(-n) + V_loss (1 - e^(-n)); n = 1.246: 0.288 + 0.712 V_loss (0.359 at V_loss = 0.1).
 * Visibility mu = 2 A_O A_R F / (A_O^2 + A_R^2) (unfiltered: the detected intensity is unchanged),
   i.e. mu = mu_0 F. With the zero-loss filter mu = 2 A_O A_R e^(-(n_O+n_R)/2) /
   (e^(-n_O) A_O^2 + e^(-n_R) A_R^2) at the reduced dose.
@@ -88,8 +89,10 @@ class SurfacePlasmonLoss:
     object_label                qualified evidence label of n_O
     mean_excitations_reference  n_R >= 0 (R1/R3: 0, R2: n_O; ``for_reference_model``)
     reference_label             qualified evidence label of n_R
-    loss_visibility             V_loss in [0, 1] (item 16; stand-in B39)
-    visibility_label            qualified evidence label of V_loss
+    loss_visibility             V_loss in [0, 1] (item 16; stand-in B39), or None ONLY where it
+                                has no effect: L_O L_R = 0 (one arm carries no loss electron, e.g.
+                                an R1/R3 vacuum reference) or a zero-loss filter (audit A5 F10)
+    visibility_label            qualified evidence label of V_loss (None with V_loss None)
     energy_filter               "none" (every electron detected) or "zero_loss"
     energy_filter_label         qualified evidence label of the filter declaration"""
     mean_excitations_object: float
@@ -107,16 +110,30 @@ class SurfacePlasmonLoss:
         object.__setattr__(self, "mean_excitations_reference",
                            _num("mean_excitations_reference", self.mean_excitations_reference,
                                 0.0, 50.0))
-        object.__setattr__(self, "loss_visibility",
-                           _num("loss_visibility", self.loss_visibility, 0.0, 1.0))
-        for name, what in (("object_label", "surface-plasmon excitation number (item 21)"),
-                           ("reference_label", "reference-arm excitation number"),
-                           ("visibility_label", "loss-electron visibility (item 16)"),
-                           ("energy_filter_label", "energy-filter declaration")):
-            require_evidence_label(getattr(self, name), what, accepted=_LABELS, qualified=True)
         if self.energy_filter not in ENERGY_FILTERS:
             raise ValueError(f"energy_filter must be one of {ENERGY_FILTERS}, got "
                              f"{self.energy_filter!r}")
+        labels = [("object_label", "surface-plasmon excitation number (item 21)"),
+                  ("reference_label", "reference-arm excitation number"),
+                  ("energy_filter_label", "energy-filter declaration")]
+        if self.loss_visibility is None:
+            # no default is substituted: an absent V_loss is accepted only where it cannot enter
+            if not self.visibility_not_used():
+                raise ValueError("loss_visibility is required (no default is substituted): both "
+                                 "arms carry loss electrons and no zero-loss filter is declared")
+            if self.visibility_label is not None:
+                raise ValueError("visibility_label must be None when loss_visibility is None")
+        else:
+            object.__setattr__(self, "loss_visibility",
+                               _num("loss_visibility", self.loss_visibility, 0.0, 1.0))
+            labels.append(("visibility_label", "loss-electron visibility (item 16)"))
+        for name, what in labels:
+            require_evidence_label(getattr(self, name), what, accepted=_LABELS, qualified=True)
+
+    def visibility_not_used(self) -> bool:
+        """True if V_loss cannot affect the hologram: L_O L_R = 0 or a zero-loss filter."""
+        return (self.energy_filter == "zero_loss" or self.mean_excitations_object == 0.0
+                or self.mean_excitations_reference == 0.0)
 
     # -- factors ---------------------------------------------------------------------------------
     @property
@@ -138,7 +155,7 @@ class SurfacePlasmonLoss:
     def fringe_factor(self) -> float:
         """F: the factor multiplying the lossless fringe (sideband) term (module docstring)."""
         f = self.zero_loss_amplitude_object * self.zero_loss_amplitude_reference
-        if self.energy_filter == "none":
+        if self.energy_filter == "none" and self.loss_visibility is not None:
             f += self.loss_visibility * math.sqrt(self.loss_fraction_object
                                                   * self.loss_fraction_reference)
         return f
@@ -156,7 +173,10 @@ class SurfacePlasmonLoss:
             mean_excitations_object=self.mean_excitations_object, object_label=self.object_label,
             mean_excitations_reference=self.mean_excitations_reference,
             reference_label=self.reference_label, loss_visibility=self.loss_visibility,
-            visibility_label=self.visibility_label, energy_filter=self.energy_filter,
+            visibility_label=(self.visibility_label if self.loss_visibility is not None else
+                              "not declared: no effect (one arm carries no loss electron, or a "
+                              "zero-loss filter)"),
+            energy_filter=self.energy_filter,
             energy_filter_label=self.energy_filter_label,
             zero_loss_amplitude_object=self.zero_loss_amplitude_object,
             zero_loss_amplitude_reference=self.zero_loss_amplitude_reference,
@@ -170,7 +190,9 @@ def for_reference_model(reference_model: str, *, mean_excitations: float, excita
                         loss_visibility: float, visibility_label: str, energy_filter: str,
                         energy_filter_label: str) -> SurfacePlasmonLoss:
     """The loss model of a reference scheme: R1 and R3 (vacuum references) n_R = 0; R2 (self-
-    reference from the same surface) n_R = n_O (module docstring). All arguments required."""
+    reference from the same surface) n_R = n_O (module docstring). All arguments required;
+    loss_visibility and visibility_label may be None (explicitly) only where V_loss has no effect
+    (R1/R3, or n = 0; SurfacePlasmonLoss refuses None otherwise)."""
     if reference_model in ("R1", "R3"):
         n_r, lab = 0.0, R1_REFERENCE_LABEL
     elif reference_model == "R2":
@@ -194,9 +216,10 @@ def inelastic_pair_intensity(u_o: np.ndarray, u_r: np.ndarray, loss: SurfacePlas
     intensity = np.abs(a_o * u_o + a_r * u_r) ** 2
     if loss.energy_filter == "none":
         l_o, l_r = loss.loss_fraction_object, loss.loss_fraction_reference
-        intensity = (intensity + (l_o * np.abs(u_o) ** 2 + l_r * np.abs(u_r) ** 2)
-                     + 2.0 * loss.loss_visibility * math.sqrt(l_o * l_r)
-                     * np.real(u_o * np.conj(u_r)))
+        intensity = intensity + (l_o * np.abs(u_o) ** 2 + l_r * np.abs(u_r) ** 2)
+        if loss.loss_visibility is not None:          # None only where l_o l_r = 0 (A5 F10)
+            intensity = intensity + (2.0 * loss.loss_visibility * math.sqrt(l_o * l_r)
+                                     * np.real(u_o * np.conj(u_r)))
     return intensity
 
 

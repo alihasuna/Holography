@@ -13,9 +13,11 @@ average is therefore an ensemble average taken after squaring, like the frozen-p
 ``DimerFlipFlopPotential`` wraps a ``forward.multislice.AtomicPotential`` (not modified; agent E1
 owns potentials.py): per realisation it builds the cell's atom positions of the drawn configuration
 and calls the unchanged ``AtomicPotential.realise`` on a view of the potential whose ``cell`` is the
-per-realisation cell. It requires frozen phonons (the engine seeds a generator only for a potential
-with frozen phonons, and the flip-flop is a room-temperature model: thermal displacements at the same
-specimen temperature, model_assumptions B35).
+per-realisation cell. It requires frozen phonons of the sourced model B35 (the engine seeds a
+generator only for a potential with frozen phonons, and the flip-flop is a room-temperature model:
+thermal displacements at the same specimen temperature, model_assumptions B35); any other
+FrozenPhonons, e.g. the fixed u of A7, is refused (structure.thermal.require_b35_frozen_phonons;
+audit A5 F11).
 
 Recorded per realisation (ExitWave.metadata["potential"]["realised"]["dimer_flip_flop"]): number of
 cells, number reversed, SHA-256 of the packed state vector and the packed states themselves (hex).
@@ -27,6 +29,7 @@ import hashlib
 
 import numpy as np
 
+from reflection_holo.structure import thermal
 from reflection_holo.structure.reconstruction import FLIPFLOP, FLIPFLOP_LABEL
 
 _MAP_TOL_A = 1e-9
@@ -60,6 +63,10 @@ class DimerFlipFlopPotential:
                 "realisation only for a potential with frozen phonons, and the flip-flop is a "
                 "room-temperature model (thermal displacements at the same specimen temperature, "
                 "model_assumptions B35; PROJECT_INPUT item 23)")
+        # B37 requires the sourced model B35 (not only some frozen phonons, e.g. not the fixed u
+        # of A7): enforced here as well as in the pipeline gate (audit A5 F11)
+        thermal.require_b35_frozen_phonons(base.frozen_phonons,
+                                           "the flip-flop ensemble (ASSUMPTION B37)")
         cell = base.cell
         md = structure.metadata
         tops = np.array([t["top_height_A"] for t in md["terrace_map"]], float)

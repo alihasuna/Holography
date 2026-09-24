@@ -102,3 +102,14 @@ def test_validity_range_justification_numbers():
     assert max(dev_e, dev_d) <= thermal.B_REF_SIGMA_A2 / 7
     for T in (225.0, 375.0):
         assert abs(einstein(T) - lin(T)) >= 0.0015           # near the stated uncertainty there
+
+
+def test_numpy_floating_temperatures_are_accepted_and_bools_refused():
+    """A5 F12: numpy float32 was refused with a TypeError; any real number is a temperature in K,
+    a bool (Python or numpy) is not."""
+    import numpy as np
+    for T in (np.float32(295.5), np.float64(295.5), np.int64(300), 300):
+        assert thermal.si_debye_waller_B_A2(T) == thermal.si_debye_waller_B_A2(float(T))
+    for bad in (True, np.bool_(True), "295.5"):
+        with pytest.raises(TypeError):
+            thermal.si_debye_waller_B_A2(bad)
