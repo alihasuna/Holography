@@ -107,7 +107,7 @@ def fig_surface(repo: Path, out: Path) -> None:
     st = Staircase(edges="transverse", terrace_layers=(0, 2, 1), terrace_widths=(4, 4, 4),
                    boundary_step_layers=-1)
     s = build(st, azimuth=(1, 1, 0), edge_periods=4, substrate_layers=12, backbond=(1, 1, 0),
-              termination="c(4x2)")
+              termination={"name": "c(4x2)", "buckling_registry": "+[100]"})  # registry: arbitrary, labelled (X1)
     tops = np.array([t["top_layer_index"] for t in s.metadata["terrace_map"]])
     top = s.layer_index == tops[s.terrace_index]
     pos = s.positions_A

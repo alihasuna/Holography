@@ -244,7 +244,7 @@ about 110 wraps at (4,-4,4). Consequences:
   reference phase). The hologram model must also contain the biprism's own Fresnel fringes and finite
   overlap width, specimen drift as a coherent envelope loss, and the possibility of specimen charging
   (an added, drifting phase indistinguishable from topography), each as a declared option.
-* Phase noise of the sideband estimate: `sigma_phi = sqrt(2)/(mu sqrt(N))` with fringe contrast `mu` and
+* Phase noise of the sideband estimate, for an ideal (DQE = 1) detector: `sigma_phi = sqrt(2)/(mu sqrt(N))` (for a detector with DQE(q): `sqrt(2)/(mu sqrt(N DQE(q_c)))` with mu the incident contrast and N the incident electrons; review E10, reproduced by Monte Carlo) with fringe contrast `mu` and
   `N` counts in the reconstruction aperture area.
 * Processing trap verified in the calculator (check T24, section 12 of its output) and in the package
   (S1c, C2 section 2): for a 50/50 phase step of 2.36 rad the brightest off-centre Fourier bin of the

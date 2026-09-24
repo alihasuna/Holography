@@ -17,7 +17,7 @@ continuum null tests and the atomistic MOVED-beam translation; the atomistic FIX
 check that docs/05 4.4 item 3 requires before any step-phase run has NOT passed (audit A6 S-1). The
 abTEM cross-check is NOT RUN. The flat-surface rocking-curve comparison with an independent
 dynamical solver was RUN (reports S5, E8): with the solver's own potential the phase differs by a
-median of 0.014 rad ([100]) and 0.017 rad ([110]), up to 0.075 rad at weakly reflecting angles
+median of 0.014 rad ([100]) and 0.017 rad ([110]); more than 0.05 rad at five other angles (0.051-0.075 rad, |R|^2 0.0017-0.044) and 0.398 rad at [100] 15.0 mrad where |R|^2 is about 1e-5
 (tools/plots/phase4_figures_solver_output.txt), not like-for-like along the beam and no amplitude validation (E8 M1, M2). The label is
 copied into every ExitWave.metadata["validation_status"].
 
@@ -61,7 +61,8 @@ VALIDATION_STATUS = (
     "flat-surface rocking-curve comparison with an independent dynamical solver (sim-trhepd-rheed, "
     "flat Si(001), [100] and [110], TEST_ONLY r = 0.1; reports S5, E8) was RUN: with the solver's "
     "own potential the phase differs by a median of 0.014 rad ([100]) and 0.017 rad ([110]), up to "
-    "0.075 rad at weakly reflecting angles (tools/plots/phase4_figures_solver_output.txt), but the "
+    "0.05 rad at five other angles (0.051-0.075 rad) and 0.398 rad at [100] 15.0 mrad where |R|^2 is "
+    "about 1e-5 (tools/plots/phase4_figures_solver_output.txt), but the "
     "comparison is not like-for-like along the beam and its amplitude tolerance has no power "
     "(E8 M1, M2): not an amplitude validation")
 PLANE_TEXT = "exit plane z = L_z (no further propagation)"

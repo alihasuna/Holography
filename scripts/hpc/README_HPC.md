@@ -139,6 +139,6 @@ charging, biprism Fresnel fringes, detector MTF); the multislice engine is UNVAL
 atomistic reflection (engine.VALIDATION_STATUS: rung 2 test R2-A passes on a continuum potential;
 the atomistic fixed-beam null test of rung 3 has NOT passed; the abTEM cross-check NOT RUN; the
 flat-surface comparison with a dynamical solver, reports S5 and E8, differs in phase by a median of
-0.014 rad ([100]) and 0.017 rad ([110]), up to 0.075 rad at weakly reflecting angles, but is not an amplitude validation), and its independent-atom mean inner potential (13.903 V) exceeds B1 (12.0 V) and the DFT value
+0.014 rad ([100]) and 0.017 rad ([110]), more than 0.05 rad at five other angles (0.051-0.075 rad, |R|^2 0.0017-0.044) and 0.398 rad at [100] 15.0 mrad where |R|^2 is about 1e-5, but is not an amplitude validation), and its independent-atom mean inner potential (13.903 V) exceeds B1 (12.0 V) and the DFT value
 12.53 V. The tiny multislice variant is below the dark-field resolution along the beam, so its step
 heights are reported as not measurable by design.
