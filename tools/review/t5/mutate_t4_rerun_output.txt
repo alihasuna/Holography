@@ -1,0 +1,40 @@
+M2_analysis_script_reverted_to_T3: restored tools/plots/buried_torus.py from 4c4a78b; package /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t5/mut_t4/M2_analysis_script_reverted_to_T3/reflection_holo/__init__.py; tests tests/forward/test_buried_torus_analysis.py
+    result: 24 failed, 3 passed, 2 warnings in 1.27s  -> expected to fail: OK
+    FAILED tests/forward/test_buried_torus_analysis.py::test_vacuum_mask_shape - ...
+    FAILED tests/forward/test_buried_torus_analysis.py::test_split_is_linear_and_exact
+    FAILED tests/forward/test_buried_torus_analysis.py::test_end_face_signal_leaks_through_the_aperture_but_not_into_the_vacuum_origin_part
+    FAILED tests/forward/test_buried_torus_analysis.py::test_regions_follow_their_definitions
+    FAILED tests/forward/test_buried_torus_analysis.py::test_deep_cap_has_no_two_beam_vacuum_region
+    FAILED tests/forward/test_buried_torus_analysis.py::test_vacuum_class_is_geometric
+    FAILED tests/forward/test_buried_torus_analysis.py::test_steepest_row_beam - ...
+    FAILED tests/forward/test_buried_torus_analysis.py::test_cross_cap - Attribut...
+    FAILED tests/forward/test_buried_torus_analysis.py::test_no_detection_rule_and_no_fitted_lengths
+    FAILED tests/forward/test_buried_torus_analysis.py::test_reading_lines - Attr...
+    FAILED tests/forward/test_buried_torus_analysis.py::test_geometric_zero_statement
+    FAILED tests/forward/test_buried_torus_analysis.py::test_mask_family_is_a10a_nine_and_admits_nothing_at_or_below_the_top_plane
+    FAILED tests/forward/test_buried_torus_analysis.py::test_causal_paths_band_edge_row_and_two_beam
+    FAILED tests/forward/test_buried_torus_analysis.py::test_causal_paths_on_t3_geometry_match_the_independent_a10a_values
+    FAILED tests/forward/test_buried_torus_analysis.py::test_band_edge_vs_P_wording
+    FAILED tests/forward/test_buried_torus_analysis.py::test_raw_fraction_first_layer_known_answer
+    FAILED tests/forward/test_buried_torus_analysis.py::test_x_centroid_of_a_zero_profile_is_nan
+    FAILED tests/forward/test_buried_torus_analysis.py::test_geometry_reads_and_asserts_the_band_edge
+    FAILED tests/forward/test_buried_torus_analysis.py::test_analyse_pair_end_face_only_difference_has_no_vacuum_origin_part
+    FAILED tests/forward/test_buried_torus_analysis.py::test_analyse_pair_vacuum_only_difference_is_all_vacuum_origin
+    FAILED tests/forward/test_buried_torus_analysis.py::test_analyse_pair_mixed_difference_wiring_and_cap5_reading
+    FAILED tests/forward/test_buried_torus_analysis.py::test_deep_and_cap10_readings_carry_the_band_edge_and_the_attribution_history
+    FAILED tests/forward/test_buried_torus_analysis.py::test_compact_panel_info_one_shared_scale_and_plain_titles
+    FAILED tests/forward/test_buried_torus_analysis.py::test_compact_bottom_panels_share_the_colour_scale
+M3_mask_after_the_aperture: 1 replacement in tools/plots/buried_torus.py; package /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t5/mut_t4/M3_mask_after_the_aperture/reflection_holo/__init__.py; tests tests/forward/test_buried_torus_analysis.py
+    result: 4 failed, 23 passed in 1.35s  -> expected to fail: OK
+    FAILED tests/forward/test_buried_torus_analysis.py::test_end_face_signal_leaks_through_the_aperture_but_not_into_the_vacuum_origin_part
+    FAILED tests/forward/test_buried_torus_analysis.py::test_analyse_pair_end_face_only_difference_has_no_vacuum_origin_part
+    FAILED tests/forward/test_buried_torus_analysis.py::test_analyse_pair_vacuum_only_difference_is_all_vacuum_origin
+    FAILED tests/forward/test_buried_torus_analysis.py::test_analyse_pair_mixed_difference_wiring_and_cap5_reading
+M4_sharp_vacuum_mask: 1 replacement in tools/plots/buried_torus.py; package /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t5/mut_t4/M4_sharp_vacuum_mask/reflection_holo/__init__.py; tests tests/forward/test_buried_torus_analysis.py
+    result: 3 failed, 24 passed in 1.32s  -> expected to fail: OK
+    FAILED tests/forward/test_buried_torus_analysis.py::test_vacuum_mask_shape - ...
+    FAILED tests/forward/test_buried_torus_analysis.py::test_mask_family_is_a10a_nine_and_admits_nothing_at_or_below_the_top_plane
+    FAILED tests/forward/test_buried_torus_analysis.py::test_analyse_pair_mixed_difference_wiring_and_cap5_reading
+M5_geometric_zero_wording: 1 replacement in tools/plots/buried_torus.py; package /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/buried_t5/mut_t4/M5_geometric_zero_wording/reflection_holo/__init__.py; tests tests/forward/test_buried_torus_analysis.py
+    result: 1 failed, 26 passed in 1.29s  -> expected to fail: OK
+    FAILED tests/forward/test_buried_torus_analysis.py::test_geometric_zero_statement
