@@ -1,7 +1,7 @@
 # E4 - Continuum oxide overlayer in the multislice and geometric engines
 
 Agent E4, 2026-09-24. Branch `claude/electron-holography-orchestration-nakd7r` (HEAD 54de605 when
-work started). Status: IN PROGRESS (written incrementally). Nothing committed or pushed by E4.
+work started). Status: FINAL (written incrementally). Nothing committed or pushed by E4.
 
 PROJECT_INPUT (Ali, 2026-09-24; docs/06 item 12): the ion-milled Si(001) samples were air-exposed
 and only O2/Ar plasma-cleaned (about 10 min); holograms at 200 keV, specular (0,0,8), 16.1347 mrad
@@ -140,6 +140,8 @@ Tolerances were fixed before the runs; none was changed after a run.
   within 3 propagated sigma, the multislice oxide variant passes the engine setup (dry run).
 * no overlayer = bit-identical: no new metadata without a layer (tests), and outputs compared
   bitwise with the HEAD tree (section 4).
+* amorphous Si (E9 M5 option): the potential between x_c and x_i is V_a + iV'_a (TEST_ONLY 13.6 +
+  0.47i V), the oxide above V_ox + iV'_ox, the crystal below (rtol 1e-9).
 
 ## 4. Results (printed by the tests and scripts; verbatim where quoted)
 
@@ -207,9 +209,25 @@ overlayer remains not implemented.
 
 (test counts: section 5)
 
-## 5. Test runs
+## 5. Test runs (verbatim last lines; `venv/bin/python -m pytest -q`, 4 cores shared)
 
-(to be completed)
+    tests/forward:   133 passed, 3 skipped in 885.33s (0:14:45)
+    tests/structure: 332 passed in 27.42s
+    tests/pipeline:  129 passed in 247.97s (0:04:07)
+    tests/io:        FAILED tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions
+                     1 failed, 127 passed in 1.28s
+    full suite:      FAILED tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions
+                     1 failed, 1290 passed, 8 skipped, 12 warnings in 1374.10s (0:22:54)
+
+The one failure is the expected doc-consistency test (`AssertionError: B41`: the registry has B41,
+docs/model_assumptions.md has no B41 row yet). The outputs/ guard passed. Baseline (a clean clone of
+HEAD 54de605 with the working-tree docs, same venv): every test passed (1071 passed + 8 skipped, and
+the 94 hpc/slurm tests that need `venv/` at the clone's root: 147 passed, 5 skipped when rerun with
+it linked), so no existing test changed outcome; 126 new tests (structure 59, geometric 21,
+multislice 11, pipeline 35). One more test, `test_amorphous_si_layer_between_oxide_and_crystal`,
+was added after these runs started and was run alone: `1 passed, 11 deselected in 0.08s`.
+Existing tests changed: only the expected registry in `tests/io/test_io_config_stand_ins.py`
+(B41 added, as instructed); no tolerance was changed.
 
 ## 6. Proposed B41 row (for the orchestrator; E4 does not edit docs/)
 
@@ -239,6 +257,9 @@ and a line for the new assertion `item4_buildup_length_through_overlayer`.
   of the sum).
 * The oxide on the feature (half-torus) path and under a reconstruction: refused, not implemented.
 * A demo_hpc oxide variant and HPC runs: not added, NOT RUN.
+* Manifest: the oxide specification's hash enters the engine manifest through the configuration
+  hash (potential provenance, cell terrace records), not as a separate `input_hashes` entry (not
+  added, to keep the tested engine code unchanged after the suite runs).
 * Docs: B41 row and the rows of section 6 are NOT written (orchestrator);
   `tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions` fails until
   the B41 row exists (expected).
