@@ -31,7 +31,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 ## D. Reference wave (do not infer from the biprism's intended function)
 
 15. (blocking) Trajectory of the reference beam at the specimen plane: vacuum beside the sample, reflected from a flat area of the same surface, or transmitted through a thin region.
-16. Separation between object and reference regions at the specimen (revision 5: as a 3-vector D0 at the specimen, needed by the convergence ensemble with an R1 reference; and, for a self-reference R2, the fringe visibility of the plasmon-loss electrons if known); measured carrier fringe spacing (in image pixels and in specimen nanometres, stating which axis) and fringe contrast on an empty or flat-surface hologram.
+16. Separation between object and reference regions at the specimen (revision 5: as a 3-vector D0 at the specimen, needed by the convergence ensemble with an R1 reference; and, for a self-reference R2 only, the fringe visibility of the plasmon-loss electrons if known (the pipeline requires it for R2 and refuses it for R1/R3, fix X1)); measured carrier fringe spacing (in image pixels and in specimen nanometres, stating which axis) and fringe contrast on an empty or flat-surface hologram.
 17. Residual phase of an empty hologram (curvature, distortion), the biprism's Fresnel-fringe pattern and overlap width, and whether a reference hologram is recorded with every object hologram.
 18. Biprism voltage(s) only if the laboratory intends to publish them; otherwise the measured carrier and overlap width are what the simulation needs.
 

@@ -5,8 +5,8 @@ Agent X1, 2026-09-24. Status: FINAL (written incrementally).
 Scope: apply docs/agent_reports/A5_e2_e3_audit.md (F1-F11 and the NITs that concern code) to the
 code of E2 and E3, with the orchestrator's decisions. Code under audit unchanged since f4ce75e at the
 start (`git diff --stat f4ce75e HEAD -- reflection_holo tests configs scripts` empty). Nothing
-committed or pushed by X1 (the orchestrator's snapshot commits 2e187ab, b6e06bf and 63d8889 picked
-up in-progress copies of this work). Not edited: `reflection_holo/forward/multislice/potentials.py`, null-test
+committed or pushed by X1 (the orchestrator's snapshot commits from 2e187ab on picked up
+in-progress copies of this work). Not edited: `reflection_holo/forward/multislice/potentials.py`, null-test
 files, `scripts/hpc/alliance/`, docs/ (except this report), the E2/E3 reports.
 
 ## 0. Log
@@ -289,6 +289,7 @@ Runs (final code unless stated):
 | 8 | `venv/bin/python -m pytest -q` (full suite, final X1 code; X2 was editing kit and engine files at the same time) | `6 failed, 1154 passed, 6 skipped, 12 warnings in 776.78s (0:12:56)`; all six in `tests/hpc/test_kit_gpu_mem_from_dry_run.py` (`test_derived_need_is_printed_and_selects_the_refusal`, `test_margin_is_required_and_explicit_need_overrides`, `test_report_must_belong_to_this_configuration`, `test_host_memory_is_compared_with_mem_and_recorded`, `test_pipeline_dry_run_writes_the_report_json`, `test_emulated_dry_run_job_writes_the_report`), e.g. `REFUSED: .../dry_run_report.json: schema 'reflholo_pipeline_dry_run_report/1', expected 'reflholo_pipeline_dry_run_report/2'` and `AssertionError: assert 'reflholo_pip..._run_report/2' == 'reflholo_pip..._run_report/1'`: X2's half-applied schema change (A6 K-1) in `reflection_holo/pipeline/__main__.py`, `scripts/hpc/alliance/kit.py` and that test file, none of them touched by X1 |
 | 9 | `pytest -q tests/hpc/test_kit_gpu_mem_from_dry_run.py` alone, right after | `8 passed in 16.58s` |
 | 10 | worktree at 63d8889 (contains the new `.gitignore`), `venv` symlink: `git status --porcelain`; `git check-ignore -v venv` | clean; `.gitignore:7:/venv	venv` (worktree removed) |
+| 11 | `venv/bin/python -m pytest -q` (full suite again, final X1 code, X2's kit changes completed) | `1164 passed, 8 skipped, 12 warnings, 1 error in 1000.09s (0:16:40)`; the error is the session fixture of `tests/conftest.py:26` at the teardown of `tests/test_frames.py::test_inconsistent_azimuth_rejected`: `AssertionError: a test wrote into the repository's outputs/ directory` / `Left contains 5 more items, first extra item: ('phase4_figures', 4096, 1790221854744065625)`. `outputs/phase4_figures` was created at 03:49:52 UTC during the run by `tools/plots/phase4_figures.py` run outside this suite (no file under tests/ names it), not by a test; every test passed. Skips: 2 long null-readout proofs (`RH_NULL_READOUT_LONG=1`, X2's new module), R2-B, 5 shellcheck |
 
 ## 3. Declined, partly done, or left to others
 
@@ -308,7 +309,8 @@ Runs (final code unless stated):
   "comparison" does not refuse it on that ground (F2 covered the multislice frozen-phonon forms).
 * Concurrency: another agent (X2, A6 fixes) edited engine, potential, kit, null-study and forward
   test files while runs 4 and 8 ran (run 8's six failures come from it); the orchestrator's
-  snapshot commits 2e187ab, b6e06bf and 63d8889 contain this task's code. E3's genuine member-job
+  snapshot commits from 2e187ab on contain this task's code; another process created
+  `outputs/phase4_figures` during run 11. E3's genuine member-job
   test compares package trees, so a commit made between its jobs and its assembly does not refuse
   (F6).
 
