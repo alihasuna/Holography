@@ -385,7 +385,8 @@ def test_r2_design_extent_adds_the_shift_and_the_step_phase():
 REPO_CODE = dict(commit="c0ffee" * 6 + "c0ff", dirty=False, package_tree=dict(sha256="ab" * 32))
 
 
-def _fake_member_jobs(root, cfg, q, *, extra_realisation=None, commit_of=None, wave_seed=None):
+def _fake_member_jobs(root, cfg, q, *, extra_realisation=None, commit_of=None, tree_of=None,
+                      wave_seed=None):
     """Synthetic member jobs (exit waves written with the repository's own writer, engine manifests
     reduced to the fields the assembly reads), as a job of this configuration would write them."""
     import hashlib
@@ -416,6 +417,8 @@ def _fake_member_jobs(root, cfg, q, *, extra_realisation=None, commit_of=None, w
             files.append(dict(path=str(p.relative_to(d)), realisation=r,
                               sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
         repo = dict(REPO_CODE, commit=(commit_of or {}).get(mem.index, REPO_CODE["commit"]))
+        if tree_of and mem.index in tree_of:
+            repo["package_tree"] = dict(sha256=tree_of[mem.index])
         man = dict(repository=repo, seeds={"frozen_phonons": m_cfg["seed"]},
                    extra=dict(caller=dict(convergence=dict(member=dict(index=mem.index))),
                               run_configuration=dict(realisations=m_cfg["n_realisations"],
@@ -445,8 +448,13 @@ def test_member_job_assembly_checks_realisations_seed_manifests_and_code(tmp_pat
     _fake_member_jobs(ok, cfg, q)
     waves, mans, code = load(ok)
     assert sorted(waves) == [0, 1] and code["assembling_run"]["commit"] == REPO_CODE["commit"]
+    assert code["mixed_commits"] is False
+    # another commit with the SAME package tree (same code): accepted, the mix is recorded
+    mix = tmp_path / "mixed_commits"
+    _fake_member_jobs(mix, cfg, q, commit_of={1: "deadbeef"})
+    assert load(mix)[2]["mixed_commits"] is True
     cases = [("extra realisation", dict(extra_realisation=1), None, "realisations \\[0, 1\\]"),
-             ("mixed commits", dict(commit_of={1: "deadbeef"}), None, "different code"),
+             ("mixed code", dict(tree_of={1: "ee" * 32}), None, "different code"),
              ("wave seed", dict(wave_seed=7), None, "another seed"),
              ("assembling run", {}, dict(REPO_CODE, package_tree=dict(sha256="cd" * 32)),
               "other than the assembling run")]

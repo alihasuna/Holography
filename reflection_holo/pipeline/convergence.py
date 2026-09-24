@@ -337,9 +337,10 @@ def load_member_jobs(cfg: PipelineConfig, members_dir, q: C.ConvergenceQuadratur
     for every member: the realisations exactly 0 .. n_realisations - 1 of the configuration, each
     once, with the configured seed; the engine manifest present, unchanged (SHA-256 recorded by the
     job), written for this member, with the configured seed and realisation count and the job's
-    commit and package-tree hash; ONE code identity (commit and package-tree SHA-256) across the
-    members, equal to that of the assembling run (``code_state``, its git pre-flight record; a
-    mix is refused). Returns (waves by member, manifest paths by member, code record)."""
+    commit and package-tree hash; ONE package-tree SHA-256 (the code that ran) across the members,
+    equal to that of the assembling run (``code_state``, its git pre-flight record; a mix is
+    refused; different commits with that same package tree are recorded as a mix of commits).
+    Returns (waves by member, manifest paths by member, code record)."""
     from reflection_holo.forward.multislice import PLANE_TEXT, load_exit_wave
     from reflection_holo.forward.multislice.convergence import quadrature_sha256
     root = Path(members_dir)
@@ -418,22 +419,28 @@ def load_member_jobs(cfg: PipelineConfig, members_dir, q: C.ConvergenceQuadratur
     if set(waves) != want:
         raise PipelineConfigError(f"member jobs under {root}: have {sorted(waves)}, need every "
                                   f"member {sorted(want)}")
-    ids = {(c.get("commit"), c.get("package_tree_sha256")) for c in codes.values()}
-    if len(ids) != 1:
-        raise PipelineConfigError(f"member jobs under {root} ran different code (commit, package "
-                                  f"tree): { {k: (c.get('commit'), c.get('package_tree_sha256')) for k, c in sorted(codes.items())} }: "
-                                  f"a mix is refused (A5 F6)")
+    # the code that ran is identified by the package-tree SHA-256 (every *.py and *.yaml of the
+    # package, committed or not): it must be ONE across the members and the assembling run. The
+    # commits are recorded; different commits with the same package tree (e.g. a commit that
+    # changed nothing in the package between the jobs) are accepted and recorded as a mix.
+    trees = {k: c.get("package_tree_sha256") for k, c in codes.items()}
     here = code_identity(code_state)
-    (commit, tree), = ids
-    if here["package_tree_sha256"] is None or tree != here["package_tree_sha256"] or (
-            commit is not None and here["commit"] is not None and commit != here["commit"]):
-        raise PipelineConfigError(f"member jobs under {root} ran code (commit {commit}, package "
-                                  f"tree {tree}) other than the assembling run's (commit "
-                                  f"{here['commit']}, package tree {here['package_tree_sha256']}): "
+    if None in trees.values() or len(set(trees.values())) != 1:
+        raise PipelineConfigError(f"member jobs under {root} ran different code (package-tree "
+                                  f"SHA-256 per member: {dict(sorted(trees.items()))}): a mix is "
                                   f"refused (A5 F6)")
-    return waves, manifests, dict(members=codes, assembling_run=here,
-                                  rule="one commit and package-tree SHA-256 across the members "
-                                       "and the assembling run (A5 F6)")
+    tree = next(iter(trees.values()))
+    if here["package_tree_sha256"] != tree:
+        raise PipelineConfigError(f"member jobs under {root} ran code (package tree {tree}) other "
+                                  f"than the assembling run's (package tree "
+                                  f"{here['package_tree_sha256']}, commit {here['commit']}): "
+                                  f"refused (A5 F6)")
+    commits = sorted({str(c.get("commit")) for c in codes.values()} | {str(here["commit"])})
+    return waves, manifests, dict(members=codes, assembling_run=here, package_tree_sha256=tree,
+                                  commits=commits, mixed_commits=len(commits) > 1,
+                                  rule="one package-tree SHA-256 across the members and the "
+                                       "assembling run; commits recorded, a mix of commits with "
+                                       "the same package tree is recorded (A5 F6)")
 
 
 # ------------------------------------------------------------------------------------------------

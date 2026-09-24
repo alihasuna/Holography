@@ -13,6 +13,12 @@ Required cell inputs (no defaults; E1 wave 2a):
 * azimuth: "110" (the M2 azimuth) or "100" (exact [100]: the (0,0,8) condition is at least a
   four-beam case there, H2 section 2.2); TEST_ONLY stand-ins for PROJECT_INPUT item 8. The in-plane
   period along the beam is a/sqrt(2) ([110]) or a ([100]); dz = period/4 (as M2 and H2).
+* H, edge, gap: the sheet beam (full height H incl. the two sin^2 edges of width `edge`, bottom edge
+  `gap` above the highest surface at the entrance plane; illumination.SheetBeam). Required (audit
+  A6 N-1/N-3, X2): the M2 cells used H = 8, edge 2, gap 2 A (LEGACY_M2_BEAM), which lights only
+  H/tan(theta) ~ 500 A of surface; the surface-position-resolved read-out needs the surface lit up
+  to the exit plane (H2 2.4 and 2.6): `sheet_height_lit_to_exit_A` gives
+  H = L_z tan(theta) - gap - step - 1 A (H2 2.6) with L_z from `cell_length_z_A`.
 The surface-position-resolved read-out (H2 section 2.4, finding N12) is H2's own
 `specular_column` (tools/hpc/supercell_sizing.py, imported, not re-implemented); the pairing of the
 two crystals by surface point is `resolved_translation` below."""
@@ -44,6 +50,11 @@ AZIMUTHS = {"110": dict(uvw=(1, 1, 0), period_A=A_SI_A / np.sqrt(2), label=AZ_LA
                         label="TEST_ONLY: stands in for PROJECT_INPUT item 8 (beam azimuth exact "
                               "[100]; (0,0,8) is at least four-beam there, H2 section 2.2)")}
 TILE_ABOVE_PERIODS_M2 = 400      # M2's threshold for building one period and tiling (exact)
+LEGACY_M2_BEAM = dict(H=8.0, edge=2.0, gap=2.0)   # LEGACY (M2 study cells): an 8 A sheet beam
+#                                     lights ~500 A of surface; for reproducing M2 only (A6 N-1)
+ENTRANCE_SLICES = 10             # entrance vacuum of the null-test cells: 10 slices of period/4
+BUILDUP_A = 20.0                 # buildup_depth_A of the null-test cells (M2)
+LIT_TO_EXIT_MARGIN_A = 1.0       # H2 2.6: the top edge lands 1 A (in height) before the exit plane
 
 
 def _azimuth(azimuth):
@@ -61,6 +72,43 @@ def _clean_depth(clean_depth_A):
     if not (np.isfinite(c) and c > 0):
         raise ValueError(f"clean_depth_A must be finite and > 0, got {clean_depth_A!r}")
     return c
+
+
+def _beam_inputs(H, edge, gap):
+    """The sheet-beam inputs of a null-test cell: required, finite, > 0 (SheetBeam asserts
+    2 edge <= H)."""
+    out = []
+    for name, v in (("H", H), ("edge", edge), ("gap", gap)):
+        if v is None or isinstance(v, bool):
+            raise ValueError(f"{name} (sheet beam) is required: LEGACY_M2_BEAM = {LEGACY_M2_BEAM} "
+                             f"reproduces M2; the surface-resolved read-out needs a beam lit to the "
+                             f"exit plane (sheet_height_lit_to_exit_A)")
+        f = float(v)
+        if not (np.isfinite(f) and f > 0):
+            raise ValueError(f"{name} must be finite and > 0, got {v!r}")
+        out.append(f)
+    return out
+
+
+def cell_length_z_A(*, theta, azimuth, gap, extra_A, buildup=BUILDUP_A) -> float:
+    """L_z of a translation_pair / parallel step_case cell (entrance vacuum 10 dz + whole periods
+    along the beam, `_length_periods`); independent of H."""
+    Pz = _azimuth(azimuth)["period_A"]
+    ent = ENTRANCE_SLICES * (Pz / 4)                 # as translation_pair / step_case
+    periods = _length_periods(theta, gap=gap, h_total=2 * Q, buildup=buildup, extra_A=extra_A,
+                              ent=ent, period_A=Pz)
+    return float(ent + periods * Pz)
+
+
+def sheet_height_lit_to_exit_A(*, L_z_A, theta, gap, step_A=2 * Q,
+                               margin_A=LIT_TO_EXIT_MARGIN_A) -> float:
+    """H2 2.6 (DERIVED there): H = L_z tan(theta) - gap - step - 1 A, so that the top edge of a sheet
+    beam whose bottom edge is `gap` above the HIGHEST surface reaches the LOWEST surface (step_A
+    lower: a/2 for the translated pair in the fixed-beam case and for the a/2 step) margin_A in
+    height, i.e. margin_A/tan(theta) along z, before the exit plane (engine item 3 asserts the
+    contact before the exit plane). Rounded DOWN to 1e-3 A (the study files carry the number)."""
+    h = L_z_A * np.tan(theta) - gap - step_A - margin_A
+    return float(np.floor(h * 1000.0) / 1000.0)
 
 
 def theta_0008() -> float:
@@ -121,19 +169,44 @@ def _length_periods(theta, *, gap, h_total, buildup, extra_A, ent, period_A):
     return int(np.ceil((L_need - ent) / period_A))
 
 
-def translation_pair(*, theta, clean_depth_A, azimuth, width_periods=2, H=8.0, edge=2.0, gap=2.0,
-                     buildup=20.0, extra_A=0.0, absorption=NO_ABS, precision="complex64",
+def _translation_check(sA, sB, R):
+    """B's atoms above A's cut against wrap(A's atoms + R): nearest-neighbour distances with a
+    KD-tree periodic in y and z (the builder's periodic directions; z periodic also at [100], where
+    R has a z component; A6 n3/n4). Replaces a rounded-coordinate set comparison that was False for
+    every pair (wrap rounding at the cell faces), including the verified legacy M2 pair."""
+    from scipy.spatial import cKDTree
+    L = np.diag(sA.cell_A)
+    bs = np.array([1e6, L[1], L[2]])                 # x not periodic (1e6 A box)
+
+    def wrap(p):
+        w = np.mod(p, bs)
+        w[w >= bs] = 0.0                             # np.mod may return the box length itself
+        return w
+    moved = wrap(sA.positions_A + R)
+    b = sB.positions_A[sB.positions_A[:, 0] >= 2 * Q - 1e-6]
+    d, _ = cKDTree(wrap(b), boxsize=bs).query(moved)
+    dmax = float(d.max()) if len(d) else float("inf")
+    return dict(n_translated=int(len(moved)), n_B_above=int(len(b)), max_distance_A=dmax,
+                identical_sets=bool(len(b) == len(moved) and dmax < 1e-6),
+                method="cKDTree periodic in y and z (A6 n3)")
+
+
+def translation_pair(*, theta, clean_depth_A, azimuth, H, edge, gap, width_periods=2,
+                     buildup=BUILDUP_A, extra_A=0.0, absorption=NO_ABS, precision="complex64",
                      move_beam: bool = False, tile_above_periods=TILE_ABOVE_PERIODS_M2):
     """Flat terrace A and the same crystal translated by the builder's a/2 translation R
     (normal component a/2), in identical boxes, with the identical beam and grid.
 
     clean_depth_A (required): crystal between A's surface and the 15 A bulk absorber (B has a/2
-    more); azimuth (required): "110" or "100" (module docstring).
-    Returns dict(A=(cell, pot), B=(cell, pot), beam, params, R_slab_A, check) where check is the
-    maximum distance between B's atoms above A's cut and wrap(A's atoms + R) (must be ~0)."""
+    more); azimuth (required): "110" or "100"; H, edge, gap (required): the sheet beam, bottom edge
+    gap above B's surface (module docstring; LEGACY_M2_BEAM reproduces M2).
+    Returns dict(A=(cell, pot), B=(cell, pot), beam, params, R_slab_A, check) where check holds the
+    maximum distance between B's atoms above A's cut and wrap(A's atoms + R), periodic in y and z
+    (must be ~0; A6 n3)."""
+    H, edge, gap = _beam_inputs(H, edge, gap)
     Pz = _azimuth(azimuth)["period_A"]
     dz = Pz / 4
-    ent = 10 * dz
+    ent = ENTRANCE_SLICES * dz
     absorber, clean = 15.0, _clean_depth(clean_depth_A)
     depth = absorber + clean
     sub = int(np.ceil(depth / Q)) + 2
@@ -149,18 +222,7 @@ def translation_pair(*, theta, clean_depth_A, azimuth, width_periods=2, H=8.0, e
                    boundary_step_layers=-2)
     R = np.array(_build(st, 2, 6, azimuth).metadata["steps"][0]["relation"]["t_slab_A"])
     assert abs(R[0] - 2 * Q) < 1e-9
-    L = np.diag(sA.cell_A)
-    moved = sA.positions_A + R
-    moved[:, 1] %= L[1]
-    moved[:, 2] %= L[2]
-    for ax in (1, 2):
-        moved[np.abs(moved[:, ax] - L[ax]) < 1e-6, ax] = 0.0
-    keyB = np.round(sB.positions_A[sB.positions_A[:, 0] >= 2 * Q - 1e-6], 5)
-    keyM = np.round(moved, 5)
-    sB_set = {tuple(v) for v in keyB}
-    sM_set = {tuple(v) for v in keyM}
-    check = dict(n_translated=len(sM_set), n_B_above=len(sB_set),
-                 identical_sets=bool(sB_set == sM_set))
+    check = _translation_check(sA, sB, R)
     vac = float(np.ceil(H + gap + (ent + periods * Pz) * np.tan(theta) + 1.0)) + 2 * Q
     cA = build_reflection_cell(sA, vacuum_above_A=vac, depth_below_A=depth,
                                bulk_absorber_A=absorber, top_absorber_A=10.0,
@@ -223,11 +285,65 @@ def _h2_specular_column():
 
 
 RESOLVED_KEYS = ("radius_per_A", "x_cut_A", "taper_A", "min_height_A", "bin_A", "exit_excl_A",
-                 "tol_phase_rad", "tol_amp")
+                 "tol_phase_rad", "tol_amp", "amp_floor_rel")
+
+
+def lit_strip(pair, *, L_z_A, wavelength_A, radius_per_A):
+    """Where each crystal of a pair is lit, in the surface coordinate z_s (along the beam from the
+    entrance plane; contact of a ray descending at theta from height h above the surface: h/tan):
+    bottom-edge contact, top-edge contact, end of the fully lit core (top edge minus the sin^2 edge),
+    and the LIT-END LIMIT of the surface-resolved read-out:
+
+        lit_limit = min over A, B of (end of the lit core) - radius_per_A lambda L_z / tan(theta).
+
+    The margin (DERIVED_HERE, X2; checked on A6's continuum case, see resolved_translation) is the
+    z_s extent of the Fresnel fringes of the beam's top edge that pass the read-out band: a fringe a
+    height dx below the geometric edge has, after a path L_z, the local frequency offset
+    dx/(lambda L_z) from the carrier; |f - f_c| <= radius_per_A keeps dx <= radius lambda L_z, i.e.
+    radius lambda L_z / tan(theta) of surface (933 A for L_z = 6000 A, 0.1 1/A, 16.13 mrad). In the
+    fixed-beam case these fringes sit (x_sB - x_sA)/tan(theta) apart on A and B and do not cancel in
+    the ratio."""
+    th = float(pair["params"].theta_out_ext_rad)
+    t = np.tan(th)
+    rec = {}
+    for key in ("A", "B"):
+        xs = float(pair[key][0].metadata["layout"]["highest_surface_x_A"])
+        b = pair["beams"][key]
+        xb, H, e = float(b.x_bottom_A), float(b.height_A), float(b.edge_A)
+        rec[key] = dict(x_surface_A=xs, z_bottom_contact_A=(xb - xs) / t,
+                        z_top_contact_A=(xb + H - xs) / t, z_core_end_A=(xb + H - e - xs) / t)
+    margin = float(radius_per_A) * float(wavelength_A) * float(L_z_A) / t
+    first = min(("A", "B"), key=lambda k: rec[k]["z_core_end_A"])
+    rec.update(top_edge_fringe_margin_A=margin, lit_limit_A=rec[first]["z_core_end_A"] - margin,
+               lit_limit_set_by=first, L_z_A=float(L_z_A),
+               rule="lit_limit = min(end of the fully lit core of A, B) - radius lambda L_z / "
+                    "tan(theta) (top-edge Fresnel fringes inside the read-out band; X2, DERIVED_HERE)")
+    return rec
+
+
+def check_lit_to_exit(pair, *, exit_excl_A):
+    """A6 N-1: the surface-resolved read-out presumes the surface is lit up to the exit plane (H2
+    2.4, 2.6). Refuse (ValueError) a pair whose sheet beam's top edge meets either crystal before
+    L_z - exit_excl_A (the end of the read-out window): the bins beyond it would read the decaying
+    tail of an unlit strip, whose ratio is not the null-test quantity. The engine itself asserts
+    the contact before the exit plane (item 3)."""
+    Lz = float(pair["A"][0].length_z_A)
+    th = float(pair["params"].theta_out_ext_rad)
+    bad = []
+    for key in ("A", "B"):
+        xs = float(pair[key][0].metadata["layout"]["highest_surface_x_A"])
+        b = pair["beams"][key]
+        zt = (float(b.x_bottom_A) + float(b.height_A) - xs) / np.tan(th)
+        if zt < Lz - float(exit_excl_A):
+            bad.append(f"{key}: top-edge contact z = {zt:.1f} A < L_z - exit_excl_A = "
+                       f"{Lz - float(exit_excl_A):.1f} A (H {float(b.height_A):g} A)")
+    if bad:
+        raise ValueError("the sheet beam does not light the surface up to the read-out window "
+                         "(A6 N-1; use H = sheet_height_lit_to_exit_A(...)): " + "; ".join(bad))
 
 
 def resolved_translation(ewA, ewB, pair, *, expected_rad, radius_per_A, x_cut_A, taper_A,
-                         min_height_A, bin_A, exit_excl_A, tol_phase_rad, tol_amp):
+                         min_height_A, bin_A, exit_excl_A, tol_phase_rad, tol_amp, amp_floor_rel):
     """Surface-position-resolved comparison of the translated crystal B with A (H2 N12).
 
     Each exit wave is read with H2's specular_column (y average, sin^2 vacuum window from
@@ -240,14 +356,35 @@ def resolved_translation(ewA, ewB, pair, *, expected_rad, radius_per_A, x_cut_A,
     err = wrap(arg c - expected_rad), amp = |c|. For a
     translation R, E_B(z_s) = E_A(z_s - R_z) exp(-i (k_out - k_in).R) wherever the reflected field
     has converged (DERIVED_HERE; the beam envelope is not translated in the fixed-beam case, so B
-    has been lit (x_sB - x_sA)/tan(theta) longer at the same z_s). converged_beyond_A: end of the
-    last bin (distance from the later contact) with |err| > tol_phase_rad or |amp - 1| > tol_amp;
-    0 if none; None if the LAST bin fails (not converged in this cell)."""
+    has been lit (x_sB - x_sA)/tan(theta) longer at the same z_s).
+
+    Every bin is reported (`rows`, with `status` and `excluded_because`). A bin is EXCLUDED from the
+    verdict (A6 N-2, X2) when
+      * it ends beyond lit_strip()'s lit-end limit (the end of the fully lit core of A or B minus
+        the top-edge fringe margin radius lambda L_z / tan(theta)); checked on A6's continuum case:
+        the last bin of the fixed-beam comparison, 254 A before the end of B's lit core, reads
+        |B|/|A| = 1.029 with the beams as run and 1.0004 when A's top edge is moved to meet the
+        surface where B's does (X2 report); or
+      * |E_A| or |E_B| is below amp_floor_rel times the largest bin amplitude of the same exit wave
+        (REQUIRED; an unlit or decaying tail near the noise floor has no meaningful ratio).
+    Verdict over the included bins, each passing when |err| <= tol_phase_rad and
+    |amp - 1| <= tol_amp:
+      converged_beyond_A  the first distance d (from the later contact) beyond which every included
+                          bin passes: the end of the last failing included bin, or the start of the
+                          first included bin if none fails; None only when no bin is included;
+      n_bins_beyond       included bins starting at or after d (all pass);
+      converged           n_bins_beyond >= 1 (False when the last included bin fails: then d is
+                          the end of that bin)."""
     spec = _h2_specular_column()
     th = float(pair["params"].theta_out_ext_rad)
     L = float(ewA.z_A)
     if float(ewB.z_A) != L:
         raise ValueError("A and B exit planes differ")
+    floor = float(amp_floor_rel)
+    if not (np.isfinite(floor) and 0.0 <= floor < 1.0):
+        raise ValueError(f"amp_floor_rel must be a fraction in [0, 1), got {amp_floor_rel!r}")
+    lam = float(ewA.metadata["beam"]["wavelength_A"])
+    lit = lit_strip(pair, L_z_A=L, wavelength_A=lam, radius_per_A=radius_per_A)
     out = {}
     for key, ew in (("A", ewA), ("B", ewB)):
         cell = pair[key][0]
@@ -275,24 +412,52 @@ def resolved_translation(ewA, ewB, pair, *, expected_rad, radius_per_A, x_cut_A,
                              E_B_abs=abs(eB), err_rad=float(wrap(np.angle(c) - expected_rad)),
                              amp_ratio=float(abs(c)), n_px_A=int(mA.sum()), n_px_B=int(mB.sum())))
         b = hi
-    bad = [q for q in rows if abs(q["err_rad"]) > tol_phase_rad or abs(q["amp_ratio"] - 1.0) >
-           tol_amp]
-    if not rows:
-        conv = None
-    elif bad and bad[-1] is rows[-1]:
-        conv = None
+    maxA = max((q["E_A_abs"] for q in rows), default=0.0)
+    maxB = max((q["E_B_abs"] for q in rows), default=0.0)
+    for q in rows:
+        why = []
+        if q["z_end_A"] > lit["lit_limit_A"] + 1e-9:
+            why.append(f"beyond the lit-end limit z_s = {lit['lit_limit_A']:.1f} A (end of the lit "
+                       f"core of {lit['lit_limit_set_by']} minus the top-edge fringe margin "
+                       f"{lit['top_edge_fringe_margin_A']:.1f} A)")
+        for k, amax in (("A", maxA), ("B", maxB)):
+            v = q[f"E_{k}_abs"]
+            if v < floor * amax:
+                why.append(f"|E_{k}| = {v:.3e} below the amplitude floor {floor:g} x max |E_{k}| = "
+                           f"{floor * amax:.3e}")
+        q["passes"] = bool(abs(q["err_rad"]) <= tol_phase_rad
+                           and abs(q["amp_ratio"] - 1.0) <= tol_amp)
+        q["included"] = not why
+        q["excluded_because"] = why
+        q["status"] = "excluded" if why else ("pass" if q["passes"] else "fail")
+    inc = [q for q in rows if q["included"]]
+    if not inc:
+        conv, n_after = None, 0
+        verdict = ("no bin included (none under the lit core above the amplitude floor): "
+                   "convergence not assessed")
     else:
-        conv = bad[-1]["d_end_A"] if bad else 0.0
-    return dict(rows=rows, converged_beyond_A=conv, n_bins=len(rows),
-                last_bin=(rows[-1] if rows else None),
+        fails = [q for q in inc if not q["passes"]]
+        conv = fails[-1]["d_end_A"] if fails else inc[0]["d_start_A"]
+        n_after = sum(1 for q in inc if q["d_start_A"] >= conv - 1e-9)
+        verdict = (f"converged beyond {conv:.1f} A from the later contact ({n_after} included "
+                   f"bin(s) beyond, all within tolerance)" if n_after else
+                   f"NOT converged: the last included bin (ending {conv:.1f} A from the later "
+                   f"contact) fails")
+    return dict(rows=rows, converged_beyond_A=conv, converged=bool(n_after >= 1),
+                n_bins_beyond=n_after, n_bins=len(rows), n_included=len(inc), verdict=verdict,
+                excluded=[dict(z_start_A=q["z_start_A"], z_end_A=q["z_end_A"],
+                               because=q["excluded_because"]) for q in rows if not q["included"]],
+                last_bin=(rows[-1] if rows else None), lit_strip=lit,
                 z_contact_A=dict(A=out["A"]["z_contact_A"], B=out["B"]["z_contact_A"]),
                 x_surface_A=dict(A=out["A"]["xs"], B=out["B"]["xs"]),
                 params=dict(radius_per_A=radius_per_A, x_cut_A=x_cut_A, taper_A=taper_A,
                             min_height_A=min_height_A, bin_A=bin_A, exit_excl_A=exit_excl_A,
-                            tol_phase_rad=tol_phase_rad, tol_amp=tol_amp),
+                            tol_phase_rad=tol_phase_rad, tol_amp=tol_amp,
+                            amp_floor_rel=amp_floor_rel),
                 readout="H2 section 2.4 specular_column (tools/hpc/supercell_sizing.py), bins of "
                         "the surface coordinate z_s shared by A and B; distances from the later "
-                        "bottom-edge contact")
+                        "bottom-edge contact; verdict over the included bins (X2: lit-end limit "
+                        "and amplitude floor)")
 
 
 def run_translation(pair, *, aperture=0.2, vacuum_margins_A=(), surface_resolved=None):
@@ -342,14 +507,16 @@ def run_translation(pair, *, aperture=0.2, vacuum_margins_A=(), surface_resolved
     return res
 
 
-def step_case(*, theta, width_periods, clean_depth_A, azimuth, edges="parallel", H=8.0, edge=2.0,
-              gap=2.0, buildup=20.0, extra_A=0.0, absorption=NO_ABS, precision="complex64",
+def step_case(*, theta, width_periods, clean_depth_A, azimuth, H, edge, gap, edges="parallel",
+              buildup=BUILDUP_A, extra_A=0.0, absorption=NO_ABS, precision="complex64",
               tile_above_periods=TILE_ABOVE_PERIODS_M2):
     """a/2 step between two terraces of width_periods each (edges parallel or transverse);
-    clean_depth_A and azimuth required (module docstring)."""
+    clean_depth_A, azimuth and the sheet beam H, edge, gap (bottom edge gap above the upper
+    terrace) required (module docstring)."""
+    H, edge, gap = _beam_inputs(H, edge, gap)
     Pz = _azimuth(azimuth)["period_A"]
     dz = Pz / 4
-    ent = 10 * dz
+    ent = ENTRANCE_SLICES * dz
     absorber, clean = 15.0, _clean_depth(clean_depth_A)
     depth = absorber + clean
     sub = int(np.ceil(depth / Q)) + 2
@@ -403,4 +570,5 @@ def replace_absorption(pot, absorption):
 __all__ = ["translation_pair", "run_translation", "step_case", "step_phase_rows", "theta_0008",
            "specular_component", "P", "Q", "V0_MIP", "replace_absorption", "dataclasses",
            "LEGACY_M2_CLEAN_DEPTH_A", "AZIMUTHS", "TILE_ABOVE_PERIODS_M2", "RESOLVED_KEYS",
-           "resolved_translation"]
+           "resolved_translation", "LEGACY_M2_BEAM", "cell_length_z_A",
+           "sheet_height_lit_to_exit_A", "lit_strip", "check_lit_to_exit"]

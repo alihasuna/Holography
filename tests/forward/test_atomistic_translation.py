@@ -19,11 +19,12 @@ import pytest
 
 pytest.importorskip("abtem")
 
-from null_test_cases import (LEGACY_M2_CLEAN_DEPTH_A, run_translation, theta_0008,  # noqa: E402
-                             translation_pair)
+from null_test_cases import (LEGACY_M2_BEAM, LEGACY_M2_CLEAN_DEPTH_A, run_translation,  # noqa
+                             theta_0008, translation_pair)
 
-# the M2 cells (legacy clean depth 21 A, explicit; [110]): these tests reproduce M2 section 10
-M2_CELL = dict(clean_depth_A=LEGACY_M2_CLEAN_DEPTH_A, azimuth="110")
+# the M2 cells (legacy clean depth 21 A and legacy 8 A sheet beam, explicit; [110]): these tests
+# reproduce M2 section 10
+M2_CELL = dict(clean_depth_A=LEGACY_M2_CLEAN_DEPTH_A, azimuth="110", **LEGACY_M2_BEAM)
 
 
 @pytest.fixture(scope="module")
@@ -40,18 +41,28 @@ def test_translated_crystal_is_the_builders_crystal(theta):
     z0, Lc = cA.crystal_start_z_A, cA.metadata["layout"]["crystal_length_z_A"]
     m = cA.atoms_xyz_A + R
     m[:, 1] %= Ly
-    m[:, 2] = z0 + (m[:, 2] - z0) % Lc
-    b = cB.atoms_xyz_A[cB.atoms_xyz_A[:, 0] >= cA.atoms_xyz_A[:, 0].min() + R[0] - 1e-6]
+    m[:, 2] = (m[:, 2] - z0) % Lc
+    b = cB.atoms_xyz_A[cB.atoms_xyz_A[:, 0] >= cA.atoms_xyz_A[:, 0].min() + R[0] - 1e-6].copy()
+    b[:, 2] -= z0
     from scipy.spatial import cKDTree
-    bs = np.array([1e6, Ly, 1e6])
-    d, _ = cKDTree(np.mod(b, bs), boxsize=bs).query(np.mod(m, bs))
+    # periodic in y and in z (the crystal's period along the beam; A6 n4: a tree non-periodic in z
+    # reports a false mismatch for a translation with a z component, e.g. at [100])
+    bs = np.array([1e6, Ly, Lc])
+
+    def wrap(p):
+        w = np.mod(p, bs)
+        w[w >= bs] = 0.0
+        return w
+    d, _ = cKDTree(wrap(b), boxsize=bs).query(wrap(m))
     assert len(b) == len(m) and d.max() < 1e-9
+    assert pair["check"]["identical_sets"] and pair["check"]["max_distance_A"] < 1e-9
 
 
 # surface-position-resolved read-out (H2 2.4, N12; null_test_cases.resolved_translation) with bins
-# small enough for this short cell (the study files use 500 A bins and a 750 A exit exclusion)
+# small enough for this short cell (study_depth100.yaml uses 500 A bins, a 1115.5 A exit exclusion
+# and a beam lit to the exit plane); amplitude floor as study_depth100.yaml (X2)
 RESOLVED = dict(radius_per_A=0.1, x_cut_A=2.0, taper_A=3.0, min_height_A=5.0, bin_A=250.0,
-                exit_excl_A=500.0, tol_phase_rad=1e-2, tol_amp=1e-2)
+                exit_excl_A=500.0, tol_phase_rad=1e-2, tol_amp=1e-2, amp_floor_rel=0.05)
 
 
 @pytest.fixture(scope="module")

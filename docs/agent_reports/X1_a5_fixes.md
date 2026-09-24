@@ -130,12 +130,20 @@ Line numbers are those of the working tree at the end of this task.
   (l. 332) refuses: realisations other
   than exactly 0..n-1; waves or records with another seed; a missing, edited (SHA-256) or foreign
   engine manifest (member index, seeds, realisation count, commit and package tree compared with
-  the record); different code across members; code other than the assembling run's (its git
-  pre-flight, passed from `run.py`); a record without the new fields. The assembled record keeps
-  `member_code`.
+  the record); different CODE across the members or with the assembling run (its git pre-flight,
+  passed from `run.py`). The code that ran is identified by the package-tree SHA-256 (every
+  `*.py`/`*.yaml` of `reflection_holo/`, committed or not), which must be one; the commits are
+  recorded, and different commits with the same package tree are accepted and recorded as
+  `mixed_commits` (A5's "clean, or record the mix"; comparing commits alone would refuse an
+  identical tree after an unrelated commit, which happened during this task: the orchestrator's
+  snapshot commits moved HEAD twice while the tests ran). A record without the new fields is
+  refused (rerun the job). The assembled record keeps `member_code`.
 * Test `test_member_job_assembly_checks_realisations_seed_manifests_and_code` (synthetic jobs
-  written with the repository's `save_exit_wave`; A5's case "member 0 has 2 realisations" and
-  "commits aaaa/cccc" are among the refusals). The genuine path is E3's
+  written with the repository's `save_exit_wave`): refused are A5's case "member 0 has 2
+  realisations", a member with another package tree, another seed in the waves or in the record,
+  code other than the assembling run's, an edited or missing engine manifest, a record without
+  the manifest hash; A5's "commits aaaa/cccc" with one package tree is accepted with
+  `mixed_commits` True. The genuine path is E3's
   `test_member_jobs_assemble_to_the_in_process_ensemble` (section 2).
 
 ### F7 (MINOR) R2 without shift -> KeyError: FIXED
@@ -241,3 +249,35 @@ Printed by `tools/review/x1_a5_numbers.py` (new; saved output `tools/review/x1_a
 
 Load average 2-6 on 4 cores (another agent active). Commands from the repository root with
 `venv/bin/python -m pytest -q` unless stated.
+
+Failures met while writing the new tests (verbatim; each was a defect of the new test, fixed as
+stated; no existing test or tolerance was weakened):
+
+* `test_both_registry_axes_build_and_the_measured_relation_swaps[+[100]-p(2x1)a]`:
+  `E   KeyError: 'buckling_registry_relation'` / `1 failed, 73 passed in 9.07s` (the test read
+  the key from the step instead of `step["relation"]`; fixed).
+* `test_r2_design_extent_adds_the_shift_and_the_step_phase`:
+  `E           assert 3.118920176292672e-07 <= 3.1189201077227023e-07` (even part vs kappa). The
+  analytic margin of kappa is its factor (1 + alpha^2) = 1 + 1e-8 (3e-15 rad); the independent
+  phases are differences of O(1) direction cosines times k |Q| with rounding of order
+  k eps |Q| = 5.6e-11 rad, so the exact comparison was below the precision of the check. The
+  assertion now allows 4 k eps |Q| = 2.2e-10 rad (stated in the test; 1e-3 of kappa); the odd
+  part keeps its 1e-9 relative bound.
+* same test, first gate demonstration: `ValueError: declared quadrature (uniform_disc, n_radial =
+  1, n_azimuthal = 4) has the error bound 1.548e-02 > tolerance 1.000e-02 for the design phase
+  extent v = 1.138 rad (kappa = 0 rad) ...`: the test took the "former" extent from
+  `v_coherence_rad`, which after F5 already contains the step term; it now recomputes the former
+  rule k alpha |s|. An earlier variant failed because the sqrt(2) of F8 raised the bound at
+  kappa > 0 (1.083e-02 at the former extent); the F5 demonstration uses kappa = 0 in both calls.
+
+Runs (final code unless stated):
+
+| # | command | result (verbatim) |
+|---|---|---|
+| 1 | `pytest -q tests/structure tests/io tests/optics` (before the (r3b) cell-list rewrite) | `476 passed in 31.93s` |
+| 2 | `pytest -q tests/pipeline tests/forward/test_convergence_members.py tests/optics/test_darkfield_bloch.py` (before the (r3b) rewrite) | `105 passed in 217.21s (0:03:37)` |
+| 3 | kit tests in a worktree (A5's 124: tests/hpc/test_alliance_kit.py, tests/hpc/test_kit_gpu_mem_from_dry_run.py, the 3 SLURM tests of tests/pipeline/test_a3_priority{1,3}.py), `venv` symlink, `/venv` ignore rule | `119 passed, 5 skipped in 191.46s (0:03:11)`; `SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed` |
+| 4 | `venv/bin/python -m pytest -q` (full suite, before the F6 package-tree refinement) | `1156 passed, 6 skipped, 12 warnings in 722.90s (0:12:02)` (the 120 s smoke wall-time test passed within it) |
+| 5 | `pytest -q tests/pipeline/test_e3_convergence_losses.py` (after the F6 refinement) | `11 passed in 33.56s` |
+| 6 | E2/E3 modules: tests/structure/{test_si001_reconstruction,test_thermal,test_si001_options}.py, tests/pipeline/test_e2_thermal_reconstruction.py, tests/forward/test_convergence_members.py, tests/optics/{test_coherence,test_inelastic,test_darkfield_bloch}.py, tests/pipeline/test_e3_convergence_losses.py | `234 passed in 91.12s (0:01:31)` |
+| 7 | `pytest -q tests/io tests/structure tests/optics tests/pipeline` | `570 passed in 193.08s (0:03:13)` |
