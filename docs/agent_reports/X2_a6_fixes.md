@@ -283,3 +283,65 @@ load) and the live CPU calibration line (426.815 s -> 594.458 s, timed under the
 | n7 | DECLINED | `--gpu-mem-margin 0` stays accepted: outside the orchestrator's K-1/K-2 scope for scripts/hpc/alliance/; the value is stated by the user, printed and recorded, and the NOTE says the device peak is a LOWER BOUND. |
 | n8 | DECLINED | engine and P2's reference share `reflection_holo.constants` and the read-out shares `propagator_phase`: inherent to the design (P2 section 1 states it); an error common to both is out of reach of R2-A by construction. n9 removes the one avoidable coupling. |
 | n9 | FIXED | `tests/forward/ladder_cases.py` `rung2_measure`: the reference is evaluated with P2's `reflection_amplitude_K(K = 2 pi f)` at each bin's own normal wavevector, so the engine's wavelength no longer enters the reference (the angle asin(lambda f) is kept for display only). R2-A rerun in tests/forward below (criteria unchanged). |
+
+Also added after the full-suite run below (run alone, passes: `1 passed, 11 deselected in 4.36s`):
+`test_run_study_requires_the_beam_keys_and_refuses_a_short_beam` (run_study.py refuses a point
+without `beam_height_A`, and the legacy 8 A beam in study_depth100's L5k cell with "does not light
+the surface up to the read-out window", both before anything is built or run). Note: for the L0
+points the check passes vacuously (L_z - exit_excl_A = 261 A lies before the bottom-edge contact,
+so the read-out has no bin there: "no bin included"); L0 is shorter than the build-up anyway.
+
+## study_depth100 estimate regenerated
+
+`scripts/hpc/null_test_study/study_depth100_estimate_numpy4.txt` rewritten (E1's provenance header
+format; the file's SHA-256 17af7ca8...; numpy copy differing only in the runtime block): exit 0,
+every translation point passed check_lit_to_exit, peak RSS (sampled) 1490 MB (watchdog 2800 MB),
+62.6 s, load 2.4. The lit-to-exit beam enlarges the vacuum: nx 1250 -> 1323 (L0), 1875 -> 2560
+(L5k), 2500 -> 3840 (L10k); largest point step110_w32_bragg_abs10_L5k: grid 2560x1920, numpy peak
+1516 MB (E1: 1462 MB at 1875x1920), GPU device 513 MB (415 MB); sums over the 24 points GPU ~301 s
+(E1: ~213 s, ASSUMPTION model), CPU ~34 600 s (x1.5, timed under load 2-3; E1 ~53 000 s under load
+11-13). Atom counts and slice counts are unchanged (the vacuum holds no atoms).
+
+## Test suites (verbatim counts)
+
+(Count lines and SKIPPED lines verbatim; in the error blocks the assert-repr line and pytest's
+"-v" hint are omitted.)
+
+```
+venv/bin/python -m pytest -q -p no:cacheprovider tests/forward -rs      (03:47:56-03:56:02, load 1.7 -> 6.0)
+___________ ERROR at teardown of test_evanescent_components_removed ____________
+>       assert _snapshot_outputs() == before, "a test wrote into the repository's outputs/ directory"
+E       AssertionError: a test wrote into the repository's outputs/ directory
+E         Left contains 5 more items, first extra item: ('phase4_figures', 4096, 1790221854744065625)
+tests/conftest.py:26: AssertionError
+SKIPPED [2] tests/forward/test_null_readout_known_answer.py:183: L10k study-beam proofs (about 6 min): RH_NULL_READOUT_LONG=1
+SKIPPED [1] tests/forward/test_rung2_bragg.py:138: R2-B (r = 0) is optional and qualitative (P2 8.4); RH_RUNG2_R2B=1
+121 passed, 3 skipped, 1 error in 484.04s (0:08:04)
+```
+
+The error is the session fixture of tests/conftest.py seeing `outputs/phase4_figures/` appear during
+the run: created by another agent at 03:49:52-03:50:54 (four PNG figures, e.g.
+`solver_vs_engine.png`; no code in the repository writes `phase4_figures`), and removed again at
+04:01:37. Environmental; no test failed.
+
+```
+venv/bin/python -m pytest -q -p no:cacheprovider tests/hpc -rs         (03:56:14-03:59:42, load 4.9 -> 3.9)
+SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed
+117 passed, 5 skipped in 206.63s (0:03:26)
+```
+
+```
+venv/bin/python -m pytest -q -p no:cacheprovider -rs                    (full suite, 03:59:48-04:13:01, load 3.5 -> 1.6)
+___________ ERROR at teardown of test_inconsistent_azimuth_rejected ____________
+>       assert _snapshot_outputs() == before, "a test wrote into the repository's outputs/ directory"
+E       AssertionError: a test wrote into the repository's outputs/ directory
+E         Right contains 5 more items, first extra item: ('phase4_figures', 4096, 1790221854744065625)
+tests/conftest.py:26: AssertionError
+SKIPPED [2] tests/forward/test_null_readout_known_answer.py:184: L10k study-beam proofs (about 6 min): RH_NULL_READOUT_LONG=1
+SKIPPED [1] tests/forward/test_rung2_bragg.py:138: R2-B (r = 0) is optional and qualitative (P2 8.4); RH_RUNG2_R2B=1
+SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed
+1164 passed, 8 skipped, 12 warnings, 1 error in 791.37s (0:13:11)
+```
+
+Same environmental error in the opposite direction (the other agent removed `outputs/phase4_figures/`
+at 04:01:37, during this run). No test failed; the 120 s smoke test passed in both runs.

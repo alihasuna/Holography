@@ -308,3 +308,36 @@ def test_study_files_carry_the_required_keys():
     sr = new["surface_resolved"]
     assert sr["exit_excl_A"] == 1115.5 and sr["amp_floor_rel"] == 0.05
     assert (sr["tol_phase_rad"], sr["tol_amp"]) == (0.01, 0.01)
+
+
+def _run_study_module():
+    import importlib
+    import sys
+    from pathlib import Path
+    here = Path(__file__).resolve().parents[2] / "scripts" / "hpc" / "null_test_study"
+    sys.path.insert(0, str(here))
+    try:
+        return importlib.import_module("run_study"), here
+    finally:
+        sys.path.pop(0)
+
+
+def test_run_study_requires_the_beam_keys_and_refuses_a_short_beam(tmp_path):
+    """A6 N-1/N-3 (X2): run_study.py refuses a point without beam_height_A (no hidden 8 A), and, in
+    a file with a surface_resolved block, a translation point whose beam does not light the
+    surface up to the read-out window (checked before anything runs, also with --estimate)."""
+    rs, here = _run_study_module()
+    txt = (here / "study_depth100.yaml").read_text()
+    name = "tfix110_bragg_abs10_L5k"
+    line = next(ln for ln in txt.splitlines() if f"name: {name}," in ln)
+    assert ", beam_height_A: 97.179," in line
+    missing = tmp_path / "missing.yaml"
+    missing.write_text(txt.replace(line, line.replace(", beam_height_A: 97.179", "")))
+    with pytest.raises(SystemExit, match=r"missing keys \['beam_height_A'\]"):
+        rs.main(["--config", str(missing), "--out", str(tmp_path / "o1"), "--estimate",
+                 "--only", name])
+    short = tmp_path / "short.yaml"                  # the legacy 8 A beam in a 6377 A cell
+    short.write_text(txt.replace(line, line.replace("beam_height_A: 97.179", "beam_height_A: 8.0")))
+    with pytest.raises(SystemExit, match="does not light the surface up to the read-out window"):
+        rs.main(["--config", str(short), "--out", str(tmp_path / "o2"), "--estimate", "--only",
+                 name])
