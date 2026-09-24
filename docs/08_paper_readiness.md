@@ -18,7 +18,7 @@ it), NEEDS UPLOAD (a closed source must be read).
 | 1.3 | Convergence semi-angle and source profile (item 3) | Phase spread; with an R1 reference it confines the coherent field | NEEDS ALI (ensemble implemented, E3) | B10, B40; E3 |
 | 1.4 | Aperture, detector, magnification, dose (items 4-6) | Resolution, noise, which beam is imaged | NEEDS ALI | docs/06 A |
 | 1.5 | Miscut and terrace widths (item 11) | Fixes the across-beam cell size and whether a converged measuring window exists | NEEDS ALI | H2/H7 sizing, `tools/hpc/supercell_sizing_output.txt` |
-| 1.6 | Sample preparation, vacuum, anneal; witness cross-section (item 12) | Decides the surface model (UHV-clean vs oxide/amorphous overlayer) | NEEDS ALI (checklist in docs/06 item 12) | B7; L7 section 6 |
+| 1.6 | Sample preparation, vacuum, anneal; witness cross-section (item 12) | Decides the surface model (UHV-clean vs oxide/amorphous overlayer) | PARTLY SUPPLIED (2026-09-24: air-exposed, O2/Ar plasma clean about 10 min, so oxide-covered); still NEEDS ALI: milling parameters, plasma power, time to imaging, microscope vacuum, witness cross-section | B7; L7 section 6 |
 | 1.7 | Reference-wave path, separation, fringe spacing (items 15-16) | R1 vs R2 changes the loss factor and the coherence limits | NEEDS ALI | B5, B38-B40; E3 |
 | 1.8 | Processing choices (item 19) | Simulated and measured holograms must share one code path | NEEDS ALI | B29 |
 | 1.9 | Mean inner potential (item 20) | Refraction and the working angle | NEEDS UPLOAD (Kruse 2006; Wu and Spiecker 2017) | B1; L6 section 3 |
@@ -35,7 +35,7 @@ it), NEEDS UPLOAD (a closed source must be read).
 | 2.3 | Absorption without double counting | PARTIAL (rule fixed: frozen phonons or Bird-King, never both; electronic value bracketed) | B6, SM29 |
 | 2.4 | Surface plasmons and partial coherence of loss electrons | DONE for the model (R1/R2 factors, noise); the value is a stand-in | E3, A5, B38, B39 |
 | 2.5 | Surface reconstruction (Si(001) 2x1 family, flip-flop at room temperature) | DONE for the builder (sourced coordinates); effect on the step phase: OPEN (sensitivity study) | E2, A5, B3, B37 |
-| 2.6 | Oxide or amorphous overlayer of an ion-milled surface | OPEN (engine accepts Si only; needs a multi-species potential and an amorphous structure model) | B7, SM32; H2 N5 |
+| 2.6 | Oxide or amorphous overlayer of an ion-milled surface | OPEN and now REQUIRED for the experiment (item 12: oxide-covered); engine accepts Si only; needs sourced oxide inner potential and absorption, a continuum layer first, then a multi-species atomistic amorphous layer | B7, SM32; H2 N5 |
 | 2.7 | Convergent illumination (ensemble of directions) | DONE for the model; members runnable as cluster jobs | E3, A5, B40 |
 | 2.8 | Monotonic (vicinal) staircase | OPEN (only up-down staircases are periodic) | H2 N6 |
 | 2.9 | Microscope optics: biprism Fresnel fringes, drift, detector MTF, lens transfer | OPEN | docs/05 section 5 |
