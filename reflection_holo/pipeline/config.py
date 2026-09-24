@@ -1,7 +1,8 @@
 """Pipeline configuration: a schema extending CFG-B, gated like every configuration of the package.
 
 docs/05 section 0 criterion 5 (no result may depend on a default silently substituted for a missing
-PROJECT_INPUT: such runs fail), sections 4.5 and 5; docs/06 (PROJECT_INPUT items 1-22).
+PROJECT_INPUT: such runs fail), sections 4.5 and 5; docs/06 (PROJECT_INPUT items 1-22, and item 23
+"specimen temperature during holography", proposed by report E2).
 
 File layout (YAML; duplicate keys refused anywhere, ``io.config.load_yaml_unique``):
 
@@ -59,9 +60,9 @@ PURPOSES = ("demo; not comparable to experiment", "comparison")
 BLOCKING_ITEMS = (3, 4, 5, 7, 8, 11, 12, 15)                 # docs/06 "(blocking)"
 PIPELINE_UNITS: dict[str, tuple[str, float | None]] = dict(UNITS)
 PIPELINE_UNITS.update({"e/px": ("dose_per_pixel", 1.0), "counts/e": ("gain", 1.0),
-                       "deg": ("angle", math.pi / 180.0)})
+                       "deg": ("angle", math.pi / 180.0), "K": ("temperature", 1.0)})
 CANONICAL = {"length": "A", "angle": "rad", "energy": "keV", "potential": "V", "none": "none",
-             "dose_per_pixel": "e/px", "gain": "counts/e"}
+             "dose_per_pixel": "e/px", "gain": "counts/e", "temperature": "K"}
 RECORD_KEYS_REQUIRED = ("value", "label", "source", "unit")
 RECORD_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note") + SUPPLY_KEYS
 TOP_KEYS_REQUIRED = ("pipeline_schema", "run_name", "purpose", "description", "cfg_b", "sections")
@@ -76,6 +77,15 @@ MS_KEYS = ("parameterisation", "physical_absorption", "frozen_phonons", "static_
            "save_exit_waves")
 MS_CELL_KEYS = ("vacuum_above_A", "depth_below_A", "bulk_absorber_A", "top_absorber_A",
                 "entrance_vacuum_z_A")
+# Frozen phonons (report E2): "none" (static lattice, labelled by static_lattice_label); the sourced
+# thermal model {model: THERMAL_MODEL_B35} with the specimen temperature (PROJECT_INPUT item 23, key
+# sections.engine.multislice.specimen_temperature, REQUIRED with this model: no default); or the
+# fixed per-axis u {rms_displacement_A, label} (the form used for model_assumptions A7 of the
+# inspected repository; kept working, refused by purpose "comparison" because item 23 is then
+# not represented).
+THERMAL_MODEL_B35 = "si_heacock2021_linear_B"
+MS_KEYS_OPTIONAL = ("specimen_temperature",)
+FIXED_U_KEYS = {"rms_displacement_A", "label"}
 
 
 class PipelineConfigError(ConfigError):
@@ -341,6 +351,9 @@ def _check_record_kind(where: str, kind: str, v, dim: str):
     elif kind == "mapping":
         if not (isinstance(v, dict) and v):
             bad("a non-empty mapping (handed to the engine)")
+    elif kind == "temperature":
+        if not (_is_num(v) and v > 0):
+            bad("a finite positive absolute temperature")
     elif kind == "reconstruction":
         if not isinstance(v, dict):
             bad("a mapping")
@@ -653,6 +666,14 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
     _refuse_unused_physical_inputs(cfg_b, sections, ga)
     if data["purpose"] == "comparison":
         _comparison_gate(cfg_b, records, test_only)
+        eng = sections["engine"]
+        if eng["name"] == "multislice" and isinstance(eng["multislice"]["frozen_phonons"], dict) \
+                and set(eng["multislice"]["frozen_phonons"]) == FIXED_U_KEYS:
+            raise PipelineConfigError(
+                "purpose 'comparison' refuses frozen phonons given as a fixed u (e.g. "
+                "model_assumptions A7, inherited, unsourced): the specimen temperature "
+                f"(PROJECT_INPUT item 23) must enter through {{model: {THERMAL_MODEL_B35}}} "
+                "(report E2)")
     resolved = {k: v for k, v in data.items() if k != "variants"}
     resolved["sections"] = sections_raw
     resolved["cfg_b"] = cfg_b_full
@@ -686,11 +707,7 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
                 f"item 12): no engine builds an overlayer (the structure builder records it only; "
                 f"the geometric model and B4 exclude one), and docs/06 item 12 says it must be "
                 f"modelled rather than ignored: refused (audit A3 M6)")
-        if prep.get("termination", "bulk") != "bulk":
-            raise PipelineConfigError(
-                f"cfg_b.surface_preparation_details.termination = {prep.get('termination')!r}: only "
-                f"bulk-terminated terraces are built (the 2x1 reconstruction is NOT IMPLEMENTED): "
-                f"refused (audit A3 M6)")
+        _check_termination(cfg_b, prep, sections)
     pat = cfg_b.value("pattern_geometry")
     feat = sections["structure"].get("feature")
     if feat is None:
@@ -721,6 +738,43 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
                 f"target reflection (docs/06 item 9, cfg_b.target_reflection_hkl) is "
                 f"{tuple(target)}: the angle would be computed for a reflection other than the "
                 f"declared working condition: refused (audit A3 M6)")
+
+
+def _check_termination(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
+    """cfg_b.surface_preparation_details.termination (item 12; report E2): 'bulk' on every path;
+    a sourced reconstruction (structure.reconstruction) only where it is represented, i.e. the
+    multislice engine on the staircase path (the geometric engine has no atoms and refuses it, B4;
+    the feature builder refuses it, structure.features.FEATURE_RECONSTRUCTION_REFUSAL); the
+    flip-flop ensemble only with the sourced thermal model (its configurations are drawn from the
+    frozen-phonon generator at the specimen temperature, item 23). A stand-in whose row states a
+    bulk termination (B26) cannot carry a reconstruction."""
+    from reflection_holo.structure.reconstruction import FLIPFLOP
+    from reflection_holo.structure.si001 import TERMINATIONS
+    term = prep.get("termination", "bulk")
+    where = f"cfg_b.surface_preparation_details.termination = {term!r}"
+    if term == "bulk":
+        return
+    if term not in TERMINATIONS:
+        raise PipelineConfigError(f"{where}: not one of {TERMINATIONS}: refused (audit A3 M6)")
+    eng = sections["engine"]["name"]
+    if "feature" in sections["structure"]:
+        raise PipelineConfigError(f"{where}: the feature path builds bulk-terminated structures "
+                                  f"only (reconstruction refused on the half-torus, report E2)")
+    if eng != "multislice":
+        raise PipelineConfigError(
+            f"{where}: engine {eng!r} has no atoms and represents bulk-terminated terraces only "
+            f"(B3, B4); a reconstruction is represented by the multislice engine only: refused "
+            f"rather than ignored (audit A3 M6)")
+    fp = sections["engine"]["multislice"]["frozen_phonons"]
+    if term == FLIPFLOP and not (isinstance(fp, dict) and fp.get("model") == THERMAL_MODEL_B35):
+        raise PipelineConfigError(
+            f"{where} (ASSUMPTION B37) needs frozen_phonons {{model: {THERMAL_MODEL_B35}}} with the "
+            f"specimen temperature (PROJECT_INPUT item 23): its configurations are drawn per "
+            f"realisation from the frozen-phonon generator of a room-temperature model")
+    p12 = cfg_b.parameters["surface_preparation_details"]
+    if p12.label == "ASSUMPTION" and getattr(p12, "assumption_id", None) == "B26":
+        raise PipelineConfigError(f"{where}: stand-in B26 states a clean, BULK-terminated surface; "
+                                  f"a reconstruction needs its own declaration")
 
 
 def _comparison_gate(cfg_b: LoadedConfig, records: list[Record], test_only: bool) -> None:
@@ -846,7 +900,7 @@ def _check_engine(sections: dict, *, allow_test_only: bool) -> None:
                 "sections.engine.multislice.physical_absorption is a missing PROJECT_INPUT "
                 "(docs/06_project_inputs_required.md item 21)", [21], ["physical_absorption"])
         miss = [k for k in MS_KEYS if k not in m]
-        extra = sorted(set(m) - set(MS_KEYS))
+        extra = sorted(set(m) - set(MS_KEYS) - set(MS_KEYS_OPTIONAL))
         if miss or extra:
             raise PipelineConfigError(f"sections.engine.multislice: missing keys {miss}, unknown "
                                       f"keys {extra} (every key required, no default)")
@@ -868,6 +922,7 @@ def _check_engine(sections: dict, *, allow_test_only: bool) -> None:
         if (m["frozen_phonons"] == "none") != (m["seed"] is None):
             raise PipelineConfigError("sections.engine.multislice: seed must be null exactly when "
                                       "frozen_phonons is 'none' (a static lattice has no seed)")
+        _check_frozen_phonons(m, allow_test_only=allow_test_only)
         sb = m["sheet_beam"]
         if not (isinstance(sb, dict) and set(sb) == {"height_A", "edge_A",
                                                       "x_bottom_above_highest_surface_A"}):
@@ -881,6 +936,45 @@ def _check_engine(sections: dict, *, allow_test_only: bool) -> None:
         if not (isinstance(c, dict) and set(c) == set(MS_CELL_KEYS)):
             raise PipelineConfigError(f"sections.cell.multislice must have exactly the keys "
                                       f"{MS_CELL_KEYS} (forward.cell.build_reflection_cell)")
+
+
+def _check_frozen_phonons(m: dict, *, allow_test_only: bool) -> None:
+    """The three forms of sections.engine.multislice.frozen_phonons (see THERMAL_MODEL_B35). The
+    specimen temperature (PROJECT_INPUT item 23) is required with the sourced model and refused
+    (not ignored) with the others."""
+    from reflection_holo.structure import thermal
+    fp = m["frozen_phonons"]
+    where = "sections.engine.multislice.specimen_temperature"
+    if fp == "none" or (isinstance(fp, dict) and set(fp) == FIXED_U_KEYS):
+        if "specimen_temperature" in m:
+            raise PipelineConfigError(
+                f"{where}: not used with frozen_phonons "
+                f"{'none (static lattice)' if fp == 'none' else 'given as a fixed u'}: refused "
+                f"rather than ignored (use frozen_phonons: {{model: {THERMAL_MODEL_B35}}})")
+        return
+    if not (isinstance(fp, dict) and set(fp) == {"model"} and fp["model"] == THERMAL_MODEL_B35):
+        raise PipelineConfigError(
+            f"sections.engine.multislice.frozen_phonons must be 'none', {{model: "
+            f"{THERMAL_MODEL_B35}}} (Si B(T) of Heacock et al. 2021, model_assumptions B35, with "
+            f"{where}, PROJECT_INPUT item 23) or {{rms_displacement_A, label}} (a fixed u, e.g. "
+            f"model_assumptions A7); got {fp!r}")
+    if "specimen_temperature" not in m:
+        raise MissingProjectInputError(
+            f"{where} is a missing PROJECT_INPUT (item 23, specimen temperature during "
+            f"holography): the thermal model {THERMAL_MODEL_B35} has no default temperature",
+            [23], ["specimen_temperature"])
+    r = _gate_record("engine.multislice", "specimen_temperature",
+                     _rec(23, "temperature", "temperature"), m["specimen_temperature"],
+                     allow_test_only=allow_test_only)
+    if r.value is None:
+        raise MissingProjectInputError(
+            f"{where} is a missing PROJECT_INPUT (item 23, specimen temperature during "
+            f"holography)", [23], ["specimen_temperature"])
+    try:
+        thermal.si_debye_waller_B_A2(r.canonical_value)
+    except ValueError as exc:
+        raise PipelineConfigError(f"{where}: {exc}") from exc
+    m["specimen_temperature"] = r
 
 
 def load_pipeline_file(path, *, variant: str | None) -> PipelineConfig:
@@ -914,6 +1008,8 @@ NOT_USED = {
     21: "not an input of the geometric engine (no potential); required by the multislice engine "
         "(sections.engine.multislice.physical_absorption)",
     22: "not modelled: no charging phase (ASSUMPTION B8)",
+    23: "not an input of this path: no thermal model (static lattice, geometric engine, or a fixed "
+        "u such as model_assumptions A7); used by frozen_phonons {model: si_heacock2021_linear_B}",
 }
 
 
@@ -970,7 +1066,7 @@ def _absent_reason(parameter: str, sections: dict) -> str | None:
 
 
 def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
-    """Every PROJECT_INPUT item 1-22 with the parameters that carry it, their status and whether
+    """Every PROJECT_INPUT item 1-23 with the parameters that carry it, their status and whether
     the selected path uses them, WITHOUT failing on a missing one (placeholder-level view;
     ``load_pipeline_dict`` is the run gate). A supplied value or stand-in that the path does not use
     is shown as "..., NOT USED on this path" with the reason (audit A3 M6); for the multislice
@@ -1008,6 +1104,10 @@ def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
         m = eng.get("multislice") or {}
         rows.append(_row(21, "sections.engine.multislice.physical_absorption",
                          m.get("physical_absorption"), required=True, unused=None))
+        fpv = m.get("frozen_phonons")
+        if isinstance(fpv, dict) and fpv.get("model") == THERMAL_MODEL_B35:
+            rows.append(_row(23, "sections.engine.multislice.specimen_temperature",
+                             m.get("specimen_temperature"), required=True, unused=None))
         mip = m.get("potential_mip")
         if isinstance(mip, dict):
             rows.append(dict(item=20, parameter="sections.engine.multislice.potential_mip",

@@ -310,6 +310,7 @@ atoms). Size it in a CPU job instead:
 bash scripts/hpc/alliance/submit.sh nibi dry-run --config <H2 config> --account def-XXX --time 01:00:00 --mem <SIZE>
 bash scripts/hpc/alliance/submit.sh nibi pipeline --config <H2 config> --account def-XXX --time 06:00:00 \
      [--gpu-instance full|3g.40gb|...] [--need-gpu-mem-gb <from dry-run>] [--cpus N] [--mem SIZE]
+     [--gpu-mem-from-dry-run <dry-run job dir> --gpu-mem-margin <fraction>]
 bash scripts/hpc/alliance/submit.sh nibi null-study --study <H2 study.yaml> --account def-XXX --time 02:00:00
 ```
 
@@ -323,7 +324,15 @@ required for every CPU job, and `--mem` of the dry-run job itself must cover the
 H2 N9: the builders cannot yet build 10^8 atoms in memory.
 
 A configuration whose backend is `numpy` becomes a CPU job (then `--mem` is required); `cupy` a GPU
-job. `--need-gpu-mem-gb` refuses an instance with less memory than you need. MIG instances per
+job. `--need-gpu-mem-gb` refuses an instance with less memory than you need. Instead of reading it
+off the dry run by hand, `--gpu-mem-from-dry-run <dry-run job dir or its dry_run/dry_run_report.json>
+--gpu-mem-margin <fraction>` derives it: the engine's cupy device peak (`engine.memory_model`, a
+LOWER BOUND: cuFFT/cuBLAS workspaces and the cupy pool are not modelled, no GPU was available to
+measure them) times (1 + margin); the margin has no default. The derivation is printed and recorded
+in the submission record, the dry-run report must be the one of the same configuration and variant
+(SHA-256 checked), the host memory of the GPU run (cupy host peak + 48 B/atom of builder structure,
+192 B/atom in total, H7) is compared with `--mem`, and an explicit `--need-gpu-mem-gb` overrides the
+derived value. MIG instances per
 cluster (one per job, Multi-Instance_GPU § Limitations): Fir/Nibi/Rorqual 1g.10gb, 2g.20gb,
 3g.40gb; Narval 1g.5gb, 2g.10gb, 3g.20gb; Trillium none.
 

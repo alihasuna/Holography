@@ -44,6 +44,14 @@ and must be built with ``ensemble_hologram_intensity``.
 
 Detector: Poisson noise at a declared dose (mean counts per pixel, PROJECT_INPUT item 6) with a
 declared integer seed; gain 1 count per electron; MTF NOT IMPLEMENTED.
+
+Partial coherence (report E3): ``inelastic_hologram_intensity`` forms one realisation under a
+declared surface-plasmon loss model (optics.inelastic: zero-loss amplitude factors exp(-n/2) and
+loss electrons with their own mutual visibility); ``partially_coherent_hologram`` forms
+I = sum_s w_s mean_k I(u_o,sk, u_r,sk) over the members s of a convergence ensemble
+(optics.coherence) and the realisations k of each member, always AFTER squaring. With one member of
+weight 1 and a loss model with n = 0 both reproduce ``hologram_intensity`` /
+``ensemble_hologram_intensity`` bit for bit.
 """
 from __future__ import annotations
 
@@ -55,6 +63,7 @@ import numpy as np
 
 from reflection_holo.constants import TWO_PI
 from reflection_holo.optics.fields import Grid, Hologram, Wave, _require_2vector, sha256_array
+from reflection_holo.optics.inelastic import SurfacePlasmonLoss, inelastic_pair_intensity
 
 REFERENCE_MODELS = ("R1", "R2", "R3")
 APERTURE_PASSAGES = ("second_aperture_hole", "condenser_biprism_pretilt", "no_aperture")
@@ -270,6 +279,23 @@ def _pair_intensity(object_wave: Wave, reference_wave: Wave, artefacts: Artefact
     return np.abs(u_o + reference_wave.data) ** 2
 
 
+def _pair_intensity_with_losses(object_wave: Wave, reference_wave: Wave, artefacts: ArtefactOptions,
+                                loss: SurfacePlasmonLoss) -> np.ndarray:
+    """As _pair_intensity, under the declared surface-plasmon loss model (optics.inelastic)."""
+    if not isinstance(object_wave, Wave) or not isinstance(reference_wave, Wave):
+        raise TypeError("object_wave and reference_wave must be Wave instances")
+    if not isinstance(loss, SurfacePlasmonLoss):
+        raise TypeError("loss must be a SurfacePlasmonLoss (declare it; no default)")
+    object_wave.grid.assert_same(reference_wave.grid, "object and reference waves")
+    if object_wave.realisation != reference_wave.realisation:
+        raise ValueError(f"object (realisation {object_wave.realisation}) and reference (realisation "
+                         f"{reference_wave.realisation}) must share the same realisation (SM13)")
+    u_o = object_wave.data
+    if artefacts.charging_phase_rad is not None:
+        u_o = u_o * np.exp(1j * np.asarray(artefacts.charging_phase_rad, dtype=float))
+    return inelastic_pair_intensity(u_o, reference_wave.data, loss)
+
+
 def _reference_record(reference_wave: Wave) -> dict:
     return {k: v for k, v in reference_wave.metadata.items() if k != "valid_mask"}
 
@@ -340,6 +366,110 @@ def ensemble_hologram_intensity(realisations: Sequence[tuple[Wave, Wave]], *,
         # a pixel is valid only if it is valid in every realisation's reference (audit A2 m1)
         meta["valid_mask"] = np.logical_and.reduce(masks)
     return Hologram(intensity, grid, content, meta, None)
+
+
+def inelastic_hologram_intensity(object_wave: Wave, reference_wave: Wave, *,
+                                 loss: SurfacePlasmonLoss, artefacts: ArtefactOptions,
+                                 content: str) -> Hologram:
+    """One realisation under the declared surface-plasmon loss model (optics.inelastic):
+    I = |e^(-n_O/2) u_o + e^(-n_R/2) u_r|^2 + loss electrons. All arguments required."""
+    if not isinstance(artefacts, ArtefactOptions):
+        raise TypeError("artefacts must be an ArtefactOptions (declare every artefact explicitly)")
+    artefacts.check(object_wave.grid)
+    intensity = _pair_intensity_with_losses(object_wave, reference_wave, artefacts, loss)
+    meta = {"formation": "zero-loss |e^(-n_O/2) u_o + e^(-n_R/2) u_r|^2 plus loss electrons "
+                         "(optics.inelastic)", "n_realisations": 1, "n_members": 1,
+            "surface_plasmon_losses": loss.as_record(),
+            "object_label": object_wave.label, "reference": _reference_record(reference_wave),
+            "reference_carrier_cycles_per_A": reference_wave.metadata.get("effective_carrier_cycles_per_A"),
+            "artefacts": artefacts.as_record(), "grid": object_wave.grid.as_record(),
+            "object_sha256": sha256_array(object_wave.data),
+            "reference_sha256": sha256_array(reference_wave.data)}
+    if "valid_mask" in reference_wave.metadata:
+        meta["valid_mask"] = reference_wave.metadata["valid_mask"]
+    return Hologram(intensity, object_wave.grid, content, meta, None)
+
+
+@dataclass(frozen=True, eq=False)
+class MemberPairs:
+    """The (object, reference) pairs of the realisations of ONE convergence member (report E3).
+
+    index   member index (optics.coherence.ConvergenceMember.index); distinct across members
+    weight  quadrature weight (> 0); the weights of an ensemble must sum to 1
+    pairs   [(object Wave, reference Wave)] sharing each realisation (SM13)"""
+    index: int
+    weight: float
+    pairs: tuple
+
+
+def partially_coherent_hologram(members: Sequence[MemberPairs], *, loss: SurfacePlasmonLoss,
+                                artefacts: ArtefactOptions, content: str) -> Hologram:
+    """I = sum_s w_s (1/K_s) sum_k I_loss(u_o,sk, u_r,sk): incoherent (after squaring) over the
+    convergence members s (optics.coherence, equation (1)) and the realisations k of each member,
+    each pair formed under the surface-plasmon loss model. Complex waves are never averaged. All
+    arguments required; weights must be positive and sum to 1 (to 1e-12)."""
+    if not isinstance(artefacts, ArtefactOptions):
+        raise TypeError("artefacts must be an ArtefactOptions")
+    if not isinstance(loss, SurfacePlasmonLoss):
+        raise TypeError("loss must be a SurfacePlasmonLoss (declare it; no default)")
+    ms = list(members)
+    if not ms:
+        raise ValueError("at least one member is required")
+    if any(not isinstance(m, MemberPairs) for m in ms):
+        raise TypeError("members must be MemberPairs")
+    idx = [int(m.index) for m in ms]
+    if len(set(idx)) != len(idx):
+        raise ValueError(f"member indices must be distinct, got {idx}")
+    w = np.array([float(m.weight) for m in ms])
+    if not np.all(np.isfinite(w)) or np.any(w <= 0):
+        raise ValueError("member weights must be finite and > 0")
+    if abs(float(np.sum(w)) - 1.0) > 1e-12:
+        raise ValueError(f"member weights must sum to 1 (got {float(np.sum(w))!r})")
+    grid = ms[0].pairs[0][0].grid
+    artefacts.check(grid)
+    total = np.zeros(grid.shape, dtype=np.float64)
+    masks, per_member = [], []
+    for m in ms:
+        pairs = list(m.pairs)
+        if not pairs:
+            raise ValueError(f"member {m.index}: no realisation")
+        seen = set()
+        acc = np.zeros(grid.shape, dtype=np.float64)
+        for k, pair in enumerate(pairs):
+            if len(pair) != 2:
+                raise ValueError(f"member {m.index}, realisation {k}: expected an (object, "
+                                 f"reference) pair")
+            u_o, u_r = pair
+            grid.assert_same(u_o.grid, f"member {m.index}, realisation {k}")
+            if len(pairs) > 1 and (u_o.realisation is None or u_r.realisation is None):
+                raise ValueError(f"member {m.index}: with {len(pairs)} realisations every wave "
+                                 f"needs an integer realisation index (SM13)")
+            acc += _pair_intensity_with_losses(u_o, u_r, artefacts, loss)
+            if u_o.realisation is not None:
+                if u_o.realisation in seen:
+                    raise ValueError(f"member {m.index}: realisation {u_o.realisation} used twice")
+                seen.add(u_o.realisation)
+            if "valid_mask" in u_r.metadata:
+                masks.append(np.asarray(u_r.metadata["valid_mask"], dtype=bool))
+        total += float(m.weight) * (acc / len(pairs))
+        per_member.append(dict(index=int(m.index), weight=float(m.weight),
+                               n_realisations=len(pairs)))
+    carriers = {tuple(p[1].metadata.get("effective_carrier_cycles_per_A") or ())
+                for m in ms for p in m.pairs}
+    meta = {"formation": ("sum over convergence members of w_s x mean over realisations of the "
+                          "pair intensity under the surface-plasmon loss model (after squaring; "
+                          "optics.coherence equation (1), optics.inelastic)"),
+            "n_members": len(ms), "members": per_member,
+            "n_realisations": int(sum(d["n_realisations"] for d in per_member)),
+            "surface_plasmon_losses": loss.as_record(),
+            "reference_models": sorted({str(p[1].metadata.get("reference_model"))
+                                        for m in ms for p in m.pairs}),
+            "reference_carrier_cycles_per_A": (list(next(iter(carriers))) if len(carriers) == 1
+                                               and next(iter(carriers)) else None),
+            "artefacts": artefacts.as_record(), "grid": grid.as_record()}
+    if masks:
+        meta["valid_mask"] = np.logical_and.reduce(masks)
+    return Hologram(total, grid, content, meta, None)
 
 
 # ------------------------------------------------------------------------------------------------

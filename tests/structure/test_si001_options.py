@@ -62,7 +62,12 @@ def test_option_labels_recorded_bulk_clean():
     o = s.metadata["options"]
     assert o["termination"] == {"value": "bulk", "label": "ASSUMPTION B3",
                                 "note": "unreconstructed bulk truncation of the diamond lattice"}
-    assert o["dimer_reconstruction"]["status"].startswith("NOT IMPLEMENTED")
+    # report E2: the sourced reconstructions are implemented; a bulk build says they are not enabled
+    # (this assertion replaced `startswith("NOT IMPLEMENTED")`, which described the state before E2)
+    assert o["dimer_reconstruction"]["value"] == "not enabled"
+    assert o["dimer_reconstruction"]["status"].startswith("NOT ENABLED: bulk termination")
+    for name in ("p(2x1)s", "p(2x1)a", "p(2x2)", "c(4x2)", "p(2x1)a flip-flop ensemble"):
+        assert name in o["dimer_reconstruction"]["status"]
     assert o["overlayer"]["value"] is None and o["overlayer"]["label"] == "ASSUMPTION B7"
     assert o["riser_relaxation"]["value"] == "none"
     assert o["riser_relaxation"]["label"] == "ASSUMPTION"

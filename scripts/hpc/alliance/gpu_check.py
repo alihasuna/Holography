@@ -111,7 +111,7 @@ def fft_check(seed: int):
 def tiny_cases():
     """(name, builder(precision) -> (cell, pot, beam, params)) from the test suite's own cases."""
     from ladder_cases import THETA_0008, rung1_case
-    from null_test_cases import step_case, theta_0008
+    from null_test_cases import LEGACY_M2_CLEAN_DEPTH_A, step_case, theta_0008
     from reflection_holo.forward.multislice import PhysicalAbsorption
 
     def rung1(prec):
@@ -124,7 +124,7 @@ def tiny_cases():
 
     def step(prec):
         return step_case(theta=theta_0008(), width_periods=2, extra_A=0.0, absorption=ab,
-                         precision=prec)
+                         precision=prec, clean_depth_A=LEGACY_M2_CLEAN_DEPTH_A, azimuth="110")
 
     return [("rung1_continuum_refraction", rung1), ("atomistic_a2_step_w2", step)]
 

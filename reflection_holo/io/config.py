@@ -104,7 +104,8 @@ LEVELS = ("run", "placeholder")
 STATUSES = ("benchmark", "experiment", "placeholder")
 CONFIG_IDS = {"CFG-A": "si111_cleaved_110azimuth", "CFG-B": "si001_patterned",
               "CFG-O": "osakabe_1988_reproduction"}
-N_PROJECT_INPUT_ITEMS = 22
+N_PROJECT_INPUT_ITEMS = 23      # item 23: specimen temperature during holography (report E2;
+                                # docs/06 row to be added by the orchestrator)
 PARAM_KEYS_REQUIRED = ("value", "label", "source", "unit")
 SUPPLY_KEYS = ("supplied_by", "supplied_on")                 # A2c G2: structured supply record
 PARAM_KEYS_OPTIONAL = ("item", "stands_in_for_item", "assumption_id", "note") + SUPPLY_KEYS
@@ -398,9 +399,9 @@ def _registry_cached() -> tuple:
     data = load_yaml_unique(text)
     if not isinstance(data, dict) or data.get("schema_version") != 1 \
             or not isinstance(data.get("stand_ins"), dict) \
-            or set(data) != {"schema_version", "stand_ins", "demo_only"}:
+            or set(data) != {"schema_version", "stand_ins", "demo_only", "model_rows"}:
         raise ConfigError(f"{REGISTRY_RESOURCE}: expected {{schema_version: 1, stand_ins: {{...}}, "
-                          f"demo_only: [...]}}")
+                          f"demo_only: [...], model_rows: {{...}}}}")
     out = []
     for aid, items in data["stand_ins"].items():
         if not (isinstance(aid, str) and re.fullmatch(r"B\d+", aid)):
@@ -413,7 +414,13 @@ def _registry_cached() -> tuple:
     if not (isinstance(demo, list) and all(isinstance(a, str) and a in data["stand_ins"]
                                            for a in demo) and len(set(demo)) == len(demo)):
         raise ConfigError(f"{REGISTRY_RESOURCE}: demo_only must list distinct ids of stand_ins")
-    return tuple(out), tuple(demo)
+    rows = data["model_rows"]
+    if not (isinstance(rows, dict) and all(
+            isinstance(a, str) and re.fullmatch(r"B\d+", a) and a not in data["stand_ins"]
+            and isinstance(t, str) and t.strip() for a, t in rows.items())):
+        raise ConfigError(f"{REGISTRY_RESOURCE}: model_rows must map B-row ids that are not "
+                          f"stand-ins to a non-empty description")
+    return tuple(out), tuple(demo), tuple(rows.items())
 
 
 def assumption_registry() -> dict[str, tuple[int, ...]]:
@@ -428,6 +435,12 @@ def demo_only_stand_ins() -> frozenset[str]:
     a pipeline run with purpose "comparison" refuses each of them, whatever the docs/06 item
     (audit A3 M2)."""
     return frozenset(_registry_cached()[1])
+
+
+def model_assumption_rows() -> dict[str, str]:
+    """model_assumptions B-rows that the code cites as MODEL assumptions or sourced models, not as
+    stand-ins for a docs/06 item (registry key model_rows; report E2): row id -> description."""
+    return dict(_registry_cached()[2])
 
 
 def _is_int(v) -> bool:

@@ -45,6 +45,10 @@ def _parser() -> argparse.ArgumentParser:
     d.add_argument("--variant", default=None)
     d.add_argument("--calibrate-cpu", action="store_true",
                    help="multislice: measure the FFT and potential costs on this machine")
+    d.add_argument("--report-json", default=None,
+                   help="also write the full dry-run report (with the configuration's path and "
+                        "SHA-256) to this JSON file; the Alliance kit reads the GPU memory need "
+                        "from it (kit.py --gpu-mem-from-dry-run)")
     li = sub.add_parser("list-inputs", help="show every PROJECT_INPUT and its status")
     li.add_argument("--config", required=True)
     li.add_argument("--variant", default=None)
@@ -77,6 +81,14 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "dry-run":
             from reflection_holo.pipeline.estimates import dry_run
             rep = dry_run(cfg, calibrate_cpu=args.calibrate_cpu)
+            if args.report_json:
+                import hashlib
+                from pathlib import Path
+                cpath = Path(args.config).resolve()
+                Path(args.report_json).write_text(json.dumps(dict(
+                    schema="reflholo_pipeline_dry_run_report/1", config_path=str(cpath),
+                    config_sha256=hashlib.sha256(cpath.read_bytes()).hexdigest(),
+                    variant=args.variant, report=rep), indent=1, default=str))
             print(f"purpose: {cfg.purpose}")
             print(f"configuration valid (run level); engine {rep['engine']}; glancing angle "
                   f"{rep['glancing_angle_mrad']:.6f} mrad "

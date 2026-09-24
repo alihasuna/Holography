@@ -36,8 +36,10 @@ from reflection_holo.geometry.refraction import theta_int_from_ext_rad
 
 from .backend import get_backend
 from .grid import band_limit_mask, check_band, make_grid
-from .illumination import SheetBeam, sheet_beam_wave
+from .illumination import (BlochShiftedGrid, SheetBeam, TiltedSheetBeam, bloch_fy_per_A,
+                           bloch_record, sheet_beam_wave)
 from .physics import beam_constants
+from . import potentials as _potentials
 from .potentials import NumericalAbsorber, absorber_profile_V
 from .propagator import PROPAGATORS, propagator_kernel
 
@@ -224,12 +226,24 @@ def reflection_setup(cell: ReflectionCell, *, potential, beam: SheetBeam,
            "(ContinuumPeriodicPotential.band_harmonics_per_A)" if harm else ""))
     band["internal_angles_from"] = (f"SM04 refraction with the potential's mean inner potential "
                                     f"{V0:.4f} V")
+    # azimuthal (y) tilt of a TiltedSheetBeam (convergence member, report E3): carried by the Bloch
+    # form, so every beam of the member has native f_y' = 0 and the x-angles above are the whole
+    # band assertion; theta_in / theta_out are the member's own glancing angles
+    fb = bloch_fy_per_A(beam, bc["wavelength_A"])
+    if isinstance(beam, TiltedSheetBeam):
+        band["azimuthal_tilt"] = dict(
+            direction_cosine_y=float(beam.direction_cosine_y), fy_per_A=fb,
+            native_fy_of_every_beam_per_A=0.0, tilt_label=beam.tilt_label,
+            note="Bloch form (illumination.py): the envelope's beams sit at f_y' = 0, so the band "
+                 "assertion is the x-angle check above with this member's glancing angles; the "
+                 "physical beams are at f_y' + fy_per_A")
     geo = check_reflection_geometry(cell, beam_height_A=beam.height_A,
                                     beam_x_bottom_A=beam.x_bottom_A, theta_in_ext_rad=th_in,
                                     theta_out_ext_rad=th_out, theta_int_rad=th_int_in,
                                     buildup_depth_A=params.buildup_depth_A)
     return dict(bc=bc, grid=grid, n_slices=n, commensurability=comm, V0_potential_V=V0,
-                theta_int_in_rad=th_int_in, theta_int_out_rad=th_int_out, band=band, geometry=geo)
+                theta_int_in_rad=th_int_in, theta_int_out_rad=th_int_out, band=band, geometry=geo,
+                bloch_fy_per_A=fb)
 
 
 def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params: MultisliceParams,
@@ -253,9 +267,13 @@ def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params:
     be = get_backend(params.backend, params.precision, params.threads)
     lam, sigma = bc["wavelength_A"], bc["sigma_rad_per_VA"]
     mask = band_limit_mask(grid, params.band_limit)
-    P_full, n_ev = propagator_kernel(grid, dz_A=params.dz_A, wavelength_A=lam,
+    # y tilt (TiltedSheetBeam): kernels at the physical frequencies f_y' + f_y (Bloch form); the
+    # untilted path (f_y = 0) is unchanged
+    fb = s["bloch_fy_per_A"]
+    kgrid = grid if fb == 0.0 else BlochShiftedGrid(grid, fb)
+    P_full, n_ev = propagator_kernel(kgrid, dz_A=params.dz_A, wavelength_A=lam,
                                      kind=params.propagator, band_mask=mask)
-    P_half, _ = propagator_kernel(grid, dz_A=0.5 * params.dz_A, wavelength_A=lam,
+    P_half, _ = propagator_kernel(kgrid, dz_A=0.5 * params.dz_A, wavelength_A=lam,
                                   kind=params.propagator, band_mask=mask)
     P_full = be.asarray(P_full, dtype=be.complex_dtype)
     P_half = be.asarray(P_half, dtype=be.complex_dtype)
@@ -318,6 +336,11 @@ def run_realisation(cell: ReflectionCell, *, potential, beam: SheetBeam, params:
         timing_s=dict(setup=t_setup - t_start, propagation=t_end - t_setup,
                       total=t_end - t_start),
     )
+    brec = bloch_record(beam, lam)
+    if brec is not None:                   # TiltedSheetBeam: psi is the Bloch envelope (report E3)
+        meta["bloch"] = brec
+        meta["carrier"] = (meta["carrier"] + "; y tilt: psi is the Bloch envelope, the full wave "
+                           "is psi * exp(2 pi i fy_per_A y) * exp(i k z_A) (metadata['bloch'])")
     return ExitWave(psi=psi_np, dx_A=grid.dx_A, dy_A=grid.dy_A, x0_A=grid.x0_A, y0_A=grid.y0_A,
                     plane=PLANE_TEXT, z_A=float(N * params.dz_A), energy_keV=bc["energy_keV"],
                     theta_in_ext_rad=float(beam.theta_in_ext_rad), realisation=int(realisation),
@@ -425,7 +448,10 @@ MEM_SCATTERING_F_B_PER_PX = 16         # realise: f2 grid f8 + abTEM F(f^2) f8 (
 #                                        expression itself peaks no higher: tracemalloc)
 MEM_EXP_B_PER_ELEMENT = 32             # potentials.py: each structure-factor exponential is formed
 #                                        from a complex128 argument (16 B) into a complex128 result
-#                                        (16 B) before the cast (32 B per element of nx*n or ny*n)
+#                                        (16 B) before the cast (32 B per element of nx*n or ny*n;
+#                                        with more than 2 * potentials.EXP_BLOCK_ROWS rows, per
+#                                        element of a block of EXP_BLOCK_ROWS rows, plus the
+#                                        preallocated result, cb B per element: _exp_stage_B)
 MEM_CELL_B_PER_ATOM = 32               # cell atoms_xyz_A f8 x3 + Z i8 (held by the caller)
 MEM_REALISED_B_PER_ATOM = 40           # _RealisedAtomic: sorted xyz f8 x3, idx_sorted i8, Z i8
 MEM_REALISE_PEAK_B_PER_ATOM = 112      # _RealisedAtomic.__init__: the 40 above + unsorted copy 24,
@@ -437,6 +463,15 @@ MEMORY_MODEL_LABEL = (
     "the numpy backend (tests/forward/test_memory_model.py); the cupy figures are the same "
     "statements on the device, UNVERIFIED on a GPU (cuFFT/cuBLAS workspaces and the cupy memory "
     "pool are not included, so they are lower bounds)")
+
+
+def _exp_stage_B(rows: int, n: int, cb: int) -> int:
+    """Bytes while one structure-factor exponential of `rows` x n is formed, the result included
+    (potentials._phase_factors): 32 rows n unblocked; cb rows n + 32 EXP_BLOCK_ROWS n blocked."""
+    blk = int(_potentials.EXP_BLOCK_ROWS)
+    if rows <= 2 * blk:
+        return MEM_EXP_B_PER_ELEMENT * rows * n
+    return cb * rows * n + MEM_EXP_B_PER_ELEMENT * blk * n
 
 
 def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_slice_max: int,
@@ -464,7 +499,6 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
     cell_B = MEM_CELL_B_PER_ATOM * int(n_atoms)
     starts_B = 8 * (int(n_slices) + 1)
     fxfy_B = 8 * (int(nx) + int(ny))
-    ex = MEM_EXP_B_PER_ELEMENT
     # arrays resident on the backend during the slice loop
     residents = {"propagators P(dz), P(dz/2)": 2 * cb * px,
                  "entrance wave (held by run_realisation during the loop)": cb * px,
@@ -475,11 +509,12 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
     # potential construction of the largest slice (_RealisedAtomic.projected), above its caller
     pos_B = 25 * n                                           # selected positions f8 x3 + mask b1
     pix_proj = (3 * cb + rb) * px                            # acc, ifft, V (real), V*(1+ir), astype
+    ex_x, ex_y = _exp_stage_B(int(nx), n, cb), _exp_stage_B(int(ny), n, cb)
     if nsp == 1:
-        atom_stage = pos_B + max(ex * nx * n, cb * nx * n + ex * ny * n)
+        atom_stage = pos_B + max(ex_x, cb * nx * n + ex_y)
     else:                                                    # upper bound (not measured)
         pix_proj += 2 * cb * px                              # acc and S of the previous species
-        atom_stage = pos_B + (ex + cb) * (nx + ny) * n
+        atom_stage = pos_B + cb * (nx + ny) * n + ex_x + ex_y
     pix_stage = pos_B + cb * (nx + ny) * n + pix_proj
     proj = max(atom_stage, pix_stage)
     # slice loop above the residents: psi, t_bl and t of the previous slice stay alive while the
@@ -523,8 +558,10 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
                     "slice boundaries, a few per cent more or fewer per slice)",
         loop_residents=residents,
         largest_slice=dict(atoms=n, exponentials_B=int(atom_stage), pixel_stage_B=int(pix_stage),
-                           formula="max(32 nx n, cb nx n + 32 ny n) and cb (nx + ny) n + "
-                                   "(3 cb + rb) px (one species)"),
+                           exp_block_rows=int(_potentials.EXP_BLOCK_ROWS),
+                           formula="max(E(nx), cb nx n + E(ny)) and cb (nx + ny) n + "
+                                   "(3 cb + rb) px (one species); E(m) = 32 m n for m <= 2 B, "
+                                   "cb m n + 32 B n otherwise (B = exp_block_rows)"),
         numpy=dict(phases=numpy_phases, peak=int(max(numpy_phases.values())),
                    peak_phase=max(numpy_phases, key=numpy_phases.get)),
         cupy=dict(device_phases={k: int(v) for k, v in dev_phases.items()},

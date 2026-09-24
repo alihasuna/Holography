@@ -434,7 +434,7 @@ def run_strip(su, *, r, th, u_rms=None, seed=None, realisation=0):
     params = MultisliceParams(energy_keV=200.0, nx=su["nx"], ny=su["ny"], dz_A=Q, propagator="exact",
                               band_limit="2/3", backend="numpy", precision="complex64", threads=4,
                               absorber=NumericalAbsorber(strength_V=100.0, profile="sin2"),
-                              theta_out_ext_rad=th, buildup_depth_A=20.0)
+                              theta_out_ext_rad=th, buildup_depth_A=20.0, working_reflections_hkl=((0, 0, 8),))
     t0 = time.time()
     ew = run_realisation(cell, potential=pot, beam=beam, params=params, realisation=realisation,
                          seed=(None if fp is None else seed))
@@ -567,7 +567,7 @@ def memtime_mode(out_path):
         return MultisliceParams(energy_keV=200.0, nx=nx, ny=ny, dz_A=Q, propagator="exact", band_limit="2/3",
                                 backend="numpy", precision="complex64", threads=4,
                                 absorber=NumericalAbsorber(strength_V=100.0, profile="sin2"),
-                                theta_out_ext_rad=0.0161347, buildup_depth_A=20.0)
+                                theta_out_ext_rad=0.0161347, buildup_depth_A=20.0, working_reflections_hkl=((0, 0, 8),))
 
     # (a) host bytes per atom while realising: atom-heavy, pixel-light cell
     cell = build_flat_100(y_periods=2, z_periods=2000, depth_below=140.0, vac=40.0, ent=ent)
@@ -689,7 +689,7 @@ def engine_check_cell(cell, *, th, H, n_real, label):
     prm = MultisliceParams(energy_keV=200.0, nx=nx, ny=ny, dz_A=Q, propagator="exact", band_limit="2/3",
                            backend="numpy", precision="complex64", threads=4,
                            absorber=NumericalAbsorber(strength_V=100.0, profile="sin2"),
-                           theta_out_ext_rad=th, buildup_depth_A=20.0)
+                           theta_out_ext_rad=th, buildup_depth_A=20.0, working_reflections_hkl=((0, 0, 8),))
     pot = AtomicPotential(cell, parameterisation="kirkland",
                           physical_absorption=PhysicalAbsorption(model="proportional", ratio=0.1, label=TEST_ABS),
                           frozen_phonons=None, static_lattice_label="ASSUMPTION: static lattice (H5)")
@@ -727,11 +727,12 @@ def study_point_checks():
         ab = PhysicalAbsorption(model="proportional", ratio=r,
                                 label=("ASSUMPTION: no absorption" if r == 0 else TEST_ABS))
         if kind == "t":
-            pair = translation_pair(theta=theta, width_periods=wp, extra_A=extra, absorption=ab, precision="complex64")
+            pair = translation_pair(theta=theta, width_periods=wp, extra_A=extra, absorption=ab, precision="complex64",
+                                    clean_depth_A=21.0, azimuth="110")
             cell, prm, nrun = pair["A"][0], pair["params"], 2
         else:
             cell, _, _, prm = step_case(theta=theta, width_periods=wp, extra_A=extra, absorption=ab,
-                                        precision="complex64")
+                                        precision="complex64", clean_depth_A=21.0, azimuth="110")
             nrun = 1
         est = estimate_resources(cell, prm, realisations=nrun, calibrate_cpu=False)
         dzs = prm.dz_A
@@ -939,7 +940,8 @@ def main_report():
         try:
             check_band(g_, rule="2/3", wavelength_A=LAM, angles_rad=dict(incident_ext=th_e, outgoing_ext=th_e,
                                                                          incident_int=th_int_eng,
-                                                                         outgoing_int=th_int_eng))
+                                                                         outgoing_int=th_int_eng),
+                       reflections_per_A={})
             passed.append(float(dx))
         except SamplingError:
             pass

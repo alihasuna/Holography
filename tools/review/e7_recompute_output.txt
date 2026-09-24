@@ -1,0 +1,265 @@
+E7 recompute, numpy 2.4.6; started 2026-09-24 00:49:19
+
+====================================================================================================
+1. Beam constants (own formulas from the SI-2019 constants of reflection_holo.constants)
+====================================================================================================
+lambda = 0.0250793405 A, k = 250.5323184 rad/A, sigma = 7.288401041e-04 rad/(V A)
+2 k sigma = 0.36519600 rad^2/(A^2 V) (U = 2 k sigma V)
+2 E_tot/(hbar c)^2 = 0.36519600 (same quantity)
+   CHECK PASS  lambda vs physics_conventions 0.02507934 A: got np.float64(0.02507934045046928) want 0.02507934 err 4.505e-10 tol 5.0e-09
+   CHECK PASS  k vs physics_conventions 250.5323 rad/A: got np.float64(250.53231840720184) want 250.5323 err 1.841e-05 tol 5.0e-05
+   CHECK PASS  sigma vs P2 7.288401e-4: got np.float64(0.0007288401040975036) want 0.0007288401 err 4.098e-12 tol 5.0e-10
+   CHECK PASS  2 k sigma = 2 E_tot/(hbar c)^2: got np.float64(0.3651960020553878) want 0.3651960020553878 err 0.000e+00 tol 1.0e-12 (relative)
+
+====================================================================================================
+2. Engine potential: V0 and V_(0,0,l) (own Kirkland formula; engine scattering factor; engine-realised laterally averaged potential of a flat [100] Si(001) cell, DFT)
+====================================================================================================
+h^2/(2 pi m0 e) = 47.877647 V A^2; a^3 = 160.182629 A^3
+f_e(0) = 5.81428392 A; f_e(8/a) = 0.43315611 A
+engine MIP (8 F(0)/a^3) = 13.9028426 V
+engine-realised lateral average, dx = a/256 = 0.021214 A, window 20 layer periods from x_s - 30 a/4: V0 = 13.9028426 V
+   (0,0, 4) f = 0.73653 1/A: DFT 2.7400937 V (imag +4.3e-14 V); engine 8F/a^3 2.7400937 V; own Kirkland formula 2.7400938 V
+   (0,0, 8) f = 1.47305 1/A: DFT 1.0357425 V (imag +3.8e-14 V); engine 8F/a^3 1.0357425 V; own Kirkland formula 1.0357425 V
+   (0,0,12) f = 2.20958 1/A: DFT 0.5467016 V (imag +3.5e-14 V); engine 8F/a^3 0.5467016 V; own Kirkland formula 0.5467016 V
+   (0,0,16) f = 2.94610 1/A: DFT 0.3265205 V (imag +2.1e-14 V); engine 8F/a^3 0.3265205 V; own Kirkland formula 0.3265206 V
+   (0,0,20) f = 3.68263 1/A: DFT 0.2136469 V (imag +2.0e-14 V); engine 8F/a^3 0.2136469 V; own Kirkland formula 0.2136469 V
+   (0,0,24) f = 4.41916 1/A: DFT 0.1502739 V (imag +2.1e-14 V); engine 8F/a^3 0.1502739 V; own Kirkland formula 0.1502739 V
+engine-realised lateral average, dx = a/512 = 0.010607 A, window 20 layer periods from x_s - 30 a/4: V0 = 13.9028426 V
+   (0,0, 4) f = 0.73653 1/A: DFT 2.7400937 V (imag +4.3e-14 V); engine 8F/a^3 2.7400937 V; own Kirkland formula 2.7400938 V
+   (0,0, 8) f = 1.47305 1/A: DFT 1.0357425 V (imag +3.8e-14 V); engine 8F/a^3 1.0357425 V; own Kirkland formula 1.0357425 V
+   (0,0,12) f = 2.20958 1/A: DFT 0.5467016 V (imag +3.5e-14 V); engine 8F/a^3 0.5467016 V; own Kirkland formula 0.5467016 V
+   (0,0,16) f = 2.94610 1/A: DFT 0.3265205 V (imag +2.1e-14 V); engine 8F/a^3 0.3265205 V; own Kirkland formula 0.3265206 V
+   (0,0,20) f = 3.68263 1/A: DFT 0.2136469 V (imag +2.0e-14 V); engine 8F/a^3 0.2136469 V; own Kirkland formula 0.2136469 V
+   (0,0,24) f = 4.41916 1/A: DFT 0.1502739 V (imag +2.2e-14 V); engine 8F/a^3 0.1502739 V; own Kirkland formula 0.1502739 V
+own Kirkland formula: V0 = 13.9028426 V, V_008 = 1.0357425 V
+   CHECK PASS  own V0 vs engine MIP: got np.float64(13.90284257156463) want 13.902842551200722 err 2.036e-08 tol 1.0e-06
+   CHECK PASS  own V_008 vs engine 8F/a^3: got np.float64(1.035742538328042) want np.float64(1.0357424929524228) err 4.538e-08 tol 1.0e-07
+   CHECK PASS  engine-realised V_008 (dx a/512) vs P2 1.035742: got np.float64(1.0357424929524448) want 1.035742 err 4.930e-07 tol 1.0e-06
+   CHECK PASS  engine-realised V0 (dx a/512) vs P2 13.902843: got np.float64(13.902842551200564) want 13.902843 err 4.488e-07 tol 1.0e-06
+   CHECK PASS  V_008 vs H2/H5 1.036 V (rounded): got np.float64(1.035742538328042) want 1.036 err 2.575e-04 tol 5.0e-04
+   CHECK PASS  V0 vs IAM MIP 13.903 V (rounded): got np.float64(13.90284257156463) want 13.903 err 1.574e-04 tol 5.0e-04
+
+====================================================================================================
+3. Plateau parameters of (0,0,8) (r = 0), exact band edges
+====================================================================================================
+G = 9.255461 rad/A, d = a/8 = 0.678863 A, U_0 = 5.077263, |U_g| = 0.378249 rad^2/A^2
+two-beam centre K_c = 4.042107 rad/A, theta_ext = 16.13477 mrad, theta_int = 18.47189 mrad
+   CHECK PASS  centre vs P2 16.13477 mrad: got np.float64(16.134772869706374) want 16.13477 err 2.870e-06 tol 5.0e-06
+two-beam edges 15.94690 to 16.32049 mrad, width 373.59 urad
+EXACT gap (single harmonic, tr M = -2): 15.94648 to 16.32008 mrad, width 373.595 urad, midpoint 16.13328 mrad; shifts vs two-beam -0.416 / -0.409 urad
+Mathieu second-order edge shift -U_g^2/(2 G^2) = -8.3508e-04 rad^2/A^2 = -0.412 urad (both edges)
+   CHECK PASS  exact low edge vs P2 15.94648 mrad: got np.float64(15.946482161504742) want 15.94648 err 2.162e-06 tol 6.0e-06
+   CHECK PASS  exact high edge vs P2 16.32008 mrad: got np.float64(16.32007684294372) want 16.32008 err 3.157e-06 tol 6.0e-06
+EXACT gap, full layer potential (V_004..V_048, tr M = +2 over a/4): 15.98286 to 16.31535 mrad, width 332.492 urad (-11.0 %), midpoint shift +15.83 urad
+extinction depth G/|U_g| = 24.469 A; kc = sigma V_g = 7.548903e-04 rad/A, 1/kc = 1324.7 A, xi_g = pi/kc = 4161.7 A
+phase slope at the centre K_c/(sigma V_g) = 5.3546 rad/mrad; 1/V_g = 0.9655 rad/V
+
+====================================================================================================
+4. Exact R(theta) at x_s (cosine maximum at x_s): methods A, B, C; P2's table
+====================================================================================================
+r = 0.0: max |R_A - R_B| = 8.4e-10 (13 angles)
+   eta    theta(mrad)   |R|      arg R   | P2 |R|   P2 arg  | d|R|     d arg
+   -3.0  15.56435   0.10099  +0.0000  | 0.10099  +0.0000  | -6.2e-07  +0.0e+00
+   -2.0  15.75678   0.20165  +0.0000  | 0.20165  +0.0000  | +3.3e-06  +0.0e+00
+   -1.5  15.85213   0.32159  +0.0000  | 0.32159  +0.0000  | -3.5e-06  +0.0e+00
+   -1.0  15.94690   1.00000  +0.0762  | 1.00000  +0.0762  | +0.0e+00  +1.9e-05
+   -0.9  15.96579   1.00000  +0.5207  | 1.00000  +0.5207  | +2.2e-16  -2.5e-05
+   -0.5  16.04111   1.00000  +1.1722  | 1.00000  +1.1722  | -1.1e-16  +1.1e-05
+   +0.0  16.13477   1.00000  +1.7080  | 1.00000  +1.7080  | +2.2e-16  -2.4e-05
+   +0.5  16.22789   1.00000  +2.2088  | 1.00000  +2.2088  | +0.0e+00  +1.1e-05
+   +0.9  16.30201   1.00000  +2.7497  | 1.00000  +2.7497  | +0.0e+00  -1.4e-05
+   +1.0  16.32049   0.94342  -3.1416  | 0.94342  +3.1416  | +4.1e-06  +0.0e+00
+   +1.5  16.41255   0.43592  -3.1416  | 0.43592  +3.1416  | -1.9e-06  +0.0e+00
+   +2.0  16.50411   0.32690  -3.1416  | 0.32690  +3.1416  | -4.4e-06  +0.0e+00
+   +3.0  16.68571   0.23263  -3.1416  | 0.23263  +3.1416  | +1.3e-06  +0.0e+00
+r = 0.05: max |R_A - R_B| = 2.0e-11 (13 angles), max |R_A - R_C| = 2.0e-11 (C: 3000 periods = 2037 A)
+   eta    theta(mrad)   |R|      arg R   | P2 |R|   P2 arg  | d|R|     d arg
+   -3.0  15.56435   0.09949  +0.4651  | 0.09949  +0.4651  | +8.3e-07  -2.1e-05
+   -2.0  15.75678   0.18661  +0.5665  | 0.18661  +0.5665  | +3.9e-06  +4.3e-05
+   -1.5  15.85213   0.26631  +0.7042  | 0.26631  +0.7042  | -2.4e-06  -4.7e-05
+   -1.0  15.94690   0.37881  +0.9693  | 0.37881  +0.9693  | -2.1e-06  -4.2e-05
+   -0.9  15.96579   0.40233  +1.0399  | 0.40233  +1.0399  | -4.8e-06  -2.9e-06
+   -0.5  16.04111   0.48204  +1.3547  | 0.48204  +1.3547  | +3.8e-06  -4.3e-05
+   +0.0  16.13477   0.53532  +1.7627  | 0.53532  +1.7627  | +1.2e-06  +3.0e-06
+   +0.5  16.22789   0.53497  +2.1636  | 0.53497  +2.1636  | +3.3e-06  +2.8e-05
+   +0.9  16.30201   0.48919  +2.4676  | 0.48919  +2.4676  | -1.2e-06  +3.7e-05
+   +1.0  16.32049   0.47167  +2.5353  | 0.47167  +2.5353  | -4.3e-06  +5.4e-06
+   +1.5  16.41255   0.37711  +2.7829  | 0.37711  +2.7829  | -3.1e-06  -2.9e-05
+   +2.0  16.50411   0.30632  +2.9101  | 0.30632  +2.9101  | -4.4e-06  +3.6e-05
+   +3.0  16.68571   0.22725  +3.0251  | 0.22725  +3.0251  | -9.3e-07  -2.6e-05
+r = 0.1: max |R_A - R_B| = 1.3e-11 (13 angles), max |R_A - R_C| = 1.3e-11 (C: 3000 periods = 2037 A)
+   eta    theta(mrad)   |R|      arg R   | P2 |R|   P2 arg  | d|R|     d arg
+   -3.0  15.56435   0.09611  +0.8888  | 0.09611  +0.8888  | +3.6e-06  -2.1e-05
+   -2.0  15.75678   0.16092  +1.0177  | 0.16092  +1.0177  | -2.5e-06  +3.9e-05
+   -1.5  15.85213   0.20675  +1.1544  | 0.20675  +1.1544  | +4.4e-06  -3.3e-05
+   -1.0  15.94690   0.25860  +1.3508  | 0.25860  +1.3508  | -4.1e-06  +2.4e-05
+   -0.9  15.96579   0.26890  +1.3970  | 0.26890  +1.3970  | -1.1e-06  -4.8e-05
+   -0.5  16.04111   0.30648  +1.5991  | 0.30648  +1.5991  | +2.6e-06  -2.0e-05
+   +0.0  16.13477   0.33836  +1.8755  | 0.33836  +1.8755  | +3.1e-06  -2.8e-05
+   +0.5  16.22789   0.34655  +2.1544  | 0.34655  +2.1544  | +2.5e-06  -3.7e-05
+   +0.9  16.30201   0.33531  +2.3614  | 0.33531  +2.3614  | -5.6e-07  -4.9e-05
+   +1.0  16.32049   0.33045  +2.4089  | 0.33045  +2.4089  | -2.5e-06  -2.1e-05
+   +1.5  16.41255   0.29920  +2.6125  | 0.29920  +2.6125  | +1.1e-06  +3.3e-05
+   +2.0  16.50411   0.26579  +2.7585  | 0.26579  +2.7585  | -1.9e-06  +2.7e-05
+   +3.0  16.68571   0.21364  +2.9306  | 0.21364  +2.9306  | +1.2e-06  +2.9e-05
+   CHECK PASS  P2 table 6.3 'ex' columns reproduced to the printed digits: got np.float64(4.936599281668563e-05) want 0.0 err 4.937e-05 tol 6.0e-05
+r = 0: arg R at the two-beam centre 1.707976 rad; at the exact midpoint 1.700074; at the exact edges +0.000000 and +3.141563 (sweep 3.141563 rad); |R| - 1 at the centre +2.2e-16
+   CHECK PASS  arg R at the centre vs P2 1.70798: got np.float64(1.7079763323103236) want 1.70798 err 3.668e-06 tol 6.0e-06
+truncation offset t = 0.16972 A (cosine maximum t below x_s): arg R(centre) = -3.13195 rad (two-beam factor exp(i G t) adds +1.57080)
+truncation offset t = 0.33943 A (cosine maximum t below x_s): arg R(centre) = -1.70360 rad (two-beam factor exp(i G t) adds -3.14159)
+r = 0.05: max |R| = 0.54226 at 16.18180 mrad (grid 0.1 urad)
+r = 0.1: max |R| = 0.34697 at 16.21110 mrad (grid 0.1 urad)
+r = 0.00: |R|^2 FWHM 396.96 urad centred 16.13633 mrad; arg R at the FWHM edges +0.0000 -> -3.1416 (sweep -3.1416 rad)
+r = 0.05: |R|^2 FWHM 455.30 urad centred 16.17823 mrad; arg R at the FWHM edges +0.9826 -> +2.7699 (sweep 1.7872 rad)
+r = 0.10: |R|^2 FWHM 643.78 urad centred 16.24484 mrad; arg R at the FWHM edges +1.2955 -> +2.8318 (sweep 1.5363 rad)
+full layer potential, r = 0, at 16.13477 mrad: |R| = 1.000000, arg R = 1.67006 rad (Magnus 1024 vs 2048 steps per a/4: 1.6e-11)
+r = 0.0: 301 angles 15.4-16.9 mrad: max |R_A - R_B| = 1.4e-09; max |R| = 1.000000
+r = 0.05: 301 angles 15.4-16.9 mrad: max |R_A - R_B| = 2.0e-11; max |R| = 0.542245
+r = 0.1: 301 angles 15.4-16.9 mrad: max |R_A - R_B| = 1.3e-11; max |R| = 0.346970
+
+====================================================================================================
+5. Two-beam closed forms against the exact solution (fine eta grids, 4001 points)
+====================================================================================================
+Fresnel step at the centre r_F = -0.067547; 2 atan|r_F| = 0.134890 rad
+Darwin/TT phase at the centre pi/2 = 1.570796; exact 1.707976; exact - Darwin = 0.137180 rad; refracted Darwin 1.705686
+r = 0.00, |eta| <= 0.9: two-beam matched  max |dR| = 7.93e-03 at eta -0.900; max |d arg| = 7.93e-03 rad
+r = 0.00, |eta| <= 0.9: Darwin + Fresnel  max |dR| = 5.73e-03 at eta -0.900; max |d arg| = 5.73e-03 rad
+r = 0.00, |eta| <= 0.9: Darwin/TT         max |dR| = 1.38e-01 at eta -0.091; max |d arg| = 1.38e-01 rad
+r = 0.05, |eta| <= 3.0: two-beam matched  max |dR| = 3.86e-03 at eta -0.093; max |d arg| = 9.87e-03 rad
+r = 0.05, |eta| <= 3.0: Darwin + Fresnel  max |dR| = 1.04e-03 at eta -0.006; max |d arg| = 2.01e-03 rad
+r = 0.05, |eta| <= 3.0: Darwin/TT         max |dR| = 8.78e-02 at eta -0.083; max |d arg| = 1.80e-01 rad
+r = 0.10, |eta| <= 3.0: two-beam matched  max |dR| = 2.94e-03 at eta -0.177; max |d arg| = 1.80e-02 rad
+r = 0.10, |eta| <= 3.0: Darwin + Fresnel  max |dR| = 4.96e-04 at eta +0.038; max |d arg| = 1.49e-03 rad
+r = 0.10, |eta| <= 3.0: Darwin/TT         max |dR| = 7.60e-02 at eta -0.255; max |d arg| = 3.48e-01 rad
+   CHECK PASS  Darwin + Fresnel vs exact, r = 0, |eta|<=0.9 (P2 5.7e-3): got np.float64(0.005733042494769252) want 0.00573 err 3.042e-06 tol 5.0e-05
+   CHECK PASS  Darwin + Fresnel vs exact, r = 0.05, |eta|<=3 (P2 1.0e-3): got np.float64(0.0010360276272407347) want 0.00104 err 3.972e-06 tol 5.0e-05
+
+====================================================================================================
+6. Paraxial and 'exact' propagators (stationary R(K), laterally uniform potential)
+====================================================================================================
+eta = -0.9: dV0_eff = -2.0531 mV; arg(R(V0+dV)/R(V0)) = -5.1171e-03 rad; |R1| - |R0| = -2.2e-16
+eta = +0.0: dV0_eff = -2.0908 mV; arg(R(V0+dV)/R(V0)) = -2.0176e-03 rad; |R1| - |R0| = -5.6e-16
+eta = +0.9: dV0_eff = -2.1285 mV; arg(R(V0+dV)/R(V0)) = -4.2063e-03 rad; |R1| - |R0| = +0.0e+00
+plateau shift for dV0 = -2.0908 mV: d(theta) = +0.3770 urad = +1.01e-03 of the width
+   CHECK PASS  dV0_eff at the centre vs P2 -2.0911 mV (to 1 uV): got np.float64(-2.090785482726276) want -2.0911 err 3.145e-04 tol 1.0e-03
+rung 1 (V_g = 0, V0 = 12 V): |r_exact-prop|/|r_Fresnel| - 1 (exact dispersion of both schemes; M2 section 2 measured differences quoted: -0.005, -0.013, -0.045 %)
+   10.00 mrad: predicted -0.0052 %
+   16.47 mrad: predicted -0.0137 %
+   30.00 mrad: predicted -0.0450 %
+(e V)^2 term: dU0 = 5.0191e-05 rad^2/A^2 (9.886e-06 of U_0) = V0 + 0.1374 mV; arg R changes by +1.326e-04 rad at the centre (mean-potential part only)
+
+====================================================================================================
+7. Build-up after a leading edge: two-beam closed form (sharp edge) and exact transient
+====================================================================================================
+r = 0.05: slowest decay Z_a = 1/(r sigma (V0 - V_g)) = 2133 A; fastest 1/(r sigma (V0 + V_g)) = 1837 A
+r = 0.1: slowest decay Z_a = 1/(r sigma (V0 - V_g)) = 1066 A; fastest 1/(r sigma (V0 + V_g)) = 918 A
+r = 0.00 eta = -0.5 |R_D| = 1.0000: abs 1e-2    26900 A, abs 1e-3   134660 A, phase 1e-2 rad    23220 A, rel 1e-2    26900 A, rel 1e-3   134660 A; |A(Zmax) - R_D| = 1.9e-04
+r = 0.00 eta = +0.0 |R_D| = 1.0000: abs 1e-2    22580 A, abs 1e-3   113560 A, phase 1e-2 rad        0 A, rel 1e-2    22580 A, rel 1e-3   113560 A; |A(Zmax) - R_D| = 1.4e-04
+      |A - R_D| at 1000 A: 6.3e-01, 2000 A: 3.1e-01, 3000 A: 8.1e-02, 4000 A: 5.1e-02, 5000 A: 9.2e-02, 8000 A: 1.9e-02, 10000 A: 3.5e-02
+r = 0.00 eta = +0.5 |R_D| = 1.0000: abs 1e-2    26900 A, abs 1e-3   134660 A, phase 1e-2 rad    23220 A, rel 1e-2    26900 A, rel 1e-3   134660 A; |A(Zmax) - R_D| = 1.9e-04
+r = 0.00 eta = +0.9 |R_D| = 1.0000: abs 1e-2    68800 A, abs 1e-3   342680 A, phase 1e-2 rad    65220 A, rel 1e-2    68800 A, rel 1e-3   342680 A; |A(Zmax) - R_D| = 7.8e-04
+r = 0.05 eta = -0.5 |R_D| = 0.5007: abs 1e-2     3500 A, abs 1e-3     7100 A, phase 1e-2 rad     3720 A, rel 1e-2     3760 A, rel 1e-3     7540 A; |A(Zmax) - R_D| = 3.9e-13
+r = 0.05 eta = +0.0 |R_D| = 0.5338: abs 1e-2     3480 A, abs 1e-3     7120 A, phase 1e-2 rad     2900 A, rel 1e-2     3720 A, rel 1e-3     7540 A; |A(Zmax) - R_D| = 1.1e-13
+      |A - R_D| at 1000 A: 2.4e-01, 2000 A: 9.1e-02, 3000 A: 2.4e-02, 4000 A: 2.4e-03, 5000 A: 4.2e-03, 8000 A: 2.4e-04, 10000 A: 2.0e-04
+r = 0.05 eta = +0.5 |R_D| = 0.5143: abs 1e-2     3660 A, abs 1e-3     7340 A, phase 1e-2 rad     3560 A, rel 1e-2     4160 A, rel 1e-3     7920 A; |A(Zmax) - R_D| = 4.4e-13
+r = 0.05 eta = +0.9 |R_D| = 0.4536: abs 1e-2     3860 A, abs 1e-3     7540 A, phase 1e-2 rad     4480 A, rel 1e-2     5320 A, rel 1e-3     8460 A; |A(Zmax) - R_D| = 1.1e-12
+r = 0.10 eta = -0.5 |R_D| = 0.3186: abs 1e-2     2560 A, abs 1e-3     3720 A, phase 1e-2 rad     3180 A, rel 1e-2     3200 A, rel 1e-3     4140 A; |A(Zmax) - R_D| = 1.2e-12
+r = 0.10 eta = +0.0 |R_D| = 0.3333: abs 1e-2     2580 A, abs 1e-3     3760 A, phase 1e-2 rad     1960 A, rel 1e-2     3200 A, rel 1e-3     4300 A; |A(Zmax) - R_D| = 8.1e-13
+      |A - R_D| at 1000 A: 9.9e-02, 2000 A: 2.5e-02, 3000 A: 4.8e-03, 4000 A: 5.7e-04, 5000 A: 2.2e-04, 8000 A: 6.9e-06, 10000 A: 1.1e-06
+r = 0.10 eta = +0.5 |R_D| = 0.3249: abs 1e-2     2600 A, abs 1e-3     3860 A, phase 1e-2 rad     3020 A, rel 1e-2     3260 A, rel 1e-3     4600 A; |A(Zmax) - R_D| = 1.4e-12
+r = 0.10 eta = +0.9 |R_D| = 0.3020: abs 1e-2     2600 A, abs 1e-3     3920 A, phase 1e-2 rad     3320 A, rel 1e-2     3320 A, rel 1e-3     4780 A; |A(Zmax) - R_D| = 2.4e-12
+asymptote sqrt(2/pi)(kc Z)^(-3/2) at eta = 0: Z(1e-2) = 24551 A, Z(1e-3) = 113957 A
+   CHECK PASS  r = 0, eta = 0, abs 1e-2 build-up vs P2 22 580 A: got 22580.0 want 22580 err 0.000e+00 tol 4.0e+01
+   CHECK PASS  r = 0, eta = 0, abs 1e-3 vs P2 113 560 A: got 113560.0 want 113560 err 0.000e+00 tol 4.0e+01
+   CHECK PASS  r = 0, eta = 0.9, abs 1e-3 vs P2 342 680 A: got 342680.0 want 342680 err 0.000e+00 tol 4.0e+01
+   CHECK PASS  r = 0.05, eta = 0, abs 1e-3 vs P2 7120 A: got 7120.0 want 7120 err 0.000e+00 tol 4.0e+01
+   CHECK PASS  r = 0.1, eta = 0, abs 1e-3 vs P2 3760 A: got 3760.0 want 3760 err 0.000e+00 tol 4.0e+01
+   CHECK PASS  r = 0.05, eta = 0, rel 1e-3 vs H2 7538 A: got 7540.0 want 7538 err 2.000e+00 tol 4.0e+01
+   CHECK PASS  r = 0.1, eta = 0, rel 1e-2 vs H2 3194 A: got 3200.0 want 3194 err 6.000e+00 tol 4.0e+01
+   w = 400 A, r = 0.0, eta = 0, Z =    1953 A: |A_ex - R_ex| = 3.27e-01, |A_TT - R_TT| = 3.30e-01, |arg(A_ex/R_ex)| = 9.6e-03
+   w = 400 A, r = 0.0, eta = 0, Z =    4004 A: |A_ex - R_ex| = 5.22e-02, |A_TT - R_TT| = 4.74e-02, |arg(A_ex/R_ex)| = 2.0e-02
+   w = 400 A, r = 0.0, eta = 0, Z =    8008 A: |A_ex - R_ex| = 1.97e-02, |A_TT - R_TT| = 1.82e-02, |arg(A_ex/R_ex)| = 8.2e-03
+   w = 400 A, r = 0.0, eta = 0, Z =   16016 A: |A_ex - R_ex| = 4.66e-03, |A_TT - R_TT| = 3.89e-03, |arg(A_ex/R_ex)| = 2.8e-03
+   w = 400 A, r = 0.0, eta = 0, Z =   32031 A: |A_ex - R_ex| = 1.65e-03, |A_TT - R_TT| = 1.40e-03, |arg(A_ex/R_ex)| = 7.5e-04
+   w = 400 A, r = 0.1, eta = 0, Z =    1953 A: |A_ex - R_ex| = 2.80e-02, |A_TT - R_TT| = 2.87e-02, |arg(A_ex/R_ex)| = 2.2e-02
+   w = 400 A, r = 0.1, eta = 0, Z =    4004 A: |A_ex - R_ex| = 5.20e-04, |A_TT - R_TT| = 6.65e-04, |arg(A_ex/R_ex)| = 1.1e-03
+   w = 400 A, r = 0.1, eta = 0, Z =    8008 A: |A_ex - R_ex| = 6.06e-06, |A_TT - R_TT| = 7.30e-06, |arg(A_ex/R_ex)| = 1.6e-05
+   w = 400 A, r = 0.1, eta = 0, Z =   16016 A: |A_ex - R_ex| = 1.46e-09, |A_TT - R_TT| = 1.69e-09, |arg(A_ex/R_ex)| = 3.9e-09
+   w = 400 A, r = 0.1, eta = 0, Z =   32031 A: |A_ex - R_ex| = 9.83e-16, |A_TT - R_TT| = 4.24e-16, |arg(A_ex/R_ex)| = 2.5e-15
+   R2-A exit distance: r = 0.1, eta = -0.9, Z = 5000 A (w = 248 A): exact |A - R| = 1.3e-04
+   R2-A exit distance: r = 0.1, eta = +0.0, Z = 5000 A (w = 248 A): exact |A - R| = 1.9e-04
+   R2-A exit distance: r = 0.1, eta = +0.9, Z = 5000 A (w = 248 A): exact |A - R| = 2.2e-04
+   R2-A exit distance: r = 0.1, eta = +3.0, Z = 5000 A (w = 248 A): exact |A - R| = 1.1e-04
+   R2-A exit distance: r = 0.05, eta = -0.9, Z = 10000 A (w = 248 A): exact |A - R| = 1.7e-04
+   R2-A exit distance: r = 0.05, eta = +0.0, Z = 10000 A (w = 248 A): exact |A - R| = 1.9e-04
+   R2-A exit distance: r = 0.05, eta = +0.9, Z = 10000 A (w = 248 A): exact |A - R| = 2.3e-04
+   R2-A exit distance: r = 0.05, eta = +3.0, Z = 10000 A (w = 248 A): exact |A - R| = 6.5e-05
+
+====================================================================================================
+8. Numerical bulk absorber (100 V sin^2, 15 A) below a clean depth D: 1D model
+====================================================================================================
+r = 0.00 D =    60 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.8e-01 -1.0:3.4e-01 -0.9:1.1e-01 +0.0:1.1e-02 +0.9:9.0e-02 +1.0:3.0e-01 +1.5:3.6e-01 +3.0:1.6e-01
+r = 0.00 D =   100 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.0e-01 -1.0:2.0e-01 -0.9:2.4e-02 +0.0:4.4e-04 +0.9:2.1e-02 +1.0:1.9e-01 +1.5:2.6e-01 +3.0:1.6e-01
+r = 0.00 D =   150 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.4e-01 -1.0:1.2e-01 -0.9:4.0e-03 +0.0:7.4e-06 +0.9:3.6e-03 +1.0:1.3e-01 +1.5:3.1e-01 +3.0:1.5e-01
+r = 0.00 D =   250 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.2e-01 -1.0:5.1e-02 -0.9:1.1e-04 +0.0:2.1e-09 +0.9:1.1e-04 +1.0:8.6e-02 +1.5:2.8e-01 +3.0:1.6e-01
+r = 0.05 D =    60 A: |R_cell - R_inf| at eta -3.0:3.5e-03 -1.5:3.7e-03 -1.0:2.6e-03 -0.9:2.4e-03 +0.0:1.4e-03 +0.9:3.0e-03 +1.0:3.4e-03 +1.5:5.0e-03 +3.0:4.8e-03
+r = 0.05 D =   100 A: |R_cell - R_inf| at eta -3.0:3.0e-04 -1.5:2.2e-04 -1.0:1.0e-04 -0.9:8.2e-05 +0.0:2.7e-05 +0.9:1.2e-04 +1.0:1.6e-04 +1.5:3.8e-04 +3.0:5.2e-04
+r = 0.05 D =   150 A: |R_cell - R_inf| at eta -3.0:1.4e-05 -1.5:6.4e-06 -1.0:1.7e-06 -0.9:1.2e-06 +0.0:2.0e-07 +0.9:2.3e-06 +1.0:3.5e-06 +1.5:1.5e-05 +3.0:3.3e-05
+r = 0.10 D =    60 A: |R_cell - R_inf| at eta -3.0:7.7e-05 -1.5:8.0e-05 -1.0:7.2e-05 -0.9:7.1e-05 +0.0:6.8e-05 +0.9:9.8e-05 +1.0:1.0e-04 +1.5:1.3e-04 +3.0:1.4e-04
+r = 0.10 D =   100 A: |R_cell - R_inf| at eta -3.0:6.3e-07 -1.5:4.7e-07 -1.0:3.6e-07 -0.9:3.4e-07 +0.0:2.9e-07 +0.9:5.9e-07 +1.0:6.6e-07 +1.5:1.1e-06 +3.0:1.8e-06
+step check (r = 0, D = 150 A, half steps): max change 2.0e-10
+V_g = 0 (rung-1 geometry), D = 150 A, eta = -1.5: |R_cell - R_Fresnel| = 1.1e-04
+r = 0, D = 150 A, ramp 400 A at 20 V: |R_cell - R_inf| at eta -1.5, +1.5 = 1.04e-01, 9.41e-02
+r = 0, D = 150 A, ramp 800 A at 20 V: |R_cell - R_inf| at eta -1.5, +1.5 = 1.95e-02, 1.79e-02
+null-test pair at 16.13477 mrad (R at each crystal's own surface; B = A + a/2):
+   single (0,0,8) r = 0.00 (|R_inf| = 1.0000): D   21: arg(B/A) -1.8e-03, |B/A|-1 +5.8e-02, |R_A - R_inf| 2.5e-01; D   55: arg(B/A) +6.0e-06, |B/A|-1 +3.5e-03, |R_A - R_inf| 1.7e-02; D   60: arg(B/A) +5.4e-06, |B/A|-1 +2.3e-03, |R_A - R_inf| 1.1e-02; D   65: arg(B/A) +4.9e-06, |B/A|-1 +1.5e-03, |R_A - R_inf| 7.7e-03; D  100: arg(B/A) +3.2e-07, |B/A|-1 +8.8e-05, |R_A - R_inf| 4.4e-04
+   single (0,0,8) r = 0.05 (|R_inf| = 0.5353): D   21: arg(B/A) -4.4e-03, |B/A|-1 +3.0e-02, |R_A - R_inf| 6.3e-02; D   55: arg(B/A) -2.2e-04, |B/A|-1 +9.7e-04, |R_A - R_inf| 2.3e-03; D   60: arg(B/A) -1.4e-04, |B/A|-1 +5.9e-04, |R_A - R_inf| 1.4e-03; D   65: arg(B/A) -9.3e-05, |B/A|-1 +3.6e-04, |R_A - R_inf| 8.5e-04; D  100: arg(B/A) -4.2e-06, |B/A|-1 +1.1e-05, |R_A - R_inf| 2.7e-05
+   single (0,0,8) r = 0.10 (|R_inf| = 0.3384): D   21: arg(B/A) -3.2e-03, |B/A|-1 +1.3e-02, |R_A - R_inf| 1.4e-02; D   55: arg(B/A) -4.4e-05, |B/A|-1 +1.1e-04, |R_A - R_inf| 1.3e-04; D   60: arg(B/A) -2.3e-05, |B/A|-1 +5.7e-05, |R_A - R_inf| 6.8e-05; D   65: arg(B/A) -1.2e-05, |B/A|-1 +2.9e-05, |R_A - R_inf| 3.4e-05; D  100: arg(B/A) -1.4e-07, |B/A|-1 +2.2e-07, |R_A - R_inf| 2.9e-07
+   full layer pot. r = 0.00 (|R_inf| = 1.0000): D   21: arg(B/A) -8.1e-03, |B/A|-1 +6.5e-02, |R_A - R_inf| 3.0e-01; D   55: arg(B/A) -4.9e-04, |B/A|-1 +5.3e-03, |R_A - R_inf| 2.9e-02; D   60: arg(B/A) -3.4e-04, |B/A|-1 +3.7e-03, |R_A - R_inf| 2.0e-02; D   65: arg(B/A) -2.3e-04, |B/A|-1 +2.5e-03, |R_A - R_inf| 1.4e-02; D  100: arg(B/A) -1.8e-05, |B/A|-1 +2.0e-04, |R_A - R_inf| 1.1e-03
+   full layer pot. r = 0.05 (|R_inf| = 0.5014): D   21: arg(B/A) -9.5e-03, |B/A|-1 +3.2e-02, |R_A - R_inf| 6.8e-02; D   55: arg(B/A) -6.3e-04, |B/A|-1 +1.3e-03, |R_A - R_inf| 3.2e-03; D   60: arg(B/A) -4.2e-04, |B/A|-1 +7.8e-04, |R_A - R_inf| 2.0e-03; D   65: arg(B/A) -2.8e-04, |B/A|-1 +4.9e-04, |R_A - R_inf| 1.3e-03; D  100: arg(B/A) -1.6e-05, |B/A|-1 +1.7e-05, |R_A - R_inf| 5.3e-05
+   full layer pot. r = 0.10 (|R_inf| = 0.3137): D   21: arg(B/A) -6.0e-03, |B/A|-1 +1.3e-02, |R_A - R_inf| 1.4e-02; D   55: arg(B/A) -1.0e-04, |B/A|-1 +1.2e-04, |R_A - R_inf| 1.7e-04; D   60: arg(B/A) -5.7e-05, |B/A|-1 +6.1e-05, |R_A - R_inf| 8.7e-05; D   65: arg(B/A) -3.1e-05, |B/A|-1 +3.1e-05, |R_A - R_inf| 4.5e-05; D  100: arg(B/A) -3.9e-07, |B/A|-1 +2.1e-07, |R_A - R_inf| 4.6e-07
+
+====================================================================================================
+8b. 1D stationary intensity below the surface at the (0,0,8) centre (compare H2's atomistic exit-plane depths: [100] r = 0.1 26.0 / 53.2 A, r = 0.05 30.2 / 60.6 A for 1e-2 / 1e-4)
+====================================================================================================
+   single (0,0,8) r = 0.00: |R| = 1.0000, |u(x_s)|^2 = 1.726, intensity decay length 1/(2 Im kappa) = 12.24 A; |u|^2 below 1e-2 / 1e-4 beyond 63.0 / 119.4 A (at the planes)
+   single (0,0,8) r = 0.05: |R| = 0.5353, |u(x_s)|^2 = 1.082, intensity decay length 1/(2 Im kappa) = 10.16 A; |u|^2 below 1e-2 / 1e-4 beyond 47.6 / 94.4 A (at the planes)
+   single (0,0,8) r = 0.10: |R| = 0.3384, |u(x_s)|^2 = 0.911, intensity decay length 1/(2 Im kappa) = 7.32 A; |u|^2 below 1e-2 / 1e-4 beyond 33.0 / 66.7 A (at the planes)
+   full layer pot. r = 0.00: |R| = 1.0000, |u(x_s)|^2 = 1.802, intensity decay length 1/(2 Im kappa) = 13.76 A; |u|^2 below 1e-2 / 1e-4 beyond 71.5 / 134.8 A (at the planes)
+   full layer pot. r = 0.05: |R| = 0.5014, |u(x_s)|^2 = 1.061, intensity decay length 1/(2 Im kappa) = 11.00 A; |u|^2 below 1e-2 / 1e-4 beyond 51.3 / 101.9 A (at the planes)
+   full layer pot. r = 0.10: |R| = 0.3137, |u(x_s)|^2 = 0.878, intensity decay length 1/(2 Im kappa) = 7.64 A; |u|^2 below 1e-2 / 1e-4 beyond 34.2 / 69.3 A (at the planes)
+
+====================================================================================================
+9b. What a tolerance on max |r - R_ref| (|eta| <= 3) can detect: perturbed references (method A) at the R2-A angles, same bins as run F (dx 0.025 A, extent 409.6 A)
+====================================================================================================
+   r = 0.10: V0 + 1 mV                                       : max |dR| = 1.95e-04, max |d arg| = 5.75e-04 rad
+   r = 0.10: V0 + 3 mV                                       : max |dR| = 5.86e-04, max |d arg| = 1.73e-03 rad
+   r = 0.10: V0 + 5 mV                                       : max |dR| = 9.76e-04, max |d arg| = 2.88e-03 rad
+   r = 0.10: V0 - 2.09 mV (exact propagator)                 : max |dR| = 4.08e-04, max |d arg| = 1.20e-03 rad
+   r = 0.10: V_g x (1 - 2.2e-3) (cell-averaged, dx 0.025)    : max |dR| = 6.12e-04, max |d arg| = 9.08e-04 rad
+   r = 0.10: V_g x (1 - 8.9e-3) (cell-averaged, dx 0.05)     : max |dR| = 2.45e-03, max |d arg| = 3.67e-03 rad
+   r = 0.10: sigma x (1 + 1e-4) (V0 and V_g scaled)          : max |dR| = 2.71e-04, max |d arg| = 7.86e-04 rad
+   r = 0.10: cosine origin dx/2 = 0.0125 A below x_s         : max |dR| = 3.85e-02, max |d arg| = 1.69e-01 rad
+   r = 0.10: cosine origin 0.001 A below x_s                 : max |dR| = 3.09e-03, max |d arg| = 1.40e-02 rad
+   r = 0.10: absorption on V0 only (harmonic real)           : max |dR| = 2.69e-02
+   r = 0.10: read-out plane dx/2 = 0.0125 A off x_s: arg R changes by 2 K (0.0125 A) = 0.0978 to 0.1043 rad
+   r = 0.05: V0 + 1 mV                                       : max |dR| = 4.28e-04, max |d arg| = 8.19e-04 rad
+   r = 0.05: V0 + 3 mV                                       : max |dR| = 1.28e-03, max |d arg| = 2.46e-03 rad
+   r = 0.05: V0 + 5 mV                                       : max |dR| = 2.14e-03, max |d arg| = 4.10e-03 rad
+   r = 0.05: V0 - 2.09 mV (exact propagator)                 : max |dR| = 8.95e-04, max |d arg| = 1.71e-03 rad
+   r = 0.05: V_g x (1 - 2.2e-3) (cell-averaged, dx 0.025)    : max |dR| = 9.37e-04, max |d arg| = 9.05e-04 rad
+   r = 0.05: V_g x (1 - 8.9e-3) (cell-averaged, dx 0.05)     : max |dR| = 3.75e-03, max |d arg| = 3.62e-03 rad
+   r = 0.05: sigma x (1 + 1e-4) (V0 and V_g scaled)          : max |dR| = 6.02e-04, max |d arg| = 1.16e-03 rad
+   r = 0.05: cosine origin dx/2 = 0.0125 A below x_s         : max |dR| = 6.19e-02, max |d arg| = 1.86e-01 rad
+   r = 0.05: cosine origin 0.001 A below x_s                 : max |dR| = 4.98e-03, max |d arg| = 1.52e-02 rad
+   r = 0.05: absorption on V0 only (harmonic real)           : max |dR| = 2.14e-02
+   r = 0.05: read-out plane dx/2 = 0.0125 A off x_s: arg R changes by 2 K (0.0125 A) = 0.0978 to 0.1043 rad
+
+====================================================================================================
+9. P2's R2-A protocol run through the UNMODIFIED engine with a review-only stand-in class (P2 8.1 specification; not E1's class); bins compared with method A at their own K
+====================================================================================================
+F                  r = 0.10 fresnel dx = 0.02500 dz = 1.0 x_s = 115.00000 (x_s/dx = 4600.00) L = 6612 A nx = 16384, slices 6612, bins |eta|<=3: 18; vs exact R: max |dR| = 4.48e-04 (|eta|<=0.9: 4.48e-04), max |d arg| = 2.03e-03 rad; run 5 s
+X                  r = 0.10 exact   dx = 0.02500 dz = 1.0 x_s = 115.00000 (x_s/dx = 4600.00) L = 6612 A nx = 16384, slices 6612, bins |eta|<=3: 18; vs one-way model: max |dR| = 4.63e-04 (|eta|<=0.9: 4.63e-04), max |d arg| = 1.98e-03 rad; run 5 s
+F_dx05             r = 0.10 fresnel dx = 0.05000 dz = 1.0 x_s = 115.00000 (x_s/dx = 2300.00) L = 6612 A nx = 8192, slices 6612, bins |eta|<=3: 18; vs exact R: max |dR| = 1.44e-03 (|eta|<=0.9: 1.44e-03), max |d arg| = 7.96e-03 rad; run 2 s
+F_dx0125           r = 0.10 fresnel dx = 0.01250 dz = 1.0 x_s = 115.00000 (x_s/dx = 9200.00) L = 6612 A nx = 32768, slices 6612, bins |eta|<=3: 18; vs exact R: max |dR| = 2.20e-04 (|eta|<=0.9: 2.20e-04), max |d arg| = 8.40e-04 rad; run 10 s
+F_dz05             r = 0.10 fresnel dx = 0.02500 dz = 0.5 x_s = 115.00000 (x_s/dx = 4600.00) L = 6612 A nx = 16384, slices 13223, bins |eta|<=3: 18; vs exact R: max |dR| = 4.42e-04 (|eta|<=0.9: 4.42e-04), max |d arg| = 1.90e-03 rad; run 10 s

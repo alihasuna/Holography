@@ -1477,12 +1477,19 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
             pair = translation_pair(theta=thp, width_periods=int(p["width_periods"]),
                                     extra_A=float(p["extra_length_A"]), absorption=ab,
                                     precision=p["precision"],
-                                    move_beam=p["kind"] == "translation_moved_beam")
+                                    move_beam=p["kind"] == "translation_moved_beam",
+                                    clean_depth_A=float(p["clean_depth_A"]),
+                                    azimuth=str(p["azimuth"]),
+                                    tile_above_periods=int(study["build"]["tile_above_periods"]))
             cell, params, nrun = pair["A"][0], pair["params"], 2
         else:
             cell, _, _, params = step_case(theta=thp, width_periods=int(p["width_periods"]),
                                            extra_A=float(p["extra_length_A"]), absorption=ab,
-                                           precision=p["precision"])
+                                           precision=p["precision"],
+                                           clean_depth_A=float(p["clean_depth_A"]),
+                                           azimuth=str(p["azimuth"]),
+                                           tile_above_periods=int(
+                                               study["build"]["tile_above_periods"]))
             nrun = 1
         est = estimate_resources(cell, params, realisations=nrun, calibrate_cpu=False)
         g = est["grid"]

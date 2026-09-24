@@ -1,0 +1,67 @@
+# Atomistic a/2 null-test study, REDESIGNED (E1 wave 2a; P2 report 6.5 and 10, H2 2.2, 2.4, 3 and
+# 12 step 3, H5 D.8). Every key is required (run_study.py). Differences from study.yaml (the M2
+# reproduction set, kept unchanged in its points):
+#  * clean_depth_A = 100 A of crystal above the 15 A, 100 V sin^2 bulk absorber (M2: 21 A, which is
+#    inside the 24.5 A (0,0,8) extinction depth; P2 6.5 predicts a 1.3-6.6 % amplitude residual
+#    even after complete build-up at 21 A, 1.6e-5 rad at 100 A with r = 0.05, 1D model, indicative);
+#  * physical absorption r >= 0.05 only (TEST_ONLY stand-ins for PROJECT_INPUT item 21; with r = 0
+#    no clean depth makes the absorber emulate a semi-infinite crystal outside the plateau, P2 6.5);
+#  * the fixed-beam translation points at [110] (as M2) AND at exact [100] (TEST_ONLY stand-ins for
+#    PROJECT_INPUT item 8). theta "bragg_0008_mip" = 16.1347 mrad, the external angle of the (0,0,8)
+#    internal Bragg condition with the Kirkland MIP 13.903 V. At exact [100] the (0,+-4,4) beams are
+#    exactly excited with (0,0,8): at least a FOUR-BEAM case (H2 2.2), not the two-beam picture;
+#    at [110] (+-1,-+1,1)/(+-1,-+1,7) have admixture 0.35 (H2 2.2);
+#  * the surface-position-resolved read-out of H2 2.4 (finding N12) for every translation point:
+#    H2's specular_column (y average, sin^2 vacuum window from x_s + x_cut_A over taper_A, band pass
+#    radius_per_A about f_c, demodulation), surface point z_s = L_z - (x - x_s)/tan(theta), A and B
+#    compared in the same z_s bins of bin_A from the later bottom-edge contact to L_z - exit_excl_A;
+#    per-bin err_rad and amp_ratio, converged_beyond_A for |err| <= tol_phase_rad and
+#    |amp - 1| <= tol_amp (the README criteria). The x-summed M2 measurement is still written.
+#  * build.tile_above_periods = 0: every flat terrace / parallel step is ONE verified period tiled
+#    along z (exact; keeps the host build memory low for the deeper cells).
+# extra_length_A: cell length beyond the minimum build-up assertion (D = 20 A).
+# Engine status: UNVALIDATED (rungs 1, 2 R2-A, 3 pass; abTEM cross-check not run).
+build:
+  tile_above_periods: 0
+surface_resolved:
+  radius_per_A: 0.1
+  x_cut_A: 2.0
+  taper_A: 3.0
+  min_height_A: 5.0
+  bin_A: 500.0
+  exit_excl_A: 750.0
+  tol_phase_rad: 0.01
+  tol_amp: 0.01
+runtime:
+  backend: cupy          # numpy on CPU nodes (then set threads to cpus-per-task)
+  threads: 8
+
+points:
+  # --- A110. fixed-beam translation at [110] (contact points (a/2)/tan(theta) = 168 A apart) ----
+  - {name: tfix110_bragg_abs05_L0, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 0, width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tfix110_bragg_abs05_L5k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tfix110_bragg_abs05_L10k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tfix110_bragg_abs10_L0, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 0, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tfix110_bragg_abs10_L5k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tfix110_bragg_abs10_L10k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tfix110_off12_abs10_L5k, kind: translation_fixed_beam, theta: 12.0, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tfix110_off20_abs10_L5k, kind: translation_fixed_beam, theta: 20.0, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  # --- A100. fixed-beam translation at [100] (contact points (a/2)/tan(theta) = 168 A apart) ----
+  - {name: tfix100_bragg_abs05_L0, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 0, width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  - {name: tfix100_bragg_abs05_L5k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  - {name: tfix100_bragg_abs05_L10k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  - {name: tfix100_bragg_abs10_L0, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 0, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  - {name: tfix100_bragg_abs10_L5k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  - {name: tfix100_bragg_abs10_L10k, kind: translation_fixed_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  - {name: tfix100_off12_abs10_L5k, kind: translation_fixed_beam, theta: 12.0, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  - {name: tfix100_off20_abs10_L5k, kind: translation_fixed_beam, theta: 20.0, extra_length_A: 5000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  # --- B. covariant control (beam moved with the crystal): must match -(k_out - k_in).R in every bin
+  - {name: tmov110_bragg_abs10_L10k, kind: translation_moved_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110"}
+  - {name: tmov100_bragg_abs10_L10k, kind: translation_moved_beam, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 2, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "100"}
+  # --- C. a/2 step, edges parallel to the beam, [110] (the M2 step points with r >= 0.05) --------
+  - {name: step110_w8_bragg_abs10_L5k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 8, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110", apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0], window_width_A: 6.0}
+  - {name: step110_w16_bragg_abs10_L5k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 16, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110", apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}
+  - {name: step110_w32_bragg_abs10_L5k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 32, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110", apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0, 32.0], window_width_A: 6.0}
+  - {name: step110_w16_bragg_abs05_L5k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 5000, width_periods: 16, absorption_ratio: 0.05, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110", apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}
+  - {name: step110_w16_off20_abs10_L5k, kind: step_parallel, theta: 20.0, extra_length_A: 5000, width_periods: 16, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110", apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}
+  - {name: step110_w16_bragg_abs10_L10k, kind: step_parallel, theta: bragg_0008_mip, extra_length_A: 10000, width_periods: 16, absorption_ratio: 0.1, absorption_label: "TEST_ONLY: stands in for PROJECT_INPUT item 21", precision: complex64, clean_depth_A: 100.0, azimuth: "110", apertures_per_A: [0.1, 0.2], window_offsets_A: [4.0, 8.0, 16.0], window_width_A: 6.0}

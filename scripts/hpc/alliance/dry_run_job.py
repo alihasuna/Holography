@@ -8,8 +8,10 @@ without propagating. Its "memory per realisation" counts the engine's arrays of 
 only; the peak RSS measured here is the host memory of the structure build and the estimate (a run
 holds these plus the engine arrays of every concurrent realisation).
 
-Writes into --out: dry_run.txt (the dry run's output), dry_run_resources.json (status, wall time,
-peak RSS, atoms if printed), and a run manifest under outputs/manifests/. Exit status: the dry run's
+Writes into --out: dry_run.txt (the dry run's output), dry_run_report.json (the dry run's full
+report with the configuration's path and SHA-256: `kit.py plan --gpu-mem-from-dry-run` reads the
+engine's GPU device peak from it), dry_run_resources.json (status, wall time, peak RSS, atoms if
+printed), and a run manifest under outputs/manifests/. Exit status: the dry run's
 (0 ok; 3 configuration refused; 4 for a cupy configuration on this GPU-less node AFTER the estimates
 were printed, which is expected).
 """
@@ -36,7 +38,8 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     a.out.mkdir(parents=True, exist_ok=False)
     cfg = Path(a.config) if os.path.isabs(a.config) else a.repo / a.config
-    cmd = [sys.executable, "-m", "reflection_holo.pipeline", "dry-run", "--config", str(cfg)]
+    cmd = [sys.executable, "-m", "reflection_holo.pipeline", "dry-run", "--config", str(cfg),
+           "--report-json", str((a.out / "dry_run_report.json").resolve())]
     if a.variant:
         cmd += ["--variant", a.variant]
     print("== " + " ".join(cmd), flush=True)
@@ -56,6 +59,8 @@ def main(argv=None) -> int:
                                "a run holds these plus the engine arrays of each concurrent "
                                "realisation",
                threads=a.threads, host=os.uname().nodename,
+               report_json=(str(a.out / "dry_run_report.json")
+                            if (a.out / "dry_run_report.json").is_file() else None),
                slurm_job_id=os.environ.get("SLURM_JOB_ID"))
     (a.out / "dry_run_resources.json").write_text(json.dumps(rec, indent=1))
     print(f"== dry run: exit status {st}, wall {wall:.1f} s, peak RSS {peak_kb / 1024.0:.0f} MB "

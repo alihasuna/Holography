@@ -421,3 +421,85 @@ variants:
           source: "demo stand-in B32: the external glancing angle of the (0,0,8) internal Bragg condition computed with the mean inner potential of the potential actually used by the multislice engine (Kirkland IAM, 13.903 V), so that the refraction angles are consistent with the exit waves; PROJECT_INPUT item 7 not supplied (blocking)"
       detector:
         roi_shape: [40, 16]
+  multislice_tiny_thermal:
+    description: >-
+      As multislice_tiny, with frozen phonons from the sourced Si thermal model (model_assumptions
+      B35: B(T) = 0.4761 A^2 + 0.0014 A^2/K (T - 295.5 K), Heacock et al. 2021, u = sqrt(B/(8 pi^2))
+      per axis) at the demo stand-in specimen temperature 295.5 K (B36; PROJECT_INPUT item 23 not
+      supplied) and two realisations averaged after squaring. Bulk termination (B26). Report E2.
+    sections:
+      structure:
+        staircase:
+          value:
+            edges: transverse
+            terrace_layers: [0, 2, 1]
+            terrace_widths_periods: [90, 90, 90]
+            boundary_step_layers: -1
+            first_terrace_backbond_uvw: [1, 1, 0]
+          unit: none
+          label: ASSUMPTION
+          item: 11
+          stands_in_for_item: 11
+          assumption_id: B25
+          source: "demo stand-in B25 (tiny multislice variant): terraces 90 lattice periods long; PROJECT_INPUT item 11 not supplied"
+        edge_periods: 2
+        substrate_layers: 26
+      cell:
+        periods_along_beam: 1
+        multislice:
+          vacuum_above_A: 40.0
+          depth_below_A: 32.0
+          bulk_absorber_A: 10.0
+          top_absorber_A: 10.0
+          entrance_vacuum_z_A: 20.365875
+      engine:
+        name: multislice
+        multislice:
+          parameterisation: kirkland
+          physical_absorption:
+            value: {model: proportional, ratio: 0.0}
+            unit: none
+            label: ASSUMPTION
+            item: 21
+            stands_in_for_item: 21
+            assumption_id: B30
+            source: "demo stand-in B30: no physical absorption (imaginary potential zero; B6 not represented); the bulk-side absorber is a numerical boundary; PROJECT_INPUT item 21 not supplied"
+          frozen_phonons: {model: si_heacock2021_linear_B}
+          static_lattice_label: null
+          specimen_temperature:
+            value: 295.5
+            unit: K
+            label: ASSUMPTION
+            item: 23
+            stands_in_for_item: 23
+            assumption_id: B36
+            source: "demo stand-in B36: specimen temperature 295.5 K, the reference temperature of the sourced B (Heacock et al. 2021, arXiv:2103.05428v3 p. 6); PROJECT_INPUT item 23 (specimen temperature during holography) not supplied"
+          potential_mip:
+            value: 13.903
+            unit: V
+            label: REPRODUCED
+            source: "docs/agent_reports/D3_abtem_potential_provenance.md section 7 and F16: mean inner potential of the Kirkland independent-atom potential of Si at a = 5.4309 A (tools/provenance_checks/abtem_mip.py); asserted against forward.multislice.potentials.potential_mean_inner_potential_V at run time"
+          sheet_beam: {height_A: 8.0, edge_A: 2.0, x_bottom_above_highest_surface_A: 1.0}
+          nx: 432
+          ny: 48
+          dz_A: 1.357725
+          propagator: exact
+          band_limit: "2/3"
+          backend: numpy
+          precision: complex128
+          absorber: {strength_V: 100.0, profile: sin2}
+          buildup_depth_A: 20.0
+          n_realisations: 2
+          seed: 20260924
+          save_exit_waves: false
+      illumination:
+        glancing_angle:
+          value: {rule: internal_bragg_external_angle, reflection_hkl: [0, 0, 8], V0_source: sections.engine.multislice.potential_mip}
+          unit: none
+          label: ASSUMPTION
+          item: 7
+          stands_in_for_item: 7
+          assumption_id: B32
+          source: "demo stand-in B32: the external glancing angle of the (0,0,8) internal Bragg condition computed with the mean inner potential of the potential actually used by the multislice engine (Kirkland IAM, 13.903 V), so that the refraction angles are consistent with the exit waves; PROJECT_INPUT item 7 not supplied (blocking)"
+      detector:
+        roi_shape: [40, 16]

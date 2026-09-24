@@ -7,7 +7,8 @@
 #   A1-A8  assumptions inherited from the inspected repository (A3, "(6,-6,6) is usable", is false);
 #   B2     the lattice parameter: no docs/06 item names it and no schema gives lattice_parameter a
 #          docs/06 item, so B2 stands in for nothing (the configurations cite B2 in the source text);
-#   B3-B16 not values of any configuration parameter with a docs/06 item.
+#   B3-B16 not values of any configuration parameter with a docs/06 item;
+#   B35, B37 model rows (key model_rows below): cited by code, standing in for no docs/06 item.
 # tests/io/test_io_config_stand_ins.py checks that every ID below is a row of
 # docs/model_assumptions.md (skipped where docs/ is absent).
 schema_version: 1
@@ -37,6 +38,15 @@ stand_ins:
   # rows proposed there, added to docs/model_assumptions.md by the orchestrator). Demo only.
   B33: [13]    # half-torus TRENCH on a flat step-free Si(001) surface; R, r and centre per configuration (pipeline demo R 1000 A, r 20 A; T1 atomistic cells R 50 A, r 12 A)
   B34: [13]    # half-torus RIDGE on a flat step-free Si(001) surface; R, r and centre per configuration (pipeline demo R 1000 A, r 20 A; T1 atomistic cells R 50 A, r 12 A)
+  # Report docs/agent_reports/E2_surface_thermal.md (rows proposed there, added to
+  # docs/model_assumptions.md by the orchestrator). Demo only.
+  B36: [23]    # demo stand-in specimen temperature 295.5 K (the reference temperature of Heacock et al. 2021); docs/06 item 23 (specimen temperature during holography)
 # Demo-only stand-ins (audit A3 M2): refused by every pipeline run with purpose "comparison",
 # whatever the docs/06 item. Every id listed here must be a key of stand_ins.
-demo_only: [B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34]
+demo_only: [B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34, B36]
+# Rows the code cites as model assumptions or sourced models that stand in for NO docs/06 item
+# (report E2). They are not accepted as assumption_id of a configuration parameter; they are listed
+# so that tests/io checks that each is a row of docs/model_assumptions.md.
+model_rows:
+  B35: "Si thermal displacement of the frozen-phonon model: B(T) = 0.4761 A^2 + 0.0014 A^2/K (T - 295.5 K), u = sqrt(B/(8 pi^2)) per axis (Heacock et al. 2021; linear extrapolation an ASSUMPTION for 273.15-323.15 K); reflection_holo.structure.thermal"
+  B37: "p(2x1)a dimer flip-flop ensemble (model choice, not a source): each dimer cell of Ramstad et al. 1995 Table III in the p(2x1)a state or its mirror image with probability 1/2, independently, per realisation; reflection_holo.structure.reconstruction, reflection_holo.forward.dimer_ensemble"

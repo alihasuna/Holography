@@ -56,6 +56,29 @@ PARAMETERISATIONS = {"kirkland": "KirklandParametrization"}   # orchestrator dec
 ABTEM_COMMIT = "164e644f (tag v1.0.10; report D3 F1)"
 _LABELS = ("PROJECT_INPUT", "ASSUMPTION", "TEST_ONLY")
 _SLICE_EPS_A = 1e-9
+EXP_BLOCK_ROWS = 1024   # structure-factor exponentials with more than 2 * EXP_BLOCK_ROWS rows are
+#                         formed in blocks of this many rows (_phase_factors; report H7, E1 wave 2a)
+
+
+def _phase_factors(xp, f64, p, dtype):
+    """exp(-2 pi i f_j p_k) for the frequencies f64 (rows, float64) and the coordinates p (float64)
+    in the working precision `dtype`: the argument is formed in float64 and complex128 and the
+    exponential cast afterwards (float32 phases would err by ~1e-4 rad at 2 pi f x ~ 2e3 rad).
+    With more than 2 * EXP_BLOCK_ROWS rows, blocks of EXP_BLOCK_ROWS rows are formed into a
+    preallocated array of `dtype`: every element goes through the same operations, so the result is
+    bit-identical, and the complex128 transient falls from 32 B x rows x n to 32 B x EXP_BLOCK_ROWS
+    x n (H7's proposal; 11.7 GB -> 0.5 GB for the 2a_a2 row). Up to 2 * EXP_BLOCK_ROWS rows the
+    unblocked form needs less memory (32 B x rows x n against (cb x rows + 32 x EXP_BLOCK_ROWS) x n)
+    and is used."""
+    m = int(f64.shape[0])
+    blk = int(EXP_BLOCK_ROWS)
+    if m <= 2 * blk:
+        return xp.exp(-2j * np.pi * (f64[:, None] * p[None, :])).astype(dtype)
+    out = xp.empty((m, int(p.shape[0])), dtype=dtype)
+    for j0 in range(0, m, blk):
+        j1 = min(j0 + blk, m)
+        out[j0:j1] = xp.exp(-2j * np.pi * (f64[j0:j1, None] * p[None, :]))
+    return out
 
 
 @dataclass(frozen=True)
@@ -299,8 +322,8 @@ class _RealisedAtomic:
             # phase arguments in float64 (2 pi f x reaches ~2e3 rad; float32 would err by ~1e-4
             # rad), exponentials cast to the working precision afterwards
             pos = be.asarray(self.xyz[a:b][sel], dtype=np.float64)
-            Ex = xp.exp(-2j * np.pi * (self.fx64[:, None] * pos[None, :, 0])).astype(be.complex_dtype)
-            Ey = xp.exp(-2j * np.pi * (self.fy64[:, None] * pos[None, :, 1])).astype(be.complex_dtype)
+            Ex = _phase_factors(xp, self.fx64, pos[:, 0], be.complex_dtype)
+            Ey = _phase_factors(xp, self.fy64, pos[:, 1], be.complex_dtype)
             S = (Ex @ Ey.T) * F
             acc = S if acc is None else acc + S
         V = be.ifft2(acc).real * be.real_dtype(self.norm)

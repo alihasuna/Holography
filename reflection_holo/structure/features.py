@@ -50,9 +50,13 @@ function and tested; every tolerance is stated here and recorded in the metadata
     highest added layer below the top of the box; measured on the feature sites;
 (g) the frame (``checks.assert_frame``).
 
-Options (labels in metadata["options"]): bulk termination (ASSUMPTION B3), no 2x1 dimer
-reconstruction (NOT IMPLEMENTED), no overlayer (ASSUMPTION B7), no relaxation of the feature walls
-(ASSUMPTION). The feature geometry is PROJECT_INPUT item 13: the HalfTorus must carry its label and
+Options (labels in metadata["options"]): bulk termination (ASSUMPTION B3), no dimer
+reconstruction (REFUSED on the feature, ``feature_termination_option``: the sourced reconstructions
+are built on the terraces of the staircase builder, si001.py and reconstruction.py, but every a/4
+terrace edge of the ring is a circle that runs through all azimuths and cuts dimer cells, so
+unpaired edge atoms occur along every ring edge and in every annulus narrower than a dimer cell;
+R1 gives no geometry for them and none is invented), no overlayer (ASSUMPTION B7), no relaxation
+of the feature walls (ASSUMPTION). The feature geometry is PROJECT_INPUT item 13: the HalfTorus must carry its label and
 source (a demo value is a registered stand-in, e.g. "ASSUMPTION B33"/"B34").
 """
 from __future__ import annotations
@@ -496,12 +500,36 @@ def verify_feature_structure(s: Si001FeatureStructure) -> dict:
 # --------------------------------------------------------------------------------------------------
 # Builder
 # --------------------------------------------------------------------------------------------------
+FEATURE_RECONSTRUCTION_REFUSAL = (
+    "NOT IMPLEMENTED on the half-torus feature (report E2): the sourced Si(001) reconstructions "
+    "(Ramstad, Brocks and Kelly 1995 Tables III-IV; reconstruction.py) are built on the straight "
+    "terraces of the staircase builder only. On the ring every terrace edge is a circle through "
+    "all azimuths, so dimer cells are cut along every edge (unpaired atoms at the riser of every "
+    "annulus, and annuli narrower than a dimer cell near the rim), the dimer-row rotation across "
+    "each a/4 annulus edge would have to be imposed on curved edges, and R1 gives no geometry for "
+    "an unpaired edge atom; none is invented. Use termination 'bulk' (ASSUMPTION B3) here.")
+
+
+def feature_termination_option(termination: str) -> dict:
+    """The termination of the feature structures: 'bulk' (ASSUMPTION B3) only. Any sourced
+    reconstruction name raises NotImplementedError with FEATURE_RECONSTRUCTION_REFUSAL; anything
+    else raises ValueError."""
+    from .reconstruction import RECONSTRUCTIONS
+    if termination == "bulk":
+        return dict(value="bulk", label="ASSUMPTION B3",
+                    note="unreconstructed bulk truncation, also on the feature walls")
+    if termination in RECONSTRUCTIONS or termination == "dimer_2x1":
+        raise NotImplementedError(f"termination {termination!r}: "
+                                  + FEATURE_RECONSTRUCTION_REFUSAL)
+    raise ValueError(f"termination {termination!r}: the feature builder supports 'bulk' "
+                     f"(ASSUMPTION B3) only")
+
+
 def _options() -> dict:
     return dict(
-        termination=dict(value="bulk", label="ASSUMPTION B3",
-                         note="unreconstructed bulk truncation, also on the feature walls"),
-        dimer_reconstruction=dict(value="not enabled", status="NOT IMPLEMENTED: no Si(001)-(2x1) "
-                                  "dimer geometry source has been read"),
+        termination=feature_termination_option("bulk"),
+        dimer_reconstruction=dict(value="not enabled",
+                                  status="REFUSED: " + FEATURE_RECONSTRUCTION_REFUSAL),
         overlayer=dict(value=None, label="ASSUMPTION B7",
                        note="clean surface; the real surface is ion-milled (PROJECT_INPUT item 12)"),
         riser_relaxation=dict(value="none", label="ASSUMPTION",

@@ -20,6 +20,7 @@ import numpy as np
 import pytest
 
 import reflection_holo.forward.multislice.engine as engine
+import reflection_holo.forward.multislice.potentials as potentials
 from reflection_holo.constants import A_SI_A
 from reflection_holo.forward.cell import build_reflection_cell
 from reflection_holo.forward.multislice import (AtomicPotential, FrozenPhonons, MultisliceParams,
@@ -118,6 +119,12 @@ def warm_up(cells):
     ("wide", "complex64", False, "exponentials"),
 ])
 def test_estimate_equals_tracemalloc_peak(cells, monkeypatch, which, precision, phonons, stage):
+    if which == "wide":
+        # the case measures the UNBLOCKED exponential stage (all rows at once), which the engine
+        # uses up to 2 * EXP_BLOCK_ROWS rows; this cell (ny = 2520) is formed in blocks at the
+        # default 1024 since E1 wave 2a, so the path is selected explicitly (engine and model read
+        # the same constant); the blocked path: test_wide_slice_blocked_exponentials
+        monkeypatch.setattr(potentials, "EXP_BLOCK_ROWS", 4096)
     cell = cells[which]
     pot, beam, params = _case(cell, precision=precision, ratio=0.1, phonons=phonons)
     est = estimate_resources(cell, params, realisations=1, calibrate_cpu=False)
@@ -133,7 +140,12 @@ def test_estimate_equals_tracemalloc_peak(cells, monkeypatch, which, precision, 
 def test_wide_slice_needs_the_complex128_temporaries(cells, monkeypatch):
     """H5 M4: the accounting before the fix (72 B/px of named arrays, 8 (nx + ny) n for Ex and Ey,
     48 B/atom; no complex128 temporaries) lies more than 15 % below the measured peak of this cell;
-    the exponential term of the model is 32 ny n + 8 nx n (+ 25 n for the selected positions)."""
+    the exponential term of the model is 32 ny n + 8 nx n (+ 25 n for the selected positions).
+    This is the UNBLOCKED formation of the exponentials (all rows at once), which the engine uses up
+    to 2 * potentials.EXP_BLOCK_ROWS rows; since E1 wave 2a this cell (ny = 2520) would be formed in
+    blocks at the default 1024, so the unblocked path is selected here explicitly (block 4096; the
+    engine and the model read the same constant). The blocked path: next test."""
+    monkeypatch.setattr(potentials, "EXP_BLOCK_ROWS", 4096)
     cell = cells["wide"]
     pot, beam, params = _case(cell, precision="complex64", ratio=0.1, phonons=False)
     est = estimate_resources(cell, params, realisations=1, calibrate_cpu=False)
@@ -144,6 +156,46 @@ def test_wide_slice_needs_the_complex128_temporaries(cells, monkeypatch):
     px = nx * ny
     old = 72 * px + 8 * (nx + ny) * n + 48 * len(cell.Z)               # engine before H7
     assert measured > 1.15 * old
+
+
+@pytest.mark.parametrize("block,stage", [(1200, "exponentials"), (1024, "pixel")])
+def test_wide_slice_blocked_exponentials(cells, monkeypatch, block, stage):
+    """E1 wave 2a (H7's proposal): with more than 2 * EXP_BLOCK_ROWS rows the exponentials are
+    formed in blocks; the complex128 transient is 32 B x EXP_BLOCK_ROWS x n and the model's
+    exponential term for this cell (ny = 2520 blocked, nx = 432 not) is
+    25 n + max(32 nx n, 8 nx n + 8 ny n + 32 B n). Block 1200 keeps the blocked exponentials the
+    dominant stage (their formula is then what tracemalloc measures); at the default 1024 the pixel
+    stage dominates. Both: measured peak = model within TOL."""
+    monkeypatch.setattr(potentials, "EXP_BLOCK_ROWS", block)
+    cell = cells["wide"]
+    pot, beam, params = _case(cell, precision="complex64", ratio=0.1, phonons=False)
+    assert params.ny > 2 * block >= params.nx
+    est = estimate_resources(cell, params, realisations=1, calibrate_cpu=False)
+    nx, ny, n = params.nx, params.ny, est["atoms_per_slice_max"]
+    ls = est["memory_bytes"]["model"]["largest_slice"]
+    assert ls["exp_block_rows"] == block
+    assert ls["exponentials_B"] == 25 * n + max(32 * nx * n,
+                                                8 * nx * n + 8 * ny * n + 32 * block * n)
+    assert (ls["exponentials_B"] > ls["pixel_stage_B"]) == (stage == "exponentials")
+    predicted = est["memory_bytes"]["total"] - est["memory_bytes"]["model"]["cell_atom_arrays_B"]
+    measured = _measured_peak(cell, pot, beam, params, False, monkeypatch)
+    assert measured == pytest.approx(predicted, rel=TOL), (measured, predicted)
+
+
+def test_blocking_saves_the_modelled_amount(cells, monkeypatch):
+    """Default block (1024) against the unblocked path on the wide cell: the measured peaks differ
+    by the model's difference, within TOL of the unblocked model peak."""
+    cell = cells["wide"]
+    pot, beam, params = _case(cell, precision="complex64", ratio=0.1, phonons=False)
+    peaks, models = {}, {}
+    for block in (4096, 1024):
+        monkeypatch.setattr(potentials, "EXP_BLOCK_ROWS", block)
+        est = estimate_resources(cell, params, realisations=1, calibrate_cpu=False)
+        models[block] = est["memory_bytes"]["total"]
+        peaks[block] = _measured_peak(cell, pot, beam, params, False, monkeypatch)
+    assert models[4096] - models[1024] > 0.1 * models[4096]
+    assert peaks[4096] - peaks[1024] == pytest.approx(models[4096] - models[1024],
+                                                      abs=TOL * models[4096]), (peaks, models)
 
 
 def test_zero_absorption_is_bounded_by_one_array(cells, monkeypatch):

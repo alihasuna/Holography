@@ -102,7 +102,13 @@ def test_registry_is_package_data_mapping_ids_to_items():
                    "B19": (7,), "B20": (8,), "B21": (3,), "B22": (4,), "B23": (5,), "B24": (6,),
                    "B25": (11,), "B26": (12,), "B27": (13,), "B28": (15, 16), "B29": (19,),
                    "B30": (21,), "B31": (1,), "B32": (7,),
-                   "B33": (13,), "B34": (13,)}
+                   "B33": (13,), "B34": (13,),
+                   # report E2: demo stand-in specimen temperature (docs/06 item 23)
+                   "B36": (23,)}
+    assert "B36" in C.demo_only_stand_ins()
+    # report E2: rows cited by code that stand in for no docs/06 item (never an assumption_id)
+    assert set(C.model_assumption_rows()) == {"B35", "B37"}
+    assert not set(C.model_assumption_rows()) & set(reg)
     assert not any(k.startswith("A") for k in reg)            # inherited A-rows never stand in
     assert "B2" not in reg                                    # the lattice parameter is no stand-in
     assert all(C.SCHEMAS[c][kind].get("lattice_parameter") is None      # no docs/06 item anywhere
@@ -116,7 +122,7 @@ def test_registry_ids_exist_in_model_assumptions():
         pytest.skip("docs/model_assumptions.md is absent (installed package without docs/)")
     rows = {line.split("|")[1].strip() for line in path.read_text().splitlines()
             if line.startswith("| ") and len(line.split("|")) > 2}
-    for aid in C.assumption_registry():
+    for aid in list(C.assumption_registry()) + list(C.model_assumption_rows()):
         assert aid in rows, aid
 
 

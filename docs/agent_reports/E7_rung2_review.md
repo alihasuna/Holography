@@ -23,3 +23,18 @@ sizing), MINOR (wording, label or traceability defect that does not change a dec
   lines); tests/forward/smoke_case.py (head).
 * NOT read before my numbers were final: `tools/physics_checks/rung2_reference.py` (only imported,
   as a black box, in the comparison section of my script).
+* wrote `tools/review/e7_recompute.py`: my own exact solvers (A: continued fractions of the Bloch
+  recurrence plus complex Newton on kappa; B: my own 4th-order Magnus transfer matrix, Floquet
+  eigenvector; C: finite crystal on an absorbing substrate), the two-beam forms derived again, the
+  build-up integral, a transfer-matrix model of the engine's bulk absorber, and a review-only
+  stand-in `E7PeriodicContinuum` (P2 8.1 specification, written here, not E1's class) that I ran
+  through the UNMODIFIED engine (`run_realisation`, `flat_reflection_coefficient`) to test the R2-A
+  protocol itself. One bug of mine found by my own convergence test (sign of the Magnus commutator;
+  fixed before any number was used).
+* read E1's in-progress `tests/forward/test_rung2_bragg.py` and `ladder_cases.rung2_case` (geometry
+  lines only, to know where E1 puts x_s): x_s = 15 + D A with dx exact, i.e. a pixel centre.
+* only after all my numbers were final: imported the P2 tool as a black box (E7 out §10).
+* concurrency: engine.py, illumination.py and potentials.py were being edited by other agents in
+  the working tree during my runs (a y-tilt feature and E1's class); my stand-in uses neither; the
+  module hashes at the start of the saved run are listed in section 7 below.
+

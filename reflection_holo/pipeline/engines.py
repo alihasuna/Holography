@@ -10,6 +10,11 @@ Engines (``sections.engine.name``):
       cell = forward.cell.build_reflection_cell(structure, **sections.cell.multislice)
       pot  = multislice.AtomicPotential(cell, parameterisation, physical_absorption (item 21),
                                         frozen_phonons, static_lattice_label)
+             frozen_phonons: None (static), FrozenPhonons(**structure.thermal.
+             frozen_phonon_arguments(specimen temperature, item 23)) for the sourced model B35, or
+             the configured fixed u (A7 form); a flip-flop ensemble structure (termination
+             "p(2x1)a flip-flop ensemble", B37) wraps pot in forward.dimer_ensemble.
+             DimerFlipFlopPotential (configuration drawn per realisation; report E2)
       beam = multislice.SheetBeam(height_A, edge_A, x_bottom_A, theta_in_ext_rad, theta_label)
       params = multislice.MultisliceParams(energy_keV=200, nx, ny, dz_A, propagator, band_limit,
                                            backend, precision, threads, absorber,
@@ -39,8 +44,12 @@ from reflection_holo.forward.geometric.height_field import (HeightField, HeightF
                                                             height_field_exit_wave,
                                                             require_b4_scope_height_field)
 from reflection_holo.optics.darkfield import validate_exit_wave
-from reflection_holo.pipeline.config import PipelineConfig, PipelineConfigError, Record
-from reflection_holo.structure import OverlayerSpec, Staircase, build_si001_terraces
+from reflection_holo.forward.dimer_ensemble import DimerFlipFlopPotential
+from reflection_holo.pipeline.config import (THERMAL_MODEL_B35, PipelineConfig, PipelineConfigError,
+                                             Record)
+from reflection_holo.structure import OverlayerSpec, Staircase, build_si001_terraces, thermal
+from reflection_holo.structure.reconstruction import FLIPFLOP
+from reflection_holo.structure.features import FEATURE_RECONSTRUCTION_REFUSAL
 from reflection_holo.structure.shapes import HalfTorus
 
 MULTISLICE_MODULE = "reflection_holo.forward.multislice"
@@ -151,7 +160,9 @@ def feature_height_field(cfg: PipelineConfig, shape: HalfTorus) -> HeightField:
     prep = b.value("surface_preparation_details")
     if not isinstance(prep, dict) or prep.get("termination") != "bulk" or prep.get("overlayer") != "none":
         raise PipelineConfigError("the feature path needs cfg_b.surface_preparation_details "
-                                  "{termination: bulk, overlayer: none} (item 12)")
+                                  "{termination: bulk, overlayer: none} (item 12); reconstruction "
+                                  "on the half-torus is refused: "
+                                  + FEATURE_RECONSTRUCTION_REFUSAL)
     a_A, unit = b.quantity("lattice_parameter")
     if unit != "A":
         raise PipelineConfigError("cfg_b.lattice_parameter must be in A")
@@ -288,14 +299,24 @@ def multislice_objects(structure, cfg: PipelineConfig, *, require_backend: bool)
     pa = ms.PhysicalAbsorption(model=pa_rec.value["model"], ratio=pa_rec.value["ratio"],
                                label=_label(pa_rec))
     fp_cfg = m["frozen_phonons"]
+    thermal_record = None
     if fp_cfg == "none":
         fp, static = None, m["static_lattice_label"]
+    elif fp_cfg.get("model") == THERMAL_MODEL_B35:
+        T: Record = m["specimen_temperature"]
+        fp = ms.FrozenPhonons(**thermal.frozen_phonon_arguments(
+            specimen_temperature_K=T.canonical_value, temperature_label=_label(T)))
+        thermal_record = dict(thermal.describe(T.canonical_value), temperature_label=_label(T),
+                              temperature_assumption_id=T.assumption_id)
+        static = None
     else:
         fp = ms.FrozenPhonons(rms_displacement_A=fp_cfg["rms_displacement_A"],
                               label=fp_cfg["label"])
         static = None
     pot = ms.AtomicPotential(cell, parameterisation=m["parameterisation"], physical_absorption=pa,
                              frozen_phonons=fp, static_lattice_label=static)
+    if structure.metadata["options"]["termination"]["value"] == FLIPFLOP:
+        pot = DimerFlipFlopPotential(pot, structure)
     mip = float(getattr(potmod, MIP_FUNCTION[1])(pot))
     mip_cfg = float(m["potential_mip"].canonical_value)
     mip_check = dict(potential_mip_V=mip, configured_potential_mip_V=mip_cfg,
@@ -330,7 +351,7 @@ def multislice_objects(structure, cfg: PipelineConfig, *, require_backend: bool)
         working_reflections_hkl=(
             tuple(int(v) for v in cfg.cfg_b.value("target_reflection_hkl")),))
     return dict(ms=ms, cell=cell, potential=pot, beam=beam, params=params, mip_check=mip_check,
-                engine_params=m)
+                engine_params=m, thermal=thermal_record)
 
 
 def run_multislice(structure, cfg: PipelineConfig, *, outputs_root, run_name: str
@@ -368,6 +389,8 @@ def run_multislice(structure, cfg: PipelineConfig, *, outputs_root, run_name: st
         if (w.psi.shape, w.dx_A, w.dy_A, w.x0_A, w.y0_A, w.plane, w.z_A) != g0:
             raise ValueError("exit waves of one run must share grid, origin and plane")
     record = dict(engine_manifest=str(man), mip_check=o["mip_check"], params=params.to_dict(),
+                  thermal_model=o["thermal"],
+                  termination=structure.metadata["options"]["termination"],
                   beam=beam.describe(waves[0].metadata["beam"]["wavelength_A"]),
                   validation_status=waves[0].metadata.get("validation_status"),
                   cell_layout=cell.metadata["layout"])

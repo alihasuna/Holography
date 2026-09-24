@@ -12,9 +12,18 @@ Usage (repository root, venv from scripts/hpc/setup_env.sh):
         --out /path/to/scratch --estimate            # print estimate_resources per point, no run
     venv/bin/python scripts/hpc/null_test_study/run_study.py --config ... --out ... [--only NAME]
 
-Every value in study.yaml is required (no defaults). TEST_ONLY labels mark stand-ins for
+Every value in a study file is required (no defaults): per point also `clean_depth_A` (crystal
+between the lowest surface and the 15 A bulk absorber; study.yaml carries the LEGACY M2 value 21 A,
+shallower than the 24.5 A extinction depth, P2 6.5) and `azimuth` ("110" or "100"); at the top level
+`build.tile_above_periods` (flat terraces and parallel steps longer than this many periods are
+built as one verified period and tiled along z, exact; 400 in study.yaml as in M2). An optional
+top-level `surface_resolved` block (all keys of null_test_cases.RESOLVED_KEYS) adds the
+surface-position-resolved read-out of H2 section 2.4 to every translation point (N12); without it
+that read-out is not computed (and the result says so). TEST_ONLY labels mark stand-ins for
 PROJECT_INPUT items (azimuth item 8, angle item 7, absorption item 21). Status: UNVALIDATED engine
-(rung 2 and the abTEM multislice cross-check not run).
+(ladder rungs 1, 2 (R2-A) and 3 pass; the abTEM multislice cross-check not run).
+Study files: study.yaml (the M2 reproduction set, legacy clean depth), study_depth100.yaml (clean
+depth >= 100 A, r >= 0.05, [110] and exact [100], surface-resolved read-out; E1 wave 2a).
 """
 from __future__ import annotations
 
@@ -30,8 +39,8 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "tests" / "forward"))
 
-from null_test_cases import (run_translation, step_case, step_phase_rows,  # noqa: E402
-                             theta_0008, translation_pair)
+from null_test_cases import (AZIMUTHS, RESOLVED_KEYS, run_translation, step_case,  # noqa: E402
+                             step_phase_rows, theta_0008, translation_pair)
 from reflection_holo.forward.multislice import (PhysicalAbsorption, estimate_resources,  # noqa: E402
                                                 run_realisation)
 from reflection_holo.io.config import load_yaml_unique  # noqa: E402
@@ -44,8 +53,9 @@ STUDY_PURPOSE = ("engine null test with TEST_ONLY stand-ins read from the study 
 
 KINDS = ("translation_fixed_beam", "translation_moved_beam", "step_parallel")
 POINT_KEYS = ("name", "kind", "theta", "extra_length_A", "width_periods", "absorption_ratio",
-              "absorption_label", "precision")
+              "absorption_label", "precision", "clean_depth_A", "azimuth")
 RUNTIME_KEYS = ("backend", "threads")
+BUILD_KEYS = ("tile_above_periods",)
 STEP_KEYS = ("apertures_per_A", "window_offsets_A", "window_width_A")
 
 
@@ -62,20 +72,22 @@ def _absorption(p):
                               label=p["absorption_label"])
 
 
-def _build(p, rt):
+def _build(p, rt, build):
     th = _theta(p["theta"])
     ab = _absorption(p)
+    cellkw = dict(clean_depth_A=float(p["clean_depth_A"]), azimuth=str(p["azimuth"]),
+                  tile_above_periods=int(build["tile_above_periods"]))
     if p["kind"].startswith("translation"):
         pair = translation_pair(theta=th, width_periods=int(p["width_periods"]),
                                 extra_A=float(p["extra_length_A"]), absorption=ab,
                                 precision=p["precision"],
-                                move_beam=p["kind"] == "translation_moved_beam")
+                                move_beam=p["kind"] == "translation_moved_beam", **cellkw)
         pair["params"] = dataclasses.replace(pair["params"], backend=rt["backend"],
                                              threads=int(rt["threads"]))
         return th, pair
     cell, pot, beam, params = step_case(theta=th, width_periods=int(p["width_periods"]),
                                         extra_A=float(p["extra_length_A"]), absorption=ab,
-                                        precision=p["precision"])
+                                        precision=p["precision"], **cellkw)
     params = dataclasses.replace(params, backend=rt["backend"], threads=int(rt["threads"]))
     return th, (cell, pot, beam, params)
 
@@ -92,6 +104,17 @@ def main(argv=None):
     for k in RUNTIME_KEYS:
         if k not in rt:
             raise SystemExit(f"runtime.{k} is required")
+    build = cfg.get("build")
+    if not isinstance(build, dict) or any(k not in build for k in BUILD_KEYS):
+        raise SystemExit(f"build.{BUILD_KEYS} is required (study.yaml: tile_above_periods 400, "
+                         f"as in M2)")
+    resolved = cfg.get("surface_resolved")
+    if resolved is not None:
+        bad = sorted(set(RESOLVED_KEYS) ^ set(resolved))
+        if bad:
+            raise SystemExit(f"surface_resolved must have exactly the keys {RESOLVED_KEYS}; "
+                             f"missing or unknown: {bad}")
+        resolved = {k: float(resolved[k]) for k in RESOLVED_KEYS}
     out = Path(a.out) / "outputs"
     (out / "null_test_study").mkdir(parents=True, exist_ok=True)
     for p in cfg["points"]:
@@ -102,13 +125,17 @@ def main(argv=None):
             raise SystemExit(f"point {p.get('name')}: missing keys {miss}")
         if p["kind"] not in KINDS:
             raise SystemExit(f"point {p['name']}: kind must be one of {KINDS}")
+        if str(p["azimuth"]) not in AZIMUTHS:
+            raise SystemExit(f"point {p['name']}: azimuth must be one of {tuple(AZIMUTHS)}")
+        if not float(p["clean_depth_A"]) > 0:
+            raise SystemExit(f"point {p['name']}: clean_depth_A must be > 0")
         if a.only and p["name"] != a.only:
             continue
         path = out / "null_test_study" / f"{p['name']}.json"
         if path.exists() and not a.estimate:
             raise SystemExit(f"{path} exists: results are never overwritten (audit A3 m7); use "
                              f"another --out")
-        th, obj = _build(p, rt)
+        th, obj = _build(p, rt, build)
         if p["kind"].startswith("translation"):
             cell, params = obj["A"][0], obj["params"]
             n_runs = 2
@@ -117,7 +144,8 @@ def main(argv=None):
             n_runs = 1
         est = estimate_resources(cell, params, realisations=n_runs,
                                  calibrate_cpu=rt["backend"] == "numpy")
-        line = (f"{p['name']}: grid {est['grid']['nx']}x{est['grid']['ny']}, {est['n_slices']} "
+        line = (f"{p['name']}: [{p['azimuth']}] clean depth {float(p['clean_depth_A']):g} A, "
+                f"grid {est['grid']['nx']}x{est['grid']['ny']}, {est['n_slices']} "
                 f"slices, {est['n_atoms']} atoms, memory peak "
                 f"{est['memory_bytes']['total'] / 1e6:.0f} MB (numpy/CPU; GPU device "
                 f"{est['memory_bytes']['device_peak_cupy'] / 1e6:.0f} MB, lower bound), ")
@@ -129,8 +157,11 @@ def main(argv=None):
             continue
         t0 = time.time()
         if p["kind"].startswith("translation"):
-            res = run_translation(obj)
+            res = run_translation(obj, surface_resolved=resolved)
             res["grid"] = list(res["grid"])
+            if resolved is None:
+                res["surface_resolved"] = ("not computed: no surface_resolved block in the study "
+                                           "file")
         else:
             cell, pot, beam, params = obj
             ew = run_realisation(cell, potential=pot, beam=beam, params=params, realisation=0,

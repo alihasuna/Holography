@@ -24,10 +24,22 @@ Both relations are verified numerically on the built atoms by :func:`find_terrac
 generalises the calculator's ``screw_search`` (90 degree rotations times translations on an a/8
 grid, tested modulo the lattice) from the 8-atom basis to the atoms of two built terraces.
 
-Options, each recorded with its label in ``metadata["options"]``: bulk termination (ASSUMPTION B3,
-the only implemented termination); 2x1 dimer reconstruction (NOT IMPLEMENTED: no geometry source
-read); amorphous SiO2/damage overlayer (thickness and density are PROJECT_INPUT item 12, required;
-declared region only, atomistic content NOT IMPLEMENTED); step-riser relaxation none (ASSUMPTION).
+Options, each recorded with its label in ``metadata["options"]``: bulk termination (ASSUMPTION B3);
+the Si(001) dimer reconstructions p(2x1)s, p(2x1)a, p(2x2) and c(4x2) of Ramstad, Brocks and Kelly
+1995 Tables III-IV (SECTION_READ; T = 0 geometries, their use at the specimen temperature is an
+ASSUMPTION) and the "p(2x1)a flip-flop ensemble" (ASSUMPTION B37, a model choice, not a source), all
+in ``reconstruction.py``; amorphous SiO2/damage overlayer (thickness and density are PROJECT_INPUT
+item 12, required; declared region only, atomistic content NOT IMPLEMENTED); step-riser relaxation
+none (ASSUMPTION).
+
+With a reconstruction, assertions (a) to (g) run unchanged on the IDEAL sites (the bulk truncation
+that is then reconstructed); the reconstructed atoms are checked by (r1) to (r6)
+(``_assert_reconstruction``): displacements only in the five tabulated layers of complete dimer
+cells; every dimer's bond length and buckling equal to the table's; one dimer-bond axis per terrace,
+normal to its top-layer back-bond axis, hence rotated by 90 degrees across every a/4 step and not
+across an a/2 step (measured on the built atoms); no collision (minimum distance, over every
+configuration of the flip-flop ensemble); the bulk interior below the reconstructed layers
+unchanged and 4-coordinated.
 """
 from __future__ import annotations
 
@@ -42,8 +54,10 @@ from reflection_holo.geometry.frames import SurfaceFrame, surface_frame
 from reflection_holo.io.labels import require_evidence_label
 
 from . import checks
+from . import reconstruction as recon
 from .checks import POSITION_TOL_A, WINDOW_TOL_A, StructureAssertionError
-from .lattice import diamond_sites_quarter, is_fcc_translation, nearest_neighbour_distance_A
+from .lattice import (diamond_sites_quarter, is_fcc_translation, nearest_neighbour_distance_A,
+                      neighbour_pairs)
 
 NORMAL_HKL = (0, 0, 1)
 LABEL_PREFIXES = ("PROJECT_INPUT", "TEST_ONLY", "ASSUMPTION")
@@ -125,6 +139,8 @@ class Si001Structure:
     terrace_index: np.ndarray        # (N,) terrace of the strip containing the atom
     crystal_origin_slab_A: np.ndarray  # slab position of the crystal origin (one lattice)
     metadata: dict
+    # reconstructed terminations only: ideal sites, displacements, flip-flop cells (reconstruction.py)
+    reconstruction: "recon.ReconstructionRecord | None" = None
 
     @property
     def n_atoms(self) -> int:
@@ -359,6 +375,11 @@ B4_A4_100 = ("B4 applies for the specular beam (and, with the in-plane glide ter
 B4_A4_110 = ("does not apply (dynamical residual delta, not forced to vanish by symmetry (value "
              "unknown); open question 3)")
 B4_A4_OTHER = "does not apply"
+B4_RECONSTRUCTED = ("not established for reconstructed terraces: the relations of assertion (f) "
+                    "are measured on the ideal sites; whether the reconstructed layers of the two "
+                    "terraces are related by an operation fixing the beam is not asserted by the "
+                    "builder (model_assumptions B4: a 2x1 reconstruction can break it); report "
+                    "the dynamical phase difference, not a height")
 
 
 def b4_statement(kind: str, azimuth_uvw, incidence_plane_operations) -> str:
@@ -411,20 +432,154 @@ def _measure_backbond_axes(layer, terrace, tops, pairs, frame, a_A, tol_A):
 # --------------------------------------------------------------------------------------------------
 # Builder
 # --------------------------------------------------------------------------------------------------
+TERMINATIONS = ("bulk",) + recon.RECONSTRUCTIONS
+
+
 def _termination_option(termination: str) -> dict:
     if termination == "bulk":
         return dict(value="bulk", label="ASSUMPTION B3",
                     note="unreconstructed bulk truncation of the diamond lattice")
+    if termination in recon.STATIC_RECONSTRUCTIONS:
+        return dict(value=termination, label=recon.STATIC_LABEL,
+                    note=f"static {termination} dimer reconstruction of the five outermost layers "
+                         f"of every terrace (R1 T = 0 LDA geometry; at room temperature the "
+                         f"dimers flip-flop and c(4x2) order appears only below 205 K, L7 "
+                         f"section 1.2)")
+    if termination == recon.FLIPFLOP:
+        return dict(value=termination, label=recon.FLIPFLOP_LABEL,
+                    note="the structure's positions are ONE member of the ensemble (every cell in "
+                         "the Table III state); a run must draw the configuration of every "
+                         "realisation (forward.dimer_ensemble.DimerFlipFlopPotential)",
+                    ensemble=True)
     if termination == "dimer_2x1":
         raise NotImplementedError(
-            "Si(001) 2x1 dimer reconstruction: NOT IMPLEMENTED. No source for the dimer geometry "
-            "(dimer bond length, vertical and lateral displacements, buckling, subsurface "
-            "relaxation) has been read or recorded in docs/source_map.tsv or docs/references.bib, "
-            "and these values must not be invented (spec section 4.2; ASSUMPTION B3 keeps the "
-            "bulk termination). Read a Si(001)-(2x1) structure determination, add its source-map "
-            "row, then implement this option with the sourced parameters.")
-    raise ValueError(f"termination must be 'bulk' (ASSUMPTION B3) or 'dimer_2x1' "
-                     f"(NOT IMPLEMENTED), got {termination!r}")
+            "termination 'dimer_2x1' is NOT IMPLEMENTED as a generic option: the sourced Si(001) "
+            "reconstructions differ in dimer bond length, buckling and subsurface relaxation "
+            "(source: Ramstad, Brocks and Kelly 1995, Tables III-IV, SECTION_READ; L7 section 1.4), "
+            "and the choice between them must not be invented by the builder. Request one of "
+            f"{recon.RECONSTRUCTIONS} explicitly, or 'bulk' (ASSUMPTION B3).")
+    raise ValueError(f"termination must be 'bulk' (ASSUMPTION B3) or one of the reconstructions "
+                     f"{recon.RECONSTRUCTIONS}, got {termination!r}")
+
+
+def _terrace_groups(t_rel) -> list[list[int]]:
+    """Terraces forming one physical terrace: the single terrace of a flat cell, and terraces 0 and
+    n - 1 when they have the same height (joined across the periodic cell edge)."""
+    n = len(t_rel)
+    if n == 1:
+        return [[0]]
+    if int(t_rel[0]) == int(t_rel[-1]):
+        return [[0, n - 1]] + [[k] for k in range(1, n - 1)]
+    return [[k] for k in range(n)]
+
+
+def step_edge_type(delta_layers: int, upper_row_axis_crystal, edge_axis_crystal) -> str:
+    """Zandvliet 2000 (p. 594) step names on reconstructed terraces: S (single, a/4) or D (double,
+    a/2), A if the step edge runs along the dimer rows of the UPPER terrace, B if normal to them;
+    a step edge along <100> (45 degrees to both) is neither (a sequence of kinks)."""
+    row = np.asarray(upper_row_axis_crystal, float)
+    e = np.asarray(edge_axis_crystal, float)
+    c = abs(float(row @ e)) / (np.linalg.norm(row) * np.linalg.norm(e))
+    kind = "S" if abs(delta_layers) == 1 else "D"
+    if abs(c - 1.0) < 1e-9:
+        return kind + "A"
+    if c < 1e-9:
+        return kind + "B"
+    return (f"{kind}-type step with a <100> edge (45 deg to the dimer rows): neither "
+            f"{kind}A nor {kind}B")
+
+
+def _assert_reconstruction(rec, *, layer, terr, tops, steps, axes, frame, per, a_A, groups):
+    """(r1) to (r6) on the reconstructed atoms (module docstring). Returns the records."""
+    name = rec.name
+    group_of_terrace = np.empty(len(tops), np.int64)
+    for gi, g in enumerate(groups):
+        group_of_terrace[g] = gi
+    group_of_atom = group_of_terrace[terr]
+    pos = rec.ideal_positions_A + rec.displacement_A
+    depth = tops[terr] - layer
+    moved = np.linalg.norm(rec.displacement_A, axis=1) > 0
+    if np.any(moved & ((depth < 0) | (depth >= recon.RECONSTRUCTED_DEPTH))):
+        raise StructureAssertionError("(r1) an atom below the five tabulated layers was displaced")
+    if np.any(moved & (rec.cell_index < 0)):
+        raise StructureAssertionError("(r1) an atom outside every complete dimer cell was displaced")
+    if rec.mirror_displacement_A is not None and np.any(
+            (np.linalg.norm(rec.mirror_displacement_A, axis=1) > 0) & (rec.cell_index < 0)):
+        raise StructureAssertionError("(r1) mirror state defined outside the complete cells")
+    top_mask = depth == 0
+    refs = recon.reference_dimers(name, a_A)
+    states = [(pos, "the structure's configuration")]
+    if rec.mirror_displacement_A is not None:
+        states.append((rec.ideal_positions_A + rec.mirror_displacement_A,
+                       "every cell buckling-reversed"))
+    dim = None
+    for p_state, what in states:
+        m = recon.measure_dimers(p_state, top_mask, group_of_atom, per, frame)
+        if len(m["i"]) != rec.n_cells:
+            raise StructureAssertionError(
+                f"(r3) {what}: {len(m['i'])} top-layer pairs closer than "
+                f"{recon.DIMER_SEARCH_CUTOFF_A} A, expected one per complete cell ({rec.n_cells})")
+        paired = top_mask & (rec.cell_index >= 0)
+        if np.any(m["partners_per_atom"][paired] != 1) or np.any(
+                m["partners_per_atom"][top_mask & ~paired] != 0):
+            raise StructureAssertionError(f"(r3) {what}: a top-layer atom is not in exactly the "
+                                          f"dimer of its cell")
+        for b, th in zip(m["bond_A"], m["buckling_deg"]):
+            if not any(abs(b - r["bond_A"]) <= recon.POSITION_TOL_A
+                       and abs(th - r["buckling_deg"]) <= 1e-6 for r in refs):
+                raise StructureAssertionError(
+                    f"(r3) {what}: dimer bond {b:.6f} A / buckling {th:.6f} deg differs from the "
+                    f"{name} table's dimers {[(r['bond_A'], r['buckling_deg']) for r in refs]}")
+        if dim is None:
+            dim = m
+    # (r4) one dimer-bond axis per terrace, normal to the top-layer back-bond axis
+    measured_axes = {}
+    for k in range(len(tops)):
+        got = dim["per_terrace_axes"].get(int(group_of_terrace[k]), [])
+        if len(got) != 1:
+            raise StructureAssertionError(f"(r4) terrace {k}: dimer-bond axes {got} (need one)")
+        ax = (1, 1, 0) if got[0] == "[1,1,0]" else (1, -1, 0)
+        if _axis_key(ax) == _axis_key(axes[k]):
+            raise StructureAssertionError(f"(r4) terrace {k}: dimer bond parallel to the top-layer "
+                                          f"back-bond axis {axes[k]}")
+        measured_axes[k] = ax
+    step_rec = []
+    for s in steps:
+        A, B = s["from_terrace"], s["to_terrace"]
+        rotated = _axis_key(measured_axes[A]) != _axis_key(measured_axes[B])
+        if abs(s["delta_layers"]) == 1 and not rotated:
+            raise StructureAssertionError(f"(r4) a/4 step {s['index']}: dimer rows not rotated")
+        if abs(s["delta_layers"]) == 2 and rotated:
+            raise StructureAssertionError(f"(r4) a/2 step {s['index']}: dimer rows rotated")
+        step_rec.append((s["index"], rotated))
+    # (r5) no collision (reconstruction.assert_no_collision; every flip-flop configuration)
+    out = dict(collision=recon.assert_no_collision(rec, group_of_atom, per, a_A))
+    # the repository's existing duplicate criterion (assertion (b)) on the reconstructed positions
+    checks.assert_no_duplicates_and_count(pos, per, len(pos))
+    # (r6) bulk interior below every reconstructed layer: unchanged and 4-coordinated at d_nn
+    d_nn = nearest_neighbour_distance_A(a_A)
+    interior = (layer >= 1) & (layer <= int(tops.min()) - recon.RECONSTRUCTED_DEPTH - 1)
+    if np.any(interior):
+        i, _, d, _ = neighbour_pairs(pos, per, 1.05 * d_nn)
+        ok = np.abs(d - d_nn) <= POSITION_TOL_A
+        coord = np.bincount(i[ok], minlength=len(pos))
+        anyc = np.bincount(i, minlength=len(pos))
+        bad = interior & ((coord != 4) | (anyc != 4))
+        if np.any(bad):
+            raise StructureAssertionError(f"(r6) {int(bad.sum())} bulk-interior atom(s) not "
+                                          f"4-coordinated at d_nn after the reconstruction")
+        out["interior_atoms_checked"] = int(interior.sum())
+    else:
+        out["interior_atoms_checked"] = 0
+        out["interior_note"] = ("no layer lies below the reconstructed depth of the lowest "
+                                "terrace and above the bottom layer; (r6) not applicable")
+    out.update(measured_dimer_axes_crystal={int(k): list(v) for k, v in measured_axes.items()},
+               measured_dimers=dict(
+                   n=int(len(dim["i"])),
+                   bond_A=sorted({round(float(b), 6) for b in dim["bond_A"]}),
+                   buckling_deg=sorted({round(float(b), 6) for b in dim["buckling_deg"]})),
+               step_rotation=[dict(step=i, dimer_rows_rotated_90_deg=bool(r)) for i, r in step_rec])
+    return out
 
 
 def _overlayer_option(overlayer, vacuum_above_A: float) -> dict:
@@ -475,7 +630,10 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     substrate_layers             number of (001) layers of the lowest terrace (>= 4), bottom at x=0
     first_terrace_backbond_uvw   [1,1,0] or [1,-1,0]: top-layer back-bond axis of terrace 0 (fixes
                                  which of the two screw-related terrace types terrace 0 is)
-    termination                  'bulk' (ASSUMPTION B3) or 'dimer_2x1' (raises NotImplementedError)
+    termination                  'bulk' (ASSUMPTION B3); a static reconstruction 'p(2x1)s',
+                                 'p(2x1)a', 'p(2x2)', 'c(4x2)' (R1 Tables III-IV); or
+                                 'p(2x1)a flip-flop ensemble' (ASSUMPTION B37); 'dimer_2x1' is
+                                 refused as ambiguous (NotImplementedError)
     overlayer                    :class:`OverlayerSpec` (PROJECT_INPUT item 12) or None (explicit
                                  clean surface, ASSUMPTION B7)
     vacuum_above_A               vacuum above the highest top layer inside the (non-periodic) x box
@@ -622,6 +780,55 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     passed.append("(f) a/2 terraces related by a pure lattice translation, a/4 terraces by a "
                   "90-degree screw (measured on the atoms)")
 
+    # --- reconstruction of the five outermost layers of every terrace (reconstruction.py) ------
+    rec = None
+    recon_checks = None
+    if termination != "bulk":
+        if opt_over["value"] is not None:
+            raise NotImplementedError("a reconstruction under a declared overlayer is NOT "
+                                      "IMPLEMENTED (a buried interface is not a clean surface)")
+        rec = recon.build_reconstruction(
+            termination, ideal_positions_A=rs, quarter=np.rint(rc / q).astype(np.int64),
+            layer=layer, terrace=terr, tops=tops, c0=c0, frame=frame, origin=origin, a_A=a, L=L,
+            s_ax=s_ax, e_ax=e_ax, groups=_terrace_groups(t_rel))
+        recon_checks = _assert_reconstruction(rec, layer=layer, terr=terr, tops=tops, steps=steps,
+                                              axes=axes, frame=frame, per=per, a_A=a,
+                                              groups=_terrace_groups(t_rel))
+        passed += [
+            "(a)-(g) above were run on the ideal (bulk-truncated) sites before reconstruction",
+            "(r1) displacements only in the five tabulated layers of complete dimer cells",
+            "(r2) composition and atom count unchanged by the reconstruction",
+            "(r3) every dimer (measured on the atoms) has the table's bond length and buckling",
+            "(r4) one dimer-bond axis per terrace, normal to its back-bond axis: rotated by 90 deg "
+            "across every a/4 step, not across a/2 steps (measured on the atoms)",
+            "(r5) terrace interiors: no distance shorter than the table's shortest dimer bond; "
+            "everywhere: no collision (>= 0.9 d_nn), no duplicate (assertion (b) criterion)"
+            + (", in every configuration of the flip-flop ensemble" if rec.mirror_displacement_A
+               is not None else ""),
+            "(r6) bulk interior below the reconstructed layers unchanged and 4-coordinated"]
+        e_axis_crystal = frame.to_crystal(np.eye(3)[e_ax])
+        for s in steps:
+            A, B = s["from_terrace"], s["to_terrace"]
+            upper = B if s["delta_layers"] > 0 else A
+            row = rec.metadata["terraces"][upper]["dimer_row_axis_crystal"]
+            rot = {r["step"]: r["dimer_rows_rotated_90_deg"]
+                   for r in recon_checks["step_rotation"]}
+            s["reconstruction"] = dict(
+                termination=termination,
+                dimer_rows_rotated_90_deg=bool(rot[s["index"]]),
+                dimer_bond_axis_from=rec.metadata["terraces"][A]["dimer_bond_axis_crystal"],
+                dimer_bond_axis_to=rec.metadata["terraces"][B]["dimer_bond_axis_crystal"],
+                upper_terrace=int(upper),
+                step_type_zandvliet=step_edge_type(s["delta_layers"], row, e_axis_crystal),
+                source="Zandvliet 2000 [ZANDVLIET2000] p. 594 (SA/SB), p. 600 (only DB double "
+                       "steps observed); rotation measured on the built atoms, (r4)")
+            s["relation"]["model_assumption_B4"] = B4_RECONSTRUCTED
+            s["relation"]["model_assumption_B4_note"] = (
+                "assertion (f) and the operations above are measured on the IDEAL sites; the "
+                "reconstructed layers are not checked for the incidence-plane relation by the "
+                "builder")
+        rs = rec.ideal_positions_A + rec.displacement_A
+
     # --- metadata -----------------------------------------------------------------------------
     terrace_map = []
     for k in range(len(widths)):
@@ -640,6 +847,12 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
             continuous_with_terrace_0_across_boundary=bool(
                 k == len(widths) - 1 and len(widths) > 1 and staircase.boundary_step_layers == 0),
         ))
+        if rec is not None:
+            terrace_map[-1].update(
+                reconstruction=rec.metadata["terraces"][k],
+                top_atom_height_A=float(rs[terr == k, 0].max()),
+                top_height_note="top_height_A is the ideal top-layer plane (a/4 grid); the "
+                                "reconstructed atoms lie below it (top_atom_height_A)")
     cell = np.diag(L)
     pos_hash = hashlib.sha256(np.ascontiguousarray(rs, dtype="<f8").tobytes()).hexdigest()
     metadata = dict(
@@ -671,8 +884,14 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
         steps=steps,
         options=dict(
             termination=opt_term,
-            dimer_reconstruction=dict(value="not enabled", status="NOT IMPLEMENTED: no Si(001)-"
-                                      "(2x1) dimer geometry source has been read"),
+            dimer_reconstruction=(
+                dict(value="not enabled", status="NOT ENABLED: bulk termination requested "
+                     "(ASSUMPTION B3); sourced reconstructions available: "
+                     + ", ".join(recon.RECONSTRUCTIONS) + " (reconstruction.py)")
+                if rec is None else dict(value=termination, status="ENABLED",
+                                         **{k: v for k, v in rec.metadata.items()
+                                            if k != "terraces"},
+                                         checks=recon_checks)),
             overlayer=opt_over,
             riser_relaxation=dict(value="none", label="ASSUMPTION",
                                   note="spec 4.2 'step-riser relaxation none'; no "
@@ -691,4 +910,5 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                                              for k in range(len(widths))]
     return Si001Structure(positions_A=rs, species=np.full(rs.shape[0], "Si"), cell_A=cell,
                           pbc=(False, True, True), frame=frame, layer_index=layer,
-                          terrace_index=terr, crystal_origin_slab_A=origin, metadata=metadata)
+                          terrace_index=terr, crystal_origin_slab_A=origin, metadata=metadata,
+                          reconstruction=rec)
