@@ -285,7 +285,9 @@ def _oxide_layout(record: dict, stacks: list, terraces: list, s_axis: str, *, va
                   dep: float) -> dict:
     # the stack a ray crosses: from the top of the layer to the lower of the continuum crystal
     # boundary and the kept top atomic plane (atomistic crystal: the plane lies a/8 below the kept
-    # crystal's equivalent boundary, which the layer overlaps or misses by at most a/8)
+    # crystal's equivalent boundary, which the layer overlaps or misses by at most a/8 for the
+    # nearest count and by up to 1.5 a/4 for a parity variant whose count is not the nearest one,
+    # so the continuum boundary can then lie below the kept top atomic plane; re-audit A12 m3)
     thick = [float(st["top_x_A"] - min(v for v in (st["crystal_boundary_x_A"],
                                                    st.get("atomistic_crystal_top_x_A"))
                                        if v is not None)) for st in stacks]

@@ -34,15 +34,18 @@ label; nothing has a default):
   is True (audit A8 m4; an acknowledgement that is not needed is refused rather than ignored).
 * PARITY VARIANT (re-audit A10b M1, orchestrator's decision; report X6): when the count interval
   over the stated item-12 uncertainties (item12_count_interval: thickness, density AND a-Si
-  thickness, each +- 2 standard uncertainties or +- the stated half-width) spans ONE rounding
+  thickness; standard uncertainties combined in quadrature, the nominal depth +- 2 combined
+  standard uncertainties, re-audit A12 m2; half-widths as their worst case) spans ONE rounding
   boundary, both counts of the interval are consistent with the measurement; the specification
   then states ``consumed_layers_parity_variant`` = {parity: lower | upper, the uncertainties, their
   kind} and N must be the LOWER or the UPPER count of the interval (not necessarily the nearest
-  one). The thickness, density and a-Si values are NOT altered, so the continuum layer then
-  overlaps the kept crystal (lower variant) or leaves a gap (upper variant) of MORE than a/8 (at
-  most 1.5 a/4; recorded as interface_overlap_A). The other variant is a separate run. An interval
-  of more than two counts (more than one boundary) is refused: lower and upper would not cover the
-  counts between them. No variant when the interval spans no boundary (refused).
+  one; the record names the variant whose count is the nearest, nearest_count_variant). The
+  thickness, density and a-Si values are NOT altered, so for the variant whose count is NOT the
+  nearest one the continuum layer overlaps the kept crystal (lower variant) or leaves a gap (upper
+  variant) of MORE than a/8 (at most 1.5 a/4; recorded as interface_overlap_A; its effect is not
+  computed); the nearest-count variant stays within a/8. The other variant is a separate run. An
+  interval of more than two counts (more than one boundary) is refused: lower and upper would not
+  cover the counts between them. No variant when the interval spans no boundary (refused).
 * REFERENCE SURFACE (audit A8 M2): the pre-oxidation surface H_s of an ATOMISTIC terrace is its Si
   equivalent boundary, half a layer spacing (a/8) above its top atomic plane (Si atoms conserved:
   each (001) layer occupies a/4 centred on its plane); that of a CONTINUUM terrace is its boundary.
@@ -97,6 +100,7 @@ import hashlib
 import json
 import math
 import numbers
+import re
 from dataclasses import asdict, dataclass
 from typing import Mapping
 
@@ -125,16 +129,36 @@ MIN_INTERFACE_WIDTH_A = 0.5            # E9 M4 ("the vacuum edge and oxide/Si tr
 # The B41 2.0 nm stand-in lies 0.0036 layer from the boundary (count 7 becomes 6 at
 # 2.19877 g/cm^3, -0.056 %; audit A8 C5).
 MIN_ROUNDING_MARGIN_LAYERS = 0.05
-# re-audit A10b m2: the kind of a stated item-12 uncertainty. A STANDARD uncertainty u enters the
-# count interval as +- k u with the coverage factor k = 2 (about 95 % coverage for a normally
-# distributed quantity: 95.45 %, tools/review/x6/x6_oxide_numbers.py); a HALF_WIDTH enters as
-# +- itself.
+# re-audit A10b m2, A12 m2: the kind of a stated item-12 uncertainty. STANDARD uncertainties: the
+# continuum depth f(rho) t + t_a is (to first order) linear in the thickness, the density and the
+# a-Si thickness, so its combined standard uncertainty is the quadrature sum of the three
+# contributions, and the count interval is the nominal depth +- k u_c with the coverage factor
+# k = 2 (about 95 % coverage for a normally distributed depth: 95.45 %; the coverage check is
+# printed by tools/review/x7/x7_oxide_numbers.py); the a-Si term is one-sided at the lower end (the
+# a-Si thickness is clipped at 0). HALF_WIDTHS: the worst case, the corners of the box (the depth
+# interval is the linear sum of the three half-widths).
 UNCERTAINTY_KINDS = ("standard", "half_width")
 STANDARD_COVERAGE_FACTOR = 2.0
 COVERAGE_STATEMENT = {
-    "standard": "+- 2 standard uncertainties (coverage factor k = 2: about 95 % coverage for a "
-                "normally distributed quantity)",
-    "half_width": "+- the stated half-width (coverage as stated by the supplier)"}
+    "standard": "the nominal depth +- 2 combined standard uncertainties of the depth (the three "
+                "contributions combined in quadrature, first-order propagation; coverage factor "
+                "k = 2: about 95 % coverage for a normally distributed depth; the a-Si term "
+                "one-sided at its lower end, clipped at zero thickness)",
+    "half_width": "the worst case of the stated half-widths (the corners of the box: the linear "
+                  "sum of the three contributions; coverage as stated by the supplier)"}
+# re-audit A12 n1: each item-12 uncertainty is bounded (item12_count_interval)
+UNCERTAINTY_DEPTH_BOUND_LAYERS = 2.0
+UNCERTAINTY_BOUND_STATEMENT = (
+    "each item-12 uncertainty is bounded: its interval half-width h (k u for a standard "
+    "uncertainty, the half-width itself otherwise) must be smaller than the thickness or density "
+    "it belongs to, and must move the continuum depth by less than "
+    "UNCERTAINTY_DEPTH_BOUND_LAYERS = 2 layers of a/4 (a/2): h_t f < a/2, h_rho f t / rho < a/2, "
+    "h_a < a/2. At two layers or more the count interval holds at least three counts, which is "
+    "refused anyway (a parity variant is defined for two counts only), so the bound refuses no "
+    "record that would otherwise run; it keeps an absurd value from building the list of counts "
+    "(re-audit A12 n1)")
+_MAX_COUNTS_BUILT = 16            # above the largest interval the bounds admit (printed by
+                                  # tools/review/x7/x7_oxide_numbers.py)
 # re-audit A10b M1 (orchestrator's decision): the two counts of an interval spanning ONE boundary
 PARITY_VARIANTS = ("lower", "upper")
 PARITY_VARIANT_KEYS = ("parity", "thickness_uncertainty_A", "density_uncertainty_g_cm3",
@@ -144,6 +168,22 @@ PARITY_VARIANT_KEYS = ("parity", "thickness_uncertainty_A", "density_uncertainty
 def parity_variant_qualifier(parity: str) -> str:
     """The qualifier the DERIVED_HERE count label of a parity variant carries (re-audit A10b M1)."""
     return f"parity variant {parity} of an interval spanning a boundary"
+
+
+# re-audit A12 n4: the qualifier is checked as an exact token, not as a substring
+_PARITY_VARIANT_WORDS = re.compile(r"\bparity variant\b")
+_PARITY_VARIANT_QUALIFIER = re.compile(r"\bparity variant (lower|upper) of an interval spanning a "
+                                       r"boundary\b")
+
+
+def nearest_count_variant(interval: Mapping) -> str | None:
+    """Which parity variant ('lower' or 'upper') of a two-count interval (item12_count_interval)
+    builds the nearest count at the stated values; None unless the interval holds two counts
+    (re-audit A12 m3)."""
+    counts = list(interval["counts"])
+    if len(counts) != 2:
+        return None
+    return PARITY_VARIANTS[counts.index(interval["nearest_count"])]
 EDGE_W05_REFLECTIVITY = (
     "vacuum edge graded over w = 0.5 A: exact 1-D reflectivity |r|^2 = 1.9545e-9 at 16.1347 mrad "
     "(|r| x 8.513e-4 of the sharp edge's 2.697e-3; ODE and transfer matrix converged in step and "
@@ -463,7 +503,7 @@ def _parity_variant(variant, count_label: str, *, overrides: bool) -> dict | Non
     by terrace_stacks, which knows the lattice parameter). Returns the validated mapping or None."""
     derived = isinstance(count_label, str) and count_label.startswith("DERIVED_HERE")
     if variant is None:
-        if derived and "parity variant" in count_label:
+        if derived and _PARITY_VARIANT_WORDS.search(count_label):
             raise OxideSpecError(
                 f"consumed_layers label {count_label!r} names a parity variant, but "
                 f"consumed_layers_parity_variant is None (the count is the nearest count): "
@@ -491,10 +531,14 @@ def _parity_variant(variant, count_label: str, *, overrides: bool) -> dict | Non
         raise OxideSpecError("a parity variant is a conformal layer (one thickness and one count "
                              "on every terrace): per-terrace overrides are refused with "
                              "consumed_layers_parity_variant (re-audit A10b M1)")
-    if derived and parity_variant_qualifier(parity) not in count_label:
+    # re-audit A12 n4: exact token: the qualifier of this parity once, and no other parity-variant
+    # text (a label naming both qualifiers was accepted by the substring test)
+    if derived and (len(_PARITY_VARIANT_WORDS.findall(count_label)) != 1
+                    or _PARITY_VARIANT_QUALIFIER.findall(count_label) != [parity]):
         raise OxideSpecError(
             f"consumed_layers label {count_label!r}: a DERIVED_HERE count of a parity variant must "
-            f"carry the qualifier {parity_variant_qualifier(parity)!r} (re-audit A10b M1)")
+            f"carry the qualifier {parity_variant_qualifier(parity)!r} exactly once and name no "
+            f"other parity variant (exact token; re-audit A10b M1, A12 n4)")
     return out
 
 
@@ -559,15 +603,30 @@ def consumed_count_interval(*, thickness_A: float, thickness_uncertainty_A: floa
                       "uncertainty box (t -+ u_t, rho -+ u_rho); audit A9b m2"))
 
 
+def _counts_between(lo: float, hi: float, q: float) -> list[int]:
+    """The whole counts nearest to the continuum depths lo and hi (floor(x/q + 1/2)) and those
+    between. Refuses a non-finite depth and more than _MAX_COUNTS_BUILT counts BEFORE any list is
+    built (re-audit A12 n1: an absurd uncertainty built a list of about 7e8 integers, MemoryError,
+    or overflowed, OverflowError)."""
+    if not (math.isfinite(lo) and math.isfinite(hi)):
+        raise OxideSpecError(f"the continuum depth interval {lo}-{hi} A is not finite; "
+                             f"{UNCERTAINTY_BOUND_STATEMENT}")
+    n_lo = int(math.floor(lo / q + 0.5))
+    n_hi = int(math.floor(hi / q + 0.5))
+    if n_hi - n_lo + 1 > _MAX_COUNTS_BUILT:
+        raise OxideSpecError(f"the count interval would hold {n_hi - n_lo + 1} counts (more than "
+                             f"{_MAX_COUNTS_BUILT}); refused before the list is built; "
+                             f"{UNCERTAINTY_BOUND_STATEMENT}")
+    return list(range(n_lo, n_hi + 1))
+
+
 def _depth_counts(t_lo, t_hi, rho_lo, rho_hi, ta_lo, ta_hi, a):
     """Continuum depths f(rho) t + t_a at the two corners of a box (the depth increases with t,
     rho and t_a) and the whole counts nearest to them and between."""
     q = a / 4.0
     lo = consumed_si_fraction(rho_lo, a) * t_lo + ta_lo
     hi = consumed_si_fraction(rho_hi, a) * t_hi + ta_hi
-    n_lo = int(math.floor(lo / q + 0.5))
-    n_hi = int(math.floor(hi / q + 0.5))
-    return lo, hi, list(range(n_lo, n_hi + 1))
+    return lo, hi, _counts_between(lo, hi, q)
 
 
 def item12_count_interval(*, thickness_A: float, thickness_uncertainty_A: float,
@@ -576,15 +635,24 @@ def item12_count_interval(*, thickness_A: float, thickness_uncertainty_A: float,
                           amorphous_si_thickness_uncertainty_A: float, uncertainty_kind: str,
                           a_A: float) -> dict:
     """Consumed-layer counts consistent with the stated item-12 uncertainties (re-audit A10b m2,
-    m3, n2; report X6). Every argument is required. ``uncertainty_kind`` "standard": each
-    uncertainty u enters as +- k u, k = STANDARD_COVERAGE_FACTOR = 2 (about 95 % coverage for a
-    normally distributed quantity); "half_width": as +- u. Zero or negative uncertainties are
-    refused. The half-widths of thickness and density must be smaller than the values; the a-Si
-    thickness interval is clipped at 0 (a thickness; for a measured zero the uncertainty is the
-    detection limit). The continuum depth f(rho) t + t_a increases with t, rho and t_a, so its
-    extremes lie at the two corners of the box; the counts are the nearest counts at the corners
-    and those between. spans_boundary: more than one count; a parity variant (lower or upper) is
-    defined only for exactly two counts (one boundary)."""
+    m3, n2, report X6; re-audit A12 m2, n1, report X7). Every argument is required. The continuum
+    depth D = f(rho) t + t_a increases with t, rho and t_a; each quantity contributes a depth
+    half-width c_i = s_i h_i (sensitivities s_t = f, s_rho = f t / rho, since f is proportional to
+    rho, s_a = 1) of its interval half-width h_i:
+
+      "standard"    h = k u, k = STANDARD_COVERAGE_FACTOR = 2; the contributions are combined in
+                    QUADRATURE (first-order propagation of independent quantities): the interval is
+                    D +- sqrt(c_t^2 + c_rho^2 + c_a^2), about 95 % coverage for a normally
+                    distributed depth; the a-Si term is one-sided at the lower end, min(h_a, t_a),
+                    since the a-Si thickness is clipped at 0;
+      "half_width"  h = u; the WORST CASE: the depths at the two corners of the box (t -+ h_t,
+                    rho -+ h_rho, t_a -+ h_a clipped at 0), whose width is the linear sum of the
+                    contributions.
+
+    Zero or negative uncertainties are refused. Each uncertainty is bounded
+    (UNCERTAINTY_BOUND_STATEMENT): h_t < t, h_rho < rho, and each c_i < 2 a/4. The counts are the
+    nearest counts at the interval ends and those between. spans_boundary: more than one count; a
+    parity variant (lower or upper) is defined only for exactly two counts (one boundary)."""
     a = _num(a_A, "a_A", positive=True)
     q = a / 4.0
     if uncertainty_kind not in UNCERTAINTY_KINDS:
@@ -606,32 +674,68 @@ def item12_count_interval(*, thickness_A: float, thickness_uncertainty_A: float,
     if not ht < t:
         raise OxideSpecError(f"the thickness interval half-width {ht} A "
                              f"({COVERAGE_STATEMENT[uncertainty_kind]}) must be smaller than the "
-                             f"thickness {t} A")
+                             f"thickness {t} A; {UNCERTAINTY_BOUND_STATEMENT}")
     if not hr < rho:
         raise OxideSpecError(f"the density interval half-width {hr} g/cm^3 "
                              f"({COVERAGE_STATEMENT[uncertainty_kind]}) must be smaller than the "
-                             f"density {rho} g/cm^3")
-    ta_lo = max(0.0, t_a - ha)
-    lo, hi, counts = _depth_counts(t - ht, t + ht, rho - hr, rho + hr, ta_lo, t_a + ha, a)
-    f = consumed_si_fraction(rho, a)
-    contrib = dict(                                   # half-width of the depth, in layers of a/4
-        thickness=f * ht / q,
-        density=0.5 * (consumed_si_fraction(rho + hr, a) - consumed_si_fraction(rho - hr, a))
-        * t / q,
-        amorphous_si=(t_a + ha - ta_lo) / 2.0 / q)
-    nearest = int(math.floor((f * t + t_a) / q + 0.5))
+                             f"density {rho} g/cm^3; {UNCERTAINTY_BOUND_STATEMENT}")
+    try:
+        f = consumed_si_fraction(rho, a)
+        f_lo, f_hi = consumed_si_fraction(rho - hr, a), consumed_si_fraction(rho + hr, a)
+        contrib = dict(                               # depth half-width of each quantity, A
+            thickness=f * ht, density=0.5 * (f_hi - f_lo) * t, amorphous_si=ha)
+        sens = dict(thickness=(f, "thickness_uncertainty_A", "A"),
+                    density=(f * t / rho, "density_uncertainty_g_cm3", "g/cm^3"),
+                    amorphous_si=(1.0, "amorphous_si_thickness_uncertainty_A", "A"))
+        bound = UNCERTAINTY_DEPTH_BOUND_LAYERS * q
+        for name, c in contrib.items():
+            if not c < bound:                          # also inf (k u overflowed)
+                s_i, key, unit = sens[name]
+                raise OxideSpecError(
+                    f"{key} = {u[key]} {unit} ({uncertainty_kind}): its interval half-width moves "
+                    f"the continuum depth by {c / q:.4g} layers of a/4, not below "
+                    f"{UNCERTAINTY_DEPTH_BOUND_LAYERS:g} layers (a/2 = {bound:.4f} A): the upper "
+                    f"bound of this uncertainty here is {bound / (k * s_i):.4g} {unit}; "
+                    f"{UNCERTAINTY_BOUND_STATEMENT}")
+        ha_lo = min(ha, t_a)                           # the a-Si thickness is clipped at 0
+        depth = f * t + t_a
+        if uncertainty_kind == "half_width":           # worst case: the corners of the box
+            lo, hi, counts = _depth_counts(t - ht, t + ht, rho - hr, rho + hr, t_a - ha_lo,
+                                           t_a + ha, a)
+            combination = ("linear: the depths at the two corners of the box (the worst case of "
+                           "the stated half-widths)")
+        else:                                          # quadrature (re-audit A12 m2)
+            base = contrib["thickness"] ** 2 + contrib["density"] ** 2
+            lo = depth - math.sqrt(base + ha_lo ** 2)
+            hi = depth + math.sqrt(base + ha ** 2)
+            counts = _counts_between(lo, hi, q)
+            combination = ("quadrature: the nominal depth +- sqrt(c_t^2 + c_rho^2 + c_a^2) with "
+                           "c = sensitivity x k u (first-order propagation of independent "
+                           "quantities), the a-Si term one-sided at the lower end")
+    except (OverflowError, MemoryError) as exc:        # re-audit A12 n1: never uncaught
+        raise OxideSpecError(f"the item-12 uncertainties are too large to form a count interval "
+                             f"({type(exc).__name__}); {UNCERTAINTY_BOUND_STATEMENT}") from exc
+    ta_lo = t_a - ha_lo
+    nearest = int(math.floor(depth / q + 0.5))
     return dict(continuum_layers_min=float(lo / q), continuum_layers_max=float(hi / q),
-                continuum_layers_nominal=float((f * t + t_a) / q), nearest_count=nearest,
+                continuum_layers_nominal=float(depth / q), nearest_count=nearest,
                 counts=counts, parities=sorted({"even" if n % 2 == 0 else "odd" for n in counts}),
                 spans_boundary=bool(len(counts) > 1), boundaries_spanned=len(counts) - 1,
                 uncertainty_kind=uncertainty_kind, coverage_factor=k,
-                coverage=COVERAGE_STATEMENT[uncertainty_kind], uncertainties=u,
+                coverage=COVERAGE_STATEMENT[uncertainty_kind], combination=combination,
+                uncertainties=u,
                 box=dict(thickness_A=[t - ht, t + ht], density_g_cm3=[rho - hr, rho + hr],
                          amorphous_si_thickness_A=[ta_lo, t_a + ha]),
-                depth_half_width_layers={k_: float(v) for k_, v in contrib.items()},
-                rule=("nearest whole count of (f(rho) t + t_a)/(a/4) at the two corners of the "
-                      "box (t -+ h_t, rho -+ h_rho, t_a -+ h_a clipped at 0), h = k u; re-audit "
-                      "A10b m2, m3 (report X6)"))
+                depth_half_width_layers=dict(                # per quantity, in layers of a/4
+                    thickness=float(contrib["thickness"] / q),
+                    density=float(contrib["density"] / q),
+                    amorphous_si=float((t_a + ha - ta_lo) / 2.0 / q)),
+                combined_half_width_layers=dict(lower=float((depth - lo) / q),
+                                                upper=float((hi - depth) / q)),
+                rule=("nearest whole count of (f(rho) t + t_a)/(a/4) at the ends of the depth "
+                      "interval: standard uncertainties in quadrature (nominal +- k u_c, k = 2), "
+                      "half-widths at the corners of the box (t -+ h_t, rho -+ h_rho, t_a -+ h_a "
+                      "clipped at 0); re-audit A10b m2, m3 (report X6), A12 m2 (report X7)"))
 
 
 def spec_sha256(spec: ContinuumOxideSpec) -> str:
@@ -744,6 +848,7 @@ def _check_parity_variant(rec: dict, a: float) -> dict:
                 qualifier=parity_variant_qualifier(v["parity"]), interval=ci,
                 nearest_count=ci["nearest_count"],
                 is_nearest_count=bool(want == ci["nearest_count"]),
+                nearest_count_variant=nearest_count_variant(ci),         # re-audit A12 m3
                 other_variant=dict(parity=other, count=ci["counts"][1 - idx],
                                    count_parity=count_parity(ci["counts"][1 - idx])),
                 note=(f"parity variant {v['parity']} (count {want}, {count_parity(want)}) of an "

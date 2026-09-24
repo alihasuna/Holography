@@ -68,23 +68,32 @@ Label policy of item 12 (audit A9b M2, orchestrator's decision; report X5):
   the stated value must equal the derived count; it never carries PROJECT_INPUT.
 * V_ox, V'_ox and the two edge widths are MODEL parameters (E9 M1, M4): in any run they carry
   either "PROJECT_INPUT", then ``measurements.<key>`` must be the structured record {method,
-  instrument, date (ISO YYYY-MM-DD, not after the run's date), reference (where the result is
-  recorded)} (MEASUREMENT_RECORD_KEYS; re-audit A10b M2), or "ASSUMPTION B43", the registered
+  instrument, date (ISO YYYY-MM-DD, not before MEASUREMENT_DATE_FLOOR, not after the item-12
+  supply date or the run's date), reference (where the result is recorded)}
+  (MEASUREMENT_RECORD_KEYS; re-audit A10b M2, A12 m1), or "ASSUMPTION B43", the registered
   NON-DEMO model row (``OXIDE_MODEL_ROWS``; registry model_rows; not a stand-in for a
   PROJECT_INPUT), which a comparison run admits; B43 vouches for its nominal values and its
   declared sensitivity-bracket ends only, and every run records them with the bracket
   (``oxide_item12_record``, manifest and summary). Running the bracket ends is not required by the
   gate. The a-Si potentials, when labelled PROJECT_INPUT, need the same record (re-audit A10b m1;
-  no model row covers them). The gate cannot verify a measurement record, only require one: it
-  refuses fields that are plainly not a record (placeholders, negations such as "not measured",
-  "model", "assumption", "independent-atom", model_assumptions row ids, "?", fewer than
-  MEASUREMENT_MIN_ALNUM letters or digits, an invalid or future date).
+  no model row covers them). The gate cannot verify a measurement record, only require one
+  (re-audit A12 M1, report X7): the method must name an id of the ALLOWLIST MEASUREMENT_METHODS
+  that measures the parameter (allowed_measurement_methods: "<id>" or "<id>: <details>"); as a
+  second layer every text field is NFKC-normalised and must be printable ASCII, and it is refused
+  when it contains a listed placeholder, negation (not, never, no, n't, un-/non-measured, ...),
+  origin word of an unmeasured value (estimate, guess, calculated, computed, simulated, DFT,
+  scattering factors, literature, assumed, model, ...), a model_assumptions row id or a path into
+  this repository (_MEASUREMENT_REFUSED, case- and whitespace-insensitive; the list fails closed);
+  the reference needs a token beyond a scheme or prefix.
 * thickness and density (and the a-Si thickness) stay PROJECT_INPUT in comparison runs; there the
   record also states ``thickness_uncertainty_A``, ``density_uncertainty_g_cm3``,
   ``amorphous_si_thickness_uncertainty_A`` (for a measured zero: its detection limit) and
-  ``uncertainty_kind`` ("standard": the count interval uses +- 2 u, about 95 % coverage for a
-  normally distributed quantity; "half_width": +- u) (all four or none in other runs; zero or
-  negative uncertainties refused; audit A9b m2, re-audit A10b m2, m3, n2). When the count interval
+  ``uncertainty_kind`` ("standard": the count interval is the nominal depth +- 2 combined standard
+  uncertainties of the depth, the three contributions combined in quadrature, about 95 % coverage
+  for a normally distributed depth, re-audit A12 m2; "half_width": the worst case of the stated
+  half-widths, the corners of the box) (all four or none in other runs; zero or negative
+  uncertainties refused; each uncertainty bounded, structure.oxide.item12_count_interval; audit
+  A9b m2, re-audit A10b m2, m3, n2, A12 n1). When the count interval
   (structure.oxide.item12_count_interval) spans a rounding boundary the record must state
   ``consumed_layers_parity``: "lower" or "upper"; the run then builds that count of the interval
   (both are consistent with the stated uncertainties), labelled DERIVED_HERE with the qualifier
@@ -103,6 +112,7 @@ import hashlib
 import json
 import math
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -1037,28 +1047,108 @@ OXIDE_MODEL_PARAMETERS = ("V_real", "V_imag", "vacuum_edge", "interface")   # E9
 # parameters and the a-Si potentials (re-audit A10b m1; no model row covers the a-Si potentials)
 OXIDE_RECORDED_PARAMETERS = OXIDE_MODEL_PARAMETERS + ("amorphous_si_potential",)
 OXIDE_DERIVED_LABEL = "DERIVED_HERE"      # consumed_layers (A9b M2)
-# re-audit A10b M2 (orchestrator's decision; report X6): the measurement record of a PROJECT_INPUT
-# model parameter. The gate cannot verify a record, only require one: it refuses a record that is
-# plainly not one (a placeholder, a negation, a model or row reference, fewer than
-# MEASUREMENT_MIN_ALNUM letters or digits, an invalid or future date).
+# re-audit A10b M2 (orchestrator's decision; report X6), re-audit A12 M1, m1 (orchestrator's
+# decision; report X7): the measurement record of a PROJECT_INPUT model parameter. The gate cannot
+# verify a record, only require one. First layer: the method must name an id of the ALLOWLIST
+# MEASUREMENT_METHODS that measures that parameter (allowed_measurement_methods). Second layer:
+# every text field is NFKC-normalised, must then be printable ASCII (look-alike letters of other
+# scripts and invisible characters are refused), and is refused when it contains a placeholder, a
+# negation, an origin word of an unmeasured (model) value, or a reference to this repository's
+# rows, reports or files (_MEASUREMENT_REFUSED; case- and whitespace-insensitive). The reference
+# must contain a token beyond a scheme or prefix; the date lies in [MEASUREMENT_DATE_FLOOR, the
+# item-12 supply date].
 MEASUREMENT_RECORD_KEYS = ("method", "instrument", "date", "reference")
 MEASUREMENT_MIN_ALNUM = 3                 # a minimum form, not a check of content
-_MEASUREMENT_REFUSED = tuple(re.compile(p, re.IGNORECASE) for p in (
-    r"\bnot\s+(?:yet\s+|been\s+)?(?:measured|available|applicable|known|stated|supplied|"
-    r"determined|recorded|done)\b",
-    r"\bnever\s+measured\b", r"\bno\s+(?:measurement|record|data|reference|instrument|method)\b",
-    r"\bun(?:measured|known|specified|available|determined|verified)\b",
-    r"\bt\.?\s?b\.?\s?[acd]\b", r"\bn\s*/\s*a\b", r"\bnone\b", r"\bnil\b", r"\bnull\b",
-    r"\bto\s*-?\s*do\b", r"\bassum", r"\bmodel", r"\bindependent[\s-]*atom", r"\biam\b",
-    r"\bB\d{1,3}\b", r"\bnominal\b", r"\bplaceholder\b", r"\bpending\b", r"\bto\s+be\s+\w+",
-    r"\bdefault\b", r"\bsimulat", r"\bcalculat", r"\btheoret", r"\bliterature\b",
-    r"\bsee\s+above\b", r"\bditto\b", r"\bidem\b", r"\bdummy\b", r"\bx{3,}\b", r"\?"))
+# re-audit A12 M1: the allowlist {method id: (parameters it can measure, what it is)}; the method
+# field is "<id>" or "<id>: <details>" (allowed_measurement_methods states the table)
+MEASUREMENT_OTHER = "other_measurement"
+MEASUREMENT_OTHER_MIN_WORDS = 8           # distinct words of >= 3 letters: an arbitrary minimum
+MEASUREMENT_METHODS = {
+    "offaxis_holography_wedge": (
+        ("V_real", "amorphous_si_potential"),
+        "off-axis electron holography of a wedge or cleaved edge of known thickness (the mean "
+        "inner potential from the phase per unit thickness)"),
+    "rheed_rocking_curve_fit": (
+        ("V_real", "amorphous_si_potential"),
+        "reflection high-energy electron diffraction (RHEED) rocking-curve fit"),
+    "cbed_rocking_curve_fit": (
+        ("V_real", "amorphous_si_potential"),
+        "convergent-beam electron diffraction rocking-curve fit"),
+    "reflection_rocking_curve_fit": (
+        ("V_real", "amorphous_si_potential"),
+        "reflection rocking-curve fit (reflection electron diffraction or microscopy)"),
+    MEASUREMENT_OTHER: (
+        ("V_real", "amorphous_si_potential"),
+        f"another measurement, described after the id in at least {MEASUREMENT_OTHER_MIN_WORDS} "
+        f"distinct words of three or more letters that pass the refusal list"),
+    "eels_inelastic_mean_free_path": (
+        ("V_imag",), "electron energy-loss spectroscopy (EELS): inelastic mean free path"),
+    "energy_filtered_intensity_ratio": (
+        ("V_imag",), "energy-filtered transmission or reflection intensity ratio"),
+    "xrr_fit": (("vacuum_edge", "interface"), "X-ray reflectivity (XRR) fit"),
+    "cross_section_tem_profile": (
+        ("vacuum_edge", "interface"), "cross-section HRTEM or STEM profile"),
+    "afm_surface": (("vacuum_edge",), "atomic force microscopy (AFM): the surface only"),
+}
+# not a width method (orchestrator's decision, re-audit A12 M1): refused for w_v and w_i
+MEASUREMENT_NOT_A_WIDTH_METHOD = ("ellipsometr",)
+MEASUREMENT_DATE_FLOOR = _dt.date(1990, 1, 1)   # a stated floor (orchestrator's decision, A12 m1)
+_MEASUREMENT_REFUSED = tuple(re.compile(p) for p in (
+    # applied to the lower-case words of the field (every run of characters other than a-z and 0-9
+    # replaced by one space: "not_measured", "not-measured" and "not  measured" read alike)
+    # -- negations: anywhere in the field, in any word order
+    r"\bnot\b", r"\bnot ?(?:measur|known|avail|stat|suppl|determin|record|done|appl)",
+    r"\bnever\b", r"\bno\b", r"\bnone\b", r"\bnothing\b", r"\bwithout\b", r"\bcannot\b",
+    r"\b(?:is|was|are|were|has|have|had|do|does|did|can|could|would|should|wo|need)n t\b",
+    r"\bnon ?(?:measur|mesur|misur|medid|gemess|determin|avail|exist)",
+    r"\bun ?(?:measur|known|specif|avail|determin|verif|defin|record|stat|suppl|publish|fill)",
+    r"\b(?:nicht|niet|sans|geen|kein\w*|aucun\w*|ningun\w*|nessun\w*)\b",
+    # -- placeholders
+    r"\bmissing\b", r"\babsent\b", r"\bnan\b", r"\bnull\b", r"\bnil\b", r"\bt ?b ?[acd]\b",
+    r"\bto ?do\b", r"\bfix ?me\b", r"\bfill(?:ed)? in\b", r"\blater\b", r"\bpending\b",
+    r"\bplaceholder", r"\bdummy\b", r"\blorem\b", r"\bipsum\b", r"\b([a-z])\1{2,}\b", r"\bto be\b",
+    r"\bdefault", r"\bsee above\b", r"\bas above\b", r"\bsame as\b", r"\bditto\b", r"\bidem\b",
+    r"\bwhatever\b", r"\banything\b", r"\bblank\b", r"\bempty\b", r"\busual\b",
+    # -- origin words of an unmeasured (model) value
+    r"\bestimat", r"\bguess", r"\bcalculat", r"\bcomput(?:e|ed|es|ing|ation|ations)\b",
+    r"\bsimulat", r"\bdft\b", r"\bdensity functional", r"\bab ?initio\b",
+    r"\bfirst ?principles?\b", r"\bscattering ?factor", r"\bdoyle ?turner\b", r"\bweickenmeier",
+    r"\blobato\b", r"\bkirkland\b", r"\bindependent ?atom", r"\biam\b", r"\bassum", r"\bmodel",
+    r"\btheor", r"\bnominal\b", r"\bliterature\b", r"\btextbook", r"\bhandbook", r"\bwikipedia",
+    r"\btypical", r"\bextrapolat", r"\binterpolat", r"\bderiv", r"\bdemo\b", r"\bstand ?in\b",
+    r"\btest ?only\b", r"\bcopied\b", r"\btaken from\b", r"\bvalue from\b",
+    r"\bfrom (?:a |the )?(?:paper|book|table)\b",
+    # -- this repository's docs/model_assumptions.md row ids (not the journal "Phys. Rev. B"),
+    #    review report ids (E9) and line references of their outputs ("out:166")
+    r"(?<!rev )\bb ?\d{1,4}\b", r"\be\d{1,2}\b", r"\bout \d+\b"))
+# applied to the lower-case text itself
+_MEASUREMENT_REFUSED_RAW = tuple(re.compile(p) for p in (
+    r"\?", r"\bn\s*/\s*a\b",
+    # a path into this repository (its top-level directories, its documents and its name)
+    r"(?:^|[\s(\"'=:,;]|\./)(?:tools|docs|reflection_holo|tests|configs|scripts|outputs)/",
+    r"reflection_holo", r"model_assumptions", r"project_inputs_required", r"agent_reports",
+    r"holography/(?:tools|docs|tests|configs|scripts|outputs)\b", r"_recompute_output"))
 # a bare number with an optional short unit ("10.34 V", "0.5 A", "2026"): a value, not a record field
 _MEASUREMENT_BARE_VALUE = re.compile(r"\s*[-+]?\d+(?:[.,]\d+)?(?:[eE][-+]?\d+)?\s*"
                                      r"(?:[A-Za-z]{1,3}(?:[/^]?[A-Za-z0-9]{1,3})?)?\s*\.?\s*")
 _MEASUREMENT_PLACEHOLDERS = ("measured", "measurement", "measurements", "yes", "no", "true",
                              "false", "ok", "done", "witness", "same", "various", "other", "etc",
-                             "misc")
+                             "misc",
+                             # re-audit A12 m1: the field names and other echoes
+                             "method", "instrument", "reference", "references", "record",
+                             "records", "date", "value", "fit", "fitted", "internal", "notebook",
+                             "labbook", "logbook", "file", "report", "paper", "sample", "text",
+                             "sampletext")
+# re-audit A12 m1: words that do not locate a record by themselves (a scheme, a prefix, a filler);
+# a reference needs MEASUREMENT_MIN_ALNUM letters or digits in its other words
+_REFERENCE_FILLER = frozenset((
+    "ref", "refs", "reference", "references", "record", "records", "see", "cf", "doi", "org",
+    "http", "https", "ftp", "file", "url", "www", "lab", "laboratory", "book", "labbook",
+    "notebook", "logbook", "log", "page", "pages", "p", "pp", "nr", "number", "id", "internal",
+    "report", "entry", "sheet", "folder", "method", "instrument", "date", "value", "in", "at", "on",
+    "the", "a", "an", "of", "and", "above", "below", "here", "there", "this", "that"))
+_REFERENCE_DOI = re.compile(r"\b10\.\d{4,9}/\S+")
+_REFERENCE_URL = re.compile(r"\b[a-z][a-z0-9+.-]*://[a-z0-9-]+(?:\.[a-z0-9-]+)+")
 OXIDE_STAND_INS_CLEAN = ("B26",)          # item-12 stand-ins whose row states NO overlayer
 # the configuration values each per-parameter label covers (structure.oxide.LABEL_KEYS; A8 M1)
 OXIDE_LABEL_VALUES = {"thickness": ("thickness_A",), "density": ("density_g_cm3",),
@@ -1216,67 +1306,200 @@ def oxide_parameter_labels(p12, over: dict) -> dict:
 
 
 _MEASUREMENT_CANNOT_VERIFY = ("the gate cannot verify a measurement record, only require one "
-                              "(re-audit A10b M2)")
+                              "(re-audit A10b M2, A12 M1)")
+
+
+def allowed_measurement_methods(parameter: str) -> list[str]:
+    """The ALLOWLIST of measurement methods of the item-12 model parameters (re-audit A12 M1,
+    orchestrator's decision; report X7). The method field of a measurement record must name one of
+    these ids, as "<id>" or "<id>: <details>" (MEASUREMENT_METHODS: id -> (parameters, what it is)):
+
+      V_real, amorphous_si_potential (mean inner potential of the oxide; potential of the a-Si):
+          offaxis_holography_wedge      off-axis electron holography of a wedge or cleaved edge of
+                                        known thickness
+          rheed_rocking_curve_fit       RHEED rocking-curve fit
+          cbed_rocking_curve_fit        convergent-beam rocking-curve fit
+          reflection_rocking_curve_fit  reflection rocking-curve fit
+          other_measurement             only with details of at least MEASUREMENT_OTHER_MIN_WORDS
+                                        distinct words of three or more letters, which also pass
+                                        the refusal list
+      V_imag (electronic absorption of the oxide):
+          eels_inelastic_mean_free_path EELS inelastic mean free path
+          energy_filtered_intensity_ratio  energy-filtered transmission or reflection intensity
+                                        ratio
+      vacuum_edge, interface (grading widths w_v, w_i):
+          xrr_fit                       X-ray reflectivity fit
+          cross_section_tem_profile     cross-section HRTEM or STEM profile
+          afm_surface                   AFM, the vacuum edge (surface) only
+        ellipsometry is NOT a width method (refused for w_v and w_i).
+
+    The gate cannot verify a record, only require one: a named id is a form, not evidence that the
+    measurement was made. Returns the ids allowed for ``parameter`` (sorted)."""
+    return sorted(k for k, (params, _what) in MEASUREMENT_METHODS.items() if parameter in params)
+
+
+def _measurement_words(t: str) -> str:
+    """The lower-case words of a field: every run of characters other than a-z and 0-9 replaced by
+    one space (so separators, case and whitespace do not matter)."""
+    return " ".join(re.sub(r"[^0-9a-z]+", " ", t.lower()).split())
+
+
+def _measurement_form(what: str, field_: str, t: str) -> None:
+    """The form of a (normalised) text: at least MEASUREMENT_MIN_ALNUM letters or digits, not a bare
+    number or value, not a placeholder (_MEASUREMENT_PLACEHOLDERS, NON_SUPPLIERS)."""
+    alnum = re.sub(r"[^0-9A-Za-z]", "", t)
+    if len(alnum) < MEASUREMENT_MIN_ALNUM:
+        raise PipelineConfigError(f"{what} (at least {MEASUREMENT_MIN_ALNUM} letters or digits)")
+    if _MEASUREMENT_BARE_VALUE.fullmatch(t):
+        raise PipelineConfigError(f"{what} (a bare number or value is not a {field_})")
+    low = alnum.lower()
+    words = " ".join(re.sub(r"[^0-9a-z/]+", " ", t.lower()).split())
+    if low in _MEASUREMENT_PLACEHOLDERS or words in NON_SUPPLIERS or low in {
+            re.sub(r"[^0-9a-z]", "", s) for s in NON_SUPPLIERS}:
+        raise PipelineConfigError(f"{what} (a placeholder)")
 
 
 def _measurement_text(where: str, field_: str, v) -> str:
-    """One text field (method, instrument, reference) of a measurement record (re-audit A10b M2):
-    a string with at least MEASUREMENT_MIN_ALNUM letters or digits, not a placeholder, a negation, a
-    model or model_assumptions-row reference (_MEASUREMENT_REFUSED, case-insensitive)."""
+    """One text field (method, instrument, reference) of a measurement record (re-audit A10b M2,
+    A12 M1, m1): a string that after NFKC normalisation is printable ASCII (look-alike letters of
+    other scripts and invisible characters are refused, re-audit A12 M1), with at least
+    MEASUREMENT_MIN_ALNUM letters or digits, not a placeholder or bare value, and without any
+    pattern of _MEASUREMENT_REFUSED (on its lower-case words) or _MEASUREMENT_REFUSED_RAW (on its
+    lower-case text): negations, placeholders, origin words of an unmeasured (model) value, row,
+    report or file references into this repository. The patterns fail closed: a genuine record
+    that contains a refused word must be rephrased. Returns the normalised text (NFKC, runs of
+    whitespace collapsed, stripped)."""
     what = (f"{where}.{field_} = {v!r}: must state the {field_} of a measurement on the witness "
             f"piece; {_MEASUREMENT_CANNOT_VERIFY}, and it refuses a record that is plainly not "
             f"one")
     if not isinstance(v, str):
         raise PipelineConfigError(f"{what} (a string is required)")
-    alnum = re.sub(r"[^0-9A-Za-z]", "", v)
-    if len(alnum) < MEASUREMENT_MIN_ALNUM:
-        raise PipelineConfigError(f"{what} (at least {MEASUREMENT_MIN_ALNUM} letters or digits)")
-    if _MEASUREMENT_BARE_VALUE.fullmatch(v):
-        raise PipelineConfigError(f"{what} (a bare number or value is not a {field_})")
-    low = alnum.lower()
-    words = " ".join(re.sub(r"[^0-9a-z/]+", " ", v.lower()).split())
-    if low in _MEASUREMENT_PLACEHOLDERS or words in NON_SUPPLIERS or low in {
-            re.sub(r"[^0-9a-z]", "", s) for s in NON_SUPPLIERS}:
-        raise PipelineConfigError(f"{what} (a placeholder)")
-    for pat in _MEASUREMENT_REFUSED:
-        m = pat.search(v)
-        if m:
+    t = unicodedata.normalize("NFKC", v)
+    bad = sorted({c for c in t if not (c.isascii() and (c.isprintable() or c in "\t\n\r"))})
+    if bad:
+        names = ", ".join(f"U+{ord(c):04X} {unicodedata.name(c, 'unnamed')}" for c in bad[:4])
+        raise PipelineConfigError(
+            f"{what} (after NFKC normalisation it contains characters that are not printable "
+            f"ASCII: {names}; look-alike letters of other scripts and invisible characters are "
+            f"refused; write the field in ASCII; re-audit A12 M1)")
+    t = " ".join(t.split())
+    _measurement_form(what, field_, t)
+    for text, pats in ((_measurement_words(t), _MEASUREMENT_REFUSED),
+                       (t.lower(), _MEASUREMENT_REFUSED_RAW)):
+        for pat in pats:
+            m = pat.search(text)
+            if m:
+                raise PipelineConfigError(
+                    f"{what} (it contains {m.group(0).strip()!r}: a placeholder, a negation, an "
+                    f"origin word of an unmeasured value, or a reference to this repository's "
+                    f"rows, reports or files; an unmeasured model value is labelled "
+                    f"'ASSUMPTION B43' where that row covers it; the refusal list fails closed, "
+                    f"so a genuine record containing such a word must be rephrased; re-audit A12 "
+                    f"M1)")
+    return t
+
+
+def _measurement_method(where: str, parameter: str, v) -> str:
+    """The method field (re-audit A12 M1): _measurement_text, then "<id>" or "<id>: <details>" with
+    an id of MEASUREMENT_METHODS that measures ``parameter`` (allowed_measurement_methods); for
+    other_measurement the details need MEASUREMENT_OTHER_MIN_WORDS distinct words of three or more
+    letters; ellipsometry is refused for the grading widths."""
+    t = _measurement_text(where, "method", v)
+    head, sep, details = t.partition(":")
+    mid, details = head.strip(), details.strip()
+    allowed = allowed_measurement_methods(parameter)
+    what = (f"{where}.method = {v!r}: must state the method of a measurement on the witness "
+            f"piece as '<id>' or '<id>: <details>' with an id of the allowlist "
+            f"MEASUREMENT_METHODS that measures {parameter}: {allowed}; "
+            f"{_MEASUREMENT_CANNOT_VERIFY}")
+    if mid not in MEASUREMENT_METHODS:
+        raise PipelineConfigError(f"{what}; got the id {mid!r}")
+    if details:                                        # stated details have the form of a field
+        _measurement_form(f"{what}; the details after the id", "method description", details)
+    if parameter not in MEASUREMENT_METHODS[mid][0]:
+        raise PipelineConfigError(f"{what}; {mid} ({MEASUREMENT_METHODS[mid][1]}) measures only "
+                                  f"{list(MEASUREMENT_METHODS[mid][0])}")
+    if parameter in ("vacuum_edge", "interface") and any(
+            s in t.lower() for s in MEASUREMENT_NOT_A_WIDTH_METHOD):
+        raise PipelineConfigError(f"{what}; ellipsometry is not a width method (it does not "
+                                  f"measure a grading width)")
+    if mid == MEASUREMENT_OTHER:
+        n = len(set(re.findall(r"[a-z]{3,}", details.lower())))
+        if n < MEASUREMENT_OTHER_MIN_WORDS:
             raise PipelineConfigError(
-                f"{what} (it contains {m.group(0)!r}: a placeholder, a negation, or a model or "
-                f"model_assumptions-row reference; an unmeasured model value is labelled "
-                f"'ASSUMPTION B43' where that row covers it)")
-    return v.strip()
+                f"{what}; {MEASUREMENT_OTHER} needs a description of the measurement after the id "
+                f"of at least {MEASUREMENT_OTHER_MIN_WORDS} distinct words of three or more "
+                f"letters (got {n}; an arbitrary minimum of form, not a check of content)")
+    return t
 
 
-def _measurement_date(where: str, v) -> str:
-    """The date of a measurement record: ISO YYYY-MM-DD, a valid date not after the run's date
-    (io.config.latest_today, as for supplied_on)."""
+def _measurement_reference(where: str, v) -> str:
+    """The reference field (re-audit A12 m1): _measurement_text, then a locator: a DOI must carry
+    its suffix (10.NNNN/...), a URL a host with a dot; and besides schemes, prefixes and filler
+    words (_REFERENCE_FILLER) the reference needs MEASUREMENT_MIN_ALNUM letters or digits (a record
+    id, a page, a year). A path into this repository is refused by _measurement_text."""
+    t = _measurement_text(where, "reference", v)
+    low = t.lower()
+    what = (f"{where}.reference = {v!r}: must state where the measurement is recorded; "
+            f"{_MEASUREMENT_CANNOT_VERIFY} (re-audit A12 m1)")
+    if (re.search(r"\bdoi\b", low) or "doi.org" in low) and not _REFERENCE_DOI.search(low):
+        raise PipelineConfigError(f"{what} (a DOI needs its prefix and suffix, 10.NNNN/...)")
+    if "://" in low and not _REFERENCE_URL.search(low):
+        raise PipelineConfigError(f"{what} (a URL needs a host name with a dot)")
+    rest = "".join(w for w in _measurement_words(t).split() if w not in _REFERENCE_FILLER)
+    if len(rest) < MEASUREMENT_MIN_ALNUM:
+        raise PipelineConfigError(
+            f"{what} (besides schemes, prefixes and filler words such as 'ref', 'doi', 'http', "
+            f"'lab book', 'p.' it needs at least {MEASUREMENT_MIN_ALNUM} letters or digits: a "
+            f"record id, a page, a year)")
+    return t
+
+
+def _measurement_date(where: str, v, *, supplied_on: str | None) -> str:
+    """The date of a measurement record: ISO YYYY-MM-DD (or a YAML date), a valid date, not after
+    the run's date (io.config.latest_today), not before MEASUREMENT_DATE_FLOOR and not after the
+    item-12 supply date ``supplied_on`` when there is one (re-audit A12 m1: a supply cannot
+    contain a later measurement)."""
     from reflection_holo.io.config import latest_today
     if isinstance(v, _dt.datetime):
-        raise PipelineConfigError(f"{where}.date = {v!r}: a date 'YYYY-MM-DD', not a date-time")
+        raise PipelineConfigError(f"{where}.date = {v!r}: a date 'YYYY-MM-DD', not a date-time; "
+                                  f"{_MEASUREMENT_CANNOT_VERIFY}")
     if isinstance(v, _dt.date):
         day = v
     elif isinstance(v, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
         try:
             day = _dt.date.fromisoformat(v)
         except ValueError:
-            raise PipelineConfigError(f"{where}.date = {v!r} is not a valid date") from None
+            raise PipelineConfigError(f"{where}.date = {v!r} is not a valid date; "
+                                      f"{_MEASUREMENT_CANNOT_VERIFY}") from None
     else:
         raise PipelineConfigError(f"{where}.date must be an ISO date 'YYYY-MM-DD' (the day of the "
                                   f"measurement), got {v!r}; {_MEASUREMENT_CANNOT_VERIFY}")
     if day > latest_today():
         raise PipelineConfigError(f"{where}.date = {day.isoformat()} is in the future relative to "
                                   f"the run; {_MEASUREMENT_CANNOT_VERIFY}")
+    if day < MEASUREMENT_DATE_FLOOR:
+        raise PipelineConfigError(f"{where}.date = {day.isoformat()} is before the stated floor "
+                                  f"{MEASUREMENT_DATE_FLOOR.isoformat()} (re-audit A12 m1); "
+                                  f"{_MEASUREMENT_CANNOT_VERIFY}")
+    if supplied_on is not None and day > _dt.date.fromisoformat(supplied_on):
+        raise PipelineConfigError(f"{where}.date = {day.isoformat()} is after the item-12 supply "
+                                  f"date supplied_on = {supplied_on}: a supply cannot contain a "
+                                  f"later measurement (re-audit A12 m1); "
+                                  f"{_MEASUREMENT_CANNOT_VERIFY}")
     return day.isoformat()
 
 
-def _oxide_measurements(over: dict, plabels: dict) -> dict:
+def _oxide_measurements(over: dict, plabels: dict, p12) -> dict:
     """The measurement records of the item-12 record (audit A9b M2; structured since report X6,
-    re-audit A10b M2, m1): every parameter of OXIDE_RECORDED_PARAMETERS (V_ox, V'_ox, the two edge
-    widths, the a-Si potentials) labelled PROJECT_INPUT needs ``measurements.<key>`` =
-    {method, instrument, date, reference} (MEASUREMENT_RECORD_KEYS; reference: where the result is
-    recorded). The gate cannot verify a record, only require one; it refuses what is plainly not
-    one. A record for any other key is refused rather than ignored. Returns {key: record}."""
+    re-audit A10b M2, m1; allowlist since report X7, re-audit A12 M1, m1): every parameter of
+    OXIDE_RECORDED_PARAMETERS (V_ox, V'_ox, the two edge widths, the a-Si potentials) labelled
+    PROJECT_INPUT needs ``measurements.<key>`` = {method, instrument, date, reference}
+    (MEASUREMENT_RECORD_KEYS): method "<id>[: <details>]" with an id allowed for the parameter
+    (allowed_measurement_methods); reference: where the result is recorded; date not before
+    MEASUREMENT_DATE_FLOOR and not after the item-12 supply date of ``p12`` (or the run date). The
+    gate cannot verify a record, only require one; it refuses what is plainly not one. A record for
+    any other key is refused rather than ignored. Returns {key: record}."""
     where = "cfg_b.surface_preparation_details.overlayer.measurements (docs/06 item 12)"
     need = sorted(k for k in OXIDE_RECORDED_PARAMETERS
                   if k in plabels and plabels[k]["label"] == "PROJECT_INPUT")
@@ -1296,7 +1519,10 @@ def _oxide_measurements(over: dict, plabels: dict) -> dict:
         raise PipelineConfigError(
             f"{where}: exactly the model parameters labelled PROJECT_INPUT ({need}) carry a "
             f"measurement record, got {got!r}; a record for a parameter that is not a "
-            f"PROJECT_INPUT model parameter is refused rather than ignored (audit A9b M2)")
+            f"PROJECT_INPUT model parameter is refused rather than ignored (audit A9b M2); "
+            f"{_MEASUREMENT_CANNOT_VERIFY}")
+    supply = getattr(p12, "supply", None) or {}
+    supplied_on = supply.get("supplied_on")
     out = {}
     for k in sorted(meas):
         rec = meas[k]
@@ -1308,10 +1534,10 @@ def _oxide_measurements(over: dict, plabels: dict) -> dict:
                 f"{{{', '.join(MEASUREMENT_RECORD_KEYS)}}} (method, instrument, date YYYY-MM-DD, "
                 f"reference = where the result is recorded; every key required, no other), got "
                 f"{got!r}; {_MEASUREMENT_CANNOT_VERIFY}")
-        out[k] = dict(method=_measurement_text(w, "method", rec["method"]),
+        out[k] = dict(method=_measurement_method(w, k, rec["method"]),
                       instrument=_measurement_text(w, "instrument", rec["instrument"]),
-                      date=_measurement_date(w, rec["date"]),
-                      reference=_measurement_text(w, "reference", rec["reference"]))
+                      date=_measurement_date(w, rec["date"], supplied_on=supplied_on),
+                      reference=_measurement_reference(w, rec["reference"]))
     return out
 
 
@@ -1379,7 +1605,7 @@ def oxide_spec_from_config(cfg_b: LoadedConfig):
             f"{sorted(set(over) - want - set(OXIDE_KEYS_OPTIONAL))}")
     p12 = cfg_b.parameters["surface_preparation_details"]
     plabels = oxide_parameter_labels(p12, over)
-    meas = _oxide_measurements(over, plabels)
+    meas = _oxide_measurements(over, plabels, p12)
     labels = {k: _qualified_parameter_label(p12, v, measurement=meas.get(k))
               for k, v in plabels.items() if v["label"] != OXIDE_DERIVED_LABEL}
     variant = _oxide_count_variant(cfg_b, over)
@@ -1421,8 +1647,11 @@ def _oxide_count_variant(cfg_b: LoadedConfig, over: dict) -> dict | None:
     re-audit A10b M1, m2, m3, n2). The keys OXIDE_UNCERTAINTY_KEYS are stated all or none, and all
     in a comparison run (oxide_comparison_reasons; no default); refused under a stand-in thickness,
     density or a-Si thickness (their rows state no uncertainty); uncertainty_kind "standard"
-    (+- 2 u, about 95 % coverage for a normal distribution) or "half_width" (+- u); zero or
-    negative uncertainties refused. When the interval (structure.oxide.item12_count_interval)
+    (the nominal depth +- 2 combined standard uncertainties, quadrature, about 95 % coverage for a
+    normally distributed depth; re-audit A12 m2) or "half_width" (the worst case of the
+    half-widths); zero or negative uncertainties refused, each uncertainty bounded
+    (structure.oxide.UNCERTAINTY_BOUND_STATEMENT; re-audit A12 n1). When the interval
+    (structure.oxide.item12_count_interval)
     spans a rounding boundary the record must state consumed_layers_parity: lower | upper, and the
     run builds that count of the interval (the other is a separate run); an interval of more than
     two counts is refused; the key is refused when the interval spans no boundary (the count is
@@ -1466,6 +1695,10 @@ def _oxide_count_variant(cfg_b: LoadedConfig, over: dict) -> dict | None:
             uncertainty_kind=kind, a_A=_oxide_lattice_parameter_A(cfg_b))
     except ValueError as exc:
         raise PipelineConfigError(f"{where}: {exc}") from exc
+    except (OverflowError, MemoryError) as exc:          # re-audit A12 n1: never uncaught
+        raise PipelineConfigError(
+            f"{where}: the item-12 uncertainties are too large to form a count interval "
+            f"({type(exc).__name__}); {ox.UNCERTAINTY_BOUND_STATEMENT}") from exc
     span = (f"over the item-12 uncertainties ({ci['coverage']}: thickness "
             f"{ci['box']['thickness_A']} A, density {ci['box']['density_g_cm3']} g/cm^3, a-Si "
             f"{ci['box']['amorphous_si_thickness_A']} A) the continuum depth spans "
@@ -1708,6 +1941,7 @@ def oxide_item12_record(cfg_b: LoadedConfig) -> dict | None:
                 interval_counts=list(cv["interval"]["counts"]),
                 nearest_count=cv["interval"]["nearest_count"],
                 is_nearest_count=bool(n == cv["interval"]["nearest_count"]),
+                nearest_count_variant=ox.nearest_count_variant(cv["interval"]),
                 other_variant=dict(variant=other["parity"], count=int(other["count"]),
                                    count_parity=ox.count_parity(other["count"])),
                 other_variant_run=("the other variant is a SEPARATE run: this run builds only "
@@ -1718,15 +1952,22 @@ def oxide_item12_record(cfg_b: LoadedConfig) -> dict | None:
             note=("parity variant of an interval spanning a boundary (re-audit A10b M1, report "
                   "X6): the thickness, density and a-Si values are the stated ones; when the "
                   "count is not the nearest one the continuum layer overlaps (lower) or leaves a "
-                  "gap to (upper) the kept crystal by more than a/8 (structure record "
-                  "interface_overlap_A)"))
+                  "gap to (upper) the kept crystal by more than a/8, at most 1.5 a/4 (structure "
+                  "record interface_overlap_A), an effect not computed. Only the multislice "
+                  "engine distinguishes the variants: the geometric engine's layer phase uses "
+                  "the continuum boundaries, which do not depend on the count (re-audit A12 m3, "
+                  "report X7)"))
     return dict(labels=dict(spec.labels), headline_label=ox.headline_label(spec.labels),
                 model_rows=rows, uncertainties=unc, consumed_layers=count,
-                measurements=_oxide_measurements(over, plabels),
+                measurements=_oxide_measurements(
+                    over, plabels, cfg_b.parameters["surface_preparation_details"]),
                 measurement_rule=(f"every PROJECT_INPUT parameter of "
                                   f"{list(OXIDE_RECORDED_PARAMETERS)} carries a record "
-                                  f"{{{', '.join(MEASUREMENT_RECORD_KEYS)}}}; "
-                                  f"{_MEASUREMENT_CANNOT_VERIFY}"),
+                                  f"{{{', '.join(MEASUREMENT_RECORD_KEYS)}}} whose method "
+                                  f"names an id of the allowlist for its parameter ("
+                                  + "; ".join(f"{k}: {allowed_measurement_methods(k)}"
+                                              for k in OXIDE_RECORDED_PARAMETERS)
+                                  + f"; re-audit A12 M1); {_MEASUREMENT_CANNOT_VERIFY}"),
                 rounding_margin_rule=(f"{ox.MIN_ROUNDING_MARGIN_LAYERS} layer is an arbitrary "
                                       f"numerical guard (audit A9b m2)"))
 

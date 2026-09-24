@@ -1,0 +1,50 @@
+== the allowlist (MEASUREMENT_METHODS: id -> parameters)
+  offaxis_holography_wedge: ['V_real', 'amorphous_si_potential'] (off-axis electron holography of a wedge or cleaved edge of known thickness (the mean inner potential from the phase per unit thickness))
+  rheed_rocking_curve_fit: ['V_real', 'amorphous_si_potential'] (reflection high-energy electron diffraction (RHEED) rocking-curve fit)
+  cbed_rocking_curve_fit: ['V_real', 'amorphous_si_potential'] (convergent-beam electron diffraction rocking-curve fit)
+  reflection_rocking_curve_fit: ['V_real', 'amorphous_si_potential'] (reflection rocking-curve fit (reflection electron diffraction or microscopy))
+  other_measurement: ['V_real', 'amorphous_si_potential'] (another measurement, described after the id in at least 8 distinct words of three or more letters that pass the refusal list)
+  eels_inelastic_mean_free_path: ['V_imag'] (electron energy-loss spectroscopy (EELS): inelastic mean free path)
+  energy_filtered_intensity_ratio: ['V_imag'] (energy-filtered transmission or reflection intensity ratio)
+  xrr_fit: ['vacuum_edge', 'interface'] (X-ray reflectivity (XRR) fit)
+  cross_section_tem_profile: ['vacuum_edge', 'interface'] (cross-section HRTEM or STEM profile)
+  afm_surface: ['vacuum_edge'] (atomic force microscopy (AFM): the surface only)
+  MEASUREMENT_OTHER_MIN_WORDS = 8; MEASUREMENT_MIN_ALNUM = 3; MEASUREMENT_DATE_FLOOR = 1990-01-01; not a width method: ['ellipsometr']
+
+== residuals: A12 D1 texts that remain ACCEPTED (well-formed; the gate cannot verify)
+  instrument 'abc': ACCEPTED
+  instrument 'test': ACCEPTED
+  instrument 'Doe': ACCEPTED
+  instrument '#123': ACCEPTED
+  instrument 'n0t measured': ACCEPTED
+  instrument 'm0del value': ACCEPTED
+  instrument '   TEST: fabricated method A12   ': ACCEPTED
+  reference 'abc': ACCEPTED
+  reference 'test': ACCEPTED
+  reference 'Doe': ACCEPTED
+  reference '#123': ACCEPTED
+  reference 'n0t measured': ACCEPTED
+  reference 'm0del value': ACCEPTED
+  reference '   TEST: fabricated method A12   ': ACCEPTED
+  method 'offaxis_holography_wedge': ACCEPTED
+  method 'offaxis_holography_wedge: n0t measured': ACCEPTED
+  method 'offaxis_holography_wedge: abc': ACCEPTED
+
+== fail closed: genuine-looking texts that are refused (rephrase them)
+  V_real instrument 'JEOL model JEM-2100F': refused (it contains 'model': a placeholder, a negation, an origin word of an unmeasured value, or a reference to this
+  V_real instrument 'Titan, not aberration corrected': refused (it contains 'not': a placeholder, a negation, an origin word of an unmeasured value, or a reference to this r
+  V_real reference 'lab book No. 5, p. 12': refused (it contains 'no': a placeholder, a negation, an origin word of an unmeasured value, or a reference to this re
+  V_real method 'offaxis_holography_wedge: V0 derived from the phase slope': refused (it contains 'deriv': a placeholder, a negation, an origin word of an unmeasured value, or a reference to this
+  V_real method 'rheed_rocking_curve_fit: estimated uncertainty 0.2 V': refused (it contains 'estimat': a placeholder, a negation, an origin word of an unmeasured value, or a reference to th
+  vacuum_edge method 'xrr_fit: two-layer model fit': refused (it contains 'model': a placeholder, a negation, an origin word of an unmeasured value, or a reference to this
+  V_real reference 'Kirkland group report 2026-17': refused (it contains 'kirkland': a placeholder, a negation, an origin word of an unmeasured value, or a reference to t
+  V_real reference 'Why the oxide is not uniform, Surf. Sci. 700 (2020) 1': refused (it contains 'not': a placeholder, a negation, an origin word of an unmeasured value, or a reference to this r
+
+== accepted genuine-looking texts
+  vacuum_edge method 'afm_surface: non-contact mode, 5 um scan of the witness': ACCEPTED
+  interface method 'cross_section_tem_profile: HAADF-STEM, erf fit of the profile': ACCEPTED
+  V_imag method 'eels_inelastic_mean_free_path: log-ratio t/lambda on a wedge': ACCEPTED
+  V_real method 'other_measurement: electron holography phase across a cleaved witness corner of known angle': ACCEPTED
+  V_real reference 'Phys. Rev. B 45, 1234 (1992)': ACCEPTED
+  V_real reference 'doi:10.1016/j.ultramic.2020.113096': ACCEPTED
+  V_real reference 'lab notebook LN-17 p. 34': ACCEPTED

@@ -1,0 +1,49 @@
+a = 5.4309 A (B2), a/4 = 1.357725 A, a/8 = 0.678863 A, a/2 = 2.7155 A, 1.5 a/4 = 2.0366 A; f(2.20) = 0.441507 (code), 0.441507 (first principles)
+
+== A12 m2: depth sensitivities (layers of a/4 per unit), at 20 A, 2.20 g/cm^3
+  thickness: f / (a/4) = 0.3252 layer per A; density: f t / rho / (a/4) = 2.9562 layer per g/cm^3 (0.1478 per 0.05); a-Si: 1 / (a/4) = 0.7365 layer per A
+
+== A12 m2: the example of re-audit A12 (standard uncertainties t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A)
+  before (report X6: each quantity at +- 2u, depth at the box corners, linear sum): 5.587-7.626 layers -> counts [6, 7, 8] (refused: more than two counts); equals X6's printed standard line ('5.587', '7.626', '[6, 7, 8]'): True
+  after (report X7: nominal 6.5036 +- 2 u_c in quadrature, a-Si one-sided below): 5.789-7.233 layers (half-widths -0.7144 / +0.7294 layer) -> counts [6, 7]; first principles 5.789-7.233
+  (symmetric quadrature, a-Si also below: 5.774-7.233, A12's 5.774-7.233)
+
+== A12 m2: coverage check (k = 2)
+  analytic: P(|x - mu| <= 2 sigma) = erf(2/sqrt(2)) = 95.45 % for a normally distributed depth (the depth is linear in t, rho and t_a to first order)
+  Monte Carlo (2000000 draws, seed 20260924; t, rho normal; a-Si 5.0 +- 0.5 A normal (no clipping)): quadrature 9.160-11.212: depth inside 95.44 %, count in [9, 10, 11] 99.40 %; X6 box 8.533-11.898: depth inside 99.89 %, count in [9, 10, 11, 12] 99.95 %
+  Monte Carlo (2000000 draws, seed 20260924; t, rho normal; a-Si exactly 0 (true absence; u_a the detection limit)): quadrature 5.789-7.233: depth inside 95.64 %, count in [6, 7] 99.48 %; X6 box 5.587-7.626: depth inside 99.45 %, count in [6, 7, 8] 99.79 %
+  Monte Carlo (2000000 draws, seed 20260924; t, rho normal; a-Si |N(0, 0.1 A)| (half-normal below the detection limit)): quadrature 5.789-7.233: depth inside 95.27 %, count in [6, 7] 99.34 %; X6 box 5.587-7.626: depth inside 99.53 %, count in [6, 7, 8] 99.87 %
+  Monte Carlo (2000000 draws, seed 20260924; t, rho normal; a-Si exactly 0): quadrature 6.416-6.675: depth inside 97.76 %, count in [6, 7] 100.00 %; X6 box 6.380-6.776: depth inside 99.77 %, count in [6, 7] 100.00 %
+  Monte Carlo standard error at 95.45 %: 0.015 %
+  second-order (product) term of f(rho) t, omitted by the first-order propagation: f u_t u_rho / rho = 0.0100 A = 0.0074 layer for u_t = 1 A, u_rho = 0.05 g/cm^3 (u_c = 0.3647 layer)
+
+== A12 m2: item12_count_interval for illustrative uncertainties (TEST values; standard: quadrature, half_width: box corners)
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 5.789-7.233 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.6504, density 0.2956, a-Si 0.0737 layer (clipped at 0); parity variant lower 6 / upper 7; first principles 5.789-7.233; before (X6 box) 5.587-7.626 -> [6, 7, 8]
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 6.038-7.058 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.3252, density 0.1478, a-Si 0.0368 layer (clipped at 0); parity variant lower 6 / upper 7
+  t 20.0 +- 0.1 A, rho 2.20 +- 0.01 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 6.416-6.675 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.0650, density 0.0591, a-Si 0.0737 layer (clipped at 0); parity variant lower 6 / upper 7; first principles 6.416-6.675; before (X6 box) 6.380-6.776 -> [6, 7]
+  t 20.0 +- 0.1 A, rho 2.20 +- 0.01 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 6.442-6.640 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.0325, density 0.0296, a-Si 0.0368 layer (clipped at 0); parity variant lower 6 / upper 7
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 1.0 A, standard: 5.789-8.141 layers (nominal 6.5036, nearest 7) -> counts [6, 7, 8]; depth half-ranges: thickness 0.6504, density 0.2956, a-Si 0.7365 layer (clipped at 0); parity variant REFUSED (more than one boundary); first principles 5.789-8.141; before (X6 box) 5.587-8.952 -> [6, 7, 8, 9]
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 1.0 A, half_width: 6.038-7.721 layers (nominal 6.5036, nearest 7) -> counts [6, 7, 8]; depth half-ranges: thickness 0.3252, density 0.1478, a-Si 0.3683 layer (clipped at 0); parity variant REFUSED (more than one boundary)
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.5 A, standard: 5.789-7.530 layers (nominal 6.5036, nearest 7) -> counts [6, 7, 8]; depth half-ranges: thickness 0.6504, density 0.2956, a-Si 0.3683 layer (clipped at 0); parity variant REFUSED (more than one boundary); first principles 5.789-7.530; before (X6 box) 5.587-8.216 -> [6, 7, 8]
+  t 20.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.5 A, half_width: 6.038-7.352 layers (nominal 6.5036, nearest 7) -> counts [6, 7]; depth half-ranges: thickness 0.3252, density 0.1478, a-Si 0.1841 layer (clipped at 0); parity variant lower 6 / upper 7
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 4.526-5.259 layers (nominal 4.8777, nearest 5) -> counts [5]; depth half-ranges: thickness 0.3252, density 0.1330, a-Si 0.0737 layer (clipped at 0); parity variant not needed; first principles 4.526-5.259; before (X6 box) 4.428-5.492 -> [4, 5]
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 4.651-5.183 layers (nominal 4.8777, nearest 5) -> counts [5]; depth half-ranges: thickness 0.1626, density 0.0665, a-Si 0.0368 layer (clipped at 0); parity variant not needed
+  t 15.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 4.191-5.580 layers (nominal 4.8777, nearest 5) -> counts [4, 5, 6]; depth half-ranges: thickness 0.6504, density 0.2217, a-Si 0.0737 layer (clipped at 0); parity variant REFUSED (more than one boundary); first principles 4.191-5.580; before (X6 box) 4.035-5.927 -> [4, 5, 6]
+  t 15.0 +- 1.0 A, rho 2.20 +- 0.05 g/cm^3, a-Si 0.0 +- 0.1 A, half_width: 4.449-5.395 layers (nominal 4.8777, nearest 5) -> counts [4, 5]; depth half-ranges: thickness 0.3252, density 0.1109, a-Si 0.0368 layer (clipped at 0); parity variant lower 4 / upper 5
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 1.0 A, standard: 4.526-6.392 layers (nominal 4.8777, nearest 5) -> counts [5, 6]; depth half-ranges: thickness 0.3252, density 0.1330, a-Si 0.7365 layer (clipped at 0); parity variant lower 5 / upper 6; first principles 4.526-6.392; before (X6 box) 4.428-6.818 -> [4, 5, 6, 7]
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 0.0 +- 1.0 A, half_width: 4.651-5.846 layers (nominal 4.8777, nearest 5) -> counts [5, 6]; depth half-ranges: thickness 0.1626, density 0.0665, a-Si 0.3683 layer (clipped at 0); parity variant lower 5 / upper 6
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 5.0 +- 0.5 A, standard: 7.744-9.376 layers (nominal 8.5604, nearest 9) -> counts [8, 9]; depth half-ranges: thickness 0.3252, density 0.1330, a-Si 0.7365 layer (clipped at 0); parity variant lower 8 / upper 9; first principles 7.744-9.376; before (X6 box) 7.374-9.764 -> [7, 8, 9, 10]
+  t 15.0 +- 0.5 A, rho 2.20 +- 0.03 g/cm^3, a-Si 5.0 +- 0.5 A, half_width: 7.965-9.160 layers (nominal 8.5604, nearest 9) -> counts [8, 9]; depth half-ranges: thickness 0.1626, density 0.0665, a-Si 0.3683 layer (clipped at 0); parity variant lower 8 / upper 9
+
+== A12 n1: upper bound of each uncertainty (UNCERTAINTY_BOUND_STATEMENT) at t = 20 A, 2.20 g/cm^3
+  standard (h = 2 u): u_t < min(t, a/2 / f) / 2 = 3.0752 A; u_rho < min(rho, a/2 rho / (f t)) / 2 = 0.3383 g/cm^3; u_a < (a/2) / 2 = 1.3577 A
+  half_width (h = 1 u): u_t < min(t, a/2 / f) / 1 = 6.1504 A; u_rho < min(rho, a/2 rho / (f t)) / 1 = 0.6765 g/cm^3; u_a < (a/2) / 1 = 2.7155 A
+  widest interval the bounds admit: half_width below 12 layers -> at most 13 counts; standard below 6.93 layers -> at most 8 counts (a width below w holds at most ceil(w) + 1 counts); _MAX_COUNTS_BUILT = 16 (refused above, before the list is built)
+  a-Si uncertainty 1e+09 A (standard): refused: amorphous_si_thickness_uncertainty_A = 1000000000.0 A (standard): its interval half-width moves the continuum depth by 1.473e+09 layers of a/4, not be...
+  a-Si uncertainty 1e+300 A (standard): refused: amorphous_si_thickness_uncertainty_A = 1e+300 A (standard): its interval half-width moves the continuum depth by 1.473e+300 layers of a/4, not below 2...
+  a-Si uncertainty 1e+308 A (standard): refused: amorphous_si_thickness_uncertainty_A = 1e+308 A (standard): its interval half-width moves the continuum depth by inf layers of a/4, not below 2 layers...
+
+== A12 m3: the parity variants of the 2.0 nm interval [6, 7] (half-widths 1 A, 0.05, 0.1 A)
+  counts [6, 7], nearest count 7: nearest_count_variant = 'upper'
+  lower variant, count 6 (even): f t - N a/4 = +0.6838 A (overlap; |value| > a/8 = 0.6789 A; bound for a variant 1.5 a/4 = 2.0366 A)
+  upper variant, count 7 (odd): f t - N a/4 = -0.6739 A (gap; |value| <= a/8 = 0.6789 A; bound for a variant 1.5 a/4 = 2.0366 A)

@@ -46,9 +46,16 @@ B43 = {k: "ASSUMPTION B43" for k in ("V_real", "V_imag", "vacuum_edge", "interfa
 TEST_ONLY_LABELS = dict({k: "TEST_ONLY" for k in ox.LABEL_KEYS}, consumed_layers="DERIVED_HERE")
 UNC = dict(thickness_uncertainty_A=1.0, density_uncertainty_g_cm3=0.05,
            amorphous_si_thickness_uncertainty_A=0.1, uncertainty_kind="half_width")
-REC = dict(method="TEST: fabricated off-axis electron holography of a witness wedge",
+# report X7 (re-audit A12 M1): the method names an id of the allowlist for its parameter
+REC = dict(method="offaxis_holography_wedge: TEST: fabricated off-axis electron holography of a "
+                  "witness wedge",
            instrument="TEST: fabricated microscope", date="2026-09-20",
            reference="TEST: fabricated laboratory record 1")
+REC_BY_PARAMETER = dict(
+    V_real=REC,
+    V_imag=dict(REC, method="eels_inelastic_mean_free_path: TEST: fabricated EELS log-ratio"),
+    vacuum_edge=dict(REC, method="xrr_fit: TEST: fabricated X-ray reflectivity of the witness"),
+    interface=dict(REC, method="cross_section_tem_profile: TEST: fabricated STEM profile"))
 CANNOT_VERIFY = "the gate cannot verify a measurement record, only require one"
 
 
@@ -146,9 +153,10 @@ def test_stated_count_must_be_the_variant_count(smoke):
 
 
 def test_interval_of_more_than_two_counts_is_refused(smoke):
-    """With a standard uncertainty (+- 2 u) the 2.0 nm interval is [6, 7, 8]: lower and upper (6 and
-    8) share one parity and would not cover 7 (printed by tools/review/x6)."""
-    for unc in (dict(UNC, uncertainty_kind="standard"),
+    """With a-Si 0 +- 0.5 A as a standard uncertainty (report X7: quadrature, re-audit A12 m2), or
+    0 +- 1 A as a half-width, the 2.0 nm interval is [6, 7, 8]: lower and upper (6 and 8) share one
+    parity and would not cover 7 (printed by tools/review/x7 and x6)."""
+    for unc in (dict(UNC, uncertainty_kind="standard", amorphous_si_thickness_uncertainty_A=0.5),
                 dict(UNC, amorphous_si_thickness_uncertainty_A=1.0)):
         for parity in ("lower", "upper", None):          # None: the key not stated
             over = dict(unc) if parity is None else dict(unc, consumed_layers_parity=parity)
@@ -242,15 +250,20 @@ def test_every_project_input_model_parameter_needs_a_record(smoke):
     msg = _refusal(_measured(smoke, labels=labels))
     assert "['V_imag', 'V_real', 'interface', 'vacuum_edge'] are labelled PROJECT_INPUT" in msg
     assert CANNOT_VERIFY in msg
-    cfg = load_pipeline_dict(_measured(smoke, labels=labels, measurements={k: REC for k in labels}),
+    # report X7 (re-audit A12 M1): each parameter's record names a method of its own allowlist
+    cfg = load_pipeline_dict(_measured(smoke, labels=labels, measurements=REC_BY_PARAMETER),
                              variant="oxide_2p0nm")
     spec = oxide_spec_from_config(cfg.cfg_b)
-    text = ("measured: method TEST: fabricated off-axis electron holography of a witness wedge; "
-            "instrument TEST: fabricated microscope; date 2026-09-20; reference TEST: fabricated "
-            "laboratory record 1)")
-    assert all(spec.labels[k].endswith(text) for k in labels)
+    for k in labels:
+        text = (f"measured: method {REC_BY_PARAMETER[k]['method']}; instrument TEST: fabricated "
+                f"microscope; date 2026-09-20; reference TEST: fabricated laboratory record 1)")
+        assert spec.labels[k].endswith(text), k
+    assert spec.labels["V_real"].endswith(
+        "measured: method offaxis_holography_wedge: TEST: fabricated off-axis electron holography "
+        "of a witness wedge; instrument TEST: fabricated microscope; date 2026-09-20; reference "
+        "TEST: fabricated laboratory record 1)")
     rec = oxide_item12_record(cfg.cfg_b)
-    assert rec["measurements"] == {k: REC for k in labels}
+    assert rec["measurements"] == REC_BY_PARAMETER
     assert CANNOT_VERIFY in rec["measurement_rule"]
 
 
@@ -314,7 +327,9 @@ def test_uncertainty_kind_is_enumerated(smoke, bad):
 
 
 def test_standard_uncertainty_enters_twice(smoke):
-    # +-0.1 A, +-0.01 g/cm^3, a-Si +-0.1 A as standard uncertainties: [6, 7] (printed by x6)
+    # +-0.1 A, +-0.01 g/cm^3, a-Si +-0.1 A as standard uncertainties: [6, 7]; report X7 (re-audit
+    # A12 m2): combined in quadrature, 6.416-6.675 layers (X6's box: 6.380-6.776; both printed by
+    # tools/review/x7)
     unc = dict(UNC, thickness_uncertainty_A=0.1, density_uncertainty_g_cm3=0.01,
                uncertainty_kind="standard")
     cfg = load_pipeline_dict(_measured(smoke, consumed_layers_parity="upper", **unc),
@@ -322,7 +337,13 @@ def test_standard_uncertainty_enters_twice(smoke):
     ci = oxide_item12_record(cfg.cfg_b)["uncertainties"]["count_interval"]
     assert ci["coverage_factor"] == 2.0 and ci["box"]["thickness_A"] == [19.8, 20.2]
     assert ci["box"]["amorphous_si_thickness_A"] == [0.0, 0.2]
-    assert f"{ci['continuum_layers_min']:.3f}-{ci['continuum_layers_max']:.3f}" == "6.380-6.776"
+    assert f"{ci['continuum_layers_min']:.3f}-{ci['continuum_layers_max']:.3f}" == "6.416-6.675"
+    out = (REPO / "tools" / "review" / "x7" / "x7_oxide_numbers_output.txt").read_text()
+    assert ("t 20.0 +- 0.1 A, rho 2.20 +- 0.01 g/cm^3, a-Si 0.0 +- 0.1 A, standard: 6.416-6.675 "
+            "layers") in out and "before (X6 box) 6.380-6.776 -> [6, 7]" in out
+    # re-audit A12 n2: the kind handed to the structure is the stated kind (k = 2 there as well)
+    spec = oxide_spec_from_config(cfg.cfg_b)
+    assert spec.consumed_layers_parity_variant["uncertainty_kind"] == "standard"
 
 
 @pytest.mark.parametrize("key", ["thickness_uncertainty_A", "density_uncertainty_g_cm3",

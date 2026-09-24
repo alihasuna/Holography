@@ -15,7 +15,8 @@ A10b n1  nonconformal_sublayer_acknowledged is accepted for different counts at 
          cell refusal itself: tests/forward/test_oxide_multislice_a10b_fixes.py).
 
 Every value standing in for PROJECT_INPUT item 12 is TEST_ONLY; the reference numbers are the saved
-output of tools/review/x6/x6_oxide_numbers.py.
+output of tools/review/x6/x6_oxide_numbers.py, and for the count intervals (report X7: standard
+uncertainties combined in quadrature, re-audit A12 m2) that of tools/review/x7/x7_oxide_numbers.py.
 """
 import dataclasses
 import hashlib
@@ -33,6 +34,10 @@ L12 = "TEST_ONLY: stands in for PROJECT_INPUT item 12 (continuum oxide)"
 Q = A_SI_A / 4
 OUT = (Path(__file__).resolve().parents[2] / "tools" / "review" / "x6"
        / "x6_oxide_numbers_output.txt")
+# report X7 (re-audit A12 m2): the intervals of standard uncertainties changed (quadrature); X6's
+# saved output keeps X6's box and is no longer the reference for them
+OUT_X7 = (Path(__file__).resolve().parents[2] / "tools" / "review" / "x7"
+          / "x7_oxide_numbers_output.txt")
 UNC = dict(thickness_uncertainty_A=1.0, density_uncertainty_g_cm3=0.05,
            amorphous_si_thickness_uncertainty_A=0.1, uncertainty_kind="half_width")
 
@@ -68,8 +73,8 @@ def interval(**kw):
     return ox.item12_count_interval(**args)
 
 
-def _printed(pattern: str) -> list[str]:
-    m = re.search(pattern, OUT.read_text())
+def _printed(pattern: str, out: Path = OUT) -> list[str]:
+    m = re.search(pattern, out.read_text())
     assert m, pattern
     return list(m.groups())
 
@@ -82,9 +87,10 @@ def _printed(pattern: str) -> list[str]:
                                            (15.0, 0.5, 0.03, 5.0, 0.5)])
 @pytest.mark.parametrize("kind", ["standard", "half_width"])
 def test_interval_matches_the_printed_cases(t, ut, ur, ta, ua, kind):
+    # report X7: the reference is X7's saved output (standard: quadrature, re-audit A12 m2)
     lo, hi, counts = _printed(
         rf"t {t} \+- {ut} A, rho 2.20 \+- {ur} g/cm\^3, a-Si {ta} \+- {ua} A, {kind}: "
-        r"(\d\.\d{3})-(\d\.\d{3}) layers .*-> counts (\[[\d, ]+\])")
+        r"(\d\.\d{3})-(\d\.\d{3}) layers .*-> counts (\[[\d, ]+\])", OUT_X7)
     ci = interval(thickness_A=t, thickness_uncertainty_A=ut, density_uncertainty_g_cm3=ur,
                   amorphous_si_thickness_A=ta, amorphous_si_thickness_uncertainty_A=ua,
                   uncertainty_kind=kind)
@@ -110,18 +116,26 @@ def test_the_amorphous_si_uncertainty_enters_the_interval():
 
 
 def test_the_uncertainty_kind_sets_the_coverage():
-    """A10b m2: a standard uncertainty enters as +- 2 u (about 95 % coverage for a normal
-    distribution: 95.45 %, printed), a half-width as +- u."""
+    """A10b m2: a standard uncertainty enters with k = 2 (about 95 % coverage for a normal
+    distribution: 95.45 %, printed), a half-width as itself. Report X7 (re-audit A12 m2): standard
+    uncertainties are combined in quadrature, so 1 A, 0.05 g/cm^3 and 0.1 A as standard
+    uncertainties no longer equal the box of their doubled half-widths (X6's rule, [6, 7, 8]): the
+    interval is 5.789-7.233 layers, counts [6, 7] (printed by tools/review/x7)."""
     (cov,) = _printed(r"= (\d\d\.\d\d) % \(about 95 %\)")
     assert cov == "95.45" and ox.STANDARD_COVERAGE_FACTOR == 2.0
     assert "about 95 % coverage" in ox.COVERAGE_STATEMENT["standard"]
+    assert "quadrature" in ox.COVERAGE_STATEMENT["standard"]
+    assert "worst case" in ox.COVERAGE_STATEMENT["half_width"]
     s = interval(uncertainty_kind="standard")
     h = interval(uncertainty_kind="half_width", thickness_uncertainty_A=2.0,
                  density_uncertainty_g_cm3=0.10, amorphous_si_thickness_uncertainty_A=0.2)
-    for k in ("continuum_layers_min", "continuum_layers_max", "counts"):
-        assert s[k] == h[k], k
+    before, after = _printed(r"before \(report X6: .*: (\d\.\d{3}-\d\.\d{3}) layers .*\n"
+                             r"  after \(report X7: .*\): (\d\.\d{3}-\d\.\d{3}) layers", OUT_X7)
+    assert f"{h['continuum_layers_min']:.3f}-{h['continuum_layers_max']:.3f}" == before
+    assert f"{s['continuum_layers_min']:.3f}-{s['continuum_layers_max']:.3f}" == after
+    assert s["box"] == h["box"]                   # the per-quantity ranges +- k u are those of X6
     assert s["coverage_factor"] == 2.0 and h["coverage_factor"] == 1.0
-    assert s["counts"] == [6, 7, 8] and interval()["counts"] == [6, 7]
+    assert s["counts"] == [6, 7] and h["counts"] == [6, 7, 8] and interval()["counts"] == [6, 7]
     for bad in ("sigma", None, "Standard", ""):
         with pytest.raises(ox.OxideSpecError, match="uncertainty_kind must be one of"):
             interval(uncertainty_kind=bad)
@@ -203,8 +217,12 @@ def test_parity_variant_builds_the_structure_with_that_count():
      "consumed_layers = 7 is not the lower count 6 of the interval"),
     (dict(consumed_layers=6, consumed_layers_parity_variant=variant("upper")),
      "consumed_layers = 6 is not the upper count 7 of the interval"),
+    # report X7: with quadrature (re-audit A12 m2) the a-Si standard uncertainty 0.5 A gives
+    # [6, 7, 8] (printed by tools/review/x7); X6's 0.1 A now gives [6, 7]
     (dict(consumed_layers=8, consumed_layers_parity_variant=variant(
-        "upper", **dict(UNC, uncertainty_kind="standard"))), "spans 2 rounding boundaries"),
+        "upper", **dict(UNC, uncertainty_kind="standard",
+                        amorphous_si_thickness_uncertainty_A=0.5))),
+     "spans 2 rounding boundaries"),
     (dict(thickness_A=15.0, consumed_layers=5, rounding_boundary_acknowledged=False,
           consumed_layers_parity_variant=dict(variant("lower"), thickness_uncertainty_A=0.5,
                                               density_uncertainty_g_cm3=0.03)),

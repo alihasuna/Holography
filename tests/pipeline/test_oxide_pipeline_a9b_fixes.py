@@ -45,8 +45,10 @@ TEST_ONLY_LABELS = dict({k: "TEST_ONLY" for k in ox.LABEL_KEYS}, consumed_layers
 # report X6 (re-audit A10b m2, m3): the uncertainties include the a-Si thickness and their kind
 UNC_2NM = dict(thickness_uncertainty_A=1.0, density_uncertainty_g_cm3=0.05,
                amorphous_si_thickness_uncertainty_A=0.1, uncertainty_kind="half_width")
-# report X6 (re-audit A10b M2): a structured measurement record (fabricated TEST values)
-MEAS_REC = dict(method="TEST: fabricated off-axis electron holography of a witness wedge",
+# report X6 (re-audit A10b M2): a structured measurement record (fabricated TEST values); report X7
+# (re-audit A12 M1): the method names an id of the allowlist of V_real
+MEAS_REC = dict(method="offaxis_holography_wedge: TEST: fabricated off-axis electron holography of "
+                       "a witness wedge",
                 instrument="TEST: fabricated microscope", date="2026-09-20",
                 reference="TEST: fabricated laboratory record 1")
 

@@ -1,0 +1,29 @@
+package: reflection_holo/__init__.py (repository Holography)
+geometric oxide_2p0nm lower (6): 3.8 s; interval [6, 7], nearest count 7 (nearest_count_variant 'upper'); per-terrace consumed [6, 6, 6]; interface overlap [0.6838] A; steps (built, measured) [(2.71545, 2.7153), (-1.357725, -1.3578), (-1.357725, -1.3575)]
+geometric oxide_2p0nm upper (7): 3.2 s; interval [6, 7], nearest count 7 (nearest_count_variant 'upper'); per-terrace consumed [7, 7, 7]; interface overlap [-0.6739] A; steps (built, measured) [(2.71545, 2.7153), (-1.357725, -1.3578), (-1.357725, -1.3575)]
+geometric oxide_2p0nm lower (6) vs upper (7): 26 arrays; byte-identical 26; differing []
+multislice multislice_tiny_oxide_2p0nm lower (6): 16.1 s; interval [6, 7], nearest count 7 (nearest_count_variant 'upper'); per-terrace consumed [6, 6, 6]; interface overlap [0.6838] A; steps (built, measured) [(2.71545, None), (-1.357725, None)]
+multislice multislice_tiny_oxide_2p0nm upper (7): 13.3 s; interval [6, 7], nearest count 7 (nearest_count_variant 'upper'); per-terrace consumed [7, 7, 7]; interface overlap [-0.6739] A; steps (built, measured) [(2.71545, None), (-1.357725, None)]
+multislice multislice_tiny_oxide_2p0nm lower (6) vs upper (7): 26 arrays; byte-identical 5; differing ['amplitude', 'darkfield_r0', 'detector_object_r0', 'detector_reference_r0', 'detector_u_A', 'exit_psi_r0', 'exit_x_A', 'hologram_empty_counts', 'hologram_empty_noiseless', 'hologram_object_counts', 'hologram_object_noiseless', 'phase_unwrapped', 'phase_wrapped', 'phase_wrapped_raw', 'projected_image_u_A', 'projected_r0', 'projected_surface_z_A', 'trace_field_terrace', 'trace_source_z_A', 'trace_status', 'usable_mask']
+   amplitude: max |diff| 0.183 (max |lower| 1.237; NaN in 0 / 0 of 640)
+   darkfield_r0: max |diff| 0.041 (max |lower| 0.076; NaN in 0 / 0 of 27648)
+   detector_object_r0: max |diff| 0.010 (max |lower| 0.030; NaN in 0 / 0 of 640)
+   detector_reference_r0: max |diff| 0.003 (max |lower| 0.027; NaN in 0 / 0 of 640)
+   detector_u_A: max |diff| 0.680 (max |lower| 46.815; NaN in 0 / 0 of 40)
+   exit_psi_r0: max |diff| 0.795 (max |lower| 0.619; NaN in 0 / 0 of 27648)
+   exit_x_A: max |diff| 1.355 (max |lower| 124.494; NaN in 0 / 0 of 576)
+   hologram_empty_counts: max |diff| 120.000 (max |lower| 1088.000; NaN in 0 / 0 of 640)
+   hologram_empty_noiseless: max |diff| 0.001 (max |lower| 0.003; NaN in 0 / 0 of 640)
+   hologram_object_counts: max |diff| 392.000 (max |lower| 1617.000; NaN in 0 / 0 of 640)
+   hologram_object_noiseless: max |diff| 0.001 (max |lower| 0.003; NaN in 0 / 0 of 640)
+   phase_unwrapped: max |diff| 6.582 (max |lower| 6.028; NaN in 0 / 0 of 640)
+   phase_wrapped: max |diff| 3.485 (max |lower| 2.886; NaN in 0 / 0 of 640)
+   phase_wrapped_raw: max |diff| 3.486 (max |lower| 2.879; NaN in 0 / 0 of 640)
+   projected_image_u_A: max |diff| 1.358 (max |lower| 99.304; NaN in 0 / 0 of 576)
+   projected_r0: max |diff| 0.041 (max |lower| 0.076; NaN in 0 / 0 of 27648)
+   projected_surface_z_A: max |diff| 84.142 (max |lower| 6154.964; NaN in 0 / 0 of 576)
+   trace_field_terrace: int64 (40, 16); 80 of 640 elements differ
+   trace_source_z_A: max |diff| 42.144 (max |lower| 2944.185; NaN in 64 / 112 of 640)
+   trace_status: int8 (40, 16); 96 of 640 elements differ
+   usable_mask: bool (40, 16); 96 of 640 elements differ
+NOT a size of the parity effect: the multislice difference mixes the parity with the lower variant's overlap (+0.6838 A) and a one-layer shift of the kept crystal; the effect of the overlap is not computed
