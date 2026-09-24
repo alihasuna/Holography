@@ -28,7 +28,7 @@ re-worded before the affected item is adopted), MINOR (fix when adopting), NIT.
 
 | Time | Host | Result |
 |---|---|---|
-| 05:05-05:06 | www.uvic.ca (U1, U6, U7, U8, U9 pages; U2-U5 PDFs), onlineacademiccommunity.uvic.ca (U10) | HTTP 200 for all; SHA-256 of U1-U5 identical to L9's (U1 a9a8881e...cc1e97, U2 f9a06591...acdc5ba, U3 36f8b359...16b559, U4 d8a8e591...a24db043, U5 694bcaf1...0114) |
+| 05:05-05:06 | www.uvic.ca (U1, U6, U7, U8, U9 pages; U2-U5 PDFs), onlineacademiccommunity.uvic.ca (U10) | HTTP 200 for all; files byte-identical to L9's scratch copies (U1 a9a8881e...3dcc1e97, U2 f9a06591...2acdc5ba, U3 36f8b359...bd16b559, U4 d8a8e591...a24db043, U5 694bcaf1...e4d10114); L9's report prints the U4 suffix as "...a043" (the file ends "...b043"; nit, m4) |
 | 05:06 | onlineacademiccommunity.uvic.ca WordPress REST API, `/emicro/wp-json/wp/v2/pages?slug=facilities&_fields=date,modified,link` | HTTP 200: page created 2020-01-20T21:22:32, modified 2023-01-04T22:08:48 |
 | 05:08-05:16 | Europe PMC REST (PMC7910301 05:08; PMC2864625 05:13; PMC9233697 and PMIDs 26624513, 26630072, 32986121, 33269799, 35753170, 41202789 core records 05:16) | HTTP 200 |
 | 05:08 | eprints.gla.ac.uk/240505 (record page and `240505.pdf`) | HTTP 200; PDF SHA-256 555e925c628ba9eb...6e80fc95c6, identical to L9's copy; the record page labels the file "Published Version", CC BY |
@@ -297,11 +297,11 @@ files.
 | docs/06 section A header | "Its published specifications (source, biprisms, energy spread, energy filter if any) are being sourced (report L9)." | YES (stale once L9 is adopted) | "Published facility specifications (L9, reviewed by E10): HF-3300V STEHM, cold FEG, 60/200/300 kV, four biprisms (one condenser-side, three image-side), CEOS B-COR and SC-COR correctors, EELS and a Gatan Quantum imaging filter, a Merlin (Medipix3) detector. No 200 kV energy spread, source size, convergence, biprism or detector configuration is published." |
 | docs/06 item 2 | "Energy spread (FWHM, eV) and effective source size ... (Energy spread is a minor effect: below 0.004 rad ... at 0.7 eV.)" | no (consistent) | optional annotation: "Published for this instrument only at 60 kV: 0.32-0.34 eV zero-loss FWHM (2013; L9 U5 slide 6); the 0.3-0.7 eV bracket is an ASSUMPTION." |
 | docs/06 item 5 | "(blocking) Image pixel size at the detector (nm/pixel, both axes) and the magnification for holograms." | no (consistent) | add: "If recorded on the Merlin: 55 um pitch; calibrate M at the Merlin plane (the screen magnification does not apply); state the pixels per carrier fringe, which set the detector-attenuated contrast." |
-| docs/06 item 6 | "Detector: type, MTF or its published parameters, gain, dose per hologram ... its published pixel pitch, MTF/DQE at 200 kV and counting mode are being sourced (report L9)." | YES | "Detector: model and head (e.g. MerlinEM 1R), chip count, sensor material and thickness, SPM/CSM, threshold(s) in keV, counter depth, frame time and frames per hologram, flat-field correction, masked pixels; MTF AND DQE (or NPS) at 200 kV at the threshold used (a knife edge and a flat-field series on this detector replace the published stand-in); counts per electron at that threshold (not a 'gain': one 200 keV electron is counted in several pixels); dose per hologram in incident electrons; exposure; drift. Published stand-in (not the UVic device): Paton et al. 2021, Si Medipix3, 200 keV, SPM low threshold, MTF(omega_N) 0.01, DQE(0) 0.80, DQE(0.5 omega_N) 0.17 (Table 1, p. 5)." |
+| docs/06 item 6 | "Detector: type, MTF or its published parameters, gain, dose per hologram ... its published pixel pitch, MTF/DQE at 200 kV and counting mode are being sourced (report L9)." | YES | "Detector: model and head (e.g. "Merlin 1R", the name used by D7 and D14), chip count, sensor material and thickness, SPM/CSM, threshold(s) in keV, counter depth, frame time and frames per hologram, flat-field correction, masked pixels; MTF AND DQE (or NPS) at 200 kV at the threshold used (a knife edge and a flat-field series on this detector replace the published stand-in); counts per electron at that threshold (not a 'gain': one 200 keV electron is counted in several pixels); dose per hologram in incident electrons; exposure; drift. Published stand-in (not the UVic device): Paton et al. 2021, Si Medipix3, 200 keV, SPM low threshold, MTF(omega_N) 0.01, DQE(0) 0.80, DQE(0.5 omega_N) 0.17 (Table 1, p. 5)." |
 | docs/06 item 15 | "(blocking) Trajectory of the reference beam at the specimen plane ..." | add | "... and which of the instrument's four biprisms (one condenser-side, three image-side; L9 U1) were used." |
 | docs/06 item 16 | "... measured carrier fringe spacing (in image pixels and in specimen nanometres, stating which axis) and fringe contrast on an empty or flat-surface hologram." | YES (interpretation) | add: "The contrast measured on the detector includes the detector MTF at the carrier (about 0.30 at 4 px/fringe and 0.74 at 8 px/fringe for the Paton et al. device); the simulation must be compared after its detector model, not before." |
 | docs/06 items 17, 18 | - | no | - |
-| docs/06 item 21 | "REQUESTED MEASUREMENT: an energy-filtered EELS ... Also useful: fringe visibility of a hologram recorded with and without an energy filter." | add | "The instrument lists an EELS spectrometer and a Gatan Quantum imaging filter (L9 U1, U6); no source states that EELS of a reflected beam or energy-filtered holography with the Merlin has been done on it (section 6 of E10)." |
+| docs/06 item 21 (working tree of 2026-09-24, already edited after L9) | "REQUESTED MEASUREMENT (the UVic HF-3300V has an imaging energy filter, report L9): an energy-filtered EELS ... Also useful: fringe visibility of a hologram recorded with and without an energy filter." | the new parenthetical is supported (U1 "Imaging energy filter (Gatan Quantum)."); add the limit | append: "No source states that EELS of a reflected beam, or energy-filtered holography with the Merlin, has been done on this instrument, nor where the Merlin sits relative to the filter (E10 section 6); feasibility is for Ali to confirm." |
 | model_assumptions B23 | "Demo detector: pitch 15 um, magnification 3.0e5, image pixel 0.05 nm ... Samples the demo carrier fringes with 4 pixels per fringe" | YES if any detector MTF is adopted; otherwise add a sentence | either keep and add "ideal detector; 15 um is not the Merlin's 55 um (the specimen-referred pixel is what matters)", or change to a 0.025 nm pixel (8 px/fringe at the 2.0 A carrier; ROI x2 per axis). Never reach 8 px/fringe by doubling the carrier (section 4) |
 | model_assumptions B24 | "gain 1 count per electron, 500 electrons per pixel per hologram, Poisson noise only, no MTF, no readout noise, no drift" | YES (add) | add: "An ideal detector (MTF = 1, DQE = 1): for a Si Medipix3 at 200 keV (Paton et al. 2021) the fringe visibility would be lower by MTF(q_c) (0.30 at 4 px/fringe) and the phase noise higher by 1/sqrt(DQE(q_c)) (2.42 at 4 px/fringe)." |
 | model_assumptions B28 | "carrier fringe spacing 2.0 A ... the fringe spacing keeps the object band inside the |q_c|/3 sideband mask" | no, provided the sampling is changed through the pixel (B23), not the carrier | - |
@@ -349,36 +349,51 @@ sampling is Ali's (items 5, 16)."
 
 ### MINOR
 
-* **m1** H5 treated as the UVic instrument. Quoted (section 2.2): "This is the only peer-reviewed methods text read
-  here that names the UVic instrument; it confirms the B-COR image corrector". Evidence: H5 Methods names "a Hitachi
-  HF-3300V with CEOS BCOR imaging aberration corrector" and no location; "Victoria" appears only in the affiliations.
-  The parameter-table rows "(lens)" and "(22, drift)" list H5's corrector and "< 7 pm/sec" as UVic SECTION_READ.
-  Proposed: "H5 names a Hitachi HF-3300V without a location; that it is the UVic instrument is an inference (U1 names
-  the UVic microscope HF-3300V; H5 has a UVic co-author)."
-* **m2** U10's "Merlin" links to the MerlinEM product page (`https://quantumdetectors.com/n/products/merlinem/`).
-  Add to I1.2 as supporting (not decisive) evidence for the product family.
-* **m3** U10 dating. Quoted: "(page footer "(c) 2017 University of Victoria"; the page carries no date of last
-  change)", table "page undated (footer 2017)", bib note "footer 2017, no date of change". Evidence: WordPress REST
-  record of the page, created 2020-01-20, modified 2023-01-04. Proposed: "page created 2020-01-20, last modified
-  2023-01-04 (site REST record, retrieved 2026-09-24)".
-* **m4** Provenance of the D6 copy and scripts. `tools/lit/l9/README.md` "Glasgow accepted-manuscript PDF" and the
-  file name `Paton2021_gla_AAM.pdf` are wrong: the Glasgow record labels 240505.pdf "Published Version" (as L9's
-  report says). The report's and the script docstring's hash "555e925c...0e5" does not match the file
-  (555e925c628ba9eb...6e80fc95c6). `digitise_paton_fig8.py` needs `pymupdf`, absent from `venv/`; the README should
-  say so. The report cites the scratch copies (`l9/digitise_paton_fig8.py`, `l9/l9_numbers.out`, ...) instead of the
-  committed `tools/lit/l9/` files (sections 3.3, 5, 8).
-* **m5** Energy-filter feasibility (section 1.3, "Consequence for PROJECT_INPUT item 21"): "instrumentally possible in
-  principle" is stronger than the sources; use the wording of section 6 above.
-* **m6** Occlusion bias of the "mean of the two coincident curves": quoted "0.29" and "0.73" are 0.298 and 0.741 on the
-  fully visible curve (Table-1 ranges 0.27-0.35 and 0.72-0.77); omega_0 0.452 -> 0.456 omega_N, sigma_PSF 0.997 ->
-  0.988 px; the NNPS targets "0.87 / 0.78 / 0.54 / 0.39" become 0.89 / 0.81 / 0.57 / 0.42 and carry about +-0.04 at
-  0.5 omega_N. Quote the 58.3 keV curve and give ranges.
-* **m7** The asymmetric weighting of the sideband by MTF(q_c + q)/MTF(q_c) (ratio 5.0 across the |q_c|/3 mask at 4
-  px/fringe, 1.5 at 8), not removed by the empty-hologram division, is not mentioned; it is a further reason why
-  item 4 is necessary and it affects edge profiles and resolution.
-* **m8** Section 5 items 4 and 5: state that the deterministic MTF filter and the cluster footprint are alternatives
-  for the mean blur (electrons of item 5 are drawn from the unfiltered intensity), and that the x2 oversampling is
-  only needed for sub-pixel cluster positions, not for the mean when |q_c| + band < detector Nyquist.
+* **m1 - H5 treated as the UVic instrument.** Quoted (section 2.2): "This is the only peer-reviewed methods text read
+  here that names the UVic instrument; it confirms the B-COR image corrector, U5 slide 5." Evidence: H5 Methods
+  (PMC7910301) names "a Hitachi HF-3300V with CEOS BCOR imaging aberration corrector, operated at 60 kV" and no
+  location; "Victoria" occurs only in the affiliations. The parameter-table rows "(lens)" and "(22, drift)" carry H5's
+  corrector and "< 7 pm/sec" as UVic SECTION_READ. Proposed: "H5 names a Hitachi HF-3300V without a location; that it
+  is the UVic instrument is an inference (U1 names the UVic microscope HF-3300V; H5 has a UVic co-author)."
+* **m2 - U10's link target not recorded.** Quoted (section 1.3): "The page does not say "MerlinEM"". Evidence: the
+  U10 HTML links "Merlin" to `https://quantumdetectors.com/n/products/merlinem/`. Proposed addition to I1.2: "U10
+  links the word Merlin to the Quantum Detectors MerlinEM product page (supporting the product family; head variant,
+  chip count and sensor remain PROJECT_INPUT)."
+* **m3 - U10 dating.** Quoted: "(page footer "(c) 2017 University of Victoria"; the page carries no date of last
+  change)"; table row 6 "page undated (footer 2017)"; bib note "footer 2017, no date of change". Evidence: the site's
+  WordPress REST record of the page: created 2020-01-20, modified 2023-01-04 (retrieved 2026-09-24). Proposed:
+  "page created 2020-01-20, last modified 2023-01-04 (site REST record); the 2017 footer is not a content date".
+* **m4 - Provenance of the D6 copy and of the scripts.** Quoted: README "Glasgow accepted-manuscript PDF"; script
+  `d = pymupdf.open('pdf/Paton2021_gla_AAM.pdf')`; report and docstring "sha256 555e925c...0e5"; report "sha256
+  d8a8e591...a043" (U4); report section 5 "Numbers below are from `l9/l9_numbers.py` (output `l9/l9_numbers.out`)".
+  Evidence: the Glasgow record labels 240505.pdf "Published Version" (L9's report is right, the README is not); the
+  file hashes are 555e925c628ba9eb...6e80fc95c6 and d8a8e591...a24db043 (E10's and L9's copies byte-identical, so the
+  printed suffixes are typos); `pymupdf` is absent from `venv/`; the committed scripts are in `tools/lit/l9/`.
+  Proposed: README "Glasgow copy of the published version (CC BY; eprints.gla.ac.uk/240505, 'Published Version');
+  needs pymupdf (not in venv/)"; rename to `Paton2021_gla_published.pdf`; print full hashes; cite `tools/lit/l9/`
+  paths in sections 3.3, 5 and 8.
+* **m5 - Energy-filter feasibility.** Quoted (section 1.3): "the requested energy-filtered measurement of the specular
+  beam (docs/06 item 21) is instrumentally possible in principle". Evidence and proposed wording: section 6 above.
+* **m6 - Occlusion bias of the "mean of the two coincident curves".** Quoted: "MTF 0.29 ... p = 8: 0.73" (I3.1),
+  "omega_0 = 0.452 omega_N", "sigma = 0.997 pixel", "NNPS = ... 0.87 / 0.78 / 0.54 / 0.39". Evidence: the 12.4 keV MTF
+  line is hidden under the 58.3 keV line; on the visible line E10 gets 0.298 and 0.741, omega_0 = 0.456, PSF s.d.
+  0.988 px, NNPS 0.89 / 0.81 / 0.57 / 0.42 (uncertainty about +-0.04 at 0.5 omega_N). Proposed: "MTF(q_c) = 0.30 at
+  4 px/fringe (0.27-0.35 from Table 1's rounding) and 0.74 at 8 px/fringe (0.72-0.77), from the 58.3 keV curve, which
+  is drawn over the coincident 12.4 keV curve"; give NNPS to two figures with +-0.04.
+* **m7 - Asymmetric sideband weighting not mentioned.** Quoted (section 5 item 4): "The detector responds to intensity,
+  so the MTF belongs after hologram formation". Evidence (e10_recompute section J): after division by the empty
+  hologram the object sideband is weighted by MTF(q_c + q)/MTF(q_c): 1.95 to 0.39 across the |q_c|/3 mask at 4
+  px/fringe, 1.18 to 0.79 at 8. Proposed addition: "The MTF also weights the object sideband asymmetrically
+  (MTF(q_c + q)/MTF(q_c), a factor 5.0 across the mask at 4 px/fringe, 1.5 at 8); division by the empty hologram
+  removes only MTF(q_c). Terrace phases far from edges are unaffected; edge profiles and resolution are not."
+* **m8 - Items 4 and 5 must be alternatives; oversampling only for clusters.** Quoted (item 4): "Form the hologram
+  intensity on a grid oversampled at least x2 relative to the detector pixels"; (item 5) "each electron adds a random
+  cluster of counts whose mean footprint is the PSF of item 4". Evidence: with the hologram band |q_c| + band below the
+  detector Nyquist frequency (checked by `sideband.py` l. 311-313 for the mask), filtering the DFT of the pixel-centre
+  samples is exact; applying item 4's filter and then item 5's clusters to the same intensity would give MTF^2.
+  Proposed: "Either filter the intensity by the MTF and add noise with the prescribed NPS (item 4 + the second-order
+  form of item 5), or draw electrons from the UNFILTERED intensity and spread them with the cluster model (item 5
+  alone); oversample only for the latter."
 
 ### NIT
 
@@ -393,6 +408,9 @@ sampling is Ali's (items 5, 16)."
   >=120 keV".
 * **n5** Hashes of D1, D2, D8, D9 cannot be re-obtained (dynamic pages, download-stamped IOP PDFs); say so where a
   hash is given.
+* **n6** "MerlinEM 1R" (section 5 item 1; section 6 item 1 has "MerlinEM with head variant 1R, 4R, 4S") is not a
+  name found in the sources: D7 writes "Merlin 1R retractable Medipix3 mount" and D14's keywords list "MerlinEM;
+  Merlin 4S; Merlin 4R; Merlin 1R". Write "Merlin 1R".
 
 ## 9. Verdict table
 
