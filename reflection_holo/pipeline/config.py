@@ -1068,27 +1068,30 @@ MEASUREMENT_METHODS = {
         ("V_real", "amorphous_si_potential"),
         "off-axis electron holography of a wedge or cleaved edge of known thickness (the mean "
         "inner potential from the phase per unit thickness)"),
-    "rheed_rocking_curve_fit": (
-        ("V_real", "amorphous_si_potential"),
-        "reflection high-energy electron diffraction (RHEED) rocking-curve fit"),
-    "cbed_rocking_curve_fit": (
-        ("V_real", "amorphous_si_potential"),
-        "convergent-beam electron diffraction rocking-curve fit"),
-    "reflection_rocking_curve_fit": (
-        ("V_real", "amorphous_si_potential"),
-        "reflection rocking-curve fit (reflection electron diffraction or microscopy)"),
+    # re-audit A13 M1 (orchestrator's decision): no rocking-curve id. A CBED, RHEED or reflection
+    # rocking curve measures the CRYSTAL's potential (Bragg-peak refraction shift, V_g); an amorphous
+    # oxide or a-Si layer has no Bragg reflections of its own (DERIVED_HERE, A13; VOSS80 for CBED).
     MEASUREMENT_OTHER: (
         ("V_real", "amorphous_si_potential"),
         f"another measurement, described after the id in at least {MEASUREMENT_OTHER_MIN_WORDS} "
         f"distinct words of three or more letters that pass the refusal list"),
     "eels_inelastic_mean_free_path": (
-        ("V_imag",), "electron energy-loss spectroscopy (EELS): inelastic mean free path"),
-    "energy_filtered_intensity_ratio": (
-        ("V_imag",), "energy-filtered transmission or reflection intensity ratio"),
-    "xrr_fit": (("vacuum_edge", "interface"), "X-ray reflectivity (XRR) fit"),
+        ("V_imag",), "electron energy-loss spectroscopy (EELS): inelastic mean free path of the oxide "
+        "at a stated energy and collection angle"),
+    # re-audit A13 M1: only the log-ratio measured on the oxide film itself; a reflection ratio
+    # carries the crystal's absorption and the surface-plasmon losses (B38, E9 M1), a plan-view
+    # ratio the whole stack
+    "eftem_log_ratio_oxide_film": (
+        ("V_imag",), "energy-filtered log-ratio (t/lambda) measured on the oxide film itself, of "
+        "known thickness; not a reflection ratio and not the whole stack"),
+    # re-audit A13 m2: the width is the erf sigma of the potential profile (B41)
+    "xrr_fit": (("vacuum_edge", "interface"),
+                "X-ray reflectivity (XRR) fit: the erf sigma of the fitted interfacial profile"),
     "cross_section_tem_profile": (
-        ("vacuum_edge", "interface"), "cross-section HRTEM or STEM profile"),
-    "afm_surface": (("vacuum_edge",), "atomic force microscopy (AFM): the surface only"),
+        ("vacuum_edge", "interface"), "cross-section HRTEM or STEM profile: an erf sigma, "
+        "deconvolved from the instrumental resolution"),
+    "afm_surface": (("vacuum_edge",), "atomic force microscopy (AFM): the surface only, rms "
+                    "roughness at a stated scan size"),
 }
 # not a width method (orchestrator's decision, re-audit A12 M1): refused for w_v and w_i
 MEASUREMENT_NOT_A_WIDTH_METHOD = ("ellipsometr",)
@@ -1317,20 +1320,23 @@ def allowed_measurement_methods(parameter: str) -> list[str]:
       V_real, amorphous_si_potential (mean inner potential of the oxide; potential of the a-Si):
           offaxis_holography_wedge      off-axis electron holography of a wedge or cleaved edge of
                                         known thickness
-          rheed_rocking_curve_fit       RHEED rocking-curve fit
-          cbed_rocking_curve_fit        convergent-beam rocking-curve fit
-          reflection_rocking_curve_fit  reflection rocking-curve fit
           other_measurement             only with details of at least MEASUREMENT_OTHER_MIN_WORDS
                                         distinct words of three or more letters, which also pass
                                         the refusal list
+        no rocking-curve id: a CBED, RHEED or reflection rocking curve measures the crystal's
+        potential, not that of an amorphous layer (re-audit A13 M1). One record covers the real and
+        imaginary a-Si potentials, so an EELS value of the a-Si enters only as other_measurement
+        (re-audit A13 m1).
       V_imag (electronic absorption of the oxide):
-          eels_inelastic_mean_free_path EELS inelastic mean free path
-          energy_filtered_intensity_ratio  energy-filtered transmission or reflection intensity
-                                        ratio
+          eels_inelastic_mean_free_path EELS inelastic mean free path at a stated energy and
+                                        collection angle
+          eftem_log_ratio_oxide_film    energy-filtered log-ratio measured on the oxide film itself
+                                        (not a reflection ratio, not the whole stack)
       vacuum_edge, interface (grading widths w_v, w_i):
-          xrr_fit                       X-ray reflectivity fit
-          cross_section_tem_profile     cross-section HRTEM or STEM profile
-          afm_surface                   AFM, the vacuum edge (surface) only
+          xrr_fit                       X-ray reflectivity fit (erf sigma of the profile)
+          cross_section_tem_profile     cross-section HRTEM or STEM profile (erf sigma,
+                                        deconvolved)
+          afm_surface                   AFM, the vacuum edge (surface) only, at a stated scan size
         ellipsometry is NOT a width method (refused for w_v and w_i).
 
     The gate cannot verify a record, only require one: a named id is a form, not evidence that the

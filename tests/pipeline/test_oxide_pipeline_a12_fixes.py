@@ -107,10 +107,8 @@ def test_the_allowlist_is_the_decided_table():
     table = {k: set(v[0]) for k, v in MEASUREMENT_METHODS.items()}
     mean_inner = {"V_real", "amorphous_si_potential"}
     assert table == {
-        "offaxis_holography_wedge": mean_inner, "rheed_rocking_curve_fit": mean_inner,
-        "cbed_rocking_curve_fit": mean_inner, "reflection_rocking_curve_fit": mean_inner,
-        "other_measurement": mean_inner,
-        "eels_inelastic_mean_free_path": {"V_imag"}, "energy_filtered_intensity_ratio": {"V_imag"},
+        "offaxis_holography_wedge": mean_inner, "other_measurement": mean_inner,
+        "eels_inelastic_mean_free_path": {"V_imag"}, "eftem_log_ratio_oxide_film": {"V_imag"},
         "xrr_fit": {"vacuum_edge", "interface"},
         "cross_section_tem_profile": {"vacuum_edge", "interface"}, "afm_surface": {"vacuum_edge"}}
     doc = " ".join(allowed_measurement_methods.__doc__.split())
@@ -118,6 +116,13 @@ def test_the_allowlist_is_the_decided_table():
     assert "ellipsometry is NOT a width method" in doc and "cannot verify a record" in doc
     assert not any(any(s in m for s in pc.MEASUREMENT_NOT_A_WIDTH_METHOD) for m in MEASUREMENT_METHODS)
     assert allowed_measurement_methods("interface") == ["cross_section_tem_profile", "xrr_fit"]
+    # re-audit A13 M1: no rocking-curve id (they measure the crystal's potential, not an amorphous
+    # layer's) and no reflection or whole-stack intensity ratio for the oxide's absorption
+    assert not any("rocking" in m for m in MEASUREMENT_METHODS)
+    assert allowed_measurement_methods("V_real") == ["offaxis_holography_wedge", "other_measurement"]
+    assert allowed_measurement_methods("V_imag") == ["eels_inelastic_mean_free_path",
+                                                     "eftem_log_ratio_oxide_film"]
+    assert "not a reflection ratio" in MEASUREMENT_METHODS["eftem_log_ratio_oxide_film"][1]
 
 
 @pytest.mark.parametrize("parameter", PARAMETERS)
