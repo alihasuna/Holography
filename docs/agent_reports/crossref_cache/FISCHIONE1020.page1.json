@@ -1,0 +1,25 @@
+{
+ "url": "https://www.fischione.com/products/m1020",
+ "final_url": "https://www.fischione.com/products/m1020",
+ "status": 200,
+ "content_type": "text/html; Charset=utf-8",
+ "fetched_utc": "2026-09-24T09:31:58Z",
+ "sha256": "19f5f1052cb0da1223904115d0c038a1c7e00c0ff24c0cf2182c1e7f1c31e03e",
+ "bytes": 36561,
+ "html_title": "Model 1020 Plasma Cleaner | Fischione Instruments",
+ "h1": [],
+ "checks": [
+  {
+   "what": "owner",
+   "string": "Fischione Instruments",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "title",
+   "string": "Model 1020 Plasma Cleaner",
+   "found": true,
+   "on_pages": null
+  }
+ ]
+}

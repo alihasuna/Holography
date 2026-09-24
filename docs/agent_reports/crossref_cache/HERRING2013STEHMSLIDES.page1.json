@@ -1,0 +1,52 @@
+{
+ "url": "https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Presentation_CAMTEC_July_2013.pdf",
+ "final_url": "https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Presentation_CAMTEC_July_2013.pdf",
+ "status": 200,
+ "content_type": "application/pdf",
+ "fetched_utc": "2026-09-24T09:33:27Z",
+ "sha256": "694bcaf151a13c248fe8d82475bb12363254a23fde5be96391ee8c38e4d10114",
+ "bytes": 11091844,
+ "pdf": {
+  "pages": 55,
+  "title": "",
+  "subject": "",
+  "creationDate": "D:20130705221157Z00'00'",
+  "extracted_with": "pymupdf"
+ },
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "Recent STEHM High-Resolution Performance and Future Applications",
+   "found": true,
+   "on_pages": [
+    1,
+    2
+   ]
+  },
+  {
+   "what": "author",
+   "string": "Rodney Herring",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "owner",
+   "string": "University of Victoria",
+   "found": true,
+   "on_pages": [
+    1,
+    50
+   ]
+  },
+  {
+   "what": "meeting",
+   "string": "CAMTEC Workshop July 5, 2013",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  }
+ ]
+}

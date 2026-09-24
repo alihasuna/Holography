@@ -1,0 +1,97 @@
+{
+ "url": "https://www.hitachihyoron.com/rev/pdf/2008/r2008_03_104.pdf",
+ "final_url": "https://www.hitachihyoron.com/rev/pdf/2008/r2008_03_104.pdf",
+ "status": 200,
+ "content_type": "application/pdf",
+ "fetched_utc": "2026-09-24T09:33:17Z",
+ "sha256": "f170b8851bc579b17e6544e1e8e20824b03707131b173ac9b53f896ff4f5be9c",
+ "bytes": 150685,
+ "pdf": {
+  "pages": 4,
+  "title": "Hitachi's High-end Analytical Electron Microscope: HF-3300",
+  "subject": "HITACHI REVIEW Volume 57 Number 3 June 2008",
+  "creationDate": "D:20080624134543Z",
+  "extracted_with": "pymupdf"
+ },
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "Hitachi's High-end Analytical Electron Microscope: HF-3300",
+   "found": true,
+   "on_pages": [
+    1,
+    3
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Sato",
+   "found": true,
+   "on_pages": [
+    1,
+    4
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Matsumoto",
+   "found": true,
+   "on_pages": [
+    1,
+    4
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Konno",
+   "found": true,
+   "on_pages": [
+    1,
+    4
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Taniguchi",
+   "found": true,
+   "on_pages": [
+    1,
+    4
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Mamishin",
+   "found": true,
+   "on_pages": [
+    1,
+    4
+   ]
+  },
+  {
+   "what": "running head",
+   "string": "Hitachi Review Vol. 57 (2008), No. 3",
+   "found": true,
+   "on_pages": [
+    2,
+    4
+   ]
+  },
+  {
+   "what": "first page",
+   "string": "132",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "last page",
+   "string": "135",
+   "found": true,
+   "on_pages": [
+    4
+   ]
+  }
+ ]
+}

@@ -1,0 +1,59 @@
+{
+ "url": "https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Special_Features_CAMTEC_2013.pdf",
+ "final_url": "https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Special_Features_CAMTEC_2013.pdf",
+ "status": 200,
+ "content_type": "application/pdf",
+ "fetched_utc": "2026-09-24T09:33:21Z",
+ "sha256": "d8a8e59131fb8c580273b20043009655c3a66c00c30445741507fe69a24db043",
+ "bytes": 1642987,
+ "pdf": {
+  "pages": 28,
+  "title": "",
+  "subject": "",
+  "creationDate": "D:20130705220003Z00'00'",
+  "extracted_with": "pymupdf"
+ },
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "The Scanning Transmission Electron Holography Microscope (STEHM)",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "author",
+   "string": "Rodney Herring",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "owner",
+   "string": "University of Victoria",
+   "found": true,
+   "on_pages": [
+    1,
+    28
+   ]
+  },
+  {
+   "what": "meeting",
+   "string": "MSC/SMC June 5-8, 2012",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "place",
+   "string": "Halifax",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  }
+ ]
+}

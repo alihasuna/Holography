@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-09-24T04:33:52Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:1706.02957" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:1706.02957</identifier>
+        <datestamp>2017-10-17</datestamp>
+            <setSpec>physics:cond-mat:mes-hall</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>1706.02957</id>
+        <created>2017-06-09</created>
+            <updated>2017-10-17</updated>
+        <authors>
+                <author>
+                    <keyname>Luhmann</keyname>
+                        <forenames>Niklas</forenames>
+                </author>
+                <author>
+                    <keyname>Jachimowicz</keyname>
+                        <forenames>Artur</forenames>
+                </author>
+                <author>
+                    <keyname>Schalko</keyname>
+                        <forenames>Johannes</forenames>
+                </author>
+                <author>
+                    <keyname>Sadeghi</keyname>
+                        <forenames>Pedram</forenames>
+                </author>
+                <author>
+                    <keyname>Sauer</keyname>
+                        <forenames>Markus</forenames>
+                </author>
+                <author>
+                    <keyname>Foelske-Schmitz</keyname>
+                        <forenames>Annette</forenames>
+                </author>
+                <author>
+                    <keyname>Schmid</keyname>
+                        <forenames>Silvan</forenames>
+                </author>
+        </authors>
+        <title>Effect of oxygen plasma on nanomechanical silicon nitride resonators</title>
+            <categories>cond-mat.mes-hall</categories>
+            <doi>10.1063/1.4989775</doi>
+            <license>http://arxiv.org/licenses/nonexclusive-distrib/1.0/</license>
+            <abstract>Precise control of tensile stress and intrinsic damping is crucial for the optimal design of nanomechanical systems for sensor applications and quantum optomechanics in particular. In this letter we study the in uence of oxygen plasma on the tensile stress and intrinsic damping of nanomechanical silicon nitride resonators. Oxygen plasma treatments are common steps in micro and nanofabrication. We show that oxygen plasma of only a few minutes oxidizes the silicon nitride surface, creating several nanometer thick silicon dioxide layers with a compressive stress of 1.30(16)GPa. Such oxide layers can cause a reduction of the e ective tensile stress of a 50 nm thick stoichiometric silicon nitride membrane by almost 50%. Additionally, intrinsic damping linearly increases with the silicon dioxide lm thickness. An oxide layer of 1.5nm grown in just 10s in a 50W oxygen plasma almost doubled the intrinsic damping. The oxide surface layer can be e ciently removed in bu ered HF.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>

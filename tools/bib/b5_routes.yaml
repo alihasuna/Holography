@@ -1,0 +1,147 @@
+# B5 -- routes and declared decisions for the verification of the L8 and L9 bibliography
+# proposals (docs/agent_reports/L8_new_refs.bib, docs/agent_reports/L9_new_refs.bib).
+# Read by tools/bib/b5_check.py (a copy of tools/bib/b4_check.py, adapted).  Nothing here is a
+# bibliographic value typed from memory:
+#   * `cinii` ids and `alt_doi` are copied from the L8 notes (they are tested, not trusted);
+#   * `page` URLs are the URLs of the entries (or, for FISCHIONE1020, the link on the manufacturer's
+#     product page named in L8 section 2.1); `expect` lists the strings (entry title, owner, document
+#     number, running head) whose presence in the fetched page is tested; the page text is not stored;
+#   * `crossref_query` is a bibliographic query for an item without a DOI, logged only;
+#   * `set` values are transcriptions of a cached record, named in the entry's note by the script;
+#   * `accepted_residual` lists differences between the proposal and the record that are kept on purpose.
+
+baseline_rev: 11219d523b2203c25c79a94ac8b98f851aa98369   # B4 commit: last change of docs/references.bib (218 entries)
+
+extra:
+  HATA2006:
+    # L8's note quotes this CiNii Research record (it lists more authors than the Crossref record)
+    cinii: "1571135650339084160"
+    europepmc: true                     # Europe PMC by DOI: 0 hits (not in PubMed)
+    aux:
+      - {name: openalex, label: "OpenAlex work record (aggregator; corroboration only)",
+         url: "https://api.openalex.org/works/doi:10.1093/jmicro/dfl001?select=title,authorships"}
+      - {name: s2, label: "Semantic Scholar paper record (aggregator; corroboration only)",
+         url: "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1093/jmicro/dfl001?fields=title,authors,year"}
+      - {name: oup, label: "publisher landing page via doi.org, requested as text/html (for the printed byline)",
+         url: "https://doi.org/10.1093/jmicro/dfl001", accept: "text/html"}
+  MCCARTNEY2005:
+    # L8's note names this second Crossref DOI "with the same metadata"
+    alt_doi: "10.1093/jmicro/54.3.239"
+  ICHIKAWA2002IEEJ:                    # Crossref record: no author, feature title prefixed
+    jstage: true
+    title_prefix: "Nanotechnologies Support The 21st Century Based on The Information and The Communication Technologies."
+    # the J-STAGE page and CiNii give the author only in kanji (市川 昌和); the same kanji name is creator 3 of the
+    # JaLC record of WATANABE2000BUTSURI, whose English name there is 'lchikawa, Masakazu' (sic)
+    linked_name: {jalc_key: WATANABE2000BUTSURI, seq: 3}
+  HATTORI2001: {jstage: true, title_from_jstage: true}   # Crossref record: empty title
+  TAKAKUWA2002HK: {jstage: true, title_prefix: "Oxidation Mechanism of Silicon Surface."}   # feature title prefixed
+  KOMIYA1997:                          # Crossref record: feature titles prefixed
+    jstage: true
+    title_prefix: "Frontiers in Crystallography with Synchrotron Radiation. Utilizing of Various Properties of Synchrotron Radiation."
+  FISCHIONE1020:
+    crossref_query: null
+    page:
+      - url: "https://www.fischione.com/products/m1020"          # product page (L8 section 2.1)
+        expect: [[owner, "Fischione Instruments"], [title, "Model 1020 Plasma Cleaner"]]
+      - url: "https://www.fischione.com/files/products/17/sp1020.pdf"
+        expect: [[title, "Model 1020 Plasma Cleaner specifications"],
+                 [document, "Document Number SP1020 Revision 02 05/2025"],
+                 [owner, "E.A. Fischione Instruments, Inc."]]
+      - url: "https://www.fischione.com/files/products/17/pb1020.pdf"   # product page links /files/products/17/pb1020%2epdf
+        expect: [[title, "MODEL 1020 Plasma Cleaner"],
+                 [document, "Document Number PB1020 Revision 02 10/2014"],
+                 [owner, "E.A. Fischione Instruments, Inc."]]
+  ROBINSON2004SVC:
+    crossref_query: "Removing Surface Contaminants from Silicon Wafers to Facilitate EUV Optical Characterization Robinson 2004"
+    page:
+      - url: "https://physics.byu.edu/faculty/allred/docs/svc04.pdf"
+        entry_title: true
+        authors: true
+        expect: [[booktitle, "47th Annual Technical Conference Proceedings"],
+                 [publisher, "Society of Vacuum Coaters"], [issn, "ISSN 0737-5921"],
+                 [date and place, "April 24-29, 2004"], [place, "Dallas, TX"],
+                 [first page, "368"], [last page, "376"]]
+  SATO2008HITACHIREVIEW:
+    crossref_query: "Hitachi's High-end Analytical Electron Microscope HF-3300 Sato Hitachi Review 2008"
+    page:
+      - url: "https://www.hitachihyoron.com/rev/pdf/2008/r2008_03_104.pdf"
+        entry_title: true
+        authors: true
+        expect: [[running head, "Hitachi Review Vol. 57 (2008), No. 3"], [first page, "132"], [last page, "135"]]
+  UVIC_STEHM_PAGE:
+    page:
+      - url: "https://www.uvic.ca/research/advancedmicroscopy/about/microscopes/stehm/index.php"
+        entry_title: true
+        expect: [[owner, "University of Victoria"], [owner, "Advanced Microscopy Facility"]]
+  UVIC_EMRG_FACILITIES:
+    wp_rest: "https://onlineacademiccommunity.uvic.ca/emicro/wp-json/wp/v2/pages?slug=facilities&_fields=date,modified,link"
+    page:
+      - url: "https://onlineacademiccommunity.uvic.ca/emicro/facilities/"
+        entry_title: true
+        expect: [[owner, "UVic Electron Microscopy Research Group"],
+                 [quoted sentence, "is fitted with a Merlin (Medipix3) high speed pixelated direct-electron detector"]]
+  HERRING2012STEHMSLIDES:
+    page:
+      - url: "https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Special_Features_CAMTEC_2013.pdf"
+        entry_title: true
+        expect: [[author, "Rodney Herring"], [owner, "University of Victoria"], [meeting, "MSC/SMC June 5-8, 2012"],
+                 [place, "Halifax"]]
+  HERRING2013STEHMSLIDES:
+    page:
+      - url: "https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Presentation_CAMTEC_July_2013.pdf"
+        entry_title: true
+        expect: [[author, "Rodney Herring"], [owner, "University of Victoria"], [meeting, "CAMTEC Workshop July 5, 2013"]]
+  QD_MERLINEM_PAGE:
+    page:
+      - url: "https://quantumdetectors.com/products/merlinem/"
+        entry_title: true
+        expect: [[owner, "Quantum Detectors"]]
+  KRAJNAK2023MMC:
+    page:
+      - url: "https://www.mmc-series.org.uk/abstract/1024-merlinem-hybrid-pixel-array-counting-detector-for-transmission-electron-microscopy.html"
+        entry_title: true
+        authors: true
+        expect: [[abstract number, "Abstract number 210"], [form, "Presentation Form Poster"], [owner, "mmc series"],
+                 [meeting, "mmc2023"], [meeting, "EMAG 2023"]]
+
+keep_on_duplicate: {}
+
+# Proposals that are verified in part but NOT merged (reason printed in the log and the TSV).
+not_merged:
+  HATA2006: >-
+    author list unresolved. The Crossref record (OUP deposit) lists one author, 'S. Hata' (OpenAlex marks him as the
+    corresponding author); the CiNii/NII article record (NAID 10018006189) lists six authors starting with H. Sosiati
+    (Sosiati, Hata, Kuwano, Itakura, Nakano, Umakoshi); Semantic Scholar lists the same six starting with S. Hata; the
+    printed byline (academic.oup.com) answered HTTP 403 and PubMed has no record. The proposal (author = 'Hata, S.')
+    would cite a six-author paper under one name, and the author order cannot be settled from the records. Title,
+    journal, volume 55, issue 1, pages 23-26 and year 2006 agree in all records; merge once the byline is read.
+
+# Where a record value is a deposit artefact or absent, the merged entry uses the value below and the note says so.
+# Every value is a transcription of a cached record or page (named in the comment), never a new value.
+set:
+  WATANABE2000BUTSURI: {author: "Watanabe, Heiji and Miyata, Noriyuki and Ichikawa, Masakazu"}
+  # ^ JaLC record: creator 3 English name 'lchikawa, Masakazu' (lower-case l for capital I); kanji 市川 昌和 in the same
+  #   record; the Crossref record of WATANABE1999HK (same three authors) deposits 'ICHIKAWA, Masakazu'.
+  ICHIKAWA2002IEEJ: {author: "Ichikawa, Masakazu"}
+  # ^ no record carries a Latin-script name: Crossref has no author; J-STAGE (ICHIKAWA2002IEEJ.jstage.json) and CiNii
+  #   give 市川 昌和; linked records: the same kanji name is creator 3 of the JaLC record of WATANABE2000BUTSURI, whose
+  #   English form is 'lchikawa, Masakazu' (sic), and the Crossref record of WATANABE1999HK has 'ICHIKAWA, Masakazu'.
+  FISCHIONE1020:
+    howpublished: "Manufacturer documents, \\url{https://www.fischione.com/files/products/17/sp1020.pdf} and \\url{https://www.fischione.com/files/products/17/pb1020.pdf}"
+    url: "https://www.fischione.com/products/m1020"
+  # ^ L8 abbreviated the second URL ('.../pb1020.pdf'); both files were fetched (FISCHIONE1020.page2/3.json, HTTP 200,
+  #   document numbers SP1020 and PB1020 printed), and the product page (page1) links them as /files/products/17/*%2epdf.
+
+# Sentences added to the merged entry's note (what the cached records show; no new values).
+notes:
+  SNOECK2014MM: ["The Crossref record spells the third author 'Taniguch' [sic]; kept as deposited, as L9 did (probably Taniguchi, not checked on the printed abstract)."]
+  MCCARTNEY2005: ["A second Crossref DOI, 10.1093/jmicro/54.3.239 (cached as MCCARTNEY2005.altdoi.json), carries the same author, title, journal, volume, issue, pages and date; the doi field keeps 10.1093/jmicro/dfi035, the DOI L8 proposed."]
+  ICHIKAWA2002IEEJ: ["Author: no record carries a Latin-script name (Crossref: none; J-STAGE and CiNii: 市川 昌和); the romanisation 'Ichikawa, Masakazu' rests on linked records (flag): the same kanji name is creator 3 of the JaLC record of [WATANABE2000BUTSURI], English form 'lchikawa, Masakazu' [sic], and the Crossref record of [WATANABE1999HK] has 'ICHIKAWA, Masakazu'."]
+  WATANABE2000BUTSURI: ["The JaLC record writes the third author 'lchikawa' (lower-case l for capital I) next to the kanji 市川 昌和; the proposal's 'Ichikawa' is kept (record artefact)."]
+  KIM1996JVSTB: ["The container title is the record's full form; L8 had the short form 'Journal of Vacuum Science and Technology B'."]
+  UVIC_EMRG_FACILITIES: []
+  FISCHIONE1020: ["The product page https://www.fischione.com/products/m1020 (HTTP 200) links both documents."]
+
+# Differences between proposal and record that are NOT errors of the proposal (kept on purpose).
+accepted_residual:
+  WATANABE2000BUTSURI: "author[3].family: JaLC record 'lchikawa' (lower-case l for I); proposal kept"

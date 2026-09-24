@@ -1,0 +1,47 @@
+{
+ "url": "https://www.fischione.com/files/products/17/pb1020.pdf",
+ "final_url": "https://www.fischione.com/files/products/17/pb1020.pdf",
+ "status": 200,
+ "content_type": "application/pdf",
+ "fetched_utc": "2026-09-24T09:31:59Z",
+ "sha256": "5abf7728d49164b2e8c3c3cf5afae5c3cdad8d2e5dd47e4ec828d405a22978c1",
+ "bytes": 335463,
+ "pdf": {
+  "pages": 5,
+  "title": "PB1020.pdf | Model 1020 Plasma Cleaner product brochure",
+  "subject": "",
+  "creationDate": "D:20141010154548-04'00'",
+  "extracted_with": "pymupdf"
+ },
+ "checks": [
+  {
+   "what": "title",
+   "string": "MODEL 1020 Plasma Cleaner",
+   "found": true,
+   "on_pages": [
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "what": "document",
+   "string": "Document Number PB1020 Revision 02 10/2014",
+   "found": true,
+   "on_pages": [
+    5
+   ]
+  },
+  {
+   "what": "owner",
+   "string": "E.A. Fischione Instruments, Inc.",
+   "found": true,
+   "on_pages": [
+    3,
+    4,
+    5
+   ]
+  }
+ ]
+}

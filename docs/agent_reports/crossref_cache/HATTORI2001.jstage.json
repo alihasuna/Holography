@@ -1,0 +1,77 @@
+{
+ "record_url": "http://www.jstage.jst.go.jp/article/jvsj1958/44/8/44_8_695/_article/-char/ja/",
+ "views": [
+  {
+   "url": "http://www.jstage.jst.go.jp/article/jvsj1958/44/8/44_8_695/_article/-char/ja/",
+   "final_url": "https://www.jstage.jst.go.jp/article/jvsj1958/44/8/44_8_695/_article/-char/ja/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:46Z",
+   "meta": {
+    "citation_journal_title": [
+     "Shinku"
+    ],
+    "citation_author": [
+     "Takeo HATTORI"
+    ],
+    "citation_title": [
+     "Studies on Ultrathin Silicon Oxide Films and Their Current Problems"
+    ],
+    "citation_publication_date": [
+     "2001/08/20"
+    ],
+    "citation_volume": [
+     "44"
+    ],
+    "citation_issue": [
+     "8"
+    ],
+    "citation_firstpage": [
+     "695"
+    ],
+    "citation_lastpage": [
+     "700"
+    ],
+    "citation_doi": [
+     "10.3131/jvsj.44.695"
+    ]
+   },
+   "sha256": "bf1008db9add4e69b9db2b58e957702accdc9d3ea212cb89c25469907526f7d7"
+  },
+  {
+   "url": "http://www.jstage.jst.go.jp/article/jvsj1958/44/8/44_8_695/_article/-char/en/",
+   "final_url": "https://www.jstage.jst.go.jp/article/jvsj1958/44/8/44_8_695/_article/-char/en/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:48Z",
+   "meta": {
+    "citation_journal_title": [
+     "Shinku"
+    ],
+    "citation_author": [
+     "Takeo HATTORI"
+    ],
+    "citation_title": [
+     "Studies on Ultrathin Silicon Oxide Films and Their Current Problems"
+    ],
+    "citation_publication_date": [
+     "2001/08/20"
+    ],
+    "citation_volume": [
+     "44"
+    ],
+    "citation_issue": [
+     "8"
+    ],
+    "citation_firstpage": [
+     "695"
+    ],
+    "citation_lastpage": [
+     "700"
+    ],
+    "citation_doi": [
+     "10.3131/jvsj.44.695"
+    ]
+   },
+   "sha256": "d141e1e6d6c7cbd81ddf9e5d1c5f3dbcf96b10cb4d7763d46680917dd44b0b85"
+  }
+ ]
+}

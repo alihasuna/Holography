@@ -1,0 +1,27 @@
+{
+ "url": "https://quantumdetectors.com/products/merlinem/",
+ "final_url": "https://quantumdetectors.com/product/direct-electron-detector/",
+ "status": 200,
+ "content_type": "text/html; charset=UTF-8",
+ "fetched_utc": "2026-09-24T09:33:31Z",
+ "sha256": "001f42c145df2584625459d6381db7d59af62edc5eb2c314cf34d8ca341c643f",
+ "bytes": 166553,
+ "html_title": "Direct Electron Detector for TEM | MerlinEM by Quantum Detectors",
+ "h1": [
+  "MerlinEM – Direct Electron Detector Optimised for 4D-STEM & Dynamic TEM"
+ ],
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "MerlinEM – Direct Electron Detector Optimised for 4D-STEM & Dynamic TEM",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "owner",
+   "string": "Quantum Detectors",
+   "found": true,
+   "on_pages": null
+  }
+ ]
+}

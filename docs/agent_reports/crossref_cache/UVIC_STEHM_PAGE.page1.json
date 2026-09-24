@@ -1,0 +1,33 @@
+{
+ "url": "https://www.uvic.ca/research/advancedmicroscopy/about/microscopes/stehm/index.php",
+ "final_url": "https://www.uvic.ca/research/advancedmicroscopy/about/microscopes/stehm/index.php",
+ "status": 200,
+ "content_type": "text/html; charset=UTF-8",
+ "fetched_utc": "2026-09-24T09:33:17Z",
+ "sha256": "a9a8881eac91adb5cad203d319e0f638a6b328600a49c2eef1f8cc343dcc1e97",
+ "bytes": 25596,
+ "html_title": "Hitachi HF-3300V STEHM - University of Victoria",
+ "h1": [
+  "Hitachi HF-3300V STEHM"
+ ],
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "Hitachi HF-3300V STEHM",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "owner",
+   "string": "University of Victoria",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "owner",
+   "string": "Advanced Microscopy Facility",
+   "found": true,
+   "on_pages": null
+  }
+ ]
+}

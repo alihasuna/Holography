@@ -1,0 +1,63 @@
+{
+ "url": "https://www.mmc-series.org.uk/abstract/1024-merlinem-hybrid-pixel-array-counting-detector-for-transmission-electron-microscopy.html",
+ "final_url": "https://www.mmc-series.org.uk/abstract/1024-merlinem-hybrid-pixel-array-counting-detector-for-transmission-electron-microscopy.html",
+ "status": 200,
+ "content_type": "text/html;charset=UTF-8",
+ "fetched_utc": "2026-09-24T09:33:31Z",
+ "sha256": "dd8473827a932eb9eafe4fabec9bebb7a280167b6480130f48b6269685e5f2b7",
+ "bytes": 28302,
+ "html_title": "mmc series | MerlinEM, Hybrid Pixel Array Counting Detector for Transmission Electron Microscopy.",
+ "h1": [
+  "MerlinEM, Hybrid Pixel Array Counting Detector for Transmission Electron Microscopy."
+ ],
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "MerlinEM, Hybrid Pixel Array Counting Detector for Transmission Electron Microscopy",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "author family name",
+   "string": "Krajnak",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "author family name",
+   "string": "Klyszejko",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "abstract number",
+   "string": "Abstract number 210",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "form",
+   "string": "Presentation Form Poster",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "owner",
+   "string": "mmc series",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "meeting",
+   "string": "mmc2023",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "meeting",
+   "string": "EMAG 2023",
+   "found": true,
+   "on_pages": null
+  }
+ ]
+}

@@ -1,0 +1,168 @@
+{
+ "url": "https://physics.byu.edu/faculty/allred/docs/svc04.pdf",
+ "final_url": "https://physics.byu.edu/faculty/allred/docs/svc04.pdf",
+ "status": 200,
+ "content_type": "application/pdf",
+ "fetched_utc": "2026-09-24T09:32:04Z",
+ "sha256": "99574c40268d5c47c89f6ed16fc65284b11739ba58a518ebe140c23c3f9a6172",
+ "bytes": 51872,
+ "pdf": {
+  "pages": 9,
+  "title": "Optical",
+  "subject": "Optical",
+  "creationDate": "D:20040924124255-06'00'",
+  "extracted_with": "pymupdf"
+ },
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "Removing Surface Contaminants from Silicon Wafers to Facilitate EUV Optical Characterization",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Robinson",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Sandberg",
+   "found": true,
+   "on_pages": [
+    1,
+    8
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Allred",
+   "found": true,
+   "on_pages": [
+    1,
+    8
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Jackson",
+   "found": true,
+   "on_pages": [
+    1,
+    8
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Johnson",
+   "found": true,
+   "on_pages": [
+    1,
+    8
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Evans",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Doughty",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Baker",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Adamson",
+   "found": true,
+   "on_pages": [
+    1,
+    8
+   ]
+  },
+  {
+   "what": "author family name",
+   "string": "Jacquier",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "booktitle",
+   "string": "47th Annual Technical Conference Proceedings",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "publisher",
+   "string": "Society of Vacuum Coaters",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "issn",
+   "string": "ISSN 0737-5921",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "date and place",
+   "string": "April 24-29, 2004",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "place",
+   "string": "Dallas, TX",
+   "found": true,
+   "on_pages": [
+    1
+   ]
+  },
+  {
+   "what": "first page",
+   "string": "368",
+   "found": true,
+   "on_pages": [
+    1,
+    7
+   ]
+  },
+  {
+   "what": "last page",
+   "string": "376",
+   "found": true,
+   "on_pages": [
+    9
+   ]
+  }
+ ]
+}

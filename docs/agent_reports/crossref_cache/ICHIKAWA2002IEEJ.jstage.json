@@ -1,0 +1,77 @@
+{
+ "record_url": "http://www.jstage.jst.go.jp/article/ieejjournal1994/122/2/122_2_87/_article/-char/ja/",
+ "views": [
+  {
+   "url": "http://www.jstage.jst.go.jp/article/ieejjournal1994/122/2/122_2_87/_article/-char/ja/",
+   "final_url": "https://www.jstage.jst.go.jp/article/ieejjournal1994/122/2/122_2_87/_article/-char/ja/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:37Z",
+   "meta": {
+    "citation_journal_title": [
+     "電気学会誌"
+    ],
+    "citation_author": [
+     "市川 昌和"
+    ],
+    "citation_title": [
+     "シリコン表面界面のナノスケール観察技術"
+    ],
+    "citation_publication_date": [
+     "2002/02/01"
+    ],
+    "citation_volume": [
+     "122"
+    ],
+    "citation_issue": [
+     "2"
+    ],
+    "citation_firstpage": [
+     "87"
+    ],
+    "citation_lastpage": [
+     "89"
+    ],
+    "citation_doi": [
+     "10.1541/ieejjournal.122.87"
+    ]
+   },
+   "sha256": "a46a7bb887c7faf5f335a0462a2cddc3ff1a71f657bb8ebede88cdaa50a259d5"
+  },
+  {
+   "url": "http://www.jstage.jst.go.jp/article/ieejjournal1994/122/2/122_2_87/_article/-char/en/",
+   "final_url": "https://www.jstage.jst.go.jp/article/ieejjournal1994/122/2/122_2_87/_article/-char/en/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:39Z",
+   "meta": {
+    "citation_journal_title": [
+     "電気学会誌"
+    ],
+    "citation_author": [
+     "市川 昌和"
+    ],
+    "citation_title": [
+     "シリコン表面界面のナノスケール観察技術"
+    ],
+    "citation_publication_date": [
+     "2002/02/01"
+    ],
+    "citation_volume": [
+     "122"
+    ],
+    "citation_issue": [
+     "2"
+    ],
+    "citation_firstpage": [
+     "87"
+    ],
+    "citation_lastpage": [
+     "89"
+    ],
+    "citation_doi": [
+     "10.1541/ieejjournal.122.87"
+    ]
+   },
+   "sha256": "d003117e304571599650fc27ebaab609525b50a043e97341edb671f45b0fe12a"
+  }
+ ]
+}

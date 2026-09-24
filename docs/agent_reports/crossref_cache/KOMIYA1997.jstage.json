@@ -1,0 +1,83 @@
+{
+ "record_url": "http://www.jstage.jst.go.jp/article/jcrsj1959/39/1/39_1_89/_article/-char/ja/",
+ "views": [
+  {
+   "url": "http://www.jstage.jst.go.jp/article/jcrsj1959/39/1/39_1_89/_article/-char/ja/",
+   "final_url": "https://www.jstage.jst.go.jp/article/jcrsj1959/39/1/39_1_89/_article/-char/ja/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:50Z",
+   "meta": {
+    "citation_journal_title": [
+     "Nihon Kessho Gakkaishi"
+    ],
+    "citation_author": [
+     "Satoshi KOMIYA",
+     "Naoki AWAJI",
+     "Yoshimasa HORII",
+     "Hirofumi TOMITA"
+    ],
+    "citation_title": [
+     "Characterization of Thin Films with X-ray Total Reflection Technology"
+    ],
+    "citation_publication_date": [
+     "1997/02/28"
+    ],
+    "citation_volume": [
+     "39"
+    ],
+    "citation_issue": [
+     "1"
+    ],
+    "citation_firstpage": [
+     "89"
+    ],
+    "citation_lastpage": [
+     "93"
+    ],
+    "citation_doi": [
+     "10.5940/jcrsj.39.89"
+    ]
+   },
+   "sha256": "88aa52370036a3ddd1ae907e7fa11b3b25cbb2b7b75209bf4946daa563f2d463"
+  },
+  {
+   "url": "http://www.jstage.jst.go.jp/article/jcrsj1959/39/1/39_1_89/_article/-char/en/",
+   "final_url": "https://www.jstage.jst.go.jp/article/jcrsj1959/39/1/39_1_89/_article/-char/en/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:52Z",
+   "meta": {
+    "citation_journal_title": [
+     "Nihon Kessho Gakkaishi"
+    ],
+    "citation_author": [
+     "Satoshi KOMIYA",
+     "Naoki AWAJI",
+     "Yoshimasa HORII",
+     "Hirofumi TOMITA"
+    ],
+    "citation_title": [
+     "Characterization of Thin Films with X-ray Total Reflection Technology"
+    ],
+    "citation_publication_date": [
+     "1997/02/28"
+    ],
+    "citation_volume": [
+     "39"
+    ],
+    "citation_issue": [
+     "1"
+    ],
+    "citation_firstpage": [
+     "89"
+    ],
+    "citation_lastpage": [
+     "93"
+    ],
+    "citation_doi": [
+     "10.5940/jcrsj.39.89"
+    ]
+   },
+   "sha256": "e59098da32ba792fbe1a852d117164d6e7c74cb63fbce05c2129aed54fd7d56c"
+  }
+ ]
+}

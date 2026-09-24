@@ -1,0 +1,77 @@
+{
+ "record_url": "http://www.jstage.jst.go.jp/article/jsssj/23/9/23_9_536/_article/-char/ja/",
+ "views": [
+  {
+   "url": "http://www.jstage.jst.go.jp/article/jsssj/23/9/23_9_536/_article/-char/ja/",
+   "final_url": "https://www.jstage.jst.go.jp/article/jsssj/23/9/23_9_536/_article/-char/ja/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:42Z",
+   "meta": {
+    "citation_journal_title": [
+     "表面科学"
+    ],
+    "citation_author": [
+     "高桑 雄二"
+    ],
+    "citation_title": [
+     "極薄シリコン酸化膜形成過程のリアルタイムRHEED-AES観察"
+    ],
+    "citation_publication_date": [
+     "2002/09/10"
+    ],
+    "citation_volume": [
+     "23"
+    ],
+    "citation_issue": [
+     "9"
+    ],
+    "citation_firstpage": [
+     "536"
+    ],
+    "citation_lastpage": [
+     "552"
+    ],
+    "citation_doi": [
+     "10.1380/jsssj.23.536"
+    ]
+   },
+   "sha256": "f4a36d9742350869310a05ae298a57ee5d65fc1c50f6db72ba29c3ba1497c81e"
+  },
+  {
+   "url": "http://www.jstage.jst.go.jp/article/jsssj/23/9/23_9_536/_article/-char/en/",
+   "final_url": "https://www.jstage.jst.go.jp/article/jsssj/23/9/23_9_536/_article/-char/en/",
+   "status": 200,
+   "fetched_utc": "2026-09-24T09:32:44Z",
+   "meta": {
+    "citation_journal_title": [
+     "表面科学"
+    ],
+    "citation_author": [
+     "高桑 雄二"
+    ],
+    "citation_title": [
+     "極薄シリコン酸化膜形成過程のリアルタイムRHEED-AES観察"
+    ],
+    "citation_publication_date": [
+     "2002/09/10"
+    ],
+    "citation_volume": [
+     "23"
+    ],
+    "citation_issue": [
+     "9"
+    ],
+    "citation_firstpage": [
+     "536"
+    ],
+    "citation_lastpage": [
+     "552"
+    ],
+    "citation_doi": [
+     "10.1380/jsssj.23.536"
+    ]
+   },
+   "sha256": "19bbe58a03548dfc947d8d17fabf6381e4d5616f247df818e79d37ecfd1a15b0"
+  }
+ ]
+}

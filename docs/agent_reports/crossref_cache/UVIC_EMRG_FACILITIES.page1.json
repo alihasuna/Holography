@@ -1,0 +1,33 @@
+{
+ "url": "https://onlineacademiccommunity.uvic.ca/emicro/facilities/",
+ "final_url": "https://onlineacademiccommunity.uvic.ca/emicro/facilities/",
+ "status": 200,
+ "content_type": "text/html; charset=UTF-8",
+ "fetched_utc": "2026-09-24T09:33:19Z",
+ "sha256": "eabe26da14f7ea8e74468ec6b35de15ff2ba7cc5bd8cd2eb2846e41a2285d08e",
+ "bytes": 179175,
+ "html_title": "Facilities | UVic Electron Microscopy Research Group",
+ "h1": [
+  "Facilities"
+ ],
+ "checks": [
+  {
+   "what": "entry title",
+   "string": "Facilities",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "owner",
+   "string": "UVic Electron Microscopy Research Group",
+   "found": true,
+   "on_pages": null
+  },
+  {
+   "what": "quoted sentence",
+   "string": "is fitted with a Merlin (Medipix3) high speed pixelated direct-electron detector",
+   "found": true,
+   "on_pages": null
+  }
+ ]
+}
