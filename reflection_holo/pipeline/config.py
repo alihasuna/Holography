@@ -1426,8 +1426,8 @@ def _oxide_count_variant(cfg_b: LoadedConfig, over: dict) -> dict | None:
     spans a rounding boundary the record must state consumed_layers_parity: lower | upper, and the
     run builds that count of the interval (the other is a separate run); an interval of more than
     two counts is refused; the key is refused when the interval spans no boundary (the count is
-    then the nearest one) or when no uncertainties are stated. Returns None or the variant record
-    of structure.oxide (parity, count, interval, other_variant, note)."""
+    then the nearest one) or when no uncertainties are stated. Returns None or {parity, count,
+    interval (item12_count_interval), other_variant: {parity, count}}."""
     from reflection_holo.structure import oxide as ox
     where = "cfg_b.surface_preparation_details.overlayer (docs/06 item 12)"
     got = [k for k in OXIDE_UNCERTAINTY_KEYS if k in over]
@@ -1479,6 +1479,13 @@ def _oxide_count_variant(cfg_b: LoadedConfig, over: dict) -> dict | None:
                 f"rounding boundary, the count is the nearest count; refused rather than ignored "
                 f"(re-audit A10b M1)")
         return None
+    if len(ci["counts"]) != 2:
+        raise PipelineConfigError(
+            f"{where}: {span}: more than one rounding boundary; the lower and upper counts would "
+            f"not cover the counts between them, so a parity variant is defined for an interval "
+            f"of two counts only: refused (re-audit A10b M1, report X6; depth half-widths in "
+            f"layers: " + ", ".join(f"{k} {x:.3f}" for k, x in
+                                    ci["depth_half_width_layers"].items()) + ")")
     if OXIDE_PARITY_KEY not in over or parity not in ox.PARITY_VARIANTS:
         stated = (f"got {OXIDE_PARITY_KEY} = {parity!r}" if OXIDE_PARITY_KEY in over else
                   f"{OXIDE_PARITY_KEY} is not stated (no default)")
@@ -1488,13 +1495,6 @@ def _oxide_count_variant(cfg_b: LoadedConfig, over: dict) -> dict | None:
             f"{list(ox.PARITY_VARIANTS)}; the run builds that count of the interval (DERIVED_HERE, "
             f"parity variant) and the other variant is a separate run; {stated} (re-audit A10b "
             f"M1)")
-    if len(ci["counts"]) != 2:
-        raise PipelineConfigError(
-            f"{where}: {span}: more than one rounding boundary; the lower and upper counts would "
-            f"not cover the counts between them, so a parity variant is defined for an interval "
-            f"of two counts only: refused (re-audit A10b M1, report X6; depth half-widths in "
-            f"layers: " + ", ".join(f"{k} {x:.3f}" for k, x in
-                                    ci["depth_half_width_layers"].items()) + ")")
     idx = ox.PARITY_VARIANTS.index(parity)
     other = ox.PARITY_VARIANTS[1 - idx]
     return dict(parity=parity, count=ci["counts"][idx], interval=ci,

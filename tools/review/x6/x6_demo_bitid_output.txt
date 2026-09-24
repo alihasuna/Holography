@@ -1,0 +1,31 @@
+== oxide_2p0nm
+package: reflection_holo/__init__.py (repository Holography)
+run oxide_2p0nm: 3.9 s
+built 2.71545 measured +2.7153 +- 0.0165
+built -1.357725 measured -1.3578 +- 0.0082
+built -1.357725 measured -1.3575 +- 0.0082
+vs A10b: arrays 26 vs 26; bitwise identical 26; differing []
+   item-12 record: labels equal True; headline equal True; keys added ['consumed_layers', 'measurement_rule']; keys removed []
+   spec_sha256 equal: True (094102ed...)
+vs X5: arrays 26 vs 26; bitwise identical 26; differing []
+   item-12 record: labels equal True; headline equal True; keys added ['consumed_layers', 'measurement_rule']; keys removed []
+   spec_sha256 equal: True (094102ed...)
+vs A9b: arrays 26 vs 26; bitwise identical 26; differing []
+   item-12 record: absent in the reference (it predates the record)
+   spec_sha256 equal: False (094102ed...)
+consumed_layers record: {'count': 7, 'derived_by': 'the nearest whole count of (f t + t_a)/(a/4) at the stated values', 'parity_variant': None, 'note': 'no parity variant: no item-12 uncertainties stated'}
+exit 0
+== multislice_tiny_oxide_2p0nm
+package: reflection_holo/__init__.py (repository Holography)
+run multislice_tiny_oxide_2p0nm: 16.1 s
+built 2.71545 measured None
+built -1.357725 measured None
+vs A10b: arrays 26 vs 26; bitwise identical 26; differing []
+   item-12 record: labels equal True; headline equal True; keys added ['consumed_layers', 'measurement_rule']; keys removed []
+   spec_sha256 equal: True (094102ed...)
+reference X5: absent
+vs A9b: arrays 26 vs 26; bitwise identical 26; differing []
+   item-12 record: absent in the reference (it predates the record)
+   spec_sha256 equal: False (094102ed...)
+consumed_layers record: {'count': 7, 'derived_by': 'the nearest whole count of (f t + t_a)/(a/4) at the stated values', 'parity_variant': None, 'note': 'no parity variant: no item-12 uncertainties stated'}
+exit 0

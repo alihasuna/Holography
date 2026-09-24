@@ -1,0 +1,166 @@
+X6 mutations: repository HEAD b7dcbf0 plus the working tree; tests: tests/structure/test_oxide_structure_a10b_fixes.py, tests/forward/test_oxide_multislice_a10b_fixes.py, tests/pipeline/test_oxide_pipeline_a10b_fixes.py, tests/structure/test_oxide_structure_a9b_fixes.py, tests/forward/test_oxide_multislice_a9b_fixes.py, tests/pipeline/test_oxide_pipeline_a9b_fixes.py, tests/pipeline/test_oxide_pipeline_a8_fixes.py, tests/structure/test_oxide_structure.py
+Y0_control: package in the copy: True; 385 passed in 10.33s [11 s]
+Y1_M1_key_not_required: package in the copy: True; 2 failed, 383 passed in 10.17s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_key_is_required_across_a_boundary_and_refused_otherwise
+    FAILED tests/pipeline/test_oxide_pipeline_a9b_fixes.py::test_interval_across_a_boundary_needs_a_parity_variant
+Y2_M1_key_ignored_without_a_span: package in the copy: True; 2 failed, 383 passed in 10.38s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_key_is_required_across_a_boundary_and_refused_otherwise
+    FAILED tests/pipeline/test_oxide_pipeline_a9b_fixes.py::test_unneeded_parity_variant_is_refused
+Y3_M1_any_value_is_upper: package in the copy: True; 11 failed, 374 passed in 10.36s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[both]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[odd]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[even]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[Lower]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[LOWER]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[ lower]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[None]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[6]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[True]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_parity_value_outside_lower_upper_is_refused[bad9]
+    ... 1 more
+Y4_M1_nearest_count_always: package in the copy: True; 2 failed, 383 passed in 7.16s [8 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_each_parity_variant_is_built_and_recorded[lower-6-7]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_run_records_the_parity_variant_in_manifest_and_summary
+Y5_M1_label_without_qualifier: package in the copy: True; 8 failed, 377 passed in 7.57s [8 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_each_parity_variant_is_built_and_recorded[lower-6-7]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_each_parity_variant_is_built_and_recorded[upper-7-6]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_stated_count_must_be_the_variant_count
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_run_records_the_parity_variant_in_manifest_and_summary
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_standard_uncertainty_enters_twice
+    FAILED tests/pipeline/test_oxide_pipeline_a9b_fixes.py::test_comparison_admits_the_model_row
+    FAILED tests/pipeline/test_oxide_pipeline_a9b_fixes.py::test_interval_across_a_boundary_needs_a_parity_variant
+    FAILED tests/pipeline/test_oxide_pipeline_a8_fixes.py::test_comparison_refuses_per_parameter_stand_ins
+Y6_M1_structure_qualifier_unchecked: package in the copy: True; 1 failed, 384 passed in 10.38s [11 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_form_refusals[kw8-must carry the qualifier 'parity variant lower of an interval spanning a boundary']
+Y7_M1_record_without_the_variant: package in the copy: True; 3 failed, 382 passed in 10.71s [12 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_each_parity_variant_is_built_and_recorded[lower-6-7]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_each_parity_variant_is_built_and_recorded[upper-7-6]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_run_records_the_parity_variant_in_manifest_and_summary
+Y8_M1_more_than_two_counts_accepted: package in the copy: True; 2 failed, 383 passed in 10.40s [11 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_interval_refusals[kw2-spans 2 rounding boundaries]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_interval_of_more_than_two_counts_is_refused
+Y31_M1_more_than_two_counts_asks_for_the_key_first: package in the copy: True; 1 failed, 384 passed in 10.74s [12 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_interval_of_more_than_two_counts_is_refused
+Y9_M1_structure_count_unchecked: package in the copy: True; 3 failed, 382 passed in 10.52s [11 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_interval_refusals[kw0-consumed_layers = 7 is not the lower count 6 of the interval]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_interval_refusals[kw1-consumed_layers = 6 is not the upper count 7 of the interval]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_stated_count_must_be_the_variant_count
+Y10_M1_structure_span_unchecked: package in the copy: True; 1 failed, 384 passed in 10.33s [11 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_interval_refusals[kw3-spans no rounding boundary, so the count is the nearest count]
+Y11_M1_retired_key_not_named: package in the copy: True; 2 failed, 383 passed in 10.51s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_retired_acknowledgement_is_refused
+    FAILED tests/pipeline/test_oxide_pipeline_a9b_fixes.py::test_interval_across_a_boundary_needs_a_parity_variant
+Y12_M1_hash_of_specs_without_variant_changed: package in the copy: True; 1 failed, 384 passed in 10.52s [11 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_spec_hash_without_a_variant_is_unchanged
+Y13_M1_overlap_bound_a8: package in the copy: True; 2 failed, 383 passed in 10.74s [12 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_builds_the_lower_or_upper_count[lower-6-7-1]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_builds_the_lower_or_upper_count[upper-7-6--1]
+Y14_M2_free_text_accepted: package in the copy: True; 2 failed, 383 passed in 10.45s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_record_is_the_structured_mapping[TEST: fabricated off-axis electron holography]
+    FAILED tests/pipeline/test_oxide_pipeline_a9b_fixes.py::test_measurement_record_for_project_input_model_parameters
+Y15_M2_patterns_off: package in the copy: True; 49 failed, 336 passed in 10.39s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not measured-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not measured-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not measured-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not measured: independent-atom model value, E9 out:166-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not measured: independent-atom model value, E9 out:166-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not measured: independent-atom model value, E9 out:166-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not yet measured-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not yet measured-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[not yet measured-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[unmeasured-method]
+    ... 39 more
+Y16_M2_placeholder_words_off: package in the copy: True; 16 failed, 369 passed in 10.81s [12 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[measured-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[measured-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[measured-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[measured.-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[measured.-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[measured.-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[Measured!-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[Measured!-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[Measured!-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[measurement-method]
+    ... 6 more
+Y17_M2_min_alnum_off: package in the copy: True; 19 failed, 366 passed in 10.60s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[--method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[--instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[--reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[.-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[.-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[.-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[x-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[x-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[x-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[...-method]
+    ... 9 more
+Y18_M2_bare_value_accepted: package in the copy: True; 9 failed, 376 passed in 10.37s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[10.34 V-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[10.34 V-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[10.34 V-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[0.40 V-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[0.40 V-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[0.40 V-reference]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[0.5 A-method]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[0.5 A-instrument]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_placeholder_record_fields_are_refused[0.5 A-reference]
+Y19_M2_future_date_accepted: package in the copy: True; 2 failed, 383 passed in 10.69s [12 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_record_date_is_an_iso_date_not_in_the_future[2999-01-01-is in the future relative to the run]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_record_date_is_an_iso_date_not_in_the_future[2026-09-26-is in the future relative to the run]
+Y20_M2_date_format_free: package in the copy: True; 3 failed, 382 passed in 10.53s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_record_date_is_an_iso_date_not_in_the_future[20/09/2026-must be an ISO date]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_record_date_is_an_iso_date_not_in_the_future[2026-9-20-must be an ISO date]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_record_date_is_an_iso_date_not_in_the_future[TBD-must be an ISO date]
+Y21_m1_asi_potential_without_record: package in the copy: True; 2 failed, 383 passed in 9.94s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_amorphous_si_potentials_need_a_record
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_comparison_with_a_si_potentials_needs_the_record
+Y22_m2_standard_read_as_half_width: package in the copy: True; 10 failed, 375 passed in 10.39s [11 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-20.0-1.0-0.05-0.0-0.1]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-20.0-1.0-0.05-0.0-1.0]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-15.0-0.5-0.03-0.0-1.0]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-15.0-0.5-0.03-5.0-0.5]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_the_uncertainty_kind_sets_the_coverage
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_half_widths_must_stay_below_the_values[kw0-thickness interval]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_half_widths_must_stay_below_the_values[kw1-density interval]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_parity_variant_interval_refusals[kw2-spans 2 rounding boundaries]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_interval_of_more_than_two_counts_is_refused
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_standard_uncertainty_enters_twice
+Y23_m2_kind_defaulted: package in the copy: True; 1 failed, 384 passed in 10.45s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_new_uncertainty_keys_are_required_with_the_others[uncertainty_kind]
+Y24_m3_asi_uncertainty_ignored: package in the copy: True; 13 failed, 372 passed in 10.46s [11 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-20.0-1.0-0.05-0.0-0.1]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-20.0-1.0-0.05-0.0-1.0]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-15.0-0.5-0.03-0.0-1.0]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[standard-15.0-0.5-0.03-5.0-0.5]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[half_width-20.0-1.0-0.05-0.0-0.1]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[half_width-20.0-1.0-0.05-0.0-1.0]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[half_width-15.0-0.5-0.03-0.0-1.0]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_interval_matches_the_printed_cases[half_width-15.0-0.5-0.03-5.0-0.5]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_the_amorphous_si_uncertainty_enters_the_interval
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_the_uncertainty_kind_sets_the_coverage
+    ... 3 more
+Y30_m3_asi_stand_in_uncertainty_accepted: package in the copy: True; 1 failed, 384 passed in 10.45s [11 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_amorphous_si_uncertainty_under_a_stand_in_is_refused
+Y25_m3_comparison_names_two_keys: package in the copy: True; 2 failed, 383 passed in 12.86s [14 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_new_uncertainty_keys_are_required_with_the_others[amorphous_si_thickness_uncertainty_A]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_new_uncertainty_keys_are_required_with_the_others[uncertainty_kind]
+Y26_n2_zero_accepted: package in the copy: True; 12 failed, 373 passed in 10.70s [12 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[0.0-thickness_uncertainty_A]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[0.0-density_uncertainty_g_cm3]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[0.0-amorphous_si_thickness_uncertainty_A]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[-0.1-thickness_uncertainty_A]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[-0.1-density_uncertainty_g_cm3]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[-0.1-amorphous_si_thickness_uncertainty_A]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[-1e-12-thickness_uncertainty_A]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[-1e-12-density_uncertainty_g_cm3]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_zero_or_negative_uncertainties_are_refused[-1e-12-amorphous_si_thickness_uncertainty_A]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_zero_or_negative_uncertainty_is_refused[-0.05-thickness_uncertainty_A]
+    ... 2 more
+Y27_n1_guard_on_thickness_only: package in the copy: True; 2 failed, 383 passed in 10.20s [11 s]
+    FAILED tests/forward/test_oxide_multislice_a10b_fixes.py::test_one_thickness_two_counts_is_refused_with_the_size
+    FAILED tests/forward/test_oxide_multislice_a10b_fixes.py::test_one_thickness_two_counts_acknowledged_records_the_statement
+Y28_n1_ack_on_thickness_only: package in the copy: True; 2 failed, 383 passed in 11.06s [12 s]
+    FAILED tests/structure/test_oxide_structure_a10b_fixes.py::test_nonconformal_acknowledgement_for_counts_at_one_thickness
+    FAILED tests/forward/test_oxide_multislice_a10b_fixes.py::test_one_thickness_two_counts_acknowledged_records_the_statement
+Y29_d6_both_parities_text: package in the copy: True; 1 failed, 384 passed in 14.94s [16 s]
+    FAILED tests/pipeline/test_oxide_pipeline_a10b_fixes.py::test_no_code_string_claims_both_parities_are_run

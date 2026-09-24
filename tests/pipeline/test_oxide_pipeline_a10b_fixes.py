@@ -150,10 +150,12 @@ def test_interval_of_more_than_two_counts_is_refused(smoke):
     8) share one parity and would not cover 7 (printed by tools/review/x6)."""
     for unc in (dict(UNC, uncertainty_kind="standard"),
                 dict(UNC, amorphous_si_thickness_uncertainty_A=1.0)):
-        for parity in ("lower", "upper"):
-            msg = _refusal(_measured(smoke, consumed_layers_parity=parity, **unc))
+        for parity in ("lower", "upper", None):          # None: the key not stated
+            over = dict(unc) if parity is None else dict(unc, consumed_layers_parity=parity)
+            msg = _refusal(_measured(smoke, **over))
             assert "may be any of [6, 7, 8]" in msg and "more than one rounding boundary" in msg
             assert "defined for an interval of two counts only" in msg
+            assert "State consumed_layers_parity" not in msg
 
 
 def test_retired_acknowledgement_is_refused(smoke):
