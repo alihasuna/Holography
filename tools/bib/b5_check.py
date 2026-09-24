@@ -528,7 +528,7 @@ def norm_record_title(title, key=None, routes=None, log=None):
         log is not None and log.append("the record title's MathML transcribed (subscripts, spaces)")
     if re.search(r"&lt;/?(SUB|SUP|I|B)&gt;", t, re.I):
         t = html.unescape(t)
-        log is not None and log.append("the record title's escaped markup (&lt;SUB&gt;) transcribed")
+        log is not None and log.append("the record title's HTML-escaped SUB markup transcribed as a subscript")
     x = ((routes or {}).get("extra") or {}).get(key) or {}
     pre = x.get("title_prefix")
     if pre:
@@ -551,6 +551,10 @@ def clean_msg(msg, key=None, routes=None):
     if caps:
         m["author"] = [dict(a, family=a["family"].capitalize()) if a.get("family") in caps else a for a in m["author"]]
         m["_norm"].append("family names deposited in capitals (" + ", ".join(caps) + ") read as capitalised")
+    gcaps = [a.get("given") for a in m.get("author") or [] if re.fullmatch(r"[A-Z]{3,}(?:[ -][A-Z]{3,})*", a.get("given") or "")]
+    if gcaps:
+        m["author"] = [dict(a, given=a["given"].title()) if a.get("given") in gcaps else a for a in m["author"]]
+        m["_norm"].append("given names deposited in capitals (" + ", ".join(gcaps) + ") read as capitalised")
     if (m.get("container-title") or [""])[0].isupper() and len(m["container-title"][0]) > 3:
         m["_norm"].append(f"container title deposited in capitals ('{m['container-title'][0]}') read as capitalised")
         m["container-title"] = [m["container-title"][0].title()] + list(m["container-title"][1:])
@@ -655,6 +659,9 @@ def compare_scoped(key, e, msg, scope):
     sub = subentry(e, scope, rename=rename or None)
     checked, disc, info = cc.compare(key, sub, msg, placeholder=False if sub.get("title") else True)
     out = []
+    if "names" in info and "author" in checked:           # B5: the record carries no author list at all
+        checked.remove("author")
+        out.append({"field": "author", "proposal": sub.get("author"), "record": "(none)", "kind": "record-silent"})
     for f, b, r, kind in disc:
         if f == "title" and b == "(placeholder)":
             continue
@@ -740,6 +747,11 @@ def check_entry(src, e, routes, idx):
                 main = ("DataCite", f"{k}.datacite.json", clean_msg(datacite_msg(k), k, routes))
         if main:
             res["norm"] = list(main[2].get("_norm") or [])
+            ct = cc.cr_title(main[2])
+            if re.sub(r"[^A-Za-z]", "", ct).isupper() and bt.fold(ct) == bt.fold(plain_math(e.get("title") or "")):
+                res["title_caps"] = True
+                res["norm"].append("record title deposited in capitals; the proposal's capitalisation of the same "
+                                   "words is used")
     am = None
     if arxiv_id(e):
         route("arXiv query API", f"{k}.arxiv.xml")
@@ -888,6 +900,11 @@ def check_entry(src, e, routes, idx):
                                         "kind": "page", "source": f"page {i}"})
         if not main:
             res["records"]["main"] = ("page", names)
+    if x.get("europepmc"):
+        st = route("Europe PMC search by DOI", f"{k}.epmc.json")
+        d = jload(f"{k}.epmc.json") or {}
+        res["info"].append(f"Europe PMC search by DOI: HTTP {st}, {d.get('hitCount')} hits (not in PubMed/Europe PMC)"
+                           if not d.get("hitCount") else f"Europe PMC search by DOI: {d.get('hitCount')} hits")
     for a in x.get("aux") or []:
         st = route(a.get("label", a["name"]), f"{k}.{a['name']}.json")
         d = jload(f"{k}.{a['name']}.json") if st == 200 else None
@@ -1113,6 +1130,9 @@ def evaluate():
                                                 (resid if isinstance(resid, list) else [resid]))
                                else "corrected to the record value")
         r["counted"] = counted
+        if e.key in (routes.get("not_merged") or {}):
+            for m in counted:
+                m["resolution"] = "entry not merged (see reason)"
         d = dups.get(e.key)
         r["dup"] = d
         # ---- verdict
@@ -1235,9 +1255,12 @@ SCRATCH_SENT = re.compile(r"\s*Crossref record cached by L6 as scratchpad [^;]*?
 def evidence_prefix(label, src):
     parts = []
     if "SECTION\\_READ" in label:
-        parts.append(f"SECTION\\_READ (as labelled by {src}; not re-checked in B4)")
-    for a in re.findall(r"\+ABSTRACT\([^)]*\)", label):
+        parts.append(f"SECTION\\_READ (as labelled by {src}; not re-checked in B5)")
+    for a in re.findall(r"\+?\s*ABSTRACT\([^)]*\)", label):
+        a = "+ABSTRACT" + a.split("ABSTRACT", 1)[1]
         parts.append(f"{a} (as labelled by {src})")
+    if "REPRODUCED" in label:
+        parts.append(f"REPRODUCED (as labelled by {src}; not re-checked in B5)")
     return parts
 
 
@@ -1255,28 +1278,33 @@ def render(r, e, routes, extra_notes=()):
     rec_name = None
     etype = e.etype
     if r.get("claim"):
-        msg = clean_msg(crossref_msg(f"{k}.claim.json"))
+        msg = clean_msg(crossref_msg(f"{k}.claim.json"), k, routes)
         rec_name = f"{k}.claim.json"
-    elif r["records"].get("main") and r["records"]["main"][0] in ("Crossref", "JaLC") and etype != "phdthesis":
+    elif r["records"].get("main") and r["records"]["main"][0] in ("Crossref", "JaLC", "DataCite") and etype != "phdthesis":
         label, rec_name = r["records"]["main"]
-        msg = clean_msg(crossref_msg(rec_name) if label == "Crossref" else jalc_msg(k))
+        msg = clean_msg({"Crossref": lambda: crossref_msg(rec_name), "JaLC": lambda: jalc_msg(k),
+                         "DataCite": lambda: datacite_msg(k)}[label](), k, routes)
     else:
         msg = None
     if msg is not None and etype in ("article", "misc", "incollection") and not arxiv_only(e):
         f["author"] = names_tex(msg)
         f["title"] = tex(cr_title_raw(msg))[0]
+        if r.get("title_caps"):
+            f["title"] = e.get("title")     # B5: record title in capitals; the proposal's form of the same words
         cont = tex((msg.get("container-title") or [""])[0])[0]
         if etype == "incollection":
             f["booktitle"] = cont
             f["publisher"] = tex(msg.get("publisher", ""))[0]
         elif etype == "article":
             f["journal"] = cont
+        elif msg.get("_rtg"):
+            f["howpublished"] = f"{cont} {msg['_rtg'].lower()}"     # DataCite: publisher + resource type
         else:
             f["howpublished"] = cont
         if msg.get("volume"):
-            f["volume"] = str(msg["volume"])
+            f["volume"] = re.sub(r"^(\w+)-(\w+)$", r"\1--\2", str(msg["volume"]))
         if msg.get("issue"):
-            f["number"] = re.sub(r"^(\w+)-(\w+)$", r"\1--\2", str(msg["issue"]))
+            f["number"] = bt.unicode_to_latex(re.sub(r"^(\w+)-(\w+)$", r"\1--\2", str(msg["issue"])))[0]
         a, b = cc.cr_pages(msg)
         if a:
             f["pages"] = f"{a}--{b}" if b and b != a else a
@@ -1311,7 +1339,7 @@ def render(r, e, routes, extra_notes=()):
             if fld.name != "note":
                 f[fld.name] = fld.value
         t = f.get("title", "")
-        if t.startswith("{") and t.endswith("}"):
+        if t.startswith("{") and t.endswith("}") and bt._match_brace(t, 0) == len(t):
             f["title"] = t[1:-1]
     for a, b in sets.items():
         f[a] = str(b)
@@ -1322,59 +1350,80 @@ def arxiv_only(e):
     return bool(arxiv_id(e)) and not e.get("doi")
 
 
+def page_route(r, routes):
+    """(route text, access date) of a page-checked entry."""
+    k = r["key"]
+    x = (routes.get("extra") or {}).get(k) or {}
+    parts, dates = [], []
+    for i, pg in enumerate(x.get("page") or [], 1):
+        d = jload(f"{k}.page{i}.json") or {}
+        dates.append((d.get("fetched_utc") or "")[:10])
+        kind = "PDF, %s pages" % d["pdf"]["pages"] if d.get("pdf") else "HTML"
+        parts.append(f"{pg['url']} (HTTP {d.get('status')}, {kind}, SHA-256 {d.get('sha256', '')[:16]}...; checks "
+                     f"cached as docs/agent\\_reports/crossref\\_cache/{k}.page{i}.json)")
+    return "; ".join(parts), (max(dates) if dates else DATE)
+
+
 def note_for(r, e, rec_name, routes, dup_note=None, extra_notes=()):
     k, src = r["key"], r["src"]
+    x = (routes.get("extra") or {}).get(k) or {}
     label, rest = l_label(e.get("note") or "")
     rest = SCRATCH_SENT.sub("", rest).strip()
     pre = evidence_prefix(label, src)
-    if r.get("claim"):
-        route = (f"Crossref API /works record of the DOI that {src}'s report names for this work, accepted with the "
-                 f"first page standing in for the title the claim does not state ({r['claim']['verdict']}), cached as "
-                 f"docs/agent\\_reports/crossref\\_cache/{rec_name}")
-    elif arxiv_only(e):
-        route = (f"arXiv OAI-PMH records (formats arXiv and arXivRaw) of {arxiv_id(e)}, cached as "
-                 f"docs/agent\\_reports/crossref\\_cache/{k}.oai-arxiv.xml and {k}.oai-arxivraw.xml; the arXiv "
-                 "query API answered HTTP 406")
-    elif e.etype == "phdthesis":
-        route = (f"JaLC API record of the doi field (NDL registration; Crossref /works 404), cached as "
-                 f"docs/agent\\_reports/crossref\\_cache/{k}.jalc.json, plus the CiNii Research record "
-                 f"{cinii_msg(k)['_crid'].replace('.json', '')} (NDL data), cached as {k}.cinii.json")
-    elif rec_name and rec_name.endswith(".json") and r["records"]["main"][0] == "JaLC":
-        route = (f"JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as "
-                 f"docs/agent\\_reports/crossref\\_cache/{k}.jalc.json")
-    elif rec_name:
-        route = f"Crossref API /works record of the doi field, cached as docs/agent\\_reports/crossref\\_cache/{rec_name}"
-        if arxiv_id(e):
-            route += f", plus the arXiv OAI-PMH records of {arxiv_id(e)} ({k}.oai-arxiv.xml)"
+    page = r["records"].get("main", ("",))[0] == "page"
+    if page:
+        route, acc = page_route(r, routes)
+        checks = sorted({c.split("(")[0] for c in r["checked"]})
+        ev = " + ".join(pre + [f"PAGE\\_CHECKED (route: {route}; accessed {acc} by B5; the page prints "
+                               + ", ".join(checks) + " as in the entry; no registry record and no DOI; B5, "
+                               f"{DATE})"])
     else:
-        x = (routes.get("extra") or {}).get(k) or {}
-        route = (f"title page of the manual PDF {x.get('pdf')} (HTTP 200; page-1 text cached as "
-                 f"docs/agent\\_reports/crossref\\_cache/{k}.titlepage.txt, the PDF itself not committed)")
-    ev = " + ".join(pre + [f"METADATA\\_VERIFIED (route: {route}; B4, {DATE})"])
+        if arxiv_only(e):
+            route = (f"arXiv OAI-PMH records (formats arXiv and arXivRaw) of {arxiv_id(e)}, cached as "
+                     f"docs/agent\\_reports/crossref\\_cache/{k}.oai-arxiv.xml and {k}.oai-arxivraw.xml")
+        elif rec_name and r["records"]["main"][0] == "JaLC":
+            route = (f"JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as "
+                     f"docs/agent\\_reports/crossref\\_cache/{k}.jalc.json")
+        elif rec_name and r["records"]["main"][0] == "DataCite":
+            route = (f"DataCite API record of the doi field (Crossref /works 404, doi.org/ra: DataCite), cached as "
+                     f"docs/agent\\_reports/crossref\\_cache/{k}.datacite.json")
+        else:
+            route = f"Crossref API /works record of the doi field, cached as docs/agent\\_reports/crossref\\_cache/{rec_name}"
+            if arxiv_id(e):
+                route += (f", plus the arXiv OAI-PMH records of {arxiv_id(e)} ({k}.oai-arxiv.xml, "
+                          f"{k}.oai-arxivraw.xml; the arXiv query API answered HTTP 406)")
+        if r["records"].get("jstage"):
+            route += (f", plus the J-STAGE landing page named in that record (citation meta tags, cached as "
+                      f"{k}.jstage.json)")
+        ev = " + ".join(pre + [f"METADATA\\_VERIFIED (route: {route}; B5, {DATE})"])
     counted = r["counted"]
     if counted:
-        chk = "B4 MISMATCHES (proposal -> record; the record value is used unless stated): " + "; ".join(
+        chk = "B5 MISMATCHES (proposal -> record; the record value is used unless stated): " + "; ".join(
             f"{m['field']}: '{m['proposal']}' -> '{m['record']}' [{m['source']}]"
             + (" (proposal kept: record artefact)" if m.get("resolution", "").startswith("proposal kept") else "")
             for m in counted) + "."
     else:
-        chk = ("B4: every compared field (" + ", ".join(sorted({c.split('(')[0] for c in r['checked']}))
-               + ") agrees with the record.")
+        chk = ("B5: every compared field (" + ", ".join(sorted({c.split('(')[0] for c in r['checked']}))
+               + (") was found on the page." if page else ") agrees with the record."))
+    norm = ""
+    if r.get("norm"):
+        norm = " Record normalisations: " + "; ".join(r["norm"]) + "."
     fmt = ""
     if r["format"]:
-        fmt = " Formatting of the proposal fixed by rendering from the record: " + "; ".join(
-            sorted(set(r["format"]))) + "."
+        fmt = (" Formatting of the proposal fixed" + ("" if page else " by rendering from the record") + ": "
+               + "; ".join(sorted(set(r["format"]))) + ".")
     sets = (routes.get("set") or {}).get(k) or {}
     setn = ""
     if sets:
         setn = " Fields set rather than copied: " + "; ".join(f"{a} = '{b}'" for a, b in sets.items()) + \
-               " (reason in tools/bib/b4\\_routes.yaml)."
+               " (reason in tools/bib/b5\\_routes.yaml)."
     info = " ".join(s_ for s_ in extra_notes if s_)
-    body = (f"evidence: {ev}; label before B4 ({src} proposal): {label}; provenance: proposed by "
-            f"docs/agent\\_reports/{REPORT_OF[src]} (entry {k} of {BIBFILE_OF[src]}); bibliographic fields copied "
-            f"from the record by tools/bib/b4\\_check.py. {chk}{fmt}{setn}"
+    how = ("bibliographic fields as proposed, each tested on the page by tools/bib/b5\\_check.py" if page else
+           "bibliographic fields copied from the record by tools/bib/b5\\_check.py")
+    body = (f"evidence: {ev}; label before B5 ({src} proposal): {label}; provenance: proposed by "
+            f"docs/agent\\_reports/{REPORT_OF[src]} (entry {k} of {BIBFILE_OF[src]}); {how}. {chk}{norm}{fmt}{setn}"
             + (f" {info}" if info else "")
-            + (f" {src} note (verbatim apart from LaTeX encoding; not re-checked in B4): {rest}" if rest else "")
+            + (f" {src} note (verbatim apart from LaTeX encoding; not re-checked in B5): {rest}" if rest else "")
             + (f" {dup_note}" if dup_note else ""))
     return latex_safe_note(body)
 
@@ -1420,6 +1469,19 @@ def auto_notes(r, routes):
                    + f"; categories {am['_categories']}"
                    + (f"; journal-ref '{am['_journal_ref']}'" if am["_journal_ref"] else "")
                    + (f"; DOI {am['_doi']}" if am["_doi"] else "") + ".")
+    if r.get("wp"):
+        out.append(f"The site's WordPress REST record of this page (cached as {k}.wprest.json, read {DATE}) gives: "
+                   f"created {r['wp']['created'][:10]}, last modified {r['wp']['modified'][:10]}; the footer year "
+                   "2017 is not a content date.")
+    if r.get("crquery"):
+        c = r["crquery"]
+        out.append(f"No DOI: a Crossref bibliographic query ('{c['query']}', cached as {k}.crquery.json) returned "
+                   f"{c['n']} records, " + ("one with this title: " + ", ".join(c["title_match"]) if c["title_match"]
+                                              else "none with this title") + ".")
+    if r.get("linked"):
+        L = r["linked"]
+        out.append(f"Linked-record check: kanji name on the J-STAGE page '{L['kanji']}'; creator in the JaLC record "
+                   f"of [{L['other_key']}] '{L['other_ja']}' = '{L['other_en']}' (same kanji: {L['same_kanji']}).")
     return out
 
 
@@ -1430,7 +1492,7 @@ def arxiv_id_of(r):
 def build_merge(routes, props, base_text, results):
     ent = {(src, e.key): e for src, e in props}
     by_key = {r["key"]: r for r in results}
-    blocks = {"L6": [], "L7": []}
+    blocks = {"L8": [], "L9": []}
     merged = []
     dup_notes = {}
     keep = routes.get("keep_on_duplicate") or {}
@@ -1438,11 +1500,11 @@ def build_merge(routes, props, base_text, results):
         if r["verdict"] == "DUPLICATE" and keep.get(r["key"]):
             e = ent[(r["src"], r["key"])]
             lab, rest = l_label(e.get("note") or "")
-            dup_notes[keep[r["key"]]] = (f"B4 DUPLICATE MERGED HERE: {r['src']} proposed the same DOI as {r['key']}; "
-                                         f"its label was '{lab}' and its note reads (verbatim, not re-checked in B4): {rest}")
+            dup_notes[keep[r["key"]]] = (f"B5 DUPLICATE MERGED HERE: {r['src']} proposed the same DOI as {r['key']}; "
+                                         f"its label was '{lab}' and its note reads (verbatim, not re-checked in B5): {rest}")
     for r in results:
         e = ent[(r["src"], r["key"])]
-        if not r["verdict"].startswith("VERIFIED"):
+        if not (r["verdict"].startswith("VERIFIED") or r["verdict"] == "PAGE-CHECKED"):
             continue
         etype, f, rec_name = render(r, e, routes)
         f["note"] = note_for(r, e, rec_name, routes, extra_notes=auto_notes(r, routes),
@@ -1455,33 +1517,48 @@ def build_merge(routes, props, base_text, results):
         text, blk = takeguchi_block(text, tk, ent[("L7", "TAKEGUCHI1990")])
         blocks["L7"].append(blk)
         merged.append("TAKEGUCHI1990 (corrected)")
-    block = (SECTION + "\n%% L6 (docs/agent_reports/L6_new_refs.bib; report L6_sourced_si_parameters.md)\n\n"
-             + "\n\n".join(blocks["L6"])
-             + "\n\n%% L7 (docs/agent_reports/L7_new_refs.bib; report L7_surface_realism.md)\n\n"
-             + "\n\n".join(blocks["L7"]))
+    block = (SECTION + "\n%% L8 (docs/agent_reports/L8_new_refs.bib; report L8_oxide_plasma.md)\n\n"
+             + "\n\n".join(blocks["L8"])
+             + "\n\n%% L9 (docs/agent_reports/L9_new_refs.bib; report L9_microscope_detector.md)\n\n"
+             + "\n\n".join(blocks["L9"]))
     m = re.search(r"\n\n%% =+\n%% PART 5\n", text)
     text = text[:m.start()] + "\n\n" + block + text[m.start():]
-    text = text.replace(HEADER_ANCHOR, HEADER_ANCHOR + HEADER_B4, 1)
+    assert HEADER_ANCHOR in text
+    text = text.replace(HEADER_ANCHOR, HEADER_ANCHOR + HEADER_B5, 1)
     return text, merged
 
 
-HEADER_ANCHOR = "%% about blocked hosts describe B2's conditions, not the current ones.\n"
-HEADER_B4 = """%%
-%% B4 UPDATE (2026-09-23): the proposals of L6 and L7 (docs/agent_reports/
-%% L6_new_refs.bib, L7_new_refs.bib) were checked field by field against
-%% their Crossref, JaLC, arXiv (OAI-PMH), CiNii/NDL or publisher records by
-%% tools/bib/b4_check.py (routes and declared decisions in
-%% tools/bib/b4_routes.yaml; log docs/agent_reports/B4_verification_log.md;
-%% per-entry table docs/agent_reports/B4_results.tsv) and merged under 4n
-%% with the bibliographic fields copied from the record (the few values set
-%% otherwise are named in the entry's note). Every doi in 4n is the DOI of
-%% the cached Crossref or JaLC record it was checked against; none was typed.
-%% Reading labels (SECTION_READ, +ABSTRACT) in 4n are those of L6/L7, NOT
-%% re-checked by B4. [TAKEGUCHI1990] was corrected from the CiNii/NDL record
-%% and moved up from the UNVERIFIED section (its doi by linked records).
-%% ENCODING: two thesis records in 4n ([OSAKABE1995THESIS],
-%% [TAKEGUCHI1993THESIS]) have only a Japanese title in every record, so
-%% their title (and some notes in 4n) are UTF-8; the file is read as UTF-8.
+def strip_b5(text):
+    """The file without B5's header block and section 4o (to detect edits by others)."""
+    text = text.replace(HEADER_B5, "", 1)
+    a = text.find("\n\n" + SECTION)
+    if a >= 0:
+        m = re.search(r"\n\n%% =+\n%% PART 5\n", text[a + 2:])
+        text = text[:a] + text[a + 2 + m.start():]
+    return text
+
+
+HEADER_ANCHOR = "%% their title (and some notes in 4n) are UTF-8; the file is read as UTF-8.\n"
+HEADER_B5 = """%%
+%% B5 UPDATE (2026-09-24): the proposals of L8 and L9 (docs/agent_reports/
+%% L8_new_refs.bib, L9_new_refs.bib) were checked field by field against
+%% their Crossref, JaLC, DataCite or arXiv (OAI-PMH) records (plus J-STAGE
+%% landing pages where the Crossref record lacks a title or author) by
+%% tools/bib/b5_check.py (a copy of b4_check.py; routes and declared
+%% decisions in tools/bib/b5_routes.yaml; log docs/agent_reports/
+%% B5_verification_log.md; per-entry table B5_results.tsv) and merged under
+%% 4o with the bibliographic fields copied from the record. Every doi in 4o
+%% is the DOI of the cached registry record it was checked against; none was
+%% typed. Items with NO registry record (web pages, slides, manufacturer
+%% documents, a company page, an SVC proceedings paper, Hitachi Review, a
+%% conference abstract) carry no doi and the new label
+%%   PAGE_CHECKED   the URL resolved (HTTP 200) on the stated access date and
+%%                  the page/document itself prints the entry's title and
+%%                  owner or authors (and the other stated fields); this is
+%%                  NOT a registry verification.
+%% Reading labels (SECTION_READ, +ABSTRACT, REPRODUCED) in 4o are those of
+%% L8/L9, NOT re-checked by B5. [HATA2006] (L8) was NOT merged (author list
+%% unresolved between records; see the B5 log).
 """
 
 
@@ -1521,6 +1598,11 @@ def takeguchi_block(text, r, e):
 
 def cmd_merge(args):
     routes, props, base_text, results, near = evaluate()
+    cur = BIB.read_text()
+    if cur != base_text and strip_b5(cur) != base_text:
+        print("NOT WRITTEN: docs/references.bib carries edits other than B5's own since baseline_rev; "
+              "update baseline_rev in tools/bib/b5_routes.yaml after checking them")
+        return 1
     text, merged = build_merge(routes, props, base_text, results)
     errs, warns, stats = bt.validate(text)
     if errs:
@@ -1538,98 +1620,246 @@ def cmd_validate(args):
 # ======================================================================= report
 def label_after(r):
     if r["verdict"].startswith("VERIFIED") or r["verdict"] == "CORRECTION-CONFIRMED":
-        return "METADATA_VERIFIED (B4)"
+        return "METADATA_VERIFIED (B5)"
+    if r["verdict"] == "PAGE-CHECKED":
+        return "PAGE_CHECKED (B5)"
     return "-"
+
+
+def final_verdict(r):
+    if r["verdict"] in ("VERIFIED", "VERIFIED-CORRECTED", "PAGE-CHECKED", "CORRECTION-CONFIRMED"):
+        return "MERGED"
+    return "DUPLICATE" if r["verdict"] == "DUPLICATE" else "NOT MERGED"
+
+
+def route_short(r):
+    main = r["records"].get("main")
+    if not main:
+        return "-"
+    lab = main[0]
+    out = {"Crossref": "Crossref /works", "JaLC": "JaLC (Crossref 404)", "DataCite": "DataCite (Crossref 404)",
+           "page": "page (no registry record)"}.get(lab, lab)
+    extra = [n for n, v in (("arXiv OAI-PMH", r["records"].get("arxiv")), ("J-STAGE page", r["records"].get("jstage")),
+                            ("CiNii", r["records"].get("cinii"))) if v]
+    if r.get("alt"):
+        extra.append("Crossref (2nd DOI)")
+    if r.get("crquery"):
+        extra.append("Crossref query")
+    if r.get("aux"):
+        extra += [f"{k2} (HTTP {v['status']})" for k2, v in r["aux"].items()]
+    return out + (" + " + ", ".join(extra) if extra else "")
+
+
+# ----------------------------------------------------------------------- report-text check
+def record_locators(r):
+    """(volume, first page / article number, {years}) of the entry's main registry record."""
+    main = r["records"].get("main")
+    if not main or main[0] not in ("Crossref", "JaLC", "DataCite"):
+        return None
+    k = r["key"]
+    msg = {"Crossref": lambda: crossref_msg(main[1]), "JaLC": lambda: jalc_msg(k),
+           "DataCite": lambda: datacite_msg(k)}[main[0]]()
+    a, _ = cc.cr_pages(msg)
+    return {"volume": str(msg.get("volume") or ""), "first page": a or "",
+            "year": {v.split("-")[0] for v in cc.cr_years(msg).values()}}
+
+
+def report_text_checks(results):
+    """For every DOI of a proposal, every line of the L8/L9 reports naming it: does the citation printed next to
+    the DOI carry the record's volume, first page (or article number) and year?"""
+    out, seen = [], 0
+    texts = {s: p.read_text().splitlines() for s, p in REPORT_MD.items()}
+    dois = [(r, d) for r in results for d in [r["doi"]] + ([r["alt"]["doi"]] if r.get("alt") else []) if d]
+    alld = [d.lower() for _, d in dois]
+    for r, doi in dois:
+        loc = record_locators(r)
+        if not loc:
+            continue
+        for s, lines in texts.items():
+            for n, line in enumerate(lines, 1):
+                low = line.lower()
+                i = low.find(doi.lower())
+                if i < 0:
+                    continue
+                seen += 1
+                cell_start = line.rfind("|", 0, i) + 1
+                prev = max([low.rfind(d, cell_start, i) + len(d) for d in alld if low.rfind(d, cell_start, i) >= 0]
+                           + [cell_start])
+                seg = line[prev:i]
+                if not re.search(r"\d", seg):        # DOI in its own table cell: use the row's earlier cells
+                    seg = re.sub(r"^\s*\|\s*[\w-]+\s*\|", "", line[:cell_start])   # minus the row's first cell
+                if not re.search(r"\d", seg):
+                    continue
+                for fld in ("volume", "first page"):
+                    v = loc[fld]
+                    if v and not re.search(r"(?<![\w.])" + re.escape(v) + r"(?![\w])", seg.replace("–", "-")):
+                        out.append({"report": s, "line": n, "key": r["key"], "field": fld, "record": v,
+                                    "text": seg.strip()[-160:]})
+                if not any(re.search(r"(?<!\d)" + y + r"(?!\d)", seg) for y in loc["year"]):
+                    out.append({"report": s, "line": n, "key": r["key"], "field": "year",
+                                "record": "/".join(sorted(loc["year"])), "text": seg.strip()[-160:]})
+    return out, seen
+
+
+# ----------------------------------------------------------------------- citation keys used in docs
+KEY_TOKEN = re.compile(r"(?<![A-Za-z0-9_./\-])([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*[0-9]*[A-Z0-9]*(?:-[A-Z]+)?)(?![A-Za-z0-9_])")
+NOT_CITATION = [  # ID families used in docs/*.md and docs/source_map.tsv that are not bibliography keys
+    (r"SM\d+", "source_map claim ids"), (r"B(?:1[6-9]|[2-9]\d)", "model_assumptions row ids B16-B99"),
+    (r"B\d", "model_assumptions row ids B1-B9 (bib book keys are zero-padded, B01-B15)"),
+    (r"T\d+", "test ids"), (r"E\d+|D\d+|N\d+|L\d+|A\d+|X\d+|H\d+|U\d|P\d|R\d|O\d|M\d|S\d|C\d|I\d+(?:\.\d+)?",
+                            "agent, item, section and source ids of the reports"),
+    (r"PMC\d+", "PubMed Central ids"), (r"L\d{4}", "page numbers (e.g. L1772)")]
+
+
+def doc_key_check(bib_text, extra_keys=()):
+    """Every citation-like token in docs/*.md and docs/source_map.tsv: present in references.bib?  A token is
+    citation-like if it looks like a key of references.bib (a known key family or NAME+digits) and does not
+    belong to a documented non-citation ID family (NOT_CITATION)."""
+    keys = {e.key for e in bt.parse(bib_text)}
+    files = sorted((ROOT / "docs").glob("*.md")) + [ROOT / "docs" / "source_map.tsv"]
+    found, missing, excluded = {}, {}, {}
+    fam = re.compile(r"(?:B|C|P|U|S)\d\d[A-Z]?|PAT\d\d|[A-Z]{2,}[A-Z0-9]*\d{2,4}[A-Z0-9]*(?:-[A-Z]+)?")
+    for f in files:
+        for n, line in enumerate(f.read_text().splitlines(), 1):
+            for tok in KEY_TOKEN.findall(line):
+                loc = f"{f.name}:{n}"
+                if tok in keys:
+                    found.setdefault(tok, []).append(loc)
+                elif any(re.fullmatch(p, tok) for p, _ in NOT_CITATION):
+                    excluded.setdefault(tok, []).append(loc)
+                elif fam.fullmatch(tok) or tok in extra_keys:     # underscore keys: only the proposals' own
+                    missing.setdefault(tok, []).append(loc)
+    return found, missing, excluded
 
 
 def cmd_report(args):
     routes, props, base_text, results, near = evaluate()
-    cols = ["key", "source", "entry_type", "doi", "eprint", "routes_http", "fields_checked", "mismatches",
-            "format_fixes", "duplicate_of", "verdict", "action", "label_after"]
+    cols = ["key", "source", "entry_type", "doi", "routes_http", "fields_checked", "mismatches", "not_counted",
+            "record_normalisations", "format_fixes", "duplicate_of", "verdict", "detail", "action", "label_after"]
     lines = ["\t".join(cols)]
     clean = lambda x: str(x).replace("\t", " ").replace("\n", " ")
     for r in results:
         mm = "; ".join(f"{m['field']}: '{m['proposal']}' vs '{m['record']}' [{m['source']}; {m['kind']}; "
                        f"{m['resolution']}]" for m in r["counted"]) or "none"
-        silent = [m for m in r["mism"] if m["kind"] in NONCOUNT]
-        if silent:
-            mm += " | not counted: " + "; ".join(f"{m['field']} ({m['kind']}, {m['source']})" for m in silent)
-        row = [r["key"], r["src"], r["etype"], r["doi"], r["eprint"],
-               " | ".join(r["routes"]),
-               ",".join(r["checked"]), mm, "; ".join(r["format"]) or "none",
+        silent = "; ".join(f"{m['field']} ({m['kind']}, {m['source']})" for m in r["mism"] if m["kind"] in NONCOUNT) or "none"
+        row = [r["key"], r["src"], r["etype"], r["doi"], " | ".join(r["routes"]), ",".join(r["checked"]), mm, silent,
+               "; ".join(r.get("norm") or []) or "none", "; ".join(r["format"]) or "none",
                (f"{r['dup'][0]}:{r['dup'][1]} ({r['dup'][2]})" if r["dup"] else "none"),
-               r["verdict"], r["action"], label_after(r)]
+               final_verdict(r), r["verdict"], r["action"], label_after(r)]
         lines.append("\t".join(clean(x) for x in row))
     TSV.write_text("\n".join(lines) + "\n")
-    # ---------------- counts
-    n = len(results)
-    ver = [r for r in results if r["verdict"] == "VERIFIED"]
-    cor = [r for r in results if r["verdict"] in ("VERIFIED-CORRECTED", "CORRECTION-CONFIRMED")]
-    dup = [r for r in results if r["verdict"] == "DUPLICATE"]
-    unv = [r for r in results if r["verdict"].startswith("UNVERIFIED") or r["verdict"] == "CORRECTION-NOT-CONFIRMED"]
-    mism = [(r["key"], m) for r in results for m in r["counted"]]
-    fmt = [r for r in results if r["format"]]
+    # ---------------- state of the bib now
     text_now = BIB.read_text()
-    merged_keys = [r["key"] for r in results if r["verdict"].startswith("VERIFIED") or r["verdict"] == "CORRECTION-CONFIRMED"]
     now = {e.key: e for e in bt.parse(text_now)}
-    in_bib = [k for k in merged_keys if k in now and now[k].section == "verified" and "B4" in (now[k].get("note") or "")]
     errs, warns, stats = bt.validate(text_now)
     bad = cc.check_dois_backed(now)
+    merged_keys = [r["key"] for r in results if final_verdict(r) == "MERGED"]
+    in_bib = [k for k in merged_keys if k in now and now[k].section == "verified" and "B5" in (now[k].get("note") or "")]
+    rtc, rt_seen = report_text_checks(results)
+    found, missing, excluded = doc_key_check(text_now, {e.key for _, e in props})
+    # ---------------- counts
+    n = len(results)
+    by = lambda v: [r for r in results if r["verdict"] == v]
+    mism = [(r["key"], m) for r in results for m in r["counted"]]
+    fmt = [r for r in results if r["format"]]
     sets = routes.get("set") or {}
-    c = {"proposals checked": n, "L6": sum(r["src"] == "L6" for r in results), "L7": sum(r["src"] == "L7" for r in results),
-         "verified (every field agrees, or differs only by a record artefact)": len(ver),
-         "verified after correction (incl. the TAKEGUCHI1990 correction)": len(cor),
-         "field mismatches (counted)": len(mism), "entries with mismatches": len({k for k, _ in mism}),
-         "entries whose proposal had formatting defects (fixed by rendering from the record)": len(fmt),
-         "entries with a value set rather than copied (b4_routes.yaml)": len(sets),
-         "unverified": len(unv), "duplicates (not merged)": len(dup),
-         "merged into references.bib (verified section)": len(in_bib),
+    mains = [r["records"].get("main", ("-",))[0] for r in results]
+    c = {"proposals checked": n, "L8": sum(r["src"] == "L8" for r in results),
+         "L9": sum(r["src"] == "L9" for r in results),
+         "with a DOI (registry route: Crossref / JaLC / DataCite)":
+             f"{sum(bool(r['doi']) for r in results)} ({mains.count('Crossref')} / {mains.count('JaLC')} / "
+             f"{mains.count('DataCite')})",
+         "without a DOI (page route)": mains.count("page"),
+         "VERIFIED (every field agrees, or differs only by a declared record artefact)": len(by("VERIFIED")),
+         "VERIFIED-CORRECTED (a field corrected to the record value)": len(by("VERIFIED-CORRECTED")),
+         "PAGE-CHECKED (no registry record; URL resolves, page prints the fields)": len(by("PAGE-CHECKED")),
+         "field mismatches (counted)": len(mism), "entries with counted mismatches": len({k for k, _ in mism}),
+         "entries with record normalisations (logged)": sum(bool(r.get("norm")) for r in results),
+         "entries whose proposal had formatting defects (fixed)": len(fmt),
+         "entries with a value set rather than copied (b5_routes.yaml)": len(sets),
+         "NOT MERGED": sum(final_verdict(r) == "NOT MERGED" for r in results),
+         "DUPLICATE (not merged)": len(by("DUPLICATE")),
+         "MERGED into references.bib (section 4o)": len(in_bib),
          "references.bib entries after merge": stats.get("entries"),
          "references.bib verified / unverified section": f"{stats.get('verified_section')} / {stats.get('unverified_section')}",
-         "validation errors": len(errs), "doi fields not backed by a cached record": len(bad)}
+         "validation errors": len(errs), "doi fields not backed by a cached record": len(bad),
+         "report-text citations checked (lines naming a proposal DOI)": rt_seen,
+         "report-text field differences (see list)": len(rtc),
+         "citation keys used in docs/*.md and docs/source_map.tsv (distinct)": len(found) + len(missing),
+         "citation keys missing from references.bib": len(missing)}
     L = [GEN_BEGIN, "", "### Counts (generated)", "", "| quantity | value |", "|---|---|"]
     L += [f"| {k} | {v} |" for k, v in c.items()]
+    L += ["", "### Per-entry table (generated; full rows in B5_results.tsv)", "",
+          "| key | proposer | verdict | detail | route | fields compared | differences |", "|---|---|---|---|---|---|---|"]
+    for r in results:
+        diffs = [f"{m['field']}: '{m['proposal']}' -> '{m['record']}' [{m['source']}; {m['resolution']}]" for m in r["counted"]]
+        diffs += [f"{m['field']} ({m['kind']}, {m['source']})" for m in r["mism"] if m["kind"] in NONCOUNT]
+        diffs += [f"normalised: {x}" for x in (r.get("norm") or [])]
+        if r["verdict"] == "NOT-MERGED":
+            diffs.append(r["action"])
+        comp = ", ".join(sorted({x.split("(")[0] for x in r["checked"]}))
+        L.append(f"| {r['key']} | {r['src']} | {final_verdict(r)} | {r['verdict']} | {md(route_short(r))} | "
+                 f"{md(comp)} | {md('; '.join(diffs)) or 'none'} |")
     L += ["", "### Every counted mismatch, with the record's value (generated)", "",
           "| key | field | proposal | record | record source | resolution |", "|---|---|---|---|---|---|"]
     for k, m in mism:
         L.append(f"| {k} | {md(m['field'])} | {md(m['proposal'])} | {md(m['record'])} | {md(m['source'])} | {md(m['resolution'])} |")
-    L += ["", "Differences not counted as mismatches (the record is silent on the field, or white space only):", ""]
+    L += ["", "Differences not counted as mismatches (record silent, white space, same initials, dash form):", ""]
     for r in results:
         for m in r["mism"]:
             if m["kind"] in NONCOUNT:
                 L.append(f"* {r['key']}: {m['field']} proposal '{md(m['proposal'])}', {m['source']} record "
                          f"'{md(m['record'])}' ({m['kind']})")
-    L += ["", "### Values set rather than copied from the record (generated from tools/bib/b4_routes.yaml)", ""]
+    L += ["", "### Record normalisations applied before comparing and rendering (generated)", ""]
+    for r in results:
+        for x in r.get("norm") or []:
+            L.append(f"* {r['key']}: {md(x)}")
+    L += ["", "### Values set rather than copied from the record (generated from tools/bib/b5_routes.yaml)", ""]
     for k, d in sets.items():
         L.append(f"* {k}: " + "; ".join(f"{a} = '{md(b)}'" for a, b in d.items()))
-    tk = next((r for r in results if r["key"] == "TAKEGUCHI1990"), None)
-    if tk and tk.get("takeguchi"):
-        L += ["", "### TAKEGUCHI1990 correction (generated)", "",
-              f"Verdict: {tk['verdict']} -- {tk['action']}.", "",
-              "Old values: " + "; ".join(f"{a} = '{md(b)}'" for a, b in tk["takeguchi"]["old"].items()) + ".", ""]
-        L += [f"* {a}: {md(b)}" for a, b in tk["takeguchi"]["tests"].items()]
-    L += ["", "### Duplicates (generated)", ""]
-    for r in dup:
-        L.append(f"* {r['key']} ({r['src']}): {r['action']}")
-    L += ["", "Related items with the same first author and a similar title that are NOT duplicates "
-          "(different DOI or different year):", ""]
-    for a, b, rr, why in near:
-        if rr >= 0.80:
-            L.append(f"* {a} ~ [{b}] (title similarity {rr}): {why}")
-    L += ["", "### Per-entry results (generated; full rows in B4_results.tsv)", "",
-          "| key | src | verdict | records (HTTP) | fields checked | mismatches | formatting fixed |",
-          "|---|---|---|---|---|---|---|"]
+    L += ["", "### Page checks of the entries without a DOI (generated)", "",
+          "| key | URL | HTTP | kind | SHA-256 (first 16) | accessed (UTC) | strings found / tested |", "|---|---|---|---|---|---|---|"]
     for r in results:
-        rt = "; ".join(x.split(" http")[0].split(" https")[0] + " " + x.rsplit("-> ", 1)[-1].replace("HTTP ", "")
-                       for x in r["routes"])
-        L.append(f"| {r['key']} | {r['src']} | {r['verdict']} | {md(rt)} | {len(r['checked'])} | "
-                 f"{len(r['counted'])} | {md('; '.join(r['format'])) or '-'} |")
-    L += ["", "### Formatting defects of the proposals fixed by rendering from the records (generated)", ""]
+        x = (routes.get("extra") or {}).get(r["key"]) or {}
+        for i, pg in enumerate(x.get("page") or [], 1):
+            d = jload(f"{r['key']}.page{i}.json") or {}
+            ch = d.get("checks") or []
+            kind = f"PDF, {d['pdf']['pages']} p." if d.get("pdf") else "HTML"
+            L.append(f"| {r['key']} | {pg['url']} | {d.get('status')} | {kind} | {(d.get('sha256') or '')[:16]} | "
+                     f"{d.get('fetched_utc')} | {sum(z['found'] for z in ch)} / {len(ch)} |")
+    L += ["", "### Other routes (generated)", ""]
+    for r in results:
+        for s_ in r["info"]:
+            if any(w in s_ for w in ("Crossref query", "second Crossref record", "site REST", "CiNii record", "OpenAlex", "Europe PMC",
+                                     "Semantic Scholar", "publisher landing", "J-STAGE page")):
+                L.append(f"* {r['key']}: {md(s_)}")
+        if r.get("linked"):
+            L.append(f"* {r['key']}: linked-record check {md(json.dumps(r['linked'], ensure_ascii=False))}")
+    L += ["", "### Duplicates and key collisions (generated)", ""]
+    dup = [r for r in results if r["dup"]]
+    L += [f"* {r['key']} ({r['src']}): {r['dup'][2]} with [{r['dup'][1]}] -> {r['action']}" for r in dup] or \
+         ["* none: no proposal has the DOI, arXiv id, key or (first author + title) of an entry of references.bib, "
+          "and L8 and L9 share none."]
+    L += ["", "Related items with the same first author and a similar title that are NOT duplicates:", ""]
+    L += [f"* {a} ~ [{b_}] (title similarity {rr}): {why}" for a, b_, rr, why in near if rr >= 0.80] or ["* none"]
+    L += ["", "### Formatting defects of the proposals fixed (generated)", ""]
     from collections import Counter
     cnt = Counter(re.sub(r": [A-Z][A-Za-z]+$", "", re.sub(r"^\w+: ", "", x)) for r in results for x in set(r["format"]))
-    for what, nn in cnt.most_common():
-        L.append(f"* {nn} x {what}")
-    L += ["", f"Validation of docs/references.bib: {json.dumps(stats)}; errors: {errs or 'none'}; "
+    L += [f"* {nn} x {what}" for what, nn in cnt.most_common()]
+    L += ["", "### Report text: citations printed next to each proposal DOI in L8/L9 reports (generated)", "",
+          f"{rt_seen} report lines name a proposal DOI; for each, the citation printed before the DOI in the same "
+          "table cell or sentence was tested for the record's volume, first page (or article number) and year.", ""]
+    if rtc:
+        L += ["| report | line | key | field | record | text before the DOI |", "|---|---|---|---|---|---|"]
+        L += [f"| {z['report']} | {z['line']} | {z['key']} | {z['field']} | {md(z['record'])} | {md(z['text'])} |" for z in rtc]
+    else:
+        L.append("No difference found.")
+    L += ["", "### Citation keys used in docs/*.md and docs/source_map.tsv (generated)", "",
+          f"{len(found)} distinct keys of references.bib are used; citation-like tokens missing from references.bib: "
+          + (", ".join(f"{k} ({', '.join(v[:3])})" for k, v in sorted(missing.items())) if missing else "none") + ".",
+          "Tokens of non-citation ID families were excluded: "
+          + "; ".join(f"{d} ({p})" for p, d in NOT_CITATION) + " -- " + str(len(excluded)) + " distinct tokens.", ""]
+    L += [f"Validation of docs/references.bib: {json.dumps(stats)}; errors: {errs or 'none'}; "
           f"doi fields without a cached record carrying the same DOI: {bad or 'none'}", "", GEN_END]
     if LOG.exists():
         old = LOG.read_text()

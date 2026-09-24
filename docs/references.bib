@@ -44,6 +44,26 @@
 %% [TAKEGUCHI1993THESIS]) have only a Japanese title in every record, so
 %% their title (and some notes in 4n) are UTF-8; the file is read as UTF-8.
 %%
+%% B5 UPDATE (2026-09-24): the proposals of L8 and L9 (docs/agent_reports/
+%% L8_new_refs.bib, L9_new_refs.bib) were checked field by field against
+%% their Crossref, JaLC, DataCite or arXiv (OAI-PMH) records (plus J-STAGE
+%% landing pages where the Crossref record lacks a title or author) by
+%% tools/bib/b5_check.py (a copy of b4_check.py; routes and declared
+%% decisions in tools/bib/b5_routes.yaml; log docs/agent_reports/
+%% B5_verification_log.md; per-entry table B5_results.tsv) and merged under
+%% 4o with the bibliographic fields copied from the record. Every doi in 4o
+%% is the DOI of the cached registry record it was checked against; none was
+%% typed. Items with NO registry record (web pages, slides, manufacturer
+%% documents, a company page, an SVC proceedings paper, Hitachi Review, a
+%% conference abstract) carry no doi and the new label
+%%   PAGE_CHECKED   the URL resolved (HTTP 200) on the stated access date and
+%%                  the page/document itself prints the entry's title and
+%%                  owner or authors (and the other stated fields); this is
+%%                  NOT a registry verification.
+%% Reading labels (SECTION_READ, +ABSTRACT, REPRODUCED) in 4o are those of
+%% L8/L9, NOT re-checked by B5. [HATA2006] (L8) was NOT merged (author list
+%% unresolved between records; see the B5 log).
+%%
 %% DOI POLICY (strict): a `doi` field appears ONLY when that DOI string is
 %% written in the instruction file, or in B_literature.md with a stated
 %% provenance. NO DOI IN THIS FILE WAS CONSTRUCTED, GUESSED OR
@@ -2643,6 +2663,616 @@
   year    = {1990},
   doi     = {10.1093/oxfordjournals.jmicro.a050815},
   note    = {evidence: METADATA\_VERIFIED (route: CiNii Research record https://cir.nii.ac.jp/crid/1521417755419074304 (NDL article index, NDL bib 3675815, NAID 40005328351), cached as docs/agent\_reports/crossref\_cache/TAKEGUCHI1990.cinii.json, for authors, journal, volume, issue, pages and year; Crossref API /works record of the doi, cached as docs/agent\_reports/crossref\_cache/TAKEGUCHI1990.json, for title, journal and date; B4, 2026-09-23); label before B4: UNVERIFIED (B3 pass 2: fails the strict five-field rule); provenance: proposed by docs/agent\_reports/L4\_citation\_search.md section 6.2; correction proposed by docs/agent\_reports/L7\_surface\_realism.md section 3.2 row J-i (entry TAKEGUCHI1990 of L7\_new\_refs.bib). B4 CORRECTION (moved from the UNVERIFIED section): old values author = 'Takeguchi, Masaki and Harada, Ken and Shimizu, Ryuichi'; title = 'Observation of GaAs(110) Surface Defect by Reflection Electron Holography'; journal = 'Journal of Electron Microscopy'; year = '1990'; no volume, number, pages or doi. New: volume = '39', number = '4', pages = '269--272' from the CiNii/NDL record (which prints the first page as 'p269' and the byline 'Masaki Takeguchi; Ken Harada; Ryuichi Shimizu', matching the author field; its title lacks the space in '(110)Surface'); doi = '10.1093/oxfordjournals.jmicro.a050815' from Crossref. The Crossref record carries NO authors, volume or pages (published-online 1990-08), so the strict five-field rule still cannot be met by Crossref alone; the DOI is paired with 39(4) 269 by the publisher's own deposited resource URL in that Crossref record, https://academic.oup.com/jmicro/article/39/4/269/847699/Observation-of-GaAs110-Surface-Defect-by, which encodes volume 39, issue 4, first page 269 (route 'linked records', flagged for the orchestrator: to revert, drop the doi field). The OUP landing page itself answered HTTP 403 to B4 and was not read. Relevance: a 1990 Journal of Electron Microscopy report of reflection electron holography of GaAs(110) (L4, abstract level); body UNVERIFIED (closed).}
+}
+
+%% --- 4o. Records added by B5 (proposals of L8 and L9, each checked against its registry record or page) ---
+%% L8 (docs/agent_reports/L8_new_refs.bib; report L8_oxide_plasma.md)
+
+@article{LEE2000MT,
+  author  = {Lee, Chang-Woo and Ikematsu, Yoichi and Shindo, Daisuke},
+  title   = {Thickness Measurement of Amorphous SiO$_{2}$ by EELS and Electron Holography},
+  journal = {Materials Transactions, JIM},
+  volume  = {41},
+  number  = {9},
+  pages   = {1129--1131},
+  year    = {2000},
+  doi     = {10.2320/matertrans1989.41.1129},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/LEE2000MT.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (abstract; sec. 2; sec. 3 pp. 1130-1131; Figs. 2, 5; sec. 4; J-STAGE open PDF, scanned, read as page images) + METADATA\_VERIFIED (Crossref and JaLC); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry LEE2000MT of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: the record title's HTML-escaped SUB markup transcribed as a subscript. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 O1: MIP of amorphous SiO2 11.5 +- 0.3 V (holography at 300 kV, spheres 220-270 nm); total inelastic mean free path 178 +- 4 nm at 200 kV, no objective aperture (100 +- 2 nm at 100 kV).}
+}
+
+@article{IAKOUBOVSKII2008PRB,
+  author  = {Iakoubovskii, Konstantin and Mitsuishi, Kazutaka and Nakayama, Yoshiko and Furuya, Kazuo},
+  title   = {Mean free path of inelastic electron scattering in elemental solids and oxides using transmission electron microscopy: Atomic number dependent oscillatory behavior},
+  journal = {Physical Review B},
+  volume  = {77},
+  number  = {10},
+  pages   = {104102},
+  year    = {2008},
+  doi     = {10.1103/physrevb.77.104102},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/IAKOUBOVSKII2008PRB.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (abstract; sec. II; sec. III A; Table I; green copy at NIMS MDR mdr.nims.go.jp) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry IAKOUBOVSKII2008PRB of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 O3: 200 keV, 20 mrad convergence and collection; Si lambda 145 nm (plasmon part 168 nm); SiO2 155 nm (crystalline); amorphous SiO2 about 10 percent larger than crystalline.}
+}
+
+@article{IAKOUBOVSKII2008MRT,
+  author  = {Iakoubovskii, K. and Mitsuishi, K. and Nakayama, Y. and Furuya, K.},
+  title   = {Thickness measurements with electron energy loss spectroscopy},
+  journal = {Microscopy Research and Technique},
+  volume  = {71},
+  number  = {8},
+  pages   = {626--631},
+  year    = {2008},
+  doi     = {10.1002/jemt.20597},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L8) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/IAKOUBOVSKII2008MRT.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref) + ABSTRACT(PubMed) (Europe PMC, PMID 18454473); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry IAKOUBOVSKII2008MRT of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Body closed, not read. Abstract: lambda scales approximately as rho to the power -0.3; strong dependence on excitation and collection angles.}
+}
+
+@article{RAU1996,
+  author  = {Rau, W.-D. and Baumann, F. H. and Rentschler, J. A. and Roy, P. K. and Ourmazd, A.},
+  title   = {Characterization of stacked gate oxides by electron holography},
+  journal = {Applied Physics Letters},
+  volume  = {68},
+  number  = {24},
+  pages   = {3410--3412},
+  year    = {1996},
+  doi     = {10.1063/1.115776},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/RAU1996.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry RAU1996 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED: body closed (pubs.aip.org Cloudflare 403 on 2026-09-24); only a search-index abstract was seen, which is not evidence. Cited by C02 (Dunin-Borkowski et al. 2019, p. 772, ref. 16.63) for mean inner potentials of oxide layers on Si wedges. L8 upload item 2.}
+}
+
+@article{BASHA2022,
+  author  = {Basha, Adham and Levi, George and Amrani, Tamir and Li, Yang and Ankonina, Guy and Shekhter, Pini and Kornblum, Lior and Goldfarb, Ilan and Kohn, Amit},
+  title   = {Elastic and inelastic mean free paths for scattering of fast electrons in thin-film oxides},
+  journal = {Ultramicroscopy},
+  volume  = {240},
+  pages   = {113570},
+  year    = {2022},
+  doi     = {10.1016/j.ultramic.2022.113570},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L8) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/BASHA2022.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref) + ABSTRACT(PubMed) (Europe PMC, PMID 35700667); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry BASHA2022 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Body closed. Abstract: total inelastic MFP of Si 145 +- 10 nm at 200 keV (beta about 157 mrad); elastic and inelastic MFPs versus collection angle at 200 and 80 keV for SiO2 (thermal, CVD) and other oxides. L8 upload item 1.}
+}
+
+@article{ISABELL1999,
+  author  = {Isabell, Thomas C. and Fischione, Paul E. and O'Keefe, Catherine and Guruz, Murat U. and Dravid, Vinayak P.},
+  title   = {Plasma Cleaning and Its Applications for Electron Microscopy},
+  journal = {Microscopy and Microanalysis},
+  volume  = {5},
+  number  = {2},
+  pages   = {126--135},
+  year    = {1999},
+  doi     = {10.1017/s1431927699000094},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L8) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ISABELL1999.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref) + ABSTRACT(PubMed) (Europe PMC, PMID 10341012); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry ISABELL1999 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Body closed. Abstract: high-frequency low-energy reactive plasma removes carbonaceous contamination; no recontamination for several hours. Oxidation of the specimen is not addressed in the abstract. L8 upload item 5.}
+}
+
+@misc{FISCHIONE1020,
+  author       = {{E.A. Fischione Instruments, Inc.}},
+  title        = {Model 1020 Plasma Cleaner: specifications (Document SP1020, Revision 02, 05/2025) and product brochure (Document PB1020, Revision 02, 10/2014)},
+  year         = {2025},
+  url          = {https://www.fischione.com/products/m1020},
+  howpublished = {Manufacturer documents, \url{https://www.fischione.com/files/products/17/sp1020.pdf} and \url{https://www.fischione.com/files/products/17/pb1020.pdf}},
+  note         = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + PAGE\_CHECKED (route: https://www.fischione.com/products/m1020 (HTTP 200, HTML, SHA-256 19f5f1052cb0da12...; checks cached as docs/agent\_reports/crossref\_cache/FISCHIONE1020.page1.json); https://www.fischione.com/files/products/17/sp1020.pdf (HTTP 200, PDF, 2 pages, SHA-256 cd77bf838ca3b309...; checks cached as docs/agent\_reports/crossref\_cache/FISCHIONE1020.page2.json); https://www.fischione.com/files/products/17/pb1020.pdf (HTTP 200, PDF, 5 pages, SHA-256 5abf7728d49164b2...; checks cached as docs/agent\_reports/crossref\_cache/FISCHIONE1020.page3.json); accessed 2026-09-24 by B5; the page prints document, owner, title as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ of manufacturer documents (claims not independently tested); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry FISCHIONE1020 of L8\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (document, owner, title) was found on the page. Fields set rather than copied: howpublished = 'Manufacturer documents, \url{https://www.fischione.com/files/products/17/sp1020.pdf} and \url{https://www.fischione.com/files/products/17/pb1020.pdf}'; url = 'https://www.fischione.com/products/m1020' (reason in tools/bib/b5\_routes.yaml). The product page https://www.fischione.com/products/m1020 (HTTP 200) links both documents. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): no registry record (no DOI). L8 P1: 13.56 MHz inductively coupled plasma; ion energies below 12 eV, stated to be below the sputtering threshold; gas 25 percent oxygen and 75 percent argon; highly contaminated specimens cleaned in 2 minutes or less; no change of elemental composition claimed. SHA-256 of the files in L8 section 2.1.}
+}
+
+@article{KITAJIMA1994,
+  author  = {Kitajima, Masahiro},
+  title   = {Ellipsometric Study on Plasma Oxidation of Silicon},
+  journal = {Shinku},
+  volume  = {37},
+  number  = {10},
+  pages   = {815--825},
+  year    = {1994},
+  doi     = {10.3131/jvsj.37.815},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/KITAJIMA1994.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (review in Japanese, secs. 2-10, Figs. 3, 6, 15, 16, 18; J-STAGE open) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry KITAJIMA1994 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: family names deposited in capitals (KITAJIMA) read as capitalised; container title deposited in capitals ('SHINKU') read as capitalised; closing full stop of the J-STAGE record title dropped. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 P3: room-temperature plasma oxidation of Si; t to the power 1/2 growth beyond the initial stage; low-density RF O2 plasma (2 Pa, 200-500 W) gives oxides thinner than 1.5 nm after about 1e4 s (p. 822, Fig. 16); ion-damaged (a-Si + SiO2) interlayer (pp. 821-822); suboxides at the interface (p. 824).}
+}
+
+@inproceedings{ROBINSON2004SVC,
+  author    = {Robinson, R. E. and Sandberg, R. L. and Allred, D. D. and Jackson, A. L. and Johnson, J. E. and Evans, W. and Doughty, T. and Baker, A. E. and Adamson, K. and Jacquier, A.},
+  title     = {Removing Surface Contaminants from Silicon Wafers to Facilitate {EUV} Optical Characterization},
+  booktitle = {47th Annual Technical Conference Proceedings, Society of Vacuum Coaters (Dallas, TX, April 24-29, 2004)},
+  pages     = {368--376},
+  year      = {2004},
+  note      = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + PAGE\_CHECKED (route: https://physics.byu.edu/faculty/allred/docs/svc04.pdf (HTTP 200, PDF, 9 pages, SHA-256 99574c40268d5c47...; checks cached as docs/agent\_reports/crossref\_cache/ROBINSON2004SVC.page1.json); accessed 2026-09-24 by B5; the page prints author family name, booktitle, date and place, entry title, first page, issn, last page, place, publisher as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (pp. 370-373, Figs. 4-5; open PDF physics.byu.edu/faculty/allred/docs/svc04.pdf); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry ROBINSON2004SVC of L8\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (author family name, booktitle, date and place, entry title, first page, issn, last page, place, publisher) was found on the page. No DOI: a Crossref bibliographic query ('Removing Surface Contaminants from Silicon Wafers to Facilitate EUV Optical Characterization Robinson 2004', cached as ROBINSON2004SVC.crquery.json) returned 5 records, none with this title. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): No DOI found in Crossref; bibliographic data from the PDF itself (ISSN 0737-5921 printed), not registry-verified. L8 P4: native oxide 1.6-1.9 nm by ellipsometry; O2 plasma 250 W, 0.120 Torr, 0.75 sccm; organic layer removed in the shortest time; apparent oxide grows with exposure (Fig. 4, about 0.4-0.6 nm in 10 min by figure reading); no carbon by XPS.}
+}
+
+@article{MITCHELL2015,
+  author  = {Mitchell, D.R.G.},
+  title   = {Contamination mitigation strategies for scanning transmission electron microscopy},
+  journal = {Micron},
+  volume  = {73},
+  pages   = {36--46},
+  year    = {2015},
+  doi     = {10.1016/j.micron.2015.03.013},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MITCHELL2015.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ of the accepted manuscript (University of Wollongong Research Online, figshare record 27792012, licence 'Copyright - All rights reserved', file openly downloadable; secs. 2, 3.6, 3.7, 4; AM pages 3, 8-11, 13) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry MITCHELL2015 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 P5: gentle JEOL air plasma (DC 310 V, specimen outside the glow); contamination on ion-milled Si still significant after 10 min, removed after 60 min; carbon film removal about 5 nm per hour.}
+}
+
+@article{YAMAMURA1996,
+  author  = {Yamamura, Yasunori and Tawara, Hiro},
+  title   = {Energy Dependence of Ion-Induced Sputtering Yields from Monatomic Solids at Normal Incidence},
+  journal = {Atomic Data and Nuclear Data Tables},
+  volume  = {62},
+  number  = {2},
+  pages   = {149--253},
+  year    = {1996},
+  doi     = {10.1006/adnd.1996.0005},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/YAMAMURA1996.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry YAMAMURA1996 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: family names deposited in capitals (YAMAMURA, TAWARA) read as capitalised; given names deposited in capitals (YASUNORI, HIRO) read as capitalised; record title deposited in capitals; the proposal's capitalisation of the same words is used. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): content SECTION\_READ in the report version NIFS-DATA-23 (National Institute for Fusion Science, 1995; NIFS repository hdl 10655/0002000175, open PDF), pp. 5-8 Eqs. (9), (18), (19) and Table 1 p. 14; that the journal version carries the same Eq. (18) and Table 1 is an ASSUMPTION. L8 P6: U\_s(Si) = 4.63 eV; E\_th/U\_s = 6.7/gamma (M1 >= M2); DERIVED\_HERE thresholds 32.0 eV (Ar on Si), 21.3 eV (O on Si).}
+}
+
+@article{LUHMANN2017,
+  author        = {Luhmann, Niklas and Jachimowicz, Artur and Schalko, Johannes and Sadeghi, Pedram and Sauer, Markus and Foelske-Schmitz, Annette and Schmid, Silvan},
+  title         = {Effect of oxygen plasma on nanomechanical silicon nitride resonators},
+  journal       = {Applied Physics Letters},
+  volume        = {111},
+  number        = {6},
+  pages         = {063103},
+  year          = {2017},
+  doi           = {10.1063/1.4989775},
+  eprint        = {1706.02957},
+  archiveprefix = {arXiv},
+  note          = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/LUHMANN2017.json, plus the arXiv OAI-PMH records of 1706.02957 (LUHMANN2017.oai-arxiv.xml, LUHMANN2017.oai-arxivraw.xml; the arXiv query API answered HTTP 406); B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ of arXiv:1706.02957v1 (abstract; sec. II; sec. III pp. 2-4) + METADATA\_VERIFIED (Crossref for the APL record; arXiv OAI-PMH record gives the same title, authors and DOI); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry LUHMANN2017 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, version v1, volume, year) agrees with the record. arXiv record: versions v1 2017-06-09; categories cond-mat.mes-hall; DOI 10.1063/1.4989775. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Silicon NITRIDE, context only: 1.5 nm oxide in 10 s at 50 W in a parallel-plate RIE (20 Pa O2); cites logarithmic room-temperature growth (KIM1996JVSTB). The published version was not read.}
+}
+
+@article{WATANABE1999HK,
+  author  = {Watanabe, Heiji and Miyata, Noriyuki and Ichikawa, Masakazu},
+  title   = {Layer-by-Layer Oxidation of Si Surfaces},
+  journal = {Hyomen Kagaku},
+  volume  = {20},
+  number  = {4},
+  pages   = {250--255},
+  year    = {1999},
+  doi     = {10.1380/jsssj.20.250},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/WATANABE1999HK.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (in Japanese; abstract, secs. 2, 3.1-3.3, Figs. 1-7; J-STAGE open) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry WATANABE1999HK of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: family names deposited in capitals (WATANABE, MIYATA, ICHIKAWA) read as capitalised; closing full stop of the J-STAGE record title dropped. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 R1: SREM of buried SiO2/Si interfaces; the amorphous oxide does not contribute to the specular spot, oxides of a few nm need not be stripped (p. 251); initial steps preserved at the interface and on the surface of a 1 nm oxide, steps do not move laterally (pp. 251-252); layer-by-layer conversion of Si(001) (p. 253).}
+}
+
+@article{WATANABE2000BUTSURI,
+  author  = {Watanabe, Heiji and Miyata, Noriyuki and Ichikawa, Masakazu},
+  title   = {Layer-by-layer Oxidation of Si Surfaces},
+  journal = {Butsuri},
+  volume  = {55},
+  number  = {11},
+  pages   = {846--853},
+  year    = {2000},
+  doi     = {10.11316/butsuri1946.55.846},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: JaLC API record of the doi field (Crossref /works 404, doi.org/ra: JaLC), cached as docs/agent\_reports/crossref\_cache/WATANABE2000BUTSURI.jalc.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (in Japanese; secs. 1.2, 2.1, 2.2, 3, 3.1, 3.2, Figs. 2-8; J-STAGE open, scanned, read as page images) + METADATA\_VERIFIED (JaLC; the DOI is not in Crossref; the JaLC record gives the Japanese title, translated in the title field by the record's own English title); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry WATANABE2000BUTSURI of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5 MISMATCHES (proposal -> record; the record value is used unless stated): author[3].family: 'Ichikawa' -> 'lchikawa' [JaLC] (proposal kept: record artefact). Fields set rather than copied: author = 'Watanabe, Heiji and Miyata, Noriyuki and Ichikawa, Masakazu' (reason in tools/bib/b5\_routes.yaml). The JaLC record writes the third author 'lchikawa' (lower-case l for capital I) next to the kanji 市川 昌和; the proposal's 'Ichikawa' is kept (record artefact). L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 R2: Type-A/Type-B specular-intensity calculation for oxidised Si(001) (Fig. 4, p. 848); Si converted to oxide one atomic layer at a time (p. 848); about twofold volume expansion (p. 850); STM of stripped interfaces (Fig. 7).}
+}
+
+@article{ICHIKAWA2002IEEJ,
+  author  = {Ichikawa, Masakazu},
+  title   = {Technology to Observe Si Surface and Interfaces on The Nanoscale},
+  journal = {The Journal of The Institute of Electrical Engineers of Japan},
+  volume  = {122},
+  number  = {2},
+  pages   = {87--89},
+  year    = {2002},
+  doi     = {10.1541/ieejjournal.122.87},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ICHIKAWA2002IEEJ.json, plus the J-STAGE landing page named in that record (citation meta tags, cached as ICHIKAWA2002IEEJ.jstage.json); B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (in Japanese; secs. 2, 3.1, pp. 87-88; J-STAGE open) + METADATA\_VERIFIED (Crossref; the Crossref record has no author and prefixes the feature title 'Nanotechnologies Support The 21st Century Based on The Information and The Communication Technologies.'; the author is taken from the J-STAGE article page); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry ICHIKAWA2002IEEJ of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: the record title carries the issue's feature title 'Nanotechnologies Support The 21st Century Based on The Information and The Communication Technologies.' before the article title; that prefix is removed (declared in tools/bib/b5\_routes.yaml); closing full stop of the J-STAGE record title dropped. Fields set rather than copied: author = 'Ichikawa, Masakazu' (reason in tools/bib/b5\_routes.yaml). Author: no record carries a Latin-script name (Crossref: none; J-STAGE and CiNii: 市川 昌和); the romanisation 'Ichikawa, Masakazu' rests on linked records (flag): the same kanji name is creator 3 of the JaLC record of [WATANABE2000BUTSURI], English form 'lchikawa, Masakazu' [sic], and the Crossref record of [WATANABE1999HK] has 'ICHIKAWA, Masakazu'. Linked-record check: kanji name on the J-STAGE page '市川 昌和'; creator in the JaLC record of [WATANABE2000BUTSURI] '市川 昌和' = 'lchikawa, Masakazu' (same kanji: True). L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 R3: SREM at 30 kV, 2-3 deg; the amorphous oxide reduces the beam uniformly by inelastic scattering and does not diffract (p. 87); specular intensity depends on the interfacial Si bond direction relative to the beam (p. 88).}
+}
+
+@article{TAKAKUWA2002HK,
+  author  = {Takakuwa, Yuji},
+  title   = {Growth Kinetics of Very Thin Oxide Layers on Si(001) Surface Monitored in Real-time by Auger Electron Spectroscopy Combined with Reflection High Energy Electron Diffraction},
+  journal = {Hyomen Kagaku},
+  volume  = {23},
+  number  = {9},
+  pages   = {536--552},
+  year    = {2002},
+  doi     = {10.1380/jsssj.23.536},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/TAKAKUWA2002HK.json, plus the J-STAGE landing page named in that record (citation meta tags, cached as TAKAKUWA2002HK.jstage.json); B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (in Japanese; abstract, sec. 3 p. 540, sec. 4.1 p. 543, Fig. 6; J-STAGE open) + METADATA\_VERIFIED (Crossref; the record prefixes 'Oxidation Mechanism of Silicon Surface.'); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry TAKAKUWA2002HK of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: family names deposited in capitals (TAKAKUWA) read as capitalised; the record title carries the issue's feature title 'Oxidation Mechanism of Silicon Surface.' before the article title; that prefix is removed (declared in tools/bib/b5\_routes.yaml); closing full stop of the J-STAGE record title dropped. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 R4: 10 keV RHEED along [100] at about 3 deg; amorphous oxide gives a halo, interface flatness still in the specular intensity.}
+}
+
+@article{HONDA1988,
+  author  = {Honda, Kouichirou and Ohsawa, Akira},
+  title   = {Reflection electron microscopy observation of the silicon wafer surface},
+  journal = {Shinku},
+  volume  = {31},
+  number  = {9},
+  pages   = {783--788},
+  year    = {1988},
+  doi     = {10.3131/jvsj.31.783},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HONDA1988.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (in Japanese; abstract, secs. 2-4, Figs. 2-6; J-STAGE open) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry HONDA1988 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: family names deposited in capitals (HONDA, OHSAWA) read as capitalised; container title deposited in capitals ('SHINKU') read as capitalised; closing full stop of the J-STAGE record title dropped. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 R5: REM of HF-last Si(001) wafers in an ordinary TEM at 200 and 100 kV with 006, 008 and 0010, beam near [110]; monatomic-step phase contrast with (008) at 200 kV; thick oxides removed because of chromatic blur; Si-SiO2 interface roughness after thermal oxidation and after ion implantation.}
+}
+
+@article{HATTORI2001,
+  author  = {Hattori, Takeo},
+  title   = {Studies on Ultrathin Silicon Oxide Films and Their Current Problems},
+  journal = {Shinku},
+  volume  = {44},
+  number  = {8},
+  pages   = {695--700},
+  year    = {2001},
+  doi     = {10.3131/jvsj.44.695},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HATTORI2001.json, plus the J-STAGE landing page named in that record (citation meta tags, cached as HATTORI2001.jstage.json); B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (in Japanese; sec. 3 p. 697; refs. 42-43; J-STAGE open) + METADATA\_VERIFIED (Crossref; the record has an empty title, taken here from the English title printed on the article); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry HATTORI2001 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: family names deposited in capitals (HATTORI) read as capitalised; container title deposited in capitals ('SHINKU') read as capitalised; the Crossref record's title is empty; the English title of the J-STAGE landing page (citation\_title, cached as HATTORI2001.jstage.json) is used. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 R6: about 1 nm structural transition layer, about 5 percent denser than bulk SiO2 by XRR (citing SUGITA1996); abrupt compositional transition; oxide-surface roughness at most 0.135 nm on Si(100).}
+}
+
+@article{KOMIYA1997,
+  author  = {Komiya, Satoshi and Awaji, Naoki and Horii, Yoshimasa and Tomita, Hirofumi},
+  title   = {Characterization of Thin Films with X-ray Total Reflection Technology},
+  journal = {Nihon Kessho Gakkaishi},
+  volume  = {39},
+  number  = {1},
+  pages   = {89--93},
+  year    = {1997},
+  doi     = {10.5940/jcrsj.39.89},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/KOMIYA1997.json, plus the J-STAGE landing page named in that record (citation meta tags, cached as KOMIYA1997.jstage.json); B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (in Japanese; secs. 3, 3.1, 3.2, Figs. 3-4, Table 1; J-STAGE open) + METADATA\_VERIFIED (Crossref; the record title carries the prefix 'Frontiers in Crystallography with Synchrotron Radiation. Utilizing of Various Properties of Synchrotron Radiation.'); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry KOMIYA1997 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: family names deposited in capitals (KOMIYA, AWAJI, HORII, TOMITA) read as capitalised; the record title carries the issue's feature title 'Frontiers in Crystallography with Synchrotron Radiation. Utilizing of Various Properties of Synchrotron Radiation.' before the article title; that prefix is removed (declared in tools/bib/b5\_routes.yaml); closing full stop of the J-STAGE record title dropped. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 X1: XRR densities of about 1 nm chemical oxides 2.07-2.25 g/cm3 (Table 1); thermal oxides need a denser interfacial layer (2.35-2.41 g/cm3, 0.8-1.4 nm); interface roughness 0.2-0.3 nm.}
+}
+
+@article{ERHARD2024,
+  author  = {Erhard, Linus C. and Rohrer, Jochen and Albe, Karsten and Deringer, Volker L.},
+  title   = {Modelling atomic and nanoscale structure in the silicon--oxygen system through active machine learning},
+  journal = {Nature Communications},
+  volume  = {15},
+  number  = {1},
+  pages   = {1927},
+  year    = {2024},
+  doi     = {10.1038/s41467-024-45840-9},
+  note    = {evidence: SECTION\_READ (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/ERHARD2024.json; B5, 2026-09-24); label before B5 (L8 proposal): SECTION\_READ (abstract; Methods, quench simulations; Data availability; Table 1; Europe PMC full text PMC10908788, CC BY 4.0) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry ERHARD2024 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): L8 A1: ACE potential for Si-O; melt-quench protocol 6000 K / 4000 K / quench to 300 K at zero pressure; data in ERHARD2024DATA.}
+}
+
+@misc{ERHARD2024DATA,
+  author       = {Erhard, Linus and Rohrer, Jochen and Albe, Karsten and Deringer, Volker},
+  title        = {Research data for "Modelling atomic and nanoscale structure in the silicon-oxygen system through active machine-learning"},
+  year         = {2024},
+  doi          = {10.5281/zenodo.10419194},
+  howpublished = {Zenodo dataset},
+  note         = {evidence: REPRODUCED (as labelled by L8; not re-checked in B5) + METADATA\_VERIFIED (route: DataCite API record of the doi field (Crossref /works 404, doi.org/ra: DataCite), cached as docs/agent\_reports/crossref\_cache/ERHARD2024DATA.datacite.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (DataCite API and Zenodo API; licence CC BY 4.0) + REPRODUCED (L8 section 5: results/SiO2/ace/4.in.data, 139968 atoms, 128.716 A cube, 2.183 g/cm3, O/Si 2.000, 99.8 percent fourfold Si; results/SiO2/hybrid/hybrid.out.data, 331776 atoms, 2.311 g/cm3; members extracted by HTTP range requests and checked against the zip CRC-32); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry ERHARD2024DATA of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, title, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Candidate open atomistic amorphous SiO2 for the overlayer.}
+}
+
+@article{TINOCO2003,
+  author  = {Tinoco, J.C. and Estrada, M. and Romero, G.},
+  title   = {Room temperature plasma oxidation mechanism to obtain ultrathin silicon oxide and titanium oxide layers},
+  journal = {Microelectronics Reliability},
+  volume  = {43},
+  number  = {6},
+  pages   = {895--903},
+  year    = {2003},
+  doi     = {10.1016/s0026-2714(03)00098-2},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/TINOCO2003.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry TINOCO2003 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (closed; OpenAlex closed). L8 upload item 6.}
+}
+
+@article{TINOCO2006,
+  author  = {Tinoco, J.C. and Estrada, M. and Baez, H. and Cerdeira, A.},
+  title   = {Room temperature plasma oxidation: A new process for preparation of ultrathin layers of silicon oxide, and high dielectric constant materials},
+  journal = {Thin Solid Films},
+  volume  = {496},
+  number  = {2},
+  pages   = {546--554},
+  year    = {2006},
+  doi     = {10.1016/j.tsf.2005.08.351},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/TINOCO2006.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry TINOCO2006 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (closed; only a search-engine summary seen, not evidence). L8 upload item 6.}
+}
+
+@article{KIM1996JVSTB,
+  author  = {Kim, Keunjoo and An, M. H. and Shin, Y. G. and Suh, M. S. and Youn, C. J. and Lee, Y. H. and Lee, K. B. and Lee, H. J.},
+  title   = {Oxide growth on silicon (100) in the plasma phase of dry oxygen using an electron cyclotron resonance source},
+  journal = {Journal of Vacuum Science \& Technology B: Microelectronics and Nanometer Structures Processing, Measurement, and Phenomena},
+  volume  = {14},
+  number  = {4},
+  pages   = {2667--2673},
+  year    = {1996},
+  doi     = {10.1116/1.589002},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/KIM1996JVSTB.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry KIM1996JVSTB of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5 MISMATCHES (proposal -> record; the record value is used unless stated): container-title: 'Journal of Vacuum Science and Technology B' -> 'Journal of Vacuum Science \& Technology B: Microelectronics and Nanometer Structures Processing, Measurement, and Phenomena' [Crossref]. The container title is the record's full form; L8 had the short form 'Journal of Vacuum Science and Technology B'. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (closed); cited by LUHMANN2017 for logarithmic room-temperature plasma oxide growth. L8 upload item 7.}
+}
+
+@article{SUGITA1996,
+  author  = {Sugita, Y. and Watanabe, S. and Awaji, N. and Komiya, S.},
+  title   = {Structural fluctuation of SiO2 network at the interface with Si},
+  journal = {Applied Surface Science},
+  volume  = {100--101},
+  pages   = {268--271},
+  year    = {1996},
+  doi     = {10.1016/0169-4332(96)00302-9},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/SUGITA1996.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry SUGITA1996 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (closed); cited by HATTORI2001 (p. 697, ref. 42) for an about 1 nm interfacial layer about 5 percent denser than bulk SiO2. L8 upload item 8.}
+}
+
+@article{MCCARTNEY2005,
+  author  = {McCartney, M. R.},
+  title   = {Characterization of charging in semiconductor device materials by electron holography},
+  journal = {Journal of Electron Microscopy},
+  volume  = {54},
+  number  = {3},
+  pages   = {239--242},
+  year    = {2005},
+  doi     = {10.1093/jmicro/dfi035},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MCCARTNEY2005.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref; a duplicate Crossref DOI 10.1093/jmicro/54.3.239 carries the same metadata); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry MCCARTNEY2005 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. A second Crossref DOI, 10.1093/jmicro/54.3.239 (cached as MCCARTNEY2005.altdoi.json), carries the same author, title, journal, volume, issue, pages and date; the doi field keeps 10.1093/jmicro/dfi035, the DOI L8 proposed. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (closed); cited by C02 (ref. 16.80) for specimen charging. L8 upload item 10.}
+}
+
+@article{WATANABE1998PRL,
+  author  = {Watanabe, Heiji and Kato, Koichi and Uda, Tsuyoshi and Fujita, Ken and Ichikawa, Masakazu and Kawamura, Takaaki and Terakura, Kiyoyuki},
+  title   = {Kinetics of Initial Layer-by-Layer Oxidation of Si(001) Surfaces},
+  journal = {Physical Review Letters},
+  volume  = {80},
+  number  = {2},
+  pages   = {345--348},
+  year    = {1998},
+  doi     = {10.1103/physrevlett.80.345},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/WATANABE1998PRL.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry WATANABE1998PRL of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (closed); cited by WATANABE2000BUTSURI (ref. 10) for the SREM contrast reversal and the Type-A/Type-B calculation. L8 upload item 11.}
+}
+
+@article{HIMPSEL1988,
+  author  = {Himpsel, F. J. and McFeely, F. R. and Taleb-Ibrahimi, A. and Yarmoff, J. A. and Hollinger, G.},
+  title   = {Microscopic structure of the SiO$_{2}$/Si interface},
+  journal = {Physical Review B},
+  volume  = {38},
+  number  = {9},
+  pages   = {6084--6096},
+  year    = {1988},
+  doi     = {10.1103/physrevb.38.6084},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HIMPSEL1988.json; B5, 2026-09-24); label before B5 (L8 proposal): METADATA\_VERIFIED (Crossref; the record title encodes SiO2/Si in MathML); provenance: proposed by docs/agent\_reports/L8\_oxide\_plasma.md (entry HIMPSEL1988 of L8\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: the record title's MathML transcribed (subscripts, spaces). L8 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (closed). Suboxide distribution at the interface. L8 upload item 12.}
+}
+
+%% L9 (docs/agent_reports/L9_new_refs.bib; report L9_microscope_detector.md)
+
+@article{RODER2016,
+  author  = {R{\"o}der, Falk and Houdellier, Florent and Denneulin, Thibaud and Snoeck, Etienne and H{\"y}tch, Martin},
+  title   = {Realization of a tilted reference wave for electron holography by means of a condenser biprism},
+  journal = {Ultramicroscopy},
+  volume  = {161},
+  pages   = {23--40},
+  year    = {2016},
+  doi     = {10.1016/j.ultramic.2015.11.004},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L9) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/RODER2016.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref, L9 2026-09-24) +ABSTRACT(PubMed) (Europe PMC, PMID 26624513); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry RODER2016 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Body closed (OpenAlex closed; HAL hal-01404505 is a notice only): UPLOAD REQUESTED. L9 H6: condenser biprism above three condenser lenses, relative tilt up to 20/nm at the object plane (300 kV); first dark-field hologram with a tilted object-free reference. Closest published analogue of the R1 pre-tilt reference (B28).}
+}
+
+@article{CHANG2016,
+  author  = {Chang, Shery L.Y. and Dwyer, Christian and Barthel, Juri and Boothroyd, Chris B. and Dunin-Borkowski, Rafal E.},
+  title   = {Performance of a direct detection camera for off-axis electron holography},
+  journal = {Ultramicroscopy},
+  volume  = {161},
+  pages   = {90--97},
+  year    = {2016},
+  doi     = {10.1016/j.ultramic.2015.09.004},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L9) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/CHANG2016.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref, L9) +ABSTRACT(PubMed) (PMID 26630072); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry CHANG2016 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Body closed: UPLOAD REQUESTED. L9 D13: direct detection (MAPS) camera for off-axis holography; improved MTF and DQE raise fringe visibility and lower phase error; counting and linear modes.}
+}
+
+@article{MIR2017,
+  author  = {Mir, J.A. and Clough, R. and MacInnes, R. and Gough, C. and Plackett, R. and Shipsey, I. and Sawada, H. and MacLaren, I. and Ballabriga, R. and Maneuski, D. and O'Shea, V. and McGrouther, D. and Kirkland, A.I.},
+  title   = {Characterisation of the Medipix3 detector for 60 and 80 keV electrons},
+  journal = {Ultramicroscopy},
+  volume  = {182},
+  pages   = {44--53},
+  year    = {2017},
+  doi     = {10.1016/j.ultramic.2017.06.010},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MIR2017.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (full text, publisher version CC BY at eprints.gla.ac.uk/143680) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry MIR2017 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 D5: Medipix3, 256 x 256, 55 um, 300 um Si; 2 x 12-bit or 24-bit counters; SPM and CSM MTF/DQE at 60 and 80 keV only; sec. 7 p. 52: lateral dispersion about 190 um at 200 keV in Si (CASINO).}
+}
+
+@article{PATON2021,
+  author  = {Paton, Kirsty A. and Veale, Matthew C. and Mu, Xiaoke and Allen, Christopher S. and Maneuski, Dzmitry and K{\"u}bel, Christian and O'Shea, Val and Kirkland, Angus I. and McGrouther, Damien},
+  title   = {Quantifying the performance of a hybrid pixel detector with GaAs:Cr sensor for transmission electron microscopy},
+  journal = {Ultramicroscopy},
+  volume  = {227},
+  pages   = {113298},
+  year    = {2021},
+  doi     = {10.1016/j.ultramic.2021.113298},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PATON2021.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (full text, publisher version CC BY at eprints.gla.ac.uk/240505; Table 1 and Fig. 8 read as images; Fig. 8 digitised by L9) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry PATON2021 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: article number in an eid field (references.bib writes article numbers as pages). L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 D6: Medipix3RX with Si and GaAs:Cr sensors, 60-300 keV; 200 keV Si, SPM, low threshold: MTF(omega\_N) 0.01, DQE(0) 0.80, DQE(0.5 omega\_N) 0.17, DQE(omega\_N) 0.00; CSM no benefit at 200 keV. Si sensor thickness ambiguous (p. 2 says 500 um for both sensors; Dimova et al. 2025 say 300 um).}
+}
+
+@article{NORD2020,
+  author  = {Nord, Magnus and Webster, Robert W. H. and Paton, Kirsty A. and McVitie, Stephen and McGrouther, Damien and MacLaren, Ian and Paterson, Gary W.},
+  title   = {Fast Pixelated Detectors in Scanning Transmission Electron Microscopy. Part I: Data Acquisition, Live Processing, and Storage},
+  journal = {Microscopy and Microanalysis},
+  volume  = {26},
+  number  = {4},
+  pages   = {653--666},
+  year    = {2020},
+  doi     = {10.1017/s1431927620001713},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/NORD2020.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (sec. II of arXiv:1911.11560v2; published version not compared) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry NORD2020 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 D7: Merlin 1R retractable Medipix3 mount; Si 300 um (500 um for 300 keV); 1/6/12/24-bit modes, readout 70.8 us / 412 us / 822 us / 1.64 ms at 120 MHz.}
+}
+
+@article{BALLABRIGA2013,
+  author  = {Ballabriga, R and Alozy, J and Blaj, G and Campbell, M and Fiederle, M and Frojdh, E and Heijne, E H M and Llopart, X and Pichotka, M and Procz, S and Tlustos, L and Wong, W},
+  title   = {The Medipix3RX: a high resolution, zero dead-time pixel detector readout chip allowing spectroscopic imaging},
+  journal = {Journal of Instrumentation},
+  volume  = {8},
+  number  = {02},
+  pages   = {C02016},
+  year    = {2013},
+  doi     = {10.1088/1748-0221/8/02/c02016},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/BALLABRIGA2013.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (abstract, secs. 2-3; CC BY 3.0 PDF at iopscience) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry BALLABRIGA2013 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 D8: Medipix3RX, 256 x 256 x 55 um; counters 2 x 1, 2 x 6, 2 x 12 or 1 x 24 bit; continuous read-write dead-time free; charge summing over 2 x 2; about 72 e- rms noise, 40 e- rms threshold dispersion (300 um Si, SPM).}
+}
+
+@article{PLACKETT2013,
+  author  = {Plackett, R and Horswell, I and Gimenez, E N and Marchal, J and Omar, D and Tartoni, N},
+  title   = {Merlin: a fast versatile readout system for Medipix3},
+  journal = {Journal of Instrumentation},
+  volume  = {8},
+  number  = {01},
+  pages   = {C01038},
+  year    = {2013},
+  doi     = {10.1088/1748-0221/8/01/c01038},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PLACKETT2013.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (abstract, secs. 2-3; PDF at iopscience) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry PLACKETT2013 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 D9: Merlin readout, 256 x 256 x 12-bit frames at over 1 kHz in bursts of 1200, over 100 Hz continuous (2013).}
+}
+
+@article{MCMULLAN2009,
+  author  = {McMullan, G. and Chen, S. and Henderson, R. and Faruqi, A.R.},
+  title   = {Detective quantum efficiency of electron area detectors in electron microscopy},
+  journal = {Ultramicroscopy},
+  volume  = {109},
+  number  = {9},
+  pages   = {1126--1143},
+  year    = {2009},
+  doi     = {10.1016/j.ultramic.2009.04.002},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MCMULLAN2009.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (abstract, Medipix2 passages, Fig. 8 caption; Europe PMC PMC2864625, CC BY) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry MCMULLAN2009 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 D10: Medipix2 data at 120 keV only; DQE(0) from cluster multiplicities (Fig. 8 caption).}
+}
+
+@article{MCMULLAN2007,
+  author  = {McMullan, G. and Cattermole, D.M. and Chen, S. and Henderson, R. and Llopart, X. and Summerfield, C. and Tlustos, L. and Faruqi, A.R.},
+  title   = {Electron imaging with Medipix2 hybrid pixel detector},
+  journal = {Ultramicroscopy},
+  volume  = {107},
+  number  = {4--5},
+  pages   = {401--413},
+  year    = {2007},
+  doi     = {10.1016/j.ultramic.2006.10.005},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/MCMULLAN2007.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry MCMULLAN2007 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Not read (closed). L9 D11, background only.}
+}
+
+@article{DIMOVA2025,
+  author  = {Dimova, N. and Plackett, R. and Weatherill, D. and Wood, D. and O'Ryan, L. and Crevatin, G. and Barnard, J.S. and Gallagher-Jones, M. and Hynds, D. and Goldsbrough, R. and Shipsey, I. and Bortoletto, D. and Kirkland, A.},
+  title   = {Measurement of the resolution of the Timepix4 detector for 100 keV and 200 keV electrons for transmission electron microscopy},
+  journal = {Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment},
+  volume  = {1075},
+  pages   = {170335},
+  year    = {2025},
+  doi     = {10.1016/j.nima.2025.170335},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/DIMOVA2025.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (arXiv:2411.16258v2: abstract, secs. 2, 3, 4.1) + METADATA\_VERIFIED (Crossref; the title's MathML, which contains a non-breaking space before keV, flattened to plain text); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry DIMOVA2025 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Record normalisations: the record title's MathML transcribed (subscripts, spaces). Formatting of the proposal fixed by rendering from the record: article number in an eid field (references.bib writes article numbers as pages). L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 D12: Timepix4, 55 um, 300 um Si; MTF at Nyquist 0.16 (100 keV) and 0.0046 (200 keV) in particle counting.}
+}
+
+@article{HERRING2013MM,
+  author  = {Herring, R.A. and Hoyle, D. and Taniguchi, Y. and Haider, M.},
+  title   = {The Ultra-stable Scanning Transmission Electron Holography Microscope},
+  journal = {Microscopy and Microanalysis},
+  volume  = {19},
+  number  = {S2},
+  pages   = {320--321},
+  year    = {2013},
+  doi     = {10.1017/s1431927613003590},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HERRING2013MM.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry HERRING2013MM of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (academic.oup.com Cloudflare; Cambridge PDF 404): UPLOAD REQUESTED. L9 H7: peer-reviewed abstract on the UVic HF-3300V STEHM.}
+}
+
+@article{HERRING2015MM,
+  author  = {Herring, Rodney A. and Hoyle, David},
+  title   = {The Ultra-stable Scanning Transmission Electron Holography Microscope (STEHM)},
+  journal = {Microscopy and Microanalysis},
+  volume  = {21},
+  number  = {S3},
+  pages   = {347--348},
+  year    = {2015},
+  doi     = {10.1017/s1431927615002536},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HERRING2015MM.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry HERRING2015MM of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (as HERRING2013MM): UPLOAD REQUESTED. L9 H8.}
+}
+
+@article{SNOECK2014MM,
+  author  = {Snoeck, Etienne and Houdellier, Florent and Taniguch, Yoshifumi and Masseboeuf, Aurelien and Gatel, Christophe and Nicolai, Julien and Hytch, Martin},
+  title   = {Off-Axial Aberration Correction using a B-COR for Lorentz and HREM Modes},
+  journal = {Microscopy and Microanalysis},
+  volume  = {20},
+  number  = {S3},
+  pages   = {932--933},
+  year    = {2014},
+  doi     = {10.1017/s1431927614006382},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/SNOECK2014MM.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref; the record spells the third author Taniguch, kept as recorded); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry SNOECK2014MM of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. The Crossref record spells the third author 'Taniguch' [sic]; kept as deposited, as L9 did (probably Taniguchi, not checked on the printed abstract). L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED. L9 H9: HF-3300 (I2TEM) B-COR in Lorentz and HREM modes.}
+}
+
+@article{HARADA2006JAP,
+  author  = {Harada, Ken and Matsuda, Tsuyoshi and Tonomura, Akira and Akashi, Tetsuya and Togawa, Yoshihiko},
+  title   = {Triple-biprism electron interferometry},
+  journal = {Journal of Applied Physics},
+  volume  = {99},
+  number  = {11},
+  pages   = {113502},
+  year    = {2006},
+  doi     = {10.1063/1.2198987},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HARADA2006JAP.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref: article number 113502); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry HARADA2006JAP of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: article number in an eid field (references.bib writes article numbers as pages). L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Not read (pubs.aip.org blocked). L9 H10: cited by the UVic STEHM highlights (U3 ref. [2]) for the three image-side biprisms.}
+}
+
+@article{PUTTOCK2022,
+  author  = {Puttock, Robert and Andersen, Ingrid M. and Gatel, Christophe and Park, Bumsu and Rosamond, Mark C. and Snoeck, Etienne and Kazakova, Olga},
+  title   = {Defect-induced monopole injection and manipulation in artificial spin ice},
+  journal = {Nature Communications},
+  volume  = {13},
+  number  = {1},
+  pages   = {3641},
+  year    = {2022},
+  doi     = {10.1038/s41467-022-31309-0},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/PUTTOCK2022.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (Methods: LTEM and electron holography paragraphs; Europe PMC PMC9233697) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry PUTTOCK2022 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: article number in an eid field (references.bib writes article numbers as pages). L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 H4: HF-3300 (I2TEM), 300 kV, cold FEG, B-COR; double-biprism holography, 60 s holograms, 1.4 nm fringe spacing.}
+}
+
+@article{REIDY2021,
+  author  = {Reidy, Kate and Varnavides, Georgios and Thomsen, Joachim Dahl and Kumar, Abinash and Pham, Thang and Blackburn, Arthur M. and Anikeeva, Polina and Narang, Prineha and LeBeau, James M. and Ross, Frances M.},
+  title   = {Direct imaging and electronic structure modulation of moir{\'e} superlattices at the 2D/3D interface},
+  journal = {Nature Communications},
+  volume  = {12},
+  number  = {1},
+  pages   = {1290},
+  year    = {2021},
+  doi     = {10.1038/s41467-021-21363-5},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/REIDY2021.json; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (Methods HRTEM paragraph; Europe PMC PMC7910301) + METADATA\_VERIFIED (Crossref); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry REIDY2021 of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: article number in an eid field (references.bib writes article numbers as pages). L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): L9 H5: HRTEM on a Hitachi HF-3300V with CEOS BCOR image corrector at 60 kV; drift below 7 pm/s.}
+}
+
+@article{HERRING2026MICRON,
+  author  = {Herring, Rodney A.},
+  title   = {Phase imaging and analysis of the annihilation of a dislocation at a crystal surface},
+  journal = {Micron},
+  volume  = {201},
+  pages   = {103945},
+  year    = {2026},
+  doi     = {10.1016/j.micron.2025.103945},
+  note    = {evidence: +ABSTRACT(PubMed) (as labelled by L9) + METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/HERRING2026MICRON.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref) +ABSTRACT(PubMed) (PMID 41202789); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry HERRING2026MICRON of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, pages, title, volume, year) agrees with the record. Formatting of the proposal fixed by rendering from the record: article number in an eid field (references.bib writes article numbers as pages). L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Body closed. L9 H12: diffracted beam interferometry of a dislocation annihilating at a free surface (UVic author); the abstract names no instrument.}
+}
+
+@article{FANG2024MM,
+  author  = {Fang, Zekun and Blackburn, Arthur M},
+  title   = {Pulsed Electron Illumination and Beam Deflection Transfer Function Measurement using Multi-Trigger $<$ 1 $\mu$s Exposures on the Merlin -- Medipix Detector},
+  journal = {Microscopy and Microanalysis},
+  volume  = {30},
+  number  = {Supplement\_1},
+  pages   = {ozae044.512},
+  year    = {2024},
+  doi     = {10.1093/mam/ozae044.512},
+  note    = {evidence: METADATA\_VERIFIED (route: Crossref API /works record of the doi field, cached as docs/agent\_reports/crossref\_cache/FANG2024MM.json; B5, 2026-09-24); label before B5 (L9 proposal): METADATA\_VERIFIED (Crossref: authors and University of Victoria affiliations; the Crossref title carries a doubly escaped less-than sign, written here as $<$); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry FANG2024MM of L9\_new\_refs.bib); bibliographic fields copied from the record by tools/bib/b5\_check.py. B5: every compared field (author, container-title, issue, pages, title, volume, year) agrees with the record. Record normalisations: the record title is doubly HTML-escaped ('\&amp;lt;'); unescaped twice. Formatting of the proposal fixed by rendering from the record: article number in an eid field (references.bib writes article numbers as pages); number: unescaped underscore. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Content UNVERIFIED (academic.oup.com; only a tool summary seen, not evidence): UPLOAD REQUESTED. L9 D15: UVic abstract on the Merlin-Medipix detector.}
+}
+
+@article{SATO2008HITACHIREVIEW,
+  author  = {Sato, Takeshi and Matsumoto, Hiroaki and Konno, Mitsuru and Taniguchi, Yoshifumi and Mamishin, Shuichi},
+  title   = {Hitachi's High-end Analytical Electron Microscope: {HF-3300}},
+  journal = {Hitachi Review},
+  volume  = {57},
+  number  = {3},
+  pages   = {132--135},
+  year    = {2008},
+  url     = {https://www.hitachihyoron.com/rev/pdf/2008/r2008_03_104.pdf},
+  note    = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + PAGE\_CHECKED (route: https://www.hitachihyoron.com/rev/pdf/2008/r2008\_03\_104.pdf (HTTP 200, PDF, 4 pages, SHA-256 f170b8851bc579b1...; checks cached as docs/agent\_reports/crossref\_cache/SATO2008HITACHIREVIEW.page1.json); accessed 2026-09-24 by B5; the page prints author family name, entry title, first page, last page, running head as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (whole article; Table 1 read as a rendered image; L9 H1, retrieved 2026-09-24); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry SATO2008HITACHIREVIEW of L9\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (author family name, entry title, first page, last page, running head) was found on the page. No DOI: a Crossref bibliographic query ('Hitachi's High-end Analytical Electron Microscope HF-3300 Sato Hitachi Review 2008', cached as SATO2008HITACHIREVIEW.crquery.json) returned 5 records, none with this title. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): No DOI printed or found; volume, number, date from the PDF metadata and running heads. Cold FE W(310): brightness 2.9e8/8.7e8/2.9e9 A cm-2 sr-1 and energy spread 0.45/0.55/0.7 eV at 10/30/100 uA (voltage not stated).}
+}
+
+@misc{UVIC_STEHM_PAGE,
+  author       = {{Advanced Microscopy Facility, University of Victoria}},
+  title        = {Hitachi {HF-3300V} {STEHM}},
+  url          = {https://www.uvic.ca/research/advancedmicroscopy/about/microscopes/stehm/index.php},
+  howpublished = {Facility web page},
+  urldate      = {2026-09-24},
+  note         = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + PAGE\_CHECKED (route: https://www.uvic.ca/research/advancedmicroscopy/about/microscopes/stehm/index.php (HTTP 200, HTML, SHA-256 a9a8881eac91adb5...; checks cached as docs/agent\_reports/crossref\_cache/UVIC\_STEHM\_PAGE.page1.json); accessed 2026-09-24 by B5; the page prints entry title, owner as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (L9 U1; page undated); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry UVIC\_STEHM\_PAGE of L9\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (entry title, owner) was found on the page. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Cold-FE source, brightness 6x10e13 A/m2 sr as printed; 60/200/300 kV; four biprisms, one above and three below the specimen; Gatan Quantum imaging filter; holders.}
+}
+
+@misc{UVIC_EMRG_FACILITIES,
+  author       = {{UVic Electron Microscopy Research Group}},
+  title        = {Facilities},
+  url          = {https://onlineacademiccommunity.uvic.ca/emicro/facilities/},
+  howpublished = {Research group web page},
+  urldate      = {2026-09-24},
+  note         = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + PAGE\_CHECKED (route: https://onlineacademiccommunity.uvic.ca/emicro/facilities/ (HTTP 200, HTML, SHA-256 eabe26da14f7ea8e...; checks cached as docs/agent\_reports/crossref\_cache/UVIC\_EMRG\_FACILITIES.page1.json); accessed 2026-09-24 by B5; the page prints entry title, owner, quoted sentence as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (L9 U10; footer 2017, no date of change); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry UVIC\_EMRG\_FACILITIES of L9\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (entry title, owner, quoted sentence) was found on the page. The site's WordPress REST record of this page (cached as UVIC\_EMRG\_FACILITIES.wprest.json, read 2026-09-24) gives: created 2020-01-20, last modified 2023-01-04; the footer year 2017 is not a content date. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): The HF3300V "is fitted with a Merlin (Medipix3) high speed pixelated direct-electron detector"; one illumination-side and three image-side biprisms.}
+}
+
+@misc{HERRING2012STEHMSLIDES,
+  author       = {Herring, Rodney},
+  title        = {The Scanning Transmission Electron Holography Microscope ({STEHM})},
+  year         = {2012},
+  url          = {https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Special_Features_CAMTEC_2013.pdf},
+  howpublished = {Slides, MSC/SMC meeting, Halifax, June 5--8, 2012; file STEHM\_Special\_Features\_CAMTEC\_2013.pdf on the UVic AMF site},
+  urldate      = {2026-09-24},
+  note         = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + PAGE\_CHECKED (route: https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM\_Special\_Features\_CAMTEC\_2013.pdf (HTTP 200, PDF, 28 pages, SHA-256 d8a8e59131fb8c58...; checks cached as docs/agent\_reports/crossref\_cache/HERRING2012STEHMSLIDES.page1.json); accessed 2026-09-24 by B5; the page prints author, entry title, meeting, owner, place as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (slides 1-28; L9 U4); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry HERRING2012STEHMSLIDES of L9\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (author, entry title, meeting, owner, place) was found on the page. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Energy spread about 0.3 eV; W emitter; 10-11 Pa gun vacuum; condenser biprism; three image-side biprisms with unit magnification between them; carrier fringes down to about 4 pm.}
+}
+
+@misc{HERRING2013STEHMSLIDES,
+  author       = {Herring, Rodney},
+  title        = {Recent {STEHM} High-Resolution Performance and Future Applications},
+  year         = {2013},
+  url          = {https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM_Presentation_CAMTEC_July_2013.pdf},
+  howpublished = {Slides, CAMTEC Workshop, University of Victoria, July 5, 2013; file STEHM\_Presentation\_CAMTEC\_July\_2013.pdf on the UVic AMF site},
+  urldate      = {2026-09-24},
+  note         = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + PAGE\_CHECKED (route: https://www.uvic.ca/research/advancedmicroscopy/assets/docs/STEHM/STEHM\_Presentation\_CAMTEC\_July\_2013.pdf (HTTP 200, PDF, 55 pages, SHA-256 694bcaf151a13c24...; checks cached as docs/agent\_reports/crossref\_cache/HERRING2013STEHMSLIDES.page1.json); accessed 2026-09-24 by B5; the page prints author, entry title, meeting, owner as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (slides 1-55; slides 4, 5, 6, 10 rendered; L9 U5); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry HERRING2013STEHMSLIDES of L9\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (author, entry title, meeting, owner) was found on the page. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Slide 6: energy spread FWHM 0.32 eV (0.1 s) and 0.34 eV (1.0 s) at 60 kV; convergence and brightness not measured. Slide 5: CEOS B-COR and SC-COR correctors.}
+}
+
+@misc{QD_MERLINEM_PAGE,
+  author       = {{Quantum Detectors Ltd}},
+  title        = {{MerlinEM} -- Direct Electron Detector Optimised for {4D-STEM} \& Dynamic {TEM}},
+  url          = {https://quantumdetectors.com/products/merlinem/},
+  howpublished = {Manufacturer web page},
+  urldate      = {2026-09-24},
+  note         = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + PAGE\_CHECKED (route: https://quantumdetectors.com/products/merlinem/ (HTTP 200, HTML, SHA-256 001f42c145df2584...; checks cached as docs/agent\_reports/crossref\_cache/QD\_MERLINEM\_PAGE.page1.json); accessed 2026-09-24 by B5; the page prints entry title, owner as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (L9 D1); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry QD\_MERLINEM\_PAGE of L9\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (entry title, owner) was found on the page. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Silicon sensor; 30-300 keV; up to 2000 fps (12-bit); 55 um pitch; 256 x 256 standard; dual counters, gapless readout. Datasheet behind a personal-data form: not read.}
+}
+
+@misc{KRAJNAK2023MMC,
+  author       = {Krajnak, Matus and Klyszejko, Adriana L.},
+  title        = {{MerlinEM}, Hybrid Pixel Array Counting Detector for Transmission Electron Microscopy},
+  year         = {2023},
+  url          = {https://www.mmc-series.org.uk/abstract/1024-merlinem-hybrid-pixel-array-counting-detector-for-transmission-electron-microscopy.html},
+  howpublished = {mmc2023 incorporating EMAG 2023, abstract 210 (poster)},
+  urldate      = {2026-09-24},
+  note         = {evidence: SECTION\_READ (as labelled by L9; not re-checked in B5) + PAGE\_CHECKED (route: https://www.mmc-series.org.uk/abstract/1024-merlinem-hybrid-pixel-array-counting-detector-for-transmission-electron-microscopy.html (HTTP 200, HTML, SHA-256 dd8473827a932eb9...; checks cached as docs/agent\_reports/crossref\_cache/KRAJNAK2023MMC.page1.json); accessed 2026-09-24 by B5; the page prints abstract number, author family name, entry title, form, meeting, owner as in the entry; no registry record and no DOI; B5, 2026-09-24); label before B5 (L9 proposal): SECTION\_READ (abstract page; L9 D14); provenance: proposed by docs/agent\_reports/L9\_microscope\_detector.md (entry KRAJNAK2023MMC of L9\_new\_refs.bib); bibliographic fields as proposed, each tested on the page by tools/bib/b5\_check.py. B5: every compared field (abstract number, author family name, entry title, form, meeting, owner) was found on the page. L9 note (verbatim apart from LaTeX encoding; not re-checked in B5): Keywords list head variants Merlin 1R, 4R, 4S; commercialised by the University of Glasgow and Quantum Detectors; more than 60 systems.}
 }
 
 %% =====================================================================
