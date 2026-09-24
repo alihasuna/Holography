@@ -140,4 +140,9 @@ mean inner potential; 26 Gajdardziska-Josifovska et al., Ultramicroscopy 50 (199
 Si rocking-curve benchmark); then items 6-13 of L6 section 8 (Peng et al. 1996 x2, Wang 1996 REM book
 chapters, B08 pp. 228-310 and 454-469, Radi 1970, Dudarev et al. 1995, Menadue 1972, Ichimiya 1985 and
 Horio and Ichimiya 1983, Flensburg and Stewart 1999). Tanishiro 2003 is now read (open on J-STAGE).
-None of items 1-4, 15-17 has an open copy (L7 section 3, including J-STAGE and CiNii).
+None of items 1-4, 15-17 has an open copy (L7 section 3, including J-STAGE and CiNii). Oxide and detector additions (reports L8, L9; reviews E9, E10 pending for L9): 28 Basha 2022 (SiO2
+mean free paths); 29 Rau 1996 (inner potential of gate oxides); 30 Wang 1997 (SiO2 inner potential,
+read only via C02 p. 772); 31 Hata/Sosiati 2006; 32 Isabell 1999; 33 Tinoco 2003/2006; 34 Kim 1996;
+35 Sugita 1996 (L8 section 10); and the detector items of L9 section 7 (the MerlinEM datasheet or
+UVic's Merlin settings, Fang and Blackburn 2024, Herring et al. 2013 and 2015, Blackburn and McLeod
+2021).
