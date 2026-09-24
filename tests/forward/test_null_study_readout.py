@@ -14,8 +14,8 @@ the code (as run_translation): expected = -(k_out - k_in).R and E_B = E_A exp(+i
   * a smooth Gaussian excess on B only: the bins and the convergence distance follow from the bin
     means of the known excess (tolerances 1e-2 as in the null-test criteria);
   * no phase factor on B: every bin fails; the verdict is "not converged": `converged` is False,
-    converged_beyond_A is None (E1's contract; X2 had returned the end of the last included bin
-    there, restored after audit A7-3) and that end is reported as last_examined_A;
+    converged_beyond_A is None (E1's contract, restored after audit A7-3; X2 had returned the end
+    of the last included bin there) and that end is reported as last_examined_A;
   * X2 (audit A6 N-2): bins beyond the lit-end limit and bins below the amplitude floor are
     excluded from the verdict with their reason; a failing bin that is excluded does not decide it;
   * X2 (A6 N-1/N-3): the sheet beam (H, edge, gap) is required; study_depth100.yaml's beams light

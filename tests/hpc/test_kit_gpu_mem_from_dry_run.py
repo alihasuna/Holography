@@ -36,7 +36,9 @@ SCHEMA = "reflholo_pipeline_dry_run_report/3"                 # X3 (A7-4); /2 wa
 
 
 def _kit():
-    sys.path.insert(0, str(REPO / "scripts" / "hpc" / "alliance"))
+    d = str(REPO / "scripts" / "hpc" / "alliance")
+    if d not in sys.path:
+        sys.path.insert(0, d)
     import kit
     return kit
 
