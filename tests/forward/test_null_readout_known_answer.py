@@ -6,8 +6,8 @@ Case (A6 section 4, `resolved_known_answer.py`): the rung-2 laterally uniform pe
 16.134773 mrad, Fresnel propagator, complex128, dx 0.025 A, dz 1 A, clean depth 100 A) and the same
 crystal translated by R = (a/2, 0, 0) in an identical box. Known answers (A6, DERIVED there): with
 the beam envelope moved with the crystal, E_B(z_s) = E_A(z_s) exp(i expected) in every bin (up to
-the sub-pixel representation of a/2 = 108.618 px, measured <= 2.4e-3 rad by A6); with the beam fixed,
-the same where the reflection has built up (P2 5.3: >= 2600 A at r = 0.1).
+the sub-pixel representation of a/2 = 108.618 px, measured <= 2.4e-3 rad by A6); with the beam
+fixed, the same where the reflection has built up (P2 5.3: >= 2600 A at r = 0.1).
 
   * A6's converged fixed-beam case (L 6000 A, H = L tan(theta) - 6 A, edge 4 A, exit exclusion
     750 A): converged beyond 2500 A. Its last bin (|B|/|A| = 1.029, 254 A before the end of B's lit
@@ -100,9 +100,10 @@ def readout(ews, pairs, expected, variant, kw):
     print(f"  {variant} beam: {r['verdict']}; lit-end limit {r['lit_strip']['lit_limit_A']:.1f} A "
           f"(margin {r['lit_strip']['top_edge_fringe_margin_A']:.1f} A)")
     for q in r["rows"]:
+        why = f" ({q['excluded_because'][0]})" if q["excluded_because"] else ""
         print(f"    z_s {q['z_start_A']:7.1f}-{q['z_end_A']:7.1f} (d {q['d_start_A']:6.1f}): err "
               f"{q['err_rad']:+.2e} rad, |B|/|A| {q['amp_ratio']:.5f}, |E_A| {q['E_A_abs']:.4f}: "
-              f"{q['status']}{' (' + q['excluded_because'][0] + ')' if q['excluded_because'] else ''}")
+              f"{q['status']}{why}")
     return r
 
 

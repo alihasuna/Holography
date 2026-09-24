@@ -655,8 +655,9 @@ def make_plan(a) -> dict:
             else:
                 below = need < gpu_need["need_gb"]
                 if below and not a.accept_need_below_dry_run:
-                    raise Refused(f"--need-gpu-mem-gb {need:g} is below the {gpu_need['need_gb']:.3f}"
-                                  f" GB derived from the dry run (device peak x (1 + margin), "
+                    raise Refused(f"--need-gpu-mem-gb {need:g} is below the "
+                                  f"{gpu_need['need_gb']:.3f} GB derived from the dry run "
+                                  f"(device peak x (1 + margin), "
                                   f"itself a lower bound): pass --accept-need-below-dry-run to "
                                   f"override (recorded), or drop --need-gpu-mem-gb")
                 gpu_need["used"] = f"overridden by --need-gpu-mem-gb {need:g}"
@@ -666,8 +667,9 @@ def make_plan(a) -> dict:
                 notes.append(f"--need-gpu-mem-gb {need:g} given explicitly: it overrides the "
                              f"{gpu_need['need_gb']:.3f} GB derived from the dry run")
                 if below:
-                    _warn(warnings, f"--need-gpu-mem-gb {need:g} is BELOW the {gpu_need['need_gb']:.3f}"
-                                    f" GB derived from the dry run; accepted by "
+                    _warn(warnings, f"--need-gpu-mem-gb {need:g} is BELOW the "
+                                    f"{gpu_need['need_gb']:.3f} GB derived from the dry run; "
+                                    f"accepted by "
                                     f"--accept-need-below-dry-run (recorded in the submission "
                                     f"record)")
         if need is not None and val(inst["gpu_mem_gb"]) < need:

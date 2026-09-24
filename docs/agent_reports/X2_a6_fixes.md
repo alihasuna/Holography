@@ -260,3 +260,17 @@ engine's MEM_EXP_B_PER_ELEMENT set to 16, 8 and 0 left every row's model unchang
 or of the residents larger than 19-35 % per row, not a 32 -> 16 B slip in the exponential transient.
 The other differences of the saved output against the previous one are the run record (commit,
 load) and the live CPU calibration line (426.815 s -> 594.458 s, timed under the current load).
+
+## NITs n1-n9
+
+| id | decision | where / how |
+|---|---|---|
+| n1 | FIXED (doc) | `potentials.py` ContinuumPeriodicPotential docstring: any finite t_n is accepted (the cosine is periodic, t_n and t_n + m/g_n are the same potential); "t_n >= 0" was a convention, not needed. No behaviour change. |
+| n2 | FIXED | `tests/forward/test_rung2_bragg.py` R2-B: the E7 M1 pixel-centre assertion of x_s added (as in `_run`). R2-B stays optional (RH_RUNG2_R2B=1); run below. |
+| n3 | FIXED | `null_test_cases._translation_check`: cKDTree periodic in y and z instead of rounded-coordinate sets; `check` = n_translated, n_B_above, max_distance_A, identical_sets. Before: `identical_sets False` for every pair; after: True with 2.4e-13 to 3.6e-12 A for the 11 study.yaml pairs; asserted in test_atomistic_translation.py and test_null_study_readout.py. |
+| n4 | FIXED | `tests/forward/test_atomistic_translation.py::test_translated_crystal_is_the_builders_crystal`: the tree is periodic in z too (coordinates relative to the crystal start, box = the crystal length); assertion `d.max() < 1e-9` unchanged, plus `pair["check"]` asserted. Checked on both azimuths (`<scratch>`, not a test): `[110] ... non-periodic in z 2.602e-13 A, periodic in z 2.602e-13 A`; `[100] R = [ 2.71545  0.  -2.71545]; ... non-periodic in z 2.352e+00 A, periodic in z 2.276e-13 A` (A6's false mismatch reproduced and removed). |
+| n5 | FIXED except one file | stale "rung 2 not run" texts corrected in tests/forward/smoke_case.py, tests/forward/test_smoke_atomistic.py (docstrings), scripts/torus/run_torus_multislice.py (docstring), scripts/hpc/README_HPC.md section 6 (with the S5/E8 statement). DECLINED for scripts/hpc/alliance/README_ALLIANCE.md:15: the orchestrator restricted edits in scripts/hpc/alliance/ to K-1/K-2; the line still says "docs/05 4.4 rung 2 and the abTEM cross-check NOT RUN" and should read like README_HPC.md section 6 (for the kit owner). |
+| n6 | DECLINED | E1's line count of the H5 diff (8/6, not 6/5) is in docs/agent_reports/E1_engine_wave2a.md; docs/ is not mine to edit. Recorded here as the correction. |
+| n7 | DECLINED | `--gpu-mem-margin 0` stays accepted: outside the orchestrator's K-1/K-2 scope for scripts/hpc/alliance/; the value is stated by the user, printed and recorded, and the NOTE says the device peak is a LOWER BOUND. |
+| n8 | DECLINED | engine and P2's reference share `reflection_holo.constants` and the read-out shares `propagator_phase`: inherent to the design (P2 section 1 states it); an error common to both is out of reach of R2-A by construction. n9 removes the one avoidable coupling. |
+| n9 | FIXED | `tests/forward/ladder_cases.py` `rung2_measure`: the reference is evaluated with P2's `reflection_amplitude_K(K = 2 pi f)` at each bin's own normal wavevector, so the engine's wavelength no longer enters the reference (the angle asin(lambda f) is kept for display only). R2-A rerun in tests/forward below (criteria unchanged). |

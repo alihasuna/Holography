@@ -17,9 +17,9 @@ the code (as run_translation): expected = -(k_out - k_in).R and E_B = E_A exp(+i
     is then the end of the last included bin and `converged` is False; E1's code returned None);
   * X2 (audit A6 N-2): bins beyond the lit-end limit and bins below the amplitude floor are
     excluded from the verdict with their reason; a failing bin that is excluded does not decide it;
-  * X2 (A6 N-1/N-3): the sheet beam (H, edge, gap) is required; study_depth100.yaml's beams light the
-    surface to the exit plane (H = L_z tan(theta) - gap - a/2 - 1 A, H2 2.6) and a short beam is
-    refused by check_lit_to_exit.
+  * X2 (A6 N-1/N-3): the sheet beam (H, edge, gap) is required; study_depth100.yaml's beams light
+    the surface to the exit plane (H = L_z tan(theta) - gap - a/2 - 1 A, H2 2.6) and a short beam
+    is refused by check_lit_to_exit.
 Also: the function used is H2's (identity), and the study-file checks refuse missing keys.
 """
 from types import SimpleNamespace

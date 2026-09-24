@@ -1988,8 +1988,8 @@ def report_part4(S, cc, t_start) -> int:
           + f"; the former check device >= 48 px fails for {len(no)} of them (it cannot fail: "
             f"the model has >= 84 B/px for complex64)")
     check("negative_control_device_peak_check_can_fail", len(nf) > 0,
-          f"{len(nf)} of {len(neg)} rows fail the blocked H5 bound with the potential stage removed "
-          f"(must be > 0); the former 48 px check: {len(no)} fail")
+          f"{len(nf)} of {len(neg)} rows fail the blocked H5 bound with the potential stage "
+          f"removed (must be > 0); the former 48 px check: {len(no)} fail")
 
     # --------------------------------------------------------------------------------------------
     hdr("15. Self-checks")

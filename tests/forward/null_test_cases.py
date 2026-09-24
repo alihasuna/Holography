@@ -80,9 +80,9 @@ def _beam_inputs(H, edge, gap):
     out = []
     for name, v in (("H", H), ("edge", edge), ("gap", gap)):
         if v is None or isinstance(v, bool):
-            raise ValueError(f"{name} (sheet beam) is required: LEGACY_M2_BEAM = {LEGACY_M2_BEAM} "
-                             f"reproduces M2; the surface-resolved read-out needs a beam lit to the "
-                             f"exit plane (sheet_height_lit_to_exit_A)")
+            raise ValueError(f"{name} (sheet beam) is required: LEGACY_M2_BEAM = "
+                             f"{LEGACY_M2_BEAM} reproduces M2; the surface-resolved read-out "
+                             f"needs a beam lit to the exit plane (sheet_height_lit_to_exit_A)")
         f = float(v)
         if not (np.isfinite(f) and f > 0):
             raise ValueError(f"{name} must be finite and > 0, got {v!r}")
@@ -102,11 +102,12 @@ def cell_length_z_A(*, theta, azimuth, gap, extra_A, buildup=BUILDUP_A) -> float
 
 def sheet_height_lit_to_exit_A(*, L_z_A, theta, gap, step_A=2 * Q,
                                margin_A=LIT_TO_EXIT_MARGIN_A) -> float:
-    """H2 2.6 (DERIVED there): H = L_z tan(theta) - gap - step - 1 A, so that the top edge of a sheet
-    beam whose bottom edge is `gap` above the HIGHEST surface reaches the LOWEST surface (step_A
-    lower: a/2 for the translated pair in the fixed-beam case and for the a/2 step) margin_A in
-    height, i.e. margin_A/tan(theta) along z, before the exit plane (engine item 3 asserts the
-    contact before the exit plane). Rounded DOWN to 1e-3 A (the study files carry the number)."""
+    """H2 2.6 (DERIVED there): H = L_z tan(theta) - gap - step - 1 A, so that the top edge of a
+    sheet beam whose bottom edge is `gap` above the HIGHEST surface reaches the LOWEST surface
+    (step_A lower: a/2 for the translated pair in the fixed-beam case and for the a/2 step)
+    margin_A in height, i.e. margin_A/tan(theta) along z, before the exit plane (engine item 3
+    asserts the contact before the exit plane). Rounded DOWN to 1e-3 A (the study files carry the
+    number)."""
     h = L_z_A * np.tan(theta) - gap - step_A - margin_A
     return float(np.floor(h * 1000.0) / 1000.0)
 
@@ -291,8 +292,8 @@ RESOLVED_KEYS = ("radius_per_A", "x_cut_A", "taper_A", "min_height_A", "bin_A", 
 def lit_strip(pair, *, L_z_A, wavelength_A, radius_per_A):
     """Where each crystal of a pair is lit, in the surface coordinate z_s (along the beam from the
     entrance plane; contact of a ray descending at theta from height h above the surface: h/tan):
-    bottom-edge contact, top-edge contact, end of the fully lit core (top edge minus the sin^2 edge),
-    and the LIT-END LIMIT of the surface-resolved read-out:
+    bottom-edge contact, top-edge contact, end of the fully lit core (top edge minus the sin^2
+    edge), and the LIT-END LIMIT of the surface-resolved read-out:
 
         lit_limit = min over A, B of (end of the lit core) - radius_per_A lambda L_z / tan(theta).
 
@@ -317,7 +318,8 @@ def lit_strip(pair, *, L_z_A, wavelength_A, radius_per_A):
     rec.update(top_edge_fringe_margin_A=margin, lit_limit_A=rec[first]["z_core_end_A"] - margin,
                lit_limit_set_by=first, L_z_A=float(L_z_A),
                rule="lit_limit = min(end of the fully lit core of A, B) - radius lambda L_z / "
-                    "tan(theta) (top-edge Fresnel fringes inside the read-out band; X2, DERIVED_HERE)")
+                    "tan(theta) (top-edge Fresnel fringes inside the read-out band; X2, "
+                    "DERIVED_HERE)")
     return rec
 
 
