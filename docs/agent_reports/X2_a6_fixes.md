@@ -345,3 +345,26 @@ SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed
 
 Same environmental error in the opposite direction (the other agent removed `outputs/phase4_figures/`
 at 04:01:37, during this run). No test failed; the 120 s smoke test passed in both runs.
+
+Reruns after `outputs/` had settled (no other agent writing there), with every change of this
+report in place:
+
+```
+venv/bin/python -m pytest -q -p no:cacheprovider tests/forward -rs      (04:13:19-04:19:43, load 1.1 -> 3.6)
+SKIPPED [2] tests/forward/test_null_readout_known_answer.py:184: L10k study-beam proofs (about 6 min): RH_NULL_READOUT_LONG=1
+SKIPPED [1] tests/forward/test_rung2_bragg.py:138: R2-B (r = 0) is optional and qualitative (P2 8.4); RH_RUNG2_R2B=1
+122 passed, 3 skipped in 383.48s (0:06:23)
+```
+
+```
+venv/bin/python -m pytest -q -p no:cacheprovider -rs                    (full suite, 04:20:01-04:32:59, load 2.6 -> 1.7)
+SKIPPED [2] tests/forward/test_null_readout_known_answer.py:184: L10k study-beam proofs (about 6 min): RH_NULL_READOUT_LONG=1
+SKIPPED [1] tests/forward/test_rung2_bragg.py:138: R2-B (r = 0) is optional and qualitative (P2 8.4); RH_RUNG2_R2B=1
+SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed
+1165 passed, 8 skipped, 12 warnings in 776.79s (0:12:56)
+```
+
+tests/hpc was not rerun separately (its 117 tests are inside the clean full-suite run; the
+standalone run above had no error). The 120 s wall-time smoke test passed in every run (no rerun
+alone needed). Skips: the two optional L10k proofs (run separately, N-1 section), optional R2-B
+(run separately below), shellcheck absent.

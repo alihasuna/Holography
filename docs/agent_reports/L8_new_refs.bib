@@ -1,0 +1,351 @@
+% L8_new_refs.bib - new bibliography entries proposed by agent L8 (2026-09-24), report
+% docs/agent_reports/L8_oxide_plasma.md. NOT merged into docs/references.bib (the bibliography owner decides).
+% Every DOI below was resolved on 2026-09-24 against its registry: Crossref https://api.crossref.org/works/<doi>
+% (no mailto parameter; JSON cached outside the repository in scratchpad/l8/crossref/), the JaLC API
+% https://api.japanlinkcenter.org/dois/<doi> for Butsuri 55, 846 (not in Crossref), and the DataCite API
+% https://api.datacite.org/dois/<doi> for the Zenodo dataset. Fields other than `note` are copied from those records
+% (capitalisation normalised; Crossref records that lack a title or authors are completed from the J-STAGE article page,
+% as stated in the note). The two items without a DOI (manufacturer documents, SVC proceedings) carry the data printed
+% on the documents themselves. The `note` gives the evidence label (instruction file section 1.4), what was read and
+% the locator. No raw non-ASCII characters are used.
+% Already in references.bib and NOT repeated: C02 (Dunin-Borkowski et al., "Electron Holography", Springer Handbook of
+% Microscopy 2019, pp. 767-818, DOI 10.1007/978-3-030-00069-1_16; L8 read pp. 772-773 and the reference list of the
+% author copy at rafaldb.com, see L8 section 1 source O2), WANG97, MORITA1990, TOKUTAKE2015, KOROBTSOV2007, AZUMA2007,
+% ZLWANG96, MENDIS19, MENDIS24, TANISHIRO2003.
+
+@article{LEE2000MT,
+  author  = {Lee, Chang-Woo and Ikematsu, Yoichi and Shindo, Daisuke},
+  title   = {Thickness Measurement of Amorphous {SiO$_2$} by {EELS} and Electron Holography},
+  journal = {Materials Transactions, JIM},
+  volume  = {41},
+  number  = {9},
+  pages   = {1129--1131},
+  year    = {2000},
+  doi     = {10.2320/matertrans1989.41.1129},
+  note    = {evidence: SECTION\_READ (abstract; sec. 2; sec. 3 pp. 1130-1131; Figs. 2, 5; sec. 4; J-STAGE open PDF, scanned, read as page images) + METADATA\_VERIFIED (Crossref and JaLC). L8 O1: MIP of amorphous SiO2 11.5 +- 0.3 V (holography at 300 kV, spheres 220-270 nm); total inelastic mean free path 178 +- 4 nm at 200 kV, no objective aperture (100 +- 2 nm at 100 kV).}
+}
+
+@article{IAKOUBOVSKII2008PRB,
+  author  = {Iakoubovskii, Konstantin and Mitsuishi, Kazutaka and Nakayama, Yoshiko and Furuya, Kazuo},
+  title   = {Mean free path of inelastic electron scattering in elemental solids and oxides using transmission electron microscopy: Atomic number dependent oscillatory behavior},
+  journal = {Physical Review B},
+  volume  = {77},
+  number  = {10},
+  pages   = {104102},
+  year    = {2008},
+  doi     = {10.1103/PhysRevB.77.104102},
+  note    = {evidence: SECTION\_READ (abstract; sec. II; sec. III A; Table I; green copy at NIMS MDR mdr.nims.go.jp) + METADATA\_VERIFIED (Crossref). L8 O3: 200 keV, 20 mrad convergence and collection; Si lambda 145 nm (plasmon part 168 nm); SiO2 155 nm (crystalline); amorphous SiO2 about 10 percent larger than crystalline.}
+}
+
+@article{IAKOUBOVSKII2008MRT,
+  author  = {Iakoubovskii, K. and Mitsuishi, K. and Nakayama, Y. and Furuya, K.},
+  title   = {Thickness measurements with electron energy loss spectroscopy},
+  journal = {Microscopy Research and Technique},
+  volume  = {71},
+  number  = {8},
+  pages   = {626--631},
+  year    = {2008},
+  doi     = {10.1002/jemt.20597},
+  note    = {evidence: METADATA\_VERIFIED (Crossref) + ABSTRACT(PubMed) (Europe PMC, PMID 18454473). Body closed, not read. Abstract: lambda scales approximately as rho to the power -0.3; strong dependence on excitation and collection angles.}
+}
+
+@article{RAU1996,
+  author  = {Rau, W.-D. and Baumann, F. H. and Rentschler, J. A. and Roy, P. K. and Ourmazd, A.},
+  title   = {Characterization of stacked gate oxides by electron holography},
+  journal = {Applied Physics Letters},
+  volume  = {68},
+  number  = {24},
+  pages   = {3410--3412},
+  year    = {1996},
+  doi     = {10.1063/1.115776},
+  note    = {evidence: METADATA\_VERIFIED (Crossref). Content UNVERIFIED: body closed (pubs.aip.org Cloudflare 403 on 2026-09-24); only a search-index abstract was seen, which is not evidence. Cited by C02 (Dunin-Borkowski et al. 2019, p. 772, ref. 16.63) for mean inner potentials of oxide layers on Si wedges. L8 upload item 2.}
+}
+
+@article{BASHA2022,
+  author  = {Basha, Adham and Levi, George and Amrani, Tamir and Li, Yang and Ankonina, Guy and Shekhter, Pini and Kornblum, Lior and Goldfarb, Ilan and Kohn, Amit},
+  title   = {Elastic and inelastic mean free paths for scattering of fast electrons in thin-film oxides},
+  journal = {Ultramicroscopy},
+  volume  = {240},
+  pages   = {113570},
+  year    = {2022},
+  doi     = {10.1016/j.ultramic.2022.113570},
+  note    = {evidence: METADATA\_VERIFIED (Crossref) + ABSTRACT(PubMed) (Europe PMC, PMID 35700667). Body closed. Abstract: total inelastic MFP of Si 145 +- 10 nm at 200 keV (beta about 157 mrad); elastic and inelastic MFPs versus collection angle at 200 and 80 keV for SiO2 (thermal, CVD) and other oxides. L8 upload item 1.}
+}
+
+@article{ISABELL1999,
+  author  = {Isabell, Thomas C. and Fischione, Paul E. and O'Keefe, Catherine and Guruz, Murat U. and Dravid, Vinayak P.},
+  title   = {Plasma Cleaning and Its Applications for Electron Microscopy},
+  journal = {Microscopy and Microanalysis},
+  volume  = {5},
+  number  = {2},
+  pages   = {126--135},
+  year    = {1999},
+  doi     = {10.1017/S1431927699000094},
+  note    = {evidence: METADATA\_VERIFIED (Crossref) + ABSTRACT(PubMed) (Europe PMC, PMID 10341012). Body closed. Abstract: high-frequency low-energy reactive plasma removes carbonaceous contamination; no recontamination for several hours. Oxidation of the specimen is not addressed in the abstract. L8 upload item 5.}
+}
+
+@misc{FISCHIONE1020,
+  author       = {{E.A. Fischione Instruments, Inc.}},
+  title        = {Model 1020 Plasma Cleaner: specifications (Document SP1020, Revision 02, 05/2025) and product brochure (Document PB1020, Revision 02, 10/2014)},
+  howpublished = {Manufacturer documents, https://www.fischione.com/files/products/17/sp1020.pdf and .../pb1020.pdf},
+  year         = {2025},
+  note         = {evidence: SECTION\_READ of manufacturer documents (claims not independently tested); no registry record (no DOI). L8 P1: 13.56 MHz inductively coupled plasma; ion energies below 12 eV, stated to be below the sputtering threshold; gas 25 percent oxygen and 75 percent argon; highly contaminated specimens cleaned in 2 minutes or less; no change of elemental composition claimed. SHA-256 of the files in L8 section 2.1.}
+}
+
+@article{KITAJIMA1994,
+  author  = {Kitajima, Masahiro},
+  title   = {Ellipsometric Study on Plasma Oxidation of Silicon},
+  journal = {Shinku (Journal of the Vacuum Society of Japan)},
+  volume  = {37},
+  number  = {10},
+  pages   = {815--825},
+  year    = {1994},
+  doi     = {10.3131/jvsj.37.815},
+  note    = {evidence: SECTION\_READ (review in Japanese, secs. 2-10, Figs. 3, 6, 15, 16, 18; J-STAGE open) + METADATA\_VERIFIED (Crossref). L8 P3: room-temperature plasma oxidation of Si; t to the power 1/2 growth beyond the initial stage; low-density RF O2 plasma (2 Pa, 200-500 W) gives oxides thinner than 1.5 nm after about 1e4 s (p. 822, Fig. 16); ion-damaged (a-Si + SiO2) interlayer (pp. 821-822); suboxides at the interface (p. 824).}
+}
+
+@inproceedings{ROBINSON2004SVC,
+  author    = {Robinson, R. E. and Sandberg, R. L. and Allred, D. D. and Jackson, A. L. and Johnson, J. E. and Evans, W. and Doughty, T. and Baker, A. E. and Adamson, K. and Jacquier, A.},
+  title     = {Removing Surface Contaminants from Silicon Wafers to Facilitate {EUV} Optical Characterization},
+  booktitle = {47th Annual Technical Conference Proceedings, Society of Vacuum Coaters (Dallas, TX, April 24-29, 2004)},
+  pages     = {368--376},
+  year      = {2004},
+  note      = {evidence: SECTION\_READ (pp. 370-373, Figs. 4-5; open PDF physics.byu.edu/faculty/allred/docs/svc04.pdf). No DOI found in Crossref; bibliographic data from the PDF itself (ISSN 0737-5921 printed), not registry-verified. L8 P4: native oxide 1.6-1.9 nm by ellipsometry; O2 plasma 250 W, 0.120 Torr, 0.75 sccm; organic layer removed in the shortest time; apparent oxide grows with exposure (Fig. 4, about 0.4-0.6 nm in 10 min by figure reading); no carbon by XPS.}
+}
+
+@article{MITCHELL2015,
+  author  = {Mitchell, David R. G.},
+  title   = {Contamination mitigation strategies for scanning transmission electron microscopy},
+  journal = {Micron},
+  volume  = {73},
+  pages   = {36--46},
+  year    = {2015},
+  doi     = {10.1016/j.micron.2015.03.013},
+  note    = {evidence: SECTION\_READ of the accepted manuscript (University of Wollongong Research Online, figshare record 27792012, licence 'Copyright - All rights reserved', file openly downloadable; secs. 2, 3.6, 3.7, 4; AM pages 3, 9-10, 12, 14) + METADATA\_VERIFIED (Crossref). L8 P5: gentle JEOL air plasma (DC 310 V, specimen outside the glow); contamination on ion-milled Si still significant after 10 min, removed after 60 min; carbon film removal about 5 nm per hour.}
+}
+
+@article{YAMAMURA1996,
+  author  = {Yamamura, Yasunori and Tawara, Hiro},
+  title   = {Energy Dependence of Ion-Induced Sputtering Yields from Monatomic Solids at Normal Incidence},
+  journal = {Atomic Data and Nuclear Data Tables},
+  volume  = {62},
+  number  = {2},
+  pages   = {149--253},
+  year    = {1996},
+  doi     = {10.1006/adnd.1996.0005},
+  note    = {evidence: METADATA\_VERIFIED (Crossref); content SECTION\_READ in the report version NIFS-DATA-23 (National Institute for Fusion Science, 1995; NIFS repository hdl 10655/0002000175, open PDF), pp. 5-8 Eqs. (9), (18), (19) and Table 1 p. 14; that the journal version carries the same Eq. (18) and Table 1 is an ASSUMPTION. L8 P6: U\_s(Si) = 4.63 eV; E\_th/U\_s = 6.7/gamma (M1 >= M2); DERIVED\_HERE thresholds 32.0 eV (Ar on Si), 21.3 eV (O on Si).}
+}
+
+@article{LUHMANN2017,
+  author  = {Luhmann, Niklas and Jachimowicz, Artur and Schalko, Johannes and Sadeghi, Pedram and Sauer, Markus and Foelske-Schmitz, Annette and Schmid, Silvan},
+  title   = {Effect of oxygen plasma on nanomechanical silicon nitride resonators},
+  journal = {Applied Physics Letters},
+  volume  = {111},
+  number  = {6},
+  pages   = {063103},
+  year    = {2017},
+  doi     = {10.1063/1.4989775},
+  eprint  = {1706.02957},
+  archivePrefix = {arXiv},
+  note    = {evidence: SECTION\_READ of arXiv:1706.02957v1 (abstract; sec. II; sec. III pp. 2-4) + METADATA\_VERIFIED (Crossref for the APL record; arXiv OAI-PMH record gives the same title, authors and DOI). Silicon NITRIDE, context only: 1.5 nm oxide in 10 s at 50 W in a parallel-plate RIE (20 Pa O2); cites logarithmic room-temperature growth (KIM1996JVSTB). The published version was not read.}
+}
+
+@article{HATA2006,
+  author  = {Hata, S.},
+  title   = {Removing focused ion-beam damages on transmission electron microscopy specimens by using a plasma cleaner},
+  journal = {Journal of Electron Microscopy},
+  volume  = {55},
+  number  = {1},
+  pages   = {23--26},
+  year    = {2006},
+  doi     = {10.1093/jmicro/dfl001},
+  note    = {evidence: METADATA\_VERIFIED (Crossref, which lists only S. Hata; the CiNii record crid 1571135650339084160 lists H. Sosiati, S. Hata, N. Kuwano, M. Itakura, T. Nakano and others: author list to be checked in the article). Content UNVERIFIED: body closed; only a search-index abstract was seen (not evidence). L8 upload item 4.}
+}
+
+@article{WATANABE1999HK,
+  author  = {Watanabe, Heiji and Miyata, Noriyuki and Ichikawa, Masakazu},
+  title   = {Layer-by-Layer Oxidation of {Si} Surfaces},
+  journal = {Hyomen Kagaku},
+  volume  = {20},
+  number  = {4},
+  pages   = {250--255},
+  year    = {1999},
+  doi     = {10.1380/jsssj.20.250},
+  note    = {evidence: SECTION\_READ (in Japanese; abstract, secs. 2, 3.1-3.3, Figs. 1-7; J-STAGE open) + METADATA\_VERIFIED (Crossref). L8 R1: SREM of buried SiO2/Si interfaces; the amorphous oxide does not contribute to the specular spot, oxides of a few nm need not be stripped (p. 251); initial steps preserved at the interface and on the surface of a 1 nm oxide, steps do not move laterally (pp. 251-252); layer-by-layer conversion of Si(001) (p. 253).}
+}
+
+@article{WATANABE2000BUTSURI,
+  author  = {Watanabe, Heiji and Miyata, Noriyuki and Ichikawa, Masakazu},
+  title   = {Layer-by-layer Oxidation of {Si} Surfaces},
+  journal = {Butsuri (Nihon Butsuri Gakkaishi)},
+  volume  = {55},
+  number  = {11},
+  pages   = {846--853},
+  year    = {2000},
+  doi     = {10.11316/butsuri1946.55.846},
+  note    = {evidence: SECTION\_READ (in Japanese; secs. 1.2, 2.1, 2.2, 3, 3.1, 3.2, Figs. 2-8; J-STAGE open, scanned, read as page images) + METADATA\_VERIFIED (JaLC; the DOI is not in Crossref; the JaLC record gives the Japanese title, translated in the title field by the record's own English title). L8 R2: Type-A/Type-B specular-intensity calculation for oxidised Si(001) (Fig. 4, p. 848); Si converted to oxide one atomic layer at a time (p. 848); about twofold volume expansion (p. 850); STM of stripped interfaces (Fig. 7).}
+}
+
+@article{ICHIKAWA2002IEEJ,
+  author  = {Ichikawa, Masakazu},
+  title   = {Technology to Observe {Si} Surface and Interfaces on The Nanoscale},
+  journal = {The Journal of The Institute of Electrical Engineers of Japan},
+  volume  = {122},
+  number  = {2},
+  pages   = {87--89},
+  year    = {2002},
+  doi     = {10.1541/ieejjournal.122.87},
+  note    = {evidence: SECTION\_READ (in Japanese; secs. 2, 3.1, pp. 87-88; J-STAGE open) + METADATA\_VERIFIED (Crossref; the Crossref record has no author and prefixes the feature title 'Nanotechnologies Support The 21st Century Based on The Information and The Communication Technologies.'; the author is taken from the J-STAGE article page). L8 R3: SREM at 30 kV, 2-3 deg; the amorphous oxide reduces the beam uniformly by inelastic scattering and does not diffract (p. 87); specular intensity depends on the interfacial Si bond direction relative to the beam (p. 88).}
+}
+
+@article{TAKAKUWA2002HK,
+  author  = {Takakuwa, Yuji},
+  title   = {Growth Kinetics of Very Thin Oxide Layers on {Si(001)} Surface Monitored in Real-time by Auger Electron Spectroscopy Combined with Reflection High Energy Electron Diffraction},
+  journal = {Hyomen Kagaku},
+  volume  = {23},
+  number  = {9},
+  pages   = {536--552},
+  year    = {2002},
+  doi     = {10.1380/jsssj.23.536},
+  note    = {evidence: SECTION\_READ (in Japanese; abstract, sec. 3 p. 540, sec. 4.1 p. 543, Fig. 6; J-STAGE open) + METADATA\_VERIFIED (Crossref; the record prefixes 'Oxidation Mechanism of Silicon Surface.'). L8 R4: 10 keV RHEED along [100] at about 3 deg; amorphous oxide gives a halo, interface flatness still in the specular intensity.}
+}
+
+@article{HONDA1988,
+  author  = {Honda, Kouichirou and Ohsawa, Akira},
+  title   = {Reflection electron microscopy observation of the silicon wafer surface},
+  journal = {Shinku (Journal of the Vacuum Society of Japan)},
+  volume  = {31},
+  number  = {9},
+  pages   = {783--788},
+  year    = {1988},
+  doi     = {10.3131/jvsj.31.783},
+  note    = {evidence: SECTION\_READ (in Japanese; abstract, secs. 2-4, Figs. 2-6; J-STAGE open) + METADATA\_VERIFIED (Crossref). L8 R5: REM of HF-last Si(001) wafers in an ordinary TEM at 200 and 100 kV with 006, 008 and 0010, beam near [110]; monatomic-step phase contrast with (008) at 200 kV; thick oxides removed because of chromatic blur; Si-SiO2 interface roughness after thermal oxidation and after ion implantation.}
+}
+
+@article{HATTORI2001,
+  author  = {Hattori, Takeo},
+  title   = {Studies on Ultrathin Silicon Oxide Films and Their Current Problems},
+  journal = {Shinku (Journal of the Vacuum Society of Japan)},
+  volume  = {44},
+  number  = {8},
+  pages   = {695--700},
+  year    = {2001},
+  doi     = {10.3131/jvsj.44.695},
+  note    = {evidence: SECTION\_READ (in Japanese; sec. 3 p. 697; refs. 42-43; J-STAGE open) + METADATA\_VERIFIED (Crossref; the record has an empty title, taken here from the English title printed on the article). L8 R6: about 1 nm structural transition layer, about 5 percent denser than bulk SiO2 by XRR (citing SUGITA1996); abrupt compositional transition; oxide-surface roughness at most 0.135 nm on Si(100).}
+}
+
+@article{KOMIYA1997,
+  author  = {Komiya, Satoshi and Awaji, Naoki and Horii, Yoshimasa and Tomita, Hirofumi},
+  title   = {Characterization of Thin Films with {X}-ray Total Reflection Technology},
+  journal = {Nihon Kessho Gakkaishi},
+  volume  = {39},
+  number  = {1},
+  pages   = {89--93},
+  year    = {1997},
+  doi     = {10.5940/jcrsj.39.89},
+  note    = {evidence: SECTION\_READ (in Japanese; secs. 3, 3.1, 3.2, Figs. 3-4, Table 1; J-STAGE open) + METADATA\_VERIFIED (Crossref; the record title carries the prefix 'Frontiers in Crystallography with Synchrotron Radiation. Utilizing of Various Properties of Synchrotron Radiation.'). L8 X1: XRR densities of about 1 nm chemical oxides 2.07-2.25 g/cm3 (Table 1); thermal oxides need a denser interfacial layer (2.35-2.41 g/cm3, 0.8-1.4 nm); interface roughness 0.2-0.3 nm.}
+}
+
+@article{ERHARD2024,
+  author  = {Erhard, Linus C. and Rohrer, Jochen and Albe, Karsten and Deringer, Volker L.},
+  title   = {Modelling atomic and nanoscale structure in the silicon-oxygen system through active machine learning},
+  journal = {Nature Communications},
+  volume  = {15},
+  number  = {1},
+  pages   = {1927},
+  year    = {2024},
+  doi     = {10.1038/s41467-024-45840-9},
+  note    = {evidence: SECTION\_READ (abstract; Methods, quench simulations; Data availability; Table 1; Europe PMC full text PMC10908788, CC BY 4.0) + METADATA\_VERIFIED (Crossref). L8 A1: ACE potential for Si-O; melt-quench protocol 6000 K / 4000 K / quench to 300 K at zero pressure; data in ERHARD2024DATA.}
+}
+
+@misc{ERHARD2024DATA,
+  author       = {Erhard, Linus and Rohrer, Jochen and Albe, Karsten and Deringer, Volker},
+  title        = {Research data for "Modelling atomic and nanoscale structure in the silicon-oxygen system through active machine-learning"},
+  howpublished = {Zenodo dataset},
+  year         = {2024},
+  doi          = {10.5281/zenodo.10419194},
+  note         = {evidence: METADATA\_VERIFIED (DataCite API and Zenodo API; licence CC BY 4.0) + REPRODUCED (L8 section 5: results/SiO2/ace/4.in.data, 139968 atoms, 128.716 A cube, 2.183 g/cm3, O/Si 2.000, 99.8 percent fourfold Si; results/SiO2/hybrid/hybrid.out.data, 331776 atoms, 2.311 g/cm3; members extracted by HTTP range requests and checked against the zip CRC-32). Candidate open atomistic amorphous SiO2 for the overlayer.}
+}
+
+@article{TINOCO2003,
+  author  = {Tinoco, J. C. and Estrada, M. and Romero, G.},
+  title   = {Room temperature plasma oxidation mechanism to obtain ultrathin silicon oxide and titanium oxide layers},
+  journal = {Microelectronics Reliability},
+  volume  = {43},
+  number  = {6},
+  pages   = {895--903},
+  year    = {2003},
+  doi     = {10.1016/S0026-2714(03)00098-2},
+  note    = {evidence: METADATA\_VERIFIED (Crossref). Content UNVERIFIED (closed; OpenAlex closed). L8 upload item 6.}
+}
+
+@article{TINOCO2006,
+  author  = {Tinoco, J. C. and Estrada, M. and Baez, H. and Cerdeira, A.},
+  title   = {Room temperature plasma oxidation: A new process for preparation of ultrathin layers of silicon oxide, and high dielectric constant materials},
+  journal = {Thin Solid Films},
+  volume  = {496},
+  number  = {2},
+  pages   = {546--554},
+  year    = {2006},
+  doi     = {10.1016/j.tsf.2005.08.351},
+  note    = {evidence: METADATA\_VERIFIED (Crossref). Content UNVERIFIED (closed; only a search-engine summary seen, not evidence). L8 upload item 6.}
+}
+
+@article{KIM1996JVSTB,
+  author  = {Kim, Keunjoo and An, M. H. and Shin, Y. G. and Suh, M. S. and Youn, C. J. and Lee, Y. H. and Lee, K. B. and Lee, H. J.},
+  title   = {Oxide growth on silicon (100) in the plasma phase of dry oxygen using an electron cyclotron resonance source},
+  journal = {Journal of Vacuum Science and Technology B},
+  volume  = {14},
+  number  = {4},
+  pages   = {2667--2673},
+  year    = {1996},
+  doi     = {10.1116/1.589002},
+  note    = {evidence: METADATA\_VERIFIED (Crossref). Content UNVERIFIED (closed); cited by LUHMANN2017 for logarithmic room-temperature plasma oxide growth. L8 upload item 7.}
+}
+
+@article{SUGITA1996,
+  author  = {Sugita, Y. and Watanabe, S. and Awaji, N. and Komiya, S.},
+  title   = {Structural fluctuation of {SiO$_2$} network at the interface with {Si}},
+  journal = {Applied Surface Science},
+  volume  = {100--101},
+  pages   = {268--271},
+  year    = {1996},
+  doi     = {10.1016/0169-4332(96)00302-9},
+  note    = {evidence: METADATA\_VERIFIED (Crossref). Content UNVERIFIED (closed); cited by HATTORI2001 (p. 697, ref. 42) for an about 1 nm interfacial layer about 5 percent denser than bulk SiO2. L8 upload item 8.}
+}
+
+@article{MCCARTNEY2005,
+  author  = {McCartney, M. R.},
+  title   = {Characterization of charging in semiconductor device materials by electron holography},
+  journal = {Journal of Electron Microscopy},
+  volume  = {54},
+  number  = {3},
+  pages   = {239--242},
+  year    = {2005},
+  doi     = {10.1093/jmicro/dfi035},
+  note    = {evidence: METADATA\_VERIFIED (Crossref; a duplicate Crossref DOI 10.1093/jmicro/54.3.239 carries the same metadata). Content UNVERIFIED (closed); cited by C02 (ref. 16.80) for specimen charging. L8 upload item 10.}
+}
+
+@article{WATANABE1998PRL,
+  author  = {Watanabe, Heiji and Kato, Koichi and Uda, Tsuyoshi and Fujita, Ken and Ichikawa, Masakazu and Kawamura, Takaaki and Terakura, Kiyoyuki},
+  title   = {Kinetics of Initial Layer-by-Layer Oxidation of {Si(001)} Surfaces},
+  journal = {Physical Review Letters},
+  volume  = {80},
+  number  = {2},
+  pages   = {345--348},
+  year    = {1998},
+  doi     = {10.1103/PhysRevLett.80.345},
+  note    = {evidence: METADATA\_VERIFIED (Crossref). Content UNVERIFIED (closed); cited by WATANABE2000BUTSURI (ref. 10) for the SREM contrast reversal and the Type-A/Type-B calculation. L8 upload item 11.}
+}
+
+@article{HIMPSEL1988,
+  author  = {Himpsel, F. J. and McFeely, F. R. and Taleb-Ibrahimi, A. and Yarmoff, J. A. and Hollinger, G.},
+  title   = {Microscopic structure of the {SiO$_2$/Si} interface},
+  journal = {Physical Review B},
+  volume  = {38},
+  number  = {9},
+  pages   = {6084--6096},
+  year    = {1988},
+  doi     = {10.1103/PhysRevB.38.6084},
+  note    = {evidence: METADATA\_VERIFIED (Crossref; the record title encodes SiO2/Si in MathML). Content UNVERIFIED (closed). Suboxide distribution at the interface. L8 upload item 12.}
+}
