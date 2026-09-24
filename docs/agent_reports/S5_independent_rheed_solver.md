@@ -36,6 +36,13 @@ interface or wrapper for either. The repository's own engine is `reflection_holo
 - 22:24 UTC: no Fortran compiler in the container; `apt-get install -y --no-install-recommends
   gfortran` (as root; exit 0) installed GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0. Nothing
   else was installed.
+- 22:27-22:43 UTC: builds, patch, solver runs (section 3.2).
+- 22:45 UTC: tolerances declared (section 5) before the first engine run (22:46 UTC, 16.2 mrad).
+- 23:08 UTC to 00:48 UTC: engine runs (sections 6.1-6.6); the first pass of 8 angles (22:49-23:08)
+  was discarded and repeated because it did not store the exit columns (its values were identical
+  where repeated); the machine was shared with other agents (load average up to 22).
+- 00:49 UTC: final run of the tool's report mode (12 of 13 self-checks pass; the failure is the [100]
+  per-angle tolerance at 21.0 mrad, section 6.2); the report numbers are that run's output.
 
 ## 1. Provenance and what the solver computes
 
@@ -93,7 +100,8 @@ Consequences (DERIVED_HERE from F1-F17):
   wavenumber and the relativistically scaled potential (the standard high-energy form); the
   repository's engine uses the same `K^2 = k^2 + 2 k sigma V` (M2 section 4; `2 k sigma = 2 gamma m e /
   hbar^2`). The constants differ slightly (511.001 keV against CODATA 2018 510.99895 keV; `K` =
-  250.53 rad/A against the engine's 250.5323): section 3 prints both. Spin and the Dirac corrections
+  250.531079 rad/A against the engine's 250.532318, relative -4.95e-06): the tool's report section 2
+  prints both. Spin and the Dirac corrections
   are neglected in both codes. Nothing in the code restricts the energy; the manual's examples are
   10-15 keV (sap scaling "approximately proportional to BE^-1/2" is an empirical remark, not a
   restriction).
@@ -101,11 +109,12 @@ Consequences (DERIVED_HERE from F1-F17):
   `V_complex = V (1 + i r)` for every Fourier component of the (band-limited) slice potential
   (`potentials.py:307-308`); sim-trhepd-rheed with `sap = r > 0` gives `U' = r U` for every
   Fourier component (F15). With a static lattice in both (B = 0, no phonons) the absorption models
-  are the same model (not the same number, because U itself differs, section 3).
+  are the same model; with the Doyle-Turner potential in both codes (section 6.1) they are also the
+  same numbers.
 * Where the complex amplitude lives: `f(i, nb0)` at the end of the slice loop of `srfref`
   (`surf.f90:107`) is the reflection-matrix column of the incident (0,0) rod at the plane `s_top`.
 
-### 1.3 Convention of the complex amplitude (DERIVED_HERE from F5-F8; tested in section 4)
+### 1.3 Convention of the complex amplitude (DERIVED_HERE from F5-F8; tested in section 3.3)
 
 In vacuum the slice transfer matrix of F5 reduces to `diag(exp(+i Gamma dz), exp(-i Gamma dz))`
 acting on the pair (first block; second block), with the coordinate s increasing towards the vacuum
@@ -121,7 +130,7 @@ Therefore sim-trhepd-rheed's `f(0, nb0)` at the plane `s_top` is
 in the SAME convention as this repository (`exp(+i k.r - i omega t)`), NOT the conjugate. This
 differs from L2 D-I3, which inferred an `exp(+i omega t)` factor from the P49 PAPER's notation
 (Eqs. 9-14 with the crystal at z < 0) and noted `conjg` calls in the fork's `surf_prkn.f90`; the P49
-notation and the fork's new integrator are not what is run here. The claim is tested in section 4
+notation and the fork's new integrator are not what is run here. The claim is tested in section 3.3
 against an independent 1D integration of the same (0,0) potential with a known time convention.
 
 Reference plane: the repository measures the specular amplitude relative to the plane of the top
@@ -130,8 +139,9 @@ atomic layer (`highest_surface_x_A`, the nuclei of the top layer, `forward/cell.
 
     R(s_a) = R(s_top) exp(-2 i Gamma_0 (s_top - s_a)),   Gamma_0 = K sin(theta)
 
-(DERIVED_HERE). At 16 mrad, `2 Gamma_0 = 8.1 rad/A`: 0.01 A of misplaced reference plane moves the
-phase by 0.08 rad, so the reference plane is part of the comparison, not a detail.
+(DERIVED_HERE). A reference plane misplaced by 0.1 A moves the phase by 0.601 rad at 12 mrad and by
+1.102 rad at 22 mrad (tool report section 6), so the reference plane is part of the comparison, not a
+detail.
 
 ## 2. Build (REPRODUCED)
 
@@ -143,14 +153,13 @@ phase by 0.08 rad, so the reference plane is part of the comparison, not a detai
 * Two builds in the scratch directory `.../scratchpad/rheed_solver/`: `build_P/src` (upstream as is,
   positron default) and `build_E/src` (the patch of section 2.2). `make bulk surf`, exit 0, no warnings
   printed; `bulk.exe` and `surf.exe` SHA-256 are stored in `tools/validation/rheed_solver_results.json`.
-* Build check (REPRODUCED): the unmodified build reproduces the upstream sample
-  `sample/T4Al_on_Si_111` (positron, Si(111)-sqrt3-Al, 13 beams, 68 angles; 0.09 s + 0.77 s): all 68 x
-  13 intensities agree with the stored `output/surf-bulkP.s` to max absolute difference 5.0e-6 (the
-  stored file has 4 significant digits, maximum stored value 1.337e-2; largest relative difference
-  4.7e-4 where the stored value exceeds 1e-4), i.e. to the stored rounding. The stored file was written
-  by an older version (its log has a different layout), so this also shows that the 2022-2023 changes
-  did not alter this sample's physics. (Command: `bulk.exe; surf.exe` in `build_P/run_T4Al`, numeric
-  comparison of the two files; not part of the committed tool.)
+* Build check (REPRODUCED; tool mode `--sample-check` with the unmodified build, printed in the tool's
+  report section 8): the upstream sample `sample/T4Al_on_Si_111` (positron, Si(111)-sqrt3-Al, 68
+  angles x 13 beams, 1.3 s) agrees with the stored `output/surf-bulkP.s` to max absolute difference
+  5.00e-06 (the stored file has 4 significant digits, stored maximum 1.337e-02; max relative
+  difference 4.73e-04 where the stored value exceeds 1e-4), i.e. to the stored rounding. The stored
+  file was written by an older version (its log has a different layout), so the 2022-2023 changes did
+  not alter this sample's intensities.
 
 ### 2.2 The patch (kept in scratch as `s5_patch.diff`, SHA-256 `e3b439e9...`; applied to a copy of `src/`)
 
@@ -186,11 +195,13 @@ this section is printed by the tool's default (report) mode; the log below only 
   along [1,1,0]; the top layer is odd, as in the engine's flat strips (`first_terrace_backbond_uvw =
   (1,1,0)`, H2).
 * Bulk unit CC = a/2 (two layers) with the next unit shifted by (1/2,1/2) (the smallest unit with a
-  constant shift; the Si(001) layers alternate between two shifts). A first trial with CC = a (four
-  layers) gave |R|^2 up to 134 with absorption, i.e. garbage: bulk.exe multiplies the slice transfer
-  matrices of a whole unit (`bulk.f90:82-98`) before the layer recursion, and an evanescent rod with
-  |Gamma| ~ 14 rad/A grows by exp(14 x 5.43) ~ 1e33 across such a unit (DERIVED_HERE; the trial is in
-  scratch `explore/a100_r01`, not in the tool).
+  constant shift; the Si(001) layers alternate between two shifts). A unit CC = a (four layers) fails:
+  with absorption it gives |R|^2 up to 2.57 on the 1 mrad grid (tool case `chk_a100_N6_A4_cc_a`,
+  REPRODUCED; physical values are below 1), because bulk.exe multiplies the slice transfer matrices of
+  a whole unit (`bulk.f90:82-98`) before the layer recursion, and the outermost rod (6,-6) (|Gamma| =
+  13.29 rad/A in vacuum at 16 mrad) grows by 2.2e+31 across such a unit (DERIVED_HERE, printed by the
+  tool), beyond double precision. With CC = a/2 the growth is 4.7e+15, and routes A and B agree to
+  2e-5 (section 3.4).
 * Two numerically different routes to the same semi-infinite crystal: approach A = bulk.exe unit
   recursion (up to ML = 300 units, stop when the diagonal |R|^2 change < 1e-10, F7) with an ideal
   bulk truncation in surf.exe (`src/idealsurf.txt:1`: "(NSGS /= 0 and NATM=0) means ideal bulk
@@ -217,7 +228,7 @@ this section is printed by the tool's default (report) mode; the log below only 
   layers (B), dz = 0.005 and 0.02 A (A), phi = -45 deg (A), [110] with N = 9 (A and B), N = 12 (B),
   dz = 0.005 (A).
 - 22:41-22:43 UTC: main curves on the 0.02 mrad grid, 12-22 mrad (501 angles): `fine_a100_N6_r010`
-  (21 s + 42 s), `fine_a110_N9_r010` (50 s + 91 s).
+  (63.1 s), `fine_a110_N9_r010` (140.6 s).
 - 22:52-23:00 UTC: solver at exactly the engine angles (N = 6 / 9, approach A), rod sensitivity at the
   engine angles (N = 8, 10 at [100], N = 12 at [110], approach B), r = 0 curves (ML = 150, 300).
 - 23:10-23:16 UTC: a HOLZ test with every rod |g| <= 8/a on the 1 mrad grid was stopped after one
@@ -317,15 +328,22 @@ nuclei in the repository's convention. Beams: [100] 13 rods (h,-h), |h| <= 6; [1
 * [100] local maxima (|R|^2 > 0.005): 12.12 mrad (0.0494, arg -2.309), 16.16 mrad (0.0798, arg -2.855),
   20.96 mrad (0.0100, arg -2.497). The (0,0,8) peak (parabola on the fine grid): 16.1571 mrad,
   |R|^2 0.07977, FWHM 0.6065 mrad (15.856 to 16.463), arg R at the peak -2.8658 rad; arg R rises
-  monotonically through the peak, unwrapped from +1.590 rad at 15.5 mrad to +4.783 rad at 16.9 mrad
-  (+3.193 rad), the Bragg-case phase sweep that docs/05 4.4 rung 2 asks for. Near 15.0 and 18.1 mrad
+  monotonically through the peak (checked on the 0.02 mrad grid), unwrapped from +1.590 rad at 15.5
+  mrad to +4.788 rad at 16.9 mrad (+3.198 rad), the Bragg-case phase sweep that docs/05 4.4 rung 2
+  asks for. Near 15.0 and 18.1 mrad
   R passes close to zero and its phase jumps.
 * [110] local maxima: 12.30 (0.0823, arg -2.451), 13.10 (0.0098), 13.78 (0.0160), 15.12 (0.0498, arg
   -1.189), 17.58 (0.0439, arg -0.949), 18.62 mrad (0.0332, arg +0.962). At [110] the (0,0,8)
   condition (about 16.13 mrad) is a near-ZERO of the specular reflectivity (|R|^2 = 3.4e-4 at 16.20
-  mrad), consistent with H2's finding that [110] reflects six times more weakly there (section 6.4).
+  mrad), consistent with H2's finding that [110] reflects six times more weakly there (section 6.6).
 * The refraction-only (0,0,8) angle with the DT mean inner potential is 16.1327 mrad (tool section 2);
   the many-beam peak at [100] lies 0.024 mrad higher.
+* Many-beam effect on the phase (REPRODUCED): the (0,0) rod alone (same potential) peaks at 16.1510
+  mrad with |R|^2 0.09469, FWHM 0.6025 mrad, arg R +2.4380 at its peak; the 13-rod curve differs from it
+  by up to 0.2778 in R, and at the 13-rod peak arg R(13 rods) - arg R(1 rod) = +0.9611 rad. The in-plane
+  rods (at exact [100] the (0,+-4,4)-type beams are exactly excited, H2 2.2) therefore move the
+  reflection phase by about 1 rad while changing the peak position and width only slightly: a phase
+  comparison at [100] tests the many-beam physics, which an intensity comparison would barely see.
 
 ### 4.2 r = 0 (no absorption): finite slabs only
 
@@ -341,8 +359,7 @@ in the solver as in the engine (H2: the engine's r = 0 strip has not settled wit
 r = 0 comparison would need a stated tiny absorption or a Bloch-wave bulk boundary condition, neither
 of which the upstream code provides.
 
-## 5. Tolerances (DECLARED at 22:45 UTC, before the first engine run of this study and before any
-## engine-solver difference was computed)
+## 5. Tolerances (DECLARED at 22:45 UTC, before the first engine run and before any engine-solver difference was computed)
 
 Like-for-like comparison = the engine run with the solver's Doyle-Turner scattering factors
 (`DoyleTurnerPotential` in the tool: the engine's `AtomicPotential` with only its scattering-factor
@@ -379,7 +396,7 @@ that the engine partly carries.
   4500 A of surface after the first contact of the sheet beam, clean depth 55 A + 15 A bulk absorber
   (H2 section 3, r = 0.1), 10 A top absorber, 100 V sin^2 absorbers, sheet beam 2 A above the top
   layer with 2 A sin^2 edges whose top edge lands 1 A before the exit plane, vacuum from the engine's
-  item-2 rule, dx = dy <= 0.13 A (derived pixel 0.1293-0.1296 A), dz = a/4 ([100]) or a/(4 sqrt 2)
+  item-2 rule, dx = dy <= 0.13 A (the pixel is derived from the extent and n), dz = a/4 ([100]) or a/(4 sqrt 2)
   ([110]), exact propagator, 2/3 band, complex64, numpy backend, static lattice, proportional
   absorption r = 0.1 (TEST_ONLY stand-in for item 21), entrance vacuum 10 slices.
 * Read-out (tool `engine_readout`, DERIVED_HERE, the formula of `analysis.flat_reflection_coefficient`
@@ -448,8 +465,8 @@ read-out spread (tool report section 6):
   `d arg = c + 2 Gamma_0 dx` gives c = -0.044 rad and dx = +0.005 A, i.e. no reference-plane error (a
   plane misplaced by 0.1 A would shift arg R by 0.601 rad at 12 mrad and 1.102 rad at 22 mrad). Across
   the (0,0,8) peak (15.6-16.8 mrad, 13 angles) the phase difference stays between -0.029 and +0.055 rad
-  while the phase itself sweeps by about 3.2 rad. The largest phase differences (-0.40 rad at 15.0 mrad) occur where
-  |R|^2 ~ 1e-5, i.e. at a zero of R, where the phase is undefined.
+  while the phase itself sweeps by about 3.2 rad. The largest phase difference (-0.398 rad at 15.0
+  mrad) occurs where |R|^2 ~ 1e-5, i.e. at a zero of R, where the phase is undefined.
 * Amplitudes: the engine's |R| is below the solver's at 20 of 23 angles (d|R|/|R| from -0.134 to
   +0.188, the positive extreme at the near-zero 18.0 mrad); on the (0,0,8) peak it is 0.8 to 11.3 %
   low (largest on the low-angle flank, 15.6-15.9 mrad), 7.2 % at 12.0 mrad and 13.4 % at 21.0 mrad.
@@ -543,7 +560,39 @@ the direct check.
 
 ### 6.6 Production engine (Kirkland) and H2's stored measurements against the solver
 
-[Kirkland per-angle results: see the table added below when the run completes.]
+Production engine (Kirkland, abTEM 1.0.10) at 15 angles against the DT solver (`eng_a100_N6_r010`),
+tool report sections 6 and 7 (the tolerance column is shown for orientation only: the potentials
+differ, so this is not a pass/fail comparison):
+
+| theta | sol \|R\|^2 | sol arg | eng \|R\|^2 | eng arg | \|dR\| | d arg | d\|R\|/\|R\| | s_eng |
+|---|---|---|---|---|---|---|---|---|
+| 12.00 | 0.04650 | -2.533 | 0.03959 | -2.542 | 0.0168 | -0.008 | -0.077 | 0.0123 |
+| 15.60 | 0.00765 | +1.717 | 0.00634 | +1.725 | 0.0079 | +0.008 | -0.090 | 0.0042 |
+| 15.70 | 0.01558 | +1.900 | 0.01297 | +1.913 | 0.0110 | +0.013 | -0.088 | 0.0063 |
+| 15.80 | 0.02953 | +2.158 | 0.02494 | +2.171 | 0.0141 | +0.013 | -0.081 | 0.0076 |
+| 15.90 | 0.04851 | +2.483 | 0.04032 | +2.481 | 0.0194 | -0.002 | -0.088 | 0.0080 |
+| 16.00 | 0.06678 | +2.843 | 0.05771 | +2.826 | 0.0187 | -0.017 | -0.070 | 0.0074 |
+| 16.10 | 0.07801 | -3.073 | 0.07031 | -3.096 | 0.0154 | -0.022 | -0.051 | 0.0068 |
+| 16.20 | 0.07881 | -2.712 | 0.07350 | -2.729 | 0.0107 | -0.017 | -0.034 | 0.0075 |
+| 16.30 | 0.06999 | -2.361 | 0.06501 | -2.366 | 0.0097 | -0.005 | -0.036 | 0.0062 |
+| 16.40 | 0.05303 | -2.017 | 0.04953 | -2.030 | 0.0083 | -0.013 | -0.034 | 0.0053 |
+| 16.50 | 0.03241 | -1.729 | 0.03229 | -1.738 | 0.0015 | -0.008 | -0.002 | 0.0048 |
+| 16.60 | 0.01784 | -1.576 | 0.01833 | -1.542 | 0.0049 | +0.034 | +0.014 | 0.0050 |
+| 16.70 | 0.01089 | -1.532 | 0.01014 | -1.472 | 0.0072 | +0.060 | -0.035 | 0.0049 |
+| 16.80 | 0.00764 | -1.517 | 0.00658 | -1.511 | 0.0064 | +0.006 | -0.072 | 0.0052 |
+| 21.00 | 0.00986 | -2.364 | 0.00770 | -2.395 | 0.0119 | -0.032 | -0.116 | 0.0016 |
+
+* All 15 angles would pass the like-for-like tolerance; rms phase difference 0.023 rad over the 12
+  angles with |R_sol| >= 0.1 (fit c = -0.069 rad, dx = +0.009 A); |R| below the solver's at 14 of 15
+  angles (d|R|/|R| from -0.116 to +0.014).
+* Curve level: peak 16.1773 mrad (+0.0190 mrad against the solver at the same angles), peak |R|^2
+  0.07380 (-7.3 %, -3.7 % in |R|), FWHM 0.5973 mrad (-2.7 %), phase sweep +2.0638 rad (difference
+  -0.0051 rad).
+* Kirkland minus DT inside the engine, 15 common angles: max |Delta R| 0.0037; |R|^2 changes by -0.00045
+  to +0.00182 and arg R by -0.0130 to +0.0131 rad; the refraction-only expectation of the peak shift is
+  +0.0021 mrad (MIP 13.9028 against 13.9144 V). The parameterisation is therefore a smaller effect than
+  the engine-solver difference itself: the like-for-like result of sections 6.2-6.3 carries over to
+  the production engine at the 1 % and 0.01 rad level.
 
 H2's stored flat-strip plateaus (`tools/hpc/supercell_sizing_measurements.json`, Kirkland engine,
 6000 A strips with y = 2 periods and a 100 A clean depth, plateau window 2755-5255 A), converted here
@@ -575,3 +624,95 @@ solver's value depends on the slab thickness (section 4.2) and H2's strip had no
 | HOLZ couplings (neither code in its compared form) | solver: all 61 rods \|g\| <= 6/a against the row \|h\| <= 3 change \|R\| by -0.89 to -1.23 % and arg R by -0.009 to -0.017 rad (3 angles) | not a difference between the two codes | common omission; about 1 % in \|R\|, 0.01-0.02 rad |
 | Parameterisation (Kirkland engine vs DT solver) | MIP: Kirkland 0.0115 V lower (refraction-only peak shift +0.0021 mrad); V_g ratios DT/Kirkland 0.992 to 1.031 for the 14 coefficients printed | section 6.6 | expected model difference |
 | Remaining systematic amplitude deficit of the engine (about 3-5 % in \|R\| at the peak, 13 % at the weak 21 mrad maximum) with a phase offset of -0.02 to -0.03 rad | not predicted by any tested setting | within the declared tolerance at 22 of 23 [100] and 15 of 15 [110] angles, outside at 21.0 mrad | UNRESOLVED: not large enough to indicate a sign, convention or geometry bug; its cause (candidates: the transmission-function band limit, the infinite projection per slice, the read-out's band-pass near the surface) is not established |
+
+## 8. Resources (tool report section 8)
+
+* Solver (single-threaded Fortran, double precision, memory negligible): the 501-angle curves took
+  63.1 s ([100], 13 rods, 0.126 s per angle) and 140.6 s ([110], 19 rods, 0.281 s per angle) in
+  approach A; the slab route B 1.312 s per angle with 13 rods; 61 rods (HOLZ test) 55.0 s per angle;
+  all 36 solver cases 1534 s of single-core time.
+* Engine: grids 1470-2187 x 30-42 pixels (3072 x 75 in the finest variant), 3382-6812 slices,
+  62 000-136 000 atoms per angle; 31-449 s per angle with 2-3 FFT threads while the 4 cores were
+  shared with other agents (1-min load average 5.6 to 22.2); peak RSS at most 361 MB per process (the
+  limit asked was 2 GB). The engine angle count was reduced from a 0.5 mrad to a 1 mrad grid over
+  12-22 mrad for CPU time (section 5), plus 0.1 mrad through the (0,0,8) peak and the four [110]
+  solver maxima; the Kirkland case was reduced to 15 angles. The engine results file stores the
+  y-averaged exit column of every angle (about 3 MB).
+* Engine code: see section 6.5; after the last engine process started (00:09 UTC) another agent began
+  uncommitted edits of `illumination.py` (an azimuthal-tilt option whose docstring states that the
+  untilted path is bit-identical), `engine.py` and `potentials.py`; none of them was used by a run
+  of this study.
+
+## 9. Summary
+
+### What the comparison shows
+
+1. The solver is established and version-matched: sim-trhepd-rheed `main` at `d98d6252` (GPL-3.0),
+   Ichimiya surface-parallel slicing with the recursive reflection-matrix technique, Doyle-Turner
+   scattering factors, proportional absorption `sap`, relativistically scaled potential, double
+   precision; built with gfortran 13.3.0 outside the repository; the upstream sample is reproduced to
+   its printed precision. Its complex reflection amplitude is exposed by a three-line output patch.
+2. The solver's amplitude is in the repository's convention: an independent RK4 integration of the
+   same (0,0) problem agrees to 1e-4 to 5e-4 while its conjugate differs by 0.4 to 1.7. NO
+   conjugation is needed for sim-trhepd-rheed (the conjugation noted in docs/05 4.4 concerns the P49
+   paper's notation; the fork's new integrator was not run).
+3. With the same potential (Doyle-Turner, static lattice, r = 0.1) the engine reproduces the solver's
+   complex R at 22 of 23 angles at exact [100] and 15 of 15 at [110] within the tolerance declared
+   before the comparison; the exception (21.0 mrad, [100]) exceeds it by 0.0003 in R. At the (0,0,8)
+   peak the engine reproduces the peak angle to 0.018 mrad, the FWHM to 3.3 % and the Bragg-case phase
+   sweep (about 2.1 rad over the FWHM, 3.2 rad across the peak) to 0.006 rad; the phase difference
+   stays within -0.029 to +0.055 rad over 15.6-16.8 mrad, and |d arg| <= 0.075 rad at the four [110]
+   maxima sampled (12.3, 15.1, 17.6, 18.6 mrad). The production (Kirkland) engine behaves the same way
+   (peak +0.019 mrad, sweep -0.005 rad, peak |R|^2 -7.3 %). The in-plane rods change the [100]
+   phase by about 1 rad relative to the (0,0) rod alone, so this agreement tests the many-beam
+   physics, not only refraction.
+4. No sign, convention, reference-plane, refraction or orientation bug is visible: the conjugate is
+   excluded, the fitted reference-plane offset is 0.005-0.012 A, the peak shift is 0.018 mrad, the
+   perpendicular [110] termination is excluded.
+5. The engine's |R| is systematically lower, by 1-11 % on the [100] (0,0,8) peak (peak |R|^2 -9.6 %)
+   and up to 13 % at the weak 21.0 mrad maximum, with a residual phase offset of about -0.02 to -0.03
+   rad at the peak. Part of this depends on the engine's pixel (|R|^2 +5.2 % at dx = 0.099 A), part on
+   the read-out window (up to 3.4 %), and about 3 % in |R| remains unexplained.
+6. H2's stored engine plateaus (Kirkland, a different strip and window) agree with the solver to 0.025
+   rad ([100]) and 0.015 rad ([110]) in phase, with the same few-% amplitude deficit.
+
+### What it cannot show
+
+* Independence is limited to the METHOD: both codes use the same independent-atom Doyle-Turner
+  potential, the same proportional optical potential, a static lattice and the same bulk termination.
+  Agreement says nothing about whether these inputs describe real, ion-milled Si(001) (item 21
+  absorption, Debye-Waller or phonons, surface reconstruction, oxide, mean inner potential with
+  bonding).
+* Both omit the same physics: HOLZ couplings (about 1 % in |R| and 0.01-0.02 rad by the solver's
+  61-rod test), rods beyond |g| ~ 2.2-2.6 1/A, thermal diffuse scattering and spin/Dirac corrections.
+* It is a flat, laterally periodic surface: nothing is tested about steps, terraces, the lateral
+  coupling that broke the M2 null test, or finite features; the phase of a flat surface is only the
+  common-mode part of a step phase.
+* Without absorption there is no semi-infinite reference: the solver's r = 0 result depends on the slab
+  thickness at 468 of 501 angles, as the engine's r = 0 strip does not settle (H2).
+* The solver's many-beam phase is validated only by its internal convergence (routes A and B, dz,
+  slab, rods) and by the one-beam RK4 test; P49 validated intensities only. A second, independent
+  many-beam solver (e.g. a Bloch-wave Bragg-case code; report P2's rung-2 reference exists but was
+  not read here, UNVERIFIED whether it applies) would close that gap.
+* The cause of the engine's residual 3 % amplitude deficit is not established, so an engine
+  amplitude (e.g. for reliability masks or fringe contrast) should carry at least that uncertainty.
+
+### What is needed for a like-for-like validation of the production engine
+
+* The production potential in both codes: Kirkland scattering factors in the solver (a local
+  modification of `asf.f90` in the scratch build, never in this repository) or a DT production option
+  in the engine; this run shows the DT-Kirkland differences are small (MIP 0.0115 V, V_g ratios
+  0.992-1.031) but not zero.
+* The same beams: an engine run at a pixel where the normal-direction band covers the solver's
+  couplings (the pixel study here is not monotonic between 0.13 and 0.074 A: a finer and longer
+  study, and a band-limited solver potential, are needed) and a solver rod set matched to the engine's
+  circular (f_x, f_y) band.
+* A converged engine read-out: longer strips (7000 A changed |R|^2 by 0.9 %), a read-out window and
+  band-pass chosen by a convergence study, and a stated engine amplitude uncertainty.
+* Sourced absorption (item 21) and thermal model in both: the solver's `sap` and Debye-Waller B
+  (BH, BK, BZ) against the engine's proportional absorption and frozen phonons, compared on the
+  COHERENT (ensemble-mean) amplitude.
+* For r = 0: a Bloch-wave bulk boundary condition (not in the upstream code) or an agreed small
+  absorption limit.
+* For steps: vicinal supercells in the solver (many rods; approach B handles evanescent rods stably)
+  against the engine's step cells, which is the comparison docs/05 4.4 ultimately needs.

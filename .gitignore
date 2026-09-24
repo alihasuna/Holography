@@ -15,3 +15,6 @@ reflholo_*_dryrun.txt
 
 # Alliance kit setup logs (scripts/hpc/alliance/setup_alliance.sh; also copied into venv/alliance/)
 alliance_setup_*.log
+
+# run locks of tools/validation (report S5)
+tools/validation/*.lock

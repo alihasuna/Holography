@@ -30,8 +30,23 @@ Modes
                         the tolerances TOL_* declared below.
   --solver-run          run the solver cases (needs --solver-build, --solver-clone, --patch,
                         --workdir); results are merged into rheed_solver_results.json.
-  --engine-run CASE     run the engine for one case of ENGINE_CASES (optionally --angles-mrad a b ..),
-                        results merged into rheed_engine_results.json after every angle (resumable).
+  --engine-run CASE     run the engine for one case of ENGINE_CASES (optionally --angles-mrad a b ..,
+                        --set key=value to override ENGINE_DEFAULT, e.g. max_pixel_A=0.1; the tag is
+                        then CASE__key=value), results merged into rheed_engine_results.json after every
+                        angle (resumable; several cases may run concurrently).
+  --sample-check        run the upstream sample T4Al_on_Si_111 with an UNPATCHED build (--solver-build,
+                        --solver-clone, --workdir) and store the comparison with the stored output.
+
+Reproduction (S5 report section 2): git clone https://github.com/sim-trhepd-rheed/sim-trhepd-rheed
+(commit d98d6252), copy src/ twice outside the repository, apply the report's patch to one copy
+(ep='E' and the amp.txt output), `make bulk surf` in both (gfortran), then
+  venv/bin/python tools/validation/rheed_solver_compare.py --solver-run --solver-build PATCHED/src \
+      --solver-clone CLONE --patch PATCH.diff --workdir SCRATCH --jobs 1
+  venv/bin/python tools/validation/rheed_solver_compare.py --sample-check --solver-build ORIGINAL/src \
+      --solver-clone CLONE --workdir SCRATCH
+  venv/bin/python tools/validation/rheed_solver_compare.py --engine-run eng_a100_dt_r010 --threads 2
+  (likewise eng_a110_dt_r010, eng_a100_kk_r010, and the variants of report section 6.5 at 16.2 mrad)
+  venv/bin/python tools/validation/rheed_solver_compare.py            # report
 
 Labels: SECTION_READ, REPRODUCED, DERIVED_HERE, ASSUMPTION, TEST_ONLY, UNVERIFIED, MEASURED_HERE (a
 number from the UNVALIDATED engine in this container).
@@ -151,6 +166,9 @@ SOLVER_CASES = [
     # independent 1D integration (convention, reference plane and units test)
     SolverCase("onebeam_r010", "100", 0, 0.1, "B", "onebeam", slab_layers=60),
     SolverCase("onebeam_r000", "100", 0, 0.0, "B", "onebeam", slab_layers=60),
+    # a bulk unit CC = a (four layers): bulk.exe multiplies the slice matrices of a whole unit, so
+    # evanescent rods overflow the precision (demonstration of the failure that set CC = a/2)
+    SolverCase("chk_a100_N6_A4_cc_a", "100", 6, 0.1, "A4", "check"),
     # numerical checks on a 1 mrad grid (approach A against B; rods; slab; dz)
     SolverCase("chk_a100_N4_A", "100", 4, 0.1, "A", "check"),
     SolverCase("chk_a100_N4_B", "100", 4, 0.1, "B", "check"),
@@ -258,7 +276,8 @@ def _deg(mrad):
 def solver_inputs(case: SolverCase, grid) -> tuple[str, str, dict]:
     beams, phi = beams_for(case.azimuth, case.N)
     gi, gf, dg = grid
-    ml = case.ML if case.approach == "A" else 0
+    ml = case.ML if case.approach in ("A", "A4") else 0
+    cc, nlay, shift = (A, 4, 0.0) if case.approach == "A4" else (CC, 2, 0.5)
     L = ["1,1,1   ,NH,NK,NDOM", f"{len(beams)}   ,NB", "0   ,RDOM",
          ",".join(f"{h},{k}" for h, k in beams) + "   ,(IH(I),IK(I))",
          f"{E_KEV:.1f},{phi:.10f},{phi:.10f},0,{_deg(gi):.15g},{_deg(gf):.15g},{_deg(dg):.15g}"
@@ -266,17 +285,18 @@ def solver_inputs(case: SolverCase, grid) -> tuple[str, str, dict]:
          f"{case.dz_A:.6g},{ml}   ,DZ,ML", "1   ,NELM",
          f"14,0.0,{case.sap:.6g}   ,Si Z,da1,sap (da1 = 0: unmodified table; sap = absorption ratio)",
          "0,0,0   ,BH,BK,BZ (static lattice)",
-         f"1,{AS:.12f},{AS:.12f},90,{CC:.12f},0.5,0.5   ,NSG,AA,BB,GAM,CC,DX,DY", "2   ,NATM"]
-    for n in (0, 1):
+         f"1,{AS:.12f},{AS:.12f},90,{cc:.12f},{shift},{shift}   ,NSG,AA,BB,GAM,CC,DX,DY",
+         f"{nlay}   ,NATM"]
+    for n in range(nlay):
         u, v = LAYER_UV[n]
         L.append(f"1,1,{u},{v},{Z0 + n * Q:.12f}   ,IELM,ocr,X,Y,Z")
     bulk = "\n".join(L) + "\n"
     # surf.exe: the topmost bulk unit is shifted by (DX, DY) = (1/2, 1/2): layers 2 and 3 at
     # s = Z0 and Z0 + Q; surface atoms (shifted by DXS + DX, DYS + DY) sit at s = CC + z_s.
-    if case.approach == "A":
+    if case.approach in ("A", "A4"):
         surf = ("0   ,NELMS\n1,1,0,0,1," f"{DTHICK_A}" ",0.0,0.0   ,NSGS,msa,msb,nsa,nsb,dthick,DXS,DYS\n"
                 "0   ,NATM (ideal bulk truncation)\n1   ,WDOM\n")
-        s_a = Z0 + Q
+        s_a = Z0 + Q if case.approach == "A" else Z0 + 3 * Q
         n_top = 3
     else:
         M = case.slab_layers
@@ -294,7 +314,7 @@ def solver_inputs(case: SolverCase, grid) -> tuple[str, str, dict]:
         n_top = 3 + M
     geo = dict(beams=beams, phi_deg=phi, s_top_layer_A=s_a, top_layer_n_mod4=n_top % 4,
                top_layer_backbond="[1,1,0] (odd layer)" if n_top % 2 else "[1,-1,0]",
-               bulk_ML=ml, cc_A=CC, z0_A=Z0, dthick_A=DTHICK_A, grid_mrad=list(grid))
+               bulk_ML=ml, cc_A=cc, z0_A=Z0, dthick_A=DTHICK_A, grid_mrad=list(grid))
     return bulk, surf, geo
 
 
@@ -885,6 +905,18 @@ def report_part2(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start) -> int:
         rel = np.max(d[m] / np.abs(Rb[m])) if m.any() else np.nan
         print(f"  {label:58s} {np.max(d):.2e}  rel {rel:.2e}  ({len(ta)} angles)")
         return np.max(d), rel
+    if "chk_a100_N6_A4_cc_a" in sol["cases"]:
+        t4, R4 = solver_curve(sol, "chk_a100_N6_A4_cc_a")
+        print(f"  [100] N=6 with a bulk unit CC = a (4 layers): largest |R|^2 {np.max(np.abs(R4))**2:.3g} "
+              f"(r = 0.1; physical values are < 1): the CC = a/2 unit is used everywhere else")
+        K = sol["cases"]["onebeam_r010"]["runs"][0]["header"]["wn"]
+        G6 = 2 * np.pi * rod_g_per_A((6, -6))
+        gam6 = np.sqrt(G6**2 - (K * np.sin(16e-3)) ** 2)
+        print(f"  outermost [100] rod (6,-6) at 16 mrad: |Gamma| = {gam6:.2f} rad/A in vacuum; growth "
+              f"across one unit exp(|Gamma| CC) = {np.exp(gam6 * A):.1e} (CC = a), "
+              f"{np.exp(gam6 * CC):.1e} (CC = a/2)")
+        check("CC = a unit fails (|R| > 1), demonstrating the unit-product ill-conditioning",
+              np.max(np.abs(R4)) > 1, f"max |R|^2 {np.max(np.abs(R4))**2:.3g}")
     cmp("chk_a100_N6_A", "chk_a100_N6_B", "[100] N=6: approach A (bulk.exe) vs B (slab)")
     cmp("chk_a100_N4_A", "chk_a100_N4_B", "[100] N=4: A vs B")
     cmp("chk_a100_N6_B_slab180", "chk_a100_N6_B", "[100] N=6 B: slab 180 vs 90 layers")
@@ -952,7 +984,9 @@ def report_part3(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start) -> int:
         w0, _, _ = fwhm(t0_[m0], np.abs(R0_[m0]) ** 2, ip0)
         print(f"  [100] (0,0) rod alone (1 beam, same potential): peak {tp0:.4f} mrad, |R|^2 {Ip0:.5f}, "
               f"FWHM {w0:.4f} mrad, arg R at peak {np.angle(interp_c(t0_, R0_, tp0)):+.4f}; the 13-rod "
-              f"curve differs from it by up to {np.max(np.abs(R0_ - R1)):.4f} in R")
+              f"curve differs from it by up to {np.max(np.abs(R0_ - R1)):.4f} in R; at the 13-rod peak "
+              f"arg R(13 rods) - arg R(1 rod) = "
+              f"{wrapd(np.angle(interp_c(t1, R1, tp)) - np.angle(interp_c(t0_, R0_, tp))):+.4f} rad")
     un = np.unwrap(np.angle(R1[msk]))
     print(f"  [100] unwrapped arg R from {t1[msk][0]:.2f} to {t1[msk][-1]:.2f} mrad: {un[0]:+.3f} -> "
           f"{un[-1]:+.3f} rad (total {un[-1] - un[0]:+.3f} rad); monotonic increase on the 0.02 mrad "
@@ -1155,7 +1189,9 @@ def report_part6(sol, eng, t_start) -> int:
         rs = np.array([r["run_s"] for r in recs])
         rss = max(r["peak_rss_MB"] for r in recs)
         la = np.array([r["loadavg"][0] for r in recs])
-        print(f"  resources {tag}: {len(recs)} angles, run {rs.min():.0f}-{rs.max():.0f} s (median "
+        na = np.array([r["info"]["n_atoms"] for r in recs])
+        print(f"  resources {tag}: {len(recs)} angles, {na.min()}-{na.max()} atoms, run {rs.min():.0f}-"
+              f"{rs.max():.0f} s (median "
               f"{np.median(rs):.0f}), peak RSS {rss:.0f} MB, 1-min load average {la.min():.1f}-{la.max():.1f}"
               f", engine commit {recs[0]['engine_commit'][:7]} dirty {recs[0]['engine_dirty']}")
     print("\n  read-out choices re-evaluated on the stored exit columns (max over the angles of |Delta R| "
@@ -1209,9 +1245,70 @@ def report_part6(sol, eng, t_start) -> int:
               f"arg e {np.angle(e):+.4f}) -> R at the top layer: |R|^2 {abs(r)**2:.5f} arg {np.angle(r):+.4f};"
               f"  solver {scase}: |R|^2 {abs(Rs[0])**2:.5f} arg {np.angle(Rs[0]):+.4f};  |Delta R| "
               f"{abs(r - Rs[0]):.4f}, d arg {wrapd(np.angle(r) - np.angle(Rs[0])):+.4f}")
+    for nm in ("fine_a100_N6_r010", "fine_a110_N9_r010", "fine_a100_N6_r000_ML300", "holz_a100disk_N6_B",
+               "chk_a100_N6_B"):
+        if nm in sol["cases"]:
+            rr = sol["cases"][nm]["runs"]
+            na = sum(len(r["theta_rad"]) for r in rr)
+            tt = sum(r["bulk_s"] + r["surf_s"] for r in rr)
+            nb = len(rr[0]["geometry"]["beams"])
+            print(f"  solver {nm}: {nb} rods, {na} angles, {tt:.1f} s ({tt / na:.3f} s per angle)")
+    if "sample_check" in sol:
+        sc = sol["sample_check"]
+        print(f"  upstream sample {sc['sample']} with the UNPATCHED build: {sc['n_angles']} angles x "
+              f"{sc['n_beams']} beams, max |difference| to the stored output {sc['max_abs_diff']:.2e} "
+              f"(stored maximum {sc['stored_max']:.3e}), max relative difference where stored > 1e-4 "
+              f"{sc['max_rel_diff']:.2e}; run {sc['run_s']:.2f} s")
     tot = sum(r["bulk_s"] + r["surf_s"] for c in sol["cases"].values() for r in c["runs"])
     print(f"  solver: {len(sol['cases'])} cases, total bulk.exe + surf.exe time {tot:.0f} s (single core)")
     print(f"\n  report mode ran in {time.time() - t_start:.0f} s")
+    return 0
+
+
+def sample_check(args) -> int:
+    """Run the upstream sample sample/T4Al_on_Si_111 with the UNPATCHED build (positron default) and
+    compare its intensities with the stored upstream output (REPRODUCED build check)."""
+    import shutil
+    build, clone, wd = Path(args.solver_build), Path(args.solver_clone), Path(args.workdir) / "sample_T4Al"
+    src = clone / "sample" / "T4Al_on_Si_111"
+    wd.mkdir(parents=True, exist_ok=True)
+    for f in ("bulk.txt", "surf.txt"):
+        shutil.copy(src / f, wd / f)
+    t0 = time.time()
+    for exe in ("bulk.exe", "surf.exe"):
+        r = subprocess.run([str(build / exe)], cwd=wd, capture_output=True, text=True)
+        if r.returncode:
+            raise RuntimeError(r.stderr)
+    t1 = time.time()
+
+    def load(p):
+        rows = []
+        for line in Path(p).read_text().splitlines():
+            q = line.strip()
+            if q and q[0] not in "#d" and "," in q:
+                rows.append([float(x) for x in q.rstrip(",").split(",")])
+        return np.array(rows)
+    a, b = load(wd / "surf-bulkP.s"), load(src / "output" / "surf-bulkP.s")
+    if a.shape != b.shape or not np.allclose(a[:, 0], b[:, 0]):
+        raise RuntimeError("sample output layout differs")
+    d = np.abs(a[:, 1:] - b[:, 1:])
+    sel = np.abs(b[:, 1:]) > 1e-4
+    res = dict(sample="T4Al_on_Si_111", build=str(build),
+               exe_sha256={e: hashlib.sha256((build / e).read_bytes()).hexdigest()
+                           for e in ("bulk.exe", "surf.exe")},
+               n_angles=int(a.shape[0]), n_beams=int(a.shape[1] - 1), max_abs_diff=float(d.max()),
+               stored_max=float(np.abs(b[:, 1:]).max()),
+               max_rel_diff=float((d[sel] / np.abs(b[:, 1:])[sel]).max()), run_s=t1 - t0)
+    import fcntl
+    with open(SOLVER_JSON.with_suffix(".lock"), "w") as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        cur = json.loads(SOLVER_JSON.read_text())
+        cur["sample_check"] = res
+        tmp = SOLVER_JSON.with_suffix(f".tmp{os.getpid()}")
+        tmp.write_text(json.dumps(cur, indent=0, default=float))
+        tmp.replace(SOLVER_JSON)
+        fcntl.flock(lk, fcntl.LOCK_UN)
+    print(res)
     return 0
 
 
@@ -1228,7 +1325,11 @@ def main(argv=None) -> int:
     ap.add_argument("--angles-mrad", type=float, nargs="*")
     ap.add_argument("--set", nargs="*", help="variant overrides, e.g. max_pixel_A=0.10")
     ap.add_argument("--threads", type=int, default=4)
+    ap.add_argument("--sample-check", action="store_true",
+                    help="run the upstream sample with an UNPATCHED build (--solver-build)")
     args = ap.parse_args(argv)
+    if args.sample_check:
+        return sample_check(args)
     if args.solver_run:
         return solver_run(args)
     if args.engine_run:
