@@ -6,8 +6,10 @@ Required cell inputs (no defaults; E1 wave 2a):
 * clean_depth_A: crystal between the lowest surface and the 15 A bulk absorber. The M2 study cells
   used buildup + 1 = 21 A, which is SHALLOWER than the 24.5 A (0,0,8) extinction depth (P2 section
   6.5, H2 section 3, H5 D.8): LEGACY_M2_CLEAN_DEPTH_A = 21.0 is kept only to reproduce M2
-  (scripts/hpc/null_test_study/study.yaml, tests/forward/test_atomistic_translation.py); P2
-  recommends >= 100 A with r >= 0.05 (study_depth100.yaml).
+  (scripts/hpc/null_test_study/study.yaml, tests/forward/test_atomistic_translation.py). For the
+  null-test criteria (1e-2 rad, 1e-2 in amplitude) >= 65 A with r >= 0.05 is the reviewed minimum
+  (E7 M3, from P2's 1D model; H2 2.4 and 3); study_depth100.yaml uses 100 A as a margin. At r = 0
+  no clean depth converges the absolute reflection (P2 6.5).
 * azimuth: "110" (the M2 azimuth) or "100" (exact [100]: the (0,0,8) condition is at least a
   four-beam case there, H2 section 2.2); TEST_ONLY stand-ins for PROJECT_INPUT item 8. The in-plane
   period along the beam is a/sqrt(2) ([110]) or a ([100]); dz = period/4 (as M2 and H2).
@@ -54,7 +56,7 @@ def _azimuth(azimuth):
 def _clean_depth(clean_depth_A):
     if clean_depth_A is None:
         raise ValueError("clean_depth_A is required (LEGACY_M2_CLEAN_DEPTH_A = 21.0 reproduces M2; "
-                         "P2 recommends >= 100 A)")
+                         ">= 65 A is the reviewed minimum for the null-test criteria, E7 M3)")
     c = float(clean_depth_A)
     if not (np.isfinite(c) and c > 0):
         raise ValueError(f"clean_depth_A must be finite and > 0, got {clean_depth_A!r}")

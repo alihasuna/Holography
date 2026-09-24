@@ -358,3 +358,44 @@ H5's wide-slice probe (1470 x 4032 px, n = 4992 atoms in the slice, ny > 2048 so
 now blocked) measures projected() 385,810,728 B (H5: 702,919,128 B) and a slice-loop increment of
 528,060,264 B (H5: 845,168,784 B); the updated memory model gives 385,809,792 B and 528,058,752 B
 (ratios 1.0000024 and 1.0000029): an independent confirmation of task 3 on H5's own probe.
+
+## Corrections from the adversarial review E7 (orchestrator message after tasks 1-5)
+
+E7 (`docs/agent_reports/E7_rung2_review.md`) reviewed P2 and R2-A. Applied as the orchestrator
+decided; criteria (a) |dR| <= 1.5e-3 over |eta| <= 3 and (b) (2e-4 rad) are unchanged.
+
+* E7 M1 (criterion (c) ill-posed: the ratio of maxima depends on the sub-pixel position of x_s;
+  E7: centre 1.68 passes, quarter 1.49 and boundary 1.45 fail a correct engine):
+  `tests/forward/test_rung2_bragg.py` now asserts that x_s lies on a pixel centre (x_s/dx integer
+  to 1e-6) of EVERY grid of the test (in `_run`, for all runs), and
+  `test_r2a_dx_convergence_order` is replaced by `test_r2a_dx_convergence_guard_per_bin`: for every
+  bin with |eta| <= 3, |r(0.05) - R_ref| >= 2 |r(0.025) - R_ref|, on grids that share their bins
+  (asserted: equal extent, identical bin frequencies). To make the bins shared by construction,
+  `ladder_cases.rung2_case` takes a required `extent_multiple_A` (0.05 A in the test: the box extent
+  is rounded up to a multiple of the coarsest dx; the top absorber takes the rounding, >= 10 A).
+  For r = 0.1 the extent was already 407.70 A on both grids (results unchanged); for r = 0.05 it
+  becomes 538.40 A (nx 21536 instead of 21535; top absorber 10.03 instead of 10.005 A).
+* E7 M2 (budget grids): the expected residuals on the exact 0.025 A grid are 4.5e-4 (r = 0.1) and
+  5.1e-4 (r = 0.05), not 2.8e-4; the test docstring says so. My runs agree with E7 (below).
+* E7 M3 (clean depth): study_depth100.yaml keeps 100 A; its header now states that 65 A is the
+  reviewed minimum for the null-test criteria (E7 M3 from P2's 1D model; H2 2.4/3) and 100 A a
+  margin, and that at r = 0 no clean depth converges the absolute reflection, so every fixed-beam
+  point has r >= 0.05 (all points of the file have r >= 0.05; tested). Same wording in
+  null_test_cases.py and the null-study README. The saved estimate was regenerated (the file's hash
+  changed; every estimate line identical to the previous run except the CPU timings).
+
+Rerun after the corrections (`venv/bin/python -m pytest -q -s tests/forward/test_rung2_bragg.py`,
+load 11-13) -> `7 passed, 1 skipped in 135.68s (0:02:15)`:
+
+```
+R2-A r = 0.1, fresnel: 18 bins |eta| <= 3.0, max |dR| = 4.557e-04 (T_A = 0.0015), max |d arg| = 1.906e-03 rad
+R2-A r = 0.1, exact: 18 bins |eta| <= 3.0, max |dR| = 4.618e-04 (T_A = 0.0015), max |d arg| = 1.889e-03 rad
+R2-A r = 0.05, fresnel: 24 bins |eta| <= 3.0, max |dR| = 5.172e-04 (T_A = 0.0015), max |d arg| = 1.750e-03 rad
+  fresnel r-model exact, dx 0.02500 A, nx 21536, 11612 slices, x_s 165.000 A, run 50.1 s
+R2-A r = 0.05, exact: 24 bins |eta| <= 3.0, max |dR| = 5.263e-04 (T_A = 0.0015), max |d arg| = 1.728e-03 rad
+R2-A (b), r = 0.1, |eta| <= 0.9 (6 bins): measured arg(r_X/r_F) in [-1.181e-03, -9.489e-04] rad, predicted [-1.201e-03, -9.996e-04] rad, max |measured - predicted| = 5.074e-05 rad (T = 0.0002)
+R2-A (c) guard, r = 0.1, Fresnel, 18 bins: per-bin |dR(0.05)|/|dR(0.025)| from 3.05 to 6.50 (>= 2.0); max |dR| 1.454e-03 (dx 0.05) and 4.557e-04 (dx 0.025), ratio of maxima 3.19 (log2 1.67, not an order)
+```
+
+The first run of task 1 (before E7) passed P2's original (c) with order 1.67 on the same pixel-centre
+geometry; that criterion is withdrawn, not loosened: the per-bin guard is the reviewed replacement.

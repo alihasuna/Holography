@@ -5,15 +5,25 @@ tools/physics_checks/rung2_reference.py, imported by ladder_cases.rung2_measure;
 
 Test R2-A exactly as P2 section 8 proposes (cell, sheet beam, angle, r = 0.1 and 0.05, dx 0.025 A,
 dz 1 A, both propagators, read-out with flat_reflection_coefficient at x_s, no fitted phase or
-angle offset). The pass criteria were set by P2 BEFORE any engine run (P2 8.4) and are copied here
-unchanged; they are never loosened:
+angle offset), with the correction of the adversarial review E7 (docs/agent_reports/
+E7_rung2_review.md, M1; orchestrator decision): x_s lies on a pixel CENTRE of every grid of the
+test (asserted), and the ill-posed "order >= 1.5" of (c) is replaced by a per-bin guard. The pass
+criteria (a) and (b) were set by P2 BEFORE any engine run (P2 8.4) and are copied here unchanged;
+they are never loosened:
   (a) max over the bins with |eta| <= 3 of |r_engine - R_ref| <= T_A = 1.5e-3 (complex difference),
       for r = 0.1 (clean depth 100 A, exit 5000 A after the top-edge contact) and r = 0.05 (150 A,
       10000 A), with the Fresnel propagator against model "exact" and the exact propagator against
       model "engine_exact_propagator" (P2 4.1, 4.2);
   (b) r = 0.1, |eta| <= 0.9: |arg(r_exact-prop/r_Fresnel) - arg(R_engine_exact_propagator/R_exact)|
       <= 2e-4 rad (same grid, same bins);
-  (c) r = 0.1, Fresnel: max |dR| at dx = 0.05 A over that at dx = 0.025 A >= 2^1.5 (order >= 1.5).
+  (c) convergence guard (E7 M1, replacing P2's "max |dR| ratio >= 2^1.5"): r = 0.1, Fresnel, for
+      EVERY bin with |eta| <= 3, |r(dx 0.05) - R_ref| >= 2 |r(dx 0.025) - R_ref|, the two grids
+      sharing their frequency bins (same box extent) and x_s on a pixel centre of both (E7
+      observed a minimum per-bin ratio of 3.07). P2's order >= 1.5 depended on where x_s falls in
+      its pixel (centre 1.68 passes, quarter 1.49 and boundary 1.45 fail: E7 M1) and was not an
+      order (a dx-independent part of about 1e-4 sits under the dx term).
+The expected residuals on this exact grid are 4.5e-4 (r = 0.1) and 5.1e-4 (r = 0.05) (E7 M2; P2's
+budget of 2.8e-4 at r = 0.05 came from a split step with dx = 0.0249988 A).
 Guards against a vacuous test (not tolerances): each run has bins on both sides of the plateau and
 inside it.
 
@@ -33,12 +43,13 @@ T_A = 1.5e-3            # P2 8.4 (a)
 ETA_A = 3.0
 T_PROP = 2e-4           # P2 8.4 (b), rad
 ETA_PROP = 0.9
-ORDER_MIN = 1.5         # P2 8.4 (c)
+BIN_RATIO_MIN = 2.0     # E7 M1 correction of P2 8.4 (c): per-bin guard, orchestrator decision
 T_B = 3e-2              # P2 8.4, R2-B (optional, qualitative)
 ETA_B = 0.5
 
 COMMON = dict(dz=1.0, H=24.0, edge=4.0, gap=2.0, absorber_A=15.0, top_A=10.0, W0=100.0,
-              entrance_A=10.0, extra_vacuum_A=150.0, buildup_A=20.0, precision="complex128")
+              entrance_A=10.0, extra_vacuum_A=150.0, buildup_A=20.0, precision="complex128",
+              extent_multiple_A=0.05)       # grids of dx 0.05 and 0.025 A share their bins
 R2A = {0.1: dict(clean_A=100.0, exit_after_top_contact_A=5000.0),
        0.05: dict(clean_A=150.0, exit_after_top_contact_A=10000.0)}
 R2B = dict(clean_A=250.0, exit_after_top_contact_A=30000.0)
@@ -46,7 +57,10 @@ R2B = dict(clean_A=250.0, exit_after_top_contact_A=30000.0)
 
 @functools.lru_cache(maxsize=None)
 def _run(r, propagator, dx):
-    return rung2_measure(r, dx=dx, propagator=propagator, **R2A[r], **COMMON)
+    res = rung2_measure(r, dx=dx, propagator=propagator, **R2A[r], **COMMON)
+    # E7 M1: x_s on a pixel centre (x_j = j dx) of EVERY grid of the test
+    assert abs(res["x_s_in_pixels"] - round(res["x_s_in_pixels"])) < 1e-6, res["x_s_in_pixels"]
+    return res
 
 
 def _table(res, sel):
@@ -93,16 +107,19 @@ def test_r2a_exact_minus_fresnel_propagator_matches_the_oneway_model():
     assert dev.max() <= T_PROP
 
 
-def test_r2a_dx_convergence_order():
-    e = {}
-    for dx in (0.05, 0.025):
-        res = _run(0.1, "fresnel", dx)
-        sel = np.abs(res["eta"]) <= ETA_A
-        e[dx] = float(np.max(np.abs(res["r"][sel] - res["R_ref"][sel])))
-    order = np.log2(e[0.05] / e[0.025])
-    print(f"\nR2-A (c), r = 0.1, Fresnel: max |dR| {e[0.05]:.3e} (dx 0.05) -> {e[0.025]:.3e} "
-          f"(dx 0.025): order {order:.2f} (>= {ORDER_MIN})")
-    assert order >= ORDER_MIN
+def test_r2a_dx_convergence_guard_per_bin():
+    c, f = _run(0.1, "fresnel", 0.05), _run(0.1, "fresnel", 0.025)
+    assert c["extent_x_A"] == pytest.approx(f["extent_x_A"], abs=1e-9)
+    sc, sf = np.abs(c["eta"]) <= ETA_A, np.abs(f["eta"]) <= ETA_A
+    assert np.array_equal(c["f_per_A"][sc], f["f_per_A"][sf])     # the same bins
+    ec = np.abs(c["r"][sc] - c["R_ref"][sc])
+    ef = np.abs(f["r"][sf] - f["R_ref"][sf])
+    ratio = ec / ef
+    print(f"\nR2-A (c) guard, r = 0.1, Fresnel, {sc.sum()} bins: per-bin |dR(0.05)|/|dR(0.025)| "
+          f"from {ratio.min():.2f} to {ratio.max():.2f} (>= {BIN_RATIO_MIN}); max |dR| "
+          f"{ec.max():.3e} (dx 0.05) and {ef.max():.3e} (dx 0.025), ratio of maxima "
+          f"{ec.max() / ef.max():.2f} (log2 {np.log2(ec.max() / ef.max()):.2f}, not an order)")
+    assert np.all(ec >= BIN_RATIO_MIN * ef)
 
 
 def test_r2a_realised_potential_and_band_record():

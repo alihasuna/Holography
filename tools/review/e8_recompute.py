@@ -40,7 +40,11 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 import numpy as np  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO))
+_JOBFLAG = [f for f in ("--engine-job", "--rung2-job") if f in sys.argv]
+if _JOBFLAG:                            # job subprocess: the archived engine commit comes first
+    sys.path.insert(0, json.loads(sys.argv[sys.argv.index(_JOBFLAG[0]) + 1])["engine_root"])
+else:
+    sys.path.insert(0, str(REPO))
 SCR = Path("/tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad")
 SOLVER_DIR = SCR / "rheed_solver"
 RUNS = SOLVER_DIR / "runs"
@@ -453,6 +457,13 @@ def section3():
     cmp("chk_a100_N8_B", "chk_a100_N6_B", "[100] rods N=8 vs 6 (B)")
     cmp("chk_a100_N10_B", "chk_a100_N6_B", "[100] rods N=10 vs 6 (B)")
     cmp("chk_a100m_N6_A", "chk_a100_N6_A", "[100] phi -45 vs +45 deg")
+    for az in ("a100_N6", "a110_N9"):
+        A, B = solver_case(f"fine_{az}_r000_ML150"), solver_case(f"fine_{az}_r000_ML300")
+        d = np.abs(A["R"] - B["R"])
+        tot = (A["flux"] > 0.9999)
+        print(f"  r = 0, {az}: ML 150 vs 300 differ by more than 1e-3 in R at {int((d > 1e-3).sum())} of "
+              f"{len(d)} angles; total reflection (flux > 0.9999) at {int(tot.sum())} angles, max |dR| "
+              f"there {d[tot].max():.1e}; largest |R|^2 {max(np.abs(A['R']).max(), np.abs(B['R']).max()) ** 2:.4f}")
     return rows
 
 
@@ -629,7 +640,8 @@ def section5(res4):
           f"{np.abs(R1 - Rs)[(thr > 0.01555) & (thr < 0.01685)].max():.3f}")
     for s in (0.95, 0.90, 0.85):
         print(f"  engine |R| scaled by {s:.2f} (phase unchanged): {n_fail(Re * s)} outside; "
-              f"solver |R| scaled by {s:.2f} as a stand-in engine: {n_fail(Rs * s)} outside")
+              f"solver |R| scaled by {s:.2f} (|R|^2 {s * s - 1:+.4f}) as a stand-in engine: "
+              f"{n_fail(Rs * s)} outside")
     # the tolerance in relative amplitude and in phase at the (0,0,8) peak
     i = int(np.argmin(np.abs(thr - 0.0162)))
     print(f"  at 16.2 mrad: tol = {tol[i]:.4f} = {tol[i] / abs(Rs[i]):.3f} of |R_sol| "
@@ -681,8 +693,8 @@ def section6(res4):
     pf = peak_analysis(tf, fine["R"], w_half=pf["fwhm"] / 2)
     print(f"  solver fine grid (0.02 mrad): peak {pf['tp']:.4f} mrad, |R|^2 {pf['Ip']:.5f}, FWHM "
           f"{pf['fwhm']:.4f} mrad ({pf['tl']:.3f} to {pf['tr']:.3f}), sweep over +-FWHM/2 {pf['sweep']:+.4f} rad")
-    m = (tf >= 15.5) & (tf <= 16.9)
-    ph = np.unwrap(np.angle(fine["R"][m]))
+    i0, i1 = int(np.argmin(np.abs(tf - 15.5))), int(np.argmin(np.abs(tf - 16.9)))
+    ph = np.unwrap(np.angle(fine["R"][i0:i1 + 1]))
     print(f"  solver fine: unwrapped arg R from 15.50 to 16.90 mrad {ph[0]:+.3f} -> {ph[-1]:+.3f} "
           f"(total {ph[-1] - ph[0]:+.3f} rad); monotonic: {bool(np.all(np.diff(ph) > 0))}")
     w = pf["fwhm"] / 2
@@ -755,8 +767,10 @@ def section7():
             base = srcs[ref]
             diff = [cm for cm in allc if srcs[cm] != base]
             same_all &= not diff
+            absent = [cm for cm in allc if srcs[cm] is None]
             print(f"  {path.split('/')[-1]}:{nm}: identical at {', '.join(allc)}: {not diff}"
-                  + (f" (differs at {diff})" if diff else ""))
+                  + (f" (differs at {diff})" if diff else "")
+                  + (f" (absent at {absent})" if absent else ""))
     check("atomic-path functions identical across every engine commit S5 used", same_all,
           "propagate_slices, _RealisedAtomic, propagators, sheet beam, band mask, cell builder")
     a = ej["eng_a100_dt_r010"]["angles"]["16.2000"]
@@ -773,25 +787,518 @@ def section7():
               f"{hashlib.sha256(s.encode()).hexdigest()[:12]}")
 
 
-def _main_early(argv=None):
+# ================================================================================================
+# 10. own engine runs (E8 driver; the engine is imported from an archived commit, see --engine-job)
+# ================================================================================================
+def _engine_job(spec):
+    """Runs INSIDE a subprocess whose sys.path starts with spec['engine_root'] (a `git archive` of
+    reflection_holo at the stated commit): E8's own flat Si(001) strip after the recipe of H2's
+    flat_strip / S5 6.1 (one period built with every builder assertion, tiled along the beam), the
+    Doyle-Turner potential written here (engine AtomicPotential with only scattering_factor
+    replaced), optional along-beam (ZOLZ) averaging of the slice potentials, and the y-averaged
+    exit column saved for E8's read-out."""
+    import dataclasses
+    import resource
+    root = spec["engine_root"]
+    sys.path.insert(0, root)
+    import reflection_holo
+    assert reflection_holo.__file__.startswith(root), reflection_holo.__file__
+    from reflection_holo.forward.cell import build_reflection_cell
+    from reflection_holo.forward.multislice import (AtomicPotential, MultisliceParams,
+                                                    NumericalAbsorber, PhysicalAbsorption,
+                                                    SheetBeam, fft_friendly, run_realisation)
+    from reflection_holo.structure import Staircase, build_si001_terraces
+    A = 5.4309
+    Q = A / 4
+    th = spec["theta_mrad"] * 1e-3
+    azim = spec.get("azimuth", "100")
+    P = A if azim == "100" else A / np.sqrt(2.0)
+    dz = P / 4.0
+    GAP, EDGE, BAB, TAB, WABS = 2.0, 2.0, 15.0, 10.0, 100.0
+    depth = BAB + spec.get("clean_A", 55.0)
+    sub = int(np.ceil(depth / Q)) + 2
+    ent = 10 * dz
+    periods = int(np.ceil((GAP / np.tan(th) + spec.get("L_after_A", 4500.0) - ent) / P))
+    one = build_si001_terraces(
+        azimuth_uvw=(1, 0, 0) if azim == "100" else (1, 1, 0),
+        azimuth_label=f"TEST_ONLY: E8 review rerun, exact [{azim}]",
+        staircase=Staircase(edges="parallel", terrace_layers=(0,), terrace_widths=(1,),
+                            boundary_step_layers=0),
+        edge_periods=1, substrate_layers=sub, first_terrace_backbond_uvw=(1, 1, 0),
+        termination="bulk", overlayer=None, vacuum_above_A=10.0, lattice_parameter_A=A,
+        lattice_parameter_label="ASSUMPTION B2")
+    n = one.n_atoms
+    pos = np.tile(one.positions_A, (periods, 1))
+    pos[:, 2] += np.repeat(np.arange(periods), n) * P
+    cell_A = one.cell_A.copy()
+    cell_A[2, 2] = periods * P
+    md = dict(one.metadata)
+    md["edge_periods"] = periods
+    md["atom_count"] = int(n * periods)
+    md["positions_sha256"] = hashlib.sha256(np.ascontiguousarray(pos, "<f8").tobytes()).hexdigest()
+    s = dataclasses.replace(one, positions_A=pos, species=np.tile(one.species, periods),
+                            cell_A=cell_A, layer_index=np.tile(one.layer_index, periods),
+                            terrace_index=np.tile(one.terrace_index, periods), metadata=md)
+    Lz = ent + periods * P
+    H = Lz * np.tan(th) - GAP - 1.0
+    vac = float(np.ceil(H + Lz * np.tan(th) + 1.0))
+    cell = build_reflection_cell(s, vacuum_above_A=vac, depth_below_A=depth, bulk_absorber_A=BAB,
+                                 top_absorber_A=TAB, entrance_vacuum_z_A=ent)
+    xs = float(cell.metadata["layout"]["highest_surface_x_A"])
+    top_atom_x = float(np.asarray(cell.atoms_xyz_A)[:, 0].max())
+    a_dt = np.array(spec["dt_a"])
+    b_dt = np.array(spec["dt_b"])
+    C = spec["C"]
+
+    class DTPotential(AtomicPotential):
+        def scattering_factor(self, Z, f2):
+            f2 = np.asarray(f2, dtype=np.float64)
+            return C * (a_dt[:, None] * np.exp(-b_dt[:, None] * f2.reshape(1, -1) / 4.0)).sum(
+                axis=0).reshape(f2.shape)
+
+        def realise(self, *, grid, dz_A, n_slices, backend, rng):
+            base = super().realise(grid=grid, dz_A=dz_A, n_slices=n_slices, backend=backend, rng=rng)
+            if not spec.get("zolz"):
+                return base
+            return ZolzRealised(base, backend)
+
+    class ZolzRealised:
+        """Along-beam (ZOLZ) average: every crystal slice carries the mean projected potential of
+        one full period (4 slices of a/4 at [100]) taken from the middle of the strip."""
+        def __init__(self, base, be):
+            first = int(np.argmax(np.diff(base.starts) > 0))
+            per = int(round(P / dz))
+            mid = first + per * ((len(base.starts) - 1 - first) // (2 * per))
+            acc = None
+            for i in range(mid, mid + per):
+                v = base.projected(i)
+                acc = v if acc is None else acc + v
+            self.V = acc / per
+            self.first = first
+            self.zero = be.xp.zeros_like(self.V)
+            self.metadata = dict(base.metadata, zolz_average=dict(first_crystal_slice=first,
+                                                                   period_slices=per, from_slice=mid))
+
+        def slice_key(self, i):
+            return "empty" if i < self.first else "zolz"
+
+        def projected(self, i):
+            return self.zero if i < self.first else self.V
+
+    absn = PhysicalAbsorption(model="proportional", ratio=0.1,
+                              label="TEST_ONLY: stands in for PROJECT_INPUT item 21 (E8 rerun)")
+    pot = DTPotential(cell, parameterisation="kirkland", physical_absorption=absn,
+                      frozen_phonons=None, static_lattice_label="ASSUMPTION: static lattice")
+    beam = SheetBeam(height_A=float(H), edge_A=EDGE, x_bottom_A=xs + GAP, theta_in_ext_rad=th,
+                     theta_label="TEST_ONLY: E8 review rerun angle")
+    mp = spec["max_pixel_A"]
+    nx = fft_friendly(int(np.ceil(cell.extent_x_A / mp)))
+    ny = fft_friendly(int(np.ceil(cell.extent_y_A / mp)))
+    params = MultisliceParams(energy_keV=200.0, nx=nx, ny=ny, dz_A=dz, propagator="exact",
+                              band_limit="2/3", backend="numpy", precision="complex64",
+                              threads=int(spec["threads"]),
+                              absorber=NumericalAbsorber(strength_V=WABS, profile="sin2"),
+                              theta_out_ext_rad=th, buildup_depth_A=20.0,
+                              working_reflections_hkl=((0, 0, 8),))
+    t0 = time.time()
+    ew = run_realisation(cell, potential=pot, beam=beam, params=params, realisation=0, seed=None)
+    t1 = time.time()
+    col = ew.psi.astype(np.complex128).mean(axis=1)
+    info = dict(theta_ext_rad=th, x_surface_A=xs, L_z_A=float(ew.z_A), z_contact_A=GAP / np.tan(th),
+                nx=nx, ny=ny, dx_A=ew.dx_A, dy_A=ew.dy_A, n_slices=int(round(Lz / dz)),
+                n_atoms=int(len(cell.Z)), top_atom_x_A=top_atom_x, H_A=float(H),
+                mip_V=float(pot.mean_inner_potential_V()), run_s=t1 - t0,
+                built=int(ew.metadata["slices"]["transmission_functions_built"]),
+                peak_rss_MB=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
+                engine_commit=Path(root, "COMMIT").read_text().strip(),
+                positions_sha256_one_period=hashlib.sha256(
+                    np.ascontiguousarray(one.positions_A, "<f8").tobytes()).hexdigest())
+    np.savez(spec["out"], col=col, x0=ew.x0_A, dx=ew.dx_A, info=json.dumps(info))
+
+
+def run_engine_job(tag, *, engine_root, theta_mrad, max_pixel_A, zolz, threads, dt, L_after_A=4500.0,
+                   azimuth="100"):
+    ENGINE_CACHE.mkdir(parents=True, exist_ok=True)
+    out = ENGINE_CACHE / f"{tag}.npz"
+    if not out.exists():
+        spec = dict(engine_root=str(engine_root), theta_mrad=theta_mrad, max_pixel_A=max_pixel_A,
+                    zolz=zolz, threads=threads, dt_a=dt["a"], dt_b=dt["b"], C=dt["C"],
+                    L_after_A=L_after_A, out=str(out), azimuth=azimuth)
+        t = time.time()
+        env = dict(os.environ, PYTHONPATH=str(engine_root))
+        r = subprocess.run([sys.executable, __file__, "--engine-job", json.dumps(spec)], env=env,
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print(r.stdout[-2000:], r.stderr[-4000:])
+            raise RuntimeError(f"engine job {tag} failed")
+        print(f"  [{tag}: computed now in {time.time() - t:.0f} s wall]")
+    z = np.load(out, allow_pickle=False)
+    info = json.loads(str(z["info"]))
+    return dict(col=z["col"], x0=float(z["x0"]), dx=float(z["dx"]), info=info)
+
+
+ENGINE_MATRIX = [   # (tag, engine archive, theta mrad, max pixel A, zolz, L after contact A)
+    ("head_dt_full_p013_t16.2", "engine_HEAD", 16.2, 0.13, False, 4500.0),
+    ("head_dt_full_p010_t16.2", "engine_HEAD", 16.2, 0.10, False, 4500.0),
+    ("head_dt_full_p0075_t16.2", "engine_HEAD", 16.2, 0.075, False, 4500.0),
+    ("head_dt_full_p0065_t16.2", "engine_HEAD", 16.2, 0.065, False, 4500.0),
+    ("head_dt_zolz_p013_t16.2", "engine_HEAD", 16.2, 0.13, True, 4500.0),
+    ("head_dt_zolz_p010_t16.2", "engine_HEAD", 16.2, 0.10, True, 4500.0),
+    ("head_dt_zolz_p0075_t16.2", "engine_HEAD", 16.2, 0.075, True, 4500.0),
+    ("head_dt_zolz_p0065_t16.2", "engine_HEAD", 16.2, 0.065, True, 4500.0),
+    ("head_dt_zolz_p010_L7000_t16.2", "engine_HEAD", 16.2, 0.10, True, 7000.0),
+]
+# the like-for-like engine (along-beam average, pixel 0.10 A) and the full engine at 0.10 A at more
+# angles, both azimuths: (tag, azimuth, theta mrad, max pixel, zolz)
+ENGINE_CURVE = [
+    ("c100_zolz_p0075_t12.0", "100", 12.0, 0.075, True), ("c100_full_p0075_t12.0", "100", 12.0, 0.075, False),
+    ("c100_zolz_p0075_t15.8", "100", 15.8, 0.075, True), ("c100_full_p0075_t15.8", "100", 15.8, 0.075, False),
+    ("c100_zolz_p0075_t16.0", "100", 16.0, 0.075, True), ("c100_zolz_p0075_t16.4", "100", 16.4, 0.075, True),
+    ("c100_zolz_p0075_t21.0", "100", 21.0, 0.075, True), ("c100_full_p0075_t21.0", "100", 21.0, 0.075, False),
+    ("c110_zolz_p0075_t15.1", "110", 15.1, 0.075, True), ("c110_full_p0075_t15.1", "110", 15.1, 0.075, False),
+    ("c110_zolz_p0075_t17.6", "110", 17.6, 0.075, True), ("c110_full_p0075_t17.6", "110", 17.6, 0.075, False),
+    ("c110_zolz_p013_t17.6", "110", 17.6, 0.13, True),
+]
+
+
+def section10(dt, threads, only_run=False):
+    hr("E8-10. Own engine runs at 16.2 mrad [100] (DT, r = 0.1, static): regression against S5's "
+       "stored column, pixel study, along-beam (ZOLZ) averaged potential (MEASURED_HERE)")
+    res = {}
+    for tag, root, th, mp, zolz, L in ENGINE_MATRIX:
+        res[tag] = run_engine_job(tag, engine_root=SCR / "e8" / root, theta_mrad=th, max_pixel_A=mp,
+                                  zolz=zolz, threads=threads, dt=dt, L_after_A=L)
+    if only_run:
+        return res
+    ej = json.loads(ENGINE_JSON.read_text())["cases"]["eng_a100_dt_r010"]["angles"]["16.2000"]
+    st = np.array(ej["col_re"]) + 1j * np.array(ej["col_im"])
+    mine = res["head_dt_full_p013_t16.2"]
+    d = np.abs(mine["col"] - st)
+    print(f"  regression: E8 run with the engine at {mine['info']['engine_commit']} (git archive) vs S5's "
+          f"stored column (148e4f6, 7 significant digits): grid {mine['info']['nx']}x{mine['info']['ny']}x"
+          f"{mine['info']['n_slices']} vs {ej['info']['nx']}x{ej['info']['ny']}x{ej['info']['n_slices']}, "
+          f"atoms {mine['info']['n_atoms']} vs {ej['info']['n_atoms']}; max |diff| {d.max():.1e} "
+          f"(column max {np.abs(st).max():.3f}); relative to |c|: {np.max(d / np.maximum(np.abs(st), 1e-3)):.1e}")
+    check("current engine reproduces S5's 16.2 mrad column", d.max() < 1e-5, f"max |diff| {d.max():.1e}")
+    print(f"  top-layer nuclei at x = {mine['info']['top_atom_x_A']:.6f} A, reference plane x_s = "
+          f"{mine['info']['x_surface_A']:.6f} A (the engine's R is referred to the top-layer nuclei)")
+    sol = {n: solver_at(c, [0.0162])[0] for n, c in (("N6", "eng_a100_N6_r010"),
+                                                     ("N8", "eng_a100_N8_r010_B"),
+                                                     ("N10", "eng_a100_N10_r010_B"))}
+    print("  solver at 16.2 mrad: " + ", ".join(f"{k} |R|^2 {abs(v) ** 2:.5f} arg {np.angle(v):+.4f}"
+                                                  for k, v in sol.items()))
+    g8 = 8 / A_SI
+    f_holz = np.sqrt(K_ENG**2 - (K_ENG * np.cos(0.0162) - 2 * np.pi / A_SI) ** 2) / (2 * np.pi)
+    print(f"  first along-beam (Laue) ring at 16.2 mrad, period a along [100]: transverse frequency "
+          f"{f_holz:.3f} 1/A")
+    dy0 = res["head_dt_full_p013_t16.2"]["info"]["dy_A"]
+    print(f"  at the production grid dy = {dy0:.5f} A the y band edge 1/(3 dy) = {1 / (3 * dy0):.6f} 1/A and "
+          f"the (7,-7) rod 14/a = {14 / A_SI:.6f} 1/A (on the edge); (0,0,16) at 16/a = {16 / A_SI:.4f} "
+          f"1/A, (0,0,14) at {14 / A_SI:.4f} 1/A")
+    for tag, root, th, mp, zolz, L in ENGINE_MATRIX:
+        if zolz or L != 4500.0:
+            continue
+        dxr = res[tag]["info"]["dx_A"]
+        fm = 1 / (3 * dxr)
+        hmax = int(np.floor(fm * A_SI / 2 + 1e-9))
+        h8 = int(np.floor(np.sqrt(max(fm**2 - g8**2, 0)) * A_SI / 2 + 1e-9))
+        print(f"  pixel {dxr:.4f} A: band radius {fm:.3f} 1/A; ZOLZ rods (h,-h) inside up to |h| = "
+              f"{hmax}; rods that still carry the (0,0,8) normal component (8/a = {g8:.4f}): |h| <= {h8}"
+              f"; first along-beam ring inside the band: {f_holz < fm}")
+    print("  run                              grid          built  run_s  |R|^2(window) arg     "
+          "|R|/|R_N10|-1  d arg     plateau bins |R| (2500..3750 A, 250 A)")
+    for tag, root, th, mp, zolz, L in ENGINE_MATRIX:
+        r = res[tag]
+        ro = engine_readout(r["col"], r["x0"], r["dx"], r["info"], bandpass=BP_RADIUS)
+        R = ro["R"]
+        rel = abs(R) / abs(sol["N10"]) - 1
+        da = wrap(np.angle(R) - np.angle(sol["N10"]))
+        bins = " ".join(f"{abs(b):.4f}" for b in ro["bins"][:5])
+        print(f"  {tag:32s} {r['info']['nx']}x{r['info']['ny']}x{r['info']['n_slices']:<5d} "
+              f"{r['info']['built']:5d} {r['info']['run_s']:6.0f}  {abs(R) ** 2:.5f}  {np.angle(R):+.4f}  "
+              f"{rel:+.4f}       {da:+.4f}   {bins}")
+        res[tag]["R"] = R
+        res[tag]["ro"] = ro
+    print("  along-beam couplings in the engine (full / along-beam-averaged, same pixel, 4500 A strips):")
+    for mp in ("013", "010", "0075", "0065"):
+        fu, zo = res[f"head_dt_full_p{mp}_t16.2"], res[f"head_dt_zolz_p{mp}_t16.2"]
+        print(f"     pixel {fu['info']['dx_A']:.4f} A: |R_full|/|R_zolz| - 1 = {abs(fu['R']) / abs(zo['R']) - 1:+.4f}, "
+              f"arg R_full - arg R_zolz = {wrap(np.angle(fu['R']) - np.angle(zo['R'])):+.4f} rad")
+    z1, z2 = res["head_dt_zolz_p010_t16.2"], res["head_dt_zolz_p010_L7000_t16.2"]
+    print(f"  strip length (along-beam-averaged, 0.0990 A): 7000 A vs 4500 A: |R| ratio - 1 "
+          f"{abs(z2['R']) / abs(z1['R']) - 1:+.4f}, d arg {wrap(np.angle(z2['R']) - np.angle(z1['R'])):+.4f} rad")
+    return res
+
+
+
+def section10b(dt, threads):
+    hr("E8-10b. Like-for-like engine (along-beam-averaged potential, pixel <= 0.075 A) and the full "
+       "engine at 0.075 A against the solver at more angles and at [110] (MEASURED_HERE)")
+    print("  run                     az    theta  grid           |R|^2    arg      sol |R|^2  sol arg  "
+          "|R|/|R_sol|-1  d arg    |dR|    tol(S5 rule)  spread")
+    out = {}
+    for tag, az, th, mp, zolz in ENGINE_CURVE:
+        r = run_engine_job(tag, engine_root=SCR / "e8" / "engine_HEAD", theta_mrad=th, max_pixel_A=mp,
+                           zolz=zolz, threads=threads, dt=dt, azimuth=az)
+        ro = engine_readout(r["col"], r["x0"], r["dx"], r["info"], bandpass=BP_RADIUS)
+        Rs = solver_at("eng_a100_N6_r010" if az == "100" else "eng_a110_N9_r010", [th * 1e-3])[0]
+        R = ro["R"]
+        tol = TOL_REL * abs(Rs) + TOL_ABS + TOL_SPREAD * ro["spread"]
+        print(f"  {tag:23s} [{az}] {th:5.1f}  {r['info']['nx']}x{r['info']['ny']}x{r['info']['n_slices']:<5d}"
+              f" {abs(R) ** 2:.5f}  {np.angle(R):+.4f}  {abs(Rs) ** 2:.5f}   {np.angle(Rs):+.4f}  "
+              f"{abs(R) / abs(Rs) - 1:+.4f}        {wrap(np.angle(R) - np.angle(Rs)):+.4f}  "
+              f"{abs(R - Rs):.4f}  {tol:.4f}        {ro['spread']:.4f}")
+        out[tag] = dict(R=R, Rs=Rs)
+    # peak angle from the three points 16.0, 16.2, 16.4 mrad, same method for every curve
+    def vertex(th3, I3):
+        a, b, c = np.polyfit(th3, I3, 2)
+        return -b / (2 * a), c - b * b / (4 * a)
+    th3 = np.array([16.0, 16.2, 16.4])
+    z16 = run_engine_job("head_dt_zolz_p0075_t16.2", engine_root=SCR / "e8" / "engine_HEAD",
+                         theta_mrad=16.2, max_pixel_A=0.075, zolz=True, threads=threads, dt=dt)
+    zR = [out["c100_zolz_p0075_t16.0"]["R"],
+          engine_readout(z16["col"], z16["x0"], z16["dx"], z16["info"], bandpass=BP_RADIUS)["R"],
+          out["c100_zolz_p0075_t16.4"]["R"]]
+    sR = solver_at("eng_a100_N6_r010", th3 * 1e-3)
+    s5 = engine_case("eng_a100_dt_r010", bandpass=BP_RADIUS)
+    fR = [s5[t]["R"] for t in (16.0, 16.2, 16.4)]
+    pz, ps, pf = (vertex(th3, np.abs(np.array(v)) ** 2) for v in (zR, sR, fR))
+    print(f"  peak from the parabola through 16.0/16.2/16.4 mrad: averaged engine 0.075 A {pz[0]:.4f} mrad "
+          f"(|R|^2 {pz[1]:.5f}); solver 13 rods {ps[0]:.4f} ({ps[1]:.5f}); full engine 0.13 A (S5 runs) "
+          f"{pf[0]:.4f} ({pf[1]:.5f}); shifts vs solver {pz[0] - ps[0]:+.4f} and {pf[0] - ps[0]:+.4f} mrad")
+    return out
+
+# ================================================================================================
+# 11. rung-2 continuum problem (P2 exact reference, E1 R2-A set-up) at the atomistic runs' pixels
+# ================================================================================================
+def _rung2_job(spec):
+    """Runs INSIDE a subprocess with the archived engine and tests/forward on sys.path: the R2-A
+    cell (r = 0.1, exact propagator, clean 100 A, exit 5000 A after the top-edge contact, dz 1 A)
+    at the pixel dx (x_s = 115 A on a pixel centre), read with flat_reflection_coefficient, against
+    P2's exact reference (ladder_cases.rung2_measure, used as it is in tests/forward)."""
+    sys.path.insert(0, str(Path(spec["engine_root"]) / "tests" / "forward"))
+    from ladder_cases import rung2_measure
+    out = {}
+    for dx in spec["dx"]:
+        t = time.time()
+        res = rung2_measure(0.1, dx=dx, propagator="exact", clean_A=100.0,
+                            exit_after_top_contact_A=5000.0, dz=1.0, H=24.0, edge=4.0, gap=2.0,
+                            absorber_A=15.0, top_A=10.0, W0=100.0, entrance_A=10.0,
+                            extra_vacuum_A=150.0, buildup_A=20.0, precision="complex128",
+                            extent_multiple_A=dx)
+        out[repr(dx)] = dict(eta=res["eta"].tolist(), r_re=res["r"].real.tolist(),
+                             r_im=res["r"].imag.tolist(), ref_re=res["R_ref"].real.tolist(),
+                             ref_im=res["R_ref"].imag.tolist(), nx=int(res["nx"]),
+                             dx=float(res["dx"]), xs_pix=float(res["x_s_in_pixels"]),
+                             time_s=time.time() - t)
+    Path(spec["out"]).write_text(json.dumps(out))
+
+
+def section11():
+    hr("E8-11. Rung-2 continuum Bragg case (P2 exact reference) at coarse pixels: is the engine's "
+       "1D amplitude pixel-sensitive? (MEASURED_HERE)")
+    root = SCR / "e8" / "engine_HEAD"
+    out = ENGINE_CACHE / "rung2_pixels.json"
+    dxs = [115.0 / 885, 115.0 / 1150, 115.0 / 2300, 115.0 / 4600]    # x_s = 115 A on a pixel centre
+    if not out.exists():
+        spec = dict(engine_root=str(root), dx=dxs, out=str(out))
+        env = dict(os.environ, PYTHONPATH=f"{root}:{root}/tests/forward")
+        r = subprocess.run([sys.executable, __file__, "--rung2-job", json.dumps(spec)], env=env,
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print(r.stdout[-2000:], r.stderr[-4000:])
+            raise RuntimeError("rung-2 job failed")
+    d = json.loads(out.read_text())
+    print("  dx (A)    nx     bins |eta|<=3  max|r-R_ref|  at eta~0: |r|/|R_ref|-1  d arg     "
+          "mean over |eta|<=1 of |r|/|R_ref|-1   run s")
+    for k, v in d.items():
+        eta = np.array(v["eta"])
+        r = np.array(v["r_re"]) + 1j * np.array(v["r_im"])
+        R = np.array(v["ref_re"]) + 1j * np.array(v["ref_im"])
+        m3 = np.abs(eta) <= 3
+        m1 = np.abs(eta) <= 1
+        i0 = int(np.argmin(np.abs(eta)))
+        print(f"  {v['dx']:.5f}  {v['nx']:6d}  {int(m3.sum()):4d}        {np.abs(r - R)[m3].max():.2e}"
+              f"      {abs(r[i0]) / abs(R[i0]) - 1:+.4f} (eta {eta[i0]:+.2f})  "
+              f"{wrap(np.angle(r[i0]) - np.angle(R[i0])):+.4f}   "
+              f"{np.mean(np.abs(r[m1]) / np.abs(R[m1]) - 1):+.4f}                       {v['time_s']:.0f}")
+    return d
+
+
+# ================================================================================================
+# 8. H2's stored plateaus converted to R at the top layer (own conversion) against the solver
+# ================================================================================================
+def section8():
+    hr("E8-8. H2's stored flat-strip plateaus (Kirkland engine) converted to R at the top-layer nuclei")
+    hj = json.loads((REPO / "tools/hpc/supercell_sizing_measurements.json").read_text())["runs"]
+    for run, scase in (("bu_100_r010", "h2_a100_N6_r010"), ("bu_110_r010", "h2_a110_N9_r010"),
+                       ("bu_100_r000", "h2_a100_N6_r000_ML150"), ("bu_100_r000", "h2_a100_N6_r000_ML300")):
+        v = hj[run]
+        info = v["info"]
+        b = v["buildup"]
+        e = b["R_plateau_abs"] * np.exp(1j * b["R_plateau_arg"])
+        th = info["theta_ext_rad"]
+        fc = np.sin(th) / LAM
+        q = 2 * np.pi * fc
+        PL = np.exp(-1j * info["L_z_A"] * q * q / (K_ENG + np.sqrt(K_ENG**2 - q * q)))
+        R = e * np.exp(4j * np.pi * fc * info["x_surface_A"]) / PL
+        Rs = solver_case(scase)["R"][0]
+        print(f"  {run} (plateau {b['plateau_A'][0]:.0f}-{b['plateau_A'][1]:.0f} A, theta {1e3 * th:.4f} "
+              f"mrad): engine |R|^2 {abs(R) ** 2:.5f} arg {np.angle(R):+.4f}; solver {scase} |R|^2 "
+              f"{abs(Rs) ** 2:.5f} arg {np.angle(Rs):+.4f}; |dR| {abs(R - Rs):.4f}, d arg "
+              f"{wrap(np.angle(R) - np.angle(Rs)):+.4f}, |R_eng|/|R_sol| - 1 {abs(R) / abs(Rs) - 1:+.4f}")
+
+
+# ================================================================================================
+# 9. incident amplitude of the sheet beam at the surface in the read-out window (vacuum, own FFT)
+# ================================================================================================
+def section9(res4):
+    hr("E8-9. Incident sheet-beam amplitude at the surface plane in the read-out window (vacuum "
+       "propagation of the launched wave, no crystal; own 1D FFT with the exact kernel and 2/3 band)")
+    for ename in ("eng_a100_dt_r010",):
+        for ang in (12.0, 16.2, 21.0):
+            ro = res4[ename]["cases"][ang]
+            info = ro["info"]
+            th, xs, L, zc, H = (float(info["theta_ext_rad"]), float(info["x_surface_A"]),
+                                float(info["L_z_A"]), float(info["z_contact_A"]), float(info["H_A"]))
+            nx = int(info["nx"])
+            dx = ro["dx"]
+            x = np.arange(nx) * dx
+            fc = np.sin(th) / LAM
+            # launched wave: sin^2-edged sheet (edge 2 A) from xs + 2 to xs + 2 + H, projected onto f < 0
+            a0, e0 = xs + 2.0, 2.0
+            A = np.zeros(nx)
+            A[(x >= a0 + e0) & (x <= a0 + H - e0)] = 1.0
+            lo = (x > a0) & (x < a0 + e0)
+            A[lo] = np.sin(0.5 * np.pi * (x[lo] - a0) / e0) ** 2
+            hi = (x > a0 + H - e0) & (x < a0 + H)
+            A[hi] = np.sin(0.5 * np.pi * (a0 + H - x[hi]) / e0) ** 2
+            f = np.fft.fftfreq(nx, dx)
+            S = np.fft.fft(A * np.exp(-2j * np.pi * fc * x))
+            S[f >= 0] = 0.0
+            band = np.abs(f) <= 1.0 / (3 * dx)
+            q = 2 * np.pi * f
+            kz = np.sqrt(np.maximum(K_ENG**2 - q * q, 0.0))
+            phase = -q * q / (K_ENG + kz)
+            dwin = ro["d"]
+            wrows = (dwin >= WIN_START_A) & (dwin < (L - zc) - EXIT_EXCL_A) & (ro["x"] >= xs + 2.0)
+            ds = dwin[wrows]
+            z = zc + ds
+            # field at x = xs for every z: sum_f S(f) band(f) exp(i z phase(f)) exp(2 pi i f xs) / nx
+            M = np.exp(1j * np.outer(z, phase)) * (S * band * np.exp(2j * np.pi * f * xs))[None, :]
+            psi = M.sum(axis=1) / nx
+            ideal = np.exp(-2j * np.pi * fc * xs) * np.exp(-1j * z * (2 * np.pi * fc) ** 2 /
+                                                              (K_ENG + np.sqrt(K_ENG**2 - (2 * np.pi * fc) ** 2)))
+            rel = psi / ideal
+            print(f"  {ename} {ang:.1f} mrad: window {WIN_START_A:.0f}-{(L - zc) - EXIT_EXCL_A:.0f} A after "
+                  f"first contact; incident amplitude / ideal plane wave at x_s: mean {abs(rel.mean()):.4f}"
+                  f" (arg {np.angle(rel.mean()):+.4f}), range {np.abs(rel).min():.4f}-{np.abs(rel).max():.4f}")
+            # read-out normalised row by row by the incident field at the ray's departure point
+            # (local approximation: the reflection builds up over ~2000 A, so this is indicative)
+            Rrow = ro["Rx"][wrows]
+            Rn = Rrow / rel
+            def spread(v):
+                bins = [v[(ds >= b) & (ds < b + BIN_A)].mean() for b in np.arange(WIN_START_A,
+                        (L - zc) - EXIT_EXCL_A - BIN_A + 1e-9, BIN_A)]
+                return max(abs(q - v.mean()) for q in bins)
+            print(f"     window mean |R|^2 plain {abs(Rrow.mean()) ** 2:.5f}, incident-normalised "
+                  f"{abs(Rn.mean()) ** 2:.5f} (ratio {abs(Rn.mean()) / abs(Rrow.mean()) - 1:+.4f} in |R|); "
+                  f"250 A bin spread plain {spread(Rrow):.4f}, normalised {spread(Rn):.4f}")
+
+
+# ================================================================================================
+# 12. S5's tool as a black box: report mode re-run and compared with S5's saved output
+# ================================================================================================
+def section12():
+    hr("E8-12. The S5 tool's report mode re-run (black box) and compared with its saved output")
+    saved = (SOLVER_DIR / "report_final.txt").read_text().splitlines()
+    r = subprocess.run([sys.executable, str(REPO / "tools/validation/rheed_solver_compare.py")],
+                       capture_output=True, text=True, cwd=str(REPO))
+    new = r.stdout.splitlines()
+    diff = [(a, b) for a, b in zip(saved[1:], new[1:]) if a != b]
+    print(f"  exit status {r.returncode} (1 = a self-check fails: the 21.0 mrad [100] tolerance); "
+          f"{len(saved)} saved lines, {len(new)} new lines; lines that differ (apart from the header):"
+          f" {len(diff)}")
+    for a, b in diff:
+        print(f"     saved: {a.strip()}\n     now:   {b.strip()}")
+
+
+# ================================================================================================
+# 13. the P49 Eq. (36) assignment against the codes' strans (algebra, numerically)
+# ================================================================================================
+def section13():
+    hr("E8-13. Which amplitude does each formula return? (absorbing step, exp(-i omega t) solution)")
+    G0 = 4.0
+    U = 5.0 * (1 + 0.1j)
+    G1 = np.sqrt(G0**2 + U)
+    R = (G0 - G1) / (G0 + G1)                    # exp(-i omega t) Fresnel coefficient at s = 0
+    psi, dpsi = 1 + R, 1j * G0 * (R - 1)         # vacuum side at s = 0: exp(-i G0 s) + R exp(+i G0 s)
+    f_code = (G0 * psi - 1j * dpsi) / (G0 * psi + 1j * dpsi)          # strans (both codes)
+    f_eq36 = (G0 + 1j * dpsi / psi) / (G0 - 1j * dpsi / psi)          # P49 Eq. (36), same (Q, P)
+    c, dc = np.conj(psi), np.conj(dpsi)                                # exp(+i omega t) solution
+    f_eq36_conj = (G0 + 1j * dc / c) / (G0 - 1j * dc / c)
+    print(f"  R (Fresnel, exp(-i w t)) = {R:.6f}")
+    print(f"  code formula (Gamma Q - i P)(Gamma Q + i P)^-1 on the physical solution: {f_code:.6f}")
+    print(f"  Eq. (36) (Gamma + i P Q^-1)(Gamma - i P Q^-1)^-1 on the same solution: {f_eq36:.6f} "
+          f"= 1/R: {abs(f_eq36 - 1 / R) < 1e-12}")
+    print(f"  Eq. (36) on the exp(+i w t) solution (conjugated psi): {f_eq36_conj:.6f} = conj(R): "
+          f"{abs(f_eq36_conj - np.conj(R)) < 1e-12}")
+    check("code formula returns R, Eq. (36) returns conj(R) for the exp(+i w t) solution",
+          abs(f_code - R) < 1e-12 and abs(f_eq36_conj - np.conj(R)) < 1e-12, "algebra")
+
+
+
+# ================================================================================================
+def main(argv=None):
     p = argparse.ArgumentParser()
-    p.add_argument("--sections", default="1,2")
+    p.add_argument("--sections", default="1,2,3,4,5,6,7,8,9,10,11,12,13")
+    p.add_argument("--engine-job", default=None)
+    p.add_argument("--rung2-job", default=None)
+    p.add_argument("--threads", type=int, default=2)
+    p.add_argument("--only-run", action="store_true")
     a = p.parse_args(argv)
+    if a.engine_job:
+        _engine_job(json.loads(a.engine_job))
+        return 0
+    if a.rung2_job:
+        _rung2_job(json.loads(a.rung2_job))
+        return 0
     secs = {int(x) for x in a.sections.split(",")}
+    t0 = time.time()
+    print(f"E8 recompute; repository HEAD "
+          f"{subprocess.run(['git', '-C', str(REPO), 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()}"
+          f"; sections {sorted(secs)}")
     dt = section1()
     if 2 in secs:
         section2(dt)
     if 3 in secs:
         section3()
-    if secs & {4, 5, 6}:
-        r4 = section4()
+    r4 = section4() if secs & {4, 5, 6, 9} else None
     if 5 in secs:
         section5(r4)
     if 6 in secs:
         section6(r4)
     if 7 in secs:
         section7()
+    if 8 in secs:
+        section8()
+    if 9 in secs:
+        section9(r4)
+    if 10 in secs:
+        section10(dt, a.threads, a.only_run)
+        section10b(dt, a.threads)
+    if 11 in secs:
+        section11()
+    if 12 in secs:
+        section12()
+    if 13 in secs:
+        section13()
+    hr("Summary of self-checks")
+    for name, ok, det in CHECKS:
+        print(f"  {'PASS' if ok else 'FAIL'}  {name}: {det}")
+    print(f"\n{sum(c[1] for c in CHECKS)}/{len(CHECKS)} checks pass; ran in {time.time() - t0:.0f} s")
+    return 0
 
 
-if __name__ == "__main__" and os.environ.get("E8_EARLY"):
-    _main_early()
+if __name__ == "__main__":
+    sys.exit(main())

@@ -221,6 +221,65 @@ beam heating; required by the frozen-phonon model B35 (valid 273.15-323.15 K)". 
 stand-in stating a clean reconstructed surface (for a demo file running the flip-flop through
 `pipeline.run`) does not exist; B26 states bulk.
 
+### 4.1 E6 findings applied
+
+* m2 ([110] vs [1-10] transcription): no azimuth or direction is transcribed from a source into the
+  code. Every <110> direction in code and metadata is derived from `constants.DIAMOND_BASIS` and
+  written with its sign pattern (`dimer_bond_axis_crystal`, `dimer_row_axis_crystal`, e.g.
+  [1,1,0] vs [1,-1,0], per terrace), and which one is the dimer axis follows the top layer's parity;
+  SA/SB/DA/DB are computed from the upper terrace's measured row axis and the edge axis. Tanishiro's
+  [1-10] (Si(111)) and Horio's [1-10] RHEED azimuth are not used.
+* m3: A7 unchanged; the sourced value is the new row B35 (one rounding: 0.07765 A, +-0.00014 A).
+* E6 section 9: nothing listed there is adopted by E2.
+
 ## 5. Tests and results
 
-(filled below as the runs finish)
+Commands from the repository root with `venv/bin/python -m pytest -q`; counts pasted verbatim.
+Load average during the runs 10-13 (other agents running); pytest-of-root tmp dirs only.
+
+New or changed tests:
+* `tests/structure/test_si001_reconstruction.py` (new): transcription vs L7 1.4 (160 entries);
+  R1 indices are diamond sites; dimer bond/buckling from the atoms vs R1 printed and vs E6 (4
+  tables); c(4x2) antiphase / p(2x2) in-phase rows; rotation across a/4 and not a/2 (5 terminations
+  x [110], [100]); SA/SB labels; no collisions at step edges (5 terminations x 2 azimuths x 2 edge
+  orientations; existing duplicate check + brute-force minimum distance, whole structure and
+  within 6 A of every riser); bulk unchanged; composition, layer indices, ideal sites, step
+  heights and deep layer spacing unchanged (5 terminations); edge atoms at bulk sites at <100>;
+  flip-flop states, reversal, independence, random members collision-free; refusals (period
+  mismatch, overlayer, feature builder); frame corruption caught; measured B4 statements (12 cases);
+  the [010] p(2x1)a mismatch equals the full buckling height 0.708 A.
+* `tests/structure/test_thermal.py` (new, 18): 0.07765 A, +-0.00014 A, 2.94 %/10 K, A7 4.21 %/2.13 %;
+  range accepted/refused; missing or unlabelled temperature refused; FrozenPhonons accepts B35 and
+  A7; the range-justification numbers (Theta_E 275.1 K, Theta_D 482.1 K, <= 2.4e-4 A^2).
+* `tests/pipeline/test_e2_thermal_reconstruction.py` (new, 13): gate of item 23 (missing, null,
+  out of range, wrong unit, negative, with a static lattice, fixed u in demo and comparison, B36 in
+  comparison), terminations (multislice only, flip-flop needs B35, B26 refused, unknown refused),
+  flip-flop through the pipeline's structure and engine adapters (2 realisations: states differ,
+  reproducible from [seed, realisation], recorded, exit waves differ, manifest seeds), and the
+  thermal demo variant end to end through `pipeline.run`.
+* `tests/structure/test_si001_options.py::test_option_labels_recorded_bulk_clean`: ONE assertion
+  replaced. It asserted `o["dimer_reconstruction"]["status"].startswith("NOT IMPLEMENTED")`, the
+  state before E2; it now asserts value "not enabled", status starting "NOT ENABLED: bulk
+  termination" and naming all five options (same strength, new fact). Reported here because an
+  existing test was edited.
+* `tests/io/test_io_config_stand_ins.py`: expected registry gains `"B36": (23,)` and the model rows
+  {B35, B37}; the doc-consistency test also checks the model rows (stronger, not weaker).
+
+Runs:
+* `tests/structure` (after the B4 tests were added): `254 passed in 43.74s`.
+* `tests/structure/test_thermal.py`: `18 passed in 0.90s`.
+* `tests/pipeline/test_e2_thermal_reconstruction.py`: first run `1 failed, 12 passed in 67.41s`
+  (my test wrote the engine manifest under `tmp_path / "out"`: `ValueError: manifests are written
+  under an 'outputs' directory, got /tmp/pytest-of-root/pytest-177/test_flipflop_configurations_p0/out`;
+  test fixed); second run `1 failed, 12 passed in 86.57s`: `test_thermal_demo_variant_end_to_end`
+  `reflection_holo.pipeline.config.PipelineConfigError: sections.optics: unknown keys
+  ['loss_electron_visibility', 'surface_plasmon_excitations']` (E3 had added these keys to the
+  demo config before its config.py change was on disk); third run `13 passed in 124.25s`.
+* `tests/io tests/forward tests/pipeline`: `2 failed, 320 passed, 1 skipped in 1138.02s (0:18:58)`:
+  - `FAILED tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions`:
+    `AssertionError: B36` / `assert 'B36' in {'#', 'A1', 'A2', 'A3', 'A4', 'A5', ...}`. Expected
+    until the orchestrator adds rows B35, B36, B37 (and E3's B38-B40) to docs/model_assumptions.md.
+  - `FAILED tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008`:
+    `assert 156.6944045809978 < 120.0` (`SMOKE: build 11.9 s, propagation 144.4 s, total 156.7 s,
+    peak RSS 841 MB`; load average 10.4-12.8): the wall-time assertion under load; rerun alone
+    below. Not touched by E2 (bulk termination, static lattice).

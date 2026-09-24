@@ -211,20 +211,26 @@ def rung2_theta_centre() -> float:
 
 
 def rung2_case(r, *, dx, dz, propagator, clean_A, exit_after_top_contact_A, H, edge, gap,
-               absorber_A, top_A, W0, entrance_A, extra_vacuum_A, buildup_A, precision):
+               absorber_A, top_A, W0, entrance_A, extra_vacuum_A, buildup_A, precision,
+               extent_multiple_A):
     """P2 section 8.2 cell: one terrace of ContinuumPeriodicPotential (V0_R2, V_008 at g = 8/a,
     cosine maximum at x_s, absorption r) below x_s = absorber_A + clean_A; sheet beam of height H
     (sin^2 edges `edge`) whose bottom is `gap` above x_s, at the two-beam centre; the exit plane is
     exit_after_top_contact_A downstream of the contact of the TOP edge of the beam; the vacuum
-    above x_s is H + gap + L tan(theta) + extra_vacuum_A; dx is exact (the top absorber takes the
-    rounding, >= top_A). Every argument is required."""
+    above x_s is H + gap + L tan(theta) + extra_vacuum_A; dx is exact and the box extent is rounded
+    UP to a multiple of extent_multiple_A (a multiple of dx; the top absorber takes the rounding,
+    >= top_A), so that grids of different dx with the same extent_multiple_A share their frequency
+    bins (E7 M1). Every argument is required."""
     from reflection_holo.forward.multislice import ContinuumPeriodicPotential
     theta = rung2_theta_centre()
     xs = absorber_A + clean_A
     z_top = (gap + H) / np.tan(theta)
     L = float(np.ceil((z_top + exit_after_top_contact_A) / dz) * dz)
     vac = H + gap + L * np.tan(theta) + extra_vacuum_A
-    nx = int(np.ceil((xs + vac + top_A) / dx))
+    per = int(round(extent_multiple_A / dx))
+    if per < 1 or abs(per * dx - extent_multiple_A) > 1e-12:
+        raise ValueError("extent_multiple_A must be an integer multiple of dx")
+    nx = per * int(np.ceil((xs + vac + top_A) / extent_multiple_A))
     top = nx * dx - xs - vac
     cell = build_continuum_cell(extent_y_A=10.0, terrace_y_bounds_A=[0.0, 10.0],
                                 terrace_heights_A=[0.0], crystal_length_z_A=L - entrance_A,
@@ -275,8 +281,10 @@ def rung2_measure(r, *, readout_window_above_A=None, **kw):
     p = ref.darwin_plateau(E_KEV, V0_R2, V008_R2, rung2_g_per_A())
     K = 2 * np.pi * res["f_per_A"]
     eta = (K**2 - p["K_centre"] ** 2) / p["Ug"]
+    dx_eng = cell.extent_x_A / params.nx                 # the engine's derived pixel
     return dict(f_per_A=res["f_per_A"], theta_rad=th_b, eta=eta, r=res["r"], R_ref=np.asarray(R_ref),
-                model=model, nx=params.nx, dx=cell.extent_x_A / params.nx, dz=params.dz_A,
+                model=model, nx=params.nx, dx=dx_eng, dz=params.dz_A,
+                x_s_in_pixels=xs / dx_eng, extent_x_A=cell.extent_x_A,
                 n_slices=int(round(cell.length_z_A / params.dz_A)), x_s=xs,
                 theta_in_rad=beam.theta_in_ext_rad, propagator=params.propagator,
                 time_s=ew.metadata["timing_s"]["total"],

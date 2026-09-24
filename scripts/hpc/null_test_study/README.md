@@ -21,8 +21,9 @@ Two study files (every key required; see run_study.py):
   the absorber (`clean_depth_A: 21.0`, explicit LEGACY value) is shallower than the 24.5 A (0,0,8)
   extinction depth (P2 report 6.5, H2 3, H5 D.8): it tests the engine against M2's numbers, not the
   convergence of a production cell.
-* `study_depth100.yaml` (E1 wave 2a): 24 points, clean depth 100 A, absorption r = 0.05 and 0.1
-  only, fixed-beam translation at [110] and at exact [100] (16.1347 mrad; a four-beam case there,
+* `study_depth100.yaml` (E1 wave 2a): 24 points, clean depth 100 A (65 A is the reviewed minimum
+  for the 1e-2 criteria, E7 M3; 100 A is a margin), absorption r = 0.05 and 0.1 only (at r = 0 no
+  clean depth converges the absolute reflection), fixed-beam translation at [110] and at exact [100] (16.1347 mrad; a four-beam case there,
   H2 2.2), moved-beam controls at both azimuths, the M2 step points at [110] with r >= 0.05, and the
   surface-position-resolved read-out of H2 2.4 (`surface_resolved`: per z_s bin `err_rad`,
   `amp_ratio`, and `converged_beyond_A`). Its estimate (numpy, 4 threads, this container):
