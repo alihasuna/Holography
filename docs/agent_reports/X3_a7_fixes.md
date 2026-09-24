@@ -85,10 +85,19 @@ report mod: schema reflholo_pipeline_dry_run_report/2, engine c02579f11b77, pack
 The engine hash is the same, but the atom count, the pixel size and the device peak differ, and the
 kit ACCEPTS the other code's need. A7-4 is reproduced.
 
-After (checkout = working tree; RERUN_AFTER_PLACEHOLDER):
+After (checkout = the final working tree, identical to HEAD a965404 in reflection_holo/, scripts/
+and tests/; 08:06 UTC, after the suites. A first run at 06:53, before the A7-5 docstring edit, gave
+the same verdicts with other tree hashes):
 ```
-AFTER_PLACEHOLDER
+kit schema: reflholo_pipeline_dry_run_report/3
+report orig: schema reflholo_pipeline_dry_run_report/3, engine c02579f11b77, package_tree 520735b26079, grid {'nx': 432, 'ny': 48, 'dx_A': 0.1961005787037037, 'dy_A': 0.2262875}, n_slices 1095, n_atoms 27000, device_peak_cupy 3687818 B
+  kit of Holography: ACCEPTED, need 0.005532 GB, n_atoms 27000
+report mod: schema reflholo_pipeline_dry_run_report/3, engine c02579f11b77, package_tree b280a8a39446, grid {'nx': 432, 'ny': 48, 'dx_A': 0.19957280092592594, 'dy_A': 0.2262875}, n_slices 1095, n_atoms 28080, device_peak_cupy 3703228 B
+  kit of Holography: REFUSED: /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad/x3/a74/after/rep_mod.json was made with the reflection_holo package tree b280a8a39446..., not with the package tree of /home/user/Holography (520735b26079...): the grid, the atom count or the memory model behind its estimate may differ (code outside the engine, e.g. forward/cell.py, structure/ or pipeline/, changed; audit A7-4); rerun the `dry-run` job with this code
 ```
+The report of the submitting tree itself is still accepted, with the same need as before the fix.
+The dry-run exit status 4 is expected: a cupy configuration on a machine without a GPU exits 4
+after it has written the report.
 
 Mutation checks of the new tests, run in a scratch git copy of the working tree (`<sp>/mut_tree`,
 its own `git init`, not the project repository):
@@ -154,7 +163,28 @@ Commands, from /home/user/Holography: `venv/bin/python -m pytest -q -p no:cachep
 shared: A8's worktree suite, A8 scripts and a torus run were running, and the load was 13-17 on 4
 cores.
 
-SUITES_PLACEHOLDER
+| run | UTC, load | result |
+|---|---|---|
+| tests/forward | 07:01:44-07:30:15, load 13.2 -> 11.4 | `1 failed, 134 passed, 3 skipped in 1708.72s (0:28:28)` |
+| tests/hpc | 07:30:15-07:35:26, load 11.4 -> 10.0 | `118 passed, 5 skipped in 309.97s (0:05:09)` (`SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed`) |
+| full suite (`venv/bin/python -m pytest -q`, plus the options above) | 07:35:26-08:04:57, load 10.0 -> 1.6 | `1 failed, 1293 passed, 8 skipped, 12 warnings in 1768.61s (0:29:28)`; skips: `[2] tests/forward/test_null_readout_known_answer.py:225: L10k study-beam proofs (about 6 min): RH_NULL_READOUT_LONG=1`, `[1] tests/forward/test_rung2_bragg.py:138: R2-B (r = 0) is optional and qualitative (P2 8.4); RH_RUNG2_R2B=1`, `[5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed` |
+| rerun of the failing test alone, `-s` | 08:05:13-08:06:09, load 1.3 | `1 passed in 54.36s`; `SMOKE: build 8.9 s, propagation 45.3 s, total 54.3 s, peak RSS 806 MB` |
+
+Both failures are the same wall-time assertion of the atomistic smoke test. Verbatim:
+- tests/forward: `tests/forward/test_smoke_atomistic.py:52: AssertionError`, `E       assert
+  148.3391484849999 < 120.0` (`SMOKE: build 11.2 s, propagation 136.6 s, total 148.3 s, peak RSS
+  1027 MB`);
+- full suite: `E       assert 142.56896668000263 < 120.0` (`SMOKE: build 8.9 s, propagation
+  133.4 s, total 142.6 s, peak RSS 1017 MB`).
+
+The machine had 4 cores at load 10-17. Alone, at load 1.3, the same test passes in 54.3 s, and its
+remaining assertions (exit plane, finite field, geometry checks, UNVALIDATED status), which the
+failing runs never reached, pass too. X3 changed no engine code: the engine hash is c02579f11b77
+before and after (section 2.2). The 120 s limit was not changed.
+
+X3 added two test functions: one in tests/forward (the shifted crystal) and one in tests/hpc (tree
+hash versus engine hash). The other count changes since A7's 1165 passed at 685e434 come from later
+work (E4, E10, torus), which X3 did not audit.
 
 Earlier targeted runs (same command form):
 - tests/forward/test_null_study_readout.py: `12 passed in 4.94s`;
