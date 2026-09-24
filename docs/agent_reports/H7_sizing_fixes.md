@@ -243,3 +243,42 @@ rung-2 run, H6's gpu_sanity with this tool's --measure mode).
   passed), demo_smoke_si001 --variant multislice_tiny exit 0.
 * `run_study.py --estimate --only step_w32_bragg_abs10_L5k` -> "memory peak 527 MB (numpy/CPU; GPU
   device 227 MB, lower bound)" (the pre-H7 accounting printed 340 MB).
+* Timing comparison for the smoke failure (scratchpad copy of commit 242b566, the engine before
+  H7, run with PYTHONPATH from a scratch git repository so that the manifest can be written; then
+  the current tree, back to back, load 9-11):
+  pre-H7 `1 passed in 118.85s` ("SMOKE: build 10.5 s, propagation 108.0 s, total 118.8 s");
+  current `1 passed in 97.43s` ("SMOKE: build 9.0 s, propagation 88.1 s, total 97.4 s"). An earlier
+  back-to-back pair at load 12-16 gave pre-H7 `124.47s` (it then stopped at the manifest because the
+  first scratch copy had no git repository) and current `1 failed in 121.09s` (`E       assert
+  120.92510603200026 < 120.0`). The 120 s limit is exceeded by load, not by this change; the smoke
+  test passes when the machine is less loaded.
+
+## 6. NOT RUN
+
+* Nothing on a GPU: the cupy device and host peaks are the model's (same statements as numpy),
+  UNVERIFIED and lower bounds (cuFFT/cuBLAS workspaces, cupy pool not modelled); the GPU times
+  remain the engine's ASSUMPTION model.
+* The tool's `--measure` mode (not needed: the phonon data are H5's). The frozen-phonon run-ins for
+  r = 0.05 and r = 0 and a strip long enough for the ensemble-mean amplitude to settle within 1e-2
+  at r = 0.1 are NOT RUN (cluster work; H5 M3).
+* The proposed bit-identical memory reductions in `potentials.py` (blocked exponentials, `astype`
+  without copy): proposed only, not applied, not tested.
+* `tools/hpc/review_h5_recompute.py` (H5's record) was not updated or rerun after the change; it now
+  stops at `MultisliceParams(...)` with `TypeError: MultisliceParams.__init__() missing 1 required
+  positional argument: 'working_reflections_hkl'` (shown with a direct construction here).
+* A full pipeline run with the multislice engine (only the dry runs of section 2); the full forward
+  suite was not repeated on an unloaded machine (only the smoke test, above).
+* docs/ changes H5 asks for (docs/05, docs/03, model_assumptions B35, README_ALLIANCE 192 B/atom and
+  `--need-gpu-mem-gb`): not mine to make; listed in section 4.
+* Final check after the last (docstring-only) engine edit: `venv/bin/python -m pytest -q
+  tests/forward/test_memory_model.py tests/forward/test_band_working_reflection.py
+  tests/forward/test_engine_contract.py tests/forward/test_vacuum_propagation.py` -> `34 passed in
+  62.47s`.
+
+Files changed by H7: reflection_holo/forward/multislice/engine.py, grid.py, __init__.py;
+reflection_holo/pipeline/engines.py, __main__.py; scripts/torus/run_torus_multislice.py;
+scripts/hpc/null_test_study/run_study.py; tests/forward/ladder_cases.py, null_test_cases.py,
+smoke_case.py, test_engine_contract.py, test_vacuum_propagation.py; new
+tests/forward/test_memory_model.py, tests/forward/test_band_working_reflection.py;
+tools/hpc/supercell_sizing.py; new tools/hpc/supercell_sizing_output.txt; this report. (Part of these
+edits are already inside the orchestrator's snapshot commits, up to c7cccc9; H7 committed nothing.)
