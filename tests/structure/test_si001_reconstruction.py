@@ -251,7 +251,8 @@ def test_composition_layers_and_step_heights_unchanged(term):
     assert np.array_equal(s.reconstruction.ideal_positions_A, bulk.positions_A)
     assert np.array_equal(s.layer_index, bulk.layer_index)
     assert np.array_equal(s.terrace_index, bulk.terrace_index)
-    assert s.metadata["assertions_passed"][:8] == bulk.metadata["assertions_passed"]
+    nb = len(bulk.metadata["assertions_passed"])
+    assert s.metadata["assertions_passed"][:nb] == bulk.metadata["assertions_passed"]
     for a, b in zip(s.metadata["steps"], bulk.metadata["steps"]):
         assert a["measured_height_A"] == b["measured_height_A"]
         assert a["type"] == b["type"]
@@ -343,12 +344,52 @@ def test_feature_builder_refuses_reconstruction_with_the_reason(term):
     assert "circle" in FEATURE_RECONSTRUCTION_REFUSAL
 
 
-def test_builder_assertion_r3_catches_a_wrong_dimer():
-    """(r3) is live: a corrupted displacement table makes the builder fail."""
-    old = R.TABLES["p(2x1)s"][(0, 0, 0)]
-    try:
-        R.TABLES["p(2x1)s"][(0, 0, 0)] = (old[0] - 0.01, old[1], old[2])
-        with pytest.raises(StructureAssertionError, match=r"\(r3\)"):
-            rbuild("p(2x1)s", st=FLAT)
-    finally:
-        R.TABLES["p(2x1)s"][(0, 0, 0)] = old
+def test_builder_assertions_catch_a_wrong_frame(monkeypatch):
+    """(r1)-(r4) are live: exchanging R1's x (dimer bond) and y (dimer row) axes, i.e. building
+    dimers along the back-bond axis, makes the builder fail (bookkeeping or (r3)/(r4))."""
+    real = R.dimer_frame
+
+    def swapped(n3):
+        d, b = real(n3)
+        return b, np.cross(np.array([0, 0, 1]), b)
+
+    monkeypatch.setattr(R, "dimer_frame", swapped)
+    with pytest.raises(StructureAssertionError):
+        rbuild("p(2x1)s", st=FLAT)
+
+
+# ---- B4 on reconstructed terraces (measured relations) -----------------------------------------
+from reflection_holo.structure import si001 as S  # noqa: E402
+
+
+@pytest.mark.parametrize("term,azimuth,a4_statement", [
+    ("p(2x1)s", (1, 0, 0), S.B4_RECON_A4_100), ("p(2x1)s", (0, 1, 0), S.B4_RECON_A4_100),
+    ("p(2x1)a", (1, 0, 0), S.B4_RECON_A4_100), ("p(2x1)a", (0, 1, 0), S.B4_RECON_NOT),
+    ("p(2x2)", (1, 0, 0), S.B4_RECON_A4_100), ("p(2x2)", (0, 1, 0), S.B4_RECON_NOT),
+    ("c(4x2)", (1, 0, 0), S.B4_RECON_A4_100), ("c(4x2)", (0, 1, 0), S.B4_RECON_NOT),
+    ("p(2x1)a flip-flop ensemble", (1, 0, 0), S.B4_RECON_ENSEMBLE),
+    ("p(2x1)a flip-flop ensemble", (0, 1, 0), S.B4_RECON_ENSEMBLE),
+    ("p(2x1)s", (1, 1, 0), S.B4_A4_110), ("p(2x1)a flip-flop ensemble", (1, 1, 0), S.B4_A4_110)])
+def test_b4_statement_of_reconstructed_steps_is_measured(term, azimuth, a4_statement):
+    s = rbuild(term, azimuth=azimuth)
+    for st in s.metadata["steps"]:
+        b4 = st["relation"]["model_assumption_B4"]
+        if st["type"] == "screw":
+            assert b4 == a4_statement
+        else:
+            ens = term.endswith("ensemble")
+            assert b4 == (S.B4_RECON_ENSEMBLE if ens else S.B4_RECON_TRANSLATION)
+        for m in st["relation"]["reconstruction_relations"]:
+            if m["holds"]:
+                assert m["max_deviation_A"] <= R.TABLE_PRECISION_A + 1e-9
+            elif m["max_deviation_A"] is not None:
+                assert m["max_deviation_A"] > R.TABLE_PRECISION_A
+
+
+def test_buckling_convention_breaks_the_glide_at_010_by_the_full_buckling():
+    """[010]: the (100) mirror reverses the buckling of a static p(2x1)a terrace; the mismatch is
+    the full dimer height difference (0.921 - 0.213 = 0.708 A), not a rounding effect."""
+    s = rbuild("p(2x1)a", azimuth=(0, 1, 0))
+    st = [x for x in s.metadata["steps"] if x["type"] == "screw"][0]
+    dev = min(m["max_deviation_A"] for m in st["relation"]["reconstruction_relations"])
+    assert dev == pytest.approx(0.921 - 0.213, abs=1e-9)

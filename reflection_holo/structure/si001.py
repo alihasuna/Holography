@@ -375,12 +375,6 @@ B4_A4_100 = ("B4 applies for the specular beam (and, with the in-plane glide ter
 B4_A4_110 = ("does not apply (dynamical residual delta, not forced to vanish by symmetry (value "
              "unknown); open question 3)")
 B4_A4_OTHER = "does not apply"
-B4_RECONSTRUCTED = ("not established for reconstructed terraces: the relations of assertion (f) "
-                    "are measured on the ideal sites; whether the reconstructed layers of the two "
-                    "terraces are related by an operation fixing the beam is not asserted by the "
-                    "builder (model_assumptions B4: a 2x1 reconstruction can break it); report "
-                    "the dynamical phase difference, not a height")
-
 
 def b4_statement(kind: str, azimuth_uvw, incidence_plane_operations) -> str:
     """Whether model_assumptions B4 (dynamical reflection phase cancels between the terraces) holds
@@ -460,6 +454,56 @@ def _termination_option(termination: str) -> dict:
             f"{recon.RECONSTRUCTIONS} explicitly, or 'bulk' (ASSUMPTION B3).")
     raise ValueError(f"termination must be 'bulk' (ASSUMPTION B3) or one of the reconstructions "
                      f"{recon.RECONSTRUCTIONS}, got {termination!r}")
+
+
+B4_RECON_TRANSLATION = ("applies far from the riser: the reconstructed layers of the two terraces "
+                        "are related by the pure lattice translation (up to an in-plane shift of "
+                        "the pattern) to R1's printed precision, measured on the atoms")
+B4_RECON_A4_100 = ("B4 applies for the specular beam (and, with the in-plane glide term, for other "
+                   "beams in the incidence plane) of a plane wave on these STATIC reconstructed "
+                   "terraces: the incidence-plane glide maps the reconstructed layers of one "
+                   "terrace onto the other (up to an in-plane shift of the pattern) to R1's "
+                   "printed precision, measured on the atoms; not for beams leaving the incidence "
+                   "plane; the riser (not relaxed) and the azimuthal spread are not analysed")
+B4_RECON_ENSEMBLE = ("applies to the ENSEMBLE AVERAGE only (DERIVED_HERE): the operation fixing the "
+                     "beam maps every cell state of one terrace onto a cell state of the other "
+                     "(measured on the atoms) and each state has probability 1/2 independently, so "
+                     "the ensemble of one terrace is the image of the other's; a single "
+                     "realisation is not symmetric (finite-ensemble residual of the coherent "
+                     "average)")
+B4_RECON_NOT = ("does not apply: no operation fixing the beam maps the reconstructed layers of one "
+                "terrace onto the other (measured on the atoms); report the dynamical phase "
+                "difference, not a height")
+
+
+def _b4_reconstructed(rec, s, ops, az, *, quarter, layer, terr, tops, frame, a_A):
+    """B4 statement of a step between reconstructed terraces from the measured relations."""
+    A, B = s["from_terrace"], s["to_terrace"]
+    measured = []
+    for name, t in ops:
+        M = _OPS[name]
+        pairs = [(0, 0)] + ([(0, 1), (1, 0), (1, 1)] if rec.mirror_displacement_A is not None
+                            else [])
+        for sa, sb in pairs:
+            r = recon.reconstruction_relation(rec, quarter=quarter, layer=layer, terrace=terr,
+                                              tops=tops, frame=frame, A=A, B=B, M=M,
+                                              t_crystal_A=t, a_A=a_A, state_A=sa, state_B=sb)
+            measured.append(dict(operation=name, **r))
+    if s["type"] == "screw" and tuple(az) not in _AZIMUTHS["<100>"]:
+        return (B4_A4_110 if tuple(az) in _AZIMUTHS["<110>"] else B4_A4_OTHER), measured
+    if not measured:
+        return B4_RECON_NOT, measured
+    if rec.mirror_displacement_A is None:
+        ok = any(m["holds"] for m in measured)
+        if not ok:
+            return B4_RECON_NOT, measured
+        return (B4_RECON_TRANSLATION if s["type"] == "translation" else B4_RECON_A4_100), measured
+    # flip-flop: every state of A must map onto some state of B under one operation
+    for name in {m["operation"] for m in measured}:
+        mm = [m for m in measured if m["operation"] == name]
+        if all(any(m["holds"] for m in mm if m["state_A"] == sa) for sa in (0, 1)):
+            return B4_RECON_ENSEMBLE, measured
+    return B4_RECON_NOT, measured
 
 
 def _terrace_groups(t_rel) -> list[list[int]]:
@@ -739,6 +783,7 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
     if axes[0] != axis0:
         raise StructureAssertionError(f"(f) terrace 0 back-bond axis {axes[0]} != requested "
                                       f"{axis0}")
+    b4_ops = {}
     for s in steps:                                                          # (f)
         A, B = s["from_terrace"], s["to_terrace"]
         selA = (terr == A) & (layer >= tops[A] - 3)
@@ -754,6 +799,10 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
         if not chosen:
             chosen = [r for r in rel if r["operation"] in _SCREW_OPS and r["lattice_symmetry"]]
         best = min(chosen, key=lambda r: float(np.linalg.norm(r["t_crystal_A"][:2])))
+        b4_ops[s["index"]] = [(r["operation"], r["t_crystal_A"]) for r in rel
+                              if r["lattice_symmetry"] and (
+                                  r["operation"] in mirrors if kind == "screw"
+                                  else r["operation"] == "identity")]
         s.update(
             type=kind,
             position_A=float(bounds[s["index"] + 1] % L[s_ax]),
@@ -822,11 +871,16 @@ def build_si001_terraces(*, azimuth_uvw, azimuth_label: str, staircase: Staircas
                 step_type_zandvliet=step_edge_type(s["delta_layers"], row, e_axis_crystal),
                 source="Zandvliet 2000 [ZANDVLIET2000] p. 594 (SA/SB), p. 600 (only DB double "
                        "steps observed); rotation measured on the built atoms, (r4)")
-            s["relation"]["model_assumption_B4"] = B4_RECONSTRUCTED
+            b4, measured = _b4_reconstructed(rec, s, b4_ops[s["index"]], az,
+                                             quarter=np.rint(rc / q).astype(np.int64),
+                                             layer=layer, terr=terr, tops=tops, frame=frame, a_A=a)
+            s["relation"]["model_assumption_B4"] = b4
+            s["relation"]["reconstruction_relations"] = measured
             s["relation"]["model_assumption_B4_note"] = (
-                "assertion (f) and the operations above are measured on the IDEAL sites; the "
-                "reconstructed layers are not checked for the incidence-plane relation by the "
-                "builder")
+                "assertion (f) and the operations above are found on the IDEAL sites; "
+                "reconstruction_relations says whether each operation fixing the beam also maps "
+                "the reconstructed layers (measured on the displaced atoms, R1's printed "
+                "precision 0.001 A)")
         rs = rec.ideal_positions_A + rec.displacement_A
 
     # --- metadata -----------------------------------------------------------------------------

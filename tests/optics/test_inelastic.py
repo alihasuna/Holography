@@ -29,8 +29,8 @@ from reflection_holo.optics import (ArtefactOptions, Grid, MemberPairs, SurfaceP
                                     reference_r2_self_reference, vacuum_object_wave)
 from reflection_holo.optics.inelastic import for_reference_model
 from reflection_holo.reconstruction import (CarrierSearch, MaskSpec, locate_carrier,
-                                            reconstruct_sideband, sideband_phase_noise,
-                                            wrap_to_pi)
+                                            reconstruct_sideband, sideband_mask,
+                                            sideband_phase_noise, wrap_to_pi)
 
 NONE = ArtefactOptions(biprism_fresnel_fringes=None, drift=None, charging_phase_rad=None)
 SIDE = "simulation: -q_ref of the declared reference (phi_o - phi_r sideband)"
@@ -146,7 +146,16 @@ def _step_object(g, delta):
 
 @pytest.mark.parametrize("model", ["R1", "R2"])
 def test_reconstructed_phase_is_unchanged_by_a_uniform_loss_without_noise(model):
-    g = grid(128, 128)
+    """Noiseless holograms of a 1 rad phase step, n = 0 and n = 1.25 (V_loss = 0.1). DERIVED_HERE:
+    the demodulated sideband is w_n = F S + E, S the lossless fringe term and E the leakage of the
+    zero-order (DC) term through the sideband mask; the unfiltered DC |u_o|^2 + |u_r|^2 does not
+    depend on n, so E does not either. Hence |phi_n - phi_0| <= asin(|E|/(F|S|)) + asin(|E|/|S|)
+    pixel by pixel (both angles measured from arg S). R1 with a uniform-amplitude object: the DC
+    is constant, E = 0 inside the mask and the phase is unchanged to rounding (1e-10). R2: the
+    reference is the shifted object, zero outside the field (no wrap), so the DC steps at the
+    edge of the reference field and E != 0 there (decaying slowly with the distance from it); the
+    bound is evaluated pixel by pixel with E and S computed with the same mask.""" 
+    g = grid(128, 128) if model == "R1" else grid(128, 512)
     obj = _step_object(g, 1.0)
     q = (0.0, 0.125)
     if model == "R1":
@@ -159,20 +168,34 @@ def test_reconstructed_phase_is_unchanged_by_a_uniform_loss_without_noise(model)
     carrier = locate_carrier(hologram_intensity(emp_obj, emp_ref, artefacts=NONE, content="empty"),
                              CarrierSearch((-q[0], -q[1]), 0.5 * q[1], 0.05, "none", SIDE))
     mask = MaskSpec(carrier.carrier_magnitude_cycles_per_A / 3.0, "disc", "hann")
-    out = {}
+    out, H = {}, {}
     for n in (0.0, N_E6):
         lo = loss(n, 0.1, model)
-        H = inelastic_hologram_intensity(obj, ref, loss=lo, artefacts=NONE, content="object")
-        res = reconstruct_sideband(H, carrier=carrier, mask=mask, empty_hologram=None,
-                                   reference_correction="none", object_min_visibility=0.05,
-                                   unwrapping="none")
-        out[n] = res
+        H[n] = inelastic_hologram_intensity(obj, ref, loss=lo, artefacts=NONE, content="object")
+        out[n] = reconstruct_sideband(H[n], carrier=carrier, mask=mask, empty_hologram=None,
+                                      reference_correction="none", object_min_visibility=0.05,
+                                      unwrapping="none")
     a, b = out[0.0], out[N_E6]
     ok = a.valid_mask & b.valid_mask
     if "valid_mask" in ref.metadata:
         ok &= ref.metadata["valid_mask"]
-    assert ok.sum() > 0.5 * g.shape[0] * g.shape[1]
-    assert np.max(np.abs(wrap_to_pi(b.wrapped_phase[ok] - a.wrapped_phase[ok]))) <= 1e-10
+    dphi = np.abs(wrap_to_pi(b.wrapped_phase - a.wrapped_phase))
+    W = sideband_mask(g, carrier.sideband_centre_cycles_per_A, mask)
+    dc = np.abs(obj.data) ** 2 + np.abs(ref.data) ** 2
+    E = np.abs(np.fft.ifft2(np.fft.fft2(dc) * W))
+    S = np.abs(np.fft.ifft2(np.fft.fft2(H[0.0].intensity - dc) * W))
+    F = loss(N_E6, 0.1, model).fringe_factor()
+    good = ok & (E < 0.5 * F * S)
+    bound = (np.arcsin(np.clip(E / (F * np.maximum(S, 1e-300)), 0, 1))
+             + np.arcsin(np.clip(E / np.maximum(S, 1e-300), 0, 1)))
+    assert good.sum() > 0.5 * ok.sum()
+    assert np.all(dphi[good] <= bound[good] + 1e-10)
+    if model == "R1":
+        assert np.max(E[ok]) <= 1e-12 * np.max(S) and np.max(dphi[ok]) <= 1e-10
+    else:
+        # the leakage is a processing effect present at n = 0 too; the loss only rescales the
+        # sideband against it (by 1/F): 2.4e-5 rad at 150 px from the reference-field edge here
+        assert np.max(E[ok]) > 1e-6
 
 
 def test_phase_unchanged_within_noise_and_noise_follows_the_reduced_visibility():
@@ -181,8 +204,8 @@ def test_phase_unchanged_within_noise_and_noise_follows_the_reduced_visibility()
     measured phase noise matches sqrt(2)/(mu sqrt(N)) with the REDUCED mu and is 1/0.536 = 1.87
     times the lossless prediction (so a noise model with mu_0 would be wrong by 87 %); the mean
     phase and the step are unchanged within their noise."""
-    n_pix, K, counts, seed = 256, 12, 100.0, 20260924
-    g = grid(n_pix, n_pix)
+    n_pix, K, counts, seed = 512, 12, 100.0, 20260924
+    g = grid(n_pix, 256)
     q = (0.0, 0.125)
     lo = loss(N_E6, 0.1, "R1")
     mu = fringe_contrast_with_losses(1.0, 1.0, lo)
@@ -211,6 +234,9 @@ def test_phase_unchanged_within_noise_and_noise_follows_the_reduced_visibility()
     dev = np.concatenate([wrap_to_pi(r.wrapped_phase - 0.3).ravel() for r in flats])
     sigma = float(np.sqrt(np.mean(dev ** 2)))
     rel_se = float(np.sqrt(np.sum(W ** 4) / (2 * K * np.sum(W ** 2) ** 2)))
+    print(f"mu={mu:.4f} sigma_pred(mu)={pred:.5f} sigma_pred(mu_0=1)={pred0:.5f} "
+          f"sigma_meas={sigma:.5f} ratio={sigma / pred:.4f} ratio_to_mu0={sigma / pred0:.4f} "
+          f"rel_se={rel_se:.4f} K={K} seed={seed}")
     assert pred <= 0.07                                              # small-noise regime
     assert abs(sigma / pred - 1.0) <= 4 * rel_se
     assert abs(sigma / pred0 - 1.0) > 20 * rel_se                   # mu_0 would be wrong
@@ -223,8 +249,11 @@ def test_phase_unchanged_within_noise_and_noise_follows_the_reduced_visibility()
     hi_rows = slice(n_pix // 2 + r_px, n_pix - r_px)
     d = [float(np.mean(wrap_to_pi(r.wrapped_phase[hi_rows] - 1.0))
                - np.mean(wrap_to_pi(r.wrapped_phase[lo_rows]))) for r in steps]
-    p_half = (lo_rows.stop - lo_rows.start) * n_pix * K
+    p_half = (lo_rows.stop - lo_rows.start) * g.shape[1] * K
+    assert lo_rows.stop - lo_rows.start >= 100
     s_step = math.sqrt(2.0) * pred * math.sqrt(a_eff / p_half)
+    print(f"mean flat phase - 0.3 = {float(np.mean(dev)):+.2e} (4 sigma_mean = {4 * s_mean:.2e}); "
+          f"step - 1 rad = {float(np.mean(d)):+.2e} (4 sigma = {4 * s_step:.2e})")
     assert abs(float(np.mean(d))) <= 4 * s_step
 
 

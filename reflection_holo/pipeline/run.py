@@ -11,7 +11,9 @@ Order of the chain (each stage is the package's own implementation):
  5. projection along k_out onto surface and image coordinates (optics.projection);
  6. detector: magnification and pixel mapping (optics.detector);
  7. reference R1 or R2 on the detector grid and the hologram I = |u_o + u_r|^2, averaged over the
-    realisations AFTER squaring (optics.hologram.ensemble_hologram_intensity);
+    realisations AFTER squaring, under the declared surface-plasmon loss model and, for a
+    convergence ensemble (report E3; multislice engine), over the members with their quadrature
+    weights (optics.hologram.partially_coherent_hologram; pipeline.convergence);
  8. an EMPTY hologram with the same reference, detector, dose and gain: its object branch is the
     vacuum plane wave along k_out, which the aperture centred on k_out passes unchanged and the
     demodulation makes uniform, so it is formed directly as a uniform wave on the detector grid
@@ -45,11 +47,14 @@ from reflection_holo.geometry.wavelength import wavelength_A
 from reflection_holo.optics.darkfield import DarkFieldAperture, select_dark_field
 from reflection_holo.optics.detector import DetectorSpec, record_holograms, resample_to_detector
 from reflection_holo.optics.fields import Wave
-from reflection_holo.optics.hologram import (ArtefactOptions, ensemble_hologram_intensity,
-                                             fringe_contrast, hologram_intensity,
+from reflection_holo.optics.hologram import (ArtefactOptions, MemberPairs, fringe_contrast,
+                                             inelastic_hologram_intensity,
+                                             partially_coherent_hologram,
                                              reference_r1_vacuum_plane_wave,
                                              reference_r2_self_reference, vacuum_object_wave)
+from reflection_holo.optics.inelastic import fringe_contrast_with_losses
 from reflection_holo.optics.projection import project_along_k_out
+from reflection_holo.pipeline import convergence as CV
 from reflection_holo.pipeline import quantify as Q
 from reflection_holo.pipeline.config import (PipelineConfig, PipelineConfigError, Record,
                                              assumptions_in_use, list_inputs, load_pipeline_file)
@@ -62,8 +67,10 @@ from reflection_holo.structure import terrace_shadow_strips
 
 NOT_IMPLEMENTED = [
     "lens transfer (defocus, Cs, chromatic envelope)",
-    "partial-coherence ensembles (source size, convergence, energy spread); the geometric engine "
-    "refuses non-plane-wave illumination",
+    "partial-coherence ensembles over source size and energy spread; the convergence ensemble "
+    "(report E3) runs with the multislice engine only (the geometric engine refuses non-plane-wave "
+    "illumination); an energy filter (the holograms are unfiltered: surface-plasmon loss electrons "
+    "are detected)",
     "biprism Fresnel fringes and overlap width, specimen drift, charging (B8)",
     "detector MTF, pixel integration and readout noise",
     "the intrinsic 2 theta_ext inclination of an R1 vacuum reference and its compensation (the "
@@ -240,6 +247,16 @@ def _optics_stage(cfg: PipelineConfig, waves, *, x0: float, x0_def: str,
         det, placement = resample_to_detector(
             img, spec, band_cycles_per_A=band,
             field_of_view_u_A=fov_u if spec.alignment == "field_of_view" else None)
+        fb = float(df.record.get("bloch_fy_per_A", 0.0))
+        if fb != 0.0:
+            # azimuthally tilted convergence member (report E3): the engine, dark-field and
+            # resampling carried the y-periodic Bloch envelope; the physical wave is the envelope
+            # times exp(2 pi i f_y y) at the absolute y of each detector column
+            det = Wave(det.data * np.exp(2j * np.pi * fb * np.asarray(placement.y_A))[None, :],
+                       det.grid, det.label, det.realisation,
+                       dict(det.metadata, bloch_restored=dict(
+                           fy_per_A=fb, rule="multiplied by exp(2 pi i fy_per_A y), y = detector "
+                                             "placement y_A (absolute exit-plane y)")))
         obj_waves.append(det)
         if not dfs:
             dfs.append(df)
@@ -249,10 +266,21 @@ def _optics_stage(cfg: PipelineConfig, waves, *, x0: float, x0_def: str,
 
 
 def _hologram_stage(cfg: PipelineConfig, obj_waves, spec: DetectorSpec, *, amplitude_px,
-                    amplitude_px_description: str) -> dict:
+                    amplitude_px_description: str, ensemble: dict | None = None) -> dict:
     """Stages 7-9 (shared): the empty-object amplitude from the declared pixels (lit terrace tops,
     or lit flat-surface pixels on the feature path; A3 m3), the R1/R2 reference, the object hologram
-    averaged over realisations AFTER squaring, the empty hologram, Poisson counting and gain."""
+    averaged over realisations AFTER squaring, the empty hologram, Poisson counting and gain.
+
+    Report E3: every hologram is formed under the declared surface-plasmon loss model
+    (pipeline.convergence.plasmon_loss; the EMPTY hologram models a flat region of the same surface,
+    so it carries the same loss); with ``ensemble`` (a convergence ensemble: dict with
+    quadrature, members, obj_by_member {index: [detector Wave]}, exit_points (X, Y, Z),
+    mirror_height_A, separation_A) the object and empty holograms are the weighted means of the
+    member intensities (optics.hologram.partially_coherent_hologram), the R1 reference of member s
+    carries exp(i dk_ref,s.(Q - D0)) and the empty object branch the flat-mirror phase of member s
+    (optics.coherence). ``obj_waves`` is then every member's waves (for the empty-object
+    amplitude). The predicted fringe contrast of the empty hologram (noise model) includes the
+    loss factor and, for an ensemble, the median coherence over the lit pixels."""
     b = cfg.cfg_b
     grid = spec.grid()
     a_all = np.abs(np.stack([w.data for w in obj_waves]))
@@ -295,16 +323,82 @@ def _hologram_stage(cfg: PipelineConfig, obj_waves, spec: DetectorSpec, *, ampli
                                            relative_phase_rad=rel_phase)
 
     artefacts = ArtefactOptions(biprism_fresnel_fringes=None, drift=None, charging_phase_rad=None)
-    refs = [reference_for(o) for o in obj_waves]
-    H_obj = ensemble_hologram_intensity(list(zip(obj_waves, refs)), artefacts=artefacts,
-                                        content="object")
-    ref_emp = reference_for(vac)
-    H_emp = hologram_intensity(vac, ref_emp, artefacts=artefacts, content="empty")
+    loss = CV.plasmon_loss(cfg)
+    contrast_lossless = fringe_contrast(A_emp, ratio * A_emp)
+    contrast_losses = fringe_contrast_with_losses(A_emp, ratio * A_emp, loss)
+    coherence = None
+    if ensemble is None:
+        refs = [reference_for(o) for o in obj_waves]
+        H_obj = partially_coherent_hologram(
+            [MemberPairs(index=0, weight=1.0, pairs=tuple(zip(obj_waves, refs)))], loss=loss,
+            artefacts=artefacts, content="object")
+        ref_emp = reference_for(vac)
+        H_emp = inelastic_hologram_intensity(vac, ref_emp, loss=loss, artefacts=artefacts,
+                                             content="empty")
+        contrast_empty = contrast_losses
+    else:
+        from reflection_holo.geometry.wavelength import k_ang_per_A
+        from reflection_holo.optics import coherence as COH
+        th0 = float(cfg.glancing_angle["value_rad"])
+        k = k_ang_per_A(BEAM_ENERGY_SUPPLIED_KEV)
+        pts = ensemble["exit_points"]
+        members = ensemble["members"]
+
+        def member_reference(obj: Wave, mem) -> Wave:
+            r = reference_for(obj)
+            if ref_model != "R1":
+                return r                     # R2: the shifted member object carries the phases
+            ph = COH.r1_reference_member_phase(mem, k_rad_per_A=k, theta0_rad=th0,
+                                               exit_points_A=pts,
+                                               separation_A=ensemble["separation_A"],
+                                               aperture_passage=passage)
+            return Wave(r.data * np.exp(1j * ph), r.grid, r.label, r.realisation,
+                        dict(r.metadata, convergence_member=mem.index,
+                             member_phase="dk_ref,s.(Q - D0) (optics.coherence)"))
+        obj_pairs, emp_pairs, refs, mu = [], [], [], 0.0
+        for mem in members:
+            ws = ensemble["obj_by_member"][mem.index]
+            rs = [member_reference(o, mem) for o in ws]
+            refs.extend(rs)
+            obj_pairs.append(MemberPairs(index=mem.index, weight=mem.weight,
+                                         pairs=tuple(zip(ws, rs))))
+            phm = COH.flat_mirror_member_phase(mem, k_rad_per_A=k, theta0_rad=th0,
+                                               exit_points_A=pts,
+                                               mirror_height_A=ensemble["mirror_height_A"])
+            vs = Wave(vac.data * np.exp(1j * phm), grid, "vacuum object branch (flat mirror, "
+                      f"member {mem.index})", 0, dict(vac.metadata, convergence_member=mem.index))
+            re = member_reference(vs, mem)
+            emp_pairs.append(MemberPairs(index=mem.index, weight=mem.weight, pairs=((vs, re),)))
+            mu = mu + mem.weight * vs.data * np.conj(re.data)
+        H_obj = partially_coherent_hologram(obj_pairs, loss=loss, artefacts=artefacts,
+                                            content="object")
+        H_emp = partially_coherent_hologram(emp_pairs, loss=loss, artefacts=artefacts,
+                                            content="empty")
+        norm = np.abs(vac.data) * np.abs(ratio * A_emp)
+        cmap = np.abs(mu) / norm
+        valid = np.asarray(H_emp.metadata.get("valid_mask", np.ones(grid.shape, bool)), bool)
+        sel = valid & np.broadcast_to(amplitude_px, grid.shape)
+        coherence = dict(
+            median_over_lit_pixels=float(np.median(cmap[sel])) if sel.any() else None,
+            min_over_lit_pixels=float(np.min(cmap[sel])) if sel.any() else None,
+            max_over_lit_pixels=float(np.max(cmap[sel])) if sel.any() else None,
+            definition="|sum_s w_s u_vac,s conj(u_ref,s)| / (|u_vac| |u_ref|) of the empty (flat "
+                       "surface) ensemble: the convergence factor of its fringe contrast")
+        if coherence["median_over_lit_pixels"] is None or not coherence["median_over_lit_pixels"] > 0:
+            raise RuntimeError("the convergence ensemble leaves no coherent fringe on the lit pixels")
+        contrast_empty = contrast_losses * coherence["median_over_lit_pixels"]
     seed = cfg.value("detector", "noise_seed")
     H_obj_n, H_emp_n = record_holograms([H_obj, H_emp], spec, seed=seed)
     return dict(a_all=a_all, A_emp=A_emp, refs=refs, H_obj=H_obj, H_emp=H_emp, H_obj_n=H_obj_n,
                 H_emp_n=H_emp_n, ratio=ratio, q_ref=q_ref, ref_model=ref_model,
-                trajectory=trajectory, rel_phase=rel_phase, passage=passage, seed=seed)
+                trajectory=trajectory, rel_phase=rel_phase, passage=passage, seed=seed,
+                loss=loss, contrast_empty=contrast_empty,
+                contrast_record=dict(
+                    lossless=contrast_lossless, with_surface_plasmon_losses=contrast_losses,
+                    convergence_coherence=coherence, used_by_the_noise_model=contrast_empty,
+                    rule="2 A_O A_R F / (A_O^2 + A_R^2) (optics.inelastic, F the loss fringe "
+                         "factor) times, for a convergence ensemble, the median coherence of the "
+                         "empty ensemble over the lit pixels (report E3)"))
 
 
 def _reconstruction_stage(cfg: PipelineConfig, H_obj_n, H_emp_n, q_ref) -> dict:
@@ -334,9 +428,14 @@ def _reconstruction_stage(cfg: PipelineConfig, H_obj_n, H_emp_n, q_ref) -> dict:
                 mask=mask)
 
 
-def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = False) -> dict:
+def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = False,
+        members_dir=None) -> dict:
     """Run the pipeline for ``config`` (a path, or a PipelineConfig already gated) into
-    ``out_dir`` (created; must be empty). Returns the summary dictionary (also written)."""
+    ``out_dir`` (created; must be empty). Returns the summary dictionary (also written).
+
+    members_dir: for a convergence ensemble (report E3), a directory of member jobs written by
+    ``run-member`` (pipeline.convergence.run_member_job), assembled instead of running the members
+    here; refused without a convergence ensemble."""
     t0 = time.perf_counter()
     timing: dict[str, float] = {}
     if isinstance(config, PipelineConfig):
@@ -352,7 +451,16 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
                                   "refuses them (they exist for in-memory gate tests only; A2c G3)")
     # the manifest must identify the code: check the git state BEFORE any computation (A3 M5)
     git_preflight = require_git_state(allow_no_git=allow_no_git)
-    require_engine(cfg)                     # multislice module and cupy/GPU, before computing (m5)
+    if members_dir is None:
+        require_engine(cfg)                 # multislice module and cupy/GPU, before computing (m5)
+    else:
+        if not CV.is_convergent(cfg):
+            raise PipelineConfigError("--members-dir assembles the member jobs of a convergence "
+                                      "ensemble; this configuration has none (convergence 0)")
+        from reflection_holo.pipeline.engines import EngineUnavailableError, multislice_status
+        ok, why = multislice_status()       # the assembly runs no engine: no backend needed
+        if not ok:
+            raise EngineUnavailableError(f"engine 'multislice' unavailable: {why}")
     out = _prepare_out(out_dir)
     if "feature" in cfg.sections["structure"]:
         from reflection_holo.pipeline.feature import run_feature   # agent T2: feature path
@@ -385,8 +493,22 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         if cfg.value("cell", "periods_along_beam") != 1:
             raise PipelineConfigError("the multislice reflection cell holds one structure period "
                                       "along the beam: cell.periods_along_beam must be 1")
-        waves, cell, rec = run_multislice(structure, cfg, outputs_root=out / "outputs",
-                                          run_name=cfg.run_name)
+        if CV.is_convergent(cfg):
+            # report E3: one engine run per convergence member (or the member jobs)
+            member_waves, cell, rec = CV.engine_members(structure, cfg,
+                                                        outputs_root=out / "outputs",
+                                                        run_name=cfg.run_name,
+                                                        members_dir=members_dir)
+            quad_members = CV.member_quadrature(cfg).members()
+            waves = [w for mem in quad_members for w in member_waves[mem.index]]
+            eng_manifest = rec["engine_manifests"]
+            notes.append(f"convergence ensemble: {len(quad_members)} members "
+                         f"({rec['convergence']['member_origin']}), intensities summed with the "
+                         f"quadrature weights after squaring")
+        else:
+            waves, cell, rec = run_multislice(structure, cfg, outputs_root=out / "outputs",
+                                              run_name=cfg.run_name)
+            eng_manifest = rec["engine_manifest"]
         lay = cell.metadata["layout"]
         layout = FieldLayout(field_length_A=float(cell.length_z_A),
                              z_start_A=float(cell.crystal_start_z_A),
@@ -396,7 +518,7 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         engines_manifest = {"reflection_holo.forward.multislice": dict(
             version=reflection_holo.__version__, commit="this repository (see repository.commit)",
             licence="this repository", status=rec["validation_status"],
-            engine_manifest=rec["engine_manifest"])}
+            engine_manifest=eng_manifest)}
         notes.append("multislice engine status: " + str(rec["validation_status"]))
     timing["engine_s"] = time.perf_counter() - t
 
@@ -408,9 +530,26 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
               f"upstream end of the terraces (z = {layout.z_start_A:.6f} A); exit plane "
               f"z = {layout.field_length_A:.6f} A")
     fov_u = (0.0, (layout.field_length_A - layout.z_start_A) * math.sin(theta))
-    op = _optics_stage(cfg, waves, x0=x0, x0_def=x0_def, fov_u=fov_u)
-    spec, placement, obj_waves, dfs, imgs = (op["spec"], op["placement"], op["obj_waves"],
-                                             op["dfs"], op["imgs"])
+    ensemble = None
+    if engine == "multislice" and CV.is_convergent(cfg):
+        obj_by_member, op = {}, None
+        for mem in quad_members:                # the aperture stays centred on the CENTRAL k_out
+            o_m = _optics_stage(cfg, member_waves[mem.index], x0=x0, x0_def=x0_def, fov_u=fov_u)
+            obj_by_member[mem.index] = o_m["obj_waves"]
+            op = op or o_m
+        obj_waves = [w for mem in quad_members for w in obj_by_member[mem.index]]
+        sep = cfg.sections["reference"].get("separation")
+        ensemble = dict(members=quad_members, obj_by_member=obj_by_member,
+                        exit_points=CV.exit_points_of_detector(op["placement"], x0_A=x0,
+                                                               theta_rad=theta,
+                                                               z_A=float(waves[0].z_A)),
+                        mirror_height_A=H_ref,
+                        separation_A=(None if sep is None else
+                                      [sep.canonical_value[a] for a in ("x", "y", "z")]))
+    else:
+        op = _optics_stage(cfg, waves, x0=x0, x0_def=x0_def, fov_u=fov_u)
+        obj_waves = op["obj_waves"]
+    spec, placement, dfs, imgs = op["spec"], op["placement"], op["dfs"], op["imgs"]
     timing["optics_s"] = time.perf_counter() - t
 
     # 7-9. references, holograms, detector noise ------------------------------------------------
@@ -420,7 +559,7 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
     tr = Q.detector_trace(model, placement.u_A, placement.y_A, x0_A=x0, theta_rad=theta,
                           layout=layout)
     ho = _hologram_stage(cfg, obj_waves, spec, amplitude_px=tr["status"] == Q.STATUS["lit"],
-                         amplitude_px_description="terrace top")
+                         amplitude_px_description="terrace top", ensemble=ensemble)
     a_all, A_emp, refs = ho["a_all"], ho["A_emp"], ho["refs"]
     H_obj, H_emp, H_obj_n, H_emp_n = ho["H_obj"], ho["H_emp"], ho["H_obj_n"], ho["H_emp_n"]
     ratio, q_ref, ref_model, trajectory = ho["ratio"], ho["q_ref"], ho["ref_model"], ho["trajectory"]
@@ -527,7 +666,9 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         amplitude_rule="usable only where the reconstructed object amplitude relative to the "
                        "empty-hologram object amplitude is at least min_relative_amplitude "
                        "(no object wave, no phase)")
-    contrast_empty = fringe_contrast(A_emp, ratio * A_emp)
+    # report E3: the noise model uses the REDUCED contrast (surface-plasmon losses and, for a
+    # convergence ensemble, the median coherence), not the lossless 2 A_O A_R/(A_O^2 + A_R^2)
+    contrast_empty = ho["contrast_empty"]
     noise_pred = sideband_phase_noise(contrast_empty, spec.dose_e_per_px, W)
     timing["quantification_s"] = time.perf_counter() - t
 
@@ -628,10 +769,12 @@ def run(config, out_dir, *, variant: str | None = None, allow_no_git: bool = Fal
         reference=dict(model=ref_model, trajectory=trajectory, carrier_cycles_per_A=list(q_ref),
                        amplitude=ratio * A_emp, amplitude_ratio=ratio, relative_phase_rad=rel_phase,
                        aperture_passage=passage, empty_hologram_fringe_contrast=contrast_empty,
-                       noise_seed=seed),
+                       fringe_contrast=ho["contrast_record"], noise_seed=seed),
+        surface_plasmon_losses=ho["loss"].as_record(),
         hologram=dict(object={k: v for k, v in H_obj.metadata.items() if k != "valid_mask"},
                       empty_formation=H_emp.metadata.get("formation"),
-                      ensemble_rule="intensities averaged over realisations AFTER squaring"),
+                      ensemble_rule="intensities averaged over realisations (and convergence "
+                                    "members, with their quadrature weights) AFTER squaring"),
         reconstruction=dict(parameters=recon.parameters, resolution_A=res_A,
                             resolution_fringe_spacings=recon.resolution_fringe_spacings,
                             sideband_sign_check=recon.sideband_sign_check,

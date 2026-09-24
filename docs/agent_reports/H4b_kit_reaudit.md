@@ -127,7 +127,7 @@ Line numbers are those of a1ef2a0 (A = `scripts/hpc/alliance/`).
 ## 3. New findings, ranked (no BLOCKER found at a1ef2a0; two MAJOR, both documentation/process)
 
 ### N1. MAJOR (conditional): the walkthrough clones a moving, in-progress branch, not the audited commit
-* Where: scripts/hpc/alliance/README_ALLIANCE.md:60-66 (`git clone --branch
+* Where: scripts/hpc/alliance/README_ALLIANCE.md:60-66 and :74-77 (`git clone --branch
   claude/electron-holography-orchestration-nakd7r ... && git log -1 --oneline`): no commit is named
   and nothing is checked out; no step says which `git log -1` output to expect.
 * What is wrong: the branch receives orchestrator snapshot commits ("Snapshot in-progress agent
@@ -199,3 +199,123 @@ Line numbers are those of a1ef2a0 (A = `scripts/hpc/alliance/`).
 | # | Command (abridged) | Result |
 |---|---|---|
 | 25 | Trillium alternative, emulated (env record copied from the fir setup with cluster/env id changed, `RH_ALLIANCE_ENV_DIR`): README §4.1-§4.5 commands with `trillium --dry-run` | gpu-check exit 0: `sbatch --account=def-XXX --time=00:15:00 --nodes=1 --gpus-per-node=h100:1 --job-name=... --output=<scratch>/... --chdir=<scratch>/reflholo ...` (no --mem, no -c), `WARNING: this host is 'vm'; Trillium GPU jobs must be submitted from the GPU login node (trig-login01 ...)`; gpu-sanity and demo-gpu exit 2: the fir PASS in the same run root is listed as not qualifying (cluster, environment); smoke and torus exit 2: `REFUSED: smoke is a CPU job; the kit does not run CPU jobs on trillium ...`; `--time 00:10:00` exit 2 (15 min minimum) |
+| 28 | `PY -m reflection_holo.pipeline dry-run` in W of configs/demo_smoke_si001.yaml, its variant multislice_tiny, demo_smoke_torus_ridge.yaml, demo_smoke_torus_trench.yaml | exit 0 each (geometric; multislice_tiny: `engine multislice`, band assertion with the declared (0,0,8) passes) |
+| 22 | README §4.5 as written, emulated: `bash submit.sh fir torus --account def-XXX --time 01:00:00 --mem 4G` (load 9-15 on 4 CPUs) | submit exit 0 after 1470 s, job 900501 status 0; log: `threads: 4 (declared by the run) of 4 allocated cpus`, `== torus trench (CPU guard 1440 s, derived from --time 01:00:00 by submit.sh)`, `[trench] atoms 547662, grid 945 x 1134 (dx 0.1258, dy 0.1293 A), 1124 slices`, `[trench] estimate: CPU 1109 s (x1.5), engine arrays 238 MB, RSS after setup 1331 MB; limits CPU 1440 s (--max-cpu-seconds (caller)), memory 10 GB`, `[trench] simulate 791.7 s, total 823.6 s, peak RSS 1331 MB`; ridge estimate 878 s, simulate 621.0 s, peak RSS 1348 MB; both `finished with status 0`; summary/case JSON record `cpu_seconds 1440.0`, source `--max-cpu-seconds (caller)`; both manifests copied to manifests/. (The trench estimate, 1109 s, would have been REFUSED by the runner's old 600 s guard: F11's fix is what let it run here) |
+
+## 4. H7's engine API change against every kit path (item 4)
+
+| Kit path | How it meets `MultisliceParams.working_reflections_hkl` / band assertion / memory_model | Evidence | Verdict |
+|---|---|---|---|
+| gpu_check.py tiny cases | rung-1 continuum case `()` (tests/forward/ladder_cases.py:61), atomistic step case `((0, 0, 8),)` (tests/forward/null_test_cases.py:74) | emulated gpu-check, both cases, both precisions PASS (row 13); test_gpu_check_pass_record_with_fake_cupy passes (row 8) | OK |
+| gpu_sanity.py | study point via null_test_cases (as above); strip via supercell_sizing.py:244 | rows 16, 20 | OK |
+| smoke (demo_smoke_si001, geometric engine) | not concerned | row 21 | OK |
+| demo-gpu (demo_hpc_si001) | pipeline adapter passes the configuration's declared `target_reflection_hkl` (reflection_holo/pipeline/engines.py:328-331); the dry run runs `reflection_setup` (pipeline/estimates.py:138) | row 15: band assertion passes, exit 4 only for the missing cupy; row 26 (emulated job) | OK |
+| torus runner | `working_reflections_hkl=(c["working_reflection_hkl"],)` (scripts/torus/run_torus_multislice.py:155), dx 0.1258 A | row 22: both kinds pass the band assertion and run | OK |
+| dry-run job | pipeline dry run in a job | test_f2_emulated_dry_run_job_reports_peak_rss (row 8), row 28 | OK |
+| other configs (smoke variant multislice_tiny, torus demo configs) | as above | row 28 | OK |
+| setup's physics gate | includes H7-edited tests (test_engine_contract.py, test_vacuum_propagation.py) | `52 passed, 1 deselected` (row 9) | OK |
+| memory_model / device_peak_cupy | printed by the dry run and run_study.py; the kit still takes `--need-gpu-mem-gb` from the user | rows 15, 16 | known pending item (not a finding); the kit's and README's WORDING about the printed number is stale (N4) |
+
+No kit path constructs `MultisliceParams` itself; every path that does (torus runner, pipeline
+adapter, test cases, sizing tool) passes the new field at a1ef2a0. Cosmetic, outside the kit: the
+torus runner still labels `memory_bytes["total"]` as "engine arrays" (run_torus_multislice.py:232-233,
+printed `engine arrays 238 MB` in row 22), which after H7 is the numpy peak of one realisation.
+| 24 | README §6 as written, emulated (bash 4.2): `collect_results.sh --max-array-mb 50 --max-file-mb 20 --max-total-mb 500 --jobs 900001,900301,900401,900501`; unpack; `sha256sum -c MANIFEST.sha256`; `sha256sum -c <tarball>.sha256` | exit 0: `packed 73 of 73 selected files (63827146 bytes before compression) ... (38406103 bytes)`, `dropped files: 0`; every MANIFEST entry OK, tarball checksum OK; COLLECT_INFO.txt records caps and counts; the gpu-check PASS record, the 4 submission records with their `.sbatch_output` and the gpu-sanity study copy are included |
+
+### N5. MINOR: a login-shell PYTHONPATH reaches every job, shadows the venv, and is not recorded
+* Where: A/job.sbatch:86-92 (activates the venv, sets PYTHONNOUSERSITE, checks `sys.prefix`, but
+  leaves PYTHONPATH as inherited through `--export=ALL`); A/kit.py:697-702 (job_info.json records a
+  fixed list of variables without PYTHONPATH); setup_alliance.sh likewise runs its import check and
+  physics gate with whatever PYTHONPATH the login shell has.
+* Reproduction: this emulation itself. The setup-built venv's cupy cannot be imported
+  (`venv/bin/python -c "import cupy"` -> the stand-in's ImportError), yet every emulated GPU job
+  imported the numpy-impersonating cupy from the login shell's PYTHONPATH (rows 13, 20:
+  gpu_check.json `cupy_version "0.0+numpy-impersonation(h4b)"`); job_info.json and the copied
+  manifest contain neither `PYTHONPATH` nor the path of that module (checked with a JSON search).
+* Why it matters: Python.wiki:812-813 tells users not to modify PYTHONPATH, but a leftover export
+  in `~/.bashrc` would silently replace venv packages in the jobs (including numpy or cupy), and the
+  records would not show it. Low probability; cheap to close.
+* Fix: `unset PYTHONPATH` (or refuse when it is non-empty) in job.sbatch before activating the
+  venv and in setup_alliance.sh; add PYTHONPATH to the keys of `kit.py job-record`.
+| 29 | H4 command 21a again (emulated nibi env record): `submit.sh nibi smoke --account def-XXX --time 01:00 --mem 2G --dry-run` | exit 2: `REFUSED: --time '01:00' is ambiguous and refused: Slurm reads it as minutes:seconds (= 1 min, i.e. 00:01:00) ... 01:00:00 for one hour` (H4: accepted as one minute) |
+| 30 | H4 command 21b again: two `submit.sh rorqual smoke` started together (`--mem 2G`, `--mem 3G`, fake sbatch record mode, bash 4.2) | two records `20260924T010246Z_rorqual_smoke_24188_31326.json` (mem 2G) and `..._24189_25293.json` (mem 3G), each with its `.sbatch_output`; jobs 900801 and 900901 (H4: one record for two jobs) |
+| 31 | H4 command 20 again: synthetic run root (30 MB summary.json, 20 MB log, 5 MB arrays.npz, a `.bin`); `collect_results.sh --run-root R --max-array-mb 0` (H4's call), then with `--max-file-mb 20 --max-total-mb 100` (bash 4.2) | H4's call now refused: `ERROR: --max-file-mb is required (no default)`; with the caps: `packed 3 of 5 selected files`, the 30 MB json and the npz dropped and listed in DROPPED_FILES.tsv with their reasons, the `.bin` packed (H4: 30 MB json packed, `.bin` dropped silently) |
+| 27 | Trillium alternative, emulated gpu-check job (own scratch; fake sbatch passes no `--cpus-per-task`, so only `SLURM_CPUS_ON_NODE=24` is set, exercising job.sbatch:101-104) | submit exit 0 after 192 s, job 900701 status 0: `threads: 24 (declared by the run) of 24 allocated cpus`, `GPU CHECK: PASS (record .../PASS_trillium_trillium-..._900701.json; valid for cluster trillium, ...)` (the Trillium branch is not covered by any tests/hpc test) |
+
+## 5. Emulated submissions of tonight's list (item 3)
+
+Every job of tonight's list went through the unmodified submit.sh -> fake sbatch -> job.sbatch
+chain on a setup-built fresh clone of a1ef2a0 (bash 4.2 for submit and jobs; `module` only as a
+BASH_ENV function with sticky modules; numpy-impersonating cupy on the login shell's PYTHONPATH as
+the stand-in for a working GPU). Commands are README_ALLIANCE.md's, with `def-XXX`.
+
+| Job (README) | Row | Module reload in the job | Outputs under $SCRATCH/reflholo | Manifests / log / record copied | Gate | Status |
+|---|---|---|---|---|---|---|
+| setup (§3) | 6, 7, 9 | purge + 3 loads, list recorded (8 modules incl. sticky) | n/a | setup logs hard-linked | n/a | exit 2, 2, 0 as documented |
+| gpu-check (§4.1) | 13 | `modules: identical to the setup record (8 modules)`; 11 purges recorded by the Lmod-like function over the session | runs/gpu-check_900001_<UTC>/ | 1 manifest, slurm.log, submission.json, job_status.txt | writes PASS (cluster, env id, engine SHA-256, commit) | 0 |
+| gpu-sanity (§4.2) | 20 | identical | runs/gpu-sanity_900301_<UTC>/ (+ study_used.yaml) | 2 manifests, log, record | PASS matched at submission and at job start | 0 |
+| smoke (§4.3) | 21 | identical | runs/smoke_900401_<UTC>/pipeline | pipeline manifest, log, record | none (CPU) | 0 |
+| torus (§4.5) | 22 | identical | runs/torus_900501_<UTC>/torus_{trench,ridge} | 2 manifests, log, record | none (CPU) | 0 |
+| demo-gpu (§4.4) | 26 | see row 26 | runs/demo-gpu_900601_<UTC>/pipeline | see row 26 | PASS matched | see row 26 |
+| gpu-check on Trillium (alternative) | 27 | identical | own scratch | as gpu-check | PASS for trillium | 0 |
+| gate negative cases | 14, 25 | - | - | - | engine change: refused at submission and at job start (status 2, nothing computed); fir PASS not accepted for trillium | 2 |
+
+## 6. README_ALLIANCE.md walkthrough for tonight (item 5)
+
+| Step | Runnable as written? | Evidence |
+|---|---|---|
+| §1 prerequisites (CCDB, keys, MFA, ssh config) | not testable here | NOT RUN |
+| §2 clone | runs, but yields the moving branch tip, not the audited commit | N1 (MAJOR), row 23 |
+| §3 setup, incl. the three failure recipes | yes: the messages and "rerun the same command" advice match the script; the DONE line matches; "52 tests" matches | rows 6, 7, 9 |
+| §4 time/limit rules, recommended requests | yes: `NOTE: time limit ...` printed; per-cluster requests as stated (tests/hpc dry-run matrix) | rows 8, 10, 29 |
+| §4.1 gpu-check | yes; success line format matches; the quoted numpy complex64 deviations (1.8e-5, 9.2e-5) reappear | row 13 |
+| §4.2 gpu-sanity | yes (after the gpu-check PASS; refused before, as the README says); no instruction on FAIL | row 20; N3 |
+| §4.3 smoke | yes; every quoted output line reproduced | row 21 |
+| §4.4 demo-gpu | see row 26; the memory figure in the text is pre-H7 | N4 |
+| §4.5 torus | yes; the walltime-derived guard is what let the loaded-machine estimate (1109 s) run | row 22 |
+| §4.6 null-study | presented as the next step; not marked ON HOLD | N2 (MAJOR) |
+| §6 collect and checksums | yes | row 24 |
+| Trillium / Narval alternatives | Trillium: flags, refusals and the job's Trillium branch behave as described (rows 25, 27); Narval: dry-run matrix only (row 8) | - |
+
+## 7. Anything new that would break on a cluster (item 6)
+
+Read line by line: the H6 additions (study copy and hash, env-check, gate-check, requeue names,
+stamps and supersede logic in setup, collect caps, dry_run_job.py, gpu_sanity.py) use only
+bash 4.2 constructs (ShellCheck clean, bash 4.2 runs: rows 4, 9-31), GNU coreutils/tar options that
+EL9 has, Python stdlib, and paths under $SCRATCH for everything a job writes (Trillium's read-only
+$HOME is only read). Nothing new was found that would break on the clusters beyond N1-N5. What this
+audit cannot establish is unchanged from H4/H6 and listed under NOT RUN: real Lmod, real sbatch
+(`--export` values that are empty, e.g. `RH_VARIANT=`, are accepted by the fake only), real cupy on
+a GPU, Trillium's acceptance of `--gpus-per-node=h100:1`.
+
+Notes (no severity):
+* `--mem=280G`/`250G`/`124G` is requested for every full-GPU job, including the 15-minute gpu-check,
+  as the wiki's recommended bundle; that is policy-conformant but may lengthen queue waits on a busy
+  night (use `--mem` to lower it for gpu-check if the queue is slow).
+* The per-kind torus guard (0.8 x walltime / kinds) bounds the estimate, not the wall time: with
+  both kinds near 1440 s and the x1.5 calibration off by 20 %, `--time 01:00:00` could be exceeded;
+  on T1-like speeds (163-213 s) this is far away. The runner's "engine arrays" label is stale (N4).
+* tests/hpc still has no emulated run of gpu-sanity, torus or demo-gpu through job.sbatch, and none
+  of job.sbatch's Trillium branch; this audit ran them (rows 20-22, 26, 27). The numpy-impersonating
+  cupy cannot reveal host/device mixing (by reading: engine.py:259 `be.to_numpy`, gpu_check.py:103-104
+  `cp.asnumpy`; no mixing found).
+
+## 8. NOT RUN (and why)
+
+* Anything on an Alliance cluster (no ssh by design): real Lmod (`module -t list` on login vs
+  compute nodes, sticky/hidden modules; emulated here by a BASH_ENV function), real `sbatch`
+  (option validation, `--export` with empty values such as `RH_VARIANT=`), `SLURM_CPUS_ON_NODE` on
+  Trillium, whether Trillium's sbatch accepts `--gpus-per-node=h100:1`, time-limit SIGTERM, requeue.
+* Any GPU execution: gpu-check, gpu-sanity and demo-gpu ran with numpy impersonating cupy, which
+  tests the kit's plumbing and the engine's backend-agnostic code, not cuFFT/cuBLAS or the device.
+  Every GPU time is still the GPU_ASSUMED model; the gpu-sanity strip has never run on a GPU.
+* The real Alliance wheelhouse and PyPI (H4's local 69-wheel wheelhouse and stand-in cupy wheel were
+  used; the abTEM wheel was the SHA-verified local copy), setup with a cupy that imports from the
+  wheelhouse, `--recreate` and the `--cuda-module` supersede path (H6 ran them; the code is
+  unchanged since).
+* `git clone` from GitHub and whether a1ef2a0 is on GitHub (no fetch; the local tracking ref
+  contains it). The branch tip 3e99722 was only diffed, not audited or run.
+* A read-only $HOME (Trillium compute nodes) emulation; Narval end to end (dry-run matrix only).
+* The null study (on hold, per the brief) beyond its first point inside gpu-sanity.
+* The full repository test suite (only tests/hpc in three variants and the setup's 52-test gate;
+  H6/H7 ran the full suite: one timing-only failure in test_smoke_atomistic under load).

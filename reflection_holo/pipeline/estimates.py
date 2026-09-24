@@ -146,4 +146,20 @@ def dry_run(cfg: PipelineConfig, *, calibrate_cpu: bool = False) -> dict:
     out["cell"] = dict(extent_x_A=cell.extent_x_A, extent_y_A=cell.extent_y_A,
                        length_z_A=cell.length_z_A, n_atoms=int(len(cell.Z)),
                        crystal_start_z_A=cell.crystal_start_z_A)
+    from reflection_holo.pipeline import convergence as CV
+    if CV.is_convergent(cfg):
+        # report E3: the declared quadrature against the computed design extent, and the band and
+        # geometry assertions for EVERY member (each member is one engine run)
+        from reflection_holo.forward.multislice.convergence import check_members
+        q, de = CV.checked_quadrature(cfg, cell=cell)
+        checks = check_members(cell, potential=o["potential"], beam=o["beam"], params=params,
+                               quadrature=q)
+        n = q.n_members
+        out["convergence"] = dict(
+            quadrature=q.as_record(), design_extent=de, n_members=n,
+            members_passing_band_and_geometry_checks=len(checks),
+            cost_note=f"every engine cost above is PER MEMBER: the ensemble runs {n} members "
+                      f"(separately with run-member, or in one run)",
+            seconds_total_cpu=(est["cpu"]["seconds_total"] * n if "cpu" in est else None),
+            seconds_total_gpu_assumption=est["gpu"]["seconds_total"] * n)
     return out

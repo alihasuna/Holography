@@ -2,7 +2,10 @@
 
 Si(001) terrace builder with the spec 4.2 assertions (``si001``), assertion primitives (``checks``),
 diamond-lattice primitives (``lattice``), shadowed strips and patterned features (``shadows``) and an
-extended-XYZ writer that records the frame (``xyz``).
+extended-XYZ writer that records the frame (``xyz``). Report E2: the Si(001) dimer reconstructions
+of Ramstad, Brocks and Kelly 1995 and the flip-flop ensemble (``reconstruction``, used by the
+staircase builder's ``termination`` option) and the sourced Si thermal displacement for frozen
+phonons at the specimen temperature (``thermal``, model_assumptions B35).
 """
 from .checks import StructureAssertionError
 from .shadows import (EdgeProfile, FeatureShadowMasks, PatternedFeature, ShadowStrips,

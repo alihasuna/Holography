@@ -104,8 +104,13 @@ def test_registry_is_package_data_mapping_ids_to_items():
                    "B30": (21,), "B31": (1,), "B32": (7,),
                    "B33": (13,), "B34": (13,),
                    # report E2: demo stand-in specimen temperature (docs/06 item 23)
-                   "B36": (23,)}
+                   "B36": (23,),
+                   # report E3: demo stand-ins of the surface-plasmon excitation number (item 21),
+                   # the loss-electron visibility (item 16) and a convergent illumination with the
+                   # R1 object-reference separation (items 3 and 16)
+                   "B38": (21,), "B39": (16,), "B40": (3, 16)}
     assert "B36" in C.demo_only_stand_ins()
+    assert {"B38", "B39", "B40"} <= C.demo_only_stand_ins()
     # report E2: rows cited by code that stand in for no docs/06 item (never an assumption_id)
     assert set(C.model_assumption_rows()) == {"B35", "B37"}
     assert not set(C.model_assumption_rows()) & set(reg)

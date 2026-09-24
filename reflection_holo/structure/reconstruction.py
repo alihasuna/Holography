@@ -577,3 +577,69 @@ def assert_no_collision(rec: ReconstructionRecord, group_of_atom, periodic_lengt
                    "below the table's shortest bond: artefact of 'step-riser relaxation none' "
                    "(ASSUMPTION), recorded here"))
     return m
+
+
+
+def reconstruction_relation(rec: ReconstructionRecord, *, quarter, layer, terrace, tops, frame,
+                            A: int, B: int, M, t_crystal_A, a_A: float, state_A: int = 0,
+                            state_B: int = 0) -> dict:
+    """Does r -> M r + t (an operation of assertion (f), found on the IDEAL sites) also map the
+    reconstructed layers of terrace A onto those of terrace B, up to an in-plane translation of
+    B's pattern? (For the specular beam an in-plane translation does not matter: only t . n_hat
+    enters exp(-i (k_out - k_in) . t), model_assumptions B4.) Measured on the displaced atoms: every
+    atom of a complete cell of A is mapped by M r + t onto a site of B; M times its displacement is
+    compared with the displacement that B's atoms of the same pattern class carry, after a
+    translation (k0, l0) of B's pattern (even R1 units: lattice translations of the top layer).
+    B's classes are read from B's atoms (``state_B`` = 1: B's buckling-reversed flip-flop state).
+    Holds if the largest difference is <= RELATION_TOL_A (R1's printed precision). DERIVED_HERE."""
+    q = a_A / 4.0
+    Mi = np.rint(np.asarray(M, float)).astype(np.int64)
+    tq = np.asarray(t_crystal_A, float) / q
+    ti = np.rint(tq).astype(np.int64)
+    if np.max(np.abs(tq - ti)) > 1e-6:
+        raise StructureAssertionError("relation translation is not on the a/4 grid")
+    tB = rec.metadata["terraces"][B]
+    dB = np.array(tB["dimer_bond_axis_crystal"], np.int64)
+    bB = np.array(tB["dimer_row_axis_crystal"], np.int64)
+    oB = np.array(tB["origin_site_quarter"], np.int64)
+    if (state_A or state_B) and rec.mirror_displacement_A is None:
+        raise ValueError("state 1 exists only for the flip-flop ensemble")
+    dispA = rec.displacement_A if state_A == 0 else rec.mirror_displacement_A
+    dispB = rec.displacement_A if state_B == 0 else rec.mirror_displacement_A
+    terrace = np.asarray(terrace)
+    quarter = np.asarray(quarter, np.int64)
+    top = np.asarray(tops)[terrace] - np.asarray(layer)
+    selA = np.nonzero((terrace == A) & (rec.cell_index >= 0))[0]
+    selB = np.nonzero((terrace == B) & (rec.cell_index >= 0))[0]
+
+    def r1(v_slab):                                  # slab vector -> (dx, dy, dz) in B's frame
+        c = frame.to_crystal(v_slab)
+        return np.stack([c @ dB / np.sqrt(2.0), c @ bB / np.sqrt(2.0), c[..., 2]], axis=-1)
+
+    kB, lB = _kl(quarter[selB] - oB, dB, bB)
+    classes: dict = {}
+    for key, v in zip(zip(*[a.tolist() for a in _reduce(rec.name, kB, lB, -top[selB])]),
+                      r1(dispB[selB])):
+        if key in classes and np.max(np.abs(classes[key] - v)) > RELATION_TOL_A:
+            raise StructureAssertionError(f"terrace {B}: pattern class {key} not unique")
+        classes.setdefault(key, v)
+    img = quarter[selA] @ Mi.T + ti
+    kA, lA = _kl(img - oB, dB, bB)
+    mA = -top[selA]
+    vA = r1(frame.to_slab(frame.to_crystal(dispA[selA]) @ Mi.T.astype(float)))
+    best = None
+    lat = PATTERN_LATTICE[rec.name]
+    kper = 4 if lat == ((4, 0), (0, 2)) else 8
+    for k0 in range(0, kper, 2):
+        for l0 in range(0, 4, 2):
+            keys = list(zip(*[a.tolist() for a in _reduce(rec.name, kA + k0, lA + l0, mA)]))
+            if any(k not in classes for k in keys):
+                continue
+            dev = float(np.max(np.abs(np.array([classes[k] for k in keys]) - vA)))
+            if best is None or dev < best[0]:
+                best = (dev, k0, l0)
+    if best is None:
+        return dict(holds=False, max_deviation_A=None, note="no pattern translation matches")
+    return dict(holds=bool(best[0] <= RELATION_TOL_A), max_deviation_A=best[0],
+                pattern_translation_R1_units=[best[1], best[2]], tolerance_A=RELATION_TOL_A,
+                atoms_compared=int(len(selA)), state_A=int(state_A), state_B=int(state_B))

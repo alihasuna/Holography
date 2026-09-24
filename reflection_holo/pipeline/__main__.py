@@ -1,8 +1,18 @@
 """Command line of the pipeline.
 
     python -m reflection_holo.pipeline run --config C --out D [--variant V] [--allow-no-git]
+                                           [--members-dir M]
     python -m reflection_holo.pipeline dry-run --config C [--variant V] [--calibrate-cpu]
     python -m reflection_holo.pipeline list-inputs --config C [--variant V]
+    python -m reflection_holo.pipeline members --config C [--variant V]
+    python -m reflection_holo.pipeline run-member --config C --member K --out D [--variant V]
+                                                  [--allow-no-git]
+
+Convergence ensembles (report E3; PROJECT_INPUT item 3): ``members`` prints the job list as JSON
+(n_members and one record per incidence direction); ``run-member`` runs ONE member's engine run
+into an empty directory (exit waves always saved, engine manifest, member.json with the SHA-256 of
+every file); ``run --members-dir M`` assembles every member job found under M/*/member.json (same
+resolved configuration and quadrature; each member exactly once) instead of running the members.
 
 Exit status: 0 success; 2 usage; 3 configuration refused (a missing PROJECT_INPUT, an unregistered
 stand-in, a schema error); 4 engine unavailable; 5 output directory not empty; 6 git state
@@ -40,6 +50,19 @@ def _parser() -> argparse.ArgumentParser:
     r.add_argument("--variant", default=None)
     r.add_argument("--allow-no-git", action="store_true",
                    help="record, instead of refusing, a missing git state in the manifest")
+    r.add_argument("--members-dir", default=None,
+                   help="convergence ensemble: assemble the member jobs under this directory "
+                        "(written by run-member) instead of running the members")
+    me = sub.add_parser("members", help="convergence ensemble: print the member job list (JSON)")
+    me.add_argument("--config", required=True)
+    me.add_argument("--variant", default=None)
+    rm = sub.add_parser("run-member", help="convergence ensemble: run one member's engine run")
+    rm.add_argument("--config", required=True)
+    rm.add_argument("--member", required=True, type=int)
+    rm.add_argument("--out", required=True, help="output directory (created; must be empty)")
+    rm.add_argument("--variant", default=None)
+    rm.add_argument("--allow-no-git", action="store_true",
+                    help="record, instead of refusing, a missing git state")
     d = sub.add_parser("dry-run", help="validate the configuration and print resource estimates")
     d.add_argument("--config", required=True)
     d.add_argument("--variant", default=None)
@@ -78,6 +101,24 @@ def main(argv: list[str] | None = None) -> int:
                 return 3
             return 0
         cfg = load_pipeline_file(args.config, variant=args.variant)
+        if args.command == "members":
+            from reflection_holo.pipeline.convergence import members_table
+            print(json.dumps(members_table(cfg), indent=1, default=str))
+            return 0
+        if args.command == "run-member":
+            from reflection_holo.pipeline.convergence import run_member_job
+            from reflection_holo.pipeline.run import OutputDirectoryError
+            try:
+                rec = run_member_job(cfg, args.member, args.out, allow_no_git=args.allow_no_git)
+            except OutputDirectoryError as exc:
+                print(f"refused: {exc}", file=sys.stderr)
+                return 5
+            print(f"member {rec['member']['index']} of {rec['quadrature']['n_members']}: "
+                  f"glancing angle {rec['member']['glancing_angle_rad'] * 1e3:.6f} mrad, "
+                  f"y direction cosine {rec['member']['direction_cosine_y']:.3e}, weight "
+                  f"{rec['member']['weight']:.6g}; {len(rec['exit_waves'])} exit wave(s) and "
+                  f"member.json in {args.out}")
+            return 0
         if args.command == "dry-run":
             from reflection_holo.pipeline.estimates import dry_run
             rep = dry_run(cfg, calibrate_cpu=args.calibrate_cpu)
@@ -122,7 +163,8 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         from reflection_holo.pipeline.run import OutputDirectoryError, run
         try:
-            s = run(cfg, args.out, allow_no_git=args.allow_no_git)
+            s = run(cfg, args.out, allow_no_git=args.allow_no_git,
+                    members_dir=args.members_dir)
         except OutputDirectoryError as exc:
             print(f"refused: {exc}", file=sys.stderr)
             return 5

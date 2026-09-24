@@ -229,6 +229,22 @@ sections:
       source: "demo stand-in B22: the aperture selects the specular (0,0) rod at the (0,0,8) condition"
     projection_reference: lowest_terrace_top
     lens_transfer: none
+    surface_plasmon_excitations:
+      value: 0.0
+      unit: none
+      label: ASSUMPTION
+      item: 21
+      stands_in_for_item: 21
+      assumption_id: B30
+      source: "demo stand-in B30 (B6 not represented): NO surface-plasmon loss in this demo (n = 0, stated, not defaulted), so that its results stay those of the lossless model; the physical estimate is stand-in B38 (n = 1.25, variant plasmon_losses where defined; report E3); the laboratory value is an energy-filtered EELS of the specular beam at the working angle (a new request under PROJECT_INPUT item 21, not supplied)"
+    loss_electron_visibility:
+      value: 0.1
+      unit: none
+      label: ASSUMPTION
+      item: 16
+      stands_in_for_item: 16
+      assumption_id: B39
+      source: "demo stand-in B39: mutual fringe visibility of the plasmon-loss electrons of the two arms, 0.1 (one-plasmon-loss hologram of an R2 arrangement, Tanishiro 2003 p. 171, SECTION_READ by E6, M2); with an R1 vacuum reference the reference arm carries no loss electrons and this value has no effect (optics.inelastic, DERIVED_HERE); PROJECT_INPUT item 16 (object-reference separation) not supplied"
   reference:
     carrier_fringe_spacing:
       value: 2.0
@@ -503,3 +519,22 @@ variants:
           source: "demo stand-in B32: the external glancing angle of the (0,0,8) internal Bragg condition computed with the mean inner potential of the potential actually used by the multislice engine (Kirkland IAM, 13.903 V), so that the refraction angles are consistent with the exit waves; PROJECT_INPUT item 7 not supplied (blocking)"
       detector:
         roi_shape: [40, 16]
+  plasmon_losses:
+    description: >-
+      The base demo with the surface-plasmon loss of the object path (report E3; E6 M1, M2):
+      stand-in B38, n = 1.25 excitations per specular reflection (E6's transfer of Tanishiro 2003
+      p. 167), so that the zero-loss (coherent) amplitude of the object wave is exp(-n/2) = 0.536
+      and the loss electrons (1 - exp(-n) = 71 % of the object intensity) are detected as background;
+      with the demo's R1 vacuum reference they carry no fringes (the loss-electron visibility B39 has
+      no effect), the fringe contrast of the empty hologram drops from 1 to 0.536 and the phase
+      noise rises by 1/0.536 = 1.87 at the same dose.
+    sections:
+      optics:
+        surface_plasmon_excitations:
+          value: 1.25
+          unit: none
+          label: ASSUMPTION
+          item: 21
+          stands_in_for_item: 21
+          assumption_id: B38
+          source: "demo stand-in B38: mean number of surface-plasmon excitations of the object path per specular reflection, 1.25 = 1.44 x sin(0.8 deg)/sin(16.13 mrad): E6's 1/sin(theta) transfer (DERIVED_HERE, tools/review/e6_recompute_output.txt section F) of the 200 kV measurement on Si(111)7x7 at 0.8 deg, (444) (Tanishiro 2003 p. 167, SECTION_READ by E6) to Si(001) at the (0,0,8) condition; surface, temperature and Bragg condition differ (ASSUMPTION); the laboratory value is an energy-filtered EELS of the specular beam at the working angle (a new request under PROJECT_INPUT item 21, not supplied)"

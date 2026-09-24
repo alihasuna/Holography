@@ -127,11 +127,20 @@ SECTIONS: dict[str, dict[str, dict]] = {
         "glancing_angle": _rec(7, "angle_or_rule", "glancing"),
         "angle_calibration_sigma": _rec(7, "angle", "positive"),
         "wavelength_sigma_rel": _rec(1, "none", "positive"),
+        # report E3: the declared quadrature of a convergence ensemble; REQUIRED with a non-zero
+        # cfg_b.convergence_semi_angle (item 3), refused with a zero one (CONVERGENCE_KEYS)
+        "convergence_quadrature": _plain("mapping", optional=True),
     },
     "optics": {
         "selected_beam": _rec(4, "none", "beam"),
         "projection_reference": _plain("enum", choices=PROJECTION_REFERENCES),
         "lens_transfer": _plain("enum", choices=("none",)),
+        # report E3 (E6 M1, M2): surface-plasmon losses in hologram formation, both REQUIRED:
+        # the mean excitation number of the object path per reflection (item 21: an
+        # energy-filtered EELS of the specular beam at the working angle; stand-in B38) and the
+        # mutual visibility of the loss electrons of the two arms (item 16; stand-in B39)
+        "surface_plasmon_excitations": _rec(21, "none", "nonnegative"),
+        "loss_electron_visibility": _rec(16, "none", "unit_interval"),
     },
     "reference": {
         "carrier_fringe_spacing": _rec(16, "length", "positive"),
@@ -139,6 +148,10 @@ SECTIONS: dict[str, dict[str, dict]] = {
         "amplitude_ratio": _rec(16, "none", "positive"),
         "aperture_passage": _rec(15, "none", "aperture_passage"),
         "shift": _rec(16, "length", "pixel_pair", optional=True),
+        # report E3: separation D0 (x, y, z; cell frame, A) from the reference-arm point to the
+        # object-arm exit-plane point superposed by the biprism; required by an R1 convergence
+        # ensemble only (refused otherwise)
+        "separation": _rec(16, "length", "vector3", optional=True),
         "relative_phase_rad": _plain("float"),
     },
     "detector": {
@@ -311,6 +324,16 @@ def _check_record_kind(where: str, kind: str, v, dim: str):
     elif kind == "finite":
         if not _is_num(v):
             bad("a finite number")
+    elif kind == "nonnegative":
+        if not (_is_num(v) and v >= 0):
+            bad("a finite number >= 0")
+    elif kind == "unit_interval":
+        if not (_is_num(v) and 0 <= v <= 1):
+            bad("a finite number in [0, 1]")
+    elif kind == "vector3":
+        if not (isinstance(v, dict) and set(v) == {"x", "y", "z"}
+                and all(_is_num(a) for a in v.values())):
+            bad("{x, y, z} (finite; cell frame)")
     elif kind == "glancing":
         if dim == "angle":
             if not (_is_num(v) and v > 0):
@@ -665,7 +688,6 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
     test_only = cfg_b.test_only or any(r.label == TEST_ONLY_LABEL for r in records)
     _refuse_unused_physical_inputs(cfg_b, sections, ga)
     if data["purpose"] == "comparison":
-        _comparison_gate(cfg_b, records, test_only)
         eng = sections["engine"]
         if eng["name"] == "multislice" and isinstance(eng["multislice"]["frozen_phonons"], dict) \
                 and set(eng["multislice"]["frozen_phonons"]) == FIXED_U_KEYS:
@@ -674,6 +696,7 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
                 "model_assumptions A7, inherited, unsourced): the specimen temperature "
                 f"(PROJECT_INPUT item 23) must enter through {{model: {THERMAL_MODEL_B35}}} "
                 "(report E2)")
+        _comparison_gate(cfg_b, records, test_only)
     resolved = {k: v for k, v in data.items() if k != "variants"}
     resolved["sections"] = sections_raw
     resolved["cfg_b"] = cfg_b_full
@@ -686,19 +709,115 @@ def load_pipeline_dict(data: dict, *, variant: str | None, allow_test_only: bool
                           raw=copy.deepcopy(data))
 
 
+# the design phase extent of the quadrature is COMPUTED by the pipeline from the geometry
+# (pipeline.convergence.design_extent), not declared
+CONVERGENCE_KEYS = ("source_profile", "n_radial", "n_azimuthal", "line_azimuth_rad", "tolerance")
+# item-3 stand-ins whose model_assumptions row states a plane wave (B21) or a convergent
+# illumination (B40, report E3): a stand-in whose row contradicts the value is refused
+CONVERGENCE_STAND_IN_ZERO = {"B21": True, "B40": False}
+R1_PASSAGES_UNDER_CONVERGENCE = ("condenser_biprism_pretilt",)
+
+
+def _check_convergence(cfg_b: LoadedConfig, sections: dict, ga: dict) -> None:
+    """Gate of the illumination convergence (PROJECT_INPUT item 3; report E3; H2 N3). A zero
+    convergence is a plane wave: the quadrature block and the R1 separation are refused rather than
+    ignored. A non-zero convergence is accepted only (i) as a supplied PROJECT_INPUT or a registered
+    stand-in whose row states a convergence (the CFG-B gate and CONVERGENCE_STAND_IN_ZERO), (ii) with
+    the multislice engine (each member is an engine run; the geometric engine is plane-wave only),
+    (iii) with a declared quadrature (sections.illumination.convergence_quadrature, every key
+    required) that meets its own error bound, and (iv) with R1 only through the condenser-biprism
+    pre-tilt and with the separation D0 (item 16), or with R2 (no separation)."""
+    conv, _ = cfg_b.quantity("convergence_semi_angle")
+    p3 = cfg_b.parameters["convergence_semi_angle"]
+    aid = getattr(p3, "assumption_id", None)
+    cq = sections["illumination"].get("convergence_quadrature")
+    sep = sections["reference"].get("separation")
+    if p3.label == "ASSUMPTION" and aid in CONVERGENCE_STAND_IN_ZERO:
+        if CONVERGENCE_STAND_IN_ZERO[aid] != (conv == 0.0):
+            raise PipelineConfigError(
+                f"cfg_b.convergence_semi_angle: stand-in {aid} states "
+                f"{'a plane wave (zero convergence)' if CONVERGENCE_STAND_IN_ZERO[aid] else 'a non-zero convergence'}"
+                f", not {cfg_b.value('convergence_semi_angle')} "
+                f"{p3.unit}: refused")
+    if conv == 0.0:
+        if cq is not None:
+            raise PipelineConfigError(
+                "sections.illumination.convergence_quadrature is given but "
+                "cfg_b.convergence_semi_angle is 0 (a plane wave): refused rather than ignored")
+        if sep is not None:
+            raise PipelineConfigError(
+                "sections.reference.separation is used only by a convergence ensemble with an R1 "
+                "reference: refused rather than ignored with a zero convergence")
+        return
+    if sections["engine"]["name"] != "multislice":
+        raise PipelineConfigError(
+            f"cfg_b.convergence_semi_angle = {cfg_b.value('convergence_semi_angle')} {p3.unit} "
+            f"(docs/06 item 3): the convergence ensemble runs one multislice engine run per "
+            f"incidence direction (report E3); the geometric engine is plane-wave only: refused")
+    if cq is None:
+        raise PipelineConfigError(
+            "a non-zero cfg_b.convergence_semi_angle (docs/06 item 3) needs "
+            f"sections.illumination.convergence_quadrature with the keys {CONVERGENCE_KEYS} (the "
+            "number of incidence directions is a declared, recorded choice; no default)")
+    if not (isinstance(cq, dict) and set(cq) == set(CONVERGENCE_KEYS)):
+        raise PipelineConfigError(f"sections.illumination.convergence_quadrature must have exactly "
+                                  f"the keys {CONVERGENCE_KEYS}, got "
+                                  f"{sorted(cq) if isinstance(cq, dict) else cq!r}")
+    try:                                   # types and ranges (the error bound is checked at run time)
+        convergence_quadrature_from(cfg_b, cq, design_phase_extent_rad=0.0,
+                                    design_curvature_rad=0.0)
+    except ValueError as exc:
+        raise PipelineConfigError(f"sections.illumination.convergence_quadrature: {exc}") from exc
+    ref_model = cfg_b.value("reference_model")
+    if ref_model == "R1":
+        passage = sections["reference"]["aperture_passage"].value
+        if passage not in R1_PASSAGES_UNDER_CONVERGENCE:
+            raise PipelineConfigError(
+                f"R1 reference with aperture passage {passage!r} under convergence: only "
+                f"{R1_PASSAGES_UNDER_CONVERGENCE} is implemented (a reference inclined to the "
+                f"imaging axis needs the conjugate plane of the imaging; report E3)")
+        if sep is None or sep.value is None:
+            raise MissingProjectInputError(
+                "sections.reference.separation is a missing PROJECT_INPUT (docs/06 item 16: the "
+                "object-reference separation at the specimen), required by an R1 convergence "
+                "ensemble", [16], ["reference.separation"])
+    elif ref_model == "R2":
+        if sep is not None:
+            raise PipelineConfigError("sections.reference.separation: an R2 reference is the "
+                                      "shifted object (sections.reference.shift); refused rather "
+                                      "than ignored")
+    else:
+        raise PipelineConfigError(f"reference model {ref_model!r} under convergence: R1 and R2 "
+                                  f"only")
+
+
+def convergence_quadrature_from(cfg_b: LoadedConfig, cq: dict, *, design_phase_extent_rad: float,
+                                design_curvature_rad: float):
+    """The optics.coherence.ConvergenceQuadrature of a gated configuration (semi-angle from
+    cfg_b.convergence_semi_angle, item 3; profile, nodes and tolerance from sections.illumination.
+    convergence_quadrature; the design phase extent and curvature computed by the caller from the
+    geometry, pipeline.convergence.design_extent). Raises ValueError if the declared quadrature is
+    invalid or its error bound exceeds its tolerance."""
+    from reflection_holo.optics.coherence import ConvergenceQuadrature
+    conv, _ = cfg_b.quantity("convergence_semi_angle")
+    p3 = cfg_b.parameters["convergence_semi_angle"]
+    aid = getattr(p3, "assumption_id", None)
+    lab = (f"ASSUMPTION {aid} (stands in for PROJECT_INPUT item 3)" if p3.label == "ASSUMPTION"
+           else f"{p3.label} item 3 ({p3.source})")
+    return ConvergenceQuadrature(
+        semi_angle_rad=float(conv), semi_angle_label=lab, source_profile=cq["source_profile"],
+        n_radial=cq["n_radial"], n_azimuthal=cq["n_azimuthal"],
+        line_azimuth_rad=cq["line_azimuth_rad"],
+        design_phase_extent_rad=float(design_phase_extent_rad),
+        design_curvature_rad=float(design_curvature_rad), tolerance=cq["tolerance"])
+
+
 def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict) -> None:
     """Inputs that matter physically but that no engine path of the pipeline represents are
     REFUSED rather than accepted and ignored (audit A3 M6; docs/05 criterion 5; docs/06 item 12
     "must be modelled rather than ignored"). Items that do not change the simulated physics and are
     not used on a path are listed by ``list_inputs`` as "SUPPLIED, NOT USED on this path"."""
-    conv, _ = cfg_b.quantity("convergence_semi_angle")
-    if conv != 0.0:
-        raise PipelineConfigError(
-            f"cfg_b.convergence_semi_angle = {cfg_b.value('convergence_semi_angle')} "
-            f"{cfg_b.parameters['convergence_semi_angle'].unit} (docs/06 item 3): no engine path "
-            f"models convergent illumination (partial-coherence ensembles NOT IMPLEMENTED; the "
-            f"multislice path would run a plane wave and ignore it), so a non-zero value is "
-            f"refused rather than accepted and not used (audit A3 M6)")
+    _check_convergence(cfg_b, sections, ga)
     prep = cfg_b.value("surface_preparation_details")
     if isinstance(prep, dict):
         if prep.get("overlayer", "none") != "none":
@@ -1045,10 +1164,23 @@ def _path_usage(parameter: str, data: dict, sections: dict) -> str | None:
         "sections.reference.shift": (None if ref_model == "R2" else
                                      "the shift belongs to an R2 reference; this run uses "
                                      f"{ref_model}"),
+        "sections.optics.loss_electron_visibility": _loss_visibility_usage(ref_model, sections),
     }
     if parameter == "sections.engine.multislice.potential_mip":
         return None
     return reasons.get(parameter)
+
+
+def _loss_visibility_usage(ref_model, sections: dict) -> str | None:
+    """Why the loss-electron visibility has no effect on this path, or None (report E3)."""
+    if ref_model in ("R1", "R3"):
+        return ("with a vacuum reference (R1) the reference arm carries no surface-plasmon loss "
+                "electron, so the loss electrons of the object arm carry no fringes: the value has "
+                "no effect (optics.inelastic)")
+    n = ((sections.get("optics") or {}).get("surface_plasmon_excitations") or {})
+    if isinstance(n, dict) and n.get("value") == 0:
+        return "no loss electrons (surface_plasmon_excitations = 0): the value has no effect"
+    return None
 
 
 def _absent_reason(parameter: str, sections: dict) -> str | None:

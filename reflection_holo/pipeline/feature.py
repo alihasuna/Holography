@@ -39,7 +39,6 @@ from reflection_holo.forward.geometric import STATUS
 from reflection_holo.forward.geometric.height_field import trace_height_field
 from reflection_holo.geometry.specular import wrap_to_pi
 from reflection_holo.geometry.wavelength import wavelength_A
-from reflection_holo.optics.hologram import fringe_contrast
 from reflection_holo.pipeline import quantify as Q
 from reflection_holo.pipeline.config import PipelineConfig, assumptions_in_use, list_inputs
 from reflection_holo.pipeline.engines import run_geometric_feature
@@ -354,7 +353,8 @@ def run_feature(cfg: PipelineConfig, out: Path, *, t0: float, git_preflight: dic
     height_verdict = dict(heights_returned=n_meas, n_steps=0, withheld=withhold is not None,
                           withhold_reason=withhold, line=line, product="height map (pixels)")
     surf = _surface_mask_map(hf, theta, g["n_y"], g["exit_plane_pixel_A"]["y"], 8, 4)
-    contrast_empty = fringe_contrast(A_emp, ho["ratio"] * A_emp)
+    # report E3: the noise model uses the contrast reduced by the surface-plasmon losses
+    contrast_empty = ho["contrast_empty"]
     noise_pred = sideband_phase_noise(contrast_empty, spec.dose_e_per_px, W)
     timing["quantification_s"] = time.perf_counter() - t
 
@@ -479,10 +479,12 @@ def run_feature(cfg: PipelineConfig, out: Path, *, t0: float, git_preflight: dic
                        carrier_cycles_per_A=list(ho["q_ref"]), amplitude=ho["ratio"] * A_emp,
                        amplitude_ratio=ho["ratio"], relative_phase_rad=ho["rel_phase"],
                        aperture_passage=ho["passage"], empty_hologram_fringe_contrast=contrast_empty,
+                       fringe_contrast=ho["contrast_record"],
                        noise_seed=ho["seed"],
                        empty_hologram="uniform object wave of the flat surface (amplitude above), "
                                       "same reference, detector, dose and gain; carrier located on "
                                       "it"),
+        surface_plasmon_losses=ho["loss"].as_record(),
         hologram=dict(object={k: v for k, v in H_obj.metadata.items() if k != "valid_mask"},
                       empty_formation=H_emp.metadata.get("formation"),
                       ensemble_rule="intensities averaged over realisations AFTER squaring"),

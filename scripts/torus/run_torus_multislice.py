@@ -40,7 +40,7 @@ from reflection_holo.structure.features import (build_si001_flat_reference,
 from reflection_holo.structure.shapes import HalfTorus
 
 STATUS = ("UNVALIDATED: finite-cell build-up not converged along z, no physical absorption "
-          "(ASSUMPTION B30), engine rung 2 and abTEM cross-check NOT RUN (report M2 section 10). "
+          "(ASSUMPTION B30), engine abTEM cross-check NOT RUN (report M2 section 10). Engine: "
           + VALIDATION_STATUS)
 A = A_SI_A
 # ---- demo case (every value labelled; nothing here is comparable to experiment) ----------------

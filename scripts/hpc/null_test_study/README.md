@@ -16,6 +16,18 @@ venv/bin/python scripts/hpc/null_test_study/run_study.py \
     --config scripts/hpc/null_test_study/study.yaml --out $SCRATCH/null_study
 ```
 
+Two study files (every key required; see run_study.py):
+* `study.yaml`: the M2-reproduction set (17 points, [110]). Its clean depth of 21 A of crystal above
+  the absorber (`clean_depth_A: 21.0`, explicit LEGACY value) is shallower than the 24.5 A (0,0,8)
+  extinction depth (P2 report 6.5, H2 3, H5 D.8): it tests the engine against M2's numbers, not the
+  convergence of a production cell.
+* `study_depth100.yaml` (E1 wave 2a): 24 points, clean depth 100 A, absorption r = 0.05 and 0.1
+  only, fixed-beam translation at [110] and at exact [100] (16.1347 mrad; a four-beam case there,
+  H2 2.2), moved-beam controls at both azimuths, the M2 step points at [110] with r >= 0.05, and the
+  surface-position-resolved read-out of H2 2.4 (`surface_resolved`: per z_s bin `err_rad`,
+  `amp_ratio`, and `converged_beyond_A`). Its estimate (numpy, 4 threads, this container):
+  `study_depth100_estimate_numpy4.txt`.
+
 In a SLURM job, request one GPU (runtime.backend: cupy) or set `runtime.backend: numpy` and
 `runtime.threads` to `--cpus-per-task`. Everything in study.yaml is required; absorption values
 other than zero are TEST_ONLY stand-ins for PROJECT_INPUT item 21.

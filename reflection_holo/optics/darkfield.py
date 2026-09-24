@@ -22,6 +22,14 @@ Procedure (DERIVED_HERE; numpy FFT sign, exp(+ik.r) convention, docs/physics_con
 
 The aperture centre, radius, number of passing bins, the demodulation frequency and the engine's
 band limit are recorded with the result.
+
+Azimuthally tilted illumination (convergence member, report E3): an exit wave whose metadata
+carries ``bloch`` (forward.multislice.illumination) is the Bloch envelope u of the physical wave
+u exp(2 pi i f_y y). The aperture stays FIXED in the microscope (centred on the central k_out given by
+the caller); it is applied to the physical directions (lambda q_x, lambda (q_y + f_y), ...) of the
+envelope's components, and the selected wave is returned as an envelope with the same f_y
+(``record["bloch_fy_per_A"]``; the caller multiplies by exp(2 pi i f_y y) after any periodic
+resampling). For f_y = 0 (no ``bloch`` record) the computation is unchanged.
 """
 from __future__ import annotations
 
@@ -110,9 +118,9 @@ def validate_exit_wave(ew: ExitWave, *, energy_keV: float, theta_in_ext_rad: flo
         raise ValueError("ExitWave.realisation must be an integer")
 
 
-def _directions(nx: int, ny: int, dx: float, dy: float, lam: float):
+def _directions(nx: int, ny: int, dx: float, dy: float, lam: float, fy_shift: float = 0.0):
     qx = np.fft.fftfreq(nx, dx)
-    qy = np.fft.fftfreq(ny, dy)
+    qy = np.fft.fftfreq(ny, dy) + fy_shift          # physical frequencies of a Bloch envelope
     QX, QY = np.meshgrid(qx, qy, indexing="ij")
     s2 = (lam * QX) ** 2 + (lam * QY) ** 2
     prop = s2 < 1.0
@@ -139,9 +147,14 @@ def select_dark_field(exit_wave: ExitWave, aperture: DarkFieldAperture, *, energ
     dx, dy = float(exit_wave.dx_A), float(exit_wave.dy_A)
     alpha = aperture.semi_angle_rad
     q_out = math.sin(th) / lam
-    # band checks: the aperture disc must be representable on the grid
+    bloch = (exit_wave.metadata or {}).get("bloch") if exit_wave.metadata else None
+    fb = 0.0 if not bloch else float(bloch["fy_per_A"])
+    if not math.isfinite(fb):
+        raise ValueError("the exit wave's Bloch frequency must be finite")
+    # band checks: the aperture disc must be representable on the grid (for a Bloch envelope the
+    # aperture sits at native q_y = -f_y)
     q_hi_x = math.sin(th + alpha) / lam
-    q_hi_y = math.sin(alpha) / lam
+    q_hi_y = abs(fb) + math.sin(alpha) / lam
     if q_hi_x >= 0.5 / dx or q_hi_y >= 0.5 / dy:
         raise ValueError(f"the aperture (centre {q_out:.4f} cycles/A, semi-angle {alpha * 1e3:.3f} "
                          f"mrad) reaches ({q_hi_x:.4f}, {q_hi_y:.4f}) cycles/A, beyond the Nyquist "
@@ -151,7 +164,7 @@ def select_dark_field(exit_wave: ExitWave, aperture: DarkFieldAperture, *, energ
         if math.hypot(q_hi_x, 0.0) >= float(band) or q_hi_y >= float(band):
             raise ValueError(f"the aperture reaches {q_hi_x:.4f} cycles/A, beyond the engine's "
                              f"declared band limit {float(band):.4f} cycles/A")
-    QX, QY, dxl, dyl, dzl, prop = _directions(nx, ny, dx, dy, lam)
+    QX, QY, dxl, dyl, dzl, prop = _directions(nx, ny, dx, dy, lam, fb)
     kx, kz = math.sin(th), math.cos(th)
     chord = np.sqrt((dxl - kx) ** 2 + dyl ** 2 + (dzl - kz) ** 2)
     ang = 2.0 * np.arcsin(np.clip(0.5 * chord, 0.0, 1.0))
@@ -180,6 +193,10 @@ def select_dark_field(exit_wave: ExitWave, aperture: DarkFieldAperture, *, energ
                      "exp(i k_z z) untouched",
         demodulation_frequency_cycles_per_A=q_out,
         engine_band_limit_cycles_per_A=band, wavelength_A=lam, theta_out_ext_rad=th,
+        bloch_fy_per_A=fb,
+        bloch_note=("the selected wave is the Bloch envelope of an azimuthally tilted member: the "
+                    "physical wave is this times exp(2 pi i bloch_fy_per_A y)" if fb else
+                    "no azimuthal tilt"),
         exit_plane_grid=dict(shape=[nx, ny], dx_A=dx, dy_A=dy, x0_A=float(exit_wave.x0_A),
                              y0_A=float(exit_wave.y0_A), z_A=float(exit_wave.z_A),
                              plane=exit_wave.plane))

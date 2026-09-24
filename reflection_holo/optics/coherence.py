@@ -245,10 +245,6 @@ def minimal_quadrature(profile: str, *, phase_extent_rad: float, curvature_rad: 
 # ------------------------------------------------------------------------------------------------
 # members and quadratures
 # ------------------------------------------------------------------------------------------------
-def _unit(v) -> np.ndarray:
-    return np.asarray(v, dtype=float)
-
-
 def central_direction(theta0_rad: float) -> np.ndarray:
     """b0 = (-sin th0, 0, cos th0)."""
     return np.array([-math.sin(theta0_rad), 0.0, math.cos(theta0_rad)])
@@ -451,6 +447,30 @@ class ConvergenceQuadrature:
             raise ValueError(f"member index must lie in [0, {len(ms)}), got {index!r}")
         return ms[int(index)]
 
+    def _minimal_or_note(self):
+        try:
+            return minimal_quadrature(self.source_profile,
+                                      phase_extent_rad=float(self.design_phase_extent_rad),
+                                      curvature_rad=float(self.design_curvature_rad),
+                                      tolerance=float(self.tolerance),
+                                      max_members=max(4096, self.n_members))
+        except ValueError as exc:
+            return f"not found: {exc}"
+
+    def member_identity(self, theta0_rad: float) -> dict:
+        """What defines the member list (and nothing else): semi-angle, profile, nodes, central
+        angle and every member's offsets and weight. Member jobs and their assembly must agree on
+        it (its SHA-256 is recorded by every job); the design extent and the tolerance, which only
+        check the quadrature, are not part of it."""
+        return dict(semi_angle_rad=float(self.semi_angle_rad), source_profile=self.source_profile,
+                    n_radial=int(self.n_radial),
+                    n_azimuthal=None if self.n_azimuthal is None else int(self.n_azimuthal),
+                    line_azimuth_rad=(None if self.line_azimuth_rad is None
+                                      else float(self.line_azimuth_rad)),
+                    theta0_rad=float(theta0_rad),
+                    members=[[int(m.index), float(m.t_a_rad), float(m.t_b_rad), float(m.weight)]
+                             for m in self.members()])
+
     def as_record(self, theta0_rad: float | None = None) -> dict:
         rec = dict(
             semi_angle_rad=float(self.semi_angle_rad), semi_angle_label=self.semi_angle_label,
@@ -462,9 +482,7 @@ class ConvergenceQuadrature:
             design_phase_extent_rad=float(self.design_phase_extent_rad),
             design_curvature_rad=float(self.design_curvature_rad),
             tolerance=float(self.tolerance), error_bound=self.error_bound(),
-            minimal_quadrature_for_the_design=minimal_quadrature(
-                self.source_profile, phase_extent_rad=float(self.design_phase_extent_rad),
-                curvature_rad=float(self.design_curvature_rad), tolerance=float(self.tolerance)),
+            minimal_quadrature_for_the_design=self._minimal_or_note(),
             justification=("the number of directions is the declared (n_radial, n_azimuthal); it "
                            "is accepted only if the DERIVED_HERE error bound of the ensemble mean "
                            "of exp(i dk.E) for the design phase extent is <= the tolerance "

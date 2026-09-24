@@ -29,10 +29,11 @@ from .illumination import SheetBeam, TiltedSheetBeam
 
 
 def quadrature_sha256(quadrature: ConvergenceQuadrature, theta0_rad: float) -> str:
-    """SHA-256 of the canonical JSON of the quadrature record (with its member list at th0): the
-    identity that every member job and the assembly must share."""
-    rec = quadrature.as_record(theta0_rad)
-    return hashlib.sha256(json.dumps(rec, sort_keys=True, default=str).encode()).hexdigest()
+    """SHA-256 of the canonical JSON of the quadrature's member identity (semi-angle, profile,
+    nodes, central angle, every member's offsets and weight; ConvergenceQuadrature.member_identity):
+    the identity that every member job and the assembly must share."""
+    rec = quadrature.member_identity(theta0_rad)
+    return hashlib.sha256(json.dumps(rec, sort_keys=True).encode()).hexdigest()
 
 
 def _central(beam, params: MultisliceParams) -> float:
