@@ -265,6 +265,26 @@ Reading (DERIVED_HERE from these MEASURED_HERE runs):
    are thereby narrowed: the band limit is confirmed; the infinite projection and the read-out cannot
    be large, because the averaged runs agree with the solver to 0.2 %.
 
+The same holds at the other angles and at [110] (E8-10b; averaged potential and full engine at the
+pixel 0.075 A, against the solver case S5 compared with, 13 rods at [100] and 19 at [110]):
+
+| azimuth, theta (mrad) | averaged: |R|/|R_sol| - 1 | averaged: d arg (rad) | averaged: abs(dR) | full: |R|/|R_sol| - 1 | full: d arg (rad) |
+|---|---|---|---|---|---|
+| [100] 12.0 | -0.0064 | +0.0107 | 0.0027 | -0.0502 | -0.0143 |
+| [100] 15.8 | +0.0088 | +0.0208 | 0.0039 | -0.0502 | -0.0072 |
+| [100] 16.0 | -0.0080 | +0.0048 | 0.0024 | | |
+| [100] 16.4 | -0.0099 | -0.0061 | 0.0027 | | |
+| [100] 21.0 | -0.0046 | +0.0041 | 0.0006 | -0.0453 | -0.0163 |
+| [110] 15.1 | +0.0063 | +0.0126 | 0.0032 | -0.0124 | -0.0115 |
+| [110] 17.6 | -0.0112 | +0.0056 | 0.0026 | -0.0265 | -0.0359 |
+
+With the solver's physics the engine agrees at every angle within 1.1 % in |R| and 0.021 rad
+(largest abs(dR) 0.0039, against S5's 0.0249); the 21.0 mrad point that failed S5's tolerance
+(abs(dR) 0.0135) agrees to 0.0006. The residual +-1 % is of the size of the solver's own rod
+truncation (13 against 21 rods, section 3). At [110] 17.6 mrad the pixel effect is larger than at
+[100]: the averaged potential at 0.13 A is 4.1 % low in |R| and 0.076 rad low in phase (E8-10b), so
+S5's largest [110] phase difference (-0.075 rad at 17.6 mrad) is the band limit at 0.13 A.
+
 Read-out and strip (E8-9, E8-10): the sheet beam's incident amplitude at the surface varies from
 0.892 to 1.10 (16.2 mrad; 0.892 to 1.17 at 12.0 mrad) across the read-out window, because the
 window ends about 11 A below the diffracting top edge of the sheet; its window mean is 0.995

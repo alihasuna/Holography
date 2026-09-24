@@ -1084,13 +1084,11 @@ def _rung2_job(spec):
         res = rung2_measure(0.1, dx=dx, propagator="exact", clean_A=100.0,
                             exit_after_top_contact_A=5000.0, dz=1.0, H=24.0, edge=4.0, gap=2.0,
                             absorber_A=15.0, top_A=10.0, W0=100.0, entrance_A=10.0,
-                            extra_vacuum_A=150.0, buildup_A=20.0, precision="complex128",
-                            extent_multiple_A=dx)
+                            extra_vacuum_A=150.0, buildup_A=20.0, precision="complex128")
         out[repr(dx)] = dict(eta=res["eta"].tolist(), r_re=res["r"].real.tolist(),
                              r_im=res["r"].imag.tolist(), ref_re=res["R_ref"].real.tolist(),
                              ref_im=res["R_ref"].imag.tolist(), nx=int(res["nx"]),
-                             dx=float(res["dx"]), xs_pix=float(res["x_s_in_pixels"]),
-                             time_s=time.time() - t)
+                             dx=float(res.get("dx", dx)), time_s=time.time() - t)
     Path(spec["out"]).write_text(json.dumps(out))
 
 

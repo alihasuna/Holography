@@ -399,3 +399,74 @@ R2-A (c) guard, r = 0.1, Fresnel, 18 bins: per-bin |dR(0.05)|/|dR(0.025)| from 3
 
 The first run of task 1 (before E7) passed P2's original (c) with order 1.67 on the same pixel-centre
 geometry; that criterion is withdrawn, not loosened: the per-bin guard is the reviewed replacement.
+
+## Test suites (verbatim counts)
+
+Machine shared with other agents throughout (1-min load 11-15 during the runs); other agents (E2, E3,
+E7, H4b, S5) were editing the tree concurrently (E3 added an azimuthal-tilt path to engine.py and
+illumination.py; the untilted path is unchanged).
+
+* `venv/bin/python -m pytest -q tests/forward` (01:01-01:16 UTC, before the E7 corrections) ->
+  `1 failed, 113 passed, 1 skipped in 859.88s (0:14:19)`; the failure:
+  `FAILED tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008`,
+  `E       assert 166.0836502759994 < 120.0` ("SMOKE: build 10.7 s, propagation 155.3 s, total
+  166.1 s, peak RSS 832 MB"); the skip is the optional R2-B.
+  Rerun alone (load 14.9 -> 13.3): `venv/bin/python -m pytest -q -s
+  tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008` -> `1 failed in 159.36s
+  (0:02:39)`, `E       assert 159.2085834419995 < 120.0` ("SMOKE: build 12.4 s, propagation
+  146.5 s, total 159.2 s, peak RSS 807 MB"). The 120 s limit was not changed. The smoke cell
+  (640 x 480 px) never takes the blocked path (rows <= 2048) and its potential is bit-identical;
+  it passed in the full-suite run below, when the load had dropped.
+* `venv/bin/python -m pytest -q tests/hpc` (01:25-01:32 UTC) -> `116 passed, 5 skipped in 430.87s
+  (0:07:10)` (`SKIPPED [5] tests/hpc/test_alliance_kit.py:393: shellcheck not installed`).
+* `venv/bin/python -m pytest -q` (full suite, 01:32-01:54 UTC, HEAD d3de34a plus uncommitted work,
+  after the E7 corrections) -> `1 failed, 1129 passed, 6 skipped, 12 warnings in 1331.48s
+  (0:22:11)`; the failure:
+  `FAILED tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions`,
+  `E           AssertionError: B36` / `E           assert 'B36' in {'#', 'A1', 'A2', 'A3', 'A4',
+  'A5', ...}`. Not from this work: another agent (E2) had added B36 to
+  reflection_holo/io/assumption_registry.yaml and committed the rows B35-B37 of
+  docs/model_assumptions.md at 01:52:32 (ace41d9), after the test had run; rerun alone at 01:55 ->
+  `1 passed in 0.03s`. The smoke test passed in this run.
+* Targeted runs of this work: see each task (test_potential_periodic 10, test_rung2_bragg 7 + 1
+  optional, test_null_study_readout 7, test_atomistic_translation 4, test_potential_blocked_
+  exponentials 13, test_memory_model 11, test_kit_gpu_mem_from_dry_run 7, tests/pipeline
+  test_a3_priority3 -k study 2: all pass).
+
+## NOT RUN / open
+
+* Nothing on a GPU: the cupy path of the blocked exponentials (xp.empty and sliced assignment) is
+  UNVERIFIED on a GPU; the device peaks remain the model's lower bounds (workspaces, pool); the kit
+  option's margin covers them only as far as the user's stated margin does.
+* study_depth100.yaml: 23 of 24 points not run (HPC work; ~213 GPU-s by the ASSUMPTION model); the
+  one point run (the shortest [110] cell) is not converged, as expected. No [100] translation point
+  was run. The step points keep M2's whole-x y-window measurement (the surface-resolved read-out is
+  applied to the translation points only).
+* R2-B is optional and qualitative (run once, passes T_B); a tighter R2-A variant (dx 0.0125 A,
+  T_A = 6e-4, P2 8.4) was not run. The phonon, abTEM and atomistic rocking-curve items of the
+  engine status remain NOT RUN.
+* H7's `astype(copy=False)` proposal not applied (out of the complex128 scope; see task 3).
+* Six self-checks of H7's tools/hpc/supercell_sizing.py (`device_peak_ge_H5_model_<row>`) fail
+  after task 3 and five of H5's tools/hpc/review_h5_recompute.py fail after H7's model; both
+  diagnosed above, not edited (records of their authors); their saved outputs were not regenerated.
+* Stale text not edited (not mine / docs): tests/forward/smoke_case.py and test_smoke_atomistic.py
+  docstrings ("rung 2 ... not run"), M2 report, docs/05 4.4 status; README_ALLIANCE's CPU hint
+  "192-240 B per atom" (H7: 192 B/atom) left as is. scripts/torus/run_torus_multislice.py's STATUS
+  string no longer says "rung 2 NOT RUN" (it now defers to VALIDATION_STATUS).
+
+## Files (E1)
+
+Engine: reflection_holo/forward/multislice/potentials.py (ContinuumPeriodicPotential,
+_continuum_crystal_fraction, _phase_factors, EXP_BLOCK_ROWS), engine.py (band assertion of the
+harmonics, VALIDATION_STATUS, memory model _exp_stage_B), __init__.py; pipeline __main__.py
+(--report-json). Tests: tests/forward/ladder_cases.py, null_test_cases.py,
+test_atomistic_translation.py, test_memory_model.py; new test_rung2_bragg.py,
+test_potential_periodic.py, test_null_study_readout.py, test_potential_blocked_exponentials.py;
+new tests/hpc/test_kit_gpu_mem_from_dry_run.py. Study: scripts/hpc/null_test_study/run_study.py,
+study.yaml, README.md; new study_depth100.yaml, study_depth100_estimate_numpy4.txt. Kit:
+scripts/hpc/alliance/kit.py, submit.sh, dry_run_job.py, gpu_check.py, README_ALLIANCE.md. Tools:
+tools/hpc/review_h5_recompute.py (signatures only), tools/hpc/supercell_sizing.py (study-point
+call only). scripts/torus/run_torus_multislice.py (status string). This report. Nothing committed
+or pushed; no personal data sent anywhere; peak memory of any process <= 1.6 GB (watchdog 2.8 GB).
+
+Status: final (2026-09-24).
