@@ -1,0 +1,362 @@
+E8 recompute; repository HEAD 88f2200; sections [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+====================================================================================================
+E8-1. Provenance of the solver build and of the patch (REPRODUCED file checks)
+====================================================================================================
+  upstream clone HEAD d98d6252f6be2c9da450d980251f04556ff2e75b; working tree clean: True
+  build_E/src_orig: 35 of 35 upstream src files byte-identical
+  build_E/src files differing from upstream: ['U0.f90', 'bulkm.f90', 'surf.f90', 'surfio.f90', 'surfm.f90']
+  removed lines (3):
+     - ep='P' ! ep='E' for electron
+     - ep='P' ! 'P' for positoron, 'E' for electron
+     - ep='P' ! 'P' for positoron, 'E' for electron
+  added lines (6):
+     + ep='E' ! ep='E' for electron
+     + ep='E' ! 'P' for positoron, 'E' for electron
+     + write (8,'(*(ES25.17,:,1X))') ga,az,(dble(f(i,nb0)),dimag(f(i,nb0)),dble(gma(i)),dimag(gma(i)),i=1,nb) ! S5 patch
+     + write (8,'(A,ES25.17,1X,I0,2(1X,ES25.17))') '# S5 dz ns s_top wn ',dz,ns,ns*dz,wn ! S5 patch
+     + ep='E' ! 'P' for positoron, 'E' for electron
+     + open (8,file='amp.txt') ! S5 patch: complex amplitudes
+  CHECK PASS patch = particle switch + output only: 3 removed lines all ep='P'; added lines are 3 ep='E', 1 open(8), 2 write(8)
+  Makefile BULK = ['bulkm.f90', 'bulkio.f90', 'bulk.f90', 'bulksub.f90']; SURF = ['surfm.f90', 'surf.f90', 'surfio.f90', 'surfsub.f90', 'domainsum.f90']; U0.f90 in either: False (U0 is the separate potcalc program)
+  bulkm.f90: True (inegpos=1; if (ep == 'E') inegpos=0)
+  surfio.f90 reads inegpos from the bulk binary: True; surfm.f90 uses ep only for the file name bulkE.b: True
+  scpot.f90 negates the real potential only for positrons after the last call: True
+  bulk.exe SHA-256 80e26fe2ee216f85... equals the JSON record: True
+  surf.exe SHA-256 30002684fbecf54d... equals the JSON record: True
+  patch file SHA-256 e3b439e96e0740af...
+
+====================================================================================================
+E8-1b. Relativistic constants of the two codes (own arithmetic)
+====================================================================================================
+  2 m e / hbar^2: solver 0.262466 A^-2 eV^-1, CODATA 2018 0.262468 (relative -9.24e-06)
+  K: solver 250.531079 rad/A, engine 250.532318 rad/A, relative -4.945e-06
+  gamma: solver 1.39138867, engine 1.39139024, relative -1.128e-06
+  consequence: a relative K error e shifts every glancing angle by ~ -e/2 x (Delta/theta^2) relative; with e = -4.95e-06 the (0,0,8) peak moves by 8.0e-05 mrad or less (negligible against 0.03 mrad)
+
+====================================================================================================
+E8-1c. Doyle-Turner Si in asf.f90 (SECTION_READ of the code; own parse)
+====================================================================================================
+  asf.f90:229  2.1293d0, 2.5333d0, 0.8349d0, 0.3216d0,  &
+  asf.f90:329  57.7748d0, 16.4756d0, 2.8796d0, 0.386d0,  &
+  asf.f90:3-4  !   L.-M. Peng,  Micron 30 (1999) 625. | !   P.A. Doyle and P.S. Turner, Acta Cryst. A24 (1968) 390.
+  f_e(0) = 5.81910 A; C = h^2/(2 pi m0 e) = 47.87765 V A^2; DT mean inner potential 8 C f(0)/a^3 = 13.9144 V
+
+====================================================================================================
+E8-2. Convention: own transfer-matrix (TM) one-beam solution vs the solver's f(0,nb0) (REPRODUCED)
+====================================================================================================
+  (a) absorbing step U = 5(1+0.1i) A^-2: TM [-0.110177-0.008817j -0.067952-0.005924j -0.045584-0.004158j]; Fresnel (G0-G1)/(G0+G1) [-0.110177-0.008817j -0.067952-0.005924j -0.045584-0.004158j]; max diff 3.0e-15; Im R < 0 (arg near -pi): True
+  CHECK PASS own TM code reproduces the exp(-i omega t) Fresnel coefficient: 3.0e-15
+  onebeam_r010: 21 angles 12.0-22.0 mrad, s_top 87.50338 A, ns 8765, dz 0.009983 A, top-layer nuclei s_a 83.50009 A (s_top - s_a = 4.00329 A)
+     max |R_solver - R_TM(solver slices)| = 7.42e-12   (same discretisation)
+     max |R_solver - R_TM(continuum)|    = 9.59e-05   max |R_solver - conj(R_TM)| = 0.376;  TM h 0.001 vs 0.0005 A: 7.2e-07;  max |R| 0.2793
+     at the largest |R| (16.0 mrad): arg R(s_top) solver +2.6930, TM continuum +2.6931, conj -2.6931
+  CHECK PASS onebeam_r010: solver f(0,nb0) = TM R (not its conjugate): 9.6e-05 vs conjugate 0.38
+  CHECK PASS onebeam_r010: TM with the solver's slices reproduces the solver to round-off: 7.4e-12
+  onebeam_r000: 21 angles 12.0-22.0 mrad, s_top 87.50338 A, ns 8765, dz 0.009983 A, top-layer nuclei s_a 83.50009 A (s_top - s_a = 4.00329 A)
+     max |R_solver - R_TM(solver slices)| = 3.27e-11   (same discretisation)
+     max |R_solver - R_TM(continuum)|    = 5.09e-04   max |R_solver - conj(R_TM)| = 1.707;  TM h 0.001 vs 0.0005 A: 3.8e-06;  max |R| 0.9735
+     at the largest |R| (16.0 mrad): arg R(s_top) solver +2.0725, TM continuum +2.0730, conj -2.0730
+  CHECK PASS onebeam_r000: solver f(0,nb0) = TM R (not its conjugate): 5.1e-04 vs conjugate 1.71
+  CHECK PASS onebeam_r000: TM with the solver's slices reproduces the solver to round-off: 3.3e-11
+
+====================================================================================================
+E8-3. Solver R at the top-layer nuclei recomputed from amp.txt and the inputs (own geometry)
+====================================================================================================
+  case (first run)                 azi   s_a (A)   s_top (A)  s_top-s_a  top-layer shift  rods  ML   max flux  |R_E8 - R_S5|
+  onebeam_r010                    45.0   83.5001    87.5034    4.0033   (-0.50,+0.00)        1    0  0.078010  0.0e+00
+  onebeam_r000                    45.0   83.5001    87.5034    4.0033   (-0.50,+0.00)        1    0  0.947782  0.0e+00
+  chk_a100_N4_A                   45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)        9  300  0.094006  0.0e+00
+  chk_a100_N6_A                   45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  0.096857  0.0e+00
+  chk_a100_N4_B                   45.0  124.2318   128.2351    4.0033   (-0.50,+0.00)        9    0  0.094007  0.0e+00
+  chk_a100_N6_B                   45.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       13    0  0.096858  0.0e+00
+  chk_a100_N8_B                   45.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       17    0  0.097517  0.0e+00
+  chk_a100_N10_B                  45.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       21    0  0.097690  0.0e+00
+  chk_a100_N6_A_dz005             45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  0.096899  0.0e+00
+  chk_a100_N6_A_dz02              45.0    2.0366     6.7287    4.6921   (-0.50,+0.00)       13  300  0.096691  0.0e+00
+  chk_a100m_N6_A                 -45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  0.096857  0.0e+00
+  chk_a110_N9_A                    0.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  300  0.085514  0.0e+00
+  chk_a100_N6_B_slab180           45.0  246.4271   250.4304    4.0033   (-0.50,+0.00)       13    0  0.096858  5.9e-14
+  chk_a110_N9_B                    0.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       19    0  0.085513  0.0e+00
+  chk_a110_N9_A_dz005              0.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  300  0.085537  0.0e+00
+  chk_a110_N12_B                   0.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       25    0  0.085889  0.0e+00
+  fine_a100_N6_r010               45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  0.104626  0.0e+00
+  fine_a110_N9_r010                0.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  300  0.090875  0.0e+00
+  fine_a100_N6_r000_ML150         45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  150  1.000000  0.0e+00
+  fine_a100_N6_r000_ML300         45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  1.000000  0.0e+00
+  fine_a110_N9_r000_ML150          0.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  150  1.000000  0.0e+00
+  fine_a110_N9_r000_ML300          0.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  300  1.000000  0.0e+00
+  eng_a100_N6_r010                45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  0.096857  0.0e+00
+  eng_a110_N9_r010                 0.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  300  0.085514  0.0e+00
+  eng_a100_N8_r010_B              45.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       17    0  0.097517  0.0e+00
+  eng_a100_N10_r010_B             45.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       21    0  0.097690  0.0e+00
+  eng_a110_N12_r010_B              0.0  124.2318   128.2351    4.0033   (-0.50,+0.00)       25    0  0.085889  0.0e+00
+  h2_a100_N6_r010                 45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  0.099701  0.0e+00
+  h2_a110_N9_r010                  0.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  300  0.064739  0.0e+00
+  h2_a100_N6_r000_ML150           45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  150  0.924600  0.0e+00
+  h2_a100_N6_r000_ML300           45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       13  300  0.918609  0.0e+00
+  holz_a100disk_N6_B              45.0   56.3456    60.3489    4.0033   (-0.50,+0.00)       61    0  0.076681  8.7e-15
+  holz_a100_N3_B                  45.0   56.3456    60.3489    4.0033   (-0.50,+0.00)        7    0  0.078557  8.8e-15
+  eng_a110perp_N9_r010            90.0    2.0366     6.7187    4.6822   (-0.50,+0.00)       19  300  0.050773  0.0e+00
+  fine_a100_N0_r010               45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)        1  300  0.094619  0.0e+00
+  chk_a100_N6_A4_cc_a             45.0    4.7520     9.4342    4.6822   (-0.50,+0.00)       13  300  96.602560  0.0e+00
+  CHECK PASS S5's stored R_layer equals E8's own conversion of amp.txt: 5.9e-14
+  largest reflected flux (all cases except the CC = a failure case): 1.000000
+  CC = a case: max |R|^2 2.57, max flux 96.60 (unphysical, > 1)
+  chk_a100_N6_A: largest |Gamma| of an evanescent rod 12.74-13.55 rad/A over the angles; growth exp(|Gamma| CC) across CC = a/2 (2.7155 A): 1.1e+15 to 9.6e+15; across CC = a: 1.1e+30 to 9.3e+31; 1/eps = 4.5e+15
+  chk_a110_N9_A: largest |Gamma| of an evanescent rod 13.66-14.42 rad/A over the angles; growth exp(|Gamma| CC) across CC = a/2 (2.7155 A): 1.3e+16 to 1.0e+17; across CC = a: 1.6e+32 to 1.0e+34; 1/eps = 4.5e+15
+  [100] N=6 A vs B                             max |dR| 2.18e-05  rel 1.01e-04
+  [110] N=9 A vs B                             max |dR| 1.26e-05  rel 1.48e-04
+  [100] N=6 A dz 0.005 vs 0.01                 max |dR| 5.94e-05  rel 3.90e-04
+  [100] rods N=8 vs 6 (B)                      max |dR| 2.11e-03  rel 8.80e-03
+  [100] rods N=10 vs 6 (B)                     max |dR| 2.65e-03  rel 1.10e-02
+  [100] phi -45 vs +45 deg                     max |dR| 2.15e-09  rel 8.33e-09
+  r = 0, a100_N6: ML 150 vs 300 differ by more than 1e-3 in R at 468 of 501 angles; total reflection (flux > 0.9999) at 19 angles, max |dR| there 3.9e-09; largest |R|^2 0.9739
+  r = 0, a110_N9: ML 150 vs 300 differ by more than 1e-3 in R at 469 of 501 angles; total reflection (flux > 0.9999) at 29 angles, max |dR| there 1.7e-05; largest |R|^2 0.9003
+
+====================================================================================================
+E8-4. Engine read-out recomputed from the stored exit columns (own read-out) and the per-angle comparison with the solver (S5's declared tolerance)
+====================================================================================================
+
+  eng_a100_dt_r010 vs eng_a100_N6_r010: 23 angles
+    own band-passed read-out vs S5's stored R: max |diff| 1.4e-03; own raw-row read-out vs stored: max |diff| 2.3e-03; spread (own) vs stored: max |diff| 6.0e-03
+    theta   sol|R|^2  sol arg   eng|R|^2  eng arg   |dR|     tol    ok   d arg  d|R|/|R|  s_eng   raw-row |R|^2
+     12.00   0.04650  -2.533   0.03950  -2.535  0.0169  0.0284  yes  -0.002  -0.078  0.0063   0.04014
+     13.00   0.00955  -1.474   0.00900  -1.486  0.0031  0.0189  yes  -0.012  -0.029  0.0045   0.00894
+     14.00   0.00167  -1.510   0.00160  -1.507  0.0009  0.0269  yes  +0.003  -0.021  0.0099   0.00175
+     15.00   0.00001  -0.007   0.00001  -0.401  0.0012  0.0117  yes  -0.394  +0.060  0.0033   0.00002
+     15.60   0.00765  +1.717   0.00605  +1.715  0.0097  0.0157  yes  -0.002  -0.111  0.0032   0.00610
+     15.70   0.01558  +1.900   0.01249  +1.900  0.0131  0.0313  yes  +0.001  -0.105  0.0100   0.01231
+     15.80   0.02953  +2.158   0.02418  +2.158  0.0164  0.0341  yes  -0.000  -0.095  0.0103   0.02402
+     15.90   0.04851  +2.483   0.03935  +2.469  0.0221  0.0249  yes  -0.014  -0.099  0.0045   0.03945
+     16.00   0.06678  +2.843   0.05648  +2.816  0.0218  0.0290  yes  -0.026  -0.080  0.0055   0.05707
+     16.10   0.07801  -3.073   0.06888  -3.103  0.0186  0.0324  yes  -0.029  -0.060  0.0067   0.06901
+     16.20   0.07881  -2.712   0.07190  -2.733  0.0138  0.0315  yes  -0.021  -0.045  0.0062   0.07195
+     16.30   0.06999  -2.361   0.06348  -2.367  0.0127  0.0294  yes  -0.007  -0.048  0.0056   0.06372
+     16.40   0.05303  -2.017   0.04813  -2.030  0.0113  0.0262  yes  -0.013  -0.047  0.0048   0.04876
+     16.50   0.03241  -1.729   0.03119  -1.737  0.0037  0.0212  yes  -0.008  -0.019  0.0036   0.03113
+     16.60   0.01784  -1.576   0.01759  -1.543  0.0045  0.0267  yes  +0.033  -0.007  0.0075   0.01760
+     16.70   0.01089  -1.532   0.00973  -1.477  0.0080  0.0206  yes  +0.055  -0.055  0.0052   0.00969
+     16.80   0.00764  -1.517   0.00637  -1.517  0.0076  0.0211  yes  +0.000  -0.087  0.0059   0.00654
+     17.00   0.00448  -1.463   0.00456  -1.476  0.0010  0.0182  yes  -0.013  +0.008  0.0049   0.00460
+     18.00   0.00006  -0.508   0.00009  -0.460  0.0016  0.0103  yes  +0.048  +0.202  0.0025   0.00008
+     19.00   0.00083  +3.113   0.00071  -3.135  0.0023  0.0082  yes  +0.035  -0.071  0.0009   0.00072
+     20.00   0.00126  +2.916   0.00101  +2.963  0.0040  0.0080  yes  +0.047  -0.104  0.0006   0.00100
+     21.00   0.00986  -2.364   0.00737  -2.382  0.0136  0.0125  NO   -0.018  -0.135  0.0013   0.00738
+     22.00   0.00017  -2.888   0.00015  -2.839  0.0009  0.0078  yes  +0.048  -0.051  0.0011   0.00015
+    within tolerance: 22 of 23; excess where failing: ['21.0: +0.0011']
+    engine |R| below solver at 20 of 23; d|R|/|R| -0.135 to +0.202; median |R_eng - R_sol| 0.0080, median |R_eng - conj(R_sol)| 0.1670
+
+  eng_a110_dt_r010 vs eng_a110_N9_r010: 15 angles
+    own band-passed read-out vs S5's stored R: max |diff| 1.8e-03; own raw-row read-out vs stored: max |diff| 2.6e-03; spread (own) vs stored: max |diff| 8.1e-03
+    theta   sol|R|^2  sol arg   eng|R|^2  eng arg   |dR|     tol    ok   d arg  d|R|/|R|  s_eng   raw-row |R|^2
+     12.00   0.06288  -3.123   0.05194  -3.119  0.0229  0.0414  yes  +0.004  -0.091  0.0119   0.05318
+     12.30   0.08234  -2.451   0.07453  -2.474  0.0154  0.0409  yes  -0.023  -0.049  0.0108   0.07560
+     13.00   0.01174  -1.409   0.01325  -1.396  0.0069  0.0302  yes  +0.013  +0.062  0.0099   0.01297
+     14.00   0.01495  -1.789   0.01223  -1.732  0.0134  0.0217  yes  +0.057  -0.095  0.0053   0.01258
+     15.00   0.04860  -1.379   0.03994  -1.387  0.0207  0.0296  yes  -0.008  -0.094  0.0068   0.04001
+     15.10   0.04981  -1.221   0.04116  -1.228  0.0203  0.0287  yes  -0.006  -0.091  0.0063   0.04125
+     16.00   0.00683  +0.431   0.00620  +0.477  0.0054  0.0162  yes  +0.046  -0.047  0.0035   0.00616
+     17.00   0.00171  -2.763   0.00111  -2.708  0.0082  0.0128  yes  +0.055  -0.193  0.0029   0.00116
+     17.60   0.04389  -0.867   0.03613  -0.941  0.0244  0.0290  yes  -0.074  -0.093  0.0068   0.03604
+     18.00   0.00634  +0.361   0.00706  +0.366  0.0044  0.0197  yes  +0.005  +0.055  0.0054   0.00699
+     18.60   0.03303  +0.866   0.03022  +0.842  0.0090  0.0278  yes  -0.024  -0.044  0.0069   0.03006
+     19.00   0.01227  +2.582   0.01325  +2.572  0.0045  0.0195  yes  -0.010  +0.039  0.0045   0.01322
+     20.00   0.00194  +0.820   0.00152  +0.769  0.0054  0.0138  yes  -0.051  -0.114  0.0033   0.00159
+     21.00   0.00061  -2.678   0.00054  -2.685  0.0014  0.0086  yes  -0.007  -0.057  0.0012   0.00056
+     22.00   0.00033  -1.275   0.00039  -1.259  0.0017  0.0073  yes  +0.016  +0.091  0.0007   0.00038
+    within tolerance: 15 of 15; excess where failing: []
+    engine |R| below solver at 11 of 15; d|R|/|R| -0.193 to +0.091; median |R_eng - R_sol| 0.0082, median |R_eng - conj(R_sol)| 0.1209
+
+  eng_a100_kk_r010 vs eng_a100_N6_r010: 15 angles
+    own band-passed read-out vs S5's stored R: max |diff| 1.3e-03; own raw-row read-out vs stored: max |diff| 1.8e-03; spread (own) vs stored: max |diff| 6.0e-03
+    theta   sol|R|^2  sol arg   eng|R|^2  eng arg   |dR|     tol    ok   d arg  d|R|/|R|  s_eng   raw-row |R|^2
+     12.00   0.04650  -2.533   0.03906  -2.542  0.0181  0.0283  yes  -0.008  -0.084  0.0063   0.03969
+     15.60   0.00765  +1.717   0.00637  +1.725  0.0077  0.0155  yes  +0.009  -0.087  0.0031   0.00642
+     15.70   0.01558  +1.900   0.01303  +1.913  0.0108  0.0313  yes  +0.013  -0.085  0.0101   0.01285
+     15.80   0.02953  +2.158   0.02505  +2.171  0.0137  0.0341  yes  +0.013  -0.079  0.0103   0.02490
+     15.90   0.04851  +2.483   0.04049  +2.481  0.0190  0.0249  yes  -0.002  -0.086  0.0045   0.04059
+     16.00   0.06678  +2.843   0.05792  +2.826  0.0183  0.0289  yes  -0.017  -0.069  0.0055   0.05851
+     16.10   0.07801  -3.073   0.07053  -3.096  0.0151  0.0322  yes  -0.023  -0.049  0.0066   0.07066
+     16.20   0.07881  -2.712   0.07373  -2.729  0.0103  0.0312  yes  -0.017  -0.033  0.0061   0.07378
+     16.30   0.06999  -2.361   0.06523  -2.366  0.0093  0.0291  yes  -0.005  -0.035  0.0054   0.06548
+     16.40   0.05303  -2.017   0.04970  -2.030  0.0080  0.0259  yes  -0.013  -0.032  0.0047   0.05034
+     16.50   0.03241  -1.729   0.03239  -1.738  0.0015  0.0211  yes  -0.008  -0.000  0.0036   0.03234
+     16.60   0.01784  -1.576   0.01837  -1.542  0.0050  0.0266  yes  +0.034  +0.015  0.0075   0.01839
+     16.70   0.01089  -1.532   0.01016  -1.472  0.0071  0.0207  yes  +0.060  -0.034  0.0052   0.01013
+     16.80   0.00764  -1.517   0.00659  -1.511  0.0062  0.0208  yes  +0.006  -0.071  0.0057   0.00677
+     21.00   0.00986  -2.364   0.00769  -2.395  0.0120  0.0125  yes  -0.031  -0.117  0.0013   0.00770
+    within tolerance: 15 of 15; excess where failing: []
+    engine |R| below solver at 14 of 15; d|R|/|R| -0.117 to +0.015; median |R_eng - R_sol| 0.0103, median |R_eng - conj(R_sol)| 0.2259
+
+====================================================================================================
+E8-5. Reference plane: phase-difference fit with standard errors; power of the tolerance
+====================================================================================================
+  eng_a100_dt_r010: 12 angles with |R_sol| >= 0.1, 2 Gamma0 from 6.013 to 8.367 rad/A; d arg = c + 2 Gamma0 dx: c = -0.0440 +- 0.0970 rad, dx = +0.0052 +- 0.0122 A (correlation -0.997); with c = 0: dx = -0.0003 +- 0.0009 A; rms d arg 0.0235 rad
+  eng_a110_dt_r010: 9 angles with |R_sol| >= 0.1, 2 Gamma0 from 6.013 to 9.520 rad/A; d arg = c + 2 Gamma0 dx: c = +0.0831 +- 0.0677 rad, dx = -0.0120 +- 0.0088 A (correlation -0.987); with c = 0: dx = -0.0013 +- 0.0015 A; rms d arg 0.0338 rad
+  eng_a100_kk_r010: 12 angles with |R_sol| >= 0.1, 2 Gamma0 from 6.013 to 8.367 rad/A; d arg = c + 2 Gamma0 dx: c = -0.0688 +- 0.0951 rad, dx = +0.0089 +- 0.0119 A (correlation -0.997); with c = 0: dx = +0.0003 +- 0.0009 A; rms d arg 0.0234 rad
+  2 K sin(theta) x 0.1 A = 0.601 rad at 12 mrad, 1.102 rad at 22 mrad
+
+====================================================================================================
+E8-5b. Power of the per-angle tolerance: alternatives run through the same test ([100], DT)
+====================================================================================================
+  engine as measured: 1 of 23 angles outside
+  conjugated engine (convention bug): 19 outside
+  engine with its reference plane moved by 0.005 A: 1 outside
+  engine with its reference plane moved by 0.010 A: 2 outside
+  engine with its reference plane moved by 0.015 A: 5 outside
+  engine with its reference plane moved by 0.020 A: 12 outside
+  engine with its reference plane moved by 0.050 A: 19 outside
+  the (0,0) rod alone (solver, 1 beam, interpolated on the 0.02 mrad grid): 22 outside; the per-angle |R_1rod - R_13rods| over 15.6-16.8 mrad: 0.067 to 0.278
+  engine |R| scaled by 0.95 (phase unchanged): 3 outside; solver |R| scaled by 0.95 (|R|^2 -0.0975) as a stand-in engine: 0 outside
+  engine |R| scaled by 0.90 (phase unchanged): 9 outside; solver |R| scaled by 0.90 (|R|^2 -0.1900) as a stand-in engine: 0 outside
+  engine |R| scaled by 0.85 (phase unchanged): 13 outside; solver |R| scaled by 0.85 (|R|^2 -0.2775) as a stand-in engine: 9 outside
+  at 16.2 mrad: tol = 0.0315 = 0.112 of |R_sol| (+0.24 / -0.21 in |R|^2); a pure phase error passes up to 0.112 rad
+  at 21.0 mrad: tol = 0.00496 (5 %) + 0.005 + 2 x 0.0013 = 0.0125; |dR| = 0.0136; the failing quantity is the complex amplitude difference |R_eng - R_sol| (units of |R|), dominated by d|R|/|R| = -0.135 with d arg -0.018 rad
+
+====================================================================================================
+E8-6. Curve level at the [100] (0,0,8) peak: own peak, FWHM and phase sweep
+====================================================================================================
+  solver fine grid (0.02 mrad): peak 16.1571 mrad, |R|^2 0.07977, FWHM 0.6064 mrad (15.856 to 16.463), sweep over +-FWHM/2 +2.1252 rad
+  solver fine: unwrapped arg R from 15.50 to 16.90 mrad +1.590 -> +4.788 (total +3.198 rad); monotonic: True
+  eng_a100_dt_r010 (15.6-16.8 mrad, 0.1 mrad): engine peak 16.1764 | solver same angles 16.1584 mrad (diff +0.0180); peak |R|^2 0.07222 | 0.07965 (-0.0933; in |R| -0.0478); FWHM 0.5923 | 0.6098 (-0.0287); sweep (own peak) +2.1004 | +2.1058 (diff -0.0054); sweep about the solver's peak +2.1038
+  eng_a100_kk_r010 (15.6-16.8 mrad, 0.1 mrad): engine peak 16.1773 | solver same angles 16.1584 mrad (diff +0.0190); peak |R|^2 0.07403 | 0.07965 (-0.0706; in |R| -0.0359); FWHM 0.5959 | 0.6098 (-0.0229); sweep (own peak) +2.0879 | +2.1058 (diff -0.0179); sweep about the solver's peak +2.0913
+
+====================================================================================================
+E8-7. Engine version of S5's runs: commits recorded per run and the atomic-path code at each
+====================================================================================================
+  engine 148e4f6 dirty=True: 38 runs (['eng_a100_dt_r010', 'eng_a110_dt_r010'])
+  engine 2a3a999 dirty=True: 3 runs (['eng_a100_dt_r010__bin_A=250.0', 'eng_a100_dt_r010__dz_div=2', 'eng_a100_dt_r010__max_pixel_A=0.1'])
+  engine 64d740b dirty=False: 3 runs (['eng_a100_dt_r010__clean_A=80.0', 'eng_a100_dt_r010__max_pixel_A=0.075', 'eng_a100_dt_r010__precision=complex128'])
+  engine 2da0216 dirty=False: 1 runs (['eng_a100_dt_r010__L_after_contact_A=7000.0'])
+  engine a1ef2a0 dirty=False: 15 runs (['eng_a100_kk_r010'])
+  first recorded engine run (snapshot 242b566): 16.2 mrad, engine a84b4b3, r_top -0.24564802749113393 -0.10647680550520508
+  engine.py:propagate_slices: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  potentials.py:_phase_factors: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True (absent at ['148e4f6', '2a3a999', '2da0216', '64d740b', 'a1ef2a0', 'a84b4b3'])
+  potentials.py:_RealisedAtomic: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  potentials.py:absorber_profile_V: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  potentials.py:_profile: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  propagator.py:propagator_phase: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  propagator.py:propagator_kernel: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  illumination.py:sheet_beam_wave: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  illumination.py:SheetBeam: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  grid.py:band_limit_mask: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  grid.py:make_grid: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  physics.py:beam_constants: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  cell.py:build_reflection_cell: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
+  CHECK PASS atomic-path functions identical across every engine commit S5 used: propagate_slices, _RealisedAtomic, propagators, sheet beam, band mask, cell builder
+  16.2 mrad: main run (148e4f6, dirty True) and repeat (2a3a999, dirty True): stored exit columns identical: True; first-pass r_top equal to the main run's: True
+  engine.py:run_realisation at 148e4f6: 90 lines, sha256 6badb6592011
+  engine.py:run_realisation at 2a3a999: 90 lines, sha256 6badb6592011
+  engine.py:run_realisation at 2da0216: 90 lines, sha256 6badb6592011
+  engine.py:run_realisation at 64d740b: 90 lines, sha256 6badb6592011
+  engine.py:run_realisation at a1ef2a0: 90 lines, sha256 6badb6592011
+  engine.py:run_realisation at a84b4b3: 90 lines, sha256 6badb6592011
+
+====================================================================================================
+E8-8. H2's stored flat-strip plateaus (Kirkland engine) converted to R at the top-layer nuclei
+====================================================================================================
+  bu_100_r010 (plateau 2755-5255 A, theta 16.1347 mrad): engine |R|^2 0.07327 arg -2.9713; solver h2_a100_N6_r010 |R|^2 0.07951 arg -2.9466; |dR| 0.0132, d arg -0.0248, |R_eng|/|R_sol| - 1 -0.0400
+  bu_110_r010 (plateau 2753-5253 A, theta 16.1347 mrad): engine |R|^2 0.00186 arg +0.7537; solver h2_a110_N9_r010 |R|^2 0.00155 arg +0.7692; |dR| 0.0038, d arg -0.0154, |R_eng|/|R_sol| - 1 +0.0958
+  bu_100_r000 (plateau 8751-11251 A, theta 16.1347 mrad): engine |R|^2 0.79341 arg -2.9991; solver h2_a100_N6_r000_ML150 |R|^2 0.89336 arg -2.9593; |dR| 0.0656, d arg -0.0398, |R_eng|/|R_sol| - 1 -0.0576
+  bu_100_r000 (plateau 8751-11251 A, theta 16.1347 mrad): engine |R|^2 0.79341 arg -2.9991; solver h2_a100_N6_r000_ML300 |R|^2 0.81085 arg -2.9362; |dR| 0.0572, d arg -0.0629, |R_eng|/|R_sol| - 1 -0.0108
+
+====================================================================================================
+E8-9. Incident sheet-beam amplitude at the surface plane in the read-out window (vacuum propagation of the launched wave, no crystal; own 1D FFT with the exact kernel and 2/3 band)
+====================================================================================================
+  eng_a100_dt_r010 12.0 mrad: window 2500-3751 A after first contact; incident amplitude / ideal plane wave at x_s: mean 1.0222 (arg +0.0055), range 0.8922-1.1728
+     window mean |R|^2 plain 0.03950, incident-normalised 0.03786 (ratio -0.0209 in |R|); 250 A bin spread plain 0.0063, normalised 0.0165
+  eng_a100_dt_r010 16.2 mrad: window 2500-3751 A after first contact; incident amplitude / ideal plane wave at x_s: mean 0.9950 (arg +0.0075), range 0.8923-1.0992
+     window mean |R|^2 plain 0.07190, incident-normalised 0.07256 (ratio +0.0046 in |R|); 250 A bin spread plain 0.0062, normalised 0.0126
+  eng_a100_dt_r010 21.0 mrad: window 2500-3752 A after first contact; incident amplitude / ideal plane wave at x_s: mean 1.0017 (arg -0.0035), range 0.9228-1.0846
+     window mean |R|^2 plain 0.00737, incident-normalised 0.00734 (ratio -0.0020 in |R|); 250 A bin spread plain 0.0013, normalised 0.0011
+
+====================================================================================================
+E8-10. Own engine runs at 16.2 mrad [100] (DT, r = 0.1, static): regression against S5's stored column, pixel study, along-beam (ZOLZ) averaged potential (MEASURED_HERE)
+====================================================================================================
+  regression: E8 run with the engine at d3de34a (git archive) vs S5's stored column (148e4f6, 7 significant digits): grid 1764x42x3406 vs 1764x42x3406, atoms 88296 vs 88296; max |diff| 6.9e-08 (column max 0.577); relative to |c|: 4.3e-07
+  CHECK PASS current engine reproduces S5's 16.2 mrad column: max |diff| 6.9e-08
+  top-layer nuclei at x = 70.000000 A, reference plane x_s = 70.000000 A (the engine's R is referred to the top-layer nuclei)
+  solver at 16.2 mrad: N6 |R|^2 0.07881 arg -2.7120, N8 |R|^2 0.07902 arg -2.7066, N10 |R|^2 0.07908 arg -2.7053
+  first along-beam (Laue) ring at 16.2 mrad, period a along [100]: transverse frequency 3.881 1/A
+  at the production grid dy = 0.12931 A the y band edge 1/(3 dy) = 2.577842 1/A and the (7,-7) rod 14/a = 2.577842 1/A (on the edge); (0,0,16) at 16/a = 2.9461 1/A, (0,0,14) at 2.5778 1/A
+  pixel 0.1293 A: band radius 2.579 1/A; ZOLZ rods (h,-h) inside up to |h| = 7; rods that still carry the (0,0,8) normal component (8/a = 1.4731): |h| <= 5; first along-beam ring inside the band: False
+  pixel 0.0990 A: band radius 3.368 1/A; ZOLZ rods (h,-h) inside up to |h| = 9; rods that still carry the (0,0,8) normal component (8/a = 1.4731): |h| <= 8; first along-beam ring inside the band: False
+  pixel 0.0742 A: band radius 4.491 1/A; ZOLZ rods (h,-h) inside up to |h| = 12; rods that still carry the (0,0,8) normal component (8/a = 1.4731): |h| <= 11; first along-beam ring inside the band: True
+  pixel 0.0646 A: band radius 5.158 1/A; ZOLZ rods (h,-h) inside up to |h| = 14; rods that still carry the (0,0,8) normal component (8/a = 1.4731): |h| <= 13; first along-beam ring inside the band: True
+  run                              grid          built  run_s  |R|^2(window) arg     |R|/|R_N10|-1  d arg     plateau bins |R| (2500..3750 A, 250 A)
+  head_dt_full_p013_t16.2          1764x42x3406   3397     43  0.07190  -2.7329  -0.0465       -0.0276   0.2620 0.2708 0.2654 0.2742 0.2682
+  head_dt_full_p010_t16.2          2304x56x3406   3397     60  0.07567  -2.7283  -0.0218       -0.0231   0.2691 0.2781 0.2723 0.2805 0.2754
+  head_dt_full_p0075_t16.2         3072x75x3406   3397    137  0.07416  -2.7340  -0.0316       -0.0288   0.2665 0.2752 0.2695 0.2780 0.2724
+  head_dt_full_p0065_t16.2         3528x84x3406   3397    230  0.07404  -2.7281  -0.0324       -0.0228   0.2662 0.2750 0.2693 0.2778 0.2721
+  head_dt_zolz_p013_t16.2          1764x42x3406      2      8  0.07515  -2.7321  -0.0252       -0.0268   0.2680 0.2769 0.2713 0.2803 0.2741
+  head_dt_zolz_p010_t16.2          2304x56x3406      2     16  0.07836  -2.7111  -0.0046       -0.0058   0.2741 0.2831 0.2770 0.2852 0.2800
+  head_dt_zolz_p0075_t16.2         3072x75x3406      2     29  0.07928  -2.7076  +0.0013       -0.0023   0.2761 0.2848 0.2786 0.2872 0.2812
+  head_dt_zolz_p0065_t16.2         3528x84x3406      2     38  0.07940  -2.7075  +0.0020       -0.0022   0.2763 0.2850 0.2788 0.2874 0.2814
+  head_dt_zolz_p010_L7000_t16.2    3125x56x5250      2     26  0.07846  -2.7125  -0.0040       -0.0072   0.2757 0.2813 0.2799 0.2829 0.2819
+  along-beam couplings in the engine (full / along-beam-averaged, same pixel, 4500 A strips):
+     pixel 0.1293 A: |R_full|/|R_zolz| - 1 = -0.0219, arg R_full - arg R_zolz = -0.0008 rad
+     pixel 0.0990 A: |R_full|/|R_zolz| - 1 = -0.0173, arg R_full - arg R_zolz = -0.0172 rad
+     pixel 0.0742 A: |R_full|/|R_zolz| - 1 = -0.0329, arg R_full - arg R_zolz = -0.0264 rad
+     pixel 0.0646 A: |R_full|/|R_zolz| - 1 = -0.0344, arg R_full - arg R_zolz = -0.0206 rad
+  strip length (along-beam-averaged, 0.0990 A): 7000 A vs 4500 A: |R| ratio - 1 +0.0006, d arg -0.0014 rad
+
+====================================================================================================
+E8-10b. Like-for-like engine (along-beam-averaged potential, pixel <= 0.075 A) and the full engine at 0.075 A against the solver at more angles and at [110] (MEASURED_HERE)
+====================================================================================================
+  run                     az    theta  grid           |R|^2    arg      sol |R|^2  sol arg  |R|/|R_sol|-1  d arg    |dR|    tol(S5 rule)  spread
+  c100_zolz_p0075_t12.0   [100]  12.0  2560x75x3438  0.04591  -2.5225  0.04650   -2.5333  -0.0064        +0.0107  0.0027  0.0580        0.0211
+  c100_full_p0075_t12.0   [100]  12.0  2560x75x3438  0.04195  -2.5476  0.04650   -2.5333  -0.0502        -0.0143  0.0112  0.0569        0.0206
+  c100_zolz_p0075_t15.8   [100]  15.8  3000x75x3410  0.03005  +2.1789  0.02953   +2.1581  +0.0088        +0.0208  0.0039  0.0343        0.0104
+  c100_full_p0075_t15.8   [100]  15.8  3000x75x3410  0.02664  +2.1509  0.02953   +2.1581  -0.0502        -0.0072  0.0087  0.0343        0.0103
+  c100_zolz_p0075_t16.0   [100]  16.0  3072x75x3410  0.06571  +2.8476  0.06678   +2.8428  -0.0080        +0.0048  0.0024  0.0368        0.0095
+  c100_zolz_p0075_t16.4   [100]  16.4  3072x75x3406  0.05199  -2.0230  0.05303   -2.0169  -0.0099        -0.0061  0.0027  0.0245        0.0040
+  c100_zolz_p0075_t21.0   [100]  21.0  3645x75x3386  0.00977  -2.3598  0.00986   -2.3639  -0.0046        +0.0041  0.0006  0.0127        0.0014
+  c100_full_p0075_t21.0   [100]  21.0  3645x75x3386  0.00898  -2.3802  0.00986   -2.3639  -0.0453        -0.0163  0.0048  0.0125        0.0013
+  c110_zolz_p0075_t15.1   [110]  15.1  2916x54x4826  0.05044  -1.2087  0.04981   -1.2213  +0.0063        +0.0126  0.0032  0.0299        0.0069
+  c110_full_p0075_t15.1   [110]  15.1  2916x54x4826  0.04858  -1.2328  0.04981   -1.2213  -0.0124        -0.0115  0.0038  0.0301        0.0069
+  c110_zolz_p0075_t17.6   [110]  17.6  3240x54x4806  0.04291  -0.8610  0.04389   -0.8666  -0.0112        +0.0056  0.0026  0.0295        0.0070
+  c110_full_p0075_t17.6   [110]  17.6  3240x54x4806  0.04160  -0.9025  0.04389   -0.8666  -0.0265        -0.0359  0.0093  0.0299        0.0072
+  c110_zolz_p013_t17.6    [110]  17.6  1875x30x4806  0.04037  -0.9429  0.04389   -0.8666  -0.0410        -0.0762  0.0178  0.0298        0.0072
+  peak from the parabola through 16.0/16.2/16.4 mrad: averaged engine 0.075 A 16.1664 mrad (|R|^2 0.07986); solver 13 rods 16.1637 (0.07944); full engine 0.13 A (S5 runs) 16.1787 (0.07212); shifts vs solver +0.0028 and +0.0150 mrad
+
+====================================================================================================
+E8-11. Rung-2 continuum Bragg case (P2 exact reference) at coarse pixels: is the engine's 1D amplitude pixel-sensitive? (MEASURED_HERE)
+====================================================================================================
+  dx (A)    nx     bins |eta|<=3  max|r-R_ref|  at eta~0: |r|/|R_ref|-1  d arg     mean over |eta|<=1 of |r|/|R_ref|-1   run s
+  0.12994    3138    18        9.40e-03      -0.0020 (eta -0.11)  -0.0282   -0.0040                       4
+  0.10000    4077    18        5.52e-03      -0.0013 (eta -0.09)  -0.0164   -0.0026                       5
+  0.05000    8154    18        1.45e-03      -0.0002 (eta -0.09)  -0.0042   -0.0009                       7
+  0.02500   16308    18        4.62e-04      +0.0000 (eta -0.09)  -0.0012   -0.0004                       12
+
+====================================================================================================
+E8-12. The S5 tool's report mode re-run (black box) and compared with its saved output
+====================================================================================================
+  exit status 1 (1 = a self-check fails: the 21.0 mrad [100] tolerance); 400 saved lines, 400 new lines; lines that differ (apart from the header): 1
+     saved: report mode ran in 4 s
+     now:   report mode ran in 3 s
+
+====================================================================================================
+E8-13. Which amplitude does each formula return? (absorbing step, exp(-i omega t) solution)
+====================================================================================================
+  R (Fresnel, exp(-i w t)) = -0.067952-0.005924j
+  code formula (Gamma Q - i P)(Gamma Q + i P)^-1 on the physical solution: -0.067952-0.005924j
+  Eq. (36) (Gamma + i P Q^-1)(Gamma - i P Q^-1)^-1 on the same solution: -14.605316+1.273251j = 1/R: True
+  Eq. (36) on the exp(+i w t) solution (conjugated psi): -0.067952+0.005924j = conj(R): True
+  CHECK PASS code formula returns R, Eq. (36) returns conj(R) for the exp(+i w t) solution: algebra
+
+====================================================================================================
+Summary of self-checks
+====================================================================================================
+  PASS  patch = particle switch + output only: 3 removed lines all ep='P'; added lines are 3 ep='E', 1 open(8), 2 write(8)
+  PASS  own TM code reproduces the exp(-i omega t) Fresnel coefficient: 3.0e-15
+  PASS  onebeam_r010: solver f(0,nb0) = TM R (not its conjugate): 9.6e-05 vs conjugate 0.38
+  PASS  onebeam_r010: TM with the solver's slices reproduces the solver to round-off: 7.4e-12
+  PASS  onebeam_r000: solver f(0,nb0) = TM R (not its conjugate): 5.1e-04 vs conjugate 1.71
+  PASS  onebeam_r000: TM with the solver's slices reproduces the solver to round-off: 3.3e-11
+  PASS  S5's stored R_layer equals E8's own conversion of amp.txt: 5.9e-14
+  PASS  atomic-path functions identical across every engine commit S5 used: propagate_slices, _RealisedAtomic, propagators, sheet beam, band mask, cell builder
+  PASS  current engine reproduces S5's 16.2 mrad column: max |diff| 6.9e-08
+  PASS  code formula returns R, Eq. (36) returns conj(R) for the exp(+i w t) solution: algebra
+
+10/10 checks pass; ran in 16 s

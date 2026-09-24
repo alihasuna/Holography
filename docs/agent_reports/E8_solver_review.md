@@ -207,8 +207,8 @@ S5's lists (section 9) are right in what they contain, with one error and severa
   1. the LATERAL Fourier sign convention (a flat bulk-terminated Si(001) is invariant under the
      two-fold rotation about the normal, so U_g and U_-g give the same R_00; finding M4);
   2. the engine's circular (f_x, f_y) band against the solver's full normal structure per rod: at
-     dx = 0.13 A a rod with |g_y| > (1/3dx^2 ... ) cannot carry the (0,0,8)-type normal component
-     (E8-10 prints the limits), so the outer rods of the "matched" 13-rod set are not matched;
+     0.1293 A only rods |h| <= 5 carry the (0,0,8) normal component (E8-10), so the outer rods of
+     the "matched" 13-rod set are not matched;
   3. only the specular rod, only 12-22 mrad, only [100] and [110], only one absorption ratio
      (0.1), a static lattice and one parameterisation per code; no other Bragg condition and not
      the 24-48 mrad range where D3 flagged the engine's band and shear limits;
@@ -248,22 +248,32 @@ Reading (DERIVED_HERE from these MEASURED_HERE runs):
    production pixel 0.13 A it is 2.5 % low in |R| and 0.027 rad low in phase: this is the band limit
    (the engine's circular (f_x, f_y) band cuts normal-direction Fourier components of the outer
    rods and the (0,0,l >= 16) row, H2 section 5), and it is removed by refining the pixel.
-2. The along-beam couplings, which the engine contains and the solver's row does not, lower |R| by
-   3.4 % and arg R by 0.021 rad once the first along-beam (Laue) ring lies inside the band (pixel
-   <= 0.0742 A; converged between 0.0742 and 0.0646 A to 0.1 %). At 0.0990 A the ring is outside
-   the band and only part of the effect appears; this is why S5's pixel study was not monotonic
-   (|R|^2 +5.2 % at 0.099 A, then down at 0.074 A).
+2. The along-beam couplings, which the engine contains and the solver's row does not
+   (|R_full|/|R_averaged| - 1 at the same pixel: -0.0219, -0.0173, -0.0329, -0.0344 at 0.1293,
+   0.0990, 0.0742, 0.0646 A; phase -0.0008, -0.0172, -0.0264, -0.0206 rad), reach their full size
+   once the first along-beam (Laue) ring, at 3.881 1/A for 16.2 mrad, lies inside the band (band
+   radius 2.579, 3.368, 4.491, 5.158 1/A at the four pixels): -3.3 to -3.4 % in |R| and -0.021 to
+   -0.026 rad, the two finest pixels agreeing to 0.15 % and 0.006 rad. At 0.0990 A the ring is still
+   outside and only part of the effect appears; this is why S5's pixel study was not monotonic
+   (|R|^2 +5.2 % at 0.099 A, then down at 0.074 A), while the averaged runs are monotonic.
 3. S5's "unexplained about 3 % in |R|" is therefore the sum of a numerical engine error at 0.13 A
-   (band limit, about 2.5 %) and a physics difference between the two models (along-beam couplings,
-   about 3.4 % converged, partly present at 0.13 A), not an unexplained engine defect. S5's residual
-   phase offset (-0.02 to -0.03 rad) has the same two sources.
+   (band limit, 2.5 % in |R| and 0.027 rad in the averaged runs) and a physics difference between
+   the two models (along-beam couplings, 2.2 % at 0.13 A, 3.4 % converged), not an unexplained engine
+   defect. S5's residual phase offset (-0.02 to -0.03 rad) has the same two sources. The peak shift
+   has them too: from the parabola through 16.0/16.2/16.4 mrad the averaged engine at 0.075 A peaks
+   +0.0028 mrad from the solver (same method), S5's full engine at 0.13 A +0.0150 mrad (E8-10b). The
+   strip is long enough for the averaged physics: 7000 A against 4500 A changes |R| by +0.06 % and
+   arg R by -0.0014 rad (0.0990 A).
 4. The size of the along-beam effect is NOT validated: the engine's converged value (-3.4 % in |R|,
    -0.021 rad) is about three times the solver's 61-rod disk estimate (-1.1 %, -0.009 rad), whose
    disk is truncated at |g| <= 6/a with the row at |h| <= 3. Which is right needs a solver rod disk
    matched to (or larger than) the engine's along-beam and transverse sampling (finding M3).
 5. The candidates S5 lists (band limit, infinite projection per slice, band-pass near the surface)
-   are thereby narrowed: the band limit is confirmed; the infinite projection and the read-out cannot
-   be large, because the averaged runs agree with the solver to 0.2 %.
+   are thereby narrowed: the band limit is confirmed; the infinite projection per slice and the
+   read-out cannot be large, because the averaged runs agree with the solver to 0.2 % at 16.2 mrad
+   and to 1.1 % at every angle checked. At the production pixel only rods |h| <= 5 carry the (0,0,8)
+   normal component (8/a = 1.4731 1/A) and the y band edge 2.577842 1/A coincides with the (7,-7)
+   rod (E8-10).
 
 The same holds at the other angles and at [110] (E8-10b; averaged potential and full engine at the
 pixel 0.075 A, against the solver case S5 compared with, 13 rods at [100] and 19 at [110]):
@@ -309,13 +319,14 @@ effects of 2.5 % and 3.4 % in |R| that S5 did not separate.
   the engine's 2/3 band"; S5 5 "Like-for-like comparison = ... solver rods = the engine-band ZOLZ row".
 * Evidence: the engine slices along the beam (a/4) and so contains the along-beam couplings that the
   solver's row of rods (h,-h) averages out; S5 5 itself says the engine "partly carries" them. E8-10:
-  replacing each crystal slice by the along-beam average (the solver's physics) changes the engine's
-  |R| by +2.2 %, +1.7 %, +3.4 %, +3.5 % (pixels 0.1293, 0.0990, 0.0742, 0.0646 A; printed as
-  full/averaged ratios) and its phase by up to 0.021 rad; with the average the engine converges to
-  the solver (|R| +0.2 %, arg -0.002 rad at 0.0646 A). The engine's converged along-beam effect
-  (-3.4 % in |R|, -0.021 rad) is about three times the solver's disk estimate (-1.1 %, -0.009 rad).
-  Also, the circular (f_x, f_y) band at 0.13 A lets only rods |h| <= 5 carry the (0,0,8) normal
-  component (E8-10), so the 13-rod row is not "exactly" the engine's band.
+  the engine's along-beam couplings, measured as |R_full|/|R_averaged| - 1 at the same pixel, are
+  -0.0219, -0.0173, -0.0329, -0.0344 (pixels 0.1293, 0.0990, 0.0742, 0.0646 A) with phase changes
+  -0.0008, -0.0172, -0.0264, -0.0206 rad; with the average (the solver's physics) the engine
+  converges to the solver (|R| +0.20 %, arg -0.0022 rad at 0.0646 A). The engine's converged
+  along-beam effect (-3.3 to -3.4 % in |R|, -0.021 to -0.026 rad) is about three times the solver's
+  61-rod disk estimate (-1.1 %, -0.009 rad).
+  Also, the circular (f_x, f_y) band at 0.1293 A lets only rods |h| <= 5 carry the (0,0,8) normal
+  component (E8-10), so the 13-rod row (|h| <= 6) is not "exactly" the engine's band.
 * Correction: in S5 5 and 9 replace the like-for-like claim by: "same potential, absorption, lattice
   and termination; NOT the same Fourier components: the solver has the along-beam average of the
   potential (zero-order row, all normal components), the engine has the along-beam structure (slices

@@ -780,7 +780,11 @@ def section7():
           f"({b['engine_commit'][:7]}, dirty {b['engine_dirty']}): stored exit columns identical: {same_col}; "
           f"first-pass r_top equal to the main run's: "
           f"{float(f0['readout']['r_top_re']) == float(a['readout']['r_top_re'])}")
-    # run_realisation itself changed (band assertion, memory model): show the size of that change
+    st = subprocess.run(["git", "-C", str(REPO), "diff", "--stat", "a84b4b3", "a1ef2a0", "--",
+                         "reflection_holo/structure"], capture_output=True, text=True).stdout.strip()
+    print(f"  reflection_holo/structure between a84b4b3 and a1ef2a0: "
+          f"{'unchanged' if not st else st.splitlines()[-1]}")
+    # run_realisation itself: identical text at every commit used
     for cm in allc:
         s = _func_src(cm, "reflection_holo/forward/multislice/engine.py", "run_realisation") or ""
         print(f"  engine.py:run_realisation at {cm}: {len(s.splitlines())} lines, sha256 "
@@ -1123,6 +1127,35 @@ def section11():
     return d
 
 
+
+def section7b():
+    hr("E8-7b. Git history of the S5 tool: tolerance block and engine set-up across the snapshots")
+    import ast
+    snaps = subprocess.run(["git", "-C", str(REPO), "log", "--reverse", "--format=%h %ad",
+                            "--date=format-local:%Y-%m-%d %H:%M:%S", "872e949", "--",
+                            "tools/validation/rheed_solver_compare.py"],
+                           capture_output=True, text=True, env=dict(os.environ, TZ="UTC")).stdout.split("\n")
+    snaps = [ln.split(" ", 1) for ln in snaps if ln.strip()]
+    ref_tol = None
+    for h, date in snaps:
+        txt = subprocess.run(["git", "-C", str(REPO), "show", f"{h}:tools/validation/rheed_solver_compare.py"],
+                             capture_output=True, text=True).stdout
+        m = re.search(r"^TOL_REL = .*?^TOL_SWEEP_RAD = [^\n]*", txt, re.M | re.S)
+        tol = m.group(0) if m else None
+        ref_tol = ref_tol or tol
+        tree = ast.parse(txt)
+        hs = {}
+        for n in ast.walk(tree):
+            if isinstance(n, (ast.FunctionDef, ast.ClassDef)) and n.name in (
+                    "DoyleTurnerPotential", "engine_flat_strip", "engine_readout"):
+                hs[n.name] = hashlib.sha256(ast.get_source_segment(txt, n).encode()).hexdigest()[:8]
+        ej = subprocess.run(["git", "-C", str(REPO), "show", f"{h}:tools/validation/rheed_engine_results.json"],
+                            capture_output=True, text=True).stdout
+        eu = json.loads(ej).get("updated_utc") if ej.strip() else None
+        print(f"  {h} {date} UTC: tolerance block identical to the first: {tol == ref_tol}; "
+              f"engine results file updated {eu}; set-up hashes {hs}")
+    print("  first tolerance block:\n    " + (ref_tol or "none").replace("\n", "\n    "))
+
 # ================================================================================================
 # 8. H2's stored plateaus converted to R at the top layer (own conversion) against the solver
 # ================================================================================================
@@ -1278,6 +1311,7 @@ def main(argv=None):
         section6(r4)
     if 7 in secs:
         section7()
+        section7b()
     if 8 in secs:
         section8()
     if 9 in secs:
