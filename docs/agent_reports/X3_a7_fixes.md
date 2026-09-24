@@ -3,9 +3,12 @@
 Agent X3, 2026-09-24. Status: FINAL (written after the runs of section 5).
 
 Base: branch claude/electron-holography-orchestration-nakd7r at 83fa75f when X3 started. During the
-work the orchestrator committed 4112842 (tools/plots/torus_compact.py, unrelated) and the snapshot
-68ad1a2, which already contains X3's in-progress edits of the A7-3 files. "Before" below means
-83fa75f (a `git archive` export in X3's scratchpad); "after" means the working tree. X3 committed
+work the orchestrator committed 4112842 (tools/plots/torus_compact.py, unrelated) and the snapshots
+68ad1a2, 30156ac, cf712e4, 95b2747 and a965404. These contain X3's edits as they stood at the time,
+and at a965404 all of X3's code, script and test changes. `git diff --stat 83fa75f a965404 --
+reflection_holo tests scripts configs tools` lists only X3's files plus torus_compact.py. "Before"
+below means 83fa75f (a `git archive` export in X3's scratchpad); "after" means the working tree
+(= a965404 for those directories; the later snapshot b96bc6e touched only this report). X3 committed
 and pushed nothing and wrote nothing under outputs/ (3 files there, unchanged, before and after).
 Oxide code (structure/oxide.py, the E4 parts of forward/cell.py, engines and pipeline) was not
 touched. In docs/, only this report was written. The scratch scripts are in
@@ -23,8 +26,9 @@ touched. In docs/, only this report was written. The scratch scripts are in
 
 A7-3 design note. The rule is: converged iff at least one included bin starts at or after d, where d
 is the end of the last failing included bin (or the start of the first included bin if none fails).
-It is unchanged, so the verdict, `converged` and `n_bins_beyond` are identical to X2's for every
-input, and only the two distance fields differ. When not converged, `last_examined_A` equals the end
+It is unchanged, so `converged`, `n_bins_beyond` and the verdict's decision are identical to X2's
+for every input. Only the distance fields differ, and so does the wording of the NOT-converged
+verdict text, which now names `last_examined_A`. When not converged, `last_examined_A` equals the end
 of the last failing included bin, which is the value A7 proposed for `last_failing_..._end_A`. When
 converged, the last failing distance is `converged_beyond_A` itself (if any bin failed), so a third
 field would be redundant. A7's optional NIT, a minimum number of passing bins, was not applied (not
@@ -39,7 +43,8 @@ lies beyond it") is consistent with the new contract, and an edit would change t
 
 ### 2.1 A7-3: crystal B translated half a pixel too far (A7's `n2_probe.py shiftB`)
 
-`<sp>/shift_probe.py` is A7's `<sp7>/n2_probe.py`, changed only to also print `last_examined_A`
+`<sp>/shift_probe.py` is A7's `n2_probe.py` (`<sp>/../a7/n2_probe.py`), changed only to also print
+`last_examined_A`
 (`diff` in `<sp>`). It runs the rung-2 continuum, the study's beam and surface_resolved block, L_z of
 the [110] L5k points, and B translated by R_x + 0.0125 A.
 
