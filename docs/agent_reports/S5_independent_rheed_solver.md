@@ -276,7 +276,11 @@ better than 1e-4 in R, the [1,0,0] and [0,1,0] azimuths give the same R to 2e-9 
 of the bulk-terminated surface, a check of the input geometry), and the rods beyond the engine's band
 change R by about 1 % (up to 1.4 % at the engine angles). The total reflected flux summed over all
 propagating rods never exceeds 1 (largest value 1.000000, at total-reflection angles), with or
-without absorption. [The HOLZ row of this table is added when the run finishes; section 3.5.]
+without absorption. HOLZ test (3 angles, slab 40 layers): all 61 rods with |g| <= 6/a (including rods
+with a component along the beam) against the ZOLZ row |h| <= 3 of the same disk: max |Delta R|
+4.25e-03, relative 2.06e-02; per angle |R_disk|/|R_row| - 1 = -0.0123 (12.0 mrad), -0.0109 (16.2),
+-0.0089 (21.0) and d arg = -0.0167, -0.0086, -0.0145 rad. Neither code includes these couplings in the
+compared runs (section 7).
 
 ## 4. Solver rocking curves (REPRODUCED; tool report section 5)
 
@@ -564,10 +568,10 @@ solver's value depends on the slab thickness (section 4.2) and H2's strip had no
 | Conjugated convention (docs/05 4.4 expected a conjugation for P49) | arg R_eng = -arg R_sol | medians 0.0081 ([100]) and 0.0083 ([110]) for R_sol against 0.17 and 0.12 for conj(R_sol); the solver's own convention verified against an independent 1D integration (section 3.3) | no conjugation needed; no convention bug |
 | Reference plane (top-layer nuclei in both) | a 0.1 A error gives 0.60-1.10 rad, linear in sin(theta) | fitted dx = +0.005 A ([100]), -0.012 A ([110]) | no reference-plane bug |
 | Refraction / mean inner potential | same MIP in both (13.9144 V); peak shifts only from many-beam and sampling | peak +0.018 mrad (engine - solver) | consistent |
-| Interaction constant, absorption sign | a scale error changes widths; a sign error gives \|R\| > 1 or wrong widths | FWHM -3.3 %; \|R\| <= 0.29 everywhere; total flux <= 1 in the solver | consistent |
+| Interaction constant, absorption sign | a scale error changes widths; a sign error gives \|R\| > 1 or wrong widths | FWHM -3.3 %; largest \|R\| 0.2748 (engine) and 0.2869 (solver) at r = 0.1; total flux <= 1 in the solver | consistent |
 | Top-layer orientation at [110] | the perpendicular termination differs by median 0.17 in R | engine agrees with the parallel one (0.0083) | same termination in both |
 | Rods / band limit (engine: 2/3 band at 0.13 A in (f_x, f_y); solver: 13 or 19 ZOLZ rods, no limit along the normal) | about 1 % from the solver's rod study; H2 5: 2.8e-2 V_g Bethe estimate at 0.13 A | engine \|R\|^2 changes by +5.2 % and +3.1 % at dx = 0.099 and 0.074 A | a real sampling sensitivity of the engine at the production pixel, not a bug |
 | Finite cell (run-in, window, exit margin, depth, sheet beam) | H2: 3 % amplitude and 1e-2 rad beyond 2500 A | window/run-in variants up to 3.4 % in \|R\|, 7000 A run +0.9 % in \|R\|^2 | an engine uncertainty of a few % in \|R\| that the per-angle spread only partly measures |
-| HOLZ couplings (neither code in its compared form) | solver: all rods \|g\| <= 6/a change \|R\| by -0.9 to -1.2 % and arg R by -0.009 to -0.017 rad | not a difference between the two codes | common omission; about 1 % in \|R\|, 0.01-0.02 rad |
-| Parameterisation (Kirkland engine vs DT solver) | MIP -0.0115 V (peak +0.0021 mrad); V_g within 0.3-3 % | section 6.6 | expected model difference |
+| HOLZ couplings (neither code in its compared form) | solver: all 61 rods \|g\| <= 6/a against the row \|h\| <= 3 change \|R\| by -0.89 to -1.23 % and arg R by -0.009 to -0.017 rad (3 angles) | not a difference between the two codes | common omission; about 1 % in \|R\|, 0.01-0.02 rad |
+| Parameterisation (Kirkland engine vs DT solver) | MIP: Kirkland 0.0115 V lower (refraction-only peak shift +0.0021 mrad); V_g ratios DT/Kirkland 0.992 to 1.031 for the 14 coefficients printed | section 6.6 | expected model difference |
 | Remaining systematic amplitude deficit of the engine (about 3-5 % in \|R\| at the peak, 13 % at the weak 21 mrad maximum) with a phase offset of -0.02 to -0.03 rad | not predicted by any tested setting | within the declared tolerance at 22 of 23 [100] and 15 of 15 [110] angles, outside at 21.0 mrad | UNRESOLVED: not large enough to indicate a sign, convention or geometry bug; its cause (candidates: the transmission-function band limit, the infinite projection per slice, the read-out's band-pass near the surface) is not established |
