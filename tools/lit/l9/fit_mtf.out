@@ -1,0 +1,26 @@
+w0 = 0.452 omega_N  (omega_N = 0.5 cycles/pixel = 9.09 cycles/mm for 55 um pixels)
+q0 = 0.2258 cycles/pixel
+equivalent Gaussian PSF sigma = 0.997 pixel = 54.8 um (MTF = exp(-2 pi^2 sigma^2 q^2))
+  w=0.15  digitised 0.889  gaussian 0.896
+  w=0.20  digitised 0.815  gaussian 0.822
+  w=0.25  digitised 0.728  gaussian 0.736
+  w=0.30  digitised 0.638  gaussian 0.643
+  w=0.35  digitised 0.544  gaussian 0.548
+  w=0.40  digitised 0.453  gaussian 0.456
+  w=0.45  digitised 0.363  gaussian 0.370
+  w=0.50  digitised 0.288  gaussian 0.294
+  w=0.55  digitised 0.221  gaussian 0.227
+  w=0.60  digitised 0.167  gaussian 0.171
+  w=0.65  digitised 0.123  gaussian 0.126
+  w=0.70  digitised 0.088  gaussian 0.090
+  w=0.75  digitised 0.064  gaussian 0.063
+  w=0.80  digitised 0.045  gaussian 0.043
+  w=0.85  digitised 0.030  gaussian 0.029
+  w=1.00  Table 1: 0.01  gaussian 0.0074
+   3 px per fringe: w = 0.667 omega_N, digitised MTF 0.112, gaussian 0.113, ideal square pixel sinc 0.827
+   4 px per fringe: w = 0.500 omega_N, digitised MTF 0.288, gaussian 0.294, ideal square pixel sinc 0.900
+   5 px per fringe: w = 0.400 omega_N, digitised MTF 0.453, gaussian 0.456, ideal square pixel sinc 0.935
+   6 px per fringe: w = 0.333 omega_N, digitised MTF 0.576, gaussian 0.580, ideal square pixel sinc 0.955
+   8 px per fringe: w = 0.250 omega_N, digitised MTF 0.728, gaussian 0.736, ideal square pixel sinc 0.974
+  10 px per fringe: w = 0.200 omega_N, digitised MTF 0.815, gaussian 0.822, ideal square pixel sinc 0.984
+  12 px per fringe: w = 0.167 omega_N, digitised MTF 0.864, gaussian 0.873, ideal square pixel sinc 0.989

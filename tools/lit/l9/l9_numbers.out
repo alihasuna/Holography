@@ -1,0 +1,21 @@
+NNPS(w) = DQE(0) MTF^2 / DQE  (D6 Eq. (6) rearranged):
+  w = 0.20 omega_N: NNPS = 0.867
+  w = 0.25 omega_N: NNPS = 0.779
+  w = 0.30 omega_N: NNPS = 0.708
+  w = 0.40 omega_N: NNPS = 0.544
+  w = 0.50 omega_N: NNPS = 0.388
+  w = 0.60 omega_N: NNPS = 0.259
+1/sin(theta) = 61.98
+carrier   2.0 A at 8 px/fringe: M = 2.2e+06, specimen pixel 0.250 A, surface along beam per pixel 15.50 A, 256 px span along beam 0.397 um, perpendicular 0.0064 um
+carrier   2.0 A at 4 px/fringe: M = 1.1e+06, specimen pixel 0.500 A, surface along beam per pixel 30.99 A, 256 px span along beam 0.793 um, perpendicular 0.0128 um
+carrier  10.0 A at 8 px/fringe: M = 4.4e+05, specimen pixel 1.250 A, surface along beam per pixel 77.48 A, 256 px span along beam 1.983 um, perpendicular 0.0320 um
+carrier  50.0 A at 8 px/fringe: M = 8.8e+04, specimen pixel 6.250 A, surface along beam per pixel 387.38 A, 256 px span along beam 9.917 um, perpendicular 0.1600 um
+B23 image pixel 0.5 A with 55 um pitch needs M = 1.1e+06 (B23 states 15 um and M = 3.0e5)
+ 4 px/fringe: MTF 0.288, DQE 0.171, phase-noise factor vs ideal counting detector 1/sqrt(DQE) = 2.42
+ 5 px/fringe: MTF 0.453, DQE 0.302, phase-noise factor vs ideal counting detector 1/sqrt(DQE) = 1.82
+ 6 px/fringe: MTF 0.576, DQE 0.407, phase-noise factor vs ideal counting detector 1/sqrt(DQE) = 1.57
+ 8 px/fringe: MTF 0.728, DQE 0.544, phase-noise factor vs ideal counting detector 1/sqrt(DQE) = 1.36
+10 px/fringe: MTF 0.815, DQE 0.613, phase-noise factor vs ideal counting detector 1/sqrt(DQE) = 1.28
+6-bit counter max per frame: 63
+12-bit counter max per frame: 4095
+24-bit counter max per frame: 16777215
