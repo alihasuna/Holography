@@ -61,13 +61,18 @@ kappa:
                  (n!)^4 / ((2n + 1) ((2n)!)^3) f^(2n)(eta) on [0, 1] (n = n_radial) with the Cauchy
                  estimate |f^(2n)| <= (2n)! M(R) / R^(2n) for the radial integrand
                  h(s) = J0(v sqrt(s)) exp(-i kappa s), M(R) = I0(v sqrt(1 + R)) exp(kappa R)
-                 (|J0(v sqrt(z))| <= I0(v sqrt|z|)); f_c = 1 for kappa = 0 (h real) and sqrt(2) for
-                 kappa > 0: the remainder with ONE intermediate point eta holds for a REAL function;
-                 for h = u + i w it applies to u and w separately (points eta_u, eta_w), so
-                 |R[h]| = (R[u]^2 + R[w]^2)^(1/2) <= sqrt(2) C_n max |h^(2n)|, since
-                 |u^(2n)|, |w^(2n)| <= |h^(2n)| (audit A5 F8);
+                 (|J0(v sqrt(z))| <= I0(v sqrt|z|)); f_c = 1 for kappa = 0 (h real) and
+                 f_c = sqrt(2) for kappa != 0. The sqrt(2) is CONSERVATIVE, not necessary (audit
+                 A7-5): f_c = 1 already bounds a complex h, because the remainder functional R has
+                 real nodes and weights; with phi = arg R[h], |R[h]| = R[g] for the REAL
+                 g = Re(e^(-i phi) h), the one-point form gives R[g] = C_n g^(2n)(eta), and
+                 |g^(2n)| <= |h^(2n)|. The factor was added after audit A5 F8 (per real and
+                 imaginary part, |R[h]| <= sqrt(2) C_n max |h^(2n)|, also valid) and is kept: it
+                 makes the bound up to 41 % looser, so a quadrature near the tolerance can be
+                 refused although it meets it (X1 report section 2), never the reverse;
   line:  |Q - I| <= sqrt(2) C'_n (2n)! M(R) / R^(2n), C'_n = 2^(2n) (n!)^4 / ((2n + 1) ((2n)!)^3),
-         M(R) = exp(v R + kappa (2 R + R^2)) (integrand exp(i (v xi - kappa xi^2)) on [-1, 1]).
+         M(R) = exp(v R + kappa (2 R + R^2)) (integrand exp(i (v xi - kappa xi^2)) on [-1, 1]);
+         the sqrt(2) is conservative in the same sense (A7-5).
 A floating-point floor of 8 eps per member (double precision) is added to both bounds.
 The same bound applies to any member-dependent phase that is linear in t with the same extent v,
 e.g. the step phase of a terrace pair, whose derivative is (4 pi h / lambda) cos(theta) per radian
@@ -165,7 +170,8 @@ def radial_error_bound(n: int, v: float, kappa: float, profile: str) -> float:
     if profile == "uniform_disc":
         logM = _log_i0(abs(v) * np.sqrt(1.0 + R)) + abs(kappa) * R
         lc = _log_gauss_constant(n, "disc")
-        # sqrt(2) for the complex integrand when kappa != 0 (module docstring; A5 F8); J0 is real
+        # sqrt(2) when kappa != 0 (complex integrand; A5 F8): CONSERVATIVE, not necessary, a bound
+        # with factor 1 already holds for a complex integrand (module docstring; A7-5); J0 is real
         extra = 0.5 * math.log(2.0) if kappa != 0.0 else 0.0
     else:
         logM = abs(v) * R + abs(kappa) * (2.0 * R + R * R)

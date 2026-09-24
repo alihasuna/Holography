@@ -92,9 +92,13 @@ CPU_MEM_HINTS = {
 # realisation 112 B/atom + pixel arrays) plus the builder structure the pipeline keeps while it
 # realises, 48 B/atom (192 B/atom in total, H7 section 4; H5 measured 193). Schema /2 (X2, audit A6
 # K-1): the report carries the engine code's SHA-256 (engine_code_sha256 below), and a report of
-# other engine code (another memory model) is refused. An explicit --need-gpu-mem-gb BELOW the
-# derived need is refused unless --accept-need-below-dry-run is given (A6 K-2; recorded).
-DRY_RUN_REPORT_SCHEMA = "reflholo_pipeline_dry_run_report/2"
+# other engine code (another memory model) is refused. Schema /3 (X3, audit A7-4): it also carries
+# the SHA-256 of the whole reflection_holo package tree (package_tree_sha256 below), and a report
+# of another tree is refused, because the grid and the atom count behind the device peak come from
+# code outside the engine (forward/cell.py, forward/feature_cell.py, structure/, pipeline/). An
+# explicit --need-gpu-mem-gb BELOW the derived need is refused unless --accept-need-below-dry-run is
+# given (A6 K-2; recorded).
+DRY_RUN_REPORT_SCHEMA = "reflholo_pipeline_dry_run_report/3"
 STRUCTURE_B_PER_ATOM = 48
 _SLURM_MEM_UNIT_B = {"": 2**20, "K": 2**10, "M": 2**20, "G": 2**30, "T": 2**40}  # Slurm: MB default
 
@@ -243,6 +247,32 @@ def engine_code_sha256(repo) -> dict:
     return dict(sha256=h.hexdigest(), files=rels, dirs=list(ENGINE_CODE_DIRS))
 
 
+PACKAGE_DIR = "reflection_holo"
+PACKAGE_TREE_SUFFIXES = (".py", ".yaml")
+
+
+def package_tree_sha256(repo) -> dict:
+    """SHA-256 of the whole reflection_holo package tree of the clone `repo`, with the definition
+    of reflection_holo.provenance.manifest.package_tree_sha256 (which the dry-run report and every
+    run manifest record; re-implemented here, like engine_code_sha256, so that the check does not
+    depend on which reflection_holo is importable; equality asserted in
+    tests/hpc/test_kit_gpu_mem_from_dry_run.py): every *.py and *.yaml file
+    below reflection_holo/ (outside __pycache__), sorted by path relative to reflection_holo/,
+    path + NUL + SHA-256(content) of each. Audit A7-4 (X3): the dry-run report's memory need is
+    tied to this tree, not only to the engine code."""
+    pkg = Path(repo).resolve() / PACKAGE_DIR
+    if not pkg.is_dir():
+        raise Refused(f"package directory {pkg} not found")
+    files = sorted(p for p in pkg.rglob("*") if p.is_file() and p.suffix in PACKAGE_TREE_SUFFIXES
+                   and "__pycache__" not in p.parts)
+    h = hashlib.sha256()
+    for f in files:
+        h.update(f.relative_to(pkg).as_posix().encode() + b"\0")
+        h.update(hashlib.sha256(f.read_bytes()).digest())
+    return dict(sha256=h.hexdigest(), n_files=len(files), root=str(pkg),
+                rule="sha256 over sorted relative path + NUL + sha256(content) of *.py, *.yaml")
+
+
 def pass_problems(rec, *, cluster, env_id, engine_sha) -> list[str]:
     if not isinstance(rec, dict):
         return ["not a JSON object"]
@@ -342,7 +372,9 @@ def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str,
     """(record, NOTE lines): the GPU memory need derived from a `pipeline dry-run --report-json`
     file (or a directory holding dry_run_report.json, e.g. the dry-run job's dry_run/ directory)
     of THIS configuration and variant (SHA-256 checked) made with THIS engine code (the report's
-    engine_code.sha256 must equal engine_code_sha256(repo); A6 K-1). Every step is printed."""
+    engine_code.sha256 must equal engine_code_sha256(repo); A6 K-1) and THIS package tree (the
+    report's package_tree.sha256 must equal package_tree_sha256(repo): the grid and the atom count
+    come from code outside the engine; A7-4, X3). Every step is printed."""
     p = Path(path)
     if p.is_dir():
         cands = [p / "dry_run_report.json", p / "dry_run" / "dry_run_report.json"]
@@ -381,6 +413,14 @@ def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str,
         raise Refused(f"{p} was made with engine code {str(eng_rep)[:12]}..., not with the engine "
                       f"code of {repo} ({eng_now[:12]}...): its memory estimate may come from "
                       f"another memory model; rerun the `dry-run` job with this code")
+    pkg_now = package_tree_sha256(repo)["sha256"]
+    pkg_rep = (data.get("package_tree") or {}).get("sha256")
+    if pkg_rep != pkg_now:
+        raise Refused(f"{p} was made with the reflection_holo package tree {str(pkg_rep)[:12]}..., "
+                      f"not with the package tree of {repo} ({pkg_now[:12]}...): the grid, the "
+                      f"atom count or the memory model behind its estimate may differ (code "
+                      f"outside the engine, e.g. forward/cell.py, structure/ or pipeline/, "
+                      f"changed; audit A7-4); rerun the `dry-run` job with this code")
     rep = data.get("report") or {}
     ms = rep.get("multislice")
     if not isinstance(ms, dict) or "memory_bytes" not in ms:
@@ -397,7 +437,8 @@ def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str,
     need_B = dev * (1.0 + float(margin))
     host_B = host + STRUCTURE_B_PER_ATOM * n_atoms
     rec = dict(source=str(p), source_sha256=hashlib.sha256(raw).hexdigest(),
-               config_sha256=want, engine_code_sha256=eng_now, device_peak_cupy_B=dev,
+               config_sha256=want, engine_code_sha256=eng_now, package_tree_sha256=pkg_now,
+               device_peak_cupy_B=dev,
                margin=float(margin),
                need_gb=need_B / 1e9, host_peak_cupy_B=host, n_atoms=n_atoms,
                structure_B_per_atom=STRUCTURE_B_PER_ATOM, host_need_B=host_B,
@@ -405,8 +446,9 @@ def gpu_need_from_dry_run(path: str, *, margin, config_path: Path, variant: str,
                      "stated margin; host + 48 B/atom builder structure (H7)")
     lines = [
         f"GPU memory from the dry run {p} (SHA-256 {rec['source_sha256'][:12]}..., configuration "
-        f"SHA-256 {want[:12]}... and engine code {eng_now[:12]}... match): grid {ms.get('grid')}, "
-        f"{n_atoms} atoms, precision {ms.get('precision')}",
+        f"SHA-256 {want[:12]}..., engine code {eng_now[:12]}... and package tree "
+        f"{pkg_now[:12]}... match): grid {ms.get('grid')}, {n_atoms} atoms, precision "
+        f"{ms.get('precision')}",
         f"  device peak of the cupy backend (engine.memory_model; UNVERIFIED on a GPU, a LOWER "
         f"BOUND: cuFFT/cuBLAS workspaces and the cupy pool are not modelled) = {dev} B = "
         f"{dev / 1e9:.3f} GB",

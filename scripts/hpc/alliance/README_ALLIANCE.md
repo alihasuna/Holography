@@ -330,9 +330,11 @@ off the dry run by hand, `--gpu-mem-from-dry-run <dry-run job dir or its dry_run
 LOWER BOUND: cuFFT/cuBLAS workspaces and the cupy pool are not modelled, no GPU was available to
 measure them) times (1 + margin); the margin has no default. The derivation is printed and recorded
 in the submission record, the dry-run report must be the one of the same configuration and variant
-(SHA-256 checked) and of the same engine code (the report records the SHA-256 of the multislice
-package, the kit compares it with the clone's: a dry run made before a memory-model change is
-refused; report schema `reflholo_pipeline_dry_run_report/2`), the host memory of the GPU run (cupy
+(SHA-256 checked) and of the same code (the report records the SHA-256 of the multislice
+package and of the whole `reflection_holo` package tree, the kit compares both with the clone's: a
+dry run made before a memory-model change, or before a change of the cell, structure or pipeline
+code that sets the grid and the atom count, is refused; report schema
+`reflholo_pipeline_dry_run_report/3`, audit A7-4), the host memory of the GPU run (cupy
 host peak + 48 B/atom of builder structure, 192 B/atom in total, H7) is compared with `--mem`, and
 an explicit `--need-gpu-mem-gb` above the derived value overrides it; one BELOW it is refused unless
 `--accept-need-below-dry-run` is also given (then a WARNING is printed and the override is recorded

@@ -70,15 +70,20 @@ def _parser() -> argparse.ArgumentParser:
                    help="multislice: measure the FFT and potential costs on this machine")
     d.add_argument("--report-json", default=None,
                    help="also write the full dry-run report (with the configuration's path and "
-                        "SHA-256 and the engine code's SHA-256) to this JSON file; the Alliance "
-                        "kit reads the GPU memory need from it (kit.py --gpu-mem-from-dry-run)")
+                        "SHA-256, the engine code's SHA-256 and the SHA-256 of the whole "
+                        "reflection_holo package tree) to this JSON file; the Alliance kit reads "
+                        "the GPU memory need from it (kit.py --gpu-mem-from-dry-run)")
     li = sub.add_parser("list-inputs", help="show every PROJECT_INPUT and its status")
     li.add_argument("--config", required=True)
     li.add_argument("--variant", default=None)
     return p
 
 
-DRY_RUN_REPORT_SCHEMA = "reflholo_pipeline_dry_run_report/2"
+# Schema /3 (X3, audit A7-4): besides the configuration's and the engine code's SHA-256 (/2, X2 after
+# A6 K-1) the report carries the SHA-256 of the whole reflection_holo package tree
+# (package_tree_identity below), because the grid and the atom count behind the memory need come
+# from code outside the engine (forward/cell.py, forward/feature_cell.py, structure/, pipeline/).
+DRY_RUN_REPORT_SCHEMA = "reflholo_pipeline_dry_run_report/3"
 ENGINE_CODE_DIR = "reflection_holo/forward/multislice"
 
 
@@ -108,6 +113,27 @@ def engine_code_identity() -> dict:
         raise RuntimeError(f"engine package at {base} is not {ENGINE_CODE_DIR} below a repository")
     return dict(sha256=h.hexdigest(), files=rels, dirs=[ENGINE_CODE_DIR],
                 definition="as scripts/hpc/alliance/kit.py engine_code_sha256")
+
+
+def package_tree_identity() -> dict:
+    """SHA-256 of the whole reflection_holo package tree of the IMPORTED package (so that a
+    PYTHONPATH override is seen), with the definition of the run manifests'
+    provenance.manifest.package_tree_sha256: every *.py and *.yaml file below reflection_holo/
+    (the only file types of the package; tests/hpc asserts this for the tracked files), sorted by
+    relative path, path + NUL + SHA-256(content) of each. The Alliance kit recomputes it for the
+    submitting clone (scripts/hpc/alliance/kit.py package_tree_sha256; equality asserted in
+    tests/hpc/test_kit_gpu_mem_from_dry_run.py) and refuses a report of another tree: the grid, the
+    atom count and the memory model behind the report's device peak all come from this tree
+    (audit A7-4, X3). Uncommitted changes of the package are covered (the hash reads the files)."""
+    from pathlib import Path
+
+    import reflection_holo
+    from reflection_holo.provenance.manifest import package_tree_sha256
+    pkg = Path(reflection_holo.__file__).resolve().parent
+    rec = package_tree_sha256(pkg.parent)
+    rec["definition"] = ("reflection_holo.provenance.manifest.package_tree_sha256 (as "
+                         "scripts/hpc/alliance/kit.py package_tree_sha256)")
+    return rec
 
 
 def _human_bytes(n: float) -> str:
@@ -161,7 +187,8 @@ def main(argv: list[str] | None = None) -> int:
                 Path(args.report_json).write_text(json.dumps(dict(
                     schema=DRY_RUN_REPORT_SCHEMA, config_path=str(cpath),
                     config_sha256=hashlib.sha256(cpath.read_bytes()).hexdigest(),
-                    variant=args.variant, engine_code=engine_code_identity(), report=rep),
+                    variant=args.variant, engine_code=engine_code_identity(),
+                    package_tree=package_tree_identity(), report=rep),
                     indent=1, default=str))
             print(f"purpose: {cfg.purpose}")
             print(f"configuration valid (run level); engine {rep['engine']}; glancing angle "

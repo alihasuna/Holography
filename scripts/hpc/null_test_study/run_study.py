@@ -26,13 +26,14 @@ surface-position-resolved read-out of H2 section 2.4 to every translation point 
 translation point whose beam meets either crystal before L_z - exit_excl_A is then refused
 (null_test_cases.check_lit_to_exit, also with --estimate); without the block that read-out is not
 computed (and the result says so). Its verdict (result["surface_resolved"]): `converged`,
-`converged_beyond_A` (a distance ONLY when converged, else null: audit A7-3), `last_examined_A`
-(end of the last bin the verdict examined, also when not converged), `n_bins_beyond`, `excluded`
-and `verdict` (printed after each translation point). TEST_ONLY labels mark stand-ins for
-PROJECT_INPUT items (azimuth item 8, angle item 7, absorption item 21). Status: UNVALIDATED
-engine. Ladder rungs 1 and 2 (R2-A) pass; rung 3 has passed ONLY for the continuum null tests and the atomistic MOVED-beam translation:
-the atomistic FIXED-beam translation check that docs/05 4.4 item 3 requires before any step-phase
-run has NOT passed (this study is meant to test it); the abTEM multislice cross-check is not run.
+`converged_beyond_A` (a distance ONLY when converged, else null: audit A7-3), `last_examined_A` (end
+of the last bin the verdict examined, also when not converged), `n_bins_beyond`, `excluded` and
+`verdict` (printed after each translation point). TEST_ONLY labels mark stand-ins for PROJECT_INPUT
+items (azimuth item 8, angle item 7, absorption item 21). Status: UNVALIDATED engine. Ladder rungs 1
+and 2 (R2-A) pass; rung 3 has passed ONLY for the continuum null tests and the atomistic MOVED-beam
+translation: the atomistic FIXED-beam translation check that docs/05 4.4 item 3 requires before any
+step-phase run has NOT passed (this study is meant to test it); the abTEM multislice cross-check is
+not run.
 Study files: study.yaml (the M2 reproduction set, legacy clean depth), study_depth100.yaml (clean
 depth >= 100 A, r >= 0.05, [110] and exact [100], surface-resolved read-out; E1 wave 2a).
 """
