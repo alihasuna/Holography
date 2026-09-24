@@ -40,7 +40,7 @@ it), NEEDS UPLOAD (a closed source must be read).
 | 2.8 | Monotonic (vicinal) staircase | OPEN (only up-down staircases are periodic) | H2 N6 |
 | 2.9 | Microscope optics: biprism Fresnel fringes, drift, detector MTF, lens transfer | OPEN | docs/05 section 5 |
 | 2.10 | Working angle from a simulated rocking curve at the actual azimuth | OPEN (flat-strip rocking curve on the cluster) | H2 section 7, N11 |
-| 2.11 | Sensitivity below the surface (buried void, demo B42) | DEMO ONLY (report T3, analysis T4 and T5; audits A9a, A10a; A11 pending): in a 1499 A cell a void under a 5 A cap changes the vacuum-side beam; deeper caps need a longer cell (the signal surfaces far downstream), a dose model and convergence before any claim | B42; T3, T4, T5 |
+| 2.11 | Sensitivity below the surface (buried void, demo B42) | DEMO ONLY (report T3, analysis T4 and T5; audits A9a, A10a, A11): in a 1499 A cell a void under a 5 A cap changes the vacuum-side beam; deeper caps need a longer cell (the signal surfaces far downstream), a dose model and convergence before any claim | B42; T3, T4, T5 |
 
 ## 3. Numerical convergence (each setting shown not to change the answer)
 
