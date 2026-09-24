@@ -1,6 +1,6 @@
 # E3 - Partial coherence from illumination convergence and surface-plasmon (inelastic) losses in hologram formation
 
-Agent E3, 2026-09-24. Branch `claude/electron-holography-orchestration-nakd7r`. Status: IN PROGRESS
+Agent E3, 2026-09-24. Branch `claude/electron-holography-orchestration-nakd7r`. Status: FINAL
 (written incrementally).
 
 Scope (orchestrator task): (A) partial coherence from the illumination convergence (PROJECT_INPUT
@@ -309,6 +309,31 @@ registry entries):
   --members-dir equal the in-process ensemble bit for bit (holograms, counts, raw phase), tampered
   or incomplete job sets refused; the convergence demo config passes the gate and all four members'
   checks.
+
+Suite runs (verbatim last lines; the machine was shared with other agents, load average 9-13 on
+4 cores):
+
+    venv/bin/python -m pytest -q tests/optics tests/forward tests/io
+    FAILED tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008
+    FAILED tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions
+    2 failed, 314 passed, 1 skipped in 715.41s (0:11:55)
+
+    venv/bin/python -m pytest -q
+    FAILED tests/forward/test_smoke_atomistic.py::test_smoke_atomistic_a2_step_0008
+    FAILED tests/io/test_io_config_stand_ins.py::test_registry_ids_exist_in_model_assumptions
+    2 failed, 1128 passed, 6 skipped, 12 warnings in 1579.44s (0:26:19)
+
+* test_smoke_atomistic_a2_step_0008: `E       assert 163.9908858960007 < 120.0` (first run) and
+  `E       assert 139.78045226199902 < 120.0` (full suite), the 120 s wall-time assertion under load;
+  rerun alone: `1 passed in 88.33s (0:01:28)`.
+* test_registry_ids_exist_in_model_assumptions: `E           AssertionError: B36` in both runs
+  (E2's row, then missing). After E2's commit ace41d9 added B35-B37, rerun at the end:
+  `E           AssertionError: B38` / `1 failed, 23 passed in 0.30s`; missing from
+  docs/model_assumptions.md: B38, B39, B40 only. The test passes once the orchestrator writes the
+  rows of section 6. Not weakened.
+* tests/pipeline alone (earlier, while the base demos briefly carried n = 1.25): 5 failed, 84
+  passed; the five pass again with the lossless base (`5 passed in 20.84s`); the new member-job
+  test alone: `1 passed, 6 deselected in 172.13s (0:02:52)`.
 
 Printed numbers (pytest -s, verbatim):
 

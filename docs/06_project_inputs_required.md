@@ -9,7 +9,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 
 1. SUPPLIED (PROJECT_INPUT, Ali, 2026-09-22): the accelerating voltage is 200 keV for all reflection holography work; 300 keV is never used. Its stability (drift during a hologram series) is still to be supplied.
 2. Energy spread (FWHM, eV) and effective source size or measured spatial-coherence width at the specimen. (Energy spread is a minor effect: below 0.004 rad of step phase over the whole allowed rod, even for a 10 nm step at 0.7 eV.)
-3. (blocking) Illumination convergence semi-angle at the specimen (mrad) for holography and for REM imaging. The step phase changes by `(4 pi h/lambda) cos(theta)` per radian of incidence angle, so the convergence produces an irreducible phase spread: 1 rad of spread at 0.64 mrad for a 3.1 A bilayer, 0.20 mrad for a 1 nm step, 0.020 mrad for a 10 nm step (200 keV). This decides whether nanometre-scale features can show any phase contrast at all.
+3. (blocking) Illumination convergence semi-angle at the specimen (mrad) for holography and for REM imaging. The step phase changes by `(4 pi h/lambda) cos(theta)` per radian of incidence angle, so the convergence produces an irreducible phase spread: 1 rad of spread at 0.64 mrad for a 3.1 A bilayer, 0.20 mrad for a 1 nm step, 0.020 mrad for a 10 nm step (200 keV). This decides whether nanometre-scale features can show any phase contrast at all. Revision 5: state also the angular profile of the source (uniform disc or other); a convergence ensemble is implemented (report E3), and with an R1 vacuum reference the coherent field is confined to a band around the zero-path-difference line whose width scales as lambda/alpha.
 4. (blocking) Objective-aperture semi-angle (mrad) and which reflected beam it selects: the specular (00) rod at which Bragg order, a surface-resonance condition, or a non-specular rod/bulk reflection.
 5. (blocking) Image pixel size at the detector (nm/pixel, both axes) and the magnification for holograms.
 6. Detector: type, MTF or its published parameters, gain, dose per hologram (electrons/pixel), exposure time, drift during exposure (drift enters the model as a coherent envelope loss, not as noise).
@@ -31,7 +31,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 ## D. Reference wave (do not infer from the biprism's intended function)
 
 15. (blocking) Trajectory of the reference beam at the specimen plane: vacuum beside the sample, reflected from a flat area of the same surface, or transmitted through a thin region.
-16. Separation between object and reference regions at the specimen; measured carrier fringe spacing (in image pixels and in specimen nanometres, stating which axis) and fringe contrast on an empty or flat-surface hologram.
+16. Separation between object and reference regions at the specimen (revision 5: as a 3-vector D0 at the specimen, needed by the convergence ensemble with an R1 reference; and, for a self-reference R2, the fringe visibility of the plasmon-loss electrons if known); measured carrier fringe spacing (in image pixels and in specimen nanometres, stating which axis) and fringe contrast on an empty or flat-surface hologram.
 17. Residual phase of an empty hologram (curvature, distortion), the biprism's Fresnel-fringe pattern and overlap width, and whether a reference hologram is recorded with every object hologram.
 18. Biprism voltage(s) only if the laboratory intends to publish them; otherwise the measured carrier and overlap width are what the simulation needs.
 
