@@ -1,14 +1,14 @@
 # Feedback about simulation
 
 **Date:** 2026-09-24
-**Attendees:** Arthur, Ali
+**Attendees:** Arthur
 **Topic:** Feedback on the simulation work
 
 ## Main points
 
-### 1. Simulation of dislocations (Morphika)
+### 1. Simulation of dislocations
 
-- One of the main topics of the meeting was simulating dislocations, with Morphika.
+- One of the main topics of the meeting was simulating dislocations.
 - Details: _to be added_
 
 ### 2. Other feedback
@@ -27,3 +27,4 @@
   Osakabe et al., PRL 62, 2969 (1989), [P02]/[P02E] (screw dislocation emerging on cleaved GaAs(110)).
   See `docs/02_literature_position.md` and `docs/agent_reports/B_literature.md`.
 - Current specification of the simulation repository: `docs/05_final_repository_specification.md`.
+- Also saved to Morphika memory as `holography/meeting-2026-09-24-feedback-about-simulation`.
