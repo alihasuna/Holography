@@ -402,3 +402,172 @@ that the engine partly carries.
   `working_reflections_hkl=((0,0,8),)` when the field exists. Check (REPRODUCED): the 16.2 mrad [100]
   run repeated with the new engine (tag `__bin_A=250.0`, identical settings) gives the same R as the
   run with the old engine (section 6.5 prints both).
+
+### 6.2 [100], like-for-like (Doyle-Turner in both): per angle (MEASURED_HERE engine, REPRODUCED solver)
+
+Solver case `eng_a100_N6_r010` (13 rods, approach A) at exactly the 23 engine angles. `|dR| = |R_eng -
+R_sol|`, `tol` the declared tolerance, `d arg = arg R_eng - arg R_sol` (wrapped), `s_eng` the engine's
+read-out spread (tool report section 6):
+
+| theta | sol \|R\|^2 | sol arg | eng \|R\|^2 | eng arg | \|dR\| | tol | within | d arg | d\|R\|/\|R\| | s_eng |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 12.00 | 0.04650 | -2.533 | 0.04004 | -2.535 | 0.0155 | 0.0405 | yes | -0.002 | -0.072 | 0.0124 |
+| 13.00 | 0.00955 | -1.474 | 0.00903 | -1.486 | 0.0029 | 0.0171 | yes | -0.012 | -0.027 | 0.0036 |
+| 14.00 | 0.00167 | -1.510 | 0.00160 | -1.505 | 0.0010 | 0.0193 | yes | +0.005 | -0.023 | 0.0061 |
+| 15.00 | 0.00001 | -0.007 | 0.00001 | -0.404 | 0.0012 | 0.0111 | yes | -0.398 | +0.069 | 0.0030 |
+| 15.60 | 0.00765 | +1.717 | 0.00601 | +1.715 | 0.0099 | 0.0175 | yes | -0.002 | -0.113 | 0.0040 |
+| 15.70 | 0.01558 | +1.900 | 0.01243 | +1.900 | 0.0133 | 0.0238 | yes | +0.001 | -0.107 | 0.0063 |
+| 15.80 | 0.02953 | +2.158 | 0.02407 | +2.158 | 0.0167 | 0.0289 | yes | -0.000 | -0.097 | 0.0077 |
+| 15.90 | 0.04851 | +2.483 | 0.03919 | +2.470 | 0.0225 | 0.0318 | yes | -0.014 | -0.101 | 0.0079 |
+| 16.00 | 0.06678 | +2.843 | 0.05628 | +2.817 | 0.0221 | 0.0324 | yes | -0.026 | -0.082 | 0.0073 |
+| 16.10 | 0.07801 | -3.073 | 0.06866 | -3.102 | 0.0190 | 0.0327 | yes | -0.029 | -0.062 | 0.0069 |
+| 16.20 | 0.07881 | -2.712 | 0.07168 | -2.733 | 0.0142 | 0.0342 | yes | -0.021 | -0.046 | 0.0076 |
+| 16.30 | 0.06999 | -2.361 | 0.06327 | -2.367 | 0.0131 | 0.0305 | yes | -0.007 | -0.049 | 0.0061 |
+| 16.40 | 0.05303 | -2.017 | 0.04797 | -2.030 | 0.0117 | 0.0274 | yes | -0.013 | -0.049 | 0.0055 |
+| 16.50 | 0.03241 | -1.729 | 0.03109 | -1.737 | 0.0040 | 0.0238 | yes | -0.008 | -0.021 | 0.0049 |
+| 16.60 | 0.01784 | -1.576 | 0.01755 | -1.543 | 0.0045 | 0.0220 | yes | +0.032 | -0.008 | 0.0052 |
+| 16.70 | 0.01089 | -1.532 | 0.00970 | -1.477 | 0.0081 | 0.0205 | yes | +0.055 | -0.056 | 0.0051 |
+| 16.80 | 0.00764 | -1.517 | 0.00635 | -1.517 | 0.0077 | 0.0201 | yes | -0.000 | -0.088 | 0.0054 |
+| 17.00 | 0.00448 | -1.463 | 0.00455 | -1.477 | 0.0011 | 0.0177 | yes | -0.014 | +0.007 | 0.0047 |
+| 18.00 | 0.00006 | -0.508 | 0.00008 | -0.466 | 0.0015 | 0.0105 | yes | +0.042 | +0.188 | 0.0025 |
+| 19.00 | 0.00083 | +3.113 | 0.00071 | -3.136 | 0.0023 | 0.0083 | yes | +0.034 | -0.071 | 0.0009 |
+| 20.00 | 0.00126 | +2.916 | 0.00101 | +2.964 | 0.0041 | 0.0077 | yes | +0.048 | -0.105 | 0.0005 |
+| 21.00 | 0.00986 | -2.364 | 0.00739 | -2.382 | 0.0135 | 0.0132 | **NO** | -0.019 | -0.134 | 0.0016 |
+| 22.00 | 0.00017 | -2.888 | 0.00015 | -2.842 | 0.0009 | 0.0079 | yes | +0.045 | -0.050 | 0.0011 |
+
+* 22 of 23 angles within the declared tolerance; 21.0 mrad (the weak [100] maximum near the
+  kinematically forbidden (0,0,10) condition) exceeds it by 0.0003 (|dR| 0.0135 against 0.0132): the
+  engine's |R| there is 13.4 % low while its phase agrees to 0.019 rad. The self-check
+  "every angle within tolerance" of the tool therefore FAILS for [100] (reported, tolerance not
+  changed).
+* Phases: where |R_sol| >= 0.1 (12 angles) the rms phase difference is 0.023 rad; a fit
+  `d arg = c + 2 Gamma_0 dx` gives c = -0.044 rad and dx = +0.005 A, i.e. no reference-plane error (a
+  plane misplaced by 0.1 A would shift arg R by 0.601 rad at 12 mrad and 1.102 rad at 22 mrad). Across
+  the (0,0,8) peak (15.6-16.8 mrad, 13 angles) the phase difference stays between -0.029 and +0.055 rad
+  while the phase itself sweeps by about 3.2 rad. The largest phase differences (-0.40 rad at 15.0 mrad) occur where
+  |R|^2 ~ 1e-5, i.e. at a zero of R, where the phase is undefined.
+* Amplitudes: the engine's |R| is below the solver's at 20 of 23 angles (d|R|/|R| from -0.134 to
+  +0.188, the positive extreme at the near-zero 18.0 mrad); on the (0,0,8) peak it is 0.8 to 11.3 %
+  low (largest on the low-angle flank, 15.6-15.9 mrad), 7.2 % at 12.0 mrad and 13.4 % at 21.0 mrad.
+* Convention: median |R_eng - R_sol| 0.0081 against median |R_eng - conj(R_sol)| 0.1669: both codes
+  use the same sign convention after the (absent) conversion.
+
+### 6.3 [100] curve level at the (0,0,8) peak (tool report section 7)
+
+| quantity | engine | solver, same angles | solver, fine grid | engine - solver (same) | tolerance | result |
+|---|---|---|---|---|---|---|
+| peak angle (mrad) | 16.1764 | 16.1584 | 16.1571 | +0.0180 | 0.03 | PASS |
+| peak \|R\|^2 | 0.07200 | 0.07965 | 0.07977 | -9.6 % | 10 % | PASS |
+| FWHM (mrad) | 0.5940 | 0.6140 | 0.6065 | -3.3 % | 10 % | PASS |
+| phase sweep over +-w/2, w = 0.6065 mrad (rad) | +2.0751 | +2.0689 | +2.1245 | +0.0062 | 0.1 | PASS |
+
+The engine reproduces the Bragg-case phase sweep of the (0,0,8) reflection (about 2.1 rad over the
+central FWHM, 3.2 rad across the peak) to 0.006 rad and the peak position to 0.018 mrad; its peak
+reflectivity is 9.6 % lower (4.9 % in |R|), just inside the 10 % tolerance.
+
+### 6.4 [110], like-for-like (Doyle-Turner in both)
+
+Solver case `eng_a110_N9_r010` (19 rods) at the 15 engine angles:
+
+| theta | sol \|R\|^2 | sol arg | eng \|R\|^2 | eng arg | \|dR\| | tol | within | d arg | d\|R\|/\|R\| | s_eng |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 12.00 | 0.06288 | -3.123 | 0.05271 | -3.120 | 0.0212 | 0.0470 | yes | +0.004 | -0.084 | 0.0147 |
+| 12.30 | 0.08234 | -2.451 | 0.07549 | -2.474 | 0.0139 | 0.0570 | yes | -0.024 | -0.042 | 0.0188 |
+| 13.00 | 0.01174 | -1.409 | 0.01328 | -1.396 | 0.0070 | 0.0347 | yes | +0.013 | +0.064 | 0.0121 |
+| 14.00 | 0.01495 | -1.789 | 0.01221 | -1.731 | 0.0136 | 0.0215 | yes | +0.058 | -0.096 | 0.0052 |
+| 15.00 | 0.04860 | -1.379 | 0.03979 | -1.387 | 0.0210 | 0.0314 | yes | -0.008 | -0.095 | 0.0077 |
+| 15.10 | 0.04981 | -1.221 | 0.04103 | -1.227 | 0.0207 | 0.0304 | yes | -0.006 | -0.092 | 0.0071 |
+| 16.00 | 0.00683 | +0.431 | 0.00618 | +0.475 | 0.0054 | 0.0130 | yes | +0.045 | -0.049 | 0.0020 |
+| 17.00 | 0.00171 | -2.763 | 0.00111 | -2.707 | 0.0083 | 0.0130 | yes | +0.056 | -0.193 | 0.0030 |
+| 17.60 | 0.04389 | -0.867 | 0.03593 | -0.942 | 0.0249 | 0.0279 | yes | -0.075 | -0.095 | 0.0062 |
+| 18.00 | 0.00634 | +0.361 | 0.00701 | +0.366 | 0.0041 | 0.0197 | yes | +0.005 | +0.051 | 0.0054 |
+| 18.60 | 0.03303 | +0.866 | 0.03002 | +0.842 | 0.0095 | 0.0249 | yes | -0.024 | -0.047 | 0.0054 |
+| 19.00 | 0.01227 | +2.582 | 0.01318 | +2.572 | 0.0042 | 0.0192 | yes | -0.010 | +0.037 | 0.0043 |
+| 20.00 | 0.00194 | +0.820 | 0.00152 | +0.769 | 0.0055 | 0.0139 | yes | -0.051 | -0.115 | 0.0034 |
+| 21.00 | 0.00061 | -2.678 | 0.00054 | -2.685 | 0.0014 | 0.0084 | yes | -0.007 | -0.055 | 0.0011 |
+| 22.00 | 0.00033 | -1.275 | 0.00039 | -1.258 | 0.0017 | 0.0072 | yes | +0.017 | +0.091 | 0.0006 |
+
+* 15 of 15 within tolerance (the [110] engine read-out spreads are larger, up to 0.019, which widens
+  the tolerance there); rms phase difference 0.034 rad over the 9 angles with |R_sol| >= 0.1, fit c =
+  +0.083 rad, dx = -0.012 A; conjugation test 0.0083 against 0.1208; the engine's |R| is below the
+  solver's at 11 of 15 angles (d|R|/|R| from -0.193 to +0.091).
+* Orientation check: the solver with the top-layer back-bonds PERPENDICULAR to the beam differs from
+  the parallel one by median 0.17 in R, and the engine agrees with the parallel one (median |dR|
+  0.0083 against 0.1709): the two codes model the same termination.
+* At H2's (0,0,8) angle 16.1347 mrad the [110] reflectivity is near a zero in both codes (section 6.6).
+
+### 6.5 Engine-internal numerical sensitivity at 16.2 mrad [100] (DT), read-out choices, engine version
+
+One-angle variants of the like-for-like run (tool report section 8; each changes one setting; the
+default gives |R|^2 0.07168, arg -2.7326; solver 0.07881, -2.7120 with 13 rods, 0.07908, -2.7053 with
+21 rods):
+
+| variant | grid (x by y by slices) | \|R\|^2 | arg R | \|Delta R\| to default |
+|---|---|---|---|---|
+| repeat with the engine of commit 2a3a999 (tag `__bin_A=250.0`, settings identical) | 1764x42x3406 | 0.07168 | -2.7326 | 0.0000 |
+| dz halved (a/8; every second slice empty) | 1764x42x6812 | 0.07165 | -2.7326 | 0.0001 |
+| complex128 | 1764x42x3406 | 0.07173 | -2.7326 | 0.0001 |
+| clean depth 80 A (instead of 55 A) | 1960x42x3406 | 0.07135 | -2.7304 | 0.0009 |
+| 7000 A after first contact (instead of 4500 A) | 2400x42x5250 | 0.07232 | -2.7346 | 0.0013 |
+| pixel <= 0.10 A (derived dx 0.0990 A) | 2304x56x3406 | 0.07540 | -2.7280 | 0.0070 |
+| pixel <= 0.075 A (derived dx 0.0742 A) | 3072x75x3406 | 0.07392 | -2.7337 | 0.0042 |
+
+Read-out choices re-evaluated on the stored exit columns, max over the angles (relative where |R| >=
+0.1): band-pass radius 0.05 1/A: 5.08e-3 (2.5 %) at [100], 8.29e-3 (3.6 %) at [110]; radius 0.2 1/A:
+1.25e-3 (0.6 %), 1.35e-3 (1.2 %); exit exclusion 1250 A: 2.08e-3 (1.3 %), 4.63e-3 (2.2 %); window start
+2000 A: 4.67e-3 (3.4 %), 4.00e-3 (3.5 %); window start 3000 A: 2.43e-3 (1.8 %), 3.18e-3 (2.2 %). The
+stored read-out is reproduced from the stored column to 6e-9 (self-check).
+
+Reading: slice thickness, precision and depth are converged (<= 0.001 in R); the run-in and the
+read-out window move R by up to about 2-3 % (0.0013 at 16.2 mrad for 7000 A; up to 3.4 % over all
+angles for the window start); the PIXEL is the largest engine-internal sensitivity at the (0,0,8) peak:
+|R|^2 = 0.07168, 0.07540, 0.07392 for dx = 0.129, 0.099, 0.074 A (|R|^2 ratio +0.0519 and +0.0312 to
+the default), i.e. not monotonic, with the phase stable to 0.005 rad (d arg +0.0046, -0.0011). Against
+the 21-rod solver the engine's |R| is 4.8 % low at 0.129 A, 2.4 % at 0.099 A and 3.3 % at 0.074 A, with
+phase differences of -0.027, -0.023 and -0.028 rad. The engine's systematic amplitude deficit is
+therefore partly a sampling effect (the 2/3 band at 0.13 A drops the (0,0,l >= 14) couplings and the
+in-plane rods beyond |g| = 2.56 1/A, H2 section 5) and partly unexplained at this level (section 7).
+
+Engine version (DERIVED_HERE from the recorded commits and `git diff`): the main DT runs were started
+from commit 148e4f6 with a modified working tree ("dirty True": another agent's edits under
+`reflection_holo/`), the variants and the Kirkland runs from 2a3a999, 64d740b, 2da0216 and a1ef2a0.
+Between 148e4f6 and a1ef2a0 the atomic path (`propagate_slices`, `run_realisation`'s loop,
+`AtomicPotential`, `_RealisedAtomic`, propagator, illumination) is unchanged (the diff touches only
+`MultisliceParams`, the band assertion, the memory model and the docstrings); the uncommitted edits
+seen at 00:20 UTC in `potentials.py` change only the continuum classes. The identical repeat above is
+the direct check.
+
+### 6.6 Production engine (Kirkland) and H2's stored measurements against the solver
+
+[Kirkland per-angle results: see the table added below when the run completes.]
+
+H2's stored flat-strip plateaus (`tools/hpc/supercell_sizing_measurements.json`, Kirkland engine,
+6000 A strips with y = 2 periods and a 100 A clean depth, plateau window 2755-5255 A), converted here
+to R at the top layer with the same formula (tool report section 9), against the DT solver at the same
+angle 16.1347 mrad:
+
+| H2 run | H2 engine \|R\|^2, arg R | solver \|R\|^2, arg R | \|Delta R\| | d arg (rad) |
+|---|---|---|---|---|
+| bu_100_r010 ([100], r = 0.1) | 0.07327, -2.9713 | 0.07951, -2.9466 | 0.0132 | -0.0248 |
+| bu_110_r010 ([110], r = 0.1) | 0.00186, +0.7537 | 0.00155, +0.7692 | 0.0038 | -0.0154 |
+| bu_100_r000 ([100], r = 0) | 0.79341, -2.9991 | 0.89336, -2.9593 (ML 150) / 0.81085, -2.9362 (ML 300) | 0.0656 / 0.0572 | -0.0398 / -0.0629 |
+
+The H2 engine runs, made independently of this study with a longer strip and a different read-out
+window, show the same picture: phase within 0.025 rad at [100] and 0.015 rad at [110] (where |R|^2 is
+only 0.0016-0.0019), |R| about 4 % low at [100]. The r = 0 row is not a like-for-like comparison: the
+solver's value depends on the slab thickness (section 4.2) and H2's strip had not settled (H2 2.4).
+
+## 7. Which differences are expected from the model choices, and which would indicate a bug
+
+| Difference | Expected size | Observed | Verdict |
+|---|---|---|---|
+| Conjugated convention (docs/05 4.4 expected a conjugation for P49) | arg R_eng = -arg R_sol | medians 0.0081 ([100]) and 0.0083 ([110]) for R_sol against 0.17 and 0.12 for conj(R_sol); the solver's own convention verified against an independent 1D integration (section 3.3) | no conjugation needed; no convention bug |
+| Reference plane (top-layer nuclei in both) | a 0.1 A error gives 0.60-1.10 rad, linear in sin(theta) | fitted dx = +0.005 A ([100]), -0.012 A ([110]) | no reference-plane bug |
+| Refraction / mean inner potential | same MIP in both (13.9144 V); peak shifts only from many-beam and sampling | peak +0.018 mrad (engine - solver) | consistent |
+| Interaction constant, absorption sign | a scale error changes widths; a sign error gives \|R\| > 1 or wrong widths | FWHM -3.3 %; \|R\| <= 0.29 everywhere; total flux <= 1 in the solver | consistent |
+| Top-layer orientation at [110] | the perpendicular termination differs by median 0.17 in R | engine agrees with the parallel one (0.0083) | same termination in both |
+| Rods / band limit (engine: 2/3 band at 0.13 A in (f_x, f_y); solver: 13 or 19 ZOLZ rods, no limit along the normal) | about 1 % from the solver's rod study; H2 5: 2.8e-2 V_g Bethe estimate at 0.13 A | engine \|R\|^2 changes by +5.2 % and +3.1 % at dx = 0.099 and 0.074 A | a real sampling sensitivity of the engine at the production pixel, not a bug |
+| Finite cell (run-in, window, exit margin, depth, sheet beam) | H2: 3 % amplitude and 1e-2 rad beyond 2500 A | window/run-in variants up to 3.4 % in \|R\|, 7000 A run +0.9 % in \|R\|^2 | an engine uncertainty of a few % in \|R\| that the per-angle spread only partly measures |
+| HOLZ couplings (neither code in its compared form) | solver: all rods \|g\| <= 6/a change \|R\| by -0.9 to -1.2 % and arg R by -0.009 to -0.017 rad | not a difference between the two codes | common omission; about 1 % in \|R\|, 0.01-0.02 rad |
+| Parameterisation (Kirkland engine vs DT solver) | MIP -0.0115 V (peak +0.0021 mrad); V_g within 0.3-3 % | section 6.6 | expected model difference |
+| Remaining systematic amplitude deficit of the engine (about 3-5 % in \|R\| at the peak, 13 % at the weak 21 mrad maximum) with a phase offset of -0.02 to -0.03 rad | not predicted by any tested setting | within the declared tolerance at 22 of 23 [100] and 15 of 15 [110] angles, outside at 21.0 mrad | UNRESOLVED: not large enough to indicate a sign, convention or geometry bug; its cause (candidates: the transmission-function band limit, the infinite projection per slice, the read-out's band-pass near the surface) is not established |

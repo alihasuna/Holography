@@ -34,8 +34,8 @@ from .grid import (BAND_LIMIT_RULES, Grid, band_limit_mask, check_band, fft_frie
                    grid_shape_for_pixel, make_grid)
 from .illumination import SheetBeam, sheet_beam_wave
 from .physics import beam_constants, interaction_constant_rad_per_VA, require_beam_energy
-from .potentials import (AtomicPotential, ContinuumTerracePotential, FrozenPhonons,
-                         NumericalAbsorber, PhysicalAbsorption, absorber_profile_V,
+from .potentials import (AtomicPotential, ContinuumPeriodicPotential, ContinuumTerracePotential,
+                         FrozenPhonons, NumericalAbsorber, PhysicalAbsorption, absorber_profile_V,
                          potential_mean_inner_potential_V)
 from .propagator import propagate, propagator_kernel, propagator_phase
 
@@ -49,7 +49,8 @@ __all__ = [
     "BAND_LIMIT_RULES", "Grid", "band_limit_mask", "check_band", "fft_friendly",
     "grid_shape_for_pixel", "make_grid", "SheetBeam", "sheet_beam_wave",
     "beam_constants", "interaction_constant_rad_per_VA", "require_beam_energy",
-    "AtomicPotential", "ContinuumTerracePotential", "FrozenPhonons", "NumericalAbsorber",
+    "AtomicPotential", "ContinuumPeriodicPotential", "ContinuumTerracePotential", "FrozenPhonons",
+    "NumericalAbsorber",
     "PhysicalAbsorption", "absorber_profile_V", "potential_mean_inner_potential_V", "propagate", "propagator_kernel",
     "propagator_phase",
 ]

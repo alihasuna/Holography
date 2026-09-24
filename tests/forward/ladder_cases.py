@@ -167,3 +167,118 @@ def rung3_measure(theta, h, *, region_fraction=0.5, aperture_per_A=0.5, **kw):
                    cell.length_z_A / params.dz_A)), time_s=ew.metadata["timing_s"]["total"],
                ew=ew)
     return res
+
+
+# -------------------------------------------------------------------------------------------------
+# Rung 2 (docs/05 4.4): Bragg-case (0,0,8) reflection from a laterally uniform periodic continuum
+# potential, test R2-A (and the optional R2-B) exactly as docs/agent_reports/P2_rung2_reference.md
+# section 8 proposes. The reference values come from P2's tool tools/physics_checks/
+# rung2_reference.py (imported, not re-derived here).
+# -------------------------------------------------------------------------------------------------
+V0_R2 = 13.902843            # V, the engine's Kirkland IAM mean potential (P2 section 6.1)
+V008_R2 = 1.035742           # V, the engine's Kirkland V_(0,0,8) (P2 section 6.1)
+R2_VALUES_LABEL = ("TEST_ONLY: Kirkland IAM values of the engine (V0 = 13.902843 V, V_008 = "
+                   "1.035742 V, g = 8/a), docs/agent_reports/P2_rung2_reference.md section 6.1")
+R2_THETA_LABEL = ("TEST_ONLY: stands in for PROJECT_INPUT item 7 (two-beam (0,0,8) centre with "
+                  "V0 = 13.902843 V, P2 section 6.2)")
+
+
+def rung2_reference():
+    """P2's reference module tools/physics_checks/rung2_reference.py (imported once)."""
+    import importlib.util
+    import sys
+    from pathlib import Path
+    name = "rung2_reference"
+    if name in sys.modules:
+        return sys.modules[name]
+    path = Path(__file__).resolve().parents[2] / "tools" / "physics_checks" / "rung2_reference.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def rung2_g_per_A() -> float:
+    from reflection_holo.constants import A_SI_A
+    return 8.0 / A_SI_A
+
+
+def rung2_theta_centre() -> float:
+    """External two-beam centre of (0,0,8) (P2 section 6.2: 16.13477 mrad), from P2's tool."""
+    return float(rung2_reference().darwin_plateau(E_KEV, V0_R2, V008_R2, rung2_g_per_A())
+                 ["theta_centre"])
+
+
+def rung2_case(r, *, dx, dz, propagator, clean_A, exit_after_top_contact_A, H, edge, gap,
+               absorber_A, top_A, W0, entrance_A, extra_vacuum_A, buildup_A, precision):
+    """P2 section 8.2 cell: one terrace of ContinuumPeriodicPotential (V0_R2, V_008 at g = 8/a,
+    cosine maximum at x_s, absorption r) below x_s = absorber_A + clean_A; sheet beam of height H
+    (sin^2 edges `edge`) whose bottom is `gap` above x_s, at the two-beam centre; the exit plane is
+    exit_after_top_contact_A downstream of the contact of the TOP edge of the beam; the vacuum
+    above x_s is H + gap + L tan(theta) + extra_vacuum_A; dx is exact (the top absorber takes the
+    rounding, >= top_A). Every argument is required."""
+    from reflection_holo.forward.multislice import ContinuumPeriodicPotential
+    theta = rung2_theta_centre()
+    xs = absorber_A + clean_A
+    z_top = (gap + H) / np.tan(theta)
+    L = float(np.ceil((z_top + exit_after_top_contact_A) / dz) * dz)
+    vac = H + gap + L * np.tan(theta) + extra_vacuum_A
+    nx = int(np.ceil((xs + vac + top_A) / dx))
+    top = nx * dx - xs - vac
+    cell = build_continuum_cell(extent_y_A=10.0, terrace_y_bounds_A=[0.0, 10.0],
+                                terrace_heights_A=[0.0], crystal_length_z_A=L - entrance_A,
+                                vacuum_above_A=vac, depth_below_A=xs, bulk_absorber_A=absorber_A,
+                                top_absorber_A=top, entrance_vacuum_z_A=entrance_A)
+    lab = ("TEST_ONLY: stands in for PROJECT_INPUT item 21 (P2 R2-A)" if r > 0 else
+           "TEST_ONLY: no absorption (P2 R2-B); PROJECT_INPUT item 21 not supplied")
+    pot = ContinuumPeriodicPotential(
+        cell, V0_V=V0_R2, V0_label=R2_VALUES_LABEL,
+        harmonics=((rung2_g_per_A(), V008_R2, 0.0),), harmonics_label=R2_VALUES_LABEL,
+        physical_absorption=PhysicalAbsorption(model="proportional", ratio=float(r), label=lab),
+        surface_profile="sharp")
+    beam = SheetBeam(height_A=H, edge_A=edge, x_bottom_A=xs + gap, theta_in_ext_rad=theta,
+                     theta_label=R2_THETA_LABEL)
+    params = MultisliceParams(energy_keV=E_KEV, nx=nx, ny=1, dz_A=dz, propagator=propagator,
+                              band_limit="2/3", backend="numpy", precision=precision, threads=4,
+                              absorber=NumericalAbsorber(strength_V=W0, profile="sin2"),
+                              theta_out_ext_rad=theta, buildup_depth_A=buildup_A,
+                              working_reflections_hkl=())       # continuum cell: no lattice
+    return cell, pot, beam, params, xs
+
+
+def rung2_measure(r, *, readout_window_above_A=None, **kw):
+    """Run a rung-2 cell and read r(f) per incident bin with flat_reflection_coefficient
+    (x_surface_A = x_s, the run's propagator, rel_threshold 0.05; P2 8.3). Each bin is compared
+    with P2's exact R at its own angle asin(lambda f): model "exact" for the Fresnel propagator,
+    "engine_exact_propagator" for the exact one (P2 4.1, 4.2). readout_window_above_A = w0: the
+    exit wave is first multiplied by sin^2(pi/2 clip((x - x_s - w0)/40 A, 0, 1)) (the vacuum-only
+    read-out of R2-B, a test-side operation). eta = (K^2 - K_c^2)/|U_g| (two-beam, r = 0)."""
+    import dataclasses
+    ref = rung2_reference()
+    cell, pot, beam, params, xs = rung2_case(r, **kw)
+    ew = run_realisation(cell, potential=pot, beam=beam, params=params, realisation=0, seed=None)
+    lam = ew.metadata["beam"]["wavelength_A"]
+    grid = make_grid(cell, nx=params.nx, ny=1)
+    psi0 = sheet_beam_wave(beam, grid, lam)
+    ew_r = ew
+    if readout_window_above_A is not None:
+        x = grid.x_A()
+        w = np.sin(0.5 * np.pi * np.clip((x - xs - readout_window_above_A) / 40.0, 0.0, 1.0)) ** 2
+        ew_r = dataclasses.replace(ew, psi=ew.psi * w[:, None])
+    res = flat_reflection_coefficient(ew_r, psi0, x_surface_A=xs, propagator=params.propagator,
+                                      rel_threshold=0.05)
+    model = "exact" if params.propagator == "fresnel" else "engine_exact_propagator"
+    th_b = np.arcsin(lam * res["f_per_A"])
+    R_ref = ref.reflection_amplitude(th_b, E_KEV, V0_R2, [V008_R2], rung2_g_per_A(), float(r),
+                                     plane_offset_A=0.0, model=model)
+    p = ref.darwin_plateau(E_KEV, V0_R2, V008_R2, rung2_g_per_A())
+    K = 2 * np.pi * res["f_per_A"]
+    eta = (K**2 - p["K_centre"] ** 2) / p["Ug"]
+    return dict(f_per_A=res["f_per_A"], theta_rad=th_b, eta=eta, r=res["r"], R_ref=np.asarray(R_ref),
+                model=model, nx=params.nx, dx=cell.extent_x_A / params.nx, dz=params.dz_A,
+                n_slices=int(round(cell.length_z_A / params.dz_A)), x_s=xs,
+                theta_in_rad=beam.theta_in_ext_rad, propagator=params.propagator,
+                time_s=ew.metadata["timing_s"]["total"],
+                realised=ew.metadata["potential"]["realised"],
+                band=ew.metadata["band_limit"])

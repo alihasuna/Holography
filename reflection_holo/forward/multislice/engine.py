@@ -10,9 +10,11 @@ T_i = BL[ exp(+i sigma V_p,i(x, y)) exp(-sigma W(x) dz) ], V_p,i complex (imagin
 absorption, item 21), W the NUMERICAL absorber, BL the band-limit aperture. The output is the wave on
 the DECLARED exit plane z = L_z (no further propagation), one ExitWave per realisation.
 
-Status: UNVALIDATED for atomistic reflection; the validation ladder rung 2 and the abTEM
-cross-check are NOT RUN (docs/agent_reports/M2_multislice_engine.md). The label is copied into
-every ExitWave.metadata["validation_status"].
+Status: UNVALIDATED for atomistic reflection. Ladder rungs 1 and 3 (M2 report) and rung 2 test
+R2-A (continuum periodic potential, Bragg-case (0,0,8) with absorption; tests/forward/
+test_rung2_bragg.py, docs/agent_reports/E1_engine_wave2a.md) pass; the abTEM cross-check and the
+atomistic flat-surface rocking curve against a dynamical solver are NOT RUN. The label is copied
+into every ExitWave.metadata["validation_status"].
 
 No function default stands in for a PROJECT_INPUT: MultisliceParams, SheetBeam, the potentials and
 the absorbers have required fields only.
@@ -41,10 +43,13 @@ from .propagator import PROPAGATORS, propagator_kernel
 
 ENGINE_NAME = "reflection_holo.forward.multislice"
 VALIDATION_STATUS = (
-    "UNVALIDATED: rung 1 (refraction-only analytic limit) and rung 3 (continuum null tests) of the "
-    "docs/05 4.4 ladder pass in tests/forward; rung 2 (Bragg-case two-beam phase sweep), the abTEM "
-    "cross-check (transmission and reflection-like configurations) and the flat-surface rocking "
-    "curve against a dynamical solver were NOT RUN")
+    "UNVALIDATED: of the docs/05 4.4 ladder, rung 1 (refraction-only analytic limit), rung 2 test "
+    "R2-A (laterally uniform periodic continuum potential, Bragg-case (0,0,8) amplitude and phase "
+    "across the plateau against the exact semi-infinite solution, TEST_ONLY absorption r = 0.1 and "
+    "0.05, both propagators; P2 report section 8, tests/forward/test_rung2_bragg.py) and rung 3 "
+    "(continuum null tests) pass in tests/forward; R2-B (r = 0) is optional and qualitative; the "
+    "abTEM cross-check (transmission and reflection-like configurations) and the atomistic "
+    "flat-surface rocking curve against a dynamical solver were NOT RUN")
 PLANE_TEXT = "exit plane z = L_z (no further propagation)"
 
 
@@ -72,7 +77,10 @@ class MultisliceParams:
                        cell's structure metadata. The band assertion requires the transmission
                        function to carry each one (grid.check_band; H2 N8, H5 A7). Required and
                        non-empty for an atomic cell; () for a structureless (continuum) cell,
-                       which has no reciprocal lattice.
+                       which has no reciprocal lattice. The harmonics of a periodic continuum
+                       potential (ContinuumPeriodicPotential, rung 2) are part of the
+                       potential's definition and are asserted inside the band from the
+                       potential itself (reflection_setup), not declared here.
     """
     energy_keV: float
     nx: int
@@ -199,15 +207,21 @@ def reflection_setup(cell: ReflectionCell, *, potential, beam: SheetBeam,
     th_int_in = theta_int_from_ext_rad(th_in, params.energy_keV, V0)
     th_int_out = theta_int_from_ext_rad(th_out, params.energy_keV, V0)
     refl = working_reflection_vectors(cell, params.working_reflections_hkl)
+    # a periodic continuum potential (rung 2) has no reciprocal lattice to declare, but its
+    # harmonics ARE its definition: they are asserted inside the band like working reflections
+    harm = (dict(potential.band_harmonics_per_A())
+            if hasattr(potential, "band_harmonics_per_A") else {})
     band = check_band(grid, rule=params.band_limit, wavelength_A=bc["wavelength_A"],
                       angles_rad=dict(incident_ext=th_in, outgoing_ext=th_out,
                                       incident_int=th_int_in, outgoing_int=th_int_out),
-                      reflections_per_A={k: v[:2] for k, v in refl.items()})
+                      reflections_per_A={**{k: v[:2] for k, v in refl.items()}, **harm})
     for k, v in refl.items():
         band["working_reflections"][k]["g_z_per_A"] = v[2]
     band["working_reflections_source"] = (
         "MultisliceParams.working_reflections_hkl (PROJECT_INPUT item 9), g = hkl/a in the cubic "
-        "crystal frame projected on the cell axes; (g_x, g_y) must lie inside the band")
+        "crystal frame projected on the cell axes; (g_x, g_y) must lie inside the band"
+        + ("; plus the harmonics of the periodic continuum potential "
+           "(ContinuumPeriodicPotential.band_harmonics_per_A)" if harm else ""))
     band["internal_angles_from"] = (f"SM04 refraction with the potential's mean inner potential "
                                     f"{V0:.4f} V")
     geo = check_reflection_geometry(cell, beam_height_A=beam.height_A,

@@ -908,7 +908,8 @@ def report_part2(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, t_start) -> int:
         tb, Rb = solver_curve(sol, "holz_a100_N3_B")
         for t, x, y in zip(ta, Ra, Rb):
             print(f"      {t:6.2f} mrad: disk |R|^2 {abs(x)**2:.5f} arg {np.angle(x):+.4f}; row |R|^2 "
-                  f"{abs(y)**2:.5f} arg {np.angle(y):+.4f}; |R_disk|/|R_row| - 1 = {abs(x) / abs(y) - 1:+.4f}")
+                  f"{abs(y)**2:.5f} arg {np.angle(y):+.4f}; |R_disk|/|R_row| - 1 = {abs(x) / abs(y) - 1:+.4f},"
+                  f" d arg {wrapd(np.angle(x) - np.angle(y)):+.4f}")
     fl = []
     for nm in ("fine_a100_N6_r000_ML150", "fine_a100_N6_r000_ML300", "fine_a110_N9_r000_ML150",
                "fine_a110_N9_r000_ML300", "fine_a100_N6_r010", "fine_a110_N9_r010"):
@@ -996,6 +997,10 @@ def report_part4(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, t_start) -> int
     print(f"  tolerance per angle: |R_eng - R_sol| <= {TOL_REL} |R_sol| + {TOL_ABS} + {TOL_SPREAD_MULT} "
           f"s_eng (declared before the comparison); curve level: peak {TOL_PEAK_ANGLE_MRAD} mrad, peak "
           f"|R|^2 {TOL_PEAK_I_REL:.0%}, FWHM {TOL_FWHM_REL:.0%}, sweep {TOL_SWEEP_RAD} rad")
+    mx_e = max((abs(complex(a["readout"]["r_top_re"], a["readout"]["r_top_im"]))
+                for c in eng["cases"].values() for a in c["angles"].values()), default=float("nan"))
+    mx_s = max(np.max(np.abs(solver_curve(sol, n)[1])) for n in ("fine_a100_N6_r010", "fine_a110_N9_r010"))
+    print(f"  largest |R| (r = 0.1): engine, all runs {mx_e:.4f}; solver fine curves {mx_s:.4f}")
     solmap = {"eng_a100_dt_r010": "eng_a100_N6_r010", "eng_a110_dt_r010": "eng_a110_N9_r010",
               "eng_a100_kk_r010": "eng_a100_N6_r010"}
     results = {}
@@ -1022,6 +1027,14 @@ def report_part4(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, t_start) -> int
                   f"{wrapd(np.angle(Re[i]) - np.angle(Rs[i])):+7.3f}  {abs(Re[i]) / abs(Rs[i]) - 1:+7.3f}  "
                   f"{sp[i]:.4f}  {recs[i]['run_s']:5.0f}  {inf['nx']}x{inf['ny']}x{inf['n_slices']}")
         print(f"   angles within tolerance: {npass} of {len(te)}")
+        rel = np.abs(Re) / np.abs(Rs) - 1
+        dph = wrapd(np.angle(Re) - np.angle(Rs))
+        pk = (te >= 15.6 - 1e-9) & (te <= 16.8 + 1e-9)
+        print(f"   engine |R| below the solver's at {int((rel < 0).sum())} of {len(te)} angles; "
+              f"d|R|/|R| range {rel.min():+.3f} to {rel.max():+.3f}")
+        if pk.sum() >= 3:
+            print(f"   within 15.6-16.8 mrad ({int(pk.sum())} angles): d|R|/|R| from {rel[pk].min():+.3f} to "
+                  f"{rel[pk].max():+.3f}, d arg from {dph[pk].min():+.3f} to {dph[pk].max():+.3f} rad")
         dc = np.abs(Re - np.conj(Rs))
         print(f"   conjugation test: median |R_eng - R_sol| {np.median(np.abs(Re - Rs)):.4f}, median "
               f"|R_eng - conj(R_sol)| {np.median(dc):.4f}")
@@ -1033,6 +1046,9 @@ def report_part4(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, t_start) -> int
             cfit, dx = np.linalg.lstsq(Am, dphi, rcond=None)[0]
             print(f"   reference-plane fit over {int(big.sum())} angles with |R_sol| >= 0.1: d arg = c + 2 Gamma0 dx,"
                   f" c = {cfit:+.4f} rad, dx = {dx:+.5f} A; rms d arg {np.sqrt(np.mean(dphi**2)):.4f} rad")
+            g12, g22 = (bc["k_rad_per_A"] * np.sin(t * 1e-3) for t in (12.0, 22.0))
+            print(f"   scale: a reference plane misplaced by 0.1 A shifts arg R by 2 Gamma0 x 0.1 A = "
+                  f"{2 * g12 * 0.1:.3f} rad at 12 mrad and {2 * g22 * 0.1:.3f} rad at 22 mrad")
         if tag == "eng_a110_dt_r010" and "eng_a110perp_N9_r010" in sol["cases"]:
             tp_, Rp = solver_curve(sol, "eng_a110perp_N9_r010")
             Rp = at_angles(tp_, Rp, te)
@@ -1078,7 +1094,8 @@ def report_part5(sol, eng, dt, bc, mip_d, mip_k, th_d, th_k, SP, results, t_star
         print(f"    peak angle: engine {me['theta']:.4f}, solver (same angles) {ms['theta']:.4f}, solver "
               f"(fine grid) {SP['theta']:.4f} mrad; engine - solver(same) {me['theta'] - ms['theta']:+.4f} mrad")
         print(f"    peak |R|^2: engine {me['I']:.5f}, solver (same) {ms['I']:.5f}, solver (fine) {SP['I']:.5f};"
-              f" engine/solver(same) - 1 = {me['I'] / ms['I'] - 1:+.4f}")
+              f" engine/solver(same) - 1 = {me['I'] / ms['I'] - 1:+.4f} (in |R|: "
+              f"{np.sqrt(me['I'] / ms['I']) - 1:+.4f})")
         print(f"    FWHM: engine {me['fwhm']:.4f}, solver (same angles) {ms['fwhm']:.4f}, solver (fine) "
               f"{SP['fwhm']:.4f} mrad; engine/solver(same) - 1 = {me['fwhm'] / ms['fwhm'] - 1:+.4f}")
         print(f"    phase sweep over +-w/2 (w = solver fine FWHM {w:.4f}): engine {sw_e:+.4f}, solver (same "
@@ -1120,9 +1137,17 @@ def report_part6(sol, eng, t_start) -> int:
             rb = complex(b["readout"]["r_top_re"], b["readout"]["r_top_im"]) if b else np.nan
             inf = rec["info"]
             print(f"  {tag} at {key} mrad: |R|^2 {abs(r)**2:.5f} arg {np.angle(r):+.4f}; default run "
-                  f"|R|^2 {abs(rb)**2:.5f} arg {np.angle(rb):+.4f}; |Delta R| {abs(r - rb):.4f}; spread "
-                  f"{ro['max_bin_deviation']:.4f}; grid {inf['nx']}x{inf['ny']}x{inf['n_slices']}, dx "
+                  f"|R|^2 {abs(rb)**2:.5f} arg {np.angle(rb):+.4f}; |Delta R| {abs(r - rb):.4f}; |R|^2 "
+                  f"ratio - 1 {abs(r)**2 / abs(rb)**2 - 1:+.4f}, d arg {wrapd(np.angle(r) - np.angle(rb)):+.4f}; "
+                  f"spread {ro['max_bin_deviation']:.4f}; grid {inf['nx']}x{inf['ny']}x{inf['n_slices']}, dx "
                   f"{inf['dx_A']:.4f} A, run {rec['run_s']:.0f} s, RSS {rec['peak_rss_MB']:.0f} MB")
+            if key == "16.2000":
+                for sname in ("eng_a100_N6_r010", "eng_a100_N8_r010_B", "eng_a100_N10_r010_B"):
+                    ts_, Rs_ = solver_curve(sol, sname)
+                    x = at_angles(ts_, Rs_, [16.2])[0]
+                    print(f"      vs solver {sname} (|R|^2 {abs(x)**2:.5f} arg {np.angle(x):+.4f}): |R|^2 "
+                          f"ratio - 1 {abs(r)**2 / abs(x)**2 - 1:+.4f}, |R| ratio - 1 {abs(r) / abs(x) - 1:+.4f},"
+                          f" d arg {wrapd(np.angle(r) - np.angle(x)):+.4f}")
     for tag, c in eng["cases"].items():
         recs = list(c["angles"].values())
         if not recs:

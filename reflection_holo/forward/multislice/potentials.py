@@ -341,25 +341,180 @@ class ContinuumTerracePotential:
                     frozen_phonons=dict(model="not applicable (no atoms)"))
 
     def fill(self, grid) -> np.ndarray:
-        x = grid.x_A()
-        y = grid.y_A()
-        Ly = self.cell.extent_y_A
-        out = np.zeros(grid.shape)
-        for t in self.cell.metadata["terraces"]:
-            s = t["surface_x_A"]
-            fxv = np.clip((s - (x - 0.5 * grid.dx_A)) / grid.dx_A, 0.0, 1.0)
-            y0, y1 = t["range_A"]
-            if grid.ny == 1:
-                fyv = np.array([(y1 - y0) / Ly])
-            else:
-                lo = y - 0.5 * grid.dy_A
-                hi = y + 0.5 * grid.dy_A
-                fyv = np.zeros_like(y)
-                for sh in (-Ly, 0.0, Ly):
-                    fyv += np.clip(np.minimum(hi, y1 + sh) - np.maximum(lo, y0 + sh), 0, None)
-                fyv /= grid.dy_A
-            out += fxv[:, None] * fyv[None, :]
+        return _continuum_crystal_fraction(self.cell, grid)
+
+    def complex_potential(self, grid) -> np.ndarray:
+        """V_j (1 + i r) of every pixel (V; the projected potential of a whole slice is this times
+        its overlap with the crystal along z, _RealisedContinuum)."""
+        return self.fill(grid) * (self.V0 * (1.0 + 1j * self.absorption.ratio))
+
+    def realise(self, *, grid, dz_A: float, n_slices: int, backend, rng):
+        return _RealisedContinuum(self, grid, dz_A, n_slices, backend)
+
+
+def _continuum_crystal_fraction(cell, grid) -> np.ndarray:
+    """Crystal fraction of every pixel of a continuum cell (sharp, cell-averaged step): the
+    fraction of its area [x_j - dx/2, x_j + dx/2] x [y_m - dy/2, y_m + dy/2] inside the crystal
+    (ContinuumTerracePotential; shared unchanged with ContinuumPeriodicPotential)."""
+    x = grid.x_A()
+    y = grid.y_A()
+    Ly = cell.extent_y_A
+    out = np.zeros(grid.shape)
+    for t in cell.metadata["terraces"]:
+        s = t["surface_x_A"]
+        fxv = np.clip((s - (x - 0.5 * grid.dx_A)) / grid.dx_A, 0.0, 1.0)
+        y0, y1 = t["range_A"]
+        if grid.ny == 1:
+            fyv = np.array([(y1 - y0) / Ly])
+        else:
+            lo = y - 0.5 * grid.dy_A
+            hi = y + 0.5 * grid.dy_A
+            fyv = np.zeros_like(y)
+            for sh in (-Ly, 0.0, Ly):
+                fyv += np.clip(np.minimum(hi, y1 + sh) - np.maximum(lo, y0 + sh), 0, None)
+            fyv /= grid.dy_A
+        out += fxv[:, None] * fyv[None, :]
+    return out
+
+
+class ContinuumPeriodicPotential:
+    """Laterally uniform periodic continuum potential for rung 2 of the validation ladder
+    (docs/05 4.4; docs/agent_reports/P2_rung2_reference.md section 8.1). No atoms.
+
+        V_j = f_j [V0 + sum_n 2 V_n cos(2 pi g_n (x_j - x_s + t_n))] (1 + i r),
+
+    uniform along y and along z for z >= crystal_start_z_A (the slice straddling the front face
+    carries its overlap fraction, as ContinuumTerracePotential). f_j is the crystal fraction of
+    pixel j, computed EXACTLY as ContinuumTerracePotential.fill (sharp, cell-averaged step), so
+    harmonics with V_n = 0 reproduce the rung-1 class bit for bit. The harmonics are POINT-SAMPLED
+    at the pixel centres x_j (then represented exactly on the grid; cell-averaging them would
+    multiply V_n by sinc(pi g dx), P2 8.1). x_s is the surface (truncation) plane of the cell's
+    single terrace; t_n >= 0 is the depth of a cosine maximum of harmonic n below x_s (t = 0: the
+    truncation plane is at a maximum, an atomic plane of a layer potential). r is the proportional
+    physical absorption (PROJECT_INPUT item 21), applied to V0 and to every V_n.
+
+    Required inputs (no defaults): V0_V with V0_label (PROJECT_INPUT item 20 or a labelled
+    stand-in), harmonics = ((g_per_A, V_g_V, t_A), ...) with harmonics_label (g in cycles/A, V_g real
+    in V, t in A; an explicitly empty tuple is the constant potential of rung 1),
+    physical_absorption, surface_profile ("sharp"). One terrace only: a stepped periodic continuum
+    would need a declared crystal origin for the phase of the harmonics (not implemented).
+    The harmonics are asserted inside the band of the transmission function by the engine
+    (band_harmonics_per_A; grid.check_band), like the working reflections of an atomic cell."""
+    kind = "continuum"
+
+    def __init__(self, cell, *, V0_V: float, V0_label: str, harmonics, harmonics_label: str,
+                 physical_absorption: PhysicalAbsorption, surface_profile: str):
+        if cell.metadata.get("kind") != "continuum":
+            raise ValueError("ContinuumPeriodicPotential needs a continuum cell")
+        require_evidence_label(V0_label, "mean inner potential V0 (PROJECT_INPUT item 20)",
+                               accepted=_LABELS, qualified=True)
+        require_evidence_label(harmonics_label, "periodic harmonics (g, V_g, t)",
+                               accepted=_LABELS, qualified=True)
+        if not (np.isfinite(V0_V) and V0_V > 0):
+            raise ValueError("V0_V must be finite and > 0")
+        if surface_profile != "sharp":
+            raise ValueError("surface_profile must be 'sharp' (cell-averaged step)")
+        if not isinstance(physical_absorption, PhysicalAbsorption):
+            raise TypeError("physical_absorption must be a PhysicalAbsorption (item 21)")
+        if harmonics is None or isinstance(harmonics, (str, bytes)) or not isinstance(
+                harmonics, (tuple, list)):
+            raise TypeError("harmonics must be a tuple of (g_per_A, V_g_V, t_A) triples (an "
+                            "explicitly empty tuple for a constant potential)")
+        hs = []
+        for h in harmonics:
+            if not isinstance(h, (tuple, list)) or len(h) != 3:
+                raise ValueError(f"harmonic {h!r} is not a (g_per_A, V_g_V, t_A) triple")
+            g, v, t = (float(q) for q in h)
+            if not (np.isfinite(g) and g > 0):
+                raise ValueError(f"harmonic {h!r}: g_per_A (cycles/A) must be finite and > 0")
+            if not (np.isfinite(v) and np.isfinite(t)):
+                raise ValueError(f"harmonic {h!r}: V_g_V and t_A must be finite")
+            hs.append((g, v, t))
+        gs = [h[0] for h in hs]
+        if len(set(gs)) != len(gs):
+            raise ValueError("two harmonics share the same g_per_A: give one (V_g, t) per g")
+        terr = cell.metadata.get("terraces") or []
+        if len(terr) != 1:
+            raise ValueError(f"ContinuumPeriodicPotential supports a single terrace (got "
+                             f"{len(terr)}): the phase origin of the harmonics across a step "
+                             f"is not defined")
+        self.cell, self.V0, self.V0_label = cell, float(V0_V), V0_label
+        self.harmonics, self.harmonics_label = tuple(hs), harmonics_label
+        self.absorption, self.surface_profile = physical_absorption, surface_profile
+        self.surface_x_A = float(terr[0]["surface_x_A"])
+
+    def mean_inner_potential_V(self) -> float:
+        return self.V0
+
+    def band_harmonics_per_A(self) -> dict:
+        """name -> (g_x, g_y) (cycles/A) of every declared harmonic (along the normal x); the
+        engine asserts them inside the band like the working reflections (grid.check_band)."""
+        return {f"continuum harmonic g = {g:.6f} 1/A (V_g = {v:.6f} V)": (g, 0.0)
+                for g, v, _ in self.harmonics}
+
+    def profile_V(self, x_A) -> np.ndarray:
+        """Real potential V0 + sum 2 V_n cos(2 pi g_n (x - x_s + t_n)) at the points x_A (V),
+        before the crystal fraction and the absorption."""
+        x = np.asarray(x_A, dtype=np.float64)
+        out = np.full(x.shape, self.V0)
+        for g, v, t in self.harmonics:
+            out = out + 2.0 * v * np.cos(2.0 * np.pi * g * (x - self.surface_x_A + t))
         return out
+
+    def fill(self, grid) -> np.ndarray:
+        return _continuum_crystal_fraction(self.cell, grid)
+
+    def complex_potential(self, grid) -> np.ndarray:
+        """f_j [profile(x_j)] (1 + i r) of every pixel (V), harmonics point-sampled at x_j."""
+        prof = self.profile_V(grid.x_A()) * (1.0 + 1j * self.absorption.ratio)
+        return self.fill(grid) * prof[:, None]
+
+    def realised_harmonics(self, grid) -> dict:
+        """V0 and the harmonics actually realised on the grid: least-squares fit of
+        c0 + sum_n [2 a_n cos + 2 b_n sin](2 pi g_n (x - x_s + t_n)) to the real part of the pixels
+        entirely inside the crystal (f_j = 1); exact for point samples up to rounding. Also the
+        largest deviation of Im/Re from r there."""
+        x = grid.x_A()
+        frac = self.fill(grid)[:, 0]
+        V = self.complex_potential(grid)[:, 0]
+        m = frac == 1.0
+        xs = x[m]
+        cols = [np.ones_like(xs)]
+        for g, _, t in self.harmonics:
+            ph = 2.0 * np.pi * g * (xs - self.surface_x_A + t)
+            cols += [2.0 * np.cos(ph), 2.0 * np.sin(ph)]
+        A = np.stack(cols, axis=1)
+        coef, *_ = np.linalg.lstsq(A, V.real[m], rcond=None)
+        res = V.real[m] - A @ coef
+        r = float(self.absorption.ratio)
+        out = dict(method="least-squares fit to the real part of the interior pixels (f = 1), "
+                          "point samples",
+                   n_pixels=int(m.sum()), interior_x_A=[float(xs.min()), float(xs.max())],
+                   V0_V=float(coef[0]), rms_residual_V=float(np.sqrt(np.mean(res**2))),
+                   imag_over_real_max_dev_from_r=float(np.max(np.abs(
+                       V.imag[m] - r * V.real[m])) / max(np.max(np.abs(V.real[m])), 1e-300)),
+                   harmonics=[dict(g_per_A=g, V_g_declared_V=v, plane_offset_A=t,
+                                   V_g_cos_V=float(coef[1 + 2 * n]),
+                                   V_g_sin_V=float(coef[2 + 2 * n]))
+                              for n, (g, v, t) in enumerate(self.harmonics)])
+        return out
+
+    def provenance(self) -> dict:
+        return dict(kind="continuum laterally uniform periodic potential (no atoms; validation "
+                         "ladder rung 2)",
+                    formula="V_j = f_j [V0 + sum_n 2 V_n cos(2 pi g_n (x_j - x_s + t_n))] (1 + i r)",
+                    V0_V=self.V0, V0_label=self.V0_label,
+                    harmonics=[dict(g_per_A=g, V_g_V=v, plane_offset_A=t)
+                               for g, v, t in self.harmonics],
+                    harmonics_label=self.harmonics_label,
+                    surface_x_A=self.surface_x_A,
+                    sampling="harmonics point-sampled at the pixel centres; crystal fraction "
+                             "f_j cell-averaged per pixel (sharp step, as "
+                             "ContinuumTerracePotential)",
+                    surface_profile="sharp, cell-averaged per pixel",
+                    physical_absorption=self.absorption.describe(),
+                    frozen_phonons=dict(model="not applicable (no atoms)"),
+                    reference="docs/agent_reports/P2_rung2_reference.md section 8.1")
 
     def realise(self, *, grid, dz_A: float, n_slices: int, backend, rng):
         return _RealisedContinuum(self, grid, dz_A, n_slices, backend)
@@ -371,12 +526,13 @@ class _RealisedContinuum:
         z0, z1 = float(c.crystal_start_z_A), float(c.length_z_A)
         i = np.arange(n_slices)
         self.overlap = np.clip(np.minimum((i + 1) * dz, z1) - np.maximum(i * dz, z0), 0.0, dz)
-        v = pot.V0 * (1.0 + 1j * pot.absorption.ratio)
-        self.base = be.asarray(pot.fill(grid) * v, dtype=be.complex_dtype)
+        self.base = be.asarray(pot.complex_potential(grid), dtype=be.complex_dtype)
         self.be = be
         self.grid = grid
         self.metadata = dict(front_face_z_A=z0, slices_with_partial_overlap=int(np.count_nonzero(
             (self.overlap > 0) & (self.overlap < dz - 1e-12))))
+        if hasattr(pot, "realised_harmonics"):
+            self.metadata["realised_harmonics"] = pot.realised_harmonics(grid)
 
     def slice_key(self, i):
         return ("continuum", round(float(self.overlap[i]), 12))
