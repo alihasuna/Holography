@@ -1,6 +1,6 @@
 # P2: exact and two-beam reference for rung 2 of the phase-validation ladder
 
-Prepared: 2026-09-23 (agent P2). Written incrementally; IN PROGRESS until section 10 says final.
+Prepared: 2026-09-23 (agent P2). Written incrementally; FINAL (section 10).
 Scope (orchestrator task): the reference for docs/05 section 4.4 rung 2 ("Bragg-case Bloch-wave
 two-beam solution for one allowed reflection ... the multislice must reproduce the phase sweep, not
 only the width"). Deliverables: `tools/physics_checks/rung2_reference.py` (importable functions and a
@@ -324,13 +324,57 @@ t = kc tau, eta = (E - E_B)/kc, with E_B = (G^2/4 - U_0)/(2k) and kc = sqrt(U_g 
     A_D(Z) = i ph int_0^Z [J_1(kc tau)/tau] exp(i (E_K - E_B) tau) d tau.
 
 Without absorption the approach is a power law: from J_1(t) ~ sqrt(2/(pi t)) cos(t - 3 pi/4) and one
-integration by parts, |A_D(Z) - R_D| <= sqrt(2/pi) (kc Z)^(-3/2) / (1 - eta^2) inside the plateau, with
-oscillations at the two band-edge detunings kc (1 +- eta). With absorption the branch points
+integration by parts, for large kc Z the deviation |A_D(Z) - R_D| is at most about
+sqrt(2/pi) (kc Z)^(-3/2) / (1 - eta^2) inside the plateau (leading asymptotic order, not a rigorous
+bound), with oscillations at the two band-edge detunings kc (1 +- eta). With absorption the branch points
 E_B +- kc move to Im E = -r sigma (V0 -+ V_g); the slowest decay is exp(-Z/Z_a),
 Z_a = 1/(r sigma (V0 - V_g)). For (0,0,8): kc = 7.549e-4 rad/A (1/kc = 1324.7 A, xi_g = pi/kc = 4161.7 A),
-Z_a = 2133 A (r = 0.05) and 1066 A (r = 0.1); the bound gives Z(1e-2) = 24 551 A and Z(1e-3) = 113 957 A
+Z_a = 2133 A (r = 0.05) and 1066 A (r = 0.1); the asymptotic estimate gives Z(1e-2) = 24 551 A and Z(1e-3) = 113 957 A
 at eta = 0, r = 0 (out §9). The closed form tends to R_D to < 1e-13 for r > 0 and to 1.4e-4 at
 Z = 4e5 A for r = 0 (checks, out §9).
+
+### 5.3 Two-beam build-up numbers for (0,0,8) (sharp edge; out §9)
+
+|A_D(Z) - R_D| (and |arg(A_D/R_D)| in rad) at Z downstream of first contact:
+
+```
+            Z = 1000 A          2000 A            4000 A            8000 A            16000 A           32000 A
+r=0.00 eta=-0.5: 6.7e-01(3.4e-01)  3.6e-01(1.6e-01)  8.0e-02(7.5e-02)  3.5e-02(1.3e-02)  1.2e-02(6.2e-03)  4.8e-03(4.3e-03)
+r=0.00 eta=+0.0: 6.3e-01(4.3e-36)  3.1e-01(1.8e-34)  5.1e-02(1.5e-18)  1.9e-02(4.0e-18)  3.9e-03(3.1e-18)  1.6e-03(1.8e-18)
+r=0.00 eta=+0.5: 6.7e-01(3.4e-01)  3.6e-01(1.6e-01)  8.0e-02(7.5e-02)  3.5e-02(1.3e-02)  1.2e-02(6.2e-03)  4.8e-03(4.3e-03)
+r=0.05 eta=-0.5: 2.3e-01(2.6e-01)  9.0e-02(1.3e-01)  1.6e-03(2.5e-03)  1.4e-04(2.3e-05)  2.4e-06(1.5e-06)  6.5e-10(3.3e-11)
+r=0.05 eta=+0.0: 2.4e-01(2.0e-02)  9.1e-02(1.5e-02)  2.4e-03(4.4e-03)  2.4e-04(4.4e-04)  3.4e-06(5.6e-06)  8.5e-10(1.1e-09)
+r=0.05 eta=+0.5: 2.4e-01(2.3e-01)  9.5e-02(1.1e-01)  5.8e-03(4.9e-04)  4.7e-04(9.1e-04)  5.3e-06(1.0e-05)  1.2e-09(2.3e-09)
+r=0.10 eta=-0.5: 9.5e-02(1.5e-01)  2.4e-02(5.6e-02)  4.7e-04(1.2e-03)  5.7e-06(1.2e-05)  1.4e-09(2.6e-09)  6.9e-15(6.7e-15)
+r=0.10 eta=+0.0: 9.9e-02(1.6e-02)  2.5e-02(9.7e-03)  5.7e-04(1.5e-03)  6.9e-06(1.8e-05)  1.7e-09(4.2e-09)  3.9e-14(8.7e-15)
+r=0.10 eta=+0.5: 9.8e-02(1.3e-01)  2.5e-02(4.4e-02)  7.3e-04(7.8e-04)  8.4e-06(2.5e-05)  2.0e-09(5.8e-09)  7.2e-15(7.0e-15)
+```
+
+Build-up lengths (smallest Z beyond which the criterion holds up to 4e5 A):
+
+| r | eta | abs(R_D) | Z for abs(dA) <= 1e-2 (A) | Z for abs(dA) <= 1e-3 (A) | Z for abs(d arg) <= 1e-2 rad (A) |
+|---|---|---|---|---|---|
+| 0 | -0.5 | 1.0000 | 26 900 | 134 660 | 23 220 |
+| 0 | 0 | 1.0000 | 22 580 | 113 560 | 0 (phase fixed at pi/2 by symmetry of the two-beam model) |
+| 0 | +0.5 | 1.0000 | 26 900 | 134 660 | 23 220 |
+| 0 | +0.9 | 1.0000 | 68 800 | 342 680 | 65 220 |
+| 0.05 | -0.5 | 0.5007 | 3 500 | 7 100 | 3 720 |
+| 0.05 | 0 | 0.5338 | 3 480 | 7 120 | 2 900 |
+| 0.05 | +0.5 | 0.5143 | 3 660 | 7 340 | 3 560 |
+| 0.05 | +0.9 | 0.4536 | 3 860 | 7 540 | 4 480 |
+| 0.10 | -0.5 | 0.3186 | 2 560 | 3 720 | 3 180 |
+| 0.10 | 0 | 0.3333 | 2 580 | 3 760 | 1 960 |
+| 0.10 | +0.5 | 0.3249 | 2 600 | 3 860 | 3 020 |
+| 0.10 | +0.9 | 0.3020 | 2 600 | 3 920 | 3 320 |
+
+Reading: without absorption the reflected amplitude approaches its stationary value only as
+(kc Z)^(-3/2): 2.3 to 2.7 um for 1 % in the central half of the plateau, 11 to 13 um for 0.1 %, and
+7 to 34 um at eta = 0.9 (1 % and 0.1 %). With r = 0.05 (0.1) 1e-3 is reached after 7 100 to 7 540 A
+(3 720 to 3 920 A), set by Z_a = 2133 A (1066 A). The atomistic M2 cells (1100 A after first contact at
+the minimum build-up, up to +6600 A in the diagnosis, M2 section 10.2) are therefore far shorter
+than the r = 0 build-up, consistent with M2's observation that the fixed-beam translation error does
+not converge without absorption and decays with r = 0.1 (the atomistic potential adds non-specular
+couplings that this 1D estimate does not contain).
 
 ### 5.4 Exact step response versus the two-beam one (out §10)
 
@@ -350,8 +394,8 @@ and 9.0e-9 (r = 0.1). At the plateau centre:
 | 16016 | 4.66e-3 | 3.89e-3 | 2.8e-3 | 1.5e-9 | 1.7e-9 |
 | 32031 | 1.65e-3 | 1.40e-3 | 7.5e-4 | 5e-12 | 5e-12 |
 
-Beyond 4000 A the exact transient is 8 to 20 % larger than the two-beam one for r = 0 (the Fresnel step and the
-third beams add slow components) and slightly smaller for r = 0.1; the two-beam lengths of 5.3 are
+Beyond 4000 A the exact transient is 8 to 20 % larger than the two-beam one for r = 0 (the exact R(E)
+also contains the Fresnel step and the third beams) and slightly smaller for r = 0.1; the two-beam lengths of 5.3 are
 therefore good estimates, not bounds. Unlike the two-beam model, the exact phase at the centre is not
 stationary during the build-up (|arg(A/R)| = 8e-3 rad at 8000 A for r = 0).
 
@@ -383,7 +427,8 @@ Sine terms <= 4e-8 V (centrosymmetric layer potential about an atomic plane); fi
 full layer potential). The value is independent of the pixel as long as 8/a lies below the grid's
 Nyquist frequency (the engine builds the potential from exact structure factors). M2 section 10.2
 estimated V_008 ~ 0.84 V; the engine's own value is 23.3 % larger (out §3). Static lattice: no Debye-Waller
-factor (a frozen-phonon ensemble would reduce V_008; not computed here).
+factor (for Gaussian displacements of rms u per axis the ensemble average multiplies V_g by
+exp(-2 pi^2 g^2 u^2) < 1, DERIVED_HERE; not evaluated here because u is a caller's input).
 
 ### 6.2 Plateau of (0,0,8), single harmonic, r = 0 (out §3)
 
@@ -401,49 +446,6 @@ factor (a frozen-phonon ensemble would reduce V_008; not computed here).
   single-harmonic width) (out §3). Relevant for later atomistic comparisons, not for the rung-2 continuum test.
 * Extinction depth (amplitude) at the centre G/|U_g| = 24.47 A; kc = sigma V_g = 7.549e-4 rad/A,
   1/kc = 1324.7 A along z, extinction distance xi_g = pi/(sigma V_g) = 4161.7 A.
-
-### 5.3 Two-beam build-up numbers for (0,0,8) (sharp edge; out §9)
-
-|A_D(Z) - R_D| (and |arg(A_D/R_D)| in rad) at Z downstream of first contact:
-
-```
-            Z = 1000 A          2000 A            4000 A            8000 A            16000 A           32000 A
-r=0.00 eta=-0.5: 6.7e-01(3.4e-01)  3.6e-01(1.6e-01)  8.0e-02(7.5e-02)  3.5e-02(1.3e-02)  1.2e-02(6.2e-03)  4.8e-03(4.3e-03)
-r=0.00 eta=+0.0: 6.3e-01(4.3e-36)  3.1e-01(1.8e-34)  5.1e-02(1.5e-18)  1.9e-02(4.0e-18)  3.9e-03(3.1e-18)  1.6e-03(1.8e-18)
-r=0.00 eta=+0.5: 6.7e-01(3.4e-01)  3.6e-01(1.6e-01)  8.0e-02(7.5e-02)  3.5e-02(1.3e-02)  1.2e-02(6.2e-03)  4.8e-03(4.3e-03)
-r=0.05 eta=-0.5: 2.3e-01(2.6e-01)  9.0e-02(1.3e-01)  1.6e-03(2.5e-03)  1.4e-04(2.3e-05)  2.4e-06(1.5e-06)  6.5e-10(3.3e-11)
-r=0.05 eta=+0.0: 2.4e-01(2.0e-02)  9.1e-02(1.5e-02)  2.4e-03(4.4e-03)  2.4e-04(4.4e-04)  3.4e-06(5.6e-06)  8.5e-10(1.1e-09)
-r=0.05 eta=+0.5: 2.4e-01(2.3e-01)  9.5e-02(1.1e-01)  5.8e-03(4.9e-04)  4.7e-04(9.1e-04)  5.3e-06(1.0e-05)  1.2e-09(2.3e-09)
-r=0.10 eta=-0.5: 9.5e-02(1.5e-01)  2.4e-02(5.6e-02)  4.7e-04(1.2e-03)  5.7e-06(1.2e-05)  1.4e-09(2.6e-09)  6.9e-15(6.7e-15)
-r=0.10 eta=+0.0: 9.9e-02(1.6e-02)  2.5e-02(9.7e-03)  5.7e-04(1.5e-03)  6.9e-06(1.8e-05)  1.7e-09(4.2e-09)  3.9e-14(8.7e-15)
-r=0.10 eta=+0.5: 9.8e-02(1.3e-01)  2.5e-02(4.4e-02)  7.3e-04(7.8e-04)  8.4e-06(2.5e-05)  2.0e-09(5.8e-09)  7.2e-15(7.0e-15)
-```
-
-Build-up lengths (smallest Z beyond which the criterion holds up to 4e5 A):
-
-| r | eta | |R_D| | Z(|dA| <= 1e-2) (A) | Z(|dA| <= 1e-3) (A) | Z(|d arg| <= 1e-2 rad) (A) |
-|---|---|---|---|---|---|
-| 0 | -0.5 | 1.0000 | 26 900 | 134 660 | 23 220 |
-| 0 | 0 | 1.0000 | 22 580 | 113 560 | 0 (phase fixed at pi/2 by symmetry of the two-beam model) |
-| 0 | +0.5 | 1.0000 | 26 900 | 134 660 | 23 220 |
-| 0 | +0.9 | 1.0000 | 68 800 | 342 680 | 65 220 |
-| 0.05 | -0.5 | 0.5007 | 3 500 | 7 100 | 3 720 |
-| 0.05 | 0 | 0.5338 | 3 480 | 7 120 | 2 900 |
-| 0.05 | +0.5 | 0.5143 | 3 660 | 7 340 | 3 560 |
-| 0.05 | +0.9 | 0.4536 | 3 860 | 7 540 | 4 480 |
-| 0.10 | -0.5 | 0.3186 | 2 560 | 3 720 | 3 180 |
-| 0.10 | 0 | 0.3333 | 2 580 | 3 760 | 1 960 |
-| 0.10 | +0.5 | 0.3249 | 2 600 | 3 860 | 3 020 |
-| 0.10 | +0.9 | 0.3020 | 2 600 | 3 920 | 3 320 |
-
-Reading: without absorption the reflected amplitude approaches its stationary value only as
-(kc Z)^(-3/2): 2.3 to 2.7 um for 1 % in the central half of the plateau, 11 to 13 um for 0.1 %, and
-7 to 34 um at eta = 0.9 (1 % and 0.1 %). With r = 0.05 (0.1) 1e-3 is reached after 7 100 to 7 540 A
-(3 720 to 3 920 A), set by Z_a = 2133 A (1066 A). The atomistic M2 cells (1100 A after first contact at
-the minimum build-up, up to +6600 A in the diagnosis, M2 section 10.2) are therefore far shorter
-than the r = 0 build-up, consistent with M2's observation that the fixed-beam translation error does
-not converge without absorption and decays with r = 0.1 (the atomistic potential adds non-specular
-couplings that this 1D estimate does not contain).
 
 ### 6.3 Rocking curves (out §6)
 
@@ -587,7 +589,7 @@ step, 2/3 band limit on the propagator and on the transmission function, sin^2 n
 projected onto f < 0, the potential of section 8.1 (point-sampled harmonic times the cell-averaged
 crystal fraction), and the read-out formula of `flat_reflection_coefficient` (threshold 0.05). It
 is written from the engine's docstrings, shares no code with it, and validates nothing about the
-engine. theta0 = 16.13477 mrad, extra vacuum 150 A (bins every ~2.5e-3 1/A = 63 urad), bins with
+engine. theta0 = 16.13477 mrad, extra vacuum 150 A (run F: bins every 2.453e-3 1/A = 61.5 urad), bins with
 |eta| <= 3 compared with the reference at their own K (max over bins):
 
 | run | r | propagator (reference model) | dx (A) | dz (A) | D (A) | Z_e (A) | nx, slices | max abs(dR) (abs(eta) <= 0.9) | max abs(d arg) (abs(eta) <= 0.9) |
@@ -612,8 +614,9 @@ Run F, bins inside the plateau (r_ss = split step, R_ref = exact reference):
 ```
 
 Readings: (i) the Fresnel split step reproduces the Helmholtz R(K) over the whole rocking range to
-4.4e-4, the residual being discretisation (dx order 1.71 between 0.05 and 0.025 A; at 0.0125 A the
-dx term no longer dominates, 2.0e-4); section 4.1 is confirmed. (ii) The exact-propagator run
+4.4e-4, the residual being mainly discretisation (dx order 1.71 between 0.05 and 0.025 A; at 0.0125 A
+the dx term no longer dominates, 2.0e-4, the rest being dz and the finite cell); section 4.1 is
+confirmed. (ii) The exact-propagator run
 agrees with the one-way model of section 4.2 as well as the Fresnel run agrees with the exact
 reference, and the difference between the two runs (same grid, so the discretisation cancels) is
 arg(r_X/r_F) in [-1.18e-3, -1.07e-3] rad against the predicted [-1.20e-3, -1.10e-3] rad
@@ -644,8 +647,8 @@ V0_label, harmonics, harmonics_label, physical_absorption, surface_profile="shar
 f_j the crystal fraction of pixel j exactly as in `ContinuumTerracePotential.fill` (so V_g = 0
 reproduces the rung-1 class bit for bit), the harmonic POINT-SAMPLED at the pixel centres (it is then
 represented exactly on the grid; cell-averaging it would multiply V_g by sinc(pi g dx) = 0.99777 at
-dx = 0.025 A, a 0.22 % change of the plateau width that is not negligible against the tolerance
-near the plateau edges), `mean_inner_potential_V()` = V0, and provenance recording V0, every
+dx = 0.025 A, which changes R by up to 6.1e-4 (r = 0.1) and 9.6e-4 (r = 0.05), 40 to 65 % of the
+tolerance of section 8.4; out §3, §12b), `mean_inner_potential_V()` = V0, and provenance recording V0, every
 (g, V_g, t) with labels, and the realised V0 and V_g from a DFT of the interior samples over an
 integer number of periods. Values for rung 2: V0 = 13.902843 V and V_g = 1.035742 V (the engine's own
 Kirkland values, section 6.1; label e.g. "TEST_ONLY: Kirkland IAM values of the engine, P2 report"),
@@ -666,7 +669,7 @@ owner's.
 | beam | SheetBeam H = 24 A, edge 4 A, x_bottom = x_s + 2 A | same |
 | theta_in | 16.13477 mrad (two-beam centre with V0 = 13.902843 V) | same |
 | exit distance Z_e = L - z_top, z_top = (2 + 24)/tan(theta) = 1611.3 A | 5000 A (r = 0.1), 10000 A (r = 0.05) | 30000 A |
-| vacuum above x_s | H + 2 + L tan(theta) + 150 A (bins every ~2.5e-3 1/A = 63 urad) | same |
+| vacuum above x_s | H + 2 + L tan(theta) + 150 A (bins every 2.45e-3 1/A = 61.5 urad for r = 0.1) | same |
 | grid | dx = 0.025 A (and 0.05 A for the order check), dz = 1 A | dx 0.025 A, dz 1 A |
 | propagator | "fresnel" (reference model "exact") and "exact" (reference model "engine_exact_propagator") | "fresnel" |
 | other | band "2/3", complex128, numpy, buildup_depth_A = 20 | same |
@@ -676,6 +679,565 @@ owner's.
 `flat_reflection_coefficient(ew, psi0, x_surface_A = x_s, propagator = <same>, rel_threshold = 0.05)`
 gives r(f) per incident bin; each bin is compared with
 `reflection_amplitude(asin(lambda f), 200, V0, [V_g], g, r, plane_offset_A = t, model = ...)` at its
-own K = 2 pi f, over the bins with |eta| <= 3 for R2-A and |eta| <= 0.5 for R2-B
+own K = 2 pi f, over the bins with |eta| <= 3 for R2-A and |eta| <= 0.5 for R2-B (R2-B with the
+vacuum-only read-out of section 8.4)
 (eta = (K^2 - K_c^2)/|U_g| with K_c = 4.042107 rad/A, |U_g| = 0.378249 rad^2/A^2). No fitted phase or
 angle offset is allowed: the reference plane is x_s and the angle of a bin is fixed by its frequency.
+
+### 8.4 A priori tolerance (set before any engine run)
+
+Criterion (a), R2-A: max over the bins with |eta| <= 3 of |r_engine - R_ref| <= T_A = 1.5e-3 (the
+complex difference; it implies |arg(r/R_ref)| <= T_A/|R_ref|, i.e. <= 2.8e-3 rad (r = 0.05) and
+<= 4.4e-3 rad (r = 0.1) at the plateau centre and <= 1.6e-2 rad at |eta| = 3). Budget (maxima over the
+same bins):
+
+| contribution | r = 0.1 (D 100 A, Z_e 5000 A) | r = 0.05 (D 150 A, Z_e 10000 A) | source |
+|---|---|---|---|
+| reference solver | <= 1e-9 | <= 1e-9 | section 2 |
+| paraxial error, Fresnel propagator | 0 (identity) | 0 | section 4.1 |
+| exact propagator | modelled (`engine_exact_propagator`), residual <= 5e-5 rad | same | sections 4.2, 7 |
+| (e V)^2 term | absent from engine and reference | same | section 1 |
+| clean depth + numerical absorber | <= 1.8e-6 | <= 3.3e-5 | section 6.5 |
+| finite cell + discretisation (dx 0.025 A, dz 1 A) | 4.4e-4 (split step F; 2.0e-4 at dx 0.0125 A) | 2.8e-4 (split step F_r005) | section 7 |
+| total | <= 4.5e-4 | <= 3.2e-4 | |
+| tolerance T_A | 1.5e-3 | 1.5e-3 | 3.3x and 4.7x the budget, for a different sub-pixel position of x_s and implementation details of the class |
+
+Criterion (b), propagator pair (R2-A, r = 0.1): for |eta| <= 0.9,
+|arg(r_exact-prop/r_Fresnel) - arg(R_engine_exact_propagator/R_exact)| <= 2e-4 rad (split step: 4.7e-5).
+Criterion (c), convergence: max |dR| at dx = 0.05 A over that at dx = 0.025 A >= 2^1.5 (split step:
+3.3, order 1.71).
+
+What T_A detects (out §12b; same angles as the R2-A bins):
+
+| perturbation of the reference | r = 0.1: max abs(dR) (max abs(d arg)) | r = 0.05: max abs(dR) (max abs(d arg)) | caught by (a)? |
+|---|---|---|---|
+| V0 + 1 mV | 2.0e-4 (5.8e-4 rad) | 4.3e-4 (8.2e-4 rad) | no |
+| V0 + 5 mV | 9.8e-4 (2.9e-3 rad) | 2.1e-3 (4.1e-3 rad) | yes at r = 0.05 |
+| V_g x sinc(pi g dx), dx = 0.025 A (cell-averaged harmonic) | 6.1e-4 (1.1e-3 rad) | 9.6e-4 (9.0e-4 rad) | no: point-sample the harmonic |
+| V_g x sinc(pi g dx), dx = 0.05 A | 2.4e-3 (4.3e-3 rad) | 3.8e-3 (3.6e-3 rad) | yes |
+| cosine origin 0.01 A below x_s | 3.1e-2 (0.14 rad) | 5.0e-2 (0.16 rad) | yes (phase-origin bookkeeping to ~5e-4 A) |
+| read-out plane 0.01 A off x_s | arg R changes by 0.078 to 0.084 rad | same | yes |
+| exact propagator compared with the Helmholtz reference | 4.1e-4 (1.2e-3 rad) | 9.0e-4 (1.7e-3 rad) | no; criterion (b) catches it |
+| Darwin/TT used as the reference | 7.6e-2 | 8.8e-2 | yes |
+
+A tighter variant (dx = 0.0125 A, budget 2.0e-4, T_A = 6e-4) would catch a 2 mV error of V0 at
+r = 0.05; it costs twice the points.
+
+R2-B (r = 0, Darwin sweep): optional, qualitative. With r = 0 the whole-box read-out is contaminated by the
+field that the numerical absorber traps between itself and the surface (section 6.5): in the split
+step (section 7, out §12 --long; D = 250 A, Z_e = 30000 A) its error is 1.8e-2 to 2.3e-2 in
+|eta| <= 0.5, with a phase error alternating in sign from bin to bin (the signature of a contribution
+located about half a box away from the reflected packet), and up to 0.19 outside the plateau. A
+vacuum-only read-out, multiplying the exit wave by w(x) = sin^2(pi/2 clip((x - x_s - 60 A)/40 A, 0, 1))
+before `flat_reflection_coefficient` (a test-side operation, no engine change), removes most of it:
+max |dR| = 1.1e-2 in |eta| <= 0.5 (3.6e-2 in |eta| <= 0.9, the r = 0 build-up being slow near the
+edges; 2e-3 to 8e-3 far outside the plateau). Criterion: max over |eta| <= 0.5 of |r - R_ref| <=
+T_B = 3e-2 with the vacuum-only read-out. It checks the Darwin sweep (exact arg R from 1.1722 to
+2.2088 rad across these bins) and rejects the Darwin/TT reference (1.38e-1) and a 0.01 A phase-origin
+error (1.0e-1), but not a 5 mV error of V0 (5.9e-3, out §12b); the absorbing cases R2-A are the
+quantitative test.
+
+### 8.5 What rung 2 does not test
+
+The in-plane (non-specular) scattering of an atomistic crystal (H2 section 2.2), the atomistic
+potential construction (already cross-checked against abTEM, M2 section 4), the numerical absorber
+for r = 0 outside the plateau (a property of the cell, section 6.5), frozen phonons, and steps. The
+test does test the effective mean potential and coupling, the phase origin (surface plane, cosine
+origin, read-out plane), the refraction at the mean-potential step, the propagators, the absorption
+model and the build-up in z.
+
+### 8.6 Cost
+
+1D (ny = 1): two FFTs of nx points per slice, nx x slices = 16308 x 6612 (r = 0.1), 21536 x 11612
+(r = 0.05), 38444 x 31612 (R2-B), as in the split step (section 7), which performs the same FFTs as
+the engine. The whole tool run including all split steps took 20 min 27 s wall (13 min 24 s CPU) on
+this shared 4-core machine (load average 11 to 18 seen with `uptime` during the runs; section 11); memory is tens of MB per run (tool peak
+389 MB including the atomistic potential analysis).
+
+## 9. Comparison with H2 sections 2.1 to 2.3 (read only after the derivations and the code were final)
+
+H2 (`docs/agent_reports/H2_realistic_supercell_sizing.md`, sections 2.1 to 2.3, SECTION_READ) sizes an
+atomistic cell; this report builds a reference for the laterally uniform continuum test. Agreement
+and every difference:
+
+| item | H2 | this report | status |
+|---|---|---|---|
+| V_(0,0,8) of the engine's Kirkland potential | 1.0357 V (Kirkland F at 1.4731 1/A, abs(S) = 8); M2's 0.84 V is 23 % low | 1.035742 V, from the engine's realised potential of a built flat cell AND from 8 F(f^2)/a^3 (agree to 3.7e-7 V at dx 0.02 A) | agree |
+| penetration at the centre | Lambda = 1/b = G/u_g = 24.47 A | 24.469 A | agree |
+| extinction distance | xi_g = 4161.7 A | 4161.7 A | agree |
+| build-up scale along z | L_b = 1/(b tan theta_int) = 1324.5 A = xi_g/pi to 1.3e-4 | 1/kc = 1/(sigma V_g) = 1324.7 A (paraxial E-units) | agree; the 1.3e-4 is the exact-vs-paraxial z-scale cos(theta) (section 4.1) |
+| Darwin width | 0.3736 mrad external (0.3263 internal), two-beam | 373.59 urad two-beam; EXACT gap 373.595 urad, both edges 0.41 urad lower | agree; the exact edge shift is new |
+| two-beam amplitude | X = -(eta + q)/c (H2's eta = kappa0 - G/2, first order in eta/G; its X is the Darwin/TT ratio) | same function as R_D (section 3.2) with eta_here = eta_H2/c to first order | agree as a function |
+| amplitude at the Bragg angle with absorption | abs(X) = 0.534 (r = 0.05), 0.333 (r = 0.1) | R_D: 0.53382, 0.33335; EXACT at the same angle 0.53532, 0.33836; exact maxima 0.54226 at 16.18140 mrad and 0.34697 at 16.21117 mrad | DIFFERENCE: X omits the Fresnel reflection at the mean-potential step; harmless for sizing, but the TT/Darwin phase is 0.135 rad too small at the centre (r = 0) and misses the +33 and +62 urad peak shifts with absorption (section 3.4) |
+| premise "the exact propagator reproduces K^2 = k^2 + 2 k sigma V for the mean potential" (H2 P2) | stated as exact (SM04 vs 2 k sigma V agree to 4e-10) | exact only for the FRESNEL propagator (section 4.1); the engine's exact propagator acts like V0 - 2.09 mV at (0,0,8) (+0.377 urad plateau shift, -2.0e-3 rad at the centre; confirmed by the split step and by M2's rung-1 exact-vs-Fresnel differences, section 4.2) | DIFFERENCE (small; matters for rung-2 phases, not for sizing). The (e V0)^2 term: external Bragg angle 2.5e-8 rad, U_0 9.9e-6 relative (H2's 4e-10 compares a different quantity; not a contradiction) |
+| leading-edge transient | g(s) = i J1(c s) exp(i eta0 s)/s, s = z tan(theta_int); relative error E = 1 - A/X | A_D(Z) = i ph int_0^Z J_1(kc tau)/tau exp(i (E_K - E_B) tau) d tau: the same Green's function (c s = kc tau, eta0 s = (E_K - E_B) tau to first order in eta/G and O(theta^2)) | agree |
+| r = 0 run-in at the Bragg angle | 22 572 A (1e-2), 113 552 A (1e-3); envelope sqrt(2/pi)(b s)^(-3/2) | 22 580 A and 113 560 A (20 A grid) at eta = 0; asymptotic estimate sqrt(2/pi)(kc Z)^(-3/2)/(1 - eta^2) | agree; NEW: off-centre it is much longer (eta = 0.9: 68 800 A for 1e-2, 342 680 A for 1e-3) |
+| r = 0.05, 0.1 run-in | relative error: 3721 / 7538 A (r = 0.05), 3194 / 4290 A (r = 0.1) for 1e-2 / 1e-3 | absolute error at eta = 0: 3480 / 7120 A and 2580 / 3760 A; H2's relative values at 1000 and 2000 A (0.46, 0.17; 0.30, 0.074) equal mine divided by abs(R) | agree (different criterion: H2 relative, here absolute and phase) |
+| slow and fast absorption decay | exp(-sigma r (V0 -+ V_g) L) | Z_a = 1/(r sigma (V0 - V_g)) = 2133 A / 1066 A; fast 1837 / 918 A | agree |
+| two-beam vs exact transient | two-beam only | exact step response from the exact R(E) (damped FFT) is 8 to 20 % larger than the two-beam one beyond 4000 A for r = 0 (section 5.4) | NEW |
+| validity of two beams | section 2.2: for the ATOMISTIC crystal the (0,0,8) condition is many-beam (in-plane (0,+-4,4) exactly excited at [100], admixtures 0.2 to 0.35 at [110]); two-beam numbers are order-of-magnitude guides | for the laterally UNIFORM test potential the 1D problem is exact and the refracted Darwin form is within 5.7e-3 (r = 0, abs(eta) <= 0.9) of it; the specular-rod systematic row of the atomistic layer potential (V_004, V_012, ...) narrows the plateau by 11 % and shifts it by +15.8 urad | different scope, no contradiction: H2's in-plane beams are outside the 1D model (premise P3), which is why rung 2 must use the continuum potential and why my 1D predictions for atomistic cells (section 6.5) are indicative only |
+| penetration with absorption | 20.3 A (r = 0.05), 14.6 A (r = 0.1) | not computed | H2 only |
+
+## 10. Files, API, status
+
+* `tools/physics_checks/rung2_reference.py` (new; importable, numpy/scipy; the engine potential
+  analysis imports the repository and abTEM lazily):
+  * `reflection_amplitude(theta_rad, energy_keV, V0_V, Vg_list, g_per_A, absorption_ratio, *,
+    plane_offset_A=0.0, method="bloch"|"floquet"|"depth", model="exact"|"engine_exact_propagator",
+    n_plane_waves=None, klein_gordon_V2=False, depth_A=None) -> complex | ndarray`: the exact R(theta)
+    at the truncation plane (sections 1, 2); `reflection_amplitude_K(K, ...)` the same versus the
+    normal wavevector (complex K allowed).
+  * `two_beam_reflection(theta_rad, ..., order, form="bloch_matched"|"darwin_refracted"|"darwin")`
+    (section 3); `darwin_plateau(...)`, `theta_of_eta(...)`, `exact_band_edges(...)`.
+  * `build_up_two_beam(Z_A, theta_rad, ...)`, `build_up_length(theta_rad, ..., tols=(("abs", 1e-3),
+    ("phase", 1e-2)))`, `step_response_fft(theta_rad, ..., switch_width_A, R_of_K)` (section 5).
+  * `oneway_V0_shift_V(K, slab, bc)` (section 4.2); `reflection_amplitude_engine_geometry(...)`
+    (finite clean depth above the engine's numerical absorber, section 6.5).
+  * `engine_potential_harmonics(dx_A=...)` (section 6.1); `split_step_1d(...)` (section 7; NOT the
+    engine).
+  * `main()`: every number of this report and the self-checks; exit status 1 if a check fails.
+* `docs/agent_reports/P2_rung2_reference.md` (this report).
+* No engine code, test, summary document or other report was modified; nothing was committed.
+
+NOT RUN and open items:
+
+* The engine itself was NOT run for rung 2 (deliberately: the continuum periodic potential class does
+  not exist, and the tolerance above is set before any engine result). Status of rung 2: reference
+  and protocol ready; engine test NOT RUN.
+* The one-dimensional model is exact only for the laterally uniform test potential. For atomistic
+  cells its predictions (section 6.5, the M2 null-test geometry) are indicative: H2 section 2.2 shows
+  strong in-plane beams at this condition. Not quantified here.
+* Static lattice (no Debye-Waller reduction of V_008), independent-atom Kirkland potential (SM17
+  UNVERIFIED), proportional absorption with TEST_ONLY ratios (PROJECT_INPUT item 21 open), spin
+  neglected, (e V)^2 term quantified (1.3e-4 rad) but not included.
+* The engine owner must decide how the new class declares its harmonic to the band assertion
+  (`working_reflections_hkl`, currently () for continuum cells).
+* Recommendations that follow from this work (none applied): (1) implement the class of 8.1 and run
+  R2-A (and optionally R2-B) with the tolerances of 8.4; (2) compare flat-surface R(K) with the
+  Fresnel propagator, or apply `oneway_V0_shift_V` to references for the exact propagator; (3) for
+  atomistic (0,0,8) null tests use >= 100 A of clean crystal above the absorber with r >= 0.05 (21 A
+  gives a 1.3 to 6.6 % amplitude residual even after complete build-up in the 1D model); with r = 0
+  the absorber cannot emulate a semi-infinite crystal outside the plateau.
+
+Status: final (2026-09-23). Tool run: 57 self-checks, 0 failed (section 11).
+
+## 11. Verbatim output of the final run
+
+`venv/bin/python -u tools/physics_checks/rung2_reference.py --long` (2026-09-23, shared 4-core
+machine; `time`: real	20m27.457s user	13m23.522s sys	0m1.462s):
+
+```
+
+====================================================================================================
+1. Beam constants (reflection_holo.constants only) and cross-checks against the package
+====================================================================================================
+lambda = 0.02507934 A, k = 250.5323 rad/A, sigma = 7.288401e-04 rad/(V A), gamma = 1.391390, hbar c = 1973.2698 eV A
+   CHECK PASS  lambda vs reflection_holo.geometry.wavelength: got 0.02507934045 want 0.02507934045 err 0.000e+00 tol 1.0e-14 (relative)
+   CHECK PASS  lambda vs physics_conventions 0.02507934 A: got 0.02507934045 want 0.02507934 err 4.505e-10 tol 5.0e-09
+   CHECK PASS  k vs reflection_holo.geometry.wavelength: got 250.5323184 want 250.5323184 err 0.000e+00 tol 1.0e-14 (relative)
+   CHECK PASS  sigma vs engine physics.interaction_constant: got 0.0007288401041 want 0.0007288401041 err 0.000e+00 tol 1.0e-14 (relative)
+   CHECK PASS  300 keV refused 
+
+====================================================================================================
+2. Engine potential: laterally averaged Kirkland potential of a flat Si(001) cell
+====================================================================================================
+dx = 0.01000 A, nx = 7931, 41 atoms, fit rms residual 5.46e-03 V; MIP (8 F(0)/a^3) = 13.902843 V; fitted V0 = 13.902837 V
+   (0,0, 4): f = 0.73653 1/A  V_n(fit) = 2.740088 V  W_n(sine) = -6.7e-09 V  8F(f^2)/a^3 = 2.740094 V
+   (0,0, 8): f = 1.47305 1/A  V_n(fit) = 1.035737 V  W_n(sine) = -1.3e-08 V  8F(f^2)/a^3 = 1.035742 V
+   (0,0,12): f = 2.20958 1/A  V_n(fit) = 0.546696 V  W_n(sine) = -2.0e-08 V  8F(f^2)/a^3 = 0.546702 V
+   (0,0,16): f = 2.94610 1/A  V_n(fit) = 0.326515 V  W_n(sine) = -2.7e-08 V  8F(f^2)/a^3 = 0.326521 V
+   (0,0,20): f = 3.68263 1/A  V_n(fit) = 0.213642 V  W_n(sine) = -3.4e-08 V  8F(f^2)/a^3 = 0.213647 V
+   (0,0,24): f = 4.41916 1/A  V_n(fit) = 0.150269 V  W_n(sine) = -4.0e-08 V  8F(f^2)/a^3 = 0.150274 V
+dx = 0.02000 A, nx = 3966, 41 atoms, fit rms residual 2.82e-04 V; MIP (8 F(0)/a^3) = 13.902843 V; fitted V0 = 13.902842 V
+   (0,0, 4): f = 0.73653 1/A  V_n(fit) = 2.740093 V  W_n(sine) = -2.6e-09 V  8F(f^2)/a^3 = 2.740094 V
+   (0,0, 8): f = 1.47305 1/A  V_n(fit) = 1.035742 V  W_n(sine) = -5.2e-09 V  8F(f^2)/a^3 = 1.035742 V
+   (0,0,12): f = 2.20958 1/A  V_n(fit) = 0.546701 V  W_n(sine) = -7.8e-09 V  8F(f^2)/a^3 = 0.546702 V
+   (0,0,16): f = 2.94610 1/A  V_n(fit) = 0.326520 V  W_n(sine) = -1.0e-08 V  8F(f^2)/a^3 = 0.326521 V
+   (0,0,20): f = 3.68263 1/A  V_n(fit) = 0.213647 V  W_n(sine) = -1.3e-08 V  8F(f^2)/a^3 = 0.213647 V
+   (0,0,24): f = 4.41916 1/A  V_n(fit) = 0.150274 V  W_n(sine) = -1.6e-08 V  8F(f^2)/a^3 = 0.150274 V
+   CHECK PASS  fitted V_008 vs analytic 8F/a^3 (dx 0.01): got 1.035737148 want 1.035742493 err 5.345e-06 tol 1.0e-04
+   CHECK PASS  fitted V0 vs MIP (dx 0.01): got 13.90283721 want 13.90284255 err 5.341e-06 tol 1.0e-04
+   CHECK PASS  sine term of (0,0,8) vanishes (dx 0.01): got -1.33954049e-08 want 0 err 1.340e-08 tol 1.0e-05
+   CHECK PASS  fitted V_008 vs analytic 8F/a^3 (dx 0.02): got 1.035742127 want 1.035742493 err 3.657e-07 tol 1.0e-04
+   CHECK PASS  fitted V0 vs MIP (dx 0.02): got 13.90284219 want 13.90284255 err 3.650e-07 tol 1.0e-04
+   CHECK PASS  sine term of (0,0,8) vanishes (dx 0.02): got -5.206919673e-09 want 0 err 5.207e-09 tol 1.0e-05
+   CHECK PASS  MIP 13.903 V (M2, D3 F16): got 13.90284255 want 13.903 err 1.574e-04 tol 5.0e-04
+USED: V0 = 13.902843 V, V_004 = 2.740094 V, V_008 = 1.035742 V, V_012 = 0.546702 V, V_016 = 0.326521 V (static lattice, independent atoms; ASSUMPTION of the engine)
+(0,0,8): g = 8/a = 1.473052 cycles/A, G = 2 pi g = 9.255461 rad/A, d = a/8 = 0.678863 A; (0,0,4) fundamental g = 0.736526 cycles/A
+
+====================================================================================================
+3. Two-beam plateau parameters of (0,0,8) (r = 0) and exact band edges
+====================================================================================================
+U_0 = 2 k sigma V0 = 5.077263 rad^2/A^2, |U_g| = 0.378249 rad^2/A^2
+centre: K_c = 4.042107 rad/A, theta_ext = 16.13477 mrad (theta_int = 18.47189 mrad)
+two-beam edges: 15.94690 to 16.32049 mrad, width 0.37359 mrad = 373.59 urad
+extinction (amplitude) depth at the centre G/|U_g| = 24.469 A; coupling kc = sigma V_g = 7.548907e-04 rad/A; 1/kc = 1324.7 A along z; xi_g = pi/(sigma V_g) = 4161.7 A
+closed-form width 2 sigma V_g / K_c = 373.51 urad (= 2 kc in E-units: 1.5098e-03 rad/A); Darwin phase slope at the centre d(arg R)/d(theta) = K_c/(sigma V_g) = 5.355 rad/mrad; d(arg R)/dV0 = 1/V_g = 0.9655 rad/V; d(arg R)/dV_g = 0 at the centre
+derived quantities quoted in the report: U_g/G^2 = 4.416e-03; K_c^2/(4 k^2) = 6.51e-05 (paraxial vs exact z-dispersion); 2 q_c = 9.255 rad/A (momentum a smooth absorber ramp must supply for V_g = 0); at eta = 3 the Bloch waves differ by 2 delta = 0.2312 rad/A (beat length pi/delta = 27.2 A); sinc(pi g dx) = 0.99777 (dx 0.025 A), 0.99110 (dx 0.05 A); sheet-beam edge along z e/tan(theta_c) = 124 to 496 A for e = 2 to 8 A; top-edge contact of the test beam z_top = (2 + 24 A)/tan(theta_c) = 1611.3 A; V_008/0.84 V - 1 = +0.233 (M2 estimate)
+package specular_condition_for((0,0,8)) theta_ext = 16.134748 mrad (exact SM04 Delta incl. V0^2 term)
+   CHECK PASS  TT centre vs package specular condition: got 0.01613477295 want 0.01613474844 err 2.451e-08 tol 1.0e-07
+EXACT band edges (single harmonic): 15.94648 to 16.32008 mrad, width 373.595 urad, midpoint 16.13328 mrad; shifts vs two-beam: low -0.416 urad, high -0.409 urad
+full layer potential vs single harmonic: width change -11.0 %, midpoint shift +15.83 urad = +4.2 % of the single-harmonic width
+EXACT band edges (full layer potential, harmonics (0,0,4)...(0,0,48)): 15.98286 to 16.31535 mrad, width 332.492 urad, midpoint 16.14910 mrad
+
+====================================================================================================
+4. Exact solver cross-checks (r = 0, 0.05, 0.1)
+====================================================================================================
+r = 0.0: max |R_bloch(M=8) - R_floquet| = 6.27e-12; max |R(M=8) - R(M=4)| = 2.15e-12
+   CHECK PASS  Bloch vs Floquet-ODE, single harmonic, r = 0.0: got 6.267289713e-12 want 0 err 6.267e-12 tol 1.0e-09
+   CHECK PASS  plane-wave convergence M=4 vs 8, r = 0.0: got 2.146122375e-12 want 0 err 2.146e-12 tol 1.0e-09
+r = 0.05: max |R_bloch(M=8) - R_floquet| = 9.10e-13; max |R(M=8) - R(M=4)| = 3.36e-13
+   CHECK PASS  Bloch vs Floquet-ODE, single harmonic, r = 0.05: got 9.097082819e-13 want 0 err 9.097e-13 tol 1.0e-09
+   CHECK PASS  plane-wave convergence M=4 vs 8, r = 0.05: got 3.359813196e-13 want 0 err 3.360e-13 tol 1.0e-09
+r = 0.1: max |R_bloch(M=8) - R_floquet| = 3.90e-13; max |R(M=8) - R(M=4)| = 2.21e-13
+   CHECK PASS  Bloch vs Floquet-ODE, single harmonic, r = 0.1: got 3.900092791e-13 want 0 err 3.900e-13 tol 1.0e-09
+   CHECK PASS  plane-wave convergence M=4 vs 8, r = 0.1: got 2.214892569e-13 want 0 err 2.215e-13 tol 1.0e-09
+full layer potential (12 harmonics): max |R(M=48) - R(M=24)|, |R(M=48) - R_floquet| = 2.98e-10
+   CHECK PASS  multi-harmonic Bloch M=24/48 vs Floquet: got 2.977355375e-10 want 0 err 2.977e-10 tol 1.0e-08
+r = 0.05: finite crystal D = 600 A on a uniform substrate vs semi-infinite: max |dR| = 1.10e-11
+   CHECK PASS  finite depth -> semi-infinite, r = 0.05: got 1.101086947e-11 want 0 err 1.101e-11 tol 1.0e-07
+r = 0.1: finite crystal D = 400 A on a uniform substrate vs semi-infinite: max |dR| = 5.29e-12
+   CHECK PASS  finite depth -> semi-infinite, r = 0.1: got 5.289654028e-12 want 0 err 5.290e-12 tol 1.0e-07
+r = 0, plateau centre, D = 100 A: |R_D - R_inf| = 5.60e-04 (expected ~ exp(-2 D / 24.47 A) = 2.8e-04)
+r = 0, plateau centre, D = 200 A: |R_D - R_inf| = 1.57e-07 (expected ~ exp(-2 D / 24.47 A) = 8.0e-08)
+r = 0, plateau centre, D = 400 A: |R_D - R_inf| = 1.72e-11 (expected ~ exp(-2 D / 24.47 A) = 6.3e-15)
+   CHECK PASS  r = 0 plateau centre: finite depth 400 A = semi-infinite: got 1.722928846e-11 want 0 err 1.723e-11 tol 1.0e-09
+r = 0, eta = 1.5 (band, propagating): |R_D - R_inf| for D = 300..303, 600, 601 A: 0.280, 0.276, 0.274, 0.271, 0.286, 0.290  (no convergence without absorption)
+   CHECK PASS  r = 0 selection equals the r -> 0+ limit: got 5.137406781e-09 want 0 err 5.137e-09 tol 1.0e-07
+
+====================================================================================================
+5. Limits: Fresnel step (rung 1), unitarity, two-beam basis, Darwin form
+====================================================================================================
+V_g = 0, V0 = 12 V, 10.00 mrad: R = -0.131627-0.0e+00i; (K-q)/(K+q) = -0.131627; M2 analytic (SM04 dK) = -0.131628
+   CHECK PASS  Fresnel limit at 10.00 mrad: got -0.1316274352 want -0.1316274352 err 1.665e-16 tol 1.0e-12
+   CHECK PASS  rung-1 analytic (SM04 dK incl. V0^2) at 10.00 mrad: got -0.1316274352 want -0.1316282876 err 8.524e-07 tol 1.0e-05
+V_g = 0, V0 = 12 V, 16.47 mrad: R = -0.057202-0.0e+00i; (K-q)/(K+q) = -0.057202; M2 analytic (SM04 dK) = -0.057202
+   CHECK PASS  Fresnel limit at 16.47 mrad: got -0.05720175534 want -0.05720175534 err 1.041e-16 tol 1.0e-12
+   CHECK PASS  rung-1 analytic (SM04 dK incl. V0^2) at 16.47 mrad: got -0.05720175534 want -0.05720218582 err 4.305e-07 tol 1.0e-05
+V_g = 0, V0 = 12 V, 30.00 mrad: R = -0.018682-0.0e+00i; (K-q)/(K+q) = -0.018682; M2 analytic (SM04 dK) = -0.018682
+   CHECK PASS  Fresnel limit at 30.00 mrad: got -0.01868215331 want -0.01868215331 err 5.551e-17 tol 1.0e-12
+   CHECK PASS  rung-1 analytic (SM04 dK incl. V0^2) at 30.00 mrad: got -0.01868215331 want -0.01868230518 err 1.519e-07 tol 1.0e-05
+r = 0, 161 angles over eta in [-4, 4]: max |R| - 1 = +1.57e-13
+   CHECK PASS  |R| <= 1 + 1e-12 without absorption 
+   CHECK PASS  |R| = 1 inside the exact gap: got 1.574296249e-13 want 0 err 1.574e-13 tol 1.0e-10
+   CHECK PASS  |R| < 1 with absorption r = 0.05 (max |R| = 0.5423)
+   CHECK PASS  |R| < 1 with absorption r = 0.1 (max |R| = 0.3470)
+   CHECK PASS  two-beam closed form = Bloch method in the basis {0, 1}: got 2.185589922e-13 want 0 err 2.186e-13 tol 1.0e-10
+   CHECK PASS  Darwin arg R at eta = -1: got 4.178482285e-08 want 0 err 4.178e-08 tol 1.0e-06
+   CHECK PASS  Darwin arg R at eta = +0: got 1.570796327 want 1.570796327 err 0.000e+00 tol 1.0e-06
+   CHECK PASS  Darwin arg R at eta = +1: got 3.141592612 want 3.141592654 err 4.178e-08 tol 1.0e-06
+   CHECK PASS  i int J1(t)/t exp(i eta t) dt = -(eta - sqrt(eta^2-1)), eta = (0.3+0.2j): got (-0.2385632261+0.776613781j) want (-0.2385632262+0.776613781j) err 7.892e-13 tol 1.0e-06
+   CHECK PASS  i int J1(t)/t exp(i eta t) dt = -(eta - sqrt(eta^2-1)), eta = (-0.7+0.5j): got (0.330373629+0.4469021355j) want (0.330373629+0.4469021355j) err 1.241e-16 tol 1.0e-06
+   CHECK PASS  i int J1(t)/t exp(i eta t) dt = -(eta - sqrt(eta^2-1)), eta = (1.4+0.1j): got (-0.415011686+0.04213366611j) want (-0.4150116859+0.04213366594j) err 2.036e-10 tol 1.0e-06
+
+====================================================================================================
+6. Rocking curves of (0,0,8): exact (single harmonic) vs two-beam, r = 0, 0.05, 0.1
+====================================================================================================
+theta_ext in mrad; dth = theta - theta_c(two-beam centre) in urad; eta = two-beam deviation parameter (r = 0 definition); phases in rad; R referenced at x_s (cosine maximum at x_s);
+ex = exact (single harmonic V_008); 2b = two-beam matched closed form; DR = Darwin composed with the Fresnel step; TT = Darwin/Takagi-Taupin; full = exact, full layer potential (V_004 ... V_048, g = 4/a)
+
+--- r = 0.0 ---
+  eta     theta     dth |   |R|ex  arg ex |   |R|2b  arg 2b |   |R|DR  arg DR |   |R|TT  arg TT | |R|full arg full
+ -3.0  15.56435  -570.4 | 0.10099 -0.0000 | 0.10318 +0.0000 | 0.10091 +0.0000 | 0.17157 +0.0000 | 0.04624  +0.0000
+ -2.0  15.75678  -378.0 | 0.20165 +0.0000 | 0.20353 +0.0000 | 0.20135 +0.0000 | 0.26795 +0.0000 | 0.12795  +0.0000
+ -1.5  15.85213  -282.6 | 0.32159 +0.0000 | 0.32286 +0.0000 | 0.32084 +0.0000 | 0.38197 +0.0000 | 0.21648  -0.0000
+ -1.0  15.94690  -187.9 | 1.00000 +0.0762 | 1.00000 +0.0000 | 1.00000 +0.0000 | 1.00000 +0.0000 | 0.45149  -0.0000
+ -0.9  15.96579  -169.0 | 1.00000 +0.5207 | 1.00000 +0.5127 | 1.00000 +0.5149 | 1.00000 +0.4510 | 0.57827  -0.0000
+ -0.5  16.04111   -93.7 | 1.00000 +1.1722 | 1.00000 +1.1653 | 1.00000 +1.1694 | 1.00000 +1.0472 | 1.00000  +1.0152
+  0.0  16.13477     0.0 | 1.00000 +1.7080 | 1.00000 +1.7013 | 1.00000 +1.7057 | 1.00000 +1.5708 | 1.00000  +1.6701
+  0.5  16.22789    93.1 | 1.00000 +2.2088 | 1.00000 +2.2028 | 1.00000 +2.2064 | 1.00000 +2.0944 | 1.00000  +2.2188
+  0.9  16.30201   167.2 | 1.00000 +2.7497 | 1.00000 +2.7434 | 1.00000 +2.7451 | 1.00000 +2.6906 | 1.00000  +2.8040
+  1.0  16.32049   185.7 | 0.94342 +3.1416 | 1.00000 +3.1416 | 1.00000 +3.1416 | 1.00000 +3.1416 | 0.81349  +3.1416
+  1.5  16.41255   277.8 | 0.43592 +3.1416 | 0.43484 +3.1416 | 0.43659 +3.1416 | 0.38197 +3.1416 | 0.43116  +3.1416
+  2.0  16.50411   369.3 | 0.32690 -3.1416 | 0.32526 +3.1416 | 0.32718 +3.1416 | 0.26795 +3.1416 | 0.32986  +3.1416
+  3.0  16.68571   550.9 | 0.23263 -3.1416 | 0.23071 +3.1416 | 0.23272 +3.1416 | 0.17157 +3.1416 | 0.24203  +3.1416
+
+--- r = 0.05 ---
+  eta     theta     dth |   |R|ex  arg ex |   |R|2b  arg 2b |   |R|DR  arg DR |   |R|TT  arg TT | |R|full arg full
+ -3.0  15.56435  -570.4 | 0.09949 +0.4651 | 0.10150 +0.4552 | 0.09942 +0.4646 | 0.16668 +0.2847 | 0.05064  +0.7471
+ -2.0  15.75678  -378.0 | 0.18661 +0.5665 | 0.18830 +0.5595 | 0.18639 +0.5658 | 0.24729 +0.4172 | 0.12382  +0.6696
+ -1.5  15.85213  -282.6 | 0.26631 +0.7042 | 0.26761 +0.6974 | 0.26594 +0.7030 | 0.31952 +0.5583 | 0.19205  +0.7495
+ -1.0  15.94690  -187.9 | 0.37881 +0.9693 | 0.37955 +0.9621 | 0.37837 +0.9675 | 0.41768 +0.8153 | 0.29869  +0.9566
+ -0.9  15.96579  -169.0 | 0.40233 +1.0399 | 0.40296 +1.0326 | 0.40191 +1.0380 | 0.43741 +0.8832 | 0.32419  +1.0191
+ -0.5  16.04111   -93.7 | 0.48204 +1.3547 | 0.48228 +1.3471 | 0.48180 +1.3526 | 0.50069 +1.1891 | 0.42274  +1.3284
+  0.0  16.13477     0.0 | 0.53532 +1.7627 | 0.53512 +1.7555 | 0.53530 +1.7608 | 0.53382 +1.5986 | 0.50143  +1.7621
+  0.5  16.22789    93.1 | 0.53497 +2.1636 | 0.53441 +2.1573 | 0.53518 +2.1618 | 0.51431 +2.0185 | 0.51645  +2.1846
+  0.9  16.30201   167.2 | 0.48919 +2.4676 | 0.48838 +2.4625 | 0.48960 +2.4661 | 0.45363 +2.3471 | 0.47778  +2.4954
+  1.0  16.32049   185.7 | 0.47167 +2.5353 | 0.47078 +2.5305 | 0.47211 +2.5339 | 0.43270 +2.4211 | 0.46179  +2.5632
+  1.5  16.41255   277.8 | 0.37711 +2.7829 | 0.37577 +2.7796 | 0.37748 +2.7821 | 0.32581 +2.6932 | 0.37486  +2.8066
+  2.0  16.50411   369.3 | 0.30632 +2.9101 | 0.30466 +2.9077 | 0.30653 +2.9098 | 0.24951 +2.8336 | 0.30976  +2.9300
+  3.0  16.68571   550.9 | 0.22725 +3.0251 | 0.22533 +3.0234 | 0.22732 +3.0249 | 0.16711 +2.9619 | 0.23673  +3.0401
+
+--- r = 0.1 ---
+  eta     theta     dth |   |R|ex  arg ex |   |R|2b  arg 2b |   |R|DR  arg DR |   |R|TT  arg TT | |R|full arg full
+ -3.0  15.56435  -570.4 | 0.09611 +0.8888 | 0.09765 +0.8708 | 0.09605 +0.8880 | 0.15464 +0.5413 | 0.06020  +1.3169
+ -2.0  15.75678  -378.0 | 0.16092 +1.0177 | 0.16213 +1.0051 | 0.16079 +1.0168 | 0.20975 +0.7343 | 0.11709  +1.2171
+ -1.5  15.85213  -282.6 | 0.20675 +1.1544 | 0.20766 +1.1432 | 0.20660 +1.1532 | 0.24692 +0.8900 | 0.16113  +1.2881
+ -1.0  15.94690  -187.9 | 0.25860 +1.3508 | 0.25910 +1.3406 | 0.25844 +1.3494 | 0.28641 +1.0998 | 0.21521  +1.4391
+ -0.9  15.96579  -169.0 | 0.26890 +1.3970 | 0.26932 +1.3869 | 0.26875 +1.3955 | 0.29381 +1.1482 | 0.22665  +1.4786
+ -0.5  16.04111   -93.7 | 0.30648 +1.5991 | 0.30654 +1.5896 | 0.30638 +1.5976 | 0.31865 +1.3597 | 0.27093  +1.6624
+  0.0  16.13477     0.0 | 0.33836 +1.8755 | 0.33797 +1.8669 | 0.33835 +1.8740 | 0.33335 +1.6506 | 0.31374  +1.9299
+  0.5  16.22789    93.1 | 0.34655 +2.1544 | 0.34575 +2.1468 | 0.34664 +2.1530 | 0.32486 +1.9488 | 0.33222  +2.2061
+  0.9  16.30201   167.2 | 0.33531 +2.3614 | 0.33422 +2.3547 | 0.33546 +2.3602 | 0.30195 +2.1733 | 0.32766  +2.4108
+  1.0  16.32049   185.7 | 0.33045 +2.4089 | 0.32930 +2.4025 | 0.33060 +2.4078 | 0.29453 +2.2252 | 0.32425  +2.4576
+  1.5  16.41255   277.8 | 0.29920 +2.6125 | 0.29776 +2.6073 | 0.29936 +2.6117 | 0.25308 +2.4492 | 0.29912  +2.6563
+  2.0  16.50411   369.3 | 0.26579 +2.7585 | 0.26413 +2.7541 | 0.26591 +2.7580 | 0.21342 +2.6113 | 0.27016  +2.7970
+  3.0  16.68571   550.9 | 0.21364 +2.9306 | 0.21175 +2.9274 | 0.21370 +2.9304 | 0.15581 +2.8057 | 0.22338  +2.9601
+
+====================================================================================================
+7. Plateau summary: centre, width, phase sweep (exact vs two-beam)
+====================================================================================================
+r = 0.00 exact            : max|R| = 1.00000 at 15.95351 mrad; |R|^2 FWHM  395.94 urad centred 16.13636 mrad; arg R at eta=0: +1.7080; arg R at FWHM edges -0.0000 -> +3.1416 (sweep +3.1416)
+r = 0.00 two-beam matched : max|R| = 1.00000 at 15.95823 mrad; |R|^2 FWHM  395.94 urad centred 16.13636 mrad; arg R at eta=0: +1.7013; arg R at FWHM edges +0.0000 -> +3.1416 (sweep +3.1416)
+r = 0.00 Darwin+Fresnel   : max|R| = 1.00000 at 16.05519 mrad; |R|^2 FWHM  395.94 urad centred 16.13636 mrad; arg R at eta=0: +1.7057; arg R at FWHM edges +0.0000 -> +3.1416 (sweep +3.1416)
+r = 0.00 Darwin/TT        : max|R| = 1.00000 at 15.94784 mrad; |R|^2 FWHM  396.01 urad centred 16.13356 mrad; arg R at eta=0: +1.5708; arg R at FWHM edges +0.0000 -> +3.1416 (sweep +3.1416)
+      two-beam matched  vs exact, r = 0.00, |eta|<=0.9: max |dR| = 7.93e-03, max |arg(R/R_ex)| = 7.93e-03 rad
+      two-beam matched  vs exact, r = 0.00, |eta|<=3  : max |dR| = 7.62e-02, max |arg(R/R_ex)| = 7.62e-02 rad
+      Darwin+Fresnel    vs exact, r = 0.00, |eta|<=0.9: max |dR| = 5.73e-03, max |arg(R/R_ex)| = 5.73e-03 rad
+      Darwin+Fresnel    vs exact, r = 0.00, |eta|<=3  : max |dR| = 7.62e-02, max |arg(R/R_ex)| = 7.62e-02 rad
+      Darwin/TT         vs exact, r = 0.00, |eta|<=0.9: max |dR| = 1.38e-01, max |arg(R/R_ex)| = 1.38e-01 rad
+      Darwin/TT         vs exact, r = 0.00, |eta|<=3  : max |dR| = 1.38e-01, max |arg(R/R_ex)| = 1.38e-01 rad
+r = 0.05 exact            : max|R| = 0.54226 at 16.18140 mrad; |R|^2 FWHM  454.53 urad centred 16.17794 mrad; arg R at eta=0: +1.7627; arg R at FWHM edges +0.9830 -> +2.7685 (sweep +1.7855)
+r = 0.05 two-beam matched : max|R| = 0.54186 at 16.18140 mrad; |R|^2 FWHM  453.61 urad centred 16.17748 mrad; arg R at eta=0: +1.7555; arg R at FWHM edges +0.9758 -> +2.7633 (sweep +1.7875)
+r = 0.05 Darwin+Fresnel   : max|R| = 0.54234 at 16.18233 mrad; |R|^2 FWHM  454.50 urad centred 16.17887 mrad; arg R at eta=0: +1.7608; arg R at FWHM edges +0.9847 -> +2.7696 (sweep +1.7849)
+r = 0.05 Darwin/TT        : max|R| = 0.53439 at 16.14878 mrad; |R|^2 FWHM  454.71 urad centred 16.13831 mrad; arg R at eta=0: +1.5986; arg R at FWHM edges +0.7008 -> +2.5756 (sweep +1.8749)
+      two-beam matched  vs exact, r = 0.05, |eta|<=0.9: max |dR| = 3.86e-03, max |arg(R/R_ex)| = 7.52e-03 rad
+      two-beam matched  vs exact, r = 0.05, |eta|<=3  : max |dR| = 3.86e-03, max |arg(R/R_ex)| = 9.87e-03 rad
+      Darwin+Fresnel    vs exact, r = 0.05, |eta|<=0.9: max |dR| = 1.04e-03, max |arg(R/R_ex)| = 2.01e-03 rad
+      Darwin+Fresnel    vs exact, r = 0.05, |eta|<=3  : max |dR| = 1.04e-03, max |arg(R/R_ex)| = 2.01e-03 rad
+      Darwin/TT         vs exact, r = 0.05, |eta|<=0.9: max |dR| = 8.78e-02, max |arg(R/R_ex)| = 1.67e-01 rad
+      Darwin/TT         vs exact, r = 0.05, |eta|<=3  : max |dR| = 8.78e-02, max |arg(R/R_ex)| = 1.80e-01 rad
+r = 0.10 exact            : max|R| = 0.34697 at 16.21117 mrad; |R|^2 FWHM  642.82 urad centred 16.24467 mrad; arg R at eta=0: +1.8755; arg R at FWHM edges +1.2962 -> +2.8311 (sweep +1.5350)
+r = 0.10 two-beam matched : max|R| = 0.34624 at 16.20931 mrad; |R|^2 FWHM  641.07 urad centred 16.24190 mrad; arg R at eta=0: +1.8669; arg R at FWHM edges +1.2815 -> +2.8234 (sweep +1.5419)
+r = 0.10 Darwin+Fresnel   : max|R| = 0.34704 at 16.21117 mrad; |R|^2 FWHM  641.87 urad centred 16.24514 mrad; arg R at eta=0: +1.8740; arg R at FWHM edges +1.2970 -> +2.8307 (sweep +1.5337)
+r = 0.10 Darwin/TT        : max|R| = 0.33361 at 16.14878 mrad; |R|^2 FWHM  624.66 urad centred 16.13782 mrad; arg R at eta=0: +1.6506; arg R at FWHM edges +0.8412 -> +2.5226 (sweep +1.6814)
+      two-beam matched  vs exact, r = 0.10, |eta|<=0.9: max |dR| = 2.94e-03, max |arg(R/R_ex)| = 1.01e-02 rad
+      two-beam matched  vs exact, r = 0.10, |eta|<=3  : max |dR| = 2.94e-03, max |arg(R/R_ex)| = 1.80e-02 rad
+      Darwin+Fresnel    vs exact, r = 0.10, |eta|<=0.9: max |dR| = 4.96e-04, max |arg(R/R_ex)| = 1.49e-03 rad
+      Darwin+Fresnel    vs exact, r = 0.10, |eta|<=3  : max |dR| = 4.96e-04, max |arg(R/R_ex)| = 1.49e-03 rad
+      Darwin/TT         vs exact, r = 0.10, |eta|<=0.9: max |dR| = 7.60e-02, max |arg(R/R_ex)| = 2.49e-01 rad
+      Darwin/TT         vs exact, r = 0.10, |eta|<=3  : max |dR| = 7.60e-02, max |arg(R/R_ex)| = 3.48e-01 rad
+r = 0 exact: arg R at the band edges +0.00000 (low) and +3.14159 (high), at the midpoint +1.70007; sweep across the gap 3.14158 rad (Darwin: pi = 3.14159)
+Fresnel step amplitude at the (0,0,8) centre r_F = (K - q)/(K + q) = -0.06755; refraction phase at the centre 2 atan(|r_F|) = 0.13489 rad
+   CHECK PASS  two-beam matched: V_g = 0 gives the Fresnel step: got -0.02151959822 want -0.02151959822 err 2.429e-17 tol 1.0e-12
+   CHECK PASS  Darwin+Fresnel: V_g = 0 gives the Fresnel step: got -0.02151959822 want -0.02151959822 err 0.000e+00 tol 1.0e-12
+truncation plane offset t = 0.00000 A (cosine maximum t below x_s): R(centre) = 1.00000 exp(+1.70798 i); two-beam phase factor exp(i G t) adds +0.00000 rad
+truncation plane offset t = 0.16972 A (cosine maximum t below x_s): R(centre) = 1.00000 exp(-3.13195 i); two-beam phase factor exp(i G t) adds +1.57080 rad
+truncation plane offset t = 0.33943 A (cosine maximum t below x_s): R(centre) = 1.00000 exp(-1.70360 i); two-beam phase factor exp(i G t) adds -3.14159 rad
+   CHECK PASS  band edges independent of the truncation plane (bulk property): got 5.551115123e-17 want 0 err 5.551e-17 tol 1.0e-12
+full layer potential with the truncation plane a/8 above the top atomic plane (t = a/8): band edges 15.98286 to 16.31535 mrad (bulk property, unchanged); R at the band midpoint: t = 0 +1.7553 rad, t = a/8 +1.6453 rad
+
+====================================================================================================
+8. Paraxial / propagator models (stationary R(K), laterally uniform potential)
+====================================================================================================
+eta = -0.9: one-way ('exact' propagator) effective dV0 = -2.0534 mV; |R_oneway| - |R| = +2.85e-14, arg(R_oneway/R) = -5.118e-03 rad
+eta = +0.0: one-way ('exact' propagator) effective dV0 = -2.0911 mV; |R_oneway| - |R| = +2.63e-14, arg(R_oneway/R) = -2.018e-03 rad
+eta = +0.9: one-way ('exact' propagator) effective dV0 = -2.1289 mV; |R_oneway| - |R| = -1.45e-13, arg(R_oneway/R) = -4.207e-03 rad
+centre shift for the one-way scheme: d(K^2) = 7.637e-04 rad^2/A^2, d(theta) = +0.3771 urad = +1.01e-03 of the plateau width, d(eta) = +2.02e-03
+rung 1, V0 = 12 V, 10.00 mrad: predicted |r_exact-prop|/|r_Fresnel| - 1 = -0.0052 %; M2 section 2 measured (dx 0.025, dz 1): -0.005 % (exact -0.020 %, Fresnel -0.015 %)
+rung 1, V0 = 12 V, 16.47 mrad: predicted |r_exact-prop|/|r_Fresnel| - 1 = -0.0137 %; M2 section 2 measured (dx 0.025, dz 1): -0.013 % (exact -0.404 %, Fresnel -0.391 %)
+rung 1, V0 = 12 V, 30.00 mrad: predicted |r_exact-prop|/|r_Fresnel| - 1 = -0.0451 %; M2 section 2 measured (dx 0.025, dz 1): -0.045 % (exact -1.254 %, Fresnel -1.209 %)
+(e V)^2 term at eta = 0: arg(R_KG/R) = +1.33e-04 rad, |R_KG|-|R| = +3.7e-14; U_0 changes by 5.019e-05 rad^2/A^2 (relative 9.89e-06)
+
+====================================================================================================
+9. Build-up along the surface after a leading edge (two-beam closed form, sharp edge)
+====================================================================================================
+|A(Z) - R_TT| (and |arg(A/R_TT)| in rad) versus Z downstream of first contact
+r=0.00 eta=-0.5: 6.7e-01(3.4e-01)  3.6e-01(1.6e-01)  8.0e-02(7.5e-02)  3.5e-02(1.3e-02)  1.2e-02(6.2e-03)  4.8e-03(4.3e-03)
+r=0.00 eta=+0.0: 6.3e-01(4.3e-36)  3.1e-01(1.8e-34)  5.1e-02(1.5e-18)  1.9e-02(4.0e-18)  3.9e-03(3.1e-18)  1.6e-03(1.8e-18)
+r=0.00 eta=+0.5: 6.7e-01(3.4e-01)  3.6e-01(1.6e-01)  8.0e-02(7.5e-02)  3.5e-02(1.3e-02)  1.2e-02(6.2e-03)  4.8e-03(4.3e-03)
+r=0.05 eta=-0.5: 2.3e-01(2.6e-01)  9.0e-02(1.3e-01)  1.6e-03(2.5e-03)  1.4e-04(2.3e-05)  2.4e-06(1.5e-06)  6.5e-10(3.3e-11)
+r=0.05 eta=+0.0: 2.4e-01(2.0e-02)  9.1e-02(1.5e-02)  2.4e-03(4.4e-03)  2.4e-04(4.4e-04)  3.4e-06(5.6e-06)  8.5e-10(1.1e-09)
+r=0.05 eta=+0.5: 2.4e-01(2.3e-01)  9.5e-02(1.1e-01)  5.8e-03(4.9e-04)  4.7e-04(9.1e-04)  5.3e-06(1.0e-05)  1.2e-09(2.3e-09)
+r=0.10 eta=-0.5: 9.5e-02(1.5e-01)  2.4e-02(5.6e-02)  4.7e-04(1.2e-03)  5.7e-06(1.2e-05)  1.4e-09(2.6e-09)  6.9e-15(6.7e-15)
+r=0.10 eta=+0.0: 9.9e-02(1.6e-02)  2.5e-02(9.7e-03)  5.7e-04(1.5e-03)  6.9e-06(1.8e-05)  1.7e-09(4.2e-09)  3.9e-14(8.7e-15)
+r=0.10 eta=+0.5: 9.8e-02(1.3e-01)  2.5e-02(4.4e-02)  7.3e-04(7.8e-04)  8.4e-06(2.5e-05)  2.0e-09(5.8e-09)  7.2e-15(7.0e-15)
+
+build-up lengths (two-beam, sharp edge): smallest Z beyond which |A - R| <= tol (or |arg(A/R)| <= tol)
+r = 0.00 eta = -0.5 |R_TT| = 1.0000: Z(|dA|<=1e-2) =     26900 A, Z(|dA|<=1e-3) =    134660 A, Z(|d arg|<=1e-2 rad) =     23220 A
+r = 0.00 eta = +0.0 |R_TT| = 1.0000: Z(|dA|<=1e-2) =     22580 A, Z(|dA|<=1e-3) =    113560 A, Z(|d arg|<=1e-2 rad) =         0 A
+r = 0.00 eta = +0.5 |R_TT| = 1.0000: Z(|dA|<=1e-2) =     26900 A, Z(|dA|<=1e-3) =    134660 A, Z(|d arg|<=1e-2 rad) =     23220 A
+r = 0.00 eta = +0.9 |R_TT| = 1.0000: Z(|dA|<=1e-2) =     68800 A, Z(|dA|<=1e-3) =    342680 A, Z(|d arg|<=1e-2 rad) =     65220 A
+r = 0.05 eta = -0.5 |R_TT| = 0.5007: Z(|dA|<=1e-2) =      3500 A, Z(|dA|<=1e-3) =      7100 A, Z(|d arg|<=1e-2 rad) =      3720 A
+r = 0.05 eta = +0.0 |R_TT| = 0.5338: Z(|dA|<=1e-2) =      3480 A, Z(|dA|<=1e-3) =      7120 A, Z(|d arg|<=1e-2 rad) =      2900 A
+r = 0.05 eta = +0.5 |R_TT| = 0.5143: Z(|dA|<=1e-2) =      3660 A, Z(|dA|<=1e-3) =      7340 A, Z(|d arg|<=1e-2 rad) =      3560 A
+r = 0.05 eta = +0.9 |R_TT| = 0.4536: Z(|dA|<=1e-2) =      3860 A, Z(|dA|<=1e-3) =      7540 A, Z(|d arg|<=1e-2 rad) =      4480 A
+r = 0.10 eta = -0.5 |R_TT| = 0.3186: Z(|dA|<=1e-2) =      2560 A, Z(|dA|<=1e-3) =      3720 A, Z(|d arg|<=1e-2 rad) =      3180 A
+r = 0.10 eta = +0.0 |R_TT| = 0.3333: Z(|dA|<=1e-2) =      2580 A, Z(|dA|<=1e-3) =      3760 A, Z(|d arg|<=1e-2 rad) =      1960 A
+r = 0.10 eta = +0.5 |R_TT| = 0.3249: Z(|dA|<=1e-2) =      2600 A, Z(|dA|<=1e-3) =      3860 A, Z(|d arg|<=1e-2 rad) =      3020 A
+r = 0.10 eta = +0.9 |R_TT| = 0.3020: Z(|dA|<=1e-2) =      2600 A, Z(|dA|<=1e-3) =      3920 A, Z(|d arg|<=1e-2 rad) =      3320 A
+asymptote (r = 0, sharp edge): |A - R| ~ sqrt(2/pi) (kc Z)^(-3/2) / (1 - eta^2), kc = 7.5489e-04 rad/A -> at eta = 0: Z(1e-2) ~ 24551 A, Z(1e-3) ~ 113957 A
+r = 0.05: slowest decay exp(-Z/Z_a), Z_a = 1/(r sigma (V0 - V_g)) = 2133 A; fastest 1/(r sigma (V0 + V_g)) = 1837 A; mean absorption 1/(r sigma V0) = 1974 A
+r = 0.1: slowest decay exp(-Z/Z_a), Z_a = 1/(r sigma (V0 - V_g)) = 1066 A; fastest 1/(r sigma (V0 + V_g)) = 918 A; mean absorption 1/(r sigma V0) = 987 A
+   CHECK PASS  build-up A(Z -> inf) = R_TT, r = 0.05: got 4.851677226e-14 want 0 err 4.852e-14 tol 1.0e-08
+   CHECK PASS  build-up A(Z -> inf) = R_TT, r = 0.1: got 3.908040488e-14 want 0 err 3.908e-14 tol 1.0e-08
+   CHECK PASS  build-up A(4e5 A) -> R_TT, r = 0 (power law): got 0.0001384851129 want 0 err 1.385e-04 tol 2.0e-04
+
+====================================================================================================
+10. Exact step response (smooth edge, w = 400 A) vs two-beam, from R(E) by damped FFT
+====================================================================================================
+r = 0.0: FFT two-beam vs convolved closed form (5000 < Z < 50000 A): max |dA| = 6.99e-07
+   CHECK PASS  damped-FFT machinery vs closed form, r = 0.0: got 6.988958663e-07 want 0 err 6.989e-07 tol 2.0e-03
+   Z =    1953 A: |A_ex - R_ex| = 3.27e-01  |A_TT - R_TT| = 3.30e-01  |arg(A_ex/R_ex)| = 9.59e-03
+   Z =    4004 A: |A_ex - R_ex| = 5.22e-02  |A_TT - R_TT| = 4.74e-02  |arg(A_ex/R_ex)| = 1.97e-02
+   Z =    8008 A: |A_ex - R_ex| = 1.97e-02  |A_TT - R_TT| = 1.82e-02  |arg(A_ex/R_ex)| = 8.22e-03
+   Z =   16016 A: |A_ex - R_ex| = 4.66e-03  |A_TT - R_TT| = 3.89e-03  |arg(A_ex/R_ex)| = 2.78e-03
+   Z =   32031 A: |A_ex - R_ex| = 1.65e-03  |A_TT - R_TT| = 1.40e-03  |arg(A_ex/R_ex)| = 7.48e-04
+   CHECK PASS  exact step response -> R_exact at large Z, r = 0.0: got 0.002376258686 want 0 err 2.376e-03 tol 3.0e-03
+r = 0.1: FFT two-beam vs convolved closed form (5000 < Z < 50000 A): max |dA| = 8.98e-09
+   CHECK PASS  damped-FFT machinery vs closed form, r = 0.1: got 8.975805214e-09 want 0 err 8.976e-09 tol 2.0e-03
+   Z =    1953 A: |A_ex - R_ex| = 2.80e-02  |A_TT - R_TT| = 2.87e-02  |arg(A_ex/R_ex)| = 2.21e-02
+   Z =    4004 A: |A_ex - R_ex| = 5.20e-04  |A_TT - R_TT| = 6.65e-04  |arg(A_ex/R_ex)| = 1.13e-03
+   Z =    8008 A: |A_ex - R_ex| = 6.06e-06  |A_TT - R_TT| = 7.30e-06  |arg(A_ex/R_ex)| = 1.61e-05
+   Z =   16016 A: |A_ex - R_ex| = 1.47e-09  |A_TT - R_TT| = 1.69e-09  |arg(A_ex/R_ex)| = 3.92e-09
+   Z =   32031 A: |A_ex - R_ex| = 4.95e-12  |A_TT - R_TT| = 4.63e-12  |arg(A_ex/R_ex)| = 4.03e-13
+   CHECK PASS  exact step response -> R_exact at large Z, r = 0.1: got 1.711785954e-09 want 0 err 1.712e-09 tol 1.0e-06
+
+====================================================================================================
+11. Engine geometry: finite clean depth above the numerical absorber (sin^2, 100 V, 15 A)
+====================================================================================================
+r = 0.00 D =    60 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.8e-01 -1.0:3.4e-01 -0.9:1.1e-01 +0.0:1.1e-02 +0.9:9.0e-02 +1.0:3.0e-01 +1.5:3.6e-01 +3.0:1.6e-01
+r = 0.00 D =   100 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.0e-01 -1.0:2.0e-01 -0.9:2.4e-02 +0.0:4.4e-04 +0.9:2.1e-02 +1.0:1.9e-01 +1.5:2.6e-01 +3.0:1.6e-01
+r = 0.00 D =   150 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.4e-01 -1.0:1.2e-01 -0.9:4.0e-03 +0.0:7.4e-06 +0.9:3.6e-03 +1.0:1.3e-01 +1.5:3.1e-01 +3.0:1.5e-01
+r = 0.00 D =   250 A: |R_cell - R_inf| at eta -3.0:1.6e-01 -1.5:3.2e-01 -1.0:5.1e-02 -0.9:1.1e-04 +0.0:2.1e-09 +0.9:1.1e-04 +1.0:8.6e-02 +1.5:2.8e-01 +3.0:1.6e-01
+r = 0.05 D =    60 A: |R_cell - R_inf| at eta -3.0:3.5e-03 -1.5:3.7e-03 -1.0:2.6e-03 -0.9:2.4e-03 +0.0:1.4e-03 +0.9:3.0e-03 +1.0:3.4e-03 +1.5:5.0e-03 +3.0:4.8e-03
+r = 0.05 D =   100 A: |R_cell - R_inf| at eta -3.0:3.0e-04 -1.5:2.2e-04 -1.0:1.0e-04 -0.9:8.2e-05 +0.0:2.7e-05 +0.9:1.2e-04 +1.0:1.6e-04 +1.5:3.8e-04 +3.0:5.2e-04
+r = 0.05 D =   150 A: |R_cell - R_inf| at eta -3.0:1.4e-05 -1.5:6.4e-06 -1.0:1.7e-06 -0.9:1.2e-06 +0.0:2.0e-07 +0.9:2.3e-06 +1.0:3.5e-06 +1.5:1.5e-05 +3.0:3.3e-05
+r = 0.05 D =   250 A: |R_cell - R_inf| at eta -3.0:3.3e-08 -1.5:5.5e-09 -1.0:5.1e-10 -0.9:2.6e-10 +0.0:4.2e-12 +0.9:8.1e-10 +1.0:1.7e-09 +1.5:2.4e-08 +3.0:1.3e-07
+r = 0.10 D =    60 A: |R_cell - R_inf| at eta -3.0:7.7e-05 -1.5:8.0e-05 -1.0:7.2e-05 -0.9:7.1e-05 +0.0:6.8e-05 +0.9:9.8e-05 +1.0:1.0e-04 +1.5:1.3e-04 +3.0:1.4e-04
+r = 0.10 D =   100 A: |R_cell - R_inf| at eta -3.0:6.3e-07 -1.5:4.7e-07 -1.0:3.6e-07 -0.9:3.4e-07 +0.0:2.9e-07 +0.9:5.9e-07 +1.0:6.6e-07 +1.5:1.1e-06 +3.0:1.8e-06
+r = 0.10 D =   150 A: |R_cell - R_inf| at eta -3.0:1.5e-09 -1.5:7.7e-10 -1.0:4.7e-10 -0.9:4.3e-10 +0.0:3.0e-10 +0.9:9.9e-10 +1.0:1.2e-09 +1.5:2.6e-09 +3.0:7.2e-09
+r = 0.10 D =   250 A: |R_cell - R_inf| at eta -3.0:3.4e-12 -1.5:4.9e-12 -1.0:5.2e-12 -0.9:5.6e-12 +0.0:5.0e-12 +0.9:4.0e-12 +1.0:3.8e-12 +1.5:3.1e-12 +3.0:3.2e-12
+V_g = 0 (rung-1 geometry), D = 150 A: max |R_cell - R_Fresnel| = 1.2e-04 (absorber reflection)
+eta = 1.5, r = 0, D = 150 A: R_cell ODE = -0.420438+0.313894j, transfer matrices (h = 0.004, 0.002 A, Richardson) = -0.420438+0.313894j
+   CHECK PASS  finite cell: ODE vs transfer-matrix discretisation: got 1.180081294e-08 want 0 err 1.180e-08 tol 1.0e-06
+
+r = 0: absorber reflection of Bragg-case Bloch waves versus the absorber ramp (D = 150 A)
+   ramp    15 A, W0 = 100.0 V: |R_cell - R_inf| at eta -3.0, -1.5, +1.5, +3.0 = 1.6e-01, 3.4e-01, 3.1e-01, 1.5e-01
+   ramp   400 A, W0 =  20.0 V: |R_cell - R_inf| at eta -3.0, -1.5, +1.5, +3.0 = 7.1e-04, 1.0e-01, 9.4e-02, 7.1e-04
+   ramp   800 A, W0 =  20.0 V: |R_cell - R_inf| at eta -3.0, -1.5, +1.5, +3.0 = 1.7e-04, 2.0e-02, 1.8e-02, 1.7e-04
+
+M2 null-test geometry (tests/forward/null_test_cases.py: clean depth 21 A above a 15 A, 100 V sin^2 absorber for crystal A; crystal B = A plus two layers, clean depth 21 + a/2 A), stationary 1D prediction at theta = 16.1347 mrad (R at each crystal's own surface):
+   single (0,0,8)        r = 0.00: |R_inf| = 1.0000; |R_A| = 0.7544, |R_B| = 0.7984; arg(R_B/R_A) = -0.0018 rad, |R_B/R_A| = 1.0582; arg(R_A/R_inf) = +0.0045 rad
+   single (0,0,8)        r = 0.05: |R_inf| = 0.5353; |R_A| = 0.4734, |R_B| = 0.4876; arg(R_B/R_A) = -0.0044 rad, |R_B/R_A| = 1.0302; arg(R_A/R_inf) = +0.0201 rad
+   single (0,0,8)        r = 0.10: |R_inf| = 0.3383; |R_A| = 0.3249, |R_B| = 0.3291; arg(R_B/R_A) = -0.0032 rad, |R_B/R_A| = 1.0128; arg(R_A/R_inf) = +0.0109 rad
+   full layer potential  r = 0.00: |R_inf| = 1.0000; |R_A| = 0.7047, |R_B| = 0.7508; arg(R_B/R_A) = -0.0081 rad, |R_B/R_A| = 1.0655; arg(R_A/R_inf) = +0.0384 rad
+   full layer potential  r = 0.05: |R_inf| = 0.5014; |R_A| = 0.4367, |R_B| = 0.4508; arg(R_B/R_A) = -0.0095 rad, |R_B/R_A| = 1.0322; arg(R_A/R_inf) = +0.0479 rad
+   full layer potential  r = 0.10: |R_inf| = 0.3137; |R_A| = 0.3010, |R_B| = 0.3049; arg(R_B/R_A) = -0.0060 rad, |R_B/R_A| = 1.0129; arg(R_A/R_inf) = +0.0218 rad
+   same pair with deeper clean crystal (full layer potential):
+      D =    60 A, r = 0.05: arg(R_B/R_A) = -4.24e-04 rad, |R_B/R_A| - 1 = +7.82e-04
+      D =    60 A, r = 0.10: arg(R_B/R_A) = -5.67e-05 rad, |R_B/R_A| - 1 = +6.13e-05
+      D =   100 A, r = 0.05: arg(R_B/R_A) = -1.59e-05 rad, |R_B/R_A| - 1 = +1.71e-05
+      D =   100 A, r = 0.10: arg(R_B/R_A) = -3.91e-07 rad, |R_B/R_A| - 1 = +2.09e-07
+      D =   150 A, r = 0.05: arg(R_B/R_A) = -2.16e-07 rad, |R_B/R_A| - 1 = +1.20e-07
+      D =   150 A, r = 0.10: arg(R_B/R_A) = -6.33e-10 rad, |R_B/R_A| - 1 = +4.77e-11
+
+====================================================================================================
+12. Independent minimal 1D split step (NOT the engine): paraxial claims and test protocol
+====================================================================================================
+F         r = 0.10 fresnel dx = 0.02500 A dz = 1.0 A D = 100 A Z_e = 5000 A: nx = 16308, 6612 slices, bins |eta|<=3: 18; vs reference (exact): max |dR| = 4.39e-04 (|eta|<=0.9: 4.39e-04), max |d arg| = 1.82e-03 (|eta|<=0.9: 1.40e-03) rad
+X         r = 0.10 exact   dx = 0.02500 A dz = 1.0 A D = 100 A Z_e = 5000 A: nx = 16308, 6612 slices, bins |eta|<=3: 18; vs reference (engine_exact_propagator): max |dR| = 4.47e-04 (|eta|<=0.9: 4.40e-04), max |d arg| = 1.80e-03 (|eta|<=0.9: 1.38e-03) rad
+F_dx05    r = 0.10 fresnel dx = 0.05000 A dz = 1.0 A D = 100 A Z_e = 5000 A: nx = 8154, 6612 slices, bins |eta|<=3: 18; vs reference (exact): max |dR| = 1.44e-03 (|eta|<=0.9: 1.44e-03), max |d arg| = 7.38e-03 (|eta|<=0.9: 4.58e-03) rad
+F_dx0125  r = 0.10 fresnel dx = 0.01250 A dz = 1.0 A D = 100 A Z_e = 5000 A: nx = 32616, 6612 slices, bins |eta|<=3: 18; vs reference (exact): max |dR| = 2.02e-04 (|eta|<=0.9: 1.92e-04), max |d arg| = 7.45e-04 (|eta|<=0.9: 5.78e-04) rad
+F_dz05    r = 0.10 fresnel dx = 0.02500 A dz = 0.5 A D = 100 A Z_e = 5000 A: nx = 16308, 13223 slices, bins |eta|<=3: 18; vs reference (exact): max |dR| = 3.88e-04 (|eta|<=0.9: 3.80e-04), max |d arg| = 1.52e-03 (|eta|<=0.9: 1.21e-03) rad
+F_r005    r = 0.05 fresnel dx = 0.02500 A dz = 1.0 A D = 150 A Z_e = 10000 A: nx = 21536, 11612 slices, bins |eta|<=3: 24; vs reference (exact): max |dR| = 2.78e-04 (|eta|<=0.9: 2.78e-04), max |d arg| = 9.17e-04 (|eta|<=0.9: 5.82e-04) rad
+bin spacing of run F: 1/extent = 2.453e-03 1/A = 61.5 urad in theta; L = 6612 A
+   F bin eta = -1.073: r_ss = 0.25108 exp(+1.31778 i), R_ref = 0.25100 exp(+1.31861 i)
+   F bin eta = -0.747: r_ss = 0.28407 exp(+1.47024 i), R_ref = 0.28415 exp(+1.47135 i)
+   F bin eta = -0.420: r_ss = 0.31292 exp(+1.64089 i), R_ref = 0.31296 exp(+1.64229 i)
+   F bin eta = -0.091: r_ss = 0.33422 exp(+1.82296 i), R_ref = 0.33417 exp(+1.82412 i)
+   F bin eta = +0.238: r_ss = 0.34544 exp(+2.00911 i), R_ref = 0.34546 exp(+2.00968 i)
+   F bin eta = +0.569: r_ss = 0.34541 exp(+2.19120 i), R_ref = 0.34567 exp(+2.19179 i)
+   F bin eta = +0.902: r_ss = 0.33499 exp(+2.36103 i), R_ref = 0.33524 exp(+2.36209 i)
+   CHECK PASS  split step (Fresnel, dx 0.025, dz 1) vs Helmholtz reference, |eta| <= 3: got 0.0004390498177 want 0 err 4.390e-04 tol 1.0e-03
+   CHECK PASS  split step (exact propagator) vs one-way reference model: got 0.0004473952693 want 0 err 4.474e-04 tol 1.0e-03
+   CHECK PASS  F and X runs share their bins 
+exact minus Fresnel propagator, r = 0.1, |eta| <= 0.9: measured arg(r_X/r_F) in [-1.18e-03, -1.07e-03] rad, predicted [-1.20e-03, -1.10e-03] rad; max |measured - predicted| = 4.7e-05
+   CHECK PASS  propagator difference measured vs one-way prediction (|eta| <= 0.9): got 4.673035566e-05 want 0 err 4.673e-05 tol 2.0e-04
+dx convergence (max |dR|, |eta| <= 3): 0.05 A 1.44e-03, 0.025 A 4.39e-04, 0.0125 A 2.02e-04; observed orders 1.71, 1.12
+   CHECK PASS  dx convergence order >= 1.5 between 0.05 and 0.025 A 
+dz 0.5 A (dx 0.025): max |dR| = 3.88e-04
+r = 0.05 (D = 150 A, Z_e = 10000 A): max |dR| = 2.78e-04
+r = 0 (D = 250 A, Z_e = 30000 A): nx = 38444, 31612 slices; whole-box read-out and vacuum-only read-out (window from x_s + 60 A, full from x_s + 100 A)
+   eta = -2.924: whole box |dR| = 1.16e-01, d arg = +1.48e+00 rad; vacuum-only |dR| = 2.31e-03, d arg = +2.08e-02 rad
+   eta = -2.789: whole box |dR| = 1.10e-01, d arg = -3.05e-01 rad; vacuum-only |dR| = 2.31e-03, d arg = -1.66e-02 rad
+   eta = -2.654: whole box |dR| = 1.03e-01, d arg = +9.47e-01 rad; vacuum-only |dR| = 2.92e-03, d arg = +6.29e-03 rad
+   eta = -2.518: whole box |dR| = 9.72e-02, d arg = -3.48e-01 rad; vacuum-only |dR| = 2.63e-03, d arg = +4.28e-03 rad
+   eta = -2.383: whole box |dR| = 9.05e-02, d arg = +6.39e-01 rad; vacuum-only |dR| = 3.44e-03, d arg = -1.41e-02 rad
+   eta = -2.247: whole box |dR| = 8.42e-02, d arg = -3.37e-01 rad; vacuum-only |dR| = 3.46e-03, d arg = +2.02e-02 rad
+   eta = -2.111: whole box |dR| = 7.75e-02, d arg = +4.32e-01 rad; vacuum-only |dR| = 4.03e-03, d arg = -2.17e-02 rad
+   eta = -1.974: whole box |dR| = 7.18e-02, d arg = -2.86e-01 rad; vacuum-only |dR| = 4.79e-03, d arg = +1.69e-02 rad
+   eta = -1.838: whole box |dR| = 6.58e-02, d arg = +2.89e-01 rad; vacuum-only |dR| = 5.22e-03, d arg = -9.33e-03 rad
+   eta = -1.701: whole box |dR| = 6.05e-02, d arg = -2.13e-01 rad; vacuum-only |dR| = 6.86e-03, d arg = -2.22e-03 rad
+   eta = -1.564: whole box |dR| = 5.56e-02, d arg = +1.86e-01 rad; vacuum-only |dR| = 8.04e-03, d arg = +1.45e-02 rad
+   eta = -1.426: whole box |dR| = 5.22e-02, d arg = -1.46e-01 rad; vacuum-only |dR| = 1.12e-02, d arg = -2.58e-02 rad
+   eta = -1.289: whole box |dR| = 5.04e-02, d arg = +1.19e-01 rad; vacuum-only |dR| = 1.61e-02, d arg = +3.79e-02 rad
+   eta = -1.151: whole box |dR| = 5.58e-02, d arg = -1.04e-01 rad; vacuum-only |dR| = 2.90e-02, d arg = -5.40e-02 rad
+   eta = -1.013: whole box |dR| = 1.35e-01, d arg = +1.60e-01 rad; vacuum-only |dR| = 1.15e-01, d arg = +1.37e-01 rad
+   eta = -0.875: whole box |dR| = 4.49e-02, d arg = -3.97e-02 rad; vacuum-only |dR| = 3.61e-02, d arg = -2.62e-02 rad
+   eta = -0.737: whole box |dR| = 3.09e-02, d arg = +3.08e-02 rad; vacuum-only |dR| = 1.97e-02, d arg = +1.92e-02 rad
+   eta = -0.598: whole box |dR| = 2.71e-02, d arg = -2.70e-02 rad; vacuum-only |dR| = 1.51e-02, d arg = -1.45e-02 rad
+   eta = -0.459: whole box |dR| = 2.31e-02, d arg = +2.24e-02 rad; vacuum-only |dR| = 1.12e-02, d arg = +6.93e-03 rad
+   eta = -0.320: whole box |dR| = 2.25e-02, d arg = -2.20e-02 rad; vacuum-only |dR| = 1.02e-02, d arg = -2.58e-03 rad
+   eta = -0.181: whole box |dR| = 1.96e-02, d arg = +1.89e-02 rad; vacuum-only |dR| = 9.34e-03, d arg = -3.62e-03 rad
+   eta = -0.041: whole box |dR| = 1.98e-02, d arg = -1.95e-02 rad; vacuum-only |dR| = 8.19e-03, d arg = +5.83e-03 rad
+   eta = +0.099: whole box |dR| = 1.82e-02, d arg = +1.80e-02 rad; vacuum-only |dR| = 9.21e-03, d arg = -8.99e-03 rad
+   eta = +0.239: whole box |dR| = 1.99e-02, d arg = -1.99e-02 rad; vacuum-only |dR| = 8.27e-03, d arg = +7.90e-03 rad
+   eta = +0.379: whole box |dR| = 1.98e-02, d arg = +1.97e-02 rad; vacuum-only |dR| = 1.01e-02, d arg = -7.57e-03 rad
+   eta = +0.519: whole box |dR| = 2.30e-02, d arg = -2.25e-02 rad; vacuum-only |dR| = 1.09e-02, d arg = +2.88e-03 rad
+   eta = +0.660: whole box |dR| = 2.65e-02, d arg = +2.57e-02 rad; vacuum-only |dR| = 1.40e-02, d arg = +1.97e-03 rad
+   eta = +0.801: whole box |dR| = 3.61e-02, d arg = -3.39e-02 rad; vacuum-only |dR| = 2.10e-02, d arg = -1.25e-02 rad
+   eta = +0.942: whole box |dR| = 6.28e-02, d arg = +5.94e-02 rad; vacuum-only |dR| = 4.73e-02, d arg = +3.92e-02 rad
+   eta = +1.083: whole box |dR| = 3.17e-02, d arg = -1.52e-02 rad; vacuum-only |dR| = 3.33e-02, d arg = +1.30e-02 rad
+   eta = +1.225: whole box |dR| = 3.13e-02, d arg = +4.18e-02 rad; vacuum-only |dR| = 1.51e-02, d arg = -3.14e-03 rad
+   eta = +1.367: whole box |dR| = 4.05e-02, d arg = -5.99e-02 rad; vacuum-only |dR| = 9.06e-03, d arg = -4.21e-03 rad
+   eta = +1.509: whole box |dR| = 5.10e-02, d arg = +9.24e-02 rad; vacuum-only |dR| = 6.86e-03, d arg = +9.21e-03 rad
+   eta = +1.651: whole box |dR| = 6.18e-02, d arg = -9.70e-02 rad; vacuum-only |dR| = 5.15e-03, d arg = -1.16e-02 rad
+   eta = +1.794: whole box |dR| = 7.50e-02, d arg = +1.58e-01 rad; vacuum-only |dR| = 4.50e-03, d arg = +1.24e-02 rad
+   eta = +1.936: whole box |dR| = 8.84e-02, d arg = -1.32e-01 rad; vacuum-only |dR| = 4.13e-03, d arg = -1.10e-02 rad
+   eta = +2.079: whole box |dR| = 1.03e-01, d arg = +2.49e-01 rad; vacuum-only |dR| = 3.64e-03, d arg = +7.88e-03 rad
+   eta = +2.222: whole box |dR| = 1.17e-01, d arg = -1.61e-01 rad; vacuum-only |dR| = 4.03e-03, d arg = -3.38e-03 rad
+   eta = +2.366: whole box |dR| = 1.33e-01, d arg = +3.90e-01 rad; vacuum-only |dR| = 3.58e-03, d arg = -2.06e-03 rad
+   eta = +2.509: whole box |dR| = 1.48e-01, d arg = -1.81e-01 rad; vacuum-only |dR| = 4.25e-03, d arg = +8.07e-03 rad
+   eta = +2.653: whole box |dR| = 1.62e-01, d arg = +5.90e-01 rad; vacuum-only |dR| = 4.07e-03, d arg = -1.32e-02 rad
+   eta = +2.797: whole box |dR| = 1.75e-01, d arg = -1.95e-01 rad; vacuum-only |dR| = 4.63e-03, d arg = +1.80e-02 rad
+   eta = +2.942: whole box |dR| = 1.87e-01, d arg = +8.72e-01 rad; vacuum-only |dR| = 4.89e-03, d arg = -2.05e-02 rad
+   |eta| <= 0.5: max |dR| whole box 2.31e-02, vacuum-only 1.12e-02
+   |eta| <= 0.9: max |dR| whole box 4.49e-02, vacuum-only 3.61e-02
+
+====================================================================================================
+12b. Sensitivity of the rung-2 read-out (what a given tolerance can detect)
+====================================================================================================
+max over the bins of |R_perturbed - R| (and of |arg(R_perturbed/R)|), same angles
+   r = 0.10, |eta| <= 3.0: V0 + 1 mV                                                 : max |dR| = 1.96e-04, max |d arg| = 5.75e-04 rad
+   r = 0.10, |eta| <= 3.0: V0 + 5 mV                                                 : max |dR| = 9.78e-04, max |d arg| = 2.88e-03 rad
+   r = 0.10, |eta| <= 3.0: V_g x sinc(pi g dx), dx = 0.025 A (cell-averaged harmonic): max |dR| = 6.12e-04, max |d arg| = 1.07e-03 rad
+   r = 0.10, |eta| <= 3.0: V_g x sinc(pi g dx), dx = 0.05 A                          : max |dR| = 2.45e-03, max |d arg| = 4.33e-03 rad
+   r = 0.10, |eta| <= 3.0: cosine origin 0.01 A below x_s (t = 0.01 A)               : max |dR| = 3.09e-02, max |d arg| = 1.43e-01 rad
+   r = 0.10, |eta| <= 3.0: engine exact propagator (one-way model)                   : max |dR| = 4.10e-04, max |d arg| = 1.20e-03 rad
+   r = 0.10: read-out reference plane moved by 0.01 A changes arg R by 2 K (0.01 A) = 0.0780 to 0.0836 rad
+   r = 0.10: Darwin/TT instead of exact: max |dR| = 7.60e-02
+   r = 0.05, |eta| <= 3.0: V0 + 1 mV                                                 : max |dR| = 4.29e-04, max |d arg| = 8.19e-04 rad
+   r = 0.05, |eta| <= 3.0: V0 + 5 mV                                                 : max |dR| = 2.14e-03, max |d arg| = 4.10e-03 rad
+   r = 0.05, |eta| <= 3.0: V_g x sinc(pi g dx), dx = 0.025 A (cell-averaged harmonic): max |dR| = 9.59e-04, max |d arg| = 9.03e-04 rad
+   r = 0.05, |eta| <= 3.0: V_g x sinc(pi g dx), dx = 0.05 A                          : max |dR| = 3.83e-03, max |d arg| = 3.61e-03 rad
+   r = 0.05, |eta| <= 3.0: cosine origin 0.01 A below x_s (t = 0.01 A)               : max |dR| = 4.96e-02, max |d arg| = 1.59e-01 rad
+   r = 0.05, |eta| <= 3.0: engine exact propagator (one-way model)                   : max |dR| = 8.98e-04, max |d arg| = 1.70e-03 rad
+   r = 0.05: read-out reference plane moved by 0.01 A changes arg R by 2 K (0.01 A) = 0.0780 to 0.0836 rad
+   r = 0.05: Darwin/TT instead of exact: max |dR| = 8.78e-02
+   r = 0.00, |eta| <= 0.5: V0 + 1 mV                                                 : max |dR| = 1.19e-03, max |d arg| = 1.19e-03 rad
+   r = 0.00, |eta| <= 0.5: V0 + 5 mV                                                 : max |dR| = 5.94e-03, max |d arg| = 5.94e-03 rad
+   r = 0.00, |eta| <= 0.5: V_g x sinc(pi g dx), dx = 0.025 A (cell-averaged harmonic): max |dR| = 1.38e-03, max |d arg| = 1.38e-03 rad
+   r = 0.00, |eta| <= 0.5: V_g x sinc(pi g dx), dx = 0.05 A                          : max |dR| = 5.54e-03, max |d arg| = 5.54e-03 rad
+   r = 0.00, |eta| <= 0.5: cosine origin 0.01 A below x_s (t = 0.01 A)               : max |dR| = 9.98e-02, max |d arg| = 9.98e-02 rad
+   r = 0.00, |eta| <= 0.5: engine exact propagator (one-way model)                   : max |dR| = 2.47e-03, max |d arg| = 2.47e-03 rad
+   r = 0.00: read-out reference plane moved by 0.01 A changes arg R by 2 K (0.01 A) = 0.0804 to 0.0813 rad
+   r = 0.00: Darwin/TT instead of exact: max |dR| = 1.38e-01
+
+====================================================================================================
+13. Summary of self-checks
+====================================================================================================
+peak resident memory of this process: 389 MB
+57 checks, 0 failed
+exit 0
+```

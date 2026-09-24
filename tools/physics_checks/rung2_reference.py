@@ -5,9 +5,9 @@ Ladder: docs/05_final_repository_specification.md section 4.4, rung 2 ("Bragg-ca
 solution for one allowed reflection, which gives arg A in closed form across the Darwin plateau; the
 multislice must reproduce the phase sweep, not only the width"). Report:
 docs/agent_reports/P2_rung2_reference.md (premises, derivations, numbers, proposed engine test).
-Run: venv/bin/python tools/physics_checks/rung2_reference.py [--long]  (prints every number of the report
-and exits non-zero if a self-check fails; about 6 minutes on one free core, longer on a loaded machine;
-peak memory below 0.5 GB; --long adds the r = 0 split-step run of report section 7, about 5 minutes).
+Run: venv/bin/python -u tools/physics_checks/rung2_reference.py --long  (prints every number of the report
+and exits non-zero if a self-check fails; --long adds the r = 0 split step of report section 8.4 (R2-B);
+the final run took 13 min CPU, 20 min wall on a shared 4-core machine; peak memory 389 MB).
 
 Every formula below is DERIVED_HERE from the premises stated in the report (section 1); no textbook
 passage was read for it, so no textbook is cited.
