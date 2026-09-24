@@ -1,0 +1,108 @@
+R1 figure manifest (tools/report/figure_manifest.py). SP = /tmp/claude-0/-home-user-Holography/9d1f1226-7b90-5531-81d3-dd64f26d9e5a/scratchpad
+written at repository HEAD eae52415af1f6a7cbc68234e72825cc8991d2cf6; git status --porcelain: ['M docs/agent_reports/R1_smoke_campaign.md', '?? tools/report/figure_manifest.py', '?? tools/report/figure_manifest.txt', '?? tools/report/make_report_figures.sh', '?? tools/report/report_figures.py', '?? tools/report/report_figures_output.txt', '?? tools/report/smoke_parameters_output.txt']
+All figures: DEMO runs, not comparable to experiment; 200 keV; multislice engine UNVALIDATED for step heights. Figures made by tools/report/report_figures.py are 7.5 in wide at 150 dpi.
+Figure stdout (every annotated number): tools/report/report_figures_output.txt; run parameters and results: tools/report/smoke_parameters_output.txt; campaign log: SP/report_smoke/campaign_log.txt.
+
+file:     SP/report_smoke/figures/f0_pipeline_overview.png
+sha256:   09eebe782032d10a3e251dbe67e3e8adba2bdc03b67a87ccec448a21b429508f; 1125 x 1260 px; dpi 150; 7.50 x 8.40 in
+script:   tools/report/report_figures.py (fig_overview)
+command:  PYTHONPATH=. venv/bin/python tools/report/report_figures.py --runs SP/report_smoke --out SP/report_smoke/figures --t1-figures SP/torus/figures --t5-figures SP/buried_t5/figures
+runs:     none (schematic)
+commits:  -
+caption:  Flow of `python -m reflection_holo.pipeline run` (stages of reflection_holo/pipeline/run.py, module names in each box) with its refusal gates (exit codes of pipeline/__main__.py; thresholds of stand-in B29 in the demo configs); a schematic, no data.
+
+file:     SP/report_smoke/figures/s1_staircase_geometric.png
+sha256:   090c90c0fbf097bc055cffe4cf1ced1f38d652fc9a83d3fda8f43792470564f0; 1125 x 1110 px; dpi 150; 7.50 x 7.40 in
+script:   tools/report/report_figures.py (fig_s1)
+command:  PYTHONPATH=. venv/bin/python tools/report/report_figures.py --runs SP/report_smoke --out SP/report_smoke/figures --t1-figures SP/torus/figures --t5-figures SP/buried_t5/figures
+runs:     SP/report_smoke/S1_base
+commits:  S1_base: 2896522 (dirty True)
+caption:  S1, configs/demo_smoke_si001.yaml base, geometric engine (no dynamical amplitude), every unsupplied input an ASSUMPTION stand-in (B19-B31): object-hologram crop across the a/2 step, reconstructed wrapped phase, amplitude, quantification regions, wrapped phase along the beam and terrace heights built vs recovered (0->1 +2.7156 +- 0.0165 A (built +2.7155); 1->2 -1.3576 +- 0.0082 A (built -1.3577); 2->0 -1.3580 +- 0.0082 A (built -1.3577)); no-step control -0.0037 rad vs tolerance 0.0123 rad; DEMO, not comparable to experiment.
+
+file:     SP/report_smoke/figures/s2_multislice_tiny_supercell_exitwave.png
+sha256:   6558349ee3e88a478f78143456b7e29c730fc0142bd217c2033f6a4f783a60b8; 1125 x 990 px; dpi 150; 7.50 x 6.60 in
+script:   tools/report/report_figures.py (fig_s2)
+command:  PYTHONPATH=. venv/bin/python tools/report/report_figures.py --runs SP/report_smoke --out SP/report_smoke/figures --t1-figures SP/torus/figures --t5-figures SP/buried_t5/figures
+runs:     SP/report_smoke/S2_multislice_tiny
+commits:  S2_multislice_tiny: 2896522 (dirty True)
+caption:  S2, variant multislice_tiny: side view of the 27,000-atom supercell with the numerical absorbers and the sheet beam, and the complex exit wave (|psi|, arg psi, amplitude profiles of all beams and of the specular beam selected by the 3 mrad aperture, ASSUMPTION B22); Kirkland IAM potential (REPRODUCED MIP 13.903 V), no absorption (B30), static lattice, glancing angle 16.1347 mrad (B32); multislice engine UNVALIDATED for step heights; the run returns NO HEIGHT (terraces shorter than the 3-resolution margin).
+
+file:     SP/report_smoke/figures/s2_detail/supercell.png
+sha256:   914f82111edb05f81a7a6eb87cdf75c85e156bd7a0ff6b0d5a2ee548d3cd540c; 2186 x 1217 px; dpi 150; 14.57 x 8.11 in
+script:   tools/plots/smoke_figures.py (supercell_figure; reused, unchanged)
+command:  PYTHONPATH=. venv/bin/python tools/plots/smoke_figures.py --config configs/demo_smoke_si001.yaml --variant multislice_tiny --run-dir SP/report_smoke/S2_multislice_tiny --geometric-run-dir SP/report_smoke/S1_base --out SP/report_smoke/figures/s2_detail
+runs:     configs/demo_smoke_si001.yaml variant multislice_tiny (rebuilt by the script)
+commits:  rebuilt from the configuration by the code at the HEAD above (figures are built just before this manifest by tools/report/make_report_figures.sh)
+caption:  S2 supplementary (15 in wide, for a full landscape page): the same supercell with zooms on the a/2 translation step and the a/4 screw/glide step and a top view of the back-bond rotation across the a/4 step; bulk-terminated (B26) DEMO structure.
+
+file:     SP/report_smoke/figures/s2_detail/exit_wave_complex.png
+sha256:   dd608fff8c305a09f591ed60d36e699413895b2828dc9732c6e24e6f1b7e9207; 1950 x 1440 px; dpi 150; 13.00 x 9.60 in
+script:   tools/plots/smoke_figures.py (exitwave_figure; reused, unchanged)
+command:  same command as s2_detail/supercell.png
+runs:     SP/report_smoke/S2_multislice_tiny and S1_base
+commits:  S2_multislice_tiny: 2896522 (dirty True); S1_base: 2896522 (dirty True)
+caption:  S2 supplementary, NOT recommended for the report: its lower-right panel is the S1 geometric-engine wave and labels as 'unwrapped' a numpy.unwrap of the row-mean phase, which cannot recover whole wraps across a sharp a/4 or a/2 step; the other three panels repeat s2_multislice_tiny_*.png.
+
+file:     SP/report_smoke/figures/s3_thermal_vs_static.png
+sha256:   db38bf741255b0cc7f94dd027b2433c40b731df8b05a7b1d7f6d70c33ba2c2ad; 1125 x 585 px; dpi 150; 7.50 x 3.90 in
+script:   tools/report/report_figures.py (fig_s3)
+command:  PYTHONPATH=. venv/bin/python tools/report/report_figures.py --runs SP/report_smoke --out SP/report_smoke/figures --t1-figures SP/torus/figures --t5-figures SP/buried_t5/figures
+runs:     SP/report_smoke/S2_multislice_tiny, S3_multislice_tiny_thermal
+commits:  S2_multislice_tiny: 2896522 (dirty True); S3_multislice_tiny_thermal: 2896522 (dirty True)
+caption:  S3, variant multislice_tiny_thermal (frozen phonons, B35 at 295.5 K B36, 2 realisations averaged after squaring) vs the static S2: specular beam at the exit plane and object amplitude on the detector for realisation 0; the thermal/static ratio is printed in the figure and in tools/report/report_figures_output.txt; one realisation of a tiny cell with the UNVALIDATED engine, indicative only.
+
+file:     SP/report_smoke/figures/s4_plasmon_fringe_contrast.png
+sha256:   1a535bc881b719c3581f2be6b213efe6d950aa86722744461b3c1c6a086025f0; 1125 x 840 px; dpi 150; 7.50 x 5.60 in
+script:   tools/report/report_figures.py (fig_s4)
+command:  PYTHONPATH=. venv/bin/python tools/report/report_figures.py --runs SP/report_smoke --out SP/report_smoke/figures --t1-figures SP/torus/figures --t5-figures SP/buried_t5/figures
+runs:     SP/report_smoke/S1_base, S4_plasmon_losses
+commits:  S1_base: 2896522 (dirty True); S4_plasmon_losses: 2896522 (dirty True)
+caption:  S4, variant plasmon_losses (ASSUMPTION B38, n = 1.246 per reflection) vs S1 (n = 0, B30), geometric engine, same dose 500 e/px (B24): empty-hologram fringe contrast 1.0000 -> 0.5363, hologram crops on one grey scale, and the phase noise inside the terrace-1 region; the step heights stay within 1 sigma (S4 0->1 +2.7162 +- 0.0165 A (built +2.7155); 1->2 -1.3575 +- 0.0083 A (built -1.3577); 2->0 -1.3587 +- 0.0083 A (built -1.3577)); DEMO.
+
+file:     SP/report_smoke/figures/s5_oxide_stack_heights.png
+sha256:   7667c23ea6fd136063fa15073b318e425a1c18c2951dde9b0f4d596c54935ac1; 1125 x 1020 px; dpi 150; 7.50 x 6.80 in
+script:   tools/report/report_figures.py (fig_s5)
+command:  PYTHONPATH=. venv/bin/python tools/report/report_figures.py --runs SP/report_smoke --out SP/report_smoke/figures --t1-figures SP/torus/figures --t5-figures SP/buried_t5/figures
+runs:     SP/report_smoke/S1_base and the four geometric S5_oxide_* runs
+commits:  S1_base: 2896522 (dirty True); S5_oxide_2p0nm: 2896522 (dirty True); S5_oxide_1p5nm: d022473 (dirty False); S5_oxide_2p0nm_no_absorption: 2896522 (dirty True); S5_oxide_1p5nm_no_absorption: d022473 (dirty False)
+caption:  S5, continuum oxide (stand-in B41, conformal; consumed-layer count DERIVED_HERE) on the geometric demo: schematic of the built stack across the a/2 step (kept and consumed atomic planes, pre-oxidation surface, oxide with 0.5 A erfc edges; the riser is not modelled), the layer potential for 2.0 and 1.5 nm, the recovered - built step heights without and with the oxide, with and without V' (all within 1 sigma), and the reflected amplitude (RMS 0.9979 without oxide; 2p0nm 0.5259, 1p5nm 0.6173, 2p0nm_no_absorption 0.9979, 1p5nm_no_absorption 0.9979); DEMO.
+
+file:     SP/report_smoke/figures/s6_torus_compact.png
+sha256:   78221a82167332c5c4521cfdd4d1db3a10c9ca092b0ef9b9a2a0000c5890d4c8; 1950 x 910 px; dpi 130; 15.00 x 7.00 in
+script:   tools/plots/torus_compact.py (reused, unchanged)
+command:  PYTHONPATH=. venv/bin/python tools/plots/torus_compact.py --trench SP/report_smoke/S6_torus_trench --ridge SP/report_smoke/S6_torus_ridge --out SP/report_smoke/figures/s6_torus_compact.png
+runs:     SP/report_smoke/S6_torus_trench, S6_torus_ridge
+commits:  S6_torus_trench: d022473 (dirty False); S6_torus_ridge: d022473 (dirty False)
+caption:  S6, configs/demo_smoke_torus_{trench,ridge}.yaml (half torus R 1000 A, r 20 A, stand-ins B33/B34; geometric engine): object hologram, wrapped phase, measurable pixels and the profile across the ring; measurable 39.8 % (trench) and 18.7 % (ridge) of the detector, 0 and 0 pixels on the ring footprint: the flat surface reconstructs, the ring does not (15 in wide at 130 dpi; made for a landscape page).
+
+file:     SP/report_smoke/figures/s7_supercell_trench_T1.png
+sha256:   e2f8f3ce2af6155d9a72789e29df653cad001f4b032d6aaae825cd7199de8a02; 1773 x 1609 px; dpi 130; 13.64 x 12.38 in
+script:   tools/plots/torus_atomistic.py (report T1; copied unchanged)
+command:  PYTHONPATH=. venv/bin/python tools/plots/torus_atomistic.py --runs SP/torus --out SP/torus/figures (inferred from the script's usage line and the file locations; T1 does not record the exact line)
+runs:     SP/torus/ms_trench
+commits:  trench 2471f76 (dirty True)
+caption:  S7 (report T1, not rerun): atomistic half-torus trench (R 50 A, r 12 A, B33) in the 547,662-atom Si(001) cell: top-layer height map, cross-sections and built vs ideal a/4 terraces; DEMO structure.
+
+file:     SP/report_smoke/figures/s7_exitwave_trench_T1.png
+sha256:   8df9f9425d66ee89195ee3f25b7c7af590c0a99c704fda64d44c6acef5d81885; 2618 x 1172 px; dpi 120; 21.82 x 9.77 in
+script:   tools/plots/torus_atomistic.py (report T1; copied unchanged)
+command:  as s7_supercell_trench_T1.png
+runs:     SP/torus/ms_trench and ms_flat
+commits:  trench 2471f76 (dirty True); flat c544257 (dirty True)
+caption:  S7 (T1, not rerun): complex exit wave of the trench and its difference to the flat reference (Kirkland IAM, no absorption B30, static lattice, 16.1347 mrad B32): UNVALIDATED (finite-cell build-up not converged); no phase or height may be read from it.
+
+file:     SP/report_smoke/figures/s7_exitwave_ridge_T1.png
+sha256:   08407a3286b19b8e12f22be8549a8978164cfef250da0f1b1e60801f80fc08ee; 2618 x 1172 px; dpi 120; 21.82 x 9.77 in
+script:   tools/plots/torus_atomistic.py (report T1; copied unchanged)
+command:  as s7_supercell_trench_T1.png
+runs:     SP/torus/ms_ridge and ms_flat
+commits:  ridge c544257 (dirty False); flat c544257 (dirty True)
+caption:  S7 (T1, not rerun): as the trench figure for the ridge (B34); UNVALIDATED, no phase or height may be read from it.
+
+file:     SP/report_smoke/figures/s8_buried_compact_T5.png
+sha256:   015759907dcf509ab6c0acf8db54be1a176cdd239dc182cc5946ac03b9cf7a6a; 1846 x 1013 px; dpi 130; 14.20 x 7.79 in
+script:   tools/plots/buried_torus.py (report T5; copied unchanged)
+command:  OMP_NUM_THREADS=1 PYTHONPATH=. venv/bin/python tools/plots/buried_torus.py --runs SP/buried --out SP/buried_t5/figures (T5 report section 0)
+runs:     SP/buried/ms_* (report T3)
+commits:  runs: 39b6151 (dirty True)
+caption:  S8 (T3 runs, T5 analysis, not rerun): buried torus void (R 50 A, r 12 A, caps [5.0, 10.0, 20.0, 30.0] A, B42) under flat Si(001), TEST_ONLY absorption r = 0.1 (the r = 0 pair of cap 10, B30, is not in this figure), UNVALIDATED engine, no dose model: supercell sections and the vacuum-origin part of the specular-beam difference on one shared log scale; the panel titles are the T5 readings (tools/review/t5/buried_torus_analysis_output.txt lines 324-328).

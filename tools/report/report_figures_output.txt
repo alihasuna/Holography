@@ -1,0 +1,52 @@
+# tools/report/make_report_figures.sh SP (2026-09-24T19:25:23Z, HEAD eae52415af1f6a7cbc68234e72825cc8991d2cf6)
+$ venv/bin/python tools/report/report_figures.py --runs SP/report_smoke --out SP/report_smoke/figures --t1-figures SP/torus/figures --t5-figures SP/buried_t5/figures
+F0 overview: stages and gates as listed in reflection_holo/pipeline/run.py (docstring) and reflection_holo/pipeline/__main__.py (exit codes); thresholds from configs/demo_smoke_si001.yaml (B29: visibility 0.5, amplitude 0.25, margin 3 resolutions)
+figure: SP/report_smoke/figures/f0_pipeline_overview.png (7.50 x 8.40 in, 150 dpi)
+S1: crop rows 156-204 (step 0->1 after row 180), columns 0-24
+S1: step 0->1: +2.7156 +- 0.0165 A, built +2.7155 A
+S1: step 1->2: -1.3576 +- 0.0082 A, built -1.3577 A
+S1: step 2->0: -1.3580 +- 0.0082 A, built -1.3577 A
+S1: recovered levels {0: 0.0, 1: 2.71564, 2: 1.35799} A; closure of the three steps +0.00000 A; built levels [0.0, 2.71545, 1.35773] A
+S1: no-step control -0.0037 rad vs tolerance 0.0123 rad
+figure: SP/report_smoke/figures/s1_staircase_geometric.png (7.50 x 7.40 in, 150 dpi)
+S2: terrace length 488.781 A; reconstruction resolution on the surface 371.9 A; margin 3.0 resolutions
+S2: 27000 atoms; box 84.7155 x 10.8618 x 1486.7089 A; exit grid (432, 48) dx 0.1961 dy 0.2263 A; surfaces x 32.0 / 34.71545 A; beam x_bottom 35.71545 A
+figure: SP/report_smoke/figures/s2_multislice_tiny_supercell_exitwave.png (7.50 x 6.60 in, 150 dpi)
+S3: RMS |detector object| over lit pixels (realisation 0): static 0.07776, thermal 0.05848, ratio 0.7521; summary empty_object_amplitude static 0.09476, thermal 0.07289
+S3: B = 0.4761 A^2 (B35 at 295.5 K), |g_008| = 8/a = 1.47305 1/A, Debye-Waller amplitude exp(-B (g/2)^2) = 0.7724 (DERIVED_HERE)
+figure: SP/report_smoke/figures/s3_thermal_vs_static.png (7.50 x 3.90 in, 150 dpi)
+S4: S1_base: empty-hologram fringe contrast measured on a noiseless lit row 1.0000 (summary 1.0000); terrace-1 phase residual std 0.00657 rad (summary scatter 0.00657; predicted per px 0.00388)
+S4: S4_plasmon_losses: empty-hologram fringe contrast measured on a noiseless lit row 0.5363 (summary 0.5363); terrace-1 phase residual std 0.00901 rad (summary scatter 0.00901; predicted per px 0.00723)
+figure: SP/report_smoke/figures/s4_plasmon_fringe_contrast.png (7.50 x 5.60 in, 150 dpi)
+S5: S1_base step 0->1: h - built = +0.00019 +- 0.01649 A
+S5: S1_base step 1->2: h - built = +0.00008 +- 0.00825 A
+S5: S1_base step 2->0: h - built = -0.00026 +- 0.00825 A
+S5: S5_oxide_2p0nm step 0->1: h - built = -0.00012 +- 0.01648 A
+S5: S5_oxide_2p0nm step 1->2: h - built = -0.00006 +- 0.00825 A
+S5: S5_oxide_2p0nm step 2->0: h - built = +0.00019 +- 0.00825 A
+S5: S5_oxide_2p0nm_no_absorption step 0->1: h - built = -0.00030 +- 0.01648 A
+S5: S5_oxide_2p0nm_no_absorption step 1->2: h - built = +0.00010 +- 0.00825 A
+S5: S5_oxide_2p0nm_no_absorption step 2->0: h - built = +0.00020 +- 0.00824 A
+S5: S5_oxide_1p5nm step 0->1: h - built = +0.00057 +- 0.01649 A
+S5: S5_oxide_1p5nm step 1->2: h - built = -0.00042 +- 0.00825 A
+S5: S5_oxide_1p5nm step 2->0: h - built = -0.00015 +- 0.00825 A
+S5: S5_oxide_1p5nm_no_absorption step 0->1: h - built = +0.00000 +- 0.01648 A
+S5: S5_oxide_1p5nm_no_absorption step 1->2: h - built = +0.00016 +- 0.00825 A
+S5: S5_oxide_1p5nm_no_absorption step 2->0: h - built = -0.00016 +- 0.00825 A
+S5: 2.0 nm, V' 0.4 V, terrace 0: kept crystal top x 5.4309 A, 7 consumed planes up to H = 15.6138 A, interface 6.7837 A, top 26.7837 A
+S5: 2.0 nm, V' 0.4 V, terrace 1: kept crystal top x 8.1463 A, 7 consumed planes up to H = 18.3293 A, interface 9.4991 A, top 29.4991 A
+S5: 2.0 nm, V' 0.4 V, terrace 2: kept crystal top x 6.7886 A, 7 consumed planes up to H = 16.9716 A, interface 8.1414 A, top 28.1414 A
+S5: S1_base: RMS detector object amplitude over lit px 0.9979
+S5: S5_oxide_2p0nm: RMS detector object amplitude over lit px 0.5259
+S5: S5_oxide_2p0nm_no_absorption: RMS detector object amplitude over lit px 0.9979
+S5: S5_oxide_1p5nm: RMS detector object amplitude over lit px 0.6173
+S5: S5_oxide_1p5nm_no_absorption: RMS detector object amplitude over lit px 0.9979
+figure: SP/report_smoke/figures/s5_oxide_stack_heights.png (7.50 x 6.80 in, 150 dpi)
+reused: SP/torus/figures/supercell_trench.png -> SP/report_smoke/figures/s7_supercell_trench_T1.png (sha256 e2f8f3ce2af6155d9a72789e29df653cad001f4b032d6aaae825cd7199de8a02)
+reused: SP/torus/figures/exitwave_trench.png -> SP/report_smoke/figures/s7_exitwave_trench_T1.png (sha256 8df9f9425d66ee89195ee3f25b7c7af590c0a99c704fda64d44c6acef5d81885)
+reused: SP/torus/figures/exitwave_ridge.png -> SP/report_smoke/figures/s7_exitwave_ridge_T1.png (sha256 08407a3286b19b8e12f22be8549a8978164cfef250da0f1b1e60801f80fc08ee)
+reused: SP/buried_t5/figures/buried_compact.png -> SP/report_smoke/figures/s8_buried_compact_T5.png (sha256 015759907dcf509ab6c0acf8db54be1a176cdd239dc182cc5946ac03b9cf7a6a)
+$ venv/bin/python tools/plots/torus_compact.py --trench SP/report_smoke/S6_torus_trench --ridge SP/report_smoke/S6_torus_ridge --out SP/report_smoke/figures/s6_torus_compact.png
+wrote SP/report_smoke/figures/s6_torus_compact.png
+$ venv/bin/python tools/plots/smoke_figures.py --config configs/demo_smoke_si001.yaml --variant multislice_tiny --run-dir SP/report_smoke/S2_multislice_tiny --geometric-run-dir SP/report_smoke/S1_base --out SP/report_smoke/figures/s2_detail
+{'n_atoms': 27000, 'box': (84.71545, 10.8618, 1486.708875)} -> SP/report_smoke/figures/s2_detail
