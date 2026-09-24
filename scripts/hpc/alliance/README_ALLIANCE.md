@@ -12,8 +12,9 @@ What the results mean, before you start:
 * Everything is a DEMO: `purpose: demo; not comparable to experiment`. The laboratory inputs you have
   not supplied are registered ASSUMPTION stand-ins (docs/model_assumptions.md; `list-inputs` shows
   them). The beam energy is 200 keV.
-* The **multislice engine is UNVALIDATED** for atomistic reflection (docs/05 4.4 rung 2 and the abTEM
-  cross-check NOT RUN). `demo-gpu` printing `NO HEIGHT: no-step control failed or not performed` is
+* The **multislice engine is UNVALIDATED** for atomistic reflection (at the pinned commit a1ef2a0
+  rung 2 was not yet run; on the branch rung 2 R2-A now passes, the abTEM cross-check is NOT RUN
+  and the fixed-beam rung-3 gate is open: see the engine's VALIDATION_STATUS and docs/08 4.1-4.5). `demo-gpu` printing `NO HEIGHT: no-step control failed or not performed` is
   the **correct** outcome (README_HPC.md §4; the control failed on CPU in P1's run too). The torus
   and null-study outputs are UNVALIDATED engine outputs as well.
 * The **geometric engine** (the `smoke` job) is the one whose heights are trustworthy within its model

@@ -60,8 +60,8 @@ VALIDATION_STATUS = (
     "the abTEM cross-check (transmission and reflection-like configurations) was NOT RUN; the "
     "flat-surface rocking-curve comparison with an independent dynamical solver (sim-trhepd-rheed, "
     "flat Si(001), [100] and [110], TEST_ONLY r = 0.1; reports S5, E8) was RUN: with the solver's "
-    "own potential the phase differs by a median of 0.014 rad ([100]) and 0.017 rad ([110]), up to "
-    "0.05 rad at five other angles (0.051-0.075 rad) and 0.398 rad at [100] 15.0 mrad where |R|^2 is "
+    "own potential the phase differs by a median of 0.014 rad ([100]) and 0.017 rad ([110]), more "
+    "than 0.05 rad at five other angles (0.051-0.075 rad) and 0.398 rad at [100] 15.0 mrad where |R|^2 is "
     "about 1e-5 (tools/plots/phase4_figures_solver_output.txt), but the "
     "comparison is not like-for-like along the beam and its amplitude tolerance has no power "
     "(E8 M1, M2): not an amplitude validation")
