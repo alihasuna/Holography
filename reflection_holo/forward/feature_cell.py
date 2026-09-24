@@ -19,6 +19,23 @@ floor below it) are recorded in cell.metadata["feature"] and checked by
       the highest surface forces the beam above it at the front face, the trench floor as the
       lowest surface moves the "first contact" downstream), and the shadow / blocked-view lengths
       h / tan(theta) of the feature.
+  F5  BURIED VOID only (shapes.BuriedTorus, agent T3): the depth rule of the buried-cavity study,
+      clean crystal (between the layer and the top of the bulk absorber)
+        >= BURIED_MIN_CLEAN_BELOW_SURFACE_A = 65 A below the flat top atomic plane AND
+        >= BURIED_MIN_CLEAN_BELOW_VOID_A = 30 A below the void bottom (x_rel = -(cap + 2 r)).
+      Justification (DERIVED_HERE from the cited reports; a stated rule, not a convergence proof):
+      65 A: the depth below a flat [100] surface at which the engine-measured exit-plane intensity
+      falls below 1e-4 (the absorber then perturbs the reflection at about the 1e-4 round-trip
+      level) is 53.2 A for r = 0.1 and 60.6 A for r = 0.05 (H2 section 2.4); H2 section 3 sets
+      55 A (r = 0.1) and 65 A (r = 0.05, also taken for r = 0), E7 M3 adopts >= 65 A for the
+      atomistic null-study redesign; the larger value is used here for every absorption setting
+      (r = 0 converges at no depth outside the plateau, P2 6.5 / E7 3.7: those cells stay
+      UNVALIDATED whatever the depth). 30 A: the void bottom is a crystal surface facing the void,
+      where the wave that crossed the void re-enters the crystal; below a [100] surface at r = 0.1
+      the engine-measured exit-plane intensity falls below 1e-2 at 26.0 A (H2 section 2.4), so
+      >= 30 A keeps the absorber below the 1e-2 intensity level of the wave arriving at the void
+      bottom, itself already attenuated over cap + 2 r of crystal (P2: amplitude extinction depth
+      24.47 A at the plateau centre).
 Frame: slab frame (x = outward normal, y = z x x, z = beam azimuth), x = 0 at the box bottom, z = 0
 at the entrance plane (forward.cell).
 """
@@ -28,6 +45,10 @@ import numpy as np
 
 from reflection_holo.forward.cell import ReflectionGeometryError, build_reflection_cell
 from reflection_holo.forward.contracts import ReflectionCell
+from reflection_holo.structure.shapes import BURIED_KIND
+
+BURIED_MIN_CLEAN_BELOW_SURFACE_A = 65.0   # F5, module docstring (H2 2.4 and 3, E7 M3)
+BURIED_MIN_CLEAN_BELOW_VOID_A = 30.0      # F5, module docstring (H2 2.4: 1e-2 at 26.0 A)
 
 SURFACE_SEMANTICS = (
     "feature cell: lowest_surface_x_A and highest_surface_x_A are the FLAT surface carrying the "
@@ -70,6 +91,17 @@ def build_feature_reflection_cell(structure, *, vacuum_above_flat_surface_A: flo
                   top_layer_x_range_A=[float(v) - shift for v in f["top_layer_x_range_A"]],
                   highest_atom_x_A=x_hi_atom,
                   n_removed=f["n_removed"], n_added=f["n_added"])
+        if f["kind"] == BURIED_KIND:
+            fc.update(cap_A=float(f["cap_A"]),
+                      tube_centre_x_A=float(f["tube_centre_x_A"]) - shift,
+                      void_top_x_A=float(f["void_top_x_A"]) - shift,
+                      void_bottom_x_A=float(f["void_bottom_x_A"]) - shift,
+                      removed_layer_x_rel_range_A=list(f["removed_layer_x_rel_range_A"]),
+                      intact_cap_layers=int(f["intact_cap_layers"]))
+            if fc["void_bottom_x_A"] <= lay["bulk_absorber_x_A"][1]:
+                raise ReflectionGeometryError(
+                    f"the buried void (bottom x = {fc['void_bottom_x_A']:.4f} A) reaches the bulk "
+                    f"absorber (top x = {lay['bulk_absorber_x_A'][1]:.4f} A)")
     cell.metadata["feature"] = fc
     lay["surface_semantics"] = SURFACE_SEMANTICS
     lay["highest_atom_x_A"] = x_hi_atom
@@ -131,5 +163,35 @@ def check_feature_geometry(cell: ReflectionCell, *, beam, theta_out_ext_rad: flo
         ring_end_fraction_of_crystal=float((z1 - cell.crystal_start_z_A) / Lc),
         note="recorded only: the engine's assertions are made for the flat surface (module "
              "docstring F4)")
+    if f["kind"] == BURIED_KIND:
+        out.update(check_buried_void_depth(cell))
     out["label"] = "DERIVED_HERE (docs/05 4.3 items 2 to 4 applied to the feature)"
     return out
+
+
+def check_buried_void_depth(cell: ReflectionCell) -> dict:
+    """F5 of the module docstring (buried void only): clean crystal >= 65 A below the flat top
+    atomic plane AND >= 30 A below the void bottom, both measured to the top of the bulk absorber.
+    Raises ReflectionGeometryError."""
+    f = cell.metadata.get("feature")
+    if f is None or f.get("kind") != BURIED_KIND:
+        raise ValueError("check_buried_void_depth needs a cell carrying a buried void")
+    lay = cell.metadata["layout"]
+    ab_top = float(lay["bulk_absorber_x_A"][1])
+    clean_surface = float(lay["lowest_surface_x_A"]) - ab_top
+    clean_void = float(f["void_bottom_x_A"]) - ab_top
+    rec = dict(passed=bool(clean_surface >= BURIED_MIN_CLEAN_BELOW_SURFACE_A
+                           and clean_void >= BURIED_MIN_CLEAN_BELOW_VOID_A),
+               clean_below_surface_A=clean_surface,
+               required_below_surface_A=BURIED_MIN_CLEAN_BELOW_SURFACE_A,
+               clean_below_void_bottom_A=clean_void,
+               required_below_void_bottom_A=BURIED_MIN_CLEAN_BELOW_VOID_A,
+               void_bottom_x_A=float(f["void_bottom_x_A"]), bulk_absorber_top_x_A=ab_top,
+               rule="clean crystal >= 65 A below the flat top plane AND >= 30 A below the void "
+                    "bottom (module docstring F5; H2 2.4 and 3, E7 M3)")
+    if not rec["passed"]:
+        raise ReflectionGeometryError(
+            f"F5_buried_void_depth: clean crystal {clean_surface:.4f} A below the flat surface "
+            f"(required >= {BURIED_MIN_CLEAN_BELOW_SURFACE_A} A) and {clean_void:.4f} A below the "
+            f"void bottom (required >= {BURIED_MIN_CLEAN_BELOW_VOID_A} A)")
+    return {"F5_buried_void_depth": rec}

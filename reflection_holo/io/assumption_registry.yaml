@@ -50,10 +50,13 @@ stand_ins:
   # Report docs/agent_reports/E4_oxide_overlayer.md (row proposed there, added to
   # docs/model_assumptions.md by the orchestrator; L8 section 8 as corrected by E9). Demo only.
   B41: [12]    # demo continuum oxide on the bulk-terminated staircase: conformal, t_ox 1.5 or 2.0 nm (thermal-oxide equivalent at 2.20 g/cm^3), V_ox 10.34 V (IAM at 2.20 g/cm^3, E9 out:166), V'_ox 0.40 V or 0 V, vacuum edge and interface graded 0.5 A (E9 M4), a-Si 0 nm (optimistic bound, E9 M5); variants of configs/demo_smoke_si001.yaml only; docs/06 item 12
+  # Report docs/agent_reports/T3_buried_torus.md (row proposed there, added to
+  # docs/model_assumptions.md by the orchestrator). Demo only.
+  B42: [13]    # demo buried torus VOID under an intact cap (structure.shapes.BuriedTorus): R 50 A, r 12 A, caps 5/10/20/30 A, flat surface untouched; atomistic multislice demo of report T3 only; no laboratory counterpart (Ali's what-if); the pipeline's feature path has no buried kind
 # Demo-only stand-ins (audit A3 M2): refused by every pipeline run with purpose "comparison",
 # whatever the docs/06 item. Every id listed here must be a key of stand_ins.
 demo_only: [B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29, B30, B31, B32, B33, B34, B36,
-            B38, B39, B40, B41]
+            B38, B39, B40, B41, B42]
 # Rows the code cites as model assumptions or sourced models that stand in for NO docs/06 item
 # (report E2). They are not accepted as assumption_id of a configuration parameter; they are listed
 # so that tests/io checks that each is a row of docs/model_assumptions.md.

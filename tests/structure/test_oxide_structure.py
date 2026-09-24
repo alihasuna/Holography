@@ -19,13 +19,31 @@ KEYS = ox.LABEL_KEYS
 Q = A_SI_A / 4
 
 
+def _near_rounding_boundary(d):
+    """TEST helper (audit A8 m4): True when some terrace's count lies within
+    ox.MIN_ROUNDING_MARGIN_LAYERS of its rounding boundary, so that the fixtures state the
+    acknowledgement exactly when it is needed (the gate itself:
+    test_oxide_structure_a8_fixes.py); False for inputs the specification refuses anyway."""
+    try:
+        tt = d["terrace_thickness_A"] or (d["thickness_A"],)
+        tn = d["terrace_consumed_layers"] or (d["consumed_layers"],)
+        return any(ox.rounding_margin(thickness_A=t, density_g_cm3=d["density_g_cm3"],
+                                      amorphous_si_thickness_A=d["amorphous_si_thickness_A"],
+                                      consumed_layers=n, a_A=A_SI_A)["near_boundary"]
+                   for t, n in zip(tt, tn))
+    except (ValueError, TypeError):
+        return False
+
+
 def spec(**kw):
     base = dict(material="amorphous SiO2", thickness_A=20.0, density_g_cm3=2.20, consumed_layers=7,
                 V_real_V=10.34, V_imag_V=0.40, vacuum_edge_width_A=0.5, interface_width_A=0.5,
                 amorphous_si_thickness_A=0.0, amorphous_si_V_real_V=None,
                 amorphous_si_V_imag_V=None, terrace_thickness_A=None, terrace_consumed_layers=None,
-                sharp_edge_test_flag=False, labels={k: L12 for k in KEYS})
+                sharp_edge_test_flag=False, sharp_interface_test_flag=False,
+                labels={k: L12 for k in KEYS})
     base.update(kw)
+    base.setdefault("rounding_boundary_acknowledged", _near_rounding_boundary(base))
     return ox.ContinuumOxideSpec(**base)
 
 
@@ -62,26 +80,38 @@ def test_consumed_layers_continuum_equal_e9(t_nm, layers):
     """f(2.20) t_ox/(a/4), E9 out:125-128 (3 decimals); the nearest whole count is required."""
     N = int(np.floor(layers + 0.5))
     st = ox.terrace_stacks(spec(thickness_A=10 * t_nm, consumed_layers=N), terrace_heights_A=[0.0],
-                           a_A=A_SI_A)
+                           a_A=A_SI_A, crystal="atomistic")
     p = st["per_terrace"][0]
     assert p["consumed_layers_continuum"] == pytest.approx(layers, abs=5e-4)
     assert abs(p["interface_quantisation_A"]) <= Q / 2
 
 
 def test_two_nm_stack_equals_e9():
-    """2 nm at 2.20 g/cm^3: interface 8.8301 A down, top 11.1699 A up (out:143)."""
-    p = ox.terrace_stacks(spec(), terrace_heights_A=[5.0], a_A=A_SI_A)["per_terrace"][0]
+    """2 nm at 2.20 g/cm^3: interface 8.8301 A down, top 11.1699 A up (out:143) from the
+    pre-oxidation surface: the boundary of a continuum crystal, and the Si equivalent boundary a/8
+    above the top atomic plane of an atomistic one (audit A8 M2), whose kept top plane is 7 layers
+    down."""
+    p = ox.terrace_stacks(spec(), terrace_heights_A=[5.0], a_A=A_SI_A,
+                          crystal="continuum")["per_terrace"][0]
     assert 5.0 - p["interface_x_A"] == pytest.approx(8.8301, abs=5e-5)
     assert p["top_x_A"] - 5.0 == pytest.approx(11.1699, abs=5e-5)
     assert p["crystal_boundary_x_A"] == p["interface_x_A"]                 # no amorphous Si
-    assert p["atomistic_crystal_top_x_A"] == pytest.approx(5.0 - 7 * Q, abs=1e-12)
+    assert p["atomistic_crystal_top_x_A"] is None and p["interface_overlap_A"] == 0.0
+    a = ox.terrace_stacks(spec(), terrace_heights_A=[5.0], a_A=A_SI_A,
+                          crystal="atomistic")["per_terrace"][0]
+    assert a["pre_oxidation_plane_x_A"] == 5.0
+    assert a["pre_oxidation_surface_x_A"] == pytest.approx(5.0 + Q / 2, abs=1e-12)
+    assert a["pre_oxidation_surface_x_A"] - a["interface_x_A"] == pytest.approx(8.8301, abs=5e-5)
+    assert a["top_x_A"] - a["pre_oxidation_surface_x_A"] == pytest.approx(11.1699, abs=5e-5)
+    assert a["atomistic_crystal_top_x_A"] == pytest.approx(5.0 - 7 * Q, abs=1e-12)
 
 
 def test_amorphous_si_moves_the_crystal_boundary():
     s = spec(amorphous_si_thickness_A=10.0, consumed_layers=14, amorphous_si_V_real_V=13.6,
              amorphous_si_V_imag_V=0.47, labels=dict({k: L12 for k in KEYS},
                                                      amorphous_si_potential=L12))
-    p = ox.terrace_stacks(s, terrace_heights_A=[0.0], a_A=A_SI_A)["per_terrace"][0]
+    p = ox.terrace_stacks(s, terrace_heights_A=[0.0], a_A=A_SI_A,
+                          crystal="atomistic")["per_terrace"][0]
     assert p["interface_x_A"] - p["crystal_boundary_x_A"] == pytest.approx(10.0)
     assert abs(14 * Q - (8.8301 + 10.0)) <= Q / 2
 
@@ -181,8 +211,9 @@ def test_every_field_is_required(field):
     (dict(sharp_edge_test_flag=1), "True or False"),
     (dict(interface_width_A=-0.5), "interface_width_A"),
     (dict(amorphous_si_thickness_A=-1.0), "amorphous_si_thickness_A"),
-    (dict(labels=dict({k: L12 for k in KEYS}, amorphous_si="PROJECT_INPUT item 12")),
-     "ASSUMPTION"),
+    # audit A8 M1 (changed on purpose, report X4): a-Si = 0 labelled PROJECT_INPUT (a measured
+    # zero) is now ACCEPTED (tests/structure/test_oxide_structure_a8_fixes.py); an unlabelled zero is refused
+    (dict(labels=dict({k: L12 for k in KEYS}, amorphous_si=" ")), "label"),
     (dict(amorphous_si_V_real_V=13.6), "must be None"),
     (dict(amorphous_si_thickness_A=10.0, consumed_layers=14,
           labels=dict({k: L12 for k in KEYS}, amorphous_si_potential=L12)),
@@ -195,7 +226,7 @@ def test_every_field_is_required(field):
 ])
 def test_invalid_or_missing_inputs_are_refused(kw, match):
     with pytest.raises(ValueError, match=match):
-        ox.terrace_stacks(spec(**kw), terrace_heights_A=[0.0], a_A=A_SI_A)
+        ox.terrace_stacks(spec(**kw), terrace_heights_A=[0.0], a_A=A_SI_A, crystal="atomistic")
 
 
 def test_override_length_must_match_the_terraces():

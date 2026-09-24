@@ -12,7 +12,8 @@ ContinuumOxideSpec, or build_continuum_oxide_cell):
 
 per terrace, following the surface (never a function of x alone: E6 m12, E9 m5). Sampling: point-
 sampled at the pixel centres for w > 0 (like the harmonics of ContinuumPeriodicPotential); w = 0
-(sharp; only the interface option, or the vacuum edge with the TEST_ONLY flag) is the fraction of
+(sharp; only with the TEST_ONLY flags of structure.oxide, both edges being graded over >= 0.5 A
+otherwise: E9 M4, audit A8 m5) is the fraction of
 the pixel [x_j - dx/2, x_j + dx/2] below x0, i.e. the cell-averaged convention of
 ContinuumTerracePotential. Grid assertion (a priori, DERIVED_HERE): every graded edge needs
 dx <= w, so that the first alias of the sampled Gaussian gradient has a relative amplitude
@@ -225,8 +226,9 @@ class ContinuumOxidePotential:
         terrace for terraces along z (uniform in y, broadcast), and the per-slice weight of each
         (A of overlap), so that the slice's projected potential is sum_g arrays[g] weights[i, g].
         Memory beyond the crystal potential: one complex (nx, ny) array (terraces along y) or
-        n_terraces x nx (along z), plus the transient of the sum in ``projected`` (not in
-        engine.memory_model, which is written for AtomicPotential)."""
+        n_terraces x nx (along z), built here in complex128 (accumulator + one product): both in
+        engine.memory_model (argument ``overlayer``; audit A8 m3, tracemalloc-checked in
+        tests/forward/test_memory_model.py)."""
         x = grid.x_A()
         dx = grid.dx_A
         c = self.cell

@@ -222,8 +222,9 @@ def build_continuum_cell(*, extent_y_A: float, terrace_y_bounds_A, terrace_heigh
                           surface_x_A=float(surf[0]), crystal_start_z_A=float(ent), metadata=meta)
 
 
-_OXIDE_X_KEYS = ("pre_oxidation_plane_x_A", "interface_x_A", "top_x_A", "crystal_boundary_x_A",
-                 "atomistic_crystal_top_x_A")
+_OXIDE_X_KEYS = ("pre_oxidation_plane_x_A", "pre_oxidation_surface_x_A", "interface_x_A", "top_x_A",
+                 "crystal_boundary_x_A", "atomistic_crystal_top_x_A",
+                 "crystal_equivalent_boundary_x_A")
 OXIDE_SURFACE_SEMANTICS = (
     "continuum oxide (report E4): terraces[k].surface_x_A is the CRYSTAL surface (kept top atomic "
     "layer, or the continuum crystal boundary); layout lowest/highest_surface_x_A are the TOPS of "
@@ -235,7 +236,7 @@ OXIDE_SURFACE_SEMANTICS = (
 def _oxide_stack_in_cell(stack: dict, shift: float) -> dict:
     out = dict(stack)
     for k in _OXIDE_X_KEYS:
-        if k in out:
+        if out.get(k) is not None:                 # None: no atoms (continuum crystal)
             out[k] = float(out[k] + shift)
     for k in ("measured_crystal_top_x_A",):
         if k in out:
@@ -245,8 +246,12 @@ def _oxide_stack_in_cell(stack: dict, shift: float) -> dict:
 
 def _oxide_layout(record: dict, stacks: list, terraces: list, s_axis: str, *, vac: float,
                   dep: float) -> dict:
-    thick = [float(st["top_x_A"] - min(st["crystal_boundary_x_A"],
-                                       st["atomistic_crystal_top_x_A"])) for st in stacks]
+    # the stack a ray crosses: from the top of the layer to the lower of the continuum crystal
+    # boundary and the kept top atomic plane (atomistic crystal: the plane lies a/8 below the kept
+    # crystal's equivalent boundary, which the layer overlaps or misses by at most a/8)
+    thick = [float(st["top_x_A"] - min(v for v in (st["crystal_boundary_x_A"],
+                                                   st.get("atomistic_crystal_top_x_A"))
+                                       if v is not None)) for st in stacks]
     return dict(
         model="continuum_oxide", spec_sha256=record["spec_sha256"],
         conformal=bool(record["conformal"]), staircase_axis=s_axis,
@@ -289,7 +294,8 @@ def build_continuum_oxide_cell(*, extent_y_A: float, terrace_y_bounds_A, terrace
         raise ValueError("terrace_y_bounds_A needs one more entry than terrace_heights_A")
     if abs(b[0]) > 1e-12 or abs(b[-1] - Ly) > 1e-9 or np.any(np.diff(b) <= 0):
         raise ValueError("terrace_y_bounds_A must increase from 0 to extent_y_A")
-    st = ox.terrace_stacks(oxide, terrace_heights_A=h, a_A=lattice_parameter_A)
+    st = ox.terrace_stacks(oxide, terrace_heights_A=h, a_A=lattice_parameter_A,
+                           crystal=ox.CRYSTAL_CONTINUUM)
     xc = np.array([p["crystal_boundary_x_A"] for p in st["per_terrace"]])
     xt = np.array([p["top_x_A"] for p in st["per_terrace"]])
     shift = dep - float(xc.min())                        # structure x -> cell x

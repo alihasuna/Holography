@@ -596,12 +596,14 @@ def hdr(title):
 
 
 # ---- cost model ---------------------------------------------------------------------------------
-def memory_row(nx, ny, N, n_max, n_atoms, n_species=1, precision="complex64"):
+def memory_row(nx, ny, N, n_max, n_atoms, *, overlayer, n_species=1, precision="complex64"):
     """Memory of one realisation from the ENGINE's model (engine.memory_model, H7; checked against
     tracemalloc in tests/forward/test_memory_model.py): cupy device peak, cupy host peak, numpy
-    (CPU job) peak; the host figures add the builder structure (48 B/atom) the caller keeps."""
+    (CPU job) peak; the host figures add the builder structure (48 B/atom) the caller keeps.
+    overlayer: None (clean cell) or dict(staircase_axis, n_terraces) for a cell with the continuum
+    oxide of report E4 (its layer arrays, audit A8 m3; required, no default)."""
     mm = memory_model(nx=nx, ny=ny, n_slices=N, n_atoms=n_atoms, atoms_per_slice_max=n_max,
-                      n_species=n_species, precision=precision)
+                      n_species=n_species, precision=precision, overlayer=overlayer)
     st = STRUCTURE_B_PER_ATOM * n_atoms
     return dict(model=mm, device=mm["cupy"]["device_peak"], host_cupy=mm["cupy"]["host_peak"] + st,
                 cpu_job=mm["numpy"]["peak"] + st, structure=st)
@@ -1129,7 +1131,10 @@ def layout_100(*, name, L_run, z_fov, y_A, D_clean, S, terraces_y=None, terraces
     return dict(name=name, Lz=Lz, Ly=Ly, ext_x=ext_x, pz=pz, py=py, H=H, vac=vac,
                 depth_below=depth_below, nx=nx, ny=ny, N=N, nonempty=ncs, n_atoms=int(n_atoms),
                 n_max=int(n_max), n_mean=n_mean, layers_low=nl, L_run=L_run, z_fov=z_fov,
-                L_exit=L_exit, z_contact=z_contact, h_step=h_step, engine_rules=ok)
+                L_exit=L_exit, z_contact=z_contact, h_step=h_step, engine_rules=ok,
+                oxide_layer=dict(staircase_axis="y" if terraces_y is not None else "z",
+                                 n_terraces=len(terraces_y if terraces_y is not None
+                                                else terraces_z)))
 
 
 def report_part2(S, cal_path, meas_path, t_start) -> int:
@@ -1513,7 +1518,8 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
         est = estimate_resources(cell, params, realisations=nrun, calibrate_cpu=False)
         g = est["grid"]
         mr = memory_row(g["nx"], g["ny"], est["n_slices"], est["atoms_per_slice_max"],
-                        est["n_atoms"], n_species=len(np.unique(cell.Z)), precision=params.precision)
+                        est["n_atoms"], overlayer=None, n_species=len(np.unique(cell.Z)),
+                        precision=params.precision)
         mem = mr["model"]["numpy"]["peak"]
         gpu = nrun * replica_gpu_s(g["nx"], g["ny"], est["n_slices"], est["nonempty_slices"],
                                    est["atoms_per_nonempty_slice_mean"], params.precision)
@@ -1595,7 +1601,7 @@ def report_part3(S, cal_path, meas_path, t_start) -> int:
     from reflection_holo.forward.multislice import reflection_setup
     setup = reflection_setup(cell, potential=pot, beam=beam, params=params)
     est = estimate_resources(cell, params, realisations=1, calibrate_cpu=True)
-    mr = memory_row(lay["nx"], lay["ny"], lay["N"], lay["n_max"], lay["n_atoms"])
+    mr = memory_row(lay["nx"], lay["ny"], lay["N"], lay["n_max"], lay["n_atoms"], overlayer=None)
     mem = mr["model"]["numpy"]["peak"]
     same_counts = (est["n_atoms"] == lay["n_atoms"] and est["n_slices"] == lay["N"]
                    and est["nonempty_slices"] == lay["nonempty"]
@@ -1745,7 +1751,12 @@ def report_part4(S, cc, t_start) -> int:
 
     def add(label, lay, n_real, n_ang, note, precision="complex64"):
         mr = memory_row(lay["nx"], lay["ny"], lay["N"], lay["n_max"], lay["n_atoms"],
-                        precision=precision)
+                        overlayer=None, precision=precision)
+        # the production surface is oxide-covered (PROJECT_INPUT, Ali 2026-09-24): the continuum
+        # oxide's layer arrays on the same grid (report E4; audit A8 m3); the cell's own change
+        # (vacuum for the layer top, consumed layers) is not included
+        mr_ox = memory_row(lay["nx"], lay["ny"], lay["N"], lay["n_max"], lay["n_atoms"],
+                           overlayer=lay["oxide_layer"], precision=precision)
         gpu = replica_gpu_s(lay["nx"], lay["ny"], lay["N"], lay["nonempty"], lay["n_mean"],
                             precision)
         cpu = CPU_FACTOR * replica_cpu_s(lay["nx"], lay["ny"], lay["N"], lay["nonempty"],
@@ -1773,6 +1784,7 @@ def report_part4(S, cc, t_start) -> int:
                                                         + 5 * cbn * npx)))
         row = dict(label=label, lay=lay, mem=mr["cpu_job"], dev=mr["device"],
                    host=mr["host_cupy"], h5_dev=h5_dev, h5_blk=h5_blk, gpu=gpu, cpu=cpu,
+                   dev_ox=mr_ox["device"], mem_ox=mr_ox["cpu_job"], host_ox=mr_ox["host_cupy"],
                    n_real=n_real,
                    n_ang=n_ang, note=note, exit_bytes=8 * lay["nx"] * lay["ny"],
                    ls=mr["model"]["largest_slice"])
@@ -1803,6 +1815,12 @@ def report_part4(S, cc, t_start) -> int:
               f"structure); largest slice: exponentials {row['ls']['exponentials_B'] / 1e9:.3f} GB, "
               f"pixel stage {row['ls']['pixel_stage_B'] / 1e9:.3f} GB; exit wave "
               f"{row['exit_bytes'] / 1e9:.3f} GB")
+        print(f"    with the continuum oxide (report E4; its layer arrays on this grid, terraces along "
+              f"{lay['oxide_layer']['staircase_axis']}, audit A8 m3): GPU device peak "
+              f"{row['dev_ox'] / 1e9:.3f} GB ({(row['dev_ox'] - row['dev']) / 1e9:+.3f} GB), host of "
+              f"that run {row['host_ox'] / 1e9:.1f} GB, CPU job {row['mem_ox'] / 1e9:.3f} GB "
+              f"({(row['mem_ox'] - row['mem']) / 1e9:+.3f} GB); the cell's geometry change (vacuum "
+              f"for the layer top, consumed layers) is not included")
         (cf, cp), (gf, gp) = split_times(lay["nx"], lay["ny"], lay["N"], lay["nonempty"],
                                          lay["n_mean"], cc, precision)
         print(f"    per realisation: CPU {fmt_t(cpu)} (4 cores, {CPU_FACTOR_LABEL}; FFT+element-wise "
@@ -1937,6 +1955,35 @@ def report_part4(S, cc, t_start) -> int:
           f"or depth; lower bound on z: {GAP_A / tan_e + d10['L_run'] + M + 2 * h10 / tan_e + M:.0f}"
           f" A plus the feature length")
 
+    # continuum oxide layer arrays (audit A8 m3): A8 measured one working-precision complex array per
+    # pixel for terraces along y (tracemalloc, +8.1 B/px complex64) and scaled it to H2's grid of the
+    # 0.1 deg a/4 row (2000 x 12096: +0.194 GB) and to the r = 0.05 row (2700 x 12096: +0.26 GB).
+    # The engine's model must carry exactly that array in the slice loop (device peak and the
+    # numpy loop phase); the CPU-job peak rises only where the loop is the numpy peak phase (for
+    # these cells the atom-sorting stage of realise(), before the layer exists, is higher)
+    loop = "slice loop (largest slice)"
+    for lbl, a8_grid, a8, tol in (("2a_a4_miscut0.1_r0.10", (2000, 12096), 0.194e9, 0.0005e9),
+                                  ("2a_a4_miscut0.1_r0.05", (2700, 12096), 0.26e9, 0.005e9)):
+        rw = next(r for r in rows if r["label"] == lbl)
+        px = rw["lay"]["nx"] * rw["lay"]["ny"]
+        d_dev, d_cpu = rw["dev_ox"] - rw["dev"], rw["mem_ox"] - rw["mem"]
+        mm0 = memory_model(nx=rw["lay"]["nx"], ny=rw["lay"]["ny"], n_slices=rw["lay"]["N"],
+                           n_atoms=rw["lay"]["n_atoms"], atoms_per_slice_max=rw["lay"]["n_max"],
+                           n_species=1, precision="complex64", overlayer=None)
+        mm1 = memory_model(nx=rw["lay"]["nx"], ny=rw["lay"]["ny"], n_slices=rw["lay"]["N"],
+                           n_atoms=rw["lay"]["n_atoms"], atoms_per_slice_max=rw["lay"]["n_max"],
+                           n_species=1, precision="complex64", overlayer=rw["lay"]["oxide_layer"])
+        d_loop = mm1["numpy"]["phases"][loop] - mm0["numpy"]["phases"][loop]
+        g = [memory_model(nx=a8_grid[0], ny=a8_grid[1], n_slices=1, n_atoms=0,
+                          atoms_per_slice_max=0, n_species=1, precision="complex64",
+                          overlayer=ov)["cupy"]["device_peak"]
+             for ov in (None, dict(staircase_axis="y", n_terraces=2))]
+        check(f"oxide_layer_memory_A8_m3_{lbl}",
+              d_dev == 8 * px and d_loop == 8 * px and abs((g[1] - g[0]) - a8) <= tol,
+              f"layer arrays add {d_dev / 1e9:.4f} GB to the device peak and to the numpy slice "
+              f"loop = 8 B x {rw['lay']['nx']} x {rw['lay']['ny']} px (complex64; CPU-job peak "
+              f"{d_cpu / 1e9:+.4f} GB, numpy peak phase {mm1['numpy']['peak_phase']!r}); on A8's grid "
+              f"{a8_grid[0]} x {a8_grid[1]}: {(g[1] - g[0]) / 1e9:.4f} GB (A8 m3: +{a8 / 1e9:g} GB)")
     # --------------------------------------------------------------------------------------------
     hdr("14. Table (corrected after H5; the orchestrator quotes it; H2's report stays the record)")
     st = S["study_tot"]
@@ -1944,12 +1991,15 @@ def report_part4(S, cc, t_start) -> int:
           "amplitude not established); r = 0.05 and r = 0 rows: static-lattice LOWER BOUNDS (phonon "
           "run-in to be computed on the cluster); V row: static run-in. Memory: engine.memory_model; "
           "GPU device peak UNVERIFIED on a GPU (lower bound); host and CPU-job figures include the "
-          f"{STRUCTURE_B_PER_ATOM} B/atom builder structure. CPU: {CPU_FACTOR_LABEL}.")
+          f"{STRUCTURE_B_PER_ATOM} B/atom builder structure. CPU: {CPU_FACTOR_LABEL}. Last "
+          "column: the same with the continuum oxide's layer arrays (report E4, audit A8 m3; the "
+          "production surface is oxide-covered, PROJECT_INPUT Ali 2026-09-24; same grid, the "
+          "cell's geometry change not included).")
     print("| scenario | extents x, y, z (A) | atoms | grid | slices | run-in (A) | GPU device peak "
           "(GB) | host, GPU run (GB) | CPU job peak (GB) | CPU time per realisation (4 cores, "
           f"x{CPU_FACTOR}) | GPU time per realisation (ASSUMPTION model) | realisations x angles | "
-          "total CPU / GPU |")
-    print("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+          "total CPU / GPU | with oxide: GPU device / CPU job peak (GB) |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     print(f"| 1 study.yaml, 17 points ([110], reference) | {st['x'][0]:.0f}-{st['x'][1]:.0f} x "
           f"{st['y'][0]:.1f}-{st['y'][1]:.1f} x {st['z'][0]:.0f}-{st['z'][1]:.0f} | "
           f"{st['atoms'][0]:,} to {st['atoms'][1]:,} | see section 12 | {st['slices'][0]} to "
@@ -1967,8 +2017,9 @@ def report_part4(S, cc, t_start) -> int:
               f"{L['n_atoms']:,} | {L['nx']}x{L['ny']} | {L['N']} | {L['L_run']:.0f}{lb} | "
               f"{rw['dev'] / 1e9:.2f} | {rw['host'] / 1e9:.1f} | {rw['mem'] / 1e9:.1f} | "
               f"{fmt_t(rw['cpu'])} | {fmt_t(rw['gpu'])} | {rw['n_real']} x {rw['n_ang']} | "
-              f"{fmt_t(rw['cpu'] * n)} / {fmt_t(rw['gpu'] * n)} |")
-    print("| 4 patterned CFG-B feature | BLOCKED on PROJECT_INPUT item 13 | | | | | | | | | | | |")
+              f"{fmt_t(rw['cpu'] * n)} / {fmt_t(rw['gpu'] * n)} | {rw['dev_ox'] / 1e9:.2f} / "
+              f"{rw['mem_ox'] / 1e9:.1f} |")
+    print("| 4 patterned CFG-B feature | BLOCKED on PROJECT_INPUT item 13 | | | | | | | | | | | | |")
     big = [rw for rw in rows if rw["dev"] > 10e9]
     print(f"GPU instances: rows whose device peak exceeds 10 GB (a 1g.10gb / 2g.10gb MIG instance is "
           f"too small even before the library workspaces): {[rw['label'] for rw in big]}")

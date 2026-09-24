@@ -117,14 +117,30 @@ def test_invalid_oxide_values_are_refused(smoke, change, match):
 
 
 def test_zero_absorption_or_a_si_under_project_input_needs_assumption(smoke):
-    """V'_ox = 0 and a-Si = 0 must carry an ASSUMPTION (or TEST_ONLY) label: a supplied
-    PROJECT_INPUT record stating 0 is refused rather than taken as a measurement."""
-    e = _with_base_oxide(smoke, dict(_oxide_rec(smoke)["value"]["overlayer"], V_imag_V=0.0))
+    """V'_ox = 0 must carry an ASSUMPTION (or TEST_ONLY) label: a supplied PROJECT_INPUT stating 0
+    is refused rather than taken as a measurement. Changed on purpose by report X4 (audit A8 M1):
+    a-Si = 0 labelled PROJECT_INPUT (a measured zero) is now ACCEPTED, through the per-parameter
+    labels; E4's docstring stated its refusal, which made a measured 'no amorphous Si' impossible
+    in a comparison run."""
+    over = dict(_oxide_rec(smoke)["value"]["overlayer"], V_imag_V=0.0)
+    over["labels"] = dict(over["labels"], V_imag="PROJECT_INPUT")
+    e = _with_base_oxide(smoke, over)
     rec = e["cfg_b"]["parameters"]["surface_preparation_details"]
     rec.update(label="PROJECT_INPUT", supplied_by="Auditor", supplied_on="2026-09-24",
                source="TEST: fabricated supply to exercise the gate")
     with pytest.raises(PipelineConfigError, match="ASSUMPTION"):
         load_pipeline_dict(e, variant=None, allow_test_only=True)
+    from reflection_holo.pipeline.config import oxide_spec_from_config
+    over = dict(_oxide_rec(smoke)["value"]["overlayer"])
+    over["labels"] = dict(over["labels"], amorphous_si="PROJECT_INPUT")
+    e = _with_base_oxide(smoke, over)
+    e["cfg_b"]["parameters"]["surface_preparation_details"].update(
+        label="PROJECT_INPUT", supplied_by="Auditor", supplied_on="2026-09-24",
+        source="TEST: fabricated supply to exercise the gate")
+    spec = oxide_spec_from_config(load_pipeline_dict(e, variant=None).cfg_b)
+    assert spec.amorphous_si_thickness_A == 0.0
+    assert spec.labels["amorphous_si"].startswith("PROJECT_INPUT item 12")
+    assert spec.labels["thickness"] == "ASSUMPTION B41 (stands in for PROJECT_INPUT item 12)"
 
 
 def test_clean_stand_in_b26_cannot_carry_an_oxide(smoke):

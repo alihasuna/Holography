@@ -40,13 +40,24 @@ parameter records (``cfg_b_parameters``, report E4: e.g. the continuum-oxide sta
 12 on top of a clean base); every replaced record passes the same CFG-B gate, and the resolved
 CFG-B block is hashed and recorded.
 
-Overlayer (docs/06 item 12; report E4): cfg_b.surface_preparation_details.overlayer is "none" or a
-complete continuum oxide {model: continuum_oxide, material, thickness_A, density_g_cm3,
+Overlayer (docs/06 item 12; report E4; audit A8, report X4): cfg_b.surface_preparation_details is
+{termination, overlayer} (both keys required, no default; audit A8 n3) and its overlayer is "none" or
+a complete continuum oxide {model: continuum_oxide, material, thickness_A, density_g_cm3,
 consumed_layers, V_real_V, V_imag_V, vacuum_edge_width_A, interface_width_A,
-amorphous_si_thickness_A (+ amorphous_si_V_real_V, amorphous_si_V_imag_V when > 0)}, every key
-REQUIRED and carrying the record's label (``OXIDE_KEYS``; structure.oxide.ContinuumOxideSpec);
-anything else is refused (audit A3 M6). The pipeline builds conformal layers only (no per-terrace
-overrides), on the staircase path, with the bulk termination.
+amorphous_si_thickness_A (+ amorphous_si_V_real_V, amorphous_si_V_imag_V when > 0),
+rounding_boundary_acknowledged, labels}, every key REQUIRED (``OXIDE_KEYS``;
+structure.oxide.ContinuumOxideSpec). ``labels`` gives ONE label PER PARAMETER (keys
+structure.oxide.LABEL_KEYS, + amorphous_si_potential when a-Si > 0; audit A8 M1): "PROJECT_INPUT"
+(only inside a supplied PROJECT_INPUT record, whose supply record it shares), "ASSUMPTION <id>" (an
+id the registry maps to item 12; inside a stand-in record, that record's id) or "TEST_ONLY" (inside
+a TEST_ONLY record, in-memory fixtures only). A measured a-Si thickness of 0 can thus be a
+PROJECT_INPUT while other values remain ASSUMPTIONs; purpose "comparison" refuses every
+per-parameter ASSUMPTION that a record would be refused for (a demo stand-in, or any ASSUMPTION for
+the blocking item 12). A stand-in vouches only for the values its model_assumptions row states
+(``OXIDE_STAND_IN_ROWS``; B41 with "none" or with other values is refused, audit A8 m2); B26 states a
+clean surface. Anything else is refused (audit A3 M6). The pipeline builds conformal layers only
+(no per-terrace overrides), graded edges only (no TEST_ONLY sharp flags), on the staircase path,
+with the bulk termination.
 """
 from __future__ import annotations
 
@@ -55,6 +66,7 @@ import datetime as _dt
 import hashlib
 import json
 import math
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -907,8 +919,21 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
     _check_convergence(cfg_b, sections, ga)
     prep = cfg_b.value("surface_preparation_details")
     if isinstance(prep, dict):
-        if prep.get("overlayer", "none") != "none":
+        miss = [k for k in ("termination", "overlayer") if k not in prep]
+        if miss:                                  # audit A8 n3: no default "bulk" / "none"
+            raise PipelineConfigError(
+                f"cfg_b.surface_preparation_details (docs/06 item 12) must state both "
+                f"'termination' and 'overlayer' (no default); missing {miss}")
+        if prep["overlayer"] != "none":
             _check_overlayer(cfg_b, prep, sections)
+        else:
+            p12 = cfg_b.parameters["surface_preparation_details"]
+            aid = getattr(p12, "assumption_id", None)
+            if p12.label == "ASSUMPTION" and aid in OXIDE_STAND_IN_ROWS:
+                raise PipelineConfigError(
+                    f"cfg_b.surface_preparation_details.overlayer = 'none' under stand-in {aid}: "
+                    f"its model_assumptions row states a continuum oxide; a clean surface is B26 "
+                    f"(a stand-in vouches only for the values its row states; audit A8 m2)")
         _check_termination(cfg_b, prep, sections)
     pat = cfg_b.value("pattern_geometry")
     feat = sections["structure"].get("feature")
@@ -944,9 +969,28 @@ def _refuse_unused_physical_inputs(cfg_b: LoadedConfig, sections: dict, ga: dict
 
 OXIDE_MODEL = "continuum_oxide"
 OXIDE_KEYS = ("model", "material", "thickness_A", "density_g_cm3", "consumed_layers", "V_real_V",
-              "V_imag_V", "vacuum_edge_width_A", "interface_width_A", "amorphous_si_thickness_A")
+              "V_imag_V", "vacuum_edge_width_A", "interface_width_A", "amorphous_si_thickness_A",
+              "rounding_boundary_acknowledged", "labels")
 OXIDE_KEYS_AMORPHOUS = ("amorphous_si_V_real_V", "amorphous_si_V_imag_V")
 OXIDE_STAND_INS_CLEAN = ("B26",)          # item-12 stand-ins whose row states NO overlayer
+# the configuration values each per-parameter label covers (structure.oxide.LABEL_KEYS; A8 M1)
+OXIDE_LABEL_VALUES = {"thickness": ("thickness_A",), "density": ("density_g_cm3",),
+                      "consumed_layers": ("consumed_layers",), "V_real": ("V_real_V",),
+                      "V_imag": ("V_imag_V",), "vacuum_edge": ("vacuum_edge_width_A",),
+                      "interface": ("interface_width_A",),
+                      "amorphous_si": ("amorphous_si_thickness_A",),
+                      "amorphous_si_potential": OXIDE_KEYS_AMORPHOUS}
+# item-12 stand-ins whose docs/model_assumptions.md row states a continuum oxide, with the values the
+# row states (audit A8 m2: a stand-in vouches for these values only; B41 = report E4's demo oxide:
+# t_ox 2.0 nm with 7 consumed layers or 1.5 nm with 5, 2.20 g/cm^3, V_ox 10.34 V, V'_ox 0.40 or
+# 0 V, both edges graded 0.5 A, no amorphous Si, amorphous SiO2 on the bulk-terminated staircase)
+OXIDE_STAND_IN_ROWS = {
+    "B41": dict(material=("amorphous SiO2",), termination=("bulk",),
+                thickness_and_count=((20.0, 7), (15.0, 5)), density_g_cm3=(2.20,),
+                V_real_V=(10.34,), V_imag_V=(0.4, 0.0), vacuum_edge_width_A=(0.5,),
+                interface_width_A=(0.5,), amorphous_si_thickness_A=(0.0,)),
+}
+_OXIDE_ASSUMPTION_LABEL = re.compile(r"ASSUMPTION ([A-Za-z0-9_.-]+)")
 
 
 def qualified_label(p, item: int | None) -> str:
@@ -960,10 +1004,75 @@ def qualified_label(p, item: int | None) -> str:
     return f"{lab} ({p.source})"
 
 
+def _oxide_amorphous(over: dict) -> bool:
+    t_a = over.get("amorphous_si_thickness_A")
+    return isinstance(t_a, (int, float)) and not isinstance(t_a, bool) and t_a > 0
+
+
+def oxide_parameter_labels(p12, over: dict) -> dict:
+    """Per-parameter labels of a continuum-oxide overlayer (audit A8 M1): {key: {label,
+    assumption_id}} for every key of structure.oxide.LABEL_KEYS (+ amorphous_si_potential when
+    a-Si > 0), checked against the item-12 record p12 (module docstring). Raises
+    PipelineConfigError naming item 12."""
+    from reflection_holo.structure import oxide as ox
+    where = "cfg_b.surface_preparation_details.overlayer.labels (docs/06 item 12)"
+    labs = over.get("labels")
+    want = set(ox.LABEL_KEYS) | (set(ox.LABEL_KEYS_AMORPHOUS_POTENTIAL) if _oxide_amorphous(over)
+                                 else set())
+    if not isinstance(labs, dict) or set(labs) != want:
+        got = sorted(labs) if isinstance(labs, dict) else labs
+        raise PipelineConfigError(
+            f"{where}: one label per physical parameter is required, exactly the keys "
+            f"{sorted(want)} (no default; audit A8 M1), got {got!r}")
+    rec_label, rec_aid = p12.label, getattr(p12, "assumption_id", None)
+    out = {}
+    for k in sorted(want):
+        v = labs[k]
+        m = _OXIDE_ASSUMPTION_LABEL.fullmatch(v) if isinstance(v, str) else None
+        if v == "PROJECT_INPUT":
+            if rec_label != "PROJECT_INPUT":
+                raise PipelineConfigError(
+                    f"{where}.{k} = PROJECT_INPUT inside a record labelled {rec_label}: a "
+                    f"per-parameter PROJECT_INPUT shares the supply record (supplied_by, "
+                    f"supplied_on) of a PROJECT_INPUT item-12 record")
+            out[k] = dict(label="PROJECT_INPUT", assumption_id=None)
+        elif v == TEST_ONLY_LABEL:
+            if rec_label != TEST_ONLY_LABEL:
+                raise PipelineConfigError(f"{where}.{k} = TEST_ONLY inside a record labelled "
+                                          f"{rec_label}: TEST_ONLY only inside a TEST_ONLY record "
+                                          f"(in-memory test fixtures)")
+            out[k] = dict(label=TEST_ONLY_LABEL, assumption_id=None)
+        elif m is not None:
+            aid = m.group(1)
+            if 12 not in assumption_registry().get(aid, ()):
+                raise PipelineConfigError(f"{where}.{k}: assumption_id {aid!r} is not mapped to "
+                                          f"PROJECT_INPUT item 12 by "
+                                          f"reflection_holo/io/assumption_registry.yaml")
+            if rec_label == "ASSUMPTION" and aid != rec_aid:
+                raise PipelineConfigError(
+                    f"{where}.{k} = {v!r} inside the stand-in record {rec_aid}: a stand-in record "
+                    f"is one declaration, every parameter carries its id ('ASSUMPTION {rec_aid}')")
+            out[k] = dict(label="ASSUMPTION", assumption_id=aid)
+        else:
+            raise PipelineConfigError(
+                f"{where}.{k} = {v!r}: must be 'PROJECT_INPUT', 'ASSUMPTION <id>' (registered for "
+                f"item 12) or 'TEST_ONLY' (in-memory fixtures)")
+    return out
+
+
+def _qualified_parameter_label(p12, lab: dict) -> str:
+    if lab["label"] == "ASSUMPTION":
+        return f"ASSUMPTION {lab['assumption_id']} (stands in for PROJECT_INPUT item 12)"
+    if lab["label"] == "PROJECT_INPUT":
+        return f"PROJECT_INPUT item 12 ({p12.source})"
+    return f"{lab['label']} ({p12.source})"
+
+
 def oxide_spec_from_config(cfg_b: LoadedConfig):
     """structure.oxide.ContinuumOxideSpec of cfg_b.surface_preparation_details.overlayer (item 12;
-    report E4), every parameter carrying the record's qualified label; conformal (no per-terrace
-    overrides), sharp_edge_test_flag False. Raises PipelineConfigError naming item 12."""
+    report E4), every parameter carrying its OWN qualified label (oxide_parameter_labels; audit A8
+    M1); conformal (no per-terrace overrides), both sharp-edge test flags False. Raises
+    PipelineConfigError naming item 12."""
     from reflection_holo.structure import oxide as ox
     prep = cfg_b.value("surface_preparation_details")
     over = prep.get("overlayer") if isinstance(prep, dict) else None
@@ -973,19 +1082,15 @@ def oxide_spec_from_config(cfg_b: LoadedConfig):
             f"{where} = {over!r}: only 'none' or a complete continuum oxide {{model: "
             f"{OXIDE_MODEL}, ...}} is represented by the engines (report E4); refused rather than "
             f"ignored (audit A3 M6)")
-    t_a = over.get("amorphous_si_thickness_A")
-    want = set(OXIDE_KEYS) | (set(OXIDE_KEYS_AMORPHOUS)
-                              if isinstance(t_a, (int, float)) and t_a > 0 else set())
+    want = set(OXIDE_KEYS) | (set(OXIDE_KEYS_AMORPHOUS) if _oxide_amorphous(over) else set())
     if set(over) != want:
         raise PipelineConfigError(
             f"{where}: the continuum oxide needs exactly the keys {sorted(want)} (every physical "
             f"parameter REQUIRED; no default), got {sorted(over)}; missing "
             f"{sorted(want - set(over))}, unknown {sorted(set(over) - want)}")
     p12 = cfg_b.parameters["surface_preparation_details"]
-    lab = qualified_label(p12, 12)
-    labels = {k: lab for k in ox.LABEL_KEYS}
-    if t_a is not None and t_a > 0:
-        labels["amorphous_si_potential"] = lab
+    plabels = oxide_parameter_labels(p12, over)
+    labels = {k: _qualified_parameter_label(p12, v) for k, v in plabels.items()}
     try:
         spec = ox.ContinuumOxideSpec(
             material=over["material"], thickness_A=over["thickness_A"],
@@ -997,6 +1102,8 @@ def oxide_spec_from_config(cfg_b: LoadedConfig):
             amorphous_si_V_real_V=over.get("amorphous_si_V_real_V"),
             amorphous_si_V_imag_V=over.get("amorphous_si_V_imag_V"),
             terrace_thickness_A=None, terrace_consumed_layers=None, sharp_edge_test_flag=False,
+            sharp_interface_test_flag=False,
+            rounding_boundary_acknowledged=over["rounding_boundary_acknowledged"],
             labels=labels)
         ox.validate_spec(spec)
     except (ValueError, TypeError) as exc:
@@ -1004,12 +1111,60 @@ def oxide_spec_from_config(cfg_b: LoadedConfig):
     return spec
 
 
+def _same(a, b) -> bool:
+    return (isinstance(a, (int, float)) and not isinstance(a, bool)
+            and math.isclose(float(a), float(b), rel_tol=1e-12, abs_tol=0.0))
+
+
+def _check_oxide_stand_in_values(p12, prep: dict, over: dict, plabels: dict, where: str) -> None:
+    """A stand-in vouches only for the values its row states (OXIDE_STAND_IN_ROWS; audit A8 m2):
+    every parameter labelled with such a stand-in (per-parameter labels), and the material and
+    termination of a record labelled with it, must take a value of the row."""
+    def refuse(aid, what, allowed, got):
+        raise PipelineConfigError(
+            f"{where}: stand-in {aid} (docs/model_assumptions.md row {aid}) states {what} in "
+            f"{list(allowed)}, got {got!r}: a stand-in vouches only for the values its row states "
+            f"(audit A8 m2)")
+    rec_aid = p12.assumption_id if p12.label == "ASSUMPTION" else None
+    if rec_aid in OXIDE_STAND_IN_ROWS:
+        row = OXIDE_STAND_IN_ROWS[rec_aid]
+        if over["material"] not in row["material"]:
+            refuse(rec_aid, "material", row["material"], over["material"])
+        if prep["termination"] not in row["termination"]:
+            refuse(rec_aid, "termination", row["termination"], prep["termination"])
+    for key, lab in plabels.items():
+        aid = lab["assumption_id"]
+        if aid not in OXIDE_STAND_IN_ROWS:
+            continue
+        row = OXIDE_STAND_IN_ROWS[aid]
+        if key in ("thickness", "consumed_layers"):
+            pairs = row["thickness_and_count"]
+            t, n = over["thickness_A"], over["consumed_layers"]
+            if key == "thickness" and not any(_same(t, pt) for pt, _ in pairs):
+                refuse(aid, "thickness_A", [pt for pt, _ in pairs], t)
+            if key == "consumed_layers" and n not in [pn for _, pn in pairs]:
+                refuse(aid, "consumed_layers", [pn for _, pn in pairs], n)
+            if plabels["thickness"]["assumption_id"] == plabels["consumed_layers"][
+                    "assumption_id"] == aid and not any(_same(t, pt) and n == pn
+                                                        for pt, pn in pairs):
+                refuse(aid, "(thickness_A, consumed_layers)", pairs, (t, n))
+            continue
+        if key == "amorphous_si_potential":
+            refuse(aid, "amorphous_si_thickness_A", row["amorphous_si_thickness_A"],
+                   over["amorphous_si_thickness_A"])
+        for vk in OXIDE_LABEL_VALUES[key]:
+            if not any(_same(over[vk], allowed) for allowed in row[vk]):
+                refuse(aid, vk, row[vk], over[vk])
+
+
 def _check_overlayer(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
     """Gate of a declared overlayer (item 12; report E4): a complete continuum oxide
-    (oxide_spec_from_config), not under a stand-in whose row states a clean surface (B26), on the
-    staircase path (the feature path builds clean bulk-terminated surfaces only) with the bulk
-    termination (a reconstruction under an overlayer is NOT IMPLEMENTED). The consumed-layer count
-    is checked against the lattice parameter here (structure.oxide.terrace_stacks)."""
+    (oxide_spec_from_config, per-parameter labels), not under a stand-in whose row states a clean
+    surface (B26), on the staircase path (the feature path builds clean bulk-terminated surfaces
+    only) with the bulk termination (a reconstruction under an overlayer is NOT IMPLEMENTED); the
+    consumed-layer count and its rounding-boundary margin are checked against the lattice parameter
+    (structure.oxide.terrace_stacks), and a stand-in's values against its row
+    (OXIDE_STAND_IN_ROWS, audit A8 m2)."""
     from reflection_holo.structure import oxide as ox
     where = f"cfg_b.surface_preparation_details.overlayer = {prep.get('overlayer')!r}"
     p12 = cfg_b.parameters["surface_preparation_details"]
@@ -1022,16 +1177,33 @@ def _check_overlayer(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
         raise PipelineConfigError(f"{where}: the feature path builds clean, bulk-terminated "
                                   f"surfaces only; the continuum oxide is built on the staircase "
                                   f"path (report E4): refused rather than ignored")
-    if prep.get("termination", "bulk") != "bulk":
+    if prep["termination"] != "bulk":
         raise PipelineConfigError(f"{where}: a reconstruction under an overlayer is NOT "
                                   f"IMPLEMENTED (a buried interface is not a clean surface)")
     a_A, unit = cfg_b.quantity("lattice_parameter")
     if unit != "A":
         raise PipelineConfigError("cfg_b.lattice_parameter must be in A")
     try:
-        ox.terrace_stacks(spec, terrace_heights_A=[0.0], a_A=float(a_A))
+        ox.terrace_stacks(spec, terrace_heights_A=[0.0], a_A=float(a_A),
+                          crystal=ox.CRYSTAL_ATOMISTIC)
     except ValueError as exc:
         raise PipelineConfigError(f"{where}: {exc}") from exc
+    _check_oxide_stand_in_values(p12, prep, prep["overlayer"],
+                                 oxide_parameter_labels(p12, prep["overlayer"]),
+                                 "cfg_b.surface_preparation_details.overlayer (docs/06 item 12)")
+
+
+def oxide_parameter_assumptions(cfg_b: LoadedConfig) -> list[dict]:
+    """The per-parameter ASSUMPTION labels of a continuum-oxide overlayer (empty without one):
+    [{parameter, assumption_id}] (audit A8 M1; used by the comparison gate and the run summary)."""
+    prep = cfg_b.value("surface_preparation_details")
+    over = prep.get("overlayer") if isinstance(prep, dict) else None
+    if not isinstance(over, dict) or over.get("model") != OXIDE_MODEL:
+        return []
+    labs = oxide_parameter_labels(cfg_b.parameters["surface_preparation_details"], over)
+    return [dict(parameter=f"cfg_b.surface_preparation_details.overlayer.{k}",
+                 assumption_id=v["assumption_id"])
+            for k, v in sorted(labs.items()) if v["label"] == "ASSUMPTION"]
 
 
 def _check_termination(cfg_b: LoadedConfig, prep: dict, sections: dict) -> None:
@@ -1090,6 +1262,10 @@ def _comparison_gate(cfg_b: LoadedConfig, records: list[Record], test_only: bool
            if r.label == "ASSUMPTION" and (r.assumption_id in demo or r.item in BLOCKING_ITEMS)]
     bad += [f"cfg_b.{p.name} (item {p.item}, {p.assumption_id})" for p in cfg_b.parameters.values()
             if p.label == "ASSUMPTION" and (p.assumption_id in demo or p.item in BLOCKING_ITEMS)]
+    # per-parameter labels of the continuum oxide (audit A8 M1): the same rule as for a record
+    bad += [f"{o['parameter']} (item 12, {o['assumption_id']})"
+            for o in oxide_parameter_assumptions(cfg_b)
+            if o["assumption_id"] in demo or 12 in BLOCKING_ITEMS]
     msgs = list(reasons)
     if bad or test_only:
         msgs.append(
@@ -1110,6 +1286,10 @@ def assumptions_in_use(cfg: "PipelineConfig") -> list[dict]:
     out += [dict(parameter=f"sections.{r.section}.{r.name}", item=r.item,
                  assumption_id=r.assumption_id, demo_only=r.assumption_id in demo, source=r.source)
             for r in cfg.records() if r.label == "ASSUMPTION"]
+    out += [dict(parameter=o["parameter"], item=12, assumption_id=o["assumption_id"],
+                 demo_only=o["assumption_id"] in demo,
+                 source="per-parameter label of the continuum oxide (audit A8 M1)")
+            for o in oxide_parameter_assumptions(cfg.cfg_b)]
     return out
 
 
@@ -1435,6 +1615,8 @@ def list_inputs(data: dict, *, variant: str | None) -> list[dict]:
         where = f"cfg_b.{name}"
         rows.append(_row(item, where, p, required=name in SCHEMAS["CFG-B"]["required"],
                          unused=_path_usage(where, data, sections)))
+        if name == "surface_preparation_details":
+            rows += _oxide_label_rows(p, rows[-1])
     for sec, schema in SECTIONS.items():
         for name, spec in schema.items():
             if spec["type"] != "record" or spec["item"] is None:
@@ -1505,6 +1687,26 @@ def _row(item: int, where: str, p, *, required: bool, unused: str | None) -> dic
         detail = f"NOT USED on this path: {unused}"
     return dict(item=item, parameter=where, status=st, value=v, detail=detail,
                 used=unused is None)
+
+
+def _oxide_label_rows(p, rec_row: dict) -> list[dict]:
+    """One list-inputs row per per-parameter label of a continuum oxide (audit A8 M1); the gate is
+    load_pipeline_dict (oxide_parameter_labels), this view only shows what is declared."""
+    prep = (p or {}).get("value")
+    over = prep.get("overlayer") if isinstance(prep, dict) else None
+    if not isinstance(over, dict) or not isinstance(over.get("labels"), dict):
+        return []
+    out = []
+    for k, lab in sorted(over["labels"].items()):
+        vals = {vk: over.get(vk) for vk in OXIDE_LABEL_VALUES.get(k, ())}
+        st = str(lab) if lab != "PROJECT_INPUT" else f"PROJECT_INPUT ({rec_row['status']})"
+        if not rec_row["used"]:
+            st += ", NOT USED on this path"
+        out.append(dict(item=12, parameter=f"cfg_b.surface_preparation_details.overlayer.{k}",
+                        status=st, value=vals if len(vals) != 1 else next(iter(vals.values())),
+                        detail="per-parameter label of the continuum oxide (audit A8 M1)",
+                        used=rec_row["used"]))
+    return out
 
 
 def format_inputs(rows: list[dict]) -> str:

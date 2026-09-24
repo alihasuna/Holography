@@ -240,7 +240,8 @@ def test_realise_bytes_per_atom():
 def test_memory_model_contract():
     """Required arguments, the device/host split of the cupy figures and the phase names."""
     mm = memory_model(nx=2000, ny=12096, n_slices=4126, n_atoms=31_116_960,
-                      atoms_per_slice_max=7632, n_species=1, precision="complex64")
+                      atoms_per_slice_max=7632, n_species=1, precision="complex64",
+                      overlayer=None)
     assert mm["cupy"]["device_peak"] < mm["numpy"]["peak"]
     assert mm["numpy"]["peak"] - mm["cupy"]["device_peak"] >= 72 * 31_116_960
     assert "UNVERIFIED on a GPU" in mm["label"]
@@ -248,4 +249,68 @@ def test_memory_model_contract():
         memory_model(nx=10, ny=10, n_slices=1, n_atoms=1, atoms_per_slice_max=1, n_species=1)
     with pytest.raises(ValueError):
         memory_model(nx=10, ny=10, n_slices=1, n_atoms=1, atoms_per_slice_max=1, n_species=1,
-                     precision="float32")
+                     precision="float32", overlayer=None)
+    with pytest.raises(TypeError):                   # overlayer is required too (audit A8 m3)
+        memory_model(nx=10, ny=10, n_slices=1, n_atoms=1, atoms_per_slice_max=1, n_species=1,
+                     precision="complex64")
+    with pytest.raises(ValueError):
+        memory_model(nx=10, ny=10, n_slices=1, n_atoms=1, atoms_per_slice_max=1, n_species=1,
+                     precision="complex64", overlayer=dict(staircase_axis="x", n_terraces=2))
+
+
+# --------------------------------------------------------------------------------------------------
+# continuum oxide (report E4): the layer arrays in the model (audit A8 m3, report X4)
+# --------------------------------------------------------------------------------------------------
+def _oxide_case(edges, precision):
+    """A8's measurement (C11) as a test: two terraces with the TEST_ONLY 2 nm oxide of
+    oxide_cases.oxide_spec, terraces along y (parallel edges) or along z (transverse edges)."""
+    from oxide_cases import oxide_spec
+    from reflection_holo.forward.multislice import ContinuumOxidePotential
+    spec = oxide_spec()
+    geo = (dict(terrace_layers=(0, 1), terrace_widths=(6, 6), boundary_step_layers=-1, ep=3)
+           if edges == "parallel" else
+           dict(terrace_layers=(0, 2), terrace_widths=(2, 2), boundary_step_layers=-2, ep=8))
+    ep = geo.pop("ep")
+    s = build_si001_terraces(
+        azimuth_uvw=(1, 0, 0), azimuth_label="TEST_ONLY: stands in for PROJECT_INPUT item 8",
+        staircase=Staircase(edges=edges, **geo), edge_periods=ep,
+        substrate_layers=30 + spec.consumed_layers, first_terrace_backbond_uvw=(1, 1, 0),
+        termination="bulk", overlayer=spec, vacuum_above_A=20.0, lattice_parameter_A=A_SI_A,
+        lattice_parameter_label="ASSUMPTION B2")
+    cell = build_reflection_cell(s, vacuum_above_A=40.0, depth_below_A=36.0, bulk_absorber_A=15.0,
+                                 top_absorber_A=8.0, entrance_vacuum_z_A=2 * Q)
+    pot, beam, params = _case(cell, precision=precision, ratio=0.1, phonons=False)
+    return cell, ContinuumOxidePotential(pot, oxide=spec), beam, params
+
+
+@pytest.mark.parametrize("edges,precision", [("parallel", "complex64"),
+                                             ("parallel", "complex128"),
+                                             ("transverse", "complex64")])
+def test_oxide_layer_arrays_in_the_memory_model(monkeypatch, edges, precision):
+    """Measured peak = model with the layer (engine.overlayer_memory_arguments) within TOL; the
+    layer adds exactly one working-precision complex array per pixel for terraces along y (A8
+    measured +1.01 cb and +1.00 cb) and n_terraces x nx values along z (A8: +0.02 cb)."""
+    cell, pot, beam, params = _oxide_case(edges, precision)
+    est = estimate_resources(cell, params, realisations=1, calibrate_cpu=False)
+    mm = est["memory_bytes"]["model"]
+    ov = engine.overlayer_memory_arguments(cell)
+    assert ov == dict(staircase_axis="y" if edges == "parallel" else "z", n_terraces=2)
+    assert mm["overlayer"]["staircase_axis"] == ov["staircase_axis"]
+    cb = np.dtype(precision).itemsize
+    px = params.nx * params.ny
+    bare = memory_model(nx=params.nx, ny=params.ny, n_slices=est["n_slices"],
+                        n_atoms=est["n_atoms"], atoms_per_slice_max=est["atoms_per_slice_max"],
+                        n_species=1, precision=precision, overlayer=None)
+    added = mm["numpy"]["peak"] - bare["numpy"]["peak"]
+    assert added == (cb * px if edges == "parallel" else cb * 2 * params.nx)
+    assert mm["cupy"]["device_peak"] - bare["cupy"]["device_peak"] == added
+    assert mm["numpy"]["peak_phase"] == "slice loop (largest slice)"
+    predicted = est["memory_bytes"]["total"] - mm["cell_atom_arrays_B"]
+    measured = _measured_peak(cell, pot, beam, params, False, monkeypatch)
+    print(f"oxide, terraces along {ov['staircase_axis']}, {precision}, {params.nx} x {params.ny}: "
+          f"measured {measured / 1e6:.3f} MB, model {predicted / 1e6:.3f} MB "
+          f"({measured / predicted - 1:+.3%}); layer term {added / px:.2f} B/px")
+    assert measured == pytest.approx(predicted, rel=TOL), (measured, predicted)
+    if edges == "parallel":                  # the model before the fix missed the array (A8 m3)
+        old = bare["numpy"]["peak"] - bare["cell_atom_arrays_B"]
+        assert measured - old > 0.9 * cb * px, (measured, old)

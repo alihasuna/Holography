@@ -540,7 +540,7 @@ variants:
     sections:
       structure:
         substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
-        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+        vacuum_above_A: 20.0          # holds the top of the layer (11.85 A above the top atomic planes)
     cfg_b_parameters:
       surface_preparation_details:
         value:
@@ -556,12 +556,22 @@ variants:
             vacuum_edge_width_A: 0.5
             interface_width_A: 0.5
             amorphous_si_thickness_A: 0.0
+            rounding_boundary_acknowledged: true   # 7 consumed layers lie 0.0036 layer from the rounding boundary (6.5036 layers; 6 below 2.19877 g/cm^3): acknowledged (audit A8 m4)
+            labels:                   # one label per parameter (audit A8 M1)
+              thickness: ASSUMPTION B41
+              density: ASSUMPTION B41
+              consumed_layers: ASSUMPTION B41
+              V_real: ASSUMPTION B41
+              V_imag: ASSUMPTION B41
+              vacuum_edge: ASSUMPTION B41
+              interface: ASSUMPTION B41
+              amorphous_si: ASSUMPTION B41
         unit: none
         label: ASSUMPTION
         item: 12
         stands_in_for_item: 12
         assumption_id: B41
-        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); the stack is placed from the Si equivalent boundary a/8 above the top atomic plane (audit A8 M2); consumed_layers = 7 lies 0.0036 layer from its rounding boundary (the count is 6 below 2.19877 g/cm^3), acknowledged (audit A8 m4); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
   oxide_2p0nm_no_absorption:
     description: >-
       The base (geometric) demo under the continuum oxide of stand-in B41 (report E4): t_ox 2.0 nm,
@@ -571,7 +581,7 @@ variants:
     sections:
       structure:
         substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
-        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+        vacuum_above_A: 20.0          # holds the top of the layer (11.85 A above the top atomic planes)
     cfg_b_parameters:
       surface_preparation_details:
         value:
@@ -587,12 +597,22 @@ variants:
             vacuum_edge_width_A: 0.5
             interface_width_A: 0.5
             amorphous_si_thickness_A: 0.0
+            rounding_boundary_acknowledged: true   # 7 consumed layers lie 0.0036 layer from the rounding boundary (6.5036 layers; 6 below 2.19877 g/cm^3): acknowledged (audit A8 m4)
+            labels:                   # one label per parameter (audit A8 M1)
+              thickness: ASSUMPTION B41
+              density: ASSUMPTION B41
+              consumed_layers: ASSUMPTION B41
+              V_real: ASSUMPTION B41
+              V_imag: ASSUMPTION B41
+              vacuum_edge: ASSUMPTION B41
+              interface: ASSUMPTION B41
+              amorphous_si: ASSUMPTION B41
         unit: none
         label: ASSUMPTION
         item: 12
         stands_in_for_item: 12
         assumption_id: B41
-        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.0 V (no electronic absorption in the layer, stated), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.0 V (no electronic absorption in the layer, stated), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); the stack is placed from the Si equivalent boundary a/8 above the top atomic plane (audit A8 M2); consumed_layers = 7 lies 0.0036 layer from its rounding boundary (the count is 6 below 2.19877 g/cm^3), acknowledged (audit A8 m4); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
   oxide_1p5nm:
     description: >-
       The base (geometric) demo under the continuum oxide of stand-in B41 (report E4): t_ox 1.5 nm,
@@ -602,7 +622,7 @@ variants:
     sections:
       structure:
         substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
-        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+        vacuum_above_A: 20.0          # holds the top of the layer (11.85 A above the top atomic planes)
     cfg_b_parameters:
       surface_preparation_details:
         value:
@@ -618,12 +638,22 @@ variants:
             vacuum_edge_width_A: 0.5
             interface_width_A: 0.5
             amorphous_si_thickness_A: 0.0
+            rounding_boundary_acknowledged: false
+            labels:                   # one label per parameter (audit A8 M1)
+              thickness: ASSUMPTION B41
+              density: ASSUMPTION B41
+              consumed_layers: ASSUMPTION B41
+              V_real: ASSUMPTION B41
+              V_imag: ASSUMPTION B41
+              vacuum_edge: ASSUMPTION B41
+              interface: ASSUMPTION B41
+              amorphous_si: ASSUMPTION B41
         unit: none
         label: ASSUMPTION
         item: 12
         stands_in_for_item: 12
         assumption_id: B41
-        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 15.0 A thermal-oxide equivalent at 2.20 g/cm^3 (1.5 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 6.62 A and consumed_layers = 5 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 15.0 A thermal-oxide equivalent at 2.20 g/cm^3 (1.5 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 6.62 A and consumed_layers = 5 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); the stack is placed from the Si equivalent boundary a/8 above the top atomic plane (audit A8 M2); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
   oxide_1p5nm_no_absorption:
     description: >-
       The base (geometric) demo under the continuum oxide of stand-in B41 (report E4): t_ox 1.5 nm,
@@ -633,7 +663,7 @@ variants:
     sections:
       structure:
         substrate_layers: 12          # the layer consumes 7 (5) whole layers; four must remain
-        vacuum_above_A: 20.0          # holds the top of the layer (11.2 A above the terraces)
+        vacuum_above_A: 20.0          # holds the top of the layer (11.85 A above the top atomic planes)
     cfg_b_parameters:
       surface_preparation_details:
         value:
@@ -649,12 +679,22 @@ variants:
             vacuum_edge_width_A: 0.5
             interface_width_A: 0.5
             amorphous_si_thickness_A: 0.0
+            rounding_boundary_acknowledged: false
+            labels:                   # one label per parameter (audit A8 M1)
+              thickness: ASSUMPTION B41
+              density: ASSUMPTION B41
+              consumed_layers: ASSUMPTION B41
+              V_real: ASSUMPTION B41
+              V_imag: ASSUMPTION B41
+              vacuum_edge: ASSUMPTION B41
+              interface: ASSUMPTION B41
+              amorphous_si: ASSUMPTION B41
         unit: none
         label: ASSUMPTION
         item: 12
         stands_in_for_item: 12
         assumption_id: B41
-        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 15.0 A thermal-oxide equivalent at 2.20 g/cm^3 (1.5 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 6.62 A and consumed_layers = 5 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.0 V (no electronic absorption in the layer, stated), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 15.0 A thermal-oxide equivalent at 2.20 g/cm^3 (1.5 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 6.62 A and consumed_layers = 5 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.0 V (no electronic absorption in the layer, stated), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); the stack is placed from the Si equivalent boundary a/8 above the top atomic plane (audit A8 M2); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
   multislice_tiny_oxide_2p0nm:
     description: >-
       The multislice_tiny smoke variant under the 2.0 nm continuum oxide of stand-in B41 (report E4;
@@ -747,9 +787,19 @@ variants:
             vacuum_edge_width_A: 0.5
             interface_width_A: 0.5
             amorphous_si_thickness_A: 0.0
+            rounding_boundary_acknowledged: true   # 7 consumed layers lie 0.0036 layer from the rounding boundary (6.5036 layers; 6 below 2.19877 g/cm^3): acknowledged (audit A8 m4)
+            labels:                   # one label per parameter (audit A8 M1)
+              thickness: ASSUMPTION B41
+              density: ASSUMPTION B41
+              consumed_layers: ASSUMPTION B41
+              V_real: ASSUMPTION B41
+              V_imag: ASSUMPTION B41
+              vacuum_edge: ASSUMPTION B41
+              interface: ASSUMPTION B41
+              amorphous_si: ASSUMPTION B41
         unit: none
         label: ASSUMPTION
         item: 12
         stands_in_for_item: 12
         assumption_id: B41
-        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"
+        source: "demo stand-in B41 (report E4; L8 section 8 as corrected by E9, numbers from tools/review/e9_recompute_output.txt): conformal continuum oxide on the bulk-terminated staircase, t_ox = 20.0 A thermal-oxide equivalent at 2.20 g/cm^3 (2.0 nm; E9 M3: 1.5 nm is the midpoint of the route that matches a milled surface, 2.0 nm the midpoint of the union 0.9-2.9 nm, a choice, not a sourced centre), f = 0.4415 (out:143) so the consumed depth is 8.83 A and consumed_layers = 7 is the nearest whole count of a/4 layers (out:125-127), V_ox = 10.34 V (independent-atom value at 2.20 g/cm^3, out:166, consistent with a later atomistic layer; measured 10.1-11.5 V), V'_ox = 0.4 V (1/(2 sigma Lambda) with Lambda about 1705 A, out:20; a MODEL value, not a bound, E9 M1), vacuum edge and oxide/Si interface graded 0.5 A (E9 M4, out:241), no amorphous Si under the oxide (0 nm, the optimistic bound, E9 M5); the stack is placed from the Si equivalent boundary a/8 above the top atomic plane (audit A8 M2); consumed_layers = 7 lies 0.0036 layer from its rounding boundary (the count is 6 below 2.19877 g/cm^3), acknowledged (audit A8 m4); PROJECT_INPUT item 12 (witness measurement of the oxide, a-Si, roughness) not supplied (blocking)"

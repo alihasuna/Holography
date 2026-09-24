@@ -493,6 +493,9 @@ MEM_REALISE_PEAK_B_PER_ATOM = 112      # _RealisedAtomic.__init__: the 40 above 
 #                                        idx 8, order 8, offsets 8, and three f8 temporaries of the
 #                                        boundary count 24 (the hash's tobytes copy is also 24)
 MEM_REALISE_F_STAGE_B_PER_ATOM = 88    # the same arrays while the scattering factors are built
+MEM_OXIDE_BUILD_B_PER_PX = 32          # overlayer.ContinuumOxidePotential.layer_arrays (host numpy):
+#                                        the complex128 accumulator and one complex128 product
+#                                        (profile x y fraction) of every terrace (audit A8 m3)
 MEMORY_MODEL_LABEL = (
     "DERIVED_HERE from the engine's statements (numpy semantics), checked with tracemalloc on "
     "the numpy backend (tests/forward/test_memory_model.py); the cupy figures are the same "
@@ -509,11 +512,26 @@ def _exp_stage_B(rows: int, n: int, cb: int) -> int:
     return cb * rows * n + MEM_EXP_B_PER_ELEMENT * blk * n
 
 
+def overlayer_memory_arguments(cell: ReflectionCell) -> dict | None:
+    """The ``overlayer`` argument of memory_model for a cell: None without a continuum oxide, else
+    dict(staircase_axis, n_terraces) from the cell's layout (audit A8 m3)."""
+    ov = (cell.metadata.get("layout") or {}).get("overlayer")
+    if ov is None:
+        return None
+    return dict(staircase_axis=str(ov["staircase_axis"]), n_terraces=len(ov["per_terrace"]))
+
+
 def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_slice_max: int,
-                 n_species: int, precision: str) -> dict:
+                 n_species: int, precision: str, overlayer: dict | None) -> dict:
     """Peak memory of one realisation of run_realisation (bytes), phase by phase (H5 M4).
 
-    Every argument is required. The physical absorption is assumed non-zero (the larger of the
+    Every argument is required. ``overlayer`` is None (no continuum oxide) or dict(staircase_axis
+    "y" | "z", n_terraces) for a cell built with the continuum oxide (report E4; audit A8 m3,
+    overlayer_memory_arguments): the layer adds one working-precision complex array per pixel
+    resident during the slice loop when its terraces lie along y (or there is one terrace), and
+    n_terraces x nx complex values when they lie along z; it is built on the host in complex128
+    (MEM_OXIDE_BUILD_B_PER_PX per pixel, a transient of the realise stage; on the cupy backend a
+    host transient). The physical absorption is assumed non-zero (the larger of the
     two code paths of _RealisedAtomic.projected; zero absorption needs cb bytes per pixel less in
     the potential-construction stage). The cell's own atom arrays (32 B/atom, held by the caller)
     are included; the structure-builder objects of the caller, Python objects and arrays of size
@@ -529,6 +547,20 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
     cb = np.dtype(precision).itemsize
     rb = cb // 2
     px = int(nx) * int(ny)
+    # continuum oxide layer arrays (audit A8 m3): resident in the loop, and the host build transient
+    if overlayer is None:
+        layer_res_B = layer_build_B = 0
+    else:
+        if not isinstance(overlayer, dict) or set(overlayer) != {"staircase_axis", "n_terraces"}:
+            raise ValueError("overlayer must be None or dict(staircase_axis, n_terraces)")
+        axis, nt = overlayer["staircase_axis"], int(overlayer["n_terraces"])
+        if axis not in ("y", "z") or nt < 1:
+            raise ValueError(f"overlayer: staircase_axis 'y' or 'z' and n_terraces >= 1, got "
+                             f"{overlayer!r}")
+        if axis == "y" or nt == 1:
+            layer_res_B, layer_build_B = cb * px, MEM_OXIDE_BUILD_B_PER_PX * px
+        else:
+            layer_res_B, layer_build_B = cb * nt * int(nx), MEM_OXIDE_BUILD_B_PER_PX * nt * int(nx)
     n = int(atoms_per_slice_max)
     nsp = max(1, int(n_species))
     cell_B = MEM_CELL_B_PER_ATOM * int(n_atoms)
@@ -540,6 +572,8 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
                  "band mask (real, backend)": rb * px,
                  f"scattering factor x {nsp} species": rb * px * nsp,
                  "fx, fy (float64)": fxfy_B}
+    if overlayer is not None:
+        residents["continuum oxide layer arrays (audit A8 m3)"] = layer_res_B
     dev_pers = int(sum(residents.values()))
     # potential construction of the largest slice (_RealisedAtomic.projected), above its caller
     pos_B = 25 * n                                           # selected positions f8 x3 + mask b1
@@ -568,6 +602,10 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
         "realise: atom sorting and records":
             host_mask + 3 * cb * px + rb * px + rb * px * nsp + 8 * px + fxfy_B
             + MEM_REALISE_PEAK_B_PER_ATOM * n_atoms + starts_B + cell_B,
+        **({} if overlayer is None else {
+            "realise: continuum oxide layer arrays (complex128 host build)":
+                host_mask + 3 * cb * px + rb * px + rb * px * nsp + fxfy_B + layer_build_B
+                + MEM_REALISED_B_PER_ATOM * n_atoms + starts_B + cell_B}),
         "slice loop (largest slice)":
             host_mask + dev_pers + in_loop + MEM_REALISED_B_PER_ATOM * n_atoms + starts_B + cell_B,
         "after the loop: exit wave copy":
@@ -582,6 +620,9 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
             + MEM_REALISE_F_STAGE_B_PER_ATOM * n_atoms + cell_B,
         "realise: atom sorting and records": host_mask + 8 * px + MEM_REALISE_PEAK_B_PER_ATOM
             * n_atoms + starts_B + cell_B,
+        **({} if overlayer is None else {
+            "realise: continuum oxide layer arrays (complex128 host build)":
+                host_mask + layer_build_B + MEM_REALISED_B_PER_ATOM * n_atoms + starts_B + cell_B}),
         "slice loop": host_mask + MEM_REALISED_B_PER_ATOM * n_atoms + starts_B + cell_B,
         "after the loop: exit wave to host": host_mask + 2 * cb * px
             + MEM_REALISED_B_PER_ATOM * n_atoms + cell_B}
@@ -591,6 +632,10 @@ def memory_model(*, nx: int, ny: int, n_slices: int, n_atoms: int, atoms_per_sli
         assumptions="non-zero physical absorption (upper of the two code paths); atoms per slice "
                     "from the static positions (frozen-phonon displacements move atoms across "
                     "slice boundaries, a few per cent more or fewer per slice)",
+        overlayer=(None if overlayer is None else dict(
+            overlayer, resident_B=int(layer_res_B), host_build_B=int(layer_build_B),
+            note="continuum oxide layer arrays (report E4; audit A8 m3): resident in the slice "
+                 "loop (device on cupy), built on the host in complex128")),
         loop_residents=residents,
         largest_slice=dict(atoms=n, exponentials_B=int(atom_stage), pixel_stage_B=int(pix_stage),
                            exp_block_rows=int(_potentials.EXP_BLOCK_ROWS),
@@ -632,7 +677,8 @@ def estimate_resources(cell: ReflectionCell, params: MultisliceParams, *, realis
     n_mean = float(counts[counts > 0].mean()) if len(cell.Z) else 0.0
     mm = memory_model(nx=grid.nx, ny=grid.ny, n_slices=N, n_atoms=int(len(cell.Z)),
                       atoms_per_slice_max=n_max, n_species=len(np.unique(cell.Z)) if len(cell.Z)
-                      else 1, precision=params.precision)
+                      else 1, precision=params.precision,
+                      overlayer=overlayer_memory_arguments(cell))
     fft_flops = 5.0 * npx * np.log2(max(npx, 2))
     n_fft = 2 * N + 3 * nonempty          # propagation per slice + (FFT, IFFT of t, IFFT of V)
     gemm_flops = 8.0 * npx * float(counts.sum())

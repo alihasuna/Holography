@@ -31,8 +31,22 @@ NO_ABS = PhysicalAbsorption(model="proportional", ratio=0.0,
                             label="TEST_ONLY: no physical absorption of the substrate")
 
 
+def near_rounding_boundary(*, t_A, N, rho, t_a, tt=None, tn=None) -> bool:
+    """TEST helper (audit A8 m4): True when some terrace's consumed-layer count lies within
+    MIN_ROUNDING_MARGIN_LAYERS of its rounding boundary, so that the fixtures state the
+    acknowledgement exactly when it is needed (the gate: tests/structure/test_oxide_structure_a8_fixes.py)."""
+    from reflection_holo.structure.oxide import rounding_margin
+    return any(rounding_margin(thickness_A=t, density_g_cm3=rho, amorphous_si_thickness_A=t_a,
+                               consumed_layers=n, a_A=A_SI_A)["near_boundary"]
+               for t, n in zip(tt or (t_A,), tn or (N,)))
+
+
 def oxide_spec(*, t_A=20.0, N=7, V=V_OX, Vi=0.40, w_v=0.5, w_i=0.5, rho=2.20, t_a=0.0,
-               Va=None, Vai=None, tt=None, tn=None, flag=False, labels=None) -> ContinuumOxideSpec:
+               Va=None, Vai=None, tt=None, tn=None, flag=False, iflag=False, ack=None,
+               labels=None) -> ContinuumOxideSpec:
+    """flag / iflag: the TEST_ONLY sharp vacuum-edge / interface flags (stated by the caller);
+    ack: rounding_boundary_acknowledged, by default stated exactly when needed
+    (near_rounding_boundary)."""
     lab = {k: L12 for k in LABEL_KEYS}
     if t_a > 0:
         lab["amorphous_si_potential"] = L12
@@ -40,12 +54,15 @@ def oxide_spec(*, t_A=20.0, N=7, V=V_OX, Vi=0.40, w_v=0.5, w_i=0.5, rho=2.20, t_
         lab["overrides"] = L12
     if labels:
         lab.update(labels)
+    if ack is None:
+        ack = near_rounding_boundary(t_A=t_A, N=N, rho=rho, t_a=t_a, tt=tt, tn=tn)
     return ContinuumOxideSpec(material="amorphous SiO2", thickness_A=t_A, density_g_cm3=rho,
                               consumed_layers=N, V_real_V=V, V_imag_V=Vi, vacuum_edge_width_A=w_v,
                               interface_width_A=w_i, amorphous_si_thickness_A=t_a,
                               amorphous_si_V_real_V=Va, amorphous_si_V_imag_V=Vai,
                               terrace_thickness_A=tt, terrace_consumed_layers=tn,
-                              sharp_edge_test_flag=flag, labels=lab)
+                              sharp_edge_test_flag=flag, sharp_interface_test_flag=iflag,
+                              rounding_boundary_acknowledged=ack, labels=lab)
 
 
 def oxide_only_case(*, w_v, dx, dz=1.0, propagator="exact", H=48.0, edge=8.0, gap=2.0,
@@ -58,7 +75,9 @@ def oxide_only_case(*, w_v, dx, dz=1.0, propagator="exact", H=48.0, edge=8.0, ga
     theta = THETA_B32
     th_int = theta_int_from_ext_rad(theta, E_KEV, V_OX)
     flag = w_v < 0.5
-    spec = oxide_spec(t_A=t_A, N=N, Vi=0.0, w_v=w_v, w_i=0.0, flag=flag,
+    # the substrate carries V_OX, so the interface is no potential step: sharp with the TEST_ONLY
+    # interface flag (audit A8 m5 made the flag necessary; the fixture is unchanged)
+    spec = oxide_spec(t_A=t_A, N=N, Vi=0.0, w_v=w_v, w_i=0.0, flag=flag, iflag=True,
                       labels=dict(vacuum_edge="TEST_ONLY: sharp or narrow edge for the Fresnel "
                                               "validation (E9 M4)") if flag else None)
     dep = clean_A + absorber_A
@@ -96,6 +115,33 @@ def oxide_only_case(*, w_v, dx, dz=1.0, propagator="exact", H=48.0, edge=8.0, ga
     return cell, pot, beam, params, x_top
 
 
+def exact_graded_edge_r(theta_ext_rad: float, U_V: float, w_A: float, *, step_A: float = 0.002,
+                        span: float = 8.0) -> complex:
+    """Exact 1-D reflection coefficient of the erf-graded vacuum edge (DERIVED_HERE; the transfer
+    matrix of audit A8 C6, SP/a8/a8_analytic.py): the normal-component equation
+    psi'' + kx(x)^2 psi = 0 with kx^2 = k1^2 + dK^2 E(x), E(x) = erfc(x/(sqrt(2) w))/2, in
+    piecewise-constant layers of step_A from -span w to +span w; r at x = 0. A8: converged to
+    1e-4 relative in |r|^2 at step 0.004-0.001 A and span 8-12 (1.9545e-9 at 16.1347 mrad,
+    1.8345e-9 at 16.1751 mrad, w = 0.5 A)."""
+    import math
+    k1 = 2 * np.pi / wavelength_A(E_KEV) * np.sin(theta_ext_rad)
+    dK2 = delta_K_per_A(E_KEV, U_V) ** 2
+    edges = np.arange(-span * w_A, span * w_A + step_A, step_A)
+    xm = 0.5 * (edges[1:] + edges[:-1])
+    E = np.array([0.5 * math.erfc(x / (math.sqrt(2) * w_A)) for x in xm])
+    kx = np.sqrt(k1 ** 2 + dK2 * E + 0j)
+    k_sub = np.sqrt(k1 ** 2 + dK2 + 0j)
+    psi = np.exp(-1j * k_sub * edges[0])
+    dpsi = -1j * k_sub * psi
+    for kk in kx:
+        c, sn = np.cos(kk * step_A), np.sin(kk * step_A)
+        psi, dpsi = psi * c + dpsi * sn / kk, -psi * kk * sn + dpsi * c
+    x1 = edges[-1]
+    a_in = 0.5 * (psi - dpsi / (1j * k1)) * np.exp(1j * k1 * x1)
+    b_out = 0.5 * (psi + dpsi / (1j * k1)) * np.exp(-1j * k1 * x1)
+    return complex(b_out / a_in)
+
+
 def oxide_only_measure(**kw) -> dict:
     """r at the central incident bin (flat_reflection_coefficient, reference plane = the top of
     the layer) against the single-edge Fresnel coefficient for V_OX."""
@@ -112,6 +158,7 @@ def oxide_only_measure(**kw) -> dict:
     j = int(np.argmax(res["weight"]))
     q2 = np.sqrt(q1[j] ** 2 + dK ** 2)
     return dict(r=complex(res["r"][j]), r_analytic=float(ra[j]), q1=float(q1[j]), q2=float(q2),
+                theta_bin_rad=float(np.arcsin(res["f_per_A"][j] * lam)),
                 dx=cell.extent_x_A / params.nx, nx=params.nx, ew=ew,
                 n_slices=int(round(cell.length_z_A / params.dz_A)),
                 time_s=ew.metadata["timing_s"]["total"])
@@ -155,7 +202,9 @@ def atomistic_case(*, oxide, r, edges="transverse", layers=(0,), widths=None, bo
     depth = absorber + buildup + 1.0
     ref = length_for_oxide if length_for_oxide is not None else oxide
     f = consumed_si_fraction(2.20, A_SI_A)
-    stack = 0.0 if ref is None else (1.0 - f) * ref.thickness_A + ref.consumed_layers * q
+    # layer top above the kept top atomic plane: (1 - f) t + N a/4 + a/8 (the stack is placed from
+    # the Si equivalent boundary a/8 above the pre-oxidation top plane; audit A8 M2)
+    stack = 0.0 if ref is None else (1.0 - f) * ref.thickness_A + ref.consumed_layers * q + q / 2
     N = 0 if oxide is None else oxide.consumed_layers
     span = (max(layers) - min(layers)) * q
     sub = int(np.ceil(depth / q)) + 2 + N
@@ -179,7 +228,7 @@ def atomistic_case(*, oxide, r, edges="transverse", layers=(0,), widths=None, bo
     Lz = ent + (s.cell_A[2, 2])
     # runs with and without the layer share the box: the vacuum above the highest surface is
     # larger by the reference stack where the layer is absent (same extent_x, same grid)
-    stack_this = 0.0 if oxide is None else (1.0 - f) * oxide.thickness_A + N * q
+    stack_this = 0.0 if oxide is None else (1.0 - f) * oxide.thickness_A + N * q + q / 2
     vac = float(np.ceil(H + gap + Lz * np.tan(theta) + 2.0)) + (stack - stack_this)
     cell = build_reflection_cell(s, vacuum_above_A=vac, depth_below_A=depth,
                                  bulk_absorber_A=absorber, top_absorber_A=top,
@@ -201,7 +250,7 @@ def atomistic_case(*, oxide, r, edges="transverse", layers=(0,), widths=None, bo
                               theta_out_ext_rad=theta, buildup_depth_A=buildup,
                               working_reflections_hkl=((0, 0, 8),))
     return dict(cell=cell, potential=pot, beam=beam, params=params, theta=theta, V0=V0,
-                structure=s)
+                structure=s, stack_A=stack)
 
 
 def specular_component(ew, theta, *, y_range=None, aperture_per_A=0.1) -> complex:

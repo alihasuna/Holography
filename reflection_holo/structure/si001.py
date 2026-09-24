@@ -41,7 +41,9 @@ relation between neighbouring BURIED terraces is measured on the kept atoms (pur
 translation for an even buried layer difference, 90-degree screw for an odd one, none for a flat
 buried interface; E9 section 3 items 2 and 5), and (o4) the top-layer back-bond axis of every
 buried terrace is measured (the terrace type at the buried interface: each consumed layer swaps it,
-E9 section 3 item 2, R3 p. 88).
+E9 section 3 item 2, R3 p. 88). The layer's stack is placed from each terrace's Si equivalent
+boundary, a/8 above its ideal top atomic plane (oxide.REFERENCE_PLANE), and records its overlap with
+(or gap to) the kept crystal (oxide.INTERFACE_OVERLAP_RULE; audit A8 M2).
 
 With a reconstruction, assertions (a) to (g) run unchanged on the IDEAL sites (the bulk truncation
 that is then reconstructed); the reconstructed atoms are checked by (r1) to (r6)
@@ -822,6 +824,10 @@ B4_OXIDE_GROWN = ("NOT conformal (thickness or consumed-layer count differ): the
 B4_OXIDE_PARITY = ("at <110> the terrace type at each buried a/4 step, hence the sign of the "
                    "residual delta, depends on the parity of the consumed-layer count (E9 section 3 "
                    "item 2; R3 p. 88)")
+B4_BURIED_NOTE = ("buried_b4 is the B4 statement of the BURIED crystal step judged as a bare step "
+                  "(its words 'does not apply to ... an overlayer' refer to a layer ON that step); "
+                  "how the continuum layer enters is stated by model_assumption_B4_overlayer "
+                  "(audit A8 n2)")
 
 
 def _apply_oxide(spec, *, rs, rc, layer, terr, tops, steps, axes, q, a, az, frame, x_top,
@@ -829,7 +835,9 @@ def _apply_oxide(spec, *, rs, rc, layer, terr, tops, steps, axes, q, a, az, fram
     """Remove the consumed layers of every terrace and run assertions (o1)-(o4) (module docstring;
     report E4). Returns the kept (rs, rc, layer, terr) and the oxide record."""
     H = [float(tops[k] * q) for k in range(len(tops))]
-    st = ox.terrace_stacks(spec, terrace_heights_A=H, a_A=a)
+    # H: the ideal top atomic-layer planes; the stack is placed from the Si equivalent boundary
+    # H + a/8 (oxide.REFERENCE_PLANE; audit A8 M2) and records the interface overlap or gap
+    st = ox.terrace_stacks(spec, terrace_heights_A=H, a_A=a, crystal=ox.CRYSTAL_ATOMISTIC)
     pt = st["per_terrace"]
     N = np.array([p["consumed_layers"] for p in pt], dtype=np.int64)
     top_max = max(p["top_x_A"] for p in pt)
@@ -896,6 +904,7 @@ def _apply_oxide(spec, *, rs, rc, layer, terr, tops, steps, axes, q, a, az, fram
                        and r["lattice_symmetry"]
                        and int(np.dot(_MIRROR_NORMALS[r["operation"]], az)) == 0]
             rec.update(buried_relation=kind, buried_b4=b4_statement(kind, az, mirrors),
+                       buried_b4_note=B4_BURIED_NOTE,
                        buried_incidence_plane_mirror_operations=sorted(set(mirrors)),
                        buried_operations_found=sorted({r["operation"] for r in rel}))
             if conf and (kind != s["type"] or rec["buried_b4"]

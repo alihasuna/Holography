@@ -9,7 +9,11 @@
     within 1 % in |r| (a priori: 0.35 % rung-1 amplitude tolerance + 0.05 % between that factor
     and the Nevot-Croce factor exp(-2 k1 k2 w^2) + E9's own 1-D multislice deviation 0.12 % in |r|,
     out:285, doubled); w = 0.5 A (the required minimum) suppresses |r|^2 by at least 1e3 (the
-    factor E9 M4 asks of an oxide-only control; analytic 1.3e-8, out:241).
+    factor E9 M4 asks of an oxide-only control), and equals the EXACT 1-D reflectivity of the
+    graded edge (transfer matrix, audit A8 C6: 1.8345e-9 at the central bin 16.1751 mrad; E9's
+    Born factor exp(-(q w)^2), out:241, underestimates it 58-fold) within the same 1 % in |r|
+    (added by report X4 after audit A8 m1; the Born-based tolerances of E4 had nothing to test
+    here, the budget of the w = 0.1 A case without its Born-related terms is conservative).
 (c) Flat Si(001) [100] with and without a 2 nm oxide (V'_ox 0.40 V, and 0 V), TEST_ONLY crystal
     absorption r = 0.1: the specular reflection-coefficient ratios are REPORTED against E9's
     zero-loss model value exp(-2 Im k'_perp t) (E9 M1: a model value, not a bound; no pass/fail on
@@ -24,8 +28,8 @@ import dataclasses
 import numpy as np
 import pytest
 
-from oxide_cases import (E_KEV, THETA_B32, V_OX, atomistic_case, oxide_only_case,
-                         oxide_only_measure, oxide_spec, windowed_reflection)
+from oxide_cases import (E_KEV, THETA_B32, V_OX, atomistic_case, exact_graded_edge_r,
+                         oxide_only_case, oxide_only_measure, oxide_spec, windowed_reflection)
 from reflection_holo.constants import A_SI_A
 from reflection_holo.forward.cell import build_continuum_cell, build_continuum_oxide_cell
 from reflection_holo.forward.multislice import (ContinuumOxidePotential, ContinuumTerracePotential,
@@ -82,9 +86,15 @@ def test_graded_edge_of_0p1_A_follows_the_roughness_factor(sharp):
 def test_graded_edge_of_0p5_A_suppresses_the_layer_reflection(sharp):
     g = oxide_only_measure(w_v=0.5, dx=0.025)
     ratio = abs(g["r"]) ** 2 / abs(sharp["r"]) ** 2
-    print(f"w = 0.5 A: |r|^2 = {abs(g['r']) ** 2:.3e}, suppression {ratio:.2e} (analytic "
-          f"exp(-(q w)^2) = {np.exp(-((g['q1'] + g['q2']) * 0.5) ** 2):.2e})")
+    r_exact = exact_graded_edge_r(g["theta_bin_rad"], V_OX, 0.5)
+    print(f"w = 0.5 A: |r|^2 = {abs(g['r']) ** 2:.4e}, suppression {ratio:.2e}; EXACT 1-D "
+          f"(transfer matrix, audit A8 C6) {abs(r_exact) ** 2:.4e} at the central bin "
+          f"{g['theta_bin_rad'] * 1e3:.4f} mrad (E9's Born factor exp(-(q w)^2) = "
+          f"{np.exp(-((g['q1'] + g['q2']) * 0.5) ** 2):.2e} of the sharp edge underestimates it "
+          f"{abs(r_exact) ** 2 / (g['r_analytic'] ** 2 * np.exp(-((g['q1'] + g['q2']) * 0.5) ** 2)):.0f}"
+          f"-fold)")
     assert ratio <= SUPPRESSION
+    assert abs(g["r"]) / abs(r_exact) - 1 == pytest.approx(0, abs=GRADED_TOL)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -129,7 +139,7 @@ def test_layer_follows_the_surface_not_a_planar_mask():
 
 
 def test_sharp_interface_uses_the_crystal_base_bit_for_bit():
-    spec = oxide_spec(w_i=0.0)
+    spec = oxide_spec(w_i=0.0, iflag=True)          # TEST_ONLY sharp interface (audit A8 m5)
     cell = _two_terrace_cell(spec, A_SI_A / 4)
     base = ContinuumTerracePotential(cell, V0_V=13.903, V0_label="TEST_ONLY: substrate V0",
                                      physical_absorption=NO_ABS, surface_profile="sharp")
@@ -159,7 +169,7 @@ def test_refusals_of_the_engine():
     with pytest.raises(ValueError, match="must be multislice.ContinuumOxidePotential"):
         reflection_setup(cell, potential=pot.base, beam=beam, params=params)
     with pytest.raises(ValueError, match="spec_sha256"):
-        ContinuumOxidePotential(pot.base, oxide=oxide_spec(Vi=0.0, w_v=0.5, w_i=0.0,
+        ContinuumOxidePotential(pot.base, oxide=oxide_spec(Vi=0.0, w_v=0.5, w_i=0.0, iflag=True,
                                                            t_A=20.0, N=7, V=10.5))
     with pytest.raises(ValueError, match="not resolved"):              # dx = 0.6 A > w = 0.5 A
         reflection_setup(cell, potential=pot, beam=beam,
@@ -188,6 +198,11 @@ def test_no_overlayer_no_record():
 # (c) flat Si(001) + 2 nm oxide: comparison with the zero-loss model value (not pass/fail)
 # --------------------------------------------------------------------------------------------------
 C_EXTRA_LENGTH_A = 6000.0          # set from the cell-length series of report E4 section 4
+# audit A8 m7 (section 4): the drift of the raw ratio with cell length (0.37 / 0.54 / 0.62 at
+# +3000 / 4500 / 6000 A) is the read-out window (at +3000 A 95 % of the oxide runs' specular beam
+# is still in the window ramp or below it), not the surface-step Fresnel term; +3000 and +4500 A
+# are read-out-truncated; the absorption-only ratio is 0.505-0.532 over 3000-9000 A (3.1 % from
+# the model value 0.5213); nothing asserted on it (E9 M1)
 
 
 @pytest.fixture(scope="module")
@@ -205,7 +220,9 @@ def flat_runs():
                            length_for_oxide=ref)
         ew = run_realisation(c["cell"], potential=c["potential"], beam=c["beam"],
                              params=c["params"], realisation=0, seed=None)
-        top = c["cell"].metadata["layout"]["depth_below_A"] + 20.67      # top of the layer
+        # top of the reference layer above the box bottom (the same window for the three runs):
+        # depth below the kept top plane + (1 - f) t + N a/4 + a/8 (audit A8 M2; E4 used 20.67)
+        top = c["cell"].metadata["layout"]["depth_below_A"] + c["stack_A"]
         out[name] = dict(c=c, ew=ew, R=windowed_reflection(ew, c, x_window_A=top + 5.0))
     return out
 

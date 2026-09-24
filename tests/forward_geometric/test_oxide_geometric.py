@@ -30,15 +30,29 @@ PARAMS = GeometricParams(exit_plane_pixel_A=(0.25, 0.5), n_y=4, x_margin_A=20.0,
                          invisibility_tol_cycles=0.01)
 
 
+def _near_rounding_boundary(d):
+    """TEST helper (audit A8 m4): the acknowledgement is stated exactly when some terrace's count
+    lies within ox.MIN_ROUNDING_MARGIN_LAYERS of its rounding boundary (the gate itself is tested in
+    tests/structure/test_oxide_structure_a8_fixes.py)."""
+    tt = d["terrace_thickness_A"] or (d["thickness_A"],)
+    tn = d["terrace_consumed_layers"] or (d["consumed_layers"],)
+    return any(ox.rounding_margin(thickness_A=t, density_g_cm3=d["density_g_cm3"],
+                                  amorphous_si_thickness_A=d["amorphous_si_thickness_A"],
+                                  consumed_layers=n, a_A=A_SI_A)["near_boundary"]
+               for t, n in zip(tt, tn))
+
+
 def spec(**kw):
     base = dict(material="amorphous SiO2", thickness_A=20.0, density_g_cm3=2.20, consumed_layers=7,
                 V_real_V=10.34, V_imag_V=0.40, vacuum_edge_width_A=0.5, interface_width_A=0.5,
                 amorphous_si_thickness_A=0.0, amorphous_si_V_real_V=None,
                 amorphous_si_V_imag_V=None, terrace_thickness_A=None, terrace_consumed_layers=None,
-                sharp_edge_test_flag=False, labels={k: L12 for k in ox.LABEL_KEYS})
+                sharp_edge_test_flag=False, sharp_interface_test_flag=False,
+                labels={k: L12 for k in ox.LABEL_KEYS})
     if kw.get("terrace_thickness_A") is not None or kw.get("terrace_consumed_layers") is not None:
         base["labels"] = dict(base["labels"], overrides=L12)
     base.update(kw)
+    base.setdefault("rounding_boundary_acknowledged", _near_rounding_boundary(base))
     return ox.ContinuumOxideSpec(**base)
 
 

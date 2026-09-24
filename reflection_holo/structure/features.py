@@ -50,6 +50,28 @@ function and tested; every tolerance is stated here and recorded in the metadata
     highest added layer below the top of the box; measured on the feature sites;
 (g) the frame (``checks.assert_frame``).
 
+BURIED VOID (``shapes.BuriedTorus``, kind "buried_void", agent T3): the sites of the flat slab with
+``feature.contains(x_rel, y, z)`` (distance to the tube centre line < r) are REMOVED; nothing is
+added, no site is moved. The assertions are (a), (b), (f), (g) as above with the buried rule, and:
+(c) minimum distance a sqrt(3)/4; atoms of layers 1 .. l_s - 1 farther than r + a sqrt(3)/4 from the
+    tube centre line are 4-coordinated; and EXACT bond bookkeeping for every atom of layers
+    1 .. l_s - 1: coordination + (number of removed sites within the bond length) = 4, i.e. every
+    bond to a removed site and no other bond is missing; no isolated atom;
+(d) the removed count N matches the FULL torus volume times the density, n V = (8/a^3) 2 pi^2 R r^2,
+    within n (a/8) S with S = 4 pi^2 R r (relative tolerance a / (4 r), 11.3 % at r = 12 A; the same
+    stated half-layer-spacing shell rule as for the half torus; no flat face, so no bias);
+(e) FLAT SURFACE UNTOUCHED: the top-layer height map of the built atoms (same construction as above)
+    is 0 at EVERY grid point of the ring's box + HEIGHT_MAP_PAD_A (no exclusion band: the surface
+    is flat), equal to ``BuriedTorus.layer_height_A``;
+(h) VOID EMPTY: no atom (from its POSITION, not its layer index) has a distance to the tube centre
+    line < r; the smallest distance minus r (the clearance) is recorded;
+(i) CAP INTACT: every (001) layer with x_rel >= -cap (the cap and the flat top layer) and every layer
+    at or below the void bottom holds exactly the flat slab's per-layer atom count, and the removed
+    sites lie only in layers with -(cap + 2 r) < x_rel < -cap. With (a) and (b) (atoms on the
+    lattice sites of the window, no duplicates) a complete layer IS the flat build's layer, so the
+    cap and the surface are identical to the flat reference atom for atom (compared set-wise with
+    ``build_si001_flat_reference`` in tests/structure/test_features_buried.py).
+
 Options (labels in metadata["options"]): bulk termination (ASSUMPTION B3), no dimer
 reconstruction (REFUSED on the feature, ``feature_termination_option``: the sourced reconstructions
 are built on the terraces of the staircase builder, si001.py and reconstruction.py, but every a/4
@@ -73,7 +95,7 @@ from reflection_holo.io.labels import require_evidence_label
 from . import checks
 from .checks import POSITION_TOL_A, WINDOW_TOL_A, StructureAssertionError
 from .lattice import diamond_sites_quarter, nearest_neighbour_distance_A
-from .shapes import HalfTorus
+from .shapes import BURIED_KIND, BuriedTorus, HalfTorus
 from .si001 import _AZIMUTHS
 
 NORMAL_HKL = (0, 0, 1)
@@ -98,8 +120,8 @@ class Si001FeatureStructure:
     frame: SurfaceFrame
     layer_index: np.ndarray            # (N,) (001) layer l, x = l a/4
     crystal_origin_slab_A: np.ndarray  # (3,) = 0: crystal origin at the slab origin
-    feature: HalfTorus | None          # None for the flat reference
-    feature_sites_A: np.ndarray        # removed (trench) or added (ridge) sites, (M, 3) slab frame
+    feature: HalfTorus | BuriedTorus | None   # None for the flat reference
+    feature_sites_A: np.ndarray        # removed (trench, buried void) or added (ridge) sites, (M, 3)
     request: dict                      # the builder arguments needed to re-verify the structure
     metadata: dict
 
@@ -213,7 +235,7 @@ def assert_feature_rule(positions_A, layer, feature: HalfTorus | None, l_s: int,
     x_rel = (layer - l_s) * q_A
     inside = feature.contains(x_rel, pos[:, 1], pos[:, 2])
     base = layer <= l_s
-    if feature.kind == "trench":
+    if feature.kind in ("trench", BURIED_KIND):
         bad = ~base | inside
     else:
         bad = ~base & ~inside
@@ -224,10 +246,19 @@ def assert_feature_rule(positions_A, layer, feature: HalfTorus | None, l_s: int,
             f"at {pos[i].tolist()} (layer {int(layer[i])})")
 
 
-def feature_count_expectation(feature: HalfTorus, a_A: float) -> dict:
+def feature_count_expectation(feature: HalfTorus | BuriedTorus, a_A: float) -> dict:
     """(d) n V, the tolerance n (a/8) S and the recorded flat-face bias (module docstring)."""
     R, r = feature.major_radius_A, feature.minor_radius_A
     n = 8.0 / a_A ** 3
+    if feature.kind == BURIED_KIND:
+        V, S = feature.volume_A3, feature.surface_A2          # full torus: 2 pi^2 R r^2, 4 pi^2 R r
+        tol = n * (a_A / 8.0) * S
+        return dict(atom_density_per_A3=n, torus_volume_A3=V, expected_count=n * V,
+                    surface_A2=S, shell_A=a_A / 8.0, tolerance_count=tol,
+                    relative_tolerance=tol / (n * V), flat_face_bias_count=0.0,
+                    rule="|N - n V| <= n (a/8) S, V = 2 pi^2 R r^2, S = 4 pi^2 R r (full torus, no "
+                         "flat face); DERIVED_HERE order-of-magnitude bound set by the "
+                         "surface-to-volume ratio (module docstring (d), buried void)")
     V = np.pi ** 2 * R * r ** 2
     S_curved = 2.0 * np.pi ** 2 * R * r
     S_flat = 4.0 * np.pi * R * r
@@ -247,7 +278,8 @@ def assert_feature_count(n_feature: int, feature: HalfTorus, a_A: float) -> dict
     dev = float(n_feature) - e["expected_count"]
     if abs(dev) > e["tolerance_count"]:
         raise StructureAssertionError(
-            f"(d) {feature.kind} changes {n_feature} atoms; half-torus volume x density = "
+            f"(d) {feature.kind} changes {n_feature} atoms; "
+            f"{'full' if feature.kind == BURIED_KIND else 'half'}-torus volume x density = "
             f"{e['expected_count']:.1f}, deviation {dev:+.1f} exceeds the tolerance "
             f"{e['tolerance_count']:.1f} (n (a/8) S, relative {e['relative_tolerance']:.3f})")
     return dict(e, measured_count=int(n_feature), deviation=dev,
@@ -377,6 +409,15 @@ def assert_feature_inside(feature_sites_A, feature: HalfTorus, l_s: int, q_A: fl
     out = dict(feature_site_layers=[int(lay.min()), int(lay.max())],
                feature_site_y_range_A=[float(fs[:, 1].min()), float(fs[:, 1].max())],
                feature_site_z_range_A=[float(fs[:, 2].min()), float(fs[:, 2].max())])
+    if feature.kind == BURIED_KIND:
+        if lay.min() < MIN_LAYERS_BELOW_FEATURE or lay.max() >= l_s:
+            raise StructureAssertionError(
+                f"(f) the buried void removes layers {lay.min()}..{lay.max()}: it must stay below "
+                f"the flat top layer {l_s} with at least {MIN_LAYERS_BELOW_FEATURE} intact layers "
+                f"below it")
+        out["intact_layers_below_void"] = int(lay.min())
+        out["intact_layers_above_void"] = int(l_s - lay.max())
+        return out
     if feature.kind == "trench":
         if lay.min() < MIN_LAYERS_BELOW_FEATURE or lay.max() > l_s:
             raise StructureAssertionError(
@@ -392,6 +433,146 @@ def assert_feature_inside(feature_sites_A, feature: HalfTorus, l_s: int, q_A: fl
 
 
 # --------------------------------------------------------------------------------------------------
+# Buried void (shapes.BuriedTorus): assertions (c) bookkeeping, (e) flat top, (h) and (i)
+# --------------------------------------------------------------------------------------------------
+def buried_layer_window(feature: BuriedTorus, l_s: int, q_A: float) -> tuple[int, int]:
+    """The (001) layers that CAN hold removed sites: -(cap + 2 r) < (l - l_s) q < -cap (strict, as
+    BuriedTorus.contains). Every other layer must be complete (assertion (i))."""
+    lo = l_s + int(np.floor(feature.void_bottom_x_rel_A / q_A)) + 1
+    hi = l_s + int(np.ceil(feature.void_top_x_rel_A / q_A)) - 1
+    return lo, hi
+
+
+def assert_void_empty(positions_A, feature: BuriedTorus, x_surface_A: float, a_A: float) -> dict:
+    """(h) no atom inside the void, from the POSITIONS (distance to the tube centre line >= r, the
+    complement of BuriedTorus.contains); records the clearance and the atoms within one bond of the
+    void wall."""
+    pos = np.asarray(positions_A, float)
+    x_rel = pos[:, 0] - float(x_surface_A)
+    inside = feature.contains(x_rel, pos[:, 1], pos[:, 2])
+    dist = feature.distance_to_tube_centre_line_A(x_rel, pos[:, 1], pos[:, 2])
+    if np.any(inside):
+        k = int(np.nonzero(inside)[0][0])
+        raise StructureAssertionError(
+            f"(h) {int(inside.sum())} atom(s) inside the buried void (distance to the tube centre "
+            f"line < r = {feature.minor_radius_A} A); atom {k} at {pos[k].tolist()}, distance "
+            f"{dist[k]:.6f} A")
+    d_nn = nearest_neighbour_distance_A(a_A)
+    return dict(min_distance_to_tube_centre_line_A=float(dist.min()),
+                clearance_A=float(dist.min() - feature.minor_radius_A),
+                n_atoms_within_one_bond_of_the_wall=int(np.sum(
+                    dist < feature.minor_radius_A + d_nn + POSITION_TOL_A)),
+                rule="no atom with distance to the tube centre line < r (from the positions)")
+
+
+def assert_cap_intact(layer, feature_sites_A, feature: BuriedTorus, l_s: int, q_A: float,
+                      per_layer_count: int) -> dict:
+    """(i) every layer outside buried_layer_window (the cap, the flat top layer, the layers at or
+    below the void bottom) holds exactly the flat slab's per-layer count; the removed sites lie only
+    inside the window; built + removed = flat per layer inside it. With (a) and (b) a complete layer
+    is the flat build's layer atom for atom."""
+    layer = np.asarray(layer, np.int64)
+    if layer.min() < 0 or layer.max() > l_s:
+        raise StructureAssertionError("(i) atom outside the slab layers 0..l_s")
+    lo, hi = buried_layer_window(feature, l_s, q_A)
+    counts = np.bincount(layer, minlength=l_s + 1)
+    fs = np.asarray(feature_sites_A, float)
+    fl = np.rint(fs[:, 0] / q_A).astype(np.int64) if len(fs) else np.zeros(0, np.int64)
+    if len(fl) and (fl.min() < lo or fl.max() > hi):
+        raise StructureAssertionError(
+            f"(i) removed site(s) in layers {int(fl.min())}..{int(fl.max())}, outside the layers "
+            f"{lo}..{hi} strictly between the void bottom and top")
+    fcounts = np.bincount(fl, minlength=l_s + 1) if len(fl) else np.zeros(l_s + 1, np.int64)
+    ls = np.arange(l_s + 1)
+    outside = (ls < lo) | (ls > hi)
+    bad = outside & (counts != per_layer_count)
+    if np.any(bad):
+        l = int(ls[bad][-1])
+        raise StructureAssertionError(
+            f"(i) layer {l} (x_rel = {(l - l_s) * q_A:+.4f} A) holds {int(counts[l])} atoms, the "
+            f"flat slab {per_layer_count}: the {'cap / flat surface' if l > hi else 'crystal below the void'} "
+            f"is not intact ({int(bad.sum())} layer(s) differ)")
+    inw = ~outside
+    badw = inw & (counts + fcounts != per_layer_count)
+    if np.any(badw):
+        l = int(ls[badw][0])
+        raise StructureAssertionError(
+            f"(i) layer {l}: built {int(counts[l])} + removed {int(fcounts[l])} != flat "
+            f"{per_layer_count}")
+    hr = int(fl.max()) if len(fl) else None
+    return dict(void_layer_window=[lo, hi], per_layer_flat_count=int(per_layer_count),
+                complete_layers=int(outside.sum()),
+                cap_A=float(feature.cap_A),
+                highest_removed_layer=hr,
+                highest_removed_layer_x_rel_A=(None if hr is None else float((hr - l_s) * q_A)),
+                intact_cap_layers=(None if hr is None else int(l_s - hr)),
+                lowest_removed_layer_x_rel_A=(None if not len(fl) else
+                                              float((int(fl.min()) - l_s) * q_A)),
+                removed_per_layer={int(l): int(fcounts[l]) for l in range(lo, hi + 1)
+                                   if 0 <= l <= l_s and fcounts[l]},
+                rule="layers with x_rel >= -cap or x_rel <= -(cap + 2 r) complete (flat count)")
+
+
+def assert_void_bond_bookkeeping(positions_A, layer, pair_i, feature_sites_A, l_s: int,
+                                 a_A: float) -> dict:
+    """(c) buried void: for every atom of layers 1 .. l_s - 1, coordination + number of removed
+    sites within 1.05 a sqrt(3)/4 = 4 (every bond to a removed site is missing, no other bond is).
+    The ring lies inside the cell with a margin >= one period, so no periodic image is needed for
+    the atom-to-removed-site pairs."""
+    from scipy.spatial import cKDTree
+
+    pos = np.asarray(positions_A, float)
+    layer = np.asarray(layer)
+    coord = np.bincount(np.asarray(pair_i), minlength=pos.shape[0])
+    fs = np.asarray(feature_sites_A, float)
+    cut = 1.05 * nearest_neighbour_distance_A(a_A)
+    missing = np.zeros(pos.shape[0], np.int64)
+    if len(fs):
+        tree = cKDTree(fs)
+        lo = fs.min(axis=0) - cut
+        hi = fs.max(axis=0) + cut
+        cand = np.nonzero(np.all((pos >= lo) & (pos <= hi), axis=1))[0]
+        missing[cand] = tree.query_ball_point(pos[cand], cut, return_length=True)
+    interior = (layer >= 1) & (layer <= l_s - 1)
+    bad = interior & (coord + missing != 4)
+    if np.any(bad):
+        k = int(np.nonzero(bad)[0][0])
+        raise StructureAssertionError(
+            f"(c) bond bookkeeping at the buried void fails for {int(bad.sum())} atom(s): atom {k} "
+            f"at {pos[k].tolist()} has {int(coord[k])} bonds and {int(missing[k])} removed "
+            f"neighbour site(s) (sum must be 4)")
+    return dict(n_atoms_bonded_to_the_void=int(np.sum(missing > 0)),
+                missing_bonds_histogram={int(k): int(v) for k, v in
+                                         zip(*np.unique(missing[missing > 0],
+                                                        return_counts=True))},
+                rule="coordination + removed neighbour sites = 4 for layers 1..l_s-1")
+
+
+def assert_flat_top(positions_A, frame: SurfaceFrame, a_A: float, l_s: int, feature: BuriedTorus,
+                    L_y: float, L_z: float, step_A: float) -> dict:
+    """(e) buried void: the top-layer height map of the built atoms over the ring's box + pad equals
+    BuriedTorus.layer_height_A = 0 at EVERY grid point (flat surface untouched, no exclusion)."""
+    q = a_A / 4.0
+    ys, zs = height_map_grid(feature, L_y, L_z, step_A)
+    h = top_layer_height_map(positions_A, frame, a_A, l_s, ys, zs, L_y, L_z, (l_s - 1, l_s))
+    Y, Zg = np.meshgrid(ys, zs, indexing="ij")
+    ideal = feature.layer_height_A(Y, Zg, layer_spacing_A=q)
+    bad = np.abs(h - ideal) > POSITION_TOL_A
+    if np.any(bad):
+        i = np.unravel_index(int(np.argmax(bad)), bad.shape)
+        raise StructureAssertionError(
+            f"(e) the flat surface above the buried void is not intact: the top-layer height map "
+            f"of the built atoms is not 0 at {int(bad.sum())} grid point(s); first at (y, z) = "
+            f"({Y[i]:.3f}, {Zg[i]:.3f}) A: {h[i]:+.5f} A")
+    return dict(grid_step_A=float(step_A), n_points=int(h.size), n_checked=int(h.size),
+                n_checked_inside_ring=int((feature.footprint_half_width_A(Y, Zg) > 0).sum()),
+                exclusion_distance_A=0.0,
+                exclusion_rule="none: the surface is flat, every grid point is checked",
+                built_top_range_A=[float(h.min()), float(h.max())],
+                ideal_top_range_A=[float(ideal.min()), float(ideal.max())])
+
+
+# --------------------------------------------------------------------------------------------------
 # Verification of a built (or corrupted) structure
 # --------------------------------------------------------------------------------------------------
 def _flat_count(req: dict) -> int:
@@ -404,9 +585,13 @@ def independent_feature_site_count(feature: HalfTorus, frame: SurfaceFrame, a_A:
     """Number of lattice sites the feature changes, from a SEPARATE enumeration over the ring's
     bounding box only (not the chunked cell generation)."""
     q = a_A / 4.0
-    N = feature_layer_counts(feature, q)
     y0, y1, z0, z1 = _ring_box(feature)
-    lo_l, hi_l = (l_s - N - 1, l_s) if feature.kind == "trench" else (l_s + 1, l_s + N + 1)
+    if feature.kind == BURIED_KIND:        # every layer that the void's x range can touch, +-1
+        lo_l = max(0, l_s + int(np.floor(feature.void_bottom_x_rel_A / q)) - 1)
+        hi_l = min(l_s, l_s + int(np.ceil(feature.void_top_x_rel_A / q)) + 1)
+    else:
+        N = feature_layer_counts(feature, q)
+        lo_l, hi_l = (l_s - N - 1, l_s) if feature.kind == "trench" else (l_s + 1, l_s + N + 1)
     n, rs = _sites_in_box(frame, a_A, [lo_l * q, y0 - 1.0, z0 - 1.0],
                           [hi_l * q, y1 + 1.0, z1 + 1.0])
     lay = n[:, 2]
@@ -416,8 +601,8 @@ def independent_feature_site_count(feature: HalfTorus, frame: SurfaceFrame, a_A:
 
 
 def verify_feature_structure(s: Si001FeatureStructure) -> dict:
-    """Run assertions (a) to (g) on the atoms of ``s`` (everything recomputed from the positions
-    and the request; the stored layer index is not trusted). Returns the records; raises
+    """Run assertions (a) to (g) (and (h), (i) for a buried void) on the atoms of ``s`` (everything
+    recomputed from the positions and the request; the stored layer index is not trusted). Returns the records; raises
     StructureAssertionError on the first failure."""
     req = s.request
     a, q = req["a_A"], req["a_A"] / 4.0
@@ -447,7 +632,8 @@ def verify_feature_structure(s: Si001FeatureStructure) -> dict:
         n_feat_indep, expected = 0, flat
     else:
         n_feat_indep = independent_feature_site_count(feat, s.frame, a, l_s)
-        expected = flat - n_feat_indep if feat.kind == "trench" else flat + n_feat_indep
+        expected = (flat - n_feat_indep if feat.kind in ("trench", BURIED_KIND)
+                    else flat + n_feat_indep)
     checks.assert_no_duplicates_and_count(pos, per, expected)
     rec["count"] = dict(flat_slab_count=flat, feature_sites_independent=n_feat_indep,
                         expected=expected, built=int(pos.shape[0]))
@@ -459,11 +645,18 @@ def verify_feature_structure(s: Si001FeatureStructure) -> dict:
     if feat is not None and feat.kind == "trench" and len(s.feature_sites_A):
         floor = int(np.rint(np.asarray(s.feature_sites_A)[:, 0] / q).min()) - 1
     interior = (layer >= 1) & (layer <= floor - 1)
+    buried = feat is not None and feat.kind == BURIED_KIND
+    if buried:          # atoms within one bond of the void wall: exact bookkeeping below instead
+        interior &= feat.distance_to_tube_centre_line_A(
+            (layer - l_s) * q, pos[:, 1], pos[:, 2]) >= (feat.minor_radius_A
+                                                         + 1.05 * nearest_neighbour_distance_A(a))
     i, j, _, _ = checks.assert_min_distance_and_coordination(pos, per, a, interior)  # (c)
     coord = np.bincount(i, minlength=pos.shape[0])
     if np.any(coord == 0):
         raise StructureAssertionError(f"(c) {int(np.sum(coord == 0))} isolated atom(s) (no "
                                       f"neighbour at a sqrt(3)/4)")
+    if buried:
+        rec["void_bonds"] = assert_void_bond_bookkeeping(pos, layer, i, s.feature_sites_A, l_s, a)
     if feat is not None and feat.kind == "ridge":
         added = layer > l_s
         below = np.zeros(pos.shape[0], bool)
@@ -476,9 +669,30 @@ def verify_feature_structure(s: Si001FeatureStructure) -> dict:
                                      zip(*np.unique(coord, return_counts=True))}
     passed.append("(c) minimum distance = a*sqrt(3)/4; interior atoms 4-coordinated; no isolated "
                   "atom" + ("; every ridge atom bonded to the layer below"
-                            if feat is not None and feat.kind == "ridge" else ""))
+                            if feat is not None and feat.kind == "ridge" else "")
+                  + ("; bond bookkeeping at the void wall: coordination + removed neighbour "
+                     "sites = 4" if buried else ""))
 
-    if feat is not None:
+    if buried:
+        x_s = l_s * q
+        n_feat = abs(int(pos.shape[0]) - flat)
+        rec["volume_count"] = assert_feature_count(n_feat, feat, a)                  # (d)
+        passed.append("(d) removed count = full-torus volume x atom density within n (a/8) S")
+        rec["height_map"] = assert_flat_top(pos, s.frame, a, l_s, feat, L[1], L[2],
+                                            req["height_map_grid_A"])                # (e)
+        passed.append("(e) flat surface untouched: top-layer height map of the built atoms = 0 at "
+                      "every grid point of the ring's box")
+        rec["inside"] = assert_feature_inside(s.feature_sites_A, feat, l_s, q, L,
+                                              req["ring_margin_A"])                  # (f)
+        passed.append("(f) void fully inside the cell, intact layers below it")
+        rec["void_empty"] = assert_void_empty(pos, feat, x_s, a)                     # (h)
+        passed.append("(h) no atom inside the void (distance to the tube centre line >= r)")
+        rec["cap"] = assert_cap_intact(layer, s.feature_sites_A, feat, l_s, q,
+                                       int(req["atoms_per_layer_per_cell"] * req["periods_y"]
+                                           * req["periods_z"]))                      # (i)
+        passed.append("(i) cap intact: every layer with x_rel >= -cap (and below the void) holds "
+                      "the flat slab's atom count")
+    elif feat is not None:
         n_feat = abs(int(pos.shape[0]) - flat)
         rec["volume_count"] = assert_feature_count(n_feat, feat, a)                  # (d)
         passed.append("(d) removed/added count = half-torus volume x atom density within "
@@ -554,8 +768,9 @@ def _build(*, azimuth_uvw, azimuth_label, feature, extent_y_A, extent_z_A, depth
     family = _family(az)
     checks.assert_frame(frame, NORMAL_HKL)
     if feature is not None:
-        if not isinstance(feature, HalfTorus):
-            raise TypeError("feature must be a reflection_holo.structure.shapes.HalfTorus")
+        if not isinstance(feature, (HalfTorus, BuriedTorus)):
+            raise TypeError("feature must be a reflection_holo.structure.shapes.HalfTorus or "
+                            "BuriedTorus")
         require_evidence_label(feature.label, "feature geometry (PROJECT_INPUT item 13)",
                                accepted=LABEL_PREFIXES, qualified=True)
     if isinstance(depth_layers, bool) or int(depth_layers) != depth_layers or depth_layers < 2:
@@ -575,6 +790,15 @@ def _build(*, azimuth_uvw, azimuth_label, feature, extent_y_A, extent_z_A, depth
     N = 0
     if feature is not None:
         assert_ring_fits(feature, L[1], L[2], margin, p)                            # (b), (f)
+    if feature is not None and feature.kind == BURIED_KIND:
+        lo_void, _ = buried_layer_window(feature, l_s, q)
+        if lo_void < MIN_LAYERS_BELOW_FEATURE:
+            raise ValueError(
+                f"(f) depth_layers = {depth_layers} is too thin for a buried void reaching "
+                f"x_rel = {feature.void_bottom_x_rel_A:.4f} A: need at least "
+                f"{depth_layers + MIN_LAYERS_BELOW_FEATURE - lo_void} layers "
+                f"({MIN_LAYERS_BELOW_FEATURE} intact layers below the void)")
+    elif feature is not None:
         N = feature_layer_counts(feature, q)
         if feature.kind == "trench" and l_s - N < MIN_LAYERS_BELOW_FEATURE:
             raise ValueError(
@@ -600,7 +824,7 @@ def _build(*, azimuth_uvw, azimuth_label, feature, extent_y_A, extent_z_A, depth
             keep, fsite = base, np.zeros(len(layer), bool)
         else:
             inside = feature.contains((layer - l_s) * q, rs[:, 1], rs[:, 2])
-            if feature.kind == "trench":
+            if feature.kind in ("trench", BURIED_KIND):
                 fsite = base & inside
                 keep = base & ~inside
             else:
@@ -635,7 +859,30 @@ def _build(*, azimuth_uvw, azimuth_label, feature, extent_y_A, extent_z_A, depth
     top_layers = np.array([x_s + v for v in (rec.get("height_map", {})
                                              .get("built_top_range_A", [0.0, 0.0]))])
     feature_md = None
-    if feature is not None:
+    if feature is not None and feature.kind == BURIED_KIND:
+        cap = rec["cap"]
+        feature_md = dict(
+            shape="reflection_holo.structure.shapes.BuriedTorus", kind=feature.kind,
+            center_y_A=feature.center_y_A, center_z_A=feature.center_z_A,
+            major_radius_A=feature.major_radius_A, minor_radius_A=feature.minor_radius_A,
+            cap_A=float(feature.cap_A), label=feature.label, source=feature.source,
+            project_input="item 13", x_surface_A=x_s, flat_top_layer_index=l_s,
+            tube_centre_x_rel_A=feature.tube_centre_x_rel_A,
+            void_top_x_rel_A=feature.void_top_x_rel_A,
+            void_bottom_x_rel_A=feature.void_bottom_x_rel_A,
+            tube_centre_x_A=x_s + feature.tube_centre_x_rel_A,
+            void_top_x_A=x_s + feature.void_top_x_rel_A,
+            void_bottom_x_A=x_s + feature.void_bottom_x_rel_A,
+            void_volume_A3=feature.volume_A3,
+            n_removed=int(len(fs)), n_added=0,
+            removed_layer_x_rel_range_A=[cap["lowest_removed_layer_x_rel_A"],
+                                         cap["highest_removed_layer_x_rel_A"]],
+            intact_cap_layers=cap["intact_cap_layers"],
+            top_layer_x_range_A=[float(top_layers[0]), float(top_layers[1])],
+            rule="sites of the flat slab with distance to the tube centre line < r removed "
+                 "(BuriedTorus.contains(x - x_surface, y, z)); the cap and the flat surface are "
+                 "untouched")
+    elif feature is not None:
         feature_md = dict(
             shape="reflection_holo.structure.shapes.HalfTorus", kind=feature.kind,
             center_y_A=feature.center_y_A, center_z_A=feature.center_z_A,
@@ -695,18 +942,19 @@ def _build(*, azimuth_uvw, azimuth_label, feature, extent_y_A, extent_z_A, depth
     return s
 
 
-def build_si001_with_feature(*, azimuth_uvw, azimuth_label: str, feature: HalfTorus,
-                             extent_y_A: float, extent_z_A: float, depth_layers: int,
+def build_si001_with_feature(*, azimuth_uvw, azimuth_label: str,
+                             feature: HalfTorus | BuriedTorus, extent_y_A: float, extent_z_A: float, depth_layers: int,
                              lattice_parameter_A: float, lattice_label: str,
                              ring_margin_A: float, vacuum_above_A: float) -> Si001FeatureStructure:
-    """Si(001) slab with a half-torus trench or ridge; assertions (a) to (g) run inside.
+    """Si(001) slab with a half-torus trench or ridge, or a buried torus void under an intact cap;
+    assertions (a) to (g) (and (h), (i) for the buried void) run inside.
 
     Every argument is required (keyword-only, no defaults):
 
     azimuth_uvw, azimuth_label  beam azimuth (PROJECT_INPUT item 8; [110] or [100] families) and
                                 its evidence label
-    feature                     HalfTorus (PROJECT_INPUT item 13, carrying its label and source);
-                                centre in the cell's (y, z) coordinates
+    feature                     HalfTorus or BuriedTorus (PROJECT_INPUT item 13, carrying its
+                                label and source); centre in the cell's (y, z) coordinates
     extent_y_A, extent_z_A      periodic cell lengths; each must be an integer number of in-plane
                                 periods (a for <100>, a/sqrt(2) for <110>), else refused
     depth_layers                number of (001) layers of the flat slab (bottom layer at x = 0,

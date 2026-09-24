@@ -47,10 +47,18 @@ same on every terrace and every step phase is unchanged (E9 section 3 item 1: 10
 21.9522 rad for a/2 at 16.1347 mrad, out:91); a thickness difference Dt of a grown oxide changes
 it by [2 k'_ox - 2 k_perp (1 - f)] Dt (4.27-4.71 rad/A, out:109-117), a top-surface-only change by
 2 (k'_ox - k_perp) Dt (0.866-0.980 rad/A, out:96-103). Multiple reflections at the graded edges are
-neglected (w >= 0.5 A: |r| suppressed by 1.1e-4, out:241). B4 is judged on the BURIED crystal step
-measured on the kept atoms by the builder (its relation changes with the consumed-layer counts;
-at <110> the parity of the consumed-layer count decides the terrace type, E9 section 3 item 2).
-The ray trace uses the tops of the layer (x_t) as the surface. Without an oxide nothing changes.
+neglected (w >= 0.5 A: the exact 1-D reflectivity of the 0.5 A vacuum edge is |r|^2 = 1.95e-9 at
+16.1347 mrad, |r| x 8.5e-4 of the sharp edge, audit A8 C6, which the multislice engine reproduces;
+E9's Born factor, out:241, underestimates it 57-fold: structure.oxide.EDGE_W05_REFLECTIVITY). B4 is
+judged on the BURIED crystal step measured on the kept atoms by the builder (its relation changes
+with the consumed-layer counts; at <110> the parity of the consumed-layer count decides the terrace
+type, E9 section 3 item 2). The layer terms are referenced to the pre-oxidation surface (the Si
+equivalent boundary a/8 above the top atomic plane, structure.oxide.REFERENCE_PLANE; a common
+offset, so they do not depend on it). The ray trace uses the surface of the bare model (the top
+atomic-layer planes, heights_A) raised by each terrace's rise of the layer top above its
+pre-oxidation surface, (1 - f) t: the engine's bare-surface convention, common to all terraces
+(the a/8 between the atomic plane and the equivalent boundary is below its resolution). Without an
+oxide nothing changes.
 """
 from __future__ import annotations
 
@@ -309,10 +317,15 @@ def _oxide_terms(model: TerraceModel, *, theta_ext_rad: float, energy_keV: float
     per = rec["per_terrace"]
     if len(per) != model.n_terraces:
         raise ValueError("builder metadata: one oxide stack per terrace expected")
+    q = float(rec["layer_spacing_A"])
     for k, p in enumerate(per):
         if abs(p["pre_oxidation_plane_x_A"] - model.heights_A[k]) > _HEIGHT_TOL_A:
             raise ValueError("builder metadata: the oxide reference plane is not the terrace's "
                              "top-layer plane")
+        if p.get("crystal") != ox.CRYSTAL_ATOMISTIC or abs(
+                p["pre_oxidation_surface_x_A"] - (model.heights_A[k] + 0.5 * q)) > _HEIGHT_TOL_A:
+            raise ValueError("builder metadata: the oxide stack is not referenced to the terrace's "
+                             "Si equivalent boundary (top atomic plane + a/8; audit A8 M2)")
     k = k_ang_per_A(energy_keV)
     kp = k * math.sin(theta_ext_rad)
     ko = k_perp_in_layer_per_A(theta_ext_rad, energy_keV, rec["V_real_V"], rec["V_imag_V"])
@@ -321,8 +334,10 @@ def _oxide_terms(model: TerraceModel, *, theta_ext_rad: float, energy_keV: float
           if rec["amorphous_si_thickness_A"] > 0 else None)
     terms = [ox.stack_phase_terms(p, k_perp_vac=kp, k_perp_ox=ko, k_perp_asi=ka) for p in per]
     tot = np.array([t["total"] for t in terms], dtype=np.complex128)
-    tops = np.array([p["top_x_A"] for p in per], float)
     rises = np.array([p["top_rise_A"] for p in per], float)
+    # ray-trace surface: the bare model's surface (top atomic planes) raised by the rise of the
+    # layer top above the pre-oxidation surface (module docstring), uniform or per terrace alike
+    tops = np.asarray(model.heights_A, float) + rises
     return dict(total=tot, tops=tops, rises=rises,
                 uniform_rise=bool(np.ptp(rises) <= _HEIGHT_TOL_A),
                 record=dict(
@@ -333,7 +348,8 @@ def _oxide_terms(model: TerraceModel, *, theta_ext_rad: float, energy_keV: float
                                       interface_term_rad=t["interface"].real,
                                       layer_phase_rad=t["total"].real,
                                       zero_loss_amplitude=float(math.exp(-t["total"].imag)),
-                                      top_x_A=float(tops[i]))
+                                      top_x_A=float(per[i]["top_x_A"]),
+                                      ray_trace_surface_x_A=float(tops[i]))
                                  for i, t in enumerate(terms)],
                     rates=oxide_phase_rates(theta_ext_rad=theta_ext_rad, energy_keV=energy_keV,
                                             V_real_V=rec["V_real_V"], V_imag_V=rec["V_imag_V"],
@@ -343,8 +359,12 @@ def _oxide_terms(model: TerraceModel, *, theta_ext_rad: float, energy_keV: float
                                    "exp(-Im[T_k + I_k]) (module docstring; E9 section 3)"),
                     zero_loss_label="MODEL value (bulk-IMFP absorptive potential), not a bound "
                                     "(E9 M1); not to be multiplied with B38",
-                    multiple_reflections="neglected (graded edges, E9 out:241)",
-                    ray_trace_surface="tops of the layer x_t"))
+                    multiple_reflections=("neglected (graded edges; "
+                                          + ox.EDGE_W05_REFLECTIVITY + ")"),
+                    ray_trace_surface=("the bare model's top atomic-layer planes raised by the "
+                                       "rise (1 - f) t of the layer top above the pre-oxidation "
+                                       "surface (the layer top x_t lies a/8 higher: below the "
+                                       "engine's resolution, common to all terraces)")))
 
 
 # --------------------------------------------------------------------------------------------------

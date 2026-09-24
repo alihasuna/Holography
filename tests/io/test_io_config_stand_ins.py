@@ -110,10 +110,13 @@ def test_registry_is_package_data_mapping_ids_to_items():
                    # R1 object-reference separation (items 3 and 16)
                    "B38": (21,), "B39": (16,), "B40": (3, 16),
                    # report E4: demo continuum oxide (docs/06 item 12; L8 section 8 with E9)
-                   "B41": (12,)}
+                   "B41": (12,),
+                   # report T3: demo buried torus void under an intact cap (docs/06 item 13)
+                   "B42": (13,)}
     assert "B36" in C.demo_only_stand_ins()
     assert {"B38", "B39", "B40"} <= C.demo_only_stand_ins()
     assert "B41" in C.demo_only_stand_ins()
+    assert "B42" in C.demo_only_stand_ins()
     # report E2: rows cited by code that stand in for no docs/06 item (never an assumption_id)
     assert set(C.model_assumption_rows()) == {"B35", "B37"}
     assert not set(C.model_assumption_rows()) & set(reg)
