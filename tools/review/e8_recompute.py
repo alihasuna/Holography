@@ -17,9 +17,16 @@ Conventions (docs/physics_conventions.md): exp(+i k.r - i omega t); s or x = out
 external glancing angle; R = (upward wave)/(downward wave) at a stated plane.
 
 Run:  venv/bin/python tools/review/e8_recompute.py [--sections 1,2,...] [--threads N]
-Engine sections (10, 11) take several minutes each on a shared 4-core machine and store their raw
-results in the scratch directory (ENGINE_CACHE) so that a re-run only re-reads them; delete the
-cache files to recompute.
+Sections: 1 provenance and constants; 2 convention (own transfer matrices); 3 solver R at the
+top-layer nuclei, flux, numerical routes, r = 0 slabs, two-fold symmetry; 4 own engine read-out of
+S5's stored columns and S5's tolerance; 5 plane fit and tolerance power; 6 curve level; 7, 7b engine
+and tool version history (git); 8 H2 plateaus; 9 incident sheet-beam amplitude; 10, 10b own engine
+runs (regression, pixel study, along-beam-averaged potential, more angles, [110]); 11 rung-2
+continuum at coarse pixels; 12 S5 tool re-run as a black box; 13 P49 Eq. (36) algebra.
+The engine sections (10, 10b, 11) run the engine from `git archive` copies in the scratch directory
+(SCR/e8/engine_HEAD, commit d3de34a, with tests/forward and tools/physics_checks) in subprocesses and
+cache their raw results in ENGINE_CACHE (about 25 min of 2-thread CPU on the shared machine); a
+re-run only re-reads the cache; delete the cache files to recompute. Memory below 0.5 GB per run.
 """
 from __future__ import annotations
 
@@ -428,6 +435,16 @@ def section3():
         print(f"  {name:30s} {azi:5.1f}  {sa:8.4f}  {st:9.4f}  {dd:8.4f}   ({bb[0]:+.2f},{bb[1]:+.2f})"
               f"      {nb:3d}  {ml:3d}  {fl:.6f}  {dev:.1e}")
     check("S5's stored R_layer equals E8's own conversion of amp.txt", worst < 1e-12, f"{worst:.1e}")
+    # two-fold rotation about the normal through the origin: (x, y) -> (-x, -y) mod 1 for every layer
+    run = solver_run("chk_a100_N6_B_0")
+    b, sf = run["bulk"], run["surf"]
+    pos = [((x + b["dxb"]) % 1, (y + b["dyb"]) % 1) for (_, _, x, y, _) in b["atoms"]]
+    pos += [((x + sf["dxs"] + b["dxb"]) % 1, (y + sf["dys"] + b["dyb"]) % 1) for (_, _, x, y, _) in sf["atoms"]]
+    pos += [(x % 1, y % 1) for (_, _, x, y, _) in b["atoms"]]
+    inv = all(abs(((-x) % 1) - x) < 1e-12 or abs(abs(((-x) % 1) - x) - 1) < 1e-12 for p_ in pos for x in p_)
+    print(f"  every layer of the 90-layer slab (and the bulk units) maps onto itself under the two-fold "
+          f"rotation about the normal (fractional positions 0 or 1/2 only): {inv}; distinct in-plane "
+          f"positions {sorted(set((round(x, 6), round(y, 6)) for x, y in pos))}")
     fl_all = max(r[8] for r in rows if r[0] != "chk_a100_N6_A4_cc_a")
     print(f"  largest reflected flux (all cases except the CC = a failure case): {fl_all:.6f}")
     cca = solver_case("chk_a100_N6_A4_cc_a")
@@ -631,7 +648,6 @@ def section5(res4):
     for dxp in (0.005, 0.01, 0.015, 0.02, 0.05):
         print(f"  engine with its reference plane moved by {dxp:.3f} A: "
               f"{n_fail(Re * np.exp(2j * K_ENG * np.sin(thr) * dxp))} outside")
-    one = solver_at("fine_a100_N0_r010", thr) if False else None
     sc1 = solver_case("fine_a100_N0_r010")
     R1 = np.interp(thr, sc1["theta"], sc1["R"].real) + 1j * np.interp(thr, sc1["theta"], sc1["R"].imag)
     print(f"  the (0,0) rod alone (solver, 1 beam, interpolated on the 0.02 mrad grid): {n_fail(R1)} outside;"
@@ -780,6 +796,19 @@ def section7():
           f"({b['engine_commit'][:7]}, dirty {b['engine_dirty']}): stored exit columns identical: {same_col}; "
           f"first-pass r_top equal to the main run's: "
           f"{float(f0['readout']['r_top_re']) == float(a['readout']['r_top_re'])}")
+    # after S5: the commit E8 archived for its own engine runs against S5's last engine commit
+    later = (SCR / "e8/engine_HEAD/COMMIT").read_text().strip()
+    for path, names in (("reflection_holo/forward/multislice/engine.py",
+                         ["propagate_slices", "run_realisation", "reflection_setup"]),
+                        ("reflection_holo/forward/multislice/potentials.py",
+                         ["_RealisedAtomic", "AtomicPotential", "absorber_profile_V"]),
+                        ("reflection_holo/forward/multislice/propagator.py", ["propagator_kernel"]),
+                        ("reflection_holo/forward/multislice/illumination.py", ["sheet_beam_wave"]),
+                        ("reflection_holo/forward/multislice/grid.py", ["band_limit_mask"]),
+                        ("reflection_holo/structure/si001.py", ["build_si001_terraces"])):
+        for nm in names:
+            same = _func_src("a1ef2a0", path, nm) == _func_src(later, path, nm)
+            print(f"  {path.split('/')[-1]}:{nm}: identical at a1ef2a0 and {later} (E8's engine runs): {same}")
     st = subprocess.run(["git", "-C", str(REPO), "diff", "--stat", "a84b4b3", "a1ef2a0", "--",
                          "reflection_holo/structure"], capture_output=True, text=True).stdout.strip()
     print(f"  reflection_holo/structure between a84b4b3 and a1ef2a0: "
@@ -1009,6 +1038,8 @@ def section10(dt, threads, only_run=False):
         print(f"  pixel {dxr:.4f} A: band radius {fm:.3f} 1/A; ZOLZ rods (h,-h) inside up to |h| = "
               f"{hmax}; rods that still carry the (0,0,8) normal component (8/a = {g8:.4f}): |h| <= {h8}"
               f"; first along-beam ring inside the band: {f_holz < fm}")
+    print(f"  peak RSS of the E8 engine subprocesses: {min(r['info']['peak_rss_MB'] for r in res.values()):.0f}"
+          f" to {max(r['info']['peak_rss_MB'] for r in res.values()):.0f} MB")
     print("  run                              grid          built  run_s  |R|^2(window) arg     "
           "|R|/|R_N10|-1  d arg     plateau bins |R| (2500..3750 A, 250 A)")
     for tag, root, th, mp, zolz, L in ENGINE_MATRIX:
@@ -1221,6 +1252,9 @@ def section9(res4):
             ideal = np.exp(-2j * np.pi * fc * xs) * np.exp(-1j * z * (2 * np.pi * fc) ** 2 /
                                                               (K_ENG + np.sqrt(K_ENG**2 - (2 * np.pi * fc) ** 2)))
             rel = psi / ideal
+            below = H - ((L - zc) - EXIT_EXCL_A) * np.tan(th)
+            print(f"  {ename} {ang:.1f} mrad: the window's last ray left the sheet {below:.2f} A below its "
+                  f"top edge (sheet height {H:.2f} A)")
             print(f"  {ename} {ang:.1f} mrad: window {WIN_START_A:.0f}-{(L - zc) - EXIT_EXCL_A:.0f} A after "
                   f"first contact; incident amplitude / ideal plane wave at x_s: mean {abs(rel.mean()):.4f}"
                   f" (arg {np.angle(rel.mean()):+.4f}), range {np.abs(rel).min():.4f}-{np.abs(rel).max():.4f}")

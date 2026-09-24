@@ -1,6 +1,6 @@
 # E8: adversarial review of S5 (independent dynamical RHEED solver against the multislice engine)
 
-Agent E8, 2026-09-24. Written incrementally; the final state is sections 9 to 11. Branch
+Agent E8, 2026-09-24. Written incrementally; the final state is sections 8 to 12. Branch
 `claude/electron-holography-orchestration-nakd7r`; S5's work reviewed at commit `872e949`. Nothing
 committed or pushed by E8; no GPL-3.0 code or input copied into the repository.
 
@@ -30,9 +30,13 @@ DERIVED_HERE, ASSUMPTION, UNVERIFIED, MEASURED_HERE (a number from the UNVALIDAT
 - 01:05-01:17 UTC: script sections E8-1 to E8-7 written and run (provenance, own transfer-matrix
   convention check, R at the top-layer nuclei from `amp.txt`, own engine read-out of the stored
   columns, plane fit and tolerance power, curve level, engine-version history).
-- 01:19 UTC onwards: own engine runs at 16.2 mrad with the engine archived from commit `d3de34a`
+- 01:19-01:32 UTC: own engine runs at 16.2 mrad with the engine archived from commit `d3de34a`
   (a `git archive` in scratch, so that other agents' uncommitted edits cannot enter), 2 FFT threads,
-  peak RSS about 0.3-0.5 GB; the S5 tool's report mode re-run as a black box.
+  peak RSS 324 to 345 MB (E8-10); the S5 tool's report mode re-run as a black box (E8-12).
+- 01:32-02:00 UTC: along-beam-averaged and full engine runs at six more angles and [110] (E8-10b);
+  rung-2 continuum runs at four pixels (E8-11); final run of the whole script (all engine results
+  read from the scratch cache `.../scratchpad/e8/engine_cache/`), saved as
+  `tools/review/e8_recompute_output.txt` (10 of 10 self-checks pass).
 
 ## 1. Provenance, patch, physics inputs (question 1)
 
@@ -94,8 +98,9 @@ DERIVED_HERE, ASSUMPTION, UNVERIFIED, MEASURED_HERE (a number from the UNVALIDAT
   at the bottom (no exp(+i Gamma s) wave below the crystal) and `sap > 0` makes Im Gamma^2 > 0. Both
   facts are consistent only with exp(-i omega t). The one-beam test checks only the NORMAL direction;
   the lateral Fourier sign convention (U_g vs U_-g) is not tested by a flat bulk-terminated Si(001)
-  surface at all, because every layer is invariant under the two-fold rotation about the normal
-  (finding M4).
+  surface at all: every atom of the solver's slab sits at fractional (0 or 1/2, 0 or 1/2), so the
+  two-fold rotation about the normal maps every layer onto itself (E8-3), and R_00 is the same for a
+  structure and its inverse (finding M4).
 * The P49 fork (SECTION_READ of `trhepd-opt` at `dc394ba`; not run): the new integrators start from
   the same bulk reflection matrix, map it to (q, p) = (psi, psi')/Gamma with `invstrans`
   (`matcomp.f90`: q = G^-1 (I + f), p = i (f - I)), integrate psi'' = -(Gamma^2 + U + i U') psi
@@ -132,17 +137,18 @@ DERIVED_HERE, ASSUMPTION, UNVERIFIED, MEASURED_HERE (a number from the UNVALIDAT
   the one-parameter fit with no constant offset: dx = -0.0003 +- 0.0009 A ([100] DT),
   -0.0013 +- 0.0015 A ([110]), +0.0003 +- 0.0009 A ([100] Kirkland). A plane error cannot hide in c
   unless a constant phase offset of the opposite sign is also present; the physics differences
-  between the codes (along-beam couplings, band limit, section 6) act like such a small c (-0.009
-  to -0.017 rad for the HOLZ part), so the plane is verified to about 0.003 A. A 0.1 A error would
-  give 0.601 rad at 12 mrad and 1.102 rad at 22 mrad (E8-5, as S5).
+  between the codes act like such an offset (the along-beam couplings alone move the engine's arg R
+  by -0.0008 to -0.0264 rad, E8-10), which is why the one-parameter fit, not S5's two-parameter fit,
+  is the relevant check. A 0.1 A error would give 0.601 rad at 12 mrad and 1.102 rad at 22 mrad
+  (E8-5, as S5).
 
 ## 4. Tolerances (question 4)
 
-* Were they fixed before comparing? (git, E8-7 and `git log -p`): the tolerance block (TOL_REL 0.05,
-  TOL_ABS 0.005, TOL_SPREAD_MULT 2.0, peak 0.03 mrad, peak |R|^2 10 %, FWHM 10 %, sweep 0.1 rad) is
-  identical in every snapshot from `242b566` (22:52:30 UTC) to `872e949`. The earliest snapshot that
-  contains it also contains the first engine result (16.2 mrad, engine `a84b4b3`, results file
-  stamped 22:47:50 UTC). Git therefore shows that the tolerances never changed after the first
+* Were they fixed before comparing? (E8-7b, from `git show` of every commit that changed the tool):
+  the tolerance block (TOL_REL 0.05, TOL_ABS 0.005, TOL_SPREAD_MULT 2.0, peak 0.03 mrad, peak |R|^2
+  10 %, FWHM 10 %, sweep 0.1 rad) is identical in `242b566` (22:52:30 UTC), `2a3a999`, `64d740b`,
+  `2da0216`, `db81b59` and `872e949`. The earliest of these already contains an engine result (the
+  results file is stamped 2026-09-23T22:47:50Z; 16.2 mrad, engine `a84b4b3`, E8-7). Git therefore shows that the tolerances never changed after the first
   engine number existed, but it cannot show that they were written before it: "declared at 22:45 UTC"
   rests on S5's own log (finding m1). The report section 5 text with "DECLARED at 22:45 UTC" is
   already present at `242b566`.
@@ -178,17 +184,20 @@ DERIVED_HERE, ASSUMPTION, UNVERIFIED, MEASURED_HERE (a number from the UNVALIDAT
   `propagator_kernel`, `sheet_beam_wave`, `SheetBeam`, `band_limit_mask`, `make_grid`,
   `beam_constants` and `build_reflection_cell` are textually identical at `a84b4b3`, `148e4f6`,
   `2a3a999`, `64d740b`, `2da0216` and `a1ef2a0`; `reflection_holo/structure` is unchanged between
-  `a84b4b3` and `a1ef2a0`. The dirty state of `148e4f6` cannot be reconstructed from git, but the
+  `a84b4b3` and `a1ef2a0` (E8-7). The dirty state of `148e4f6` cannot be reconstructed from git, but the
   16.2 mrad exit column of the main run and of the `2a3a999` repeat are identical element by element,
-  and the discarded first pass (`a84b4b3`) gave the same r_top to all 17 digits. The S5 tool's own
-  engine set-up changed once in between (`engine_flat_strip` gained `dz_div` and the
-  `working_reflections_hkl` argument at `64d740b`); neither changes a default run. S5's claim of
-  consistent numerics is CONFIRMED.
-* After S5 (not S5's responsibility, but relevant for quoting): at HEAD (`d3de34a` when checked) the
-  engine's `run_realisation`, `reflection_setup`, `_RealisedAtomic` (exponentials moved into the new
-  `_phase_factors`), `sheet_beam_wave` (azimuthal tilt) and `build_si001_terraces` differ from
-  `a1ef2a0`. E8's regression run with a `git archive` of HEAD reproduces S5's stored 16.2 mrad column
-  (section 6, E8-10), so for this configuration the later changes are numerically inert.
+  and the discarded first pass (`a84b4b3`) gave the same r_top to all 17 digits. In the S5 tool
+  (E8-7b) `DoyleTurnerPotential` never changed; `engine_readout` changed between `242b566` and
+  `2a3a999`, but the final tool reproduces every stored read-out from the stored columns to 6e-09
+  (its self-check, reproduced in E8-12); `engine_flat_strip` changed at `64d740b` (it gained `dz_div`
+  and the `working_reflections_hkl` argument; SECTION_READ of the diff), which does not change a
+  default run. S5's claim of consistent numerics is CONFIRMED.
+* After S5 (not S5's responsibility, but relevant for quoting): at `d3de34a` (the HEAD E8 archived
+  for its runs) the engine's `run_realisation`, `reflection_setup`, `_RealisedAtomic` (exponentials
+  moved into the new `_phase_factors`), `sheet_beam_wave` (azimuthal tilt) and
+  `build_si001_terraces` differ from `a1ef2a0`, while `propagate_slices`, `AtomicPotential`,
+  `absorber_profile_V`, `propagator_kernel` and `band_limit_mask` do not (E8-7). E8's regression run with a `git archive` of HEAD reproduces S5's stored 16.2 mrad column
+  (section 7, E8-10), so for this configuration the later changes are numerically inert.
 
 ## 6. What the comparison cannot show; what a like-for-like validation needs (question 7)
 
@@ -211,7 +220,7 @@ S5's lists (section 9) are right in what they contain, with one error and severa
      the "matched" 13-rod set are not matched;
   3. only the specular rod, only 12-22 mrad, only [100] and [110], only one absorption ratio
      (0.1), a static lattice and one parameterisation per code; no other Bragg condition and not
-     the 24-48 mrad range where D3 flagged the engine's band and shear limits;
+     the larger glancing angles listed among docs/05's open questions;
   4. the engine's result is for a 4500 A strip read over departure points 2500-3751 A with a sheet
      beam whose top edge ends the window; the incident amplitude there is quantified in E8-9;
   5. the validated engine state is the atomic path of `148e4f6`-`a1ef2a0` (and, by E8's regression
@@ -232,7 +241,7 @@ beam, i.e. exactly the physics of the solver's zero-order row of rods). E8-10:
 * Regression: E8's default run reproduces S5's stored exit column to 6.9e-08 (column maximum 0.577;
   the column is stored with 7 significant digits); same grid 1764 x 42 x 3406 and 88296 atoms.
 * Solver at 16.2 mrad: 13 rods |R|^2 0.07881, arg -2.7120; 17 rods 0.07902, -2.7066; 21 rods
-  0.07908, -2.7053 (the rod set is converged to 0.3 % in |R|^2).
+  0.07908, -2.7053 (E8-10).
 
 | pixel (A) | full: |R|/|R_21rods| - 1 | full: d arg (rad) | averaged: |R|/|R_21rods| - 1 | averaged: d arg (rad) |
 |---|---|---|---|---|
@@ -253,7 +262,7 @@ Reading (DERIVED_HERE from these MEASURED_HERE runs):
    0.0990, 0.0742, 0.0646 A; phase -0.0008, -0.0172, -0.0264, -0.0206 rad), reach their full size
    once the first along-beam (Laue) ring, at 3.881 1/A for 16.2 mrad, lies inside the band (band
    radius 2.579, 3.368, 4.491, 5.158 1/A at the four pixels): -3.3 to -3.4 % in |R| and -0.021 to
-   -0.026 rad, the two finest pixels agreeing to 0.15 % and 0.006 rad. At 0.0990 A the ring is still
+   -0.026 rad (ratios -0.0329 and -0.0344 at the two finest pixels). At 0.0990 A the ring is still
    outside and only part of the effect appears; this is why S5's pixel study was not monotonic
    (|R|^2 +5.2 % at 0.099 A, then down at 0.074 A), while the averaged runs are monotonic.
 3. S5's "unexplained about 3 % in |R|" is therefore the sum of a numerical engine error at 0.13 A
@@ -267,7 +276,7 @@ Reading (DERIVED_HERE from these MEASURED_HERE runs):
 4. The size of the along-beam effect is NOT validated: the engine's converged value (-3.4 % in |R|,
    -0.021 rad) is about three times the solver's 61-rod disk estimate (-1.1 %, -0.009 rad), whose
    disk is truncated at |g| <= 6/a with the row at |h| <= 3. Which is right needs a solver rod disk
-   matched to (or larger than) the engine's along-beam and transverse sampling (finding M3).
+   matched to (or larger than) the engine's along-beam and transverse sampling (findings M1, M3).
 5. The candidates S5 lists (band limit, infinite projection per slice, band-pass near the surface)
    are thereby narrowed: the band limit is confirmed; the infinite projection per slice and the
    read-out cannot be large, because the averaged runs agree with the solver to 0.2 % at 16.2 mrad
@@ -295,13 +304,30 @@ truncation (13 against 21 rods, section 3). At [110] 17.6 mrad the pixel effect 
 [100]: the averaged potential at 0.13 A is 4.1 % low in |R| and 0.076 rad low in phase (E8-10b), so
 S5's largest [110] phase difference (-0.075 rad at 17.6 mrad) is the band limit at 0.13 A.
 
+Cross-check with the rung-2 exact reference (E8-11; question 5): E1's R2-A cell (laterally uniform
+continuum potential V0 + V_008, r = 0.1, exact propagator, x_s on a pixel centre) read with
+`flat_reflection_coefficient` against P2's exact semi-infinite solution, run here at the atomistic
+pixels. max |r - R_ref| over |eta| <= 3 is 9.40e-03, 5.52e-03, 1.45e-03 and 4.62e-04 at dx = 0.12994,
+0.10000, 0.05000 and 0.02500 A (the last equals E1's R2-A value); near the plateau centre the
+amplitude error is only -0.0020, -0.0013, -0.0002, +0.0000 (mean over |eta| <= 1: -0.0040 to
+-0.0004), while the phase error is -0.0282, -0.0164, -0.0042, -0.0012 rad, i.e. about proportional
+to dx^2. So in one dimension the engine's AMPLITUDE at 0.13 A is right to 0.4 %: the 2.5 % amplitude
+error of the atomistic averaged runs at 0.13 A is not a one-dimensional propagation or read-out
+effect but comes from the Fourier components that the band removes from the atomic potential (the
+outer rods' normal components and the (0,0,l >= 16) harmonics, which the single-harmonic rung-2
+potential does not have; DERIVED_HERE). The engine's PHASE, however, carries a normal-sampling
+error of about -0.03 rad at 0.13 A even without atoms, the same size as the atomistic phase error
+at that pixel (-0.027 rad).
+
 Read-out and strip (E8-9, E8-10): the sheet beam's incident amplitude at the surface varies from
-0.892 to 1.10 (16.2 mrad; 0.892 to 1.17 at 12.0 mrad) across the read-out window, because the
-window ends about 11 A below the diffracting top edge of the sheet; its window mean is 0.995
-(16.2 mrad), 1.022 (12.0) and 1.002 (21.0) while the read-out assumes 1. This is a read-out
+0.8923 to 1.0992 (16.2 mrad; 0.8922 to 1.1728 at 12.0 mrad) across the read-out window, because the
+window's last ray leaves the sheet 11.15 A below its diffracting top edge (8.00 A at 12.0 mrad,
+14.75 A at 21.0 mrad); its window mean is 0.9950 (16.2 mrad), 1.0222 (12.0) and 1.0017 (21.0) while
+the read-out assumes 1 (a row-by-row normalisation would change |R| by -0.0209, +0.0046, -0.0020). This is a read-out
 systematic of up to about 2 % in |R| at 12 mrad that S5's spread term only partly represents
-(finding m5). The 250 A bins at 16.2 mrad alternate by about +-1.5 % with a period of about 500 A in
-every run (full and averaged), so the window mean depends on the window at the 0.5 % level.
+(finding m5). The 250 A bins at 16.2 mrad alternate in every run, full and averaged (default run:
+0.2620, 0.2708, 0.2654, 0.2742, 0.2682; E8-10), so the window mean depends on where the window ends
+within that oscillation.
 
 ## 8. Findings
 
@@ -347,8 +373,8 @@ effects of 2.5 % and 3.4 % in |R| that S5 did not separate.
   the engine at 0.13 A is 2.5 % low from its band limit, and the two models differ by the along-beam
   couplings (engine -3.4 % in |R|, -0.021 rad, not validated); with the solver's physics the engine
   converges to it within 0.2 % in |R| and 0.002 rad (16.2 mrad, E8-10)". For the next comparison fix
-  the tolerance from the solver's rod and slab convergence (about 0.3 % in |R|^2) plus the engine's
-  demonstrated pixel convergence, not from 5 % + 0.005 + 2 s_eng.
+  the tolerance from the solver's rod and slab convergence (13 to 21 rods: |R|^2 0.07881 to 0.07908
+  at 16.2 mrad) plus the engine's demonstrated pixel convergence, not from 5 % + 0.005 + 2 s_eng.
 
 ### M3 (MAJOR). "About 3 % in |R| remains unexplained" is explained; the pixel non-monotonicity is physics entering the band
 
@@ -370,8 +396,9 @@ effects of 2.5 % and 3.4 % in |R| that S5 did not separate.
   and L2 D-I3, which concern the P49 paper's notation)".
 * Evidence: E8-2 confirms the normal-direction convention (own TM, 7e-12 with the solver's slices).
   The lateral Fourier sign convention (whether U_g or U_-g multiplies exp(+i g.r)) cannot be seen
-  here: each layer of bulk-terminated Si(001) is a simple 2D lattice and the surface is invariant under
-  the two-fold rotation about the normal, so R_00 is identical for a structure and its inverse. For
+  here: every atom of the solver's slab sits at fractional (0 or 1/2, 0 or 1/2) (E8-3), so the
+  surface is invariant under the two-fold rotation about the normal and R_00 is identical for a
+  structure and its inverse. For
   steps (the measurand) this sign matters. For P49's fork, E8's code reading (section 2) shows the
   same f as upstream; S5 left it open.
 * Correction: S5 9 item 4: "no sign error in the normal direction (time convention, absorption sign,
@@ -384,7 +411,7 @@ effects of 2.5 % and 3.4 % in |R| that S5 did not separate.
 * m1. "Tolerances (DECLARED at 22:45 UTC, before the first engine run and before any engine-solver
   difference was computed)" (S5 5). Git cannot confirm the order: the first snapshot containing the
   tolerance block (`242b566`, 22:52:30 UTC) already holds an engine result stamped 22:47:50 UTC. The
-  block is unchanged from then to `872e949` (E8 section 4). Proposed: "declared at 22:45 UTC (S5 log);
+  block is unchanged from then to `872e949` (E8-7b). Proposed: "declared at 22:45 UTC (S5 log);
   first committed in `242b566` together with the first engine result; unchanged afterwards".
 * m2. "a fit d arg = c + 2 Gamma_0 dx gives c = -0.044 rad and dx = +0.005 A, i.e. no reference-plane
   error" (S5 6.2) and "the fitted reference-plane offset is 0.005-0.012 A" (S5 9). With 1-sigma
@@ -404,9 +431,10 @@ effects of 2.5 % and 3.4 % in |R| that S5 did not separate.
   unit with the (1/2,1/2) shift is exact for diamond (001) and is validated empirically by the A-B
   agreement".
 * m5. The read-out assumes a unit incident amplitude at the surface (S5 6.1, R = <e> exp(+4 pi i f_c
-  x_s)/P_L). The window ends about 11 A below the sheet's top edge, and the vacuum-propagated incident
-  amplitude at x_s over the window ranges 0.892-1.10 (16.2 mrad) and 0.892-1.17 (12.0 mrad), with
-  window means 0.995, 1.022 and 1.002 at 16.2, 12.0 and 21.0 mrad (E8-9). Proposed: add this as a
+  x_s)/P_L). The window's last ray leaves the sheet 8.00 to 14.75 A below its top edge (12.0 to 21.0
+  mrad), and the vacuum-propagated incident amplitude at x_s over the window ranges 0.8923-1.0992
+  (16.2 mrad) and 0.8922-1.1728 (12.0 mrad), with
+  window means 0.9950, 1.0222 and 1.0017 at 16.2, 12.0 and 21.0 mrad (E8-9). Proposed: add this as a
   read-out systematic (up to about 2 % in |R| at 12 mrad) and, for future runs, either a taller sheet
   (window ending several Fresnel zones below the edge) or normalisation by a crystal-free run.
 * m6. "Doyle-Turner (1968) ... otherwise Peng (1999)" (S5 F11): the years are read from the code
@@ -442,7 +470,7 @@ effects of 2.5 % and 3.4 % in |R| that S5 did not separate.
 | 2 P49 fork | not run, left open | same f as upstream by code reading (DERIVED_HERE) | section 2, E8-13 |
 | 2 Scope of "no convention bug" | general | normal direction only; lateral sign untested (M4) | section 2 |
 | 3 Reference plane | top-layer nuclei in both; dx 0.005 A | CONFIRMED (engine x_s = top atom; solver R_layer to 6e-14); fit errors +-0.012 A (m2); c = 0 fit -0.0003 +- 0.0009 A | E8-3, E8-5, E8-10 |
-| 4 Tolerances fixed first | declared 22:45 | unchanged after the first engine result; order not provable (m1) | git |
+| 4 Tolerances fixed first | declared 22:45 | unchanged after the first engine result; order not provable (m1) | E8-7, E8-7b |
 | 4 Tolerances meaningful | 5 % + 0.005 + 2 s_eng; 10 % peak | phase part has power; amplitude part does not (M2); spread fragile (m3) | E8-5b, E8-4 |
 | 4 21.0 mrad failure | excess 0.0003 in R | CONFIRMED as a failure (E8: excess 0.0011); quantity = complex amplitude difference | E8-4, E8-5b |
 | 5 Amplitude deficit | 3-5 %, partly unexplained | EXPLAINED: band limit at 0.13 A (2.5 %) + along-beam couplings absent from the solver (3.4 %); like-for-like engine converges to +0.2 %, 0.002 rad | E8-10, E8-10b |
@@ -485,3 +513,69 @@ L2 D-I3 (the report is a record; add a status note rather than rewriting the inf
 > (the `conjg` calls in `surf_prkn.f90`, `surf_rk.f90` and `matcomp.f90` belong to Hermitian-
 > transposed storage; DERIVED_HERE, E8 section 2, not run). The 1-beam step-barrier test proposed
 > here was run as S5's RK4 test and E8's transfer-matrix test; neither tests the lateral sign.
+
+## 11. Statements the summary documents may quote
+
+Each is supported by the section and script output named; labels as used there.
+
+1. "An independent dynamical RHEED solver, sim-trhepd-rheed (upstream `d98d6252`, GPL-3.0, built
+   outside the repository; Ichimiya surface-parallel slicing with recursive reflection matrices),
+   was compared with the multislice engine on flat bulk-terminated Si(001) at 200 keV, 12-22 mrad,
+   exact [100] and [110], with the same Doyle-Turner potential, a static lattice and the same
+   proportional absorption r = 0.1 (TEST_ONLY). The solver's complex reflection matrix was exposed
+   by an output-only patch (S5; E8 section 1)."
+2. "The solver's amplitude is in the repository's exp(+i k.r - i omega t) convention and needs no
+   conjugation (REPRODUCED twice: S5's one-beam RK4 test and E8's transfer matrices, which reproduce
+   the solver's output to 7e-12 with its own slicing). This tests the convention along the surface
+   normal only; the in-plane Fourier sign convention is not tested by a flat Si(001) surface."
+3. "Phase: over the (0,0,8) peak at [100] (15.6-16.8 mrad) the engine's arg R agrees with the
+   solver's within 0.03 rad while arg R sweeps by about 3.2 rad; the reference planes agree to
+   0.001 A (one-parameter fit, -0.0003 +- 0.0009 A) (MEASURED_HERE, S5 6.2; E8-4, E8-5)."
+4. "Amplitude: at the production pixel 0.13 A the engine's |R| is 2-5 % below the solver's near the
+   peak. Two causes were identified (E8, MEASURED_HERE at 16.2 mrad): the engine's band limit at
+   0.13 A (-2.5 % in |R|, -0.027 rad; removed by refining the pixel) and the along-beam couplings,
+   which the engine includes and the solver's row of rods does not (-3.4 % in |R|, -0.021 rad once
+   converged). With the solver's physics (potential averaged along the beam) the engine converges to
+   the solver within 0.2 % in |R| and 0.002 rad at 16.2 mrad, and agrees within 1.1 % and 0.021 rad
+   at 12.0, 15.8, 16.0, 16.4, 21.0 mrad ([100]) and 15.1, 17.6 mrad ([110]) at a 0.075 A pixel."
+5. "In a laterally uniform (rung-2) potential the engine's Bragg-case amplitude at 0.13 A is right
+   to 0.4 %, but its phase is 0.03 rad low, an error that falls as dx^2 (E8-11)."
+6. "Not validated by this comparison: the size of the along-beam (higher-Laue-zone) couplings (the
+   engine's -3.4 % is about three times the solver's truncated-disk estimate), the in-plane sign
+   convention, steps and finite features, thermal and absorption models other than proportional
+   r = 0.1, other reflections and larger angles, and the r = 0 limit (no semi-infinite reference)."
+7. "The validated engine is the atomic path of commits `148e4f6` to `a1ef2a0`; HEAD `d3de34a`
+   reproduces the 16.2 mrad exit column to 6.9e-08 (E8-10)."
+
+Not to be quoted: "the engine reproduces the solver's complex R within the declared tolerance at 22
+of 23 angles" as an amplitude validation (M2); "about 3 % in |R| remains unexplained" (M3); "both
+codes omit HOLZ couplings" (M1); "no convention bug" without the normal-direction qualifier (M4).
+
+## 12. Verified as correct (E8 recomputation or reading)
+
+* Provenance: upstream commit, clean clone, 35/35 source files, patch content (output only plus the
+  documented electron switch), executable hashes, compiler record (E8-1).
+* Physics inputs: relativistic K and gamma (-4.945e-06, -1.128e-06), the DT Si row and its MIP
+  13.9144 V, the proportional absorption `sap` = r model, static lattice, the solver's potential scale
+  gamma 4 pi f/Omega (reproduced to 7e-12 by E8's model of the solver's slicing) (E8-1, E8-2).
+* Convention: S5's RK4 numbers (9.61e-05/0.376 and 5.10e-04/1.707) reproduced by an independent
+  method (9.59e-05/0.376, 5.09e-04/1.707); arg R(s_top) at 16.0 mrad +2.6930/+2.0725 (E8-2).
+* All 36 solver cases: R at the top-layer nuclei (5.9e-14), the approach A/B agreement (2.18e-05,
+  1.26e-05), dz and rod sensitivities, the phi = +-45 deg symmetry (2.15e-09), the flux bound
+  (1.000000), the CC = a failure (2.57), the r = 0 slab dependence (468 and 469 of 501 angles) (E8-3).
+* Engine read-out: S5's stored R reproduced by an independent read-out to 1.4e-03 ([100]) and
+  1.8e-03 ([110]); 22/23 and 15/15 within S5's tolerance; the 21.0 mrad failure; the conjugation
+  medians 0.0080/0.1670 and 0.0082/0.1209 (E8-4).
+* Curve level: solver fine-grid peak 16.1571 mrad, |R|^2 0.07977, FWHM 0.6064 (S5 0.6065) mrad,
+  unwrapped sweep +3.198 rad from 15.50 to 16.90 mrad; engine peak shift +0.0180 mrad (E8-6).
+* H2 cross-check: H2's stored plateaus converted to R at the top layer: 0.07327/-2.9713,
+  0.00186/+0.7537, 0.79341/-2.9991, as S5 (E8-8).
+* Engine version consistency across S5's runs (E8-7, E8-7b) and the regression of HEAD (E8-10).
+* S5's code locators checked while reading (SECTION_READ): F2 (`bulkm.f90:21-24`,
+  `scpot.f90:159-161`), F5 (`trmatg.f90:24-50`, `surf.f90:64-73`), F6 (`surf.f90:88-107`), F7
+  (`bulk.f90:126-140`), F8 (`surfio.f90:81-89`), F9 (`bulkio.f90`, ns = int(CC/dz) + 1, dz = CC/ns),
+  F10 (`surf.f90:109-118`; the flux normalisation |f_i0|^2 Gamma_0/Re Gamma_i is confirmed by the
+  flux bound in E8-3), F11 (`asf.f90:229, 329, 415-430`), F12 (`scpot.f90:46-50`), F13
+  (`scpot.f90:25, 37-38, 53`), F15 (`scpot.f90:145-151`).
+* S5's committed tool reproduces its saved report output line for line apart from the run time
+  (E8-12): every number of S5's sections 3-9 that E8 checked is printed by a committed script.

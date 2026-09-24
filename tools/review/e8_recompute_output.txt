@@ -1,4 +1,4 @@
-E8 recompute; repository HEAD 88f2200; sections [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+E8 recompute; repository HEAD 6ff32b5; sections [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 ====================================================================================================
 E8-1. Provenance of the solver build and of the patch (REPRODUCED file checks)
@@ -101,6 +101,7 @@ E8-3. Solver R at the top-layer nuclei recomputed from amp.txt and the inputs (o
   fine_a100_N0_r010               45.0    2.0366     6.7187    4.6822   (-0.50,+0.00)        1  300  0.094619  0.0e+00
   chk_a100_N6_A4_cc_a             45.0    4.7520     9.4342    4.6822   (-0.50,+0.00)       13  300  96.602560  0.0e+00
   CHECK PASS S5's stored R_layer equals E8's own conversion of amp.txt: 5.9e-14
+  every layer of the 90-layer slab (and the bulk units) maps onto itself under the two-fold rotation about the normal (fractional positions 0 or 1/2 only): True; distinct in-plane positions [(0.0, 0.0), (0.0, 0.5), (0.5, 0.0), (0.5, 0.5)]
   largest reflected flux (all cases except the CC = a failure case): 1.000000
   CC = a case: max |R|^2 2.57, max flux 96.60 (unphysical, > 1)
   chk_a100_N6_A: largest |Gamma| of an evanescent rod 12.74-13.55 rad/A over the angles; growth exp(|Gamma| CC) across CC = a/2 (2.7155 A): 1.1e+15 to 9.6e+15; across CC = a: 1.1e+30 to 9.3e+31; 1/eps = 4.5e+15
@@ -246,12 +247,44 @@ E8-7. Engine version of S5's runs: commits recorded per run and the atomic-path 
   cell.py:build_reflection_cell: identical at 148e4f6, 2a3a999, 2da0216, 64d740b, a1ef2a0, a84b4b3: True
   CHECK PASS atomic-path functions identical across every engine commit S5 used: propagate_slices, _RealisedAtomic, propagators, sheet beam, band mask, cell builder
   16.2 mrad: main run (148e4f6, dirty True) and repeat (2a3a999, dirty True): stored exit columns identical: True; first-pass r_top equal to the main run's: True
+  engine.py:propagate_slices: identical at a1ef2a0 and d3de34a (E8's engine runs): True
+  engine.py:run_realisation: identical at a1ef2a0 and d3de34a (E8's engine runs): False
+  engine.py:reflection_setup: identical at a1ef2a0 and d3de34a (E8's engine runs): False
+  potentials.py:_RealisedAtomic: identical at a1ef2a0 and d3de34a (E8's engine runs): False
+  potentials.py:AtomicPotential: identical at a1ef2a0 and d3de34a (E8's engine runs): True
+  potentials.py:absorber_profile_V: identical at a1ef2a0 and d3de34a (E8's engine runs): True
+  propagator.py:propagator_kernel: identical at a1ef2a0 and d3de34a (E8's engine runs): True
+  illumination.py:sheet_beam_wave: identical at a1ef2a0 and d3de34a (E8's engine runs): False
+  grid.py:band_limit_mask: identical at a1ef2a0 and d3de34a (E8's engine runs): True
+  si001.py:build_si001_terraces: identical at a1ef2a0 and d3de34a (E8's engine runs): False
+  reflection_holo/structure between a84b4b3 and a1ef2a0: unchanged
   engine.py:run_realisation at 148e4f6: 90 lines, sha256 6badb6592011
   engine.py:run_realisation at 2a3a999: 90 lines, sha256 6badb6592011
   engine.py:run_realisation at 2da0216: 90 lines, sha256 6badb6592011
   engine.py:run_realisation at 64d740b: 90 lines, sha256 6badb6592011
   engine.py:run_realisation at a1ef2a0: 90 lines, sha256 6badb6592011
   engine.py:run_realisation at a84b4b3: 90 lines, sha256 6badb6592011
+
+====================================================================================================
+E8-7b. Git history of the S5 tool: tolerance block and engine set-up across the snapshots
+====================================================================================================
+  242b566 2026-09-23 22:52:30 UTC: tolerance block identical to the first: True; engine results file updated 2026-09-23T22:47:50Z; set-up hashes {'engine_flat_strip': '10a69922', 'engine_readout': '881df930', 'DoyleTurnerPotential': '38c33531'}
+  2a3a999 2026-09-23 23:13:58 UTC: tolerance block identical to the first: True; engine results file updated 2026-09-23T23:12:49Z; set-up hashes {'engine_flat_strip': '10a69922', 'engine_readout': 'f279933b', 'DoyleTurnerPotential': '38c33531'}
+  64d740b 2026-09-23 23:42:28 UTC: tolerance block identical to the first: True; engine results file updated 2026-09-23T23:42:24Z; set-up hashes {'engine_flat_strip': '9cf86d61', 'engine_readout': 'f279933b', 'DoyleTurnerPotential': '38c33531'}
+  2da0216 2026-09-23 23:51:46 UTC: tolerance block identical to the first: True; engine results file updated 2026-09-23T23:50:53Z; set-up hashes {'engine_flat_strip': '9cf86d61', 'engine_readout': 'f279933b', 'DoyleTurnerPotential': '38c33531'}
+  db81b59 2026-09-24 00:22:52 UTC: tolerance block identical to the first: True; engine results file updated 2026-09-24T00:22:36Z; set-up hashes {'engine_flat_strip': '9cf86d61', 'engine_readout': 'f279933b', 'DoyleTurnerPotential': '38c33531'}
+  872e949 2026-09-24 00:51:45 UTC: tolerance block identical to the first: True; engine results file updated 2026-09-24T00:48:41Z; set-up hashes {'engine_flat_strip': '9cf86d61', 'engine_readout': 'f279933b', 'DoyleTurnerPotential': '38c33531'}
+  first tolerance block:
+    TOL_REL = 0.05
+    TOL_ABS = 0.005
+    TOL_SPREAD_MULT = 2.0
+    # Curve level ([100] (0,0,8) peak; both curves sampled at the SAME engine angles, peak from a parabola
+    # through the three highest points): peak angle, peak |R|^2 (relative), FWHM (relative), and the
+    # phase sweep across the peak arg R(theta_pk + w) - arg R(theta_pk - w), w = half the solver FWHM.
+    TOL_PEAK_ANGLE_MRAD = 0.03
+    TOL_PEAK_I_REL = 0.10
+    TOL_FWHM_REL = 0.10
+    TOL_SWEEP_RAD = 0.10
 
 ====================================================================================================
 E8-8. H2's stored flat-strip plateaus (Kirkland engine) converted to R at the top-layer nuclei
@@ -264,10 +297,13 @@ E8-8. H2's stored flat-strip plateaus (Kirkland engine) converted to R at the to
 ====================================================================================================
 E8-9. Incident sheet-beam amplitude at the surface plane in the read-out window (vacuum propagation of the launched wave, no crystal; own 1D FFT with the exact kernel and 2/3 band)
 ====================================================================================================
+  eng_a100_dt_r010 12.0 mrad: the window's last ray left the sheet 8.00 A below its top edge (sheet height 53.02 A)
   eng_a100_dt_r010 12.0 mrad: window 2500-3751 A after first contact; incident amplitude / ideal plane wave at x_s: mean 1.0222 (arg +0.0055), range 0.8922-1.1728
      window mean |R|^2 plain 0.03950, incident-normalised 0.03786 (ratio -0.0209 in |R|); 250 A bin spread plain 0.0063, normalised 0.0165
+  eng_a100_dt_r010 16.2 mrad: the window's last ray left the sheet 11.15 A below its top edge (sheet height 71.92 A)
   eng_a100_dt_r010 16.2 mrad: window 2500-3751 A after first contact; incident amplitude / ideal plane wave at x_s: mean 0.9950 (arg +0.0075), range 0.8923-1.0992
      window mean |R|^2 plain 0.07190, incident-normalised 0.07256 (ratio +0.0046 in |R|); 250 A bin spread plain 0.0062, normalised 0.0126
+  eng_a100_dt_r010 21.0 mrad: the window's last ray left the sheet 14.75 A below its top edge (sheet height 93.56 A)
   eng_a100_dt_r010 21.0 mrad: window 2500-3752 A after first contact; incident amplitude / ideal plane wave at x_s: mean 1.0017 (arg -0.0035), range 0.9228-1.0846
      window mean |R|^2 plain 0.00737, incident-normalised 0.00734 (ratio -0.0020 in |R|); 250 A bin spread plain 0.0013, normalised 0.0011
 
@@ -284,6 +320,7 @@ E8-10. Own engine runs at 16.2 mrad [100] (DT, r = 0.1, static): regression agai
   pixel 0.0990 A: band radius 3.368 1/A; ZOLZ rods (h,-h) inside up to |h| = 9; rods that still carry the (0,0,8) normal component (8/a = 1.4731): |h| <= 8; first along-beam ring inside the band: False
   pixel 0.0742 A: band radius 4.491 1/A; ZOLZ rods (h,-h) inside up to |h| = 12; rods that still carry the (0,0,8) normal component (8/a = 1.4731): |h| <= 11; first along-beam ring inside the band: True
   pixel 0.0646 A: band radius 5.158 1/A; ZOLZ rods (h,-h) inside up to |h| = 14; rods that still carry the (0,0,8) normal component (8/a = 1.4731): |h| <= 13; first along-beam ring inside the band: True
+  peak RSS of the E8 engine subprocesses: 324 to 345 MB
   run                              grid          built  run_s  |R|^2(window) arg     |R|/|R_N10|-1  d arg     plateau bins |R| (2500..3750 A, 250 A)
   head_dt_full_p013_t16.2          1764x42x3406   3397     43  0.07190  -2.7329  -0.0465       -0.0276   0.2620 0.2708 0.2654 0.2742 0.2682
   head_dt_full_p010_t16.2          2304x56x3406   3397     60  0.07567  -2.7283  -0.0218       -0.0231   0.2691 0.2781 0.2723 0.2805 0.2754
