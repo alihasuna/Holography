@@ -2,6 +2,9 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+# a `venv` SYMLINK at the root (e.g. a git worktree pointing at the main checkout's venv, so
+# that the Alliance-kit tests run there; `venv/` matches directories only)
+/venv
 *.h5
 *.hdf5
 *.npz
