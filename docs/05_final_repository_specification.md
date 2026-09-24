@@ -416,6 +416,15 @@ sub-pixel R2 shifts; terrace segmentation with uncertainties and the height sens
 convergence and `V0` (section 8); an experimental data loader; and configuration fields for
 PROJECT_INPUT items 2, 6, 10, 11 (miscut, terrace widths, terrace types), 16, 17, 19, 21 and 22.
 
+### 9.2 Phase 4 status (2026-09-24)
+
+Phase 4 added: the Alliance cluster kit (reports H1, H3, H4, H6, H4b; run sheet pinned to a1ef2a0),
+the realistic-supercell sizing (H2, H5, H7; `tools/hpc/supercell_sizing.py`), rung 2 of the validation
+ladder (P2, E7, E1, A6), the independent-solver comparison (S5, E8), Si(001) reconstructions and the
+sourced thermal model (E2, A5), convergent illumination and surface-plasmon partial coherence (E3, A5),
+and the literature for absorption, thermal displacement, surfaces and ion milling (L6, L7, E6, B4). The
+item-by-item status toward a citable result is kept in `docs/08_paper_readiness.md`.
+
 ## 10. Literature position (revision 3: `docs/02_literature_position.md`)
 
 * Starting point: P01 is known from its abstract only (Pt(111), two regions of the reflection image
