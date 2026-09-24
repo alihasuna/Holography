@@ -16,8 +16,9 @@ test_rung2_bragg.py, docs/agent_reports/E1_engine_wave2a.md) pass. Rung 3 has pa
 continuum null tests and the atomistic MOVED-beam translation; the atomistic FIXED-beam translation
 check that docs/05 4.4 item 3 requires before any step-phase run has NOT passed (audit A6 S-1). The
 abTEM cross-check is NOT RUN. The flat-surface rocking-curve comparison with an independent
-dynamical solver was RUN (reports S5, E8): phases within about 0.03 rad with the solver's own
-potential, not like-for-like along the beam and no amplitude validation (E8 M1, M2). The label is
+dynamical solver was RUN (reports S5, E8): with the solver's own potential the phase differs by a
+median of 0.014 rad ([100]) and 0.017 rad ([110]), up to 0.075 rad at weakly reflecting angles
+(tools/plots/phase4_figures_solver_output.txt), not like-for-like along the beam and no amplitude validation (E8 M1, M2). The label is
 copied into every ExitWave.metadata["validation_status"].
 
 No function default stands in for a PROJECT_INPUT: MultisliceParams, SheetBeam, the potentials and
@@ -59,7 +60,8 @@ VALIDATION_STATUS = (
     "the abTEM cross-check (transmission and reflection-like configurations) was NOT RUN; the "
     "flat-surface rocking-curve comparison with an independent dynamical solver (sim-trhepd-rheed, "
     "flat Si(001), [100] and [110], TEST_ONLY r = 0.1; reports S5, E8) was RUN: with the solver's "
-    "own potential the phases agree within about 0.03 rad over the rocking range, but the "
+    "own potential the phase differs by a median of 0.014 rad ([100]) and 0.017 rad ([110]), up to "
+    "0.075 rad at weakly reflecting angles (tools/plots/phase4_figures_solver_output.txt), but the "
     "comparison is not like-for-like along the beam and its amplitude tolerance has no power "
     "(E8 M1, M2): not an amplitude validation")
 PLANE_TEXT = "exit plane z = L_z (no further propagation)"

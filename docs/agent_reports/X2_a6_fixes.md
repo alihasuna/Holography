@@ -7,7 +7,7 @@ pushed. Base: HEAD b6e06bf (snapshot commits of X1/X2 in progress; X1 edits E2/E
 parallel, which were not touched here). Machine shared (4 cores); load averages are quoted with
 the runs. `<scratch>` = the session scratchpad (not in the repository).
 
-Status: IN PROGRESS.
+Status: FINAL (see the end of this report).
 
 ## Baseline taken before any edit
 
@@ -368,3 +368,65 @@ tests/hpc was not rerun separately (its 117 tests are inside the clean full-suit
 standalone run above had no error). The 120 s wall-time smoke test passed in every run (no rerun
 alone needed). Skips: the two optional L10k proofs (run separately, N-1 section), optional R2-B
 (run separately below), shellcheck absent.
+
+## Other runs (verbatim)
+
+R2-A after n9 (reference at K = 2 pi f) and the optional R2-B with the n2 assertion:
+
+```
+RH_RUNG2_R2B=1 venv/bin/python -m pytest -q -s -p no:cacheprovider tests/forward/test_rung2_bragg.py   (04:33:20-04:39:24, load 1.2)
+R2-A r = 0.1, fresnel: 18 bins |eta| <= 3.0, max |dR| = 4.557e-04 (T_A = 0.0015), max |d arg| = 1.906e-03 rad
+R2-A r = 0.1, exact: 18 bins |eta| <= 3.0, max |dR| = 4.618e-04 (T_A = 0.0015), max |d arg| = 1.889e-03 rad
+R2-A r = 0.05, fresnel: 24 bins |eta| <= 3.0, max |dR| = 5.172e-04 (T_A = 0.0015), max |d arg| = 1.750e-03 rad
+R2-A r = 0.05, exact: 24 bins |eta| <= 3.0, max |dR| = 5.263e-04 (T_A = 0.0015), max |d arg| = 1.728e-03 rad
+R2-A (b), r = 0.1, |eta| <= 0.9 (6 bins): measured arg(r_X/r_F) in [-1.181e-03, -9.489e-04] rad, predicted [-1.201e-03, -9.996e-04] rad, max |measured - predicted| = 5.074e-05 rad (T = 0.0002)
+R2-A (c) guard, r = 0.1, Fresnel, 18 bins: per-bin |dR(0.05)|/|dR(0.025)| from 3.05 to 6.50 (>= 2.0); max |dR| 1.454e-03 (dx 0.05) and 4.557e-04 (dx 0.025), ratio of maxima 3.19 (log2 1.67, not an order)
+R2-B (optional, qualitative) r = 0: 7 bins |eta| <= 0.5, max |dR| = 1.120e-02 (T_B = 0.03); arg R_ref from +1.2212 to +2.0823 rad
+  fresnel r-model exact, dx 0.02500 A, nx 38444, 31612 slices, x_s 265.000 A, run 236.1 s
+8 passed in 363.55s (0:06:03)
+```
+
+Every printed number equals E1's and A6's (the engine's lambda and P2's k agree, so n9 changes
+nothing numerically; it removes the coupling). R2-B's x_s = 265 A is on a pixel centre (asserted now).
+
+`tools/hpc/review_h5_recompute.py` report mode after the signature edit (legacy beam passed
+explicitly): `8/13 checks pass; runtime 46 s`, exit 1, the same five by-design failures E1 listed
+(`replica_vs_engine_tfix_bragg_abs0_L0, replica_vs_engine_tfix_off20_abs10_L5k,
+replica_vs_engine_step_w32_bragg_abs10_L5k, V_row_built, Wmin_row_built`); the whole output equals
+E1's saved run (`<scratch>/h5_report.txt`) except the runtime and load lines (diff empty).
+
+## Files (X2)
+
+Engine: reflection_holo/forward/multislice/engine.py (status texts), potentials.py (docstrings B-1,
+n1). Pipeline: reflection_holo/pipeline/__main__.py (engine code identity in the dry-run report).
+Tests: tests/forward/null_test_cases.py, test_null_study_readout.py, test_atomistic_translation.py,
+ladder_cases.py, test_rung2_bragg.py, test_potential_blocked_exponentials.py (docstring),
+smoke_case.py and test_smoke_atomistic.py (docstrings); new tests/forward/
+test_null_readout_known_answer.py; tests/hpc/test_kit_gpu_mem_from_dry_run.py. Study:
+scripts/hpc/null_test_study/run_study.py, study.yaml, study_depth100.yaml,
+study_depth100_estimate_numpy4.txt, README.md. Kit: scripts/hpc/alliance/kit.py, submit.sh,
+README_ALLIANCE.md (K-1/K-2) and gpu_check.py (signature only, see N-1). Tools:
+tools/hpc/supercell_sizing.py (Z-1, study-point call), supercell_sizing_output.txt,
+review_h5_recompute.py (signature only). Docs: scripts/hpc/README_HPC.md section 6,
+scripts/torus/run_torus_multislice.py (docstring). This report. Not touched: X1's files
+(structure/reconstruction.py, pipeline/config.py, optics/, pipeline/convergence.py, configs), docs/
+other than this report. Nothing committed or pushed; no personal data anywhere. Largest measured
+process: the study_depth100 estimate, peak RSS 1490 MB (watchdog 2800 MB); the known-answer runs
+use grids of at most 22047 x 1 (complex128).
+
+## NOT RUN
+
+* Nothing on a GPU: the atomistic study_depth100 points themselves (24 points; HPC work, ~301
+  GPU-s by the ASSUMPTION model) were not run; the fixed-beam atomistic check of docs/05 4.4 item 3
+  therefore remains NOT PASSED. The lit-end limit and the amplitude floor are checked on the
+  continuum known-answer case only (complex128, Fresnel); their behaviour on atomistic complex64
+  exit waves (exact propagator, [110] many-beam, [100] four-beam) is untested.
+* The lit-end margin radius lambda L_z / tan(theta) is DERIVED_HERE and checked on five fixed-beam
+  cases (L 6000 A as run by A6 and with H 3 A lower, r 0.1; the study beam at L 6377 A, r 0.1, and
+  L 11377 A, r 0.1 and 0.05); not checked at 12 or 20 mrad.
+* scripts/hpc/alliance/README_ALLIANCE.md:15 stale status line (declined, scope); n6, n7, n8
+  declined (table above).
+* tools/hpc/review_h5_recompute.py `--rerun` and `--memtime` modes (only its report mode was run).
+* The kit on a real cluster (emulated only, tests/hpc); shellcheck absent (5 skips).
+
+Status: FINAL (2026-09-24, 04:41 UTC).
