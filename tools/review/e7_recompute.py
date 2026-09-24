@@ -552,6 +552,14 @@ def wrapd(a):
 
 def sec4(p3):
     hr("4. Exact R(theta) at x_s (cosine maximum at x_s): methods A, B, C; P2's table")
+    Kc0 = K_of(TH_C)
+    for r in (0.0, 0.05, 0.1):
+        Ra0 = R_cf(Kc0, V0_ENGINE, VG_ENGINE, G8, r)
+        errs = [abs(R_floquet(Kc0, V0_ENGINE, [(G8, VG_ENGINE, 0.0)], r, 1 / G8, n) - Ra0)
+                for n in (64, 128, 256, 512)]
+        print(f"Magnus convergence at the centre, r = {r}: |R_B(n) - R_A| for n = 64, 128, 256, 512 "
+              f"steps per period: " + ", ".join(f"{v:.2e}" for v in errs) +
+              f" (ratios {errs[0] / errs[1]:.1f}, {errs[1] / errs[2]:.1f}, {errs[2] / errs[3]:.1f})")
     K = K_of_eta(ETAS)
     worst = 0.0
     for r in (0.0, 0.05, 0.1):
@@ -595,10 +603,16 @@ def sec4(p3):
         Rv = R_exact(th, r)
         I = np.abs(Rv) ** 2
         half = I.max() / 2
+        if r > 0:      # the maximum itself refined (the plateau is flat at 1 for r = 0)
+            i = int(np.argmax(I))
+            tm = optimize.minimize_scalar(lambda t: -abs(R_exact(t, r)) ** 2,
+                                          bracket=(th[i - 5], th[i], th[i + 5]), tol=1e-12).x
+            half = abs(R_exact(tm, r)) ** 2 / 2
         above = np.nonzero(I >= half)[0]
         i0, i1 = above[0], above[-1]
-        t0 = np.interp(half, [I[i0 - 1], I[i0]], [th[i0 - 1], th[i0]])
-        t1 = np.interp(half, [I[i1 + 1], I[i1]], [th[i1 + 1], th[i1]])
+        gfun = lambda t: abs(R_exact(t, r)) ** 2 - half                   # noqa: E731
+        t0 = optimize.brentq(gfun, th[i0 - 1], th[i0], xtol=1e-15)
+        t1 = optimize.brentq(gfun, th[i1], th[i1 + 1], xtol=1e-15)
         a0, a1 = np.angle(R_exact(t0, r)), np.angle(R_exact(t1, r))
         print(f"r = {r:4.2f}: |R|^2 FWHM {1e6 * (t1 - t0):.2f} urad centred {1e3 * (t0 + t1) / 2:.5f} mrad; "
               f"arg R at the FWHM edges {a0:+.4f} -> {a1:+.4f} (sweep {a1 - a0:.4f} rad)")
@@ -1027,6 +1041,10 @@ def sec9():
         ("F_r005", dict(r=0.05, D=150.0, Ze=10000.0, dx=0.025, nx=21600, propagator="fresnel")),
         ("F_r005_dx05", dict(r=0.05, D=150.0, Ze=10000.0, dx=0.05, nx=10800,
                              propagator="fresnel")),
+        ("F_r005_dx0125", dict(r=0.05, D=150.0, Ze=10000.0, dx=0.0125, nx=43200,
+                               propagator="fresnel")),
+        ("F_r005_Ze20k", dict(r=0.05, D=150.0, Ze=20000.0, dx=0.025, nx=28000,
+                              propagator="fresnel")),
         ("WRONG_cellavg", dict(r=0.1, D=100.0, Ze=5000.0, dx=0.025, nx=16384,
                                propagator="fresnel", cell_average=True)),
         ("WRONG_V0+5mV", dict(r=0.1, D=100.0, Ze=5000.0, dx=0.025, nx=16384,
