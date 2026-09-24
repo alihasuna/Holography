@@ -214,7 +214,8 @@ about 110 wraps at (4,-4,4). Consequences:
   surface larger than the illumination height plus `L_z tan(theta)`; illumination confined to the vacuum
   band and launched upstream of the crystal; cell length along the beam set by the footprint
   `H/tan(theta)` (889 A for `H = 20 A` at 22.5 mrad) and by the dynamical build-up length; an allowed
-  reflection; absorption from a sourced optical potential; validation against a surface-parallel
+  reflection; absorption as in docs/05 section 4.3 item 7 (frozen phonons or a Bird-King factor on a
+  Debye-Waller-smeared lattice, never both; electronic losses bracketed, model_assumptions B6); validation against a surface-parallel
   dynamical reflection solver (Ichimiya-type, e.g. `sim-trhepd-rheed`) or a Bragg-case Bloch-wave
   solution, in the flat-surface limit, before any step is simulated.
 

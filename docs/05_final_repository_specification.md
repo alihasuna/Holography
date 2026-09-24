@@ -152,9 +152,10 @@ Requirements independent of the engine (numbers DERIVED_HERE, source-map rows SM
    `V0` (source-map row SM17). The projected atomic potential (a Kirkland- or Peng-type
    parameterisation, its Fourier-space construction and sub-slice sampling) is a sourced physical input
    and the largest part of any custom kernel, not boilerplate.
-7. Absorption via a sourced optical potential (the warning attached to [B15] in the instruction file:
-   never a tuned parameter); frozen phonons optional, with intensity averaging after hologram formation
-   and recorded seeds.
+7. Absorption (the warning attached to [B15] in the instruction file: never a tuned parameter): thermal
+   diffuse scattering from frozen phonons OR from a Bird-King absorptive factor on a Debye-Waller-smeared
+   static lattice, never both; electronic losses as in model_assumptions B6 (a bracket until item 21 is
+   measured); frozen phonons with intensity averaging after hologram formation and recorded seeds.
 8. Output: the wave on a DECLARED plane (exit plane of the cell, no hidden propagation), per realisation,
    complex64 or complex128 stated, with axes, pixel sizes and tilt actually used stored in the file.
 9. Exact propagator preferred (the custom kernel provides one; released abTEM 1.0.10 has only the
@@ -345,7 +346,8 @@ code audit A2 (state 7874c85), re-audit A2b (state d35b751), verification A2c of
   exact a/4 and a/2 heights, periodic staircase continuity, screw, glide or translation relation found
   on the built atoms, right-handed frame) and records per a/4 step whether B4 applies (SM26); patterned
   mesas and trenches as height profiles with both strips. The 2x1 reconstruction raises
-  NotImplementedError (no source read); overlayer and pattern geometry are required PROJECT_INPUT
+  NotImplementedError (source now read: Ramstad et al. 1995 Tables III-IV, L7/E6; implementation in
+  report E2); overlayer and pattern geometry are required PROJECT_INPUT
   arguments; atomistic mesas, trenches and overlayer are not built.
 * Section 5, synthetic data only: `optics/` (hologram intensity, R1/R2/R3 references, ensemble average
   after squaring, Poisson noise with seed) and `reconstruction/` (carrier located on an empty or

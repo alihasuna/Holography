@@ -58,9 +58,14 @@ from an abstract and 28 from the title only (L4 sections 2 and 3). Result:
   90 nm for no-loss and about 45 nm for one-plasmon-loss electrons) and Tanishiro, Hyomen Kagaku 24, 166
   (2003) (abstract, English figure captions and reference list read: reflection holograms "produced by
   overlapping of two REM images using an electron biprism"; that both waves are reflected is DERIVED_HERE
-  from this caption, L4 5.1). The operating
-  voltage (about 200 kV) is inferred from undecodable Japanese text and is UNVERIFIED. Their subject is
-  interferometry, energy filtering and coherence, not height measurement.
+  from this caption, L4 5.1). Revision 4 (reports L7, E6): the body of Tanishiro 2003 is now read: 200 kV,
+  Si(111)7x7, 0.8 deg glancing angle, (444) reflection (p. 167, SECTION_READ); a step phase of 7 pi is reported
+  (p. 170), which the geometric relation 2 k sin(theta) h reproduces as 6.983 pi for one bilayer
+  (`tools/review/e6_recompute.py`); a mean of 1.44 surface-plasmon excitations per reflection (p. 167), a
+  decay distance of about 6 nm (p. 170) and one-plasmon-loss fringes with visibility about 0.1 (pp. 170-171):
+  loss electrons remain partly coherent. Their main subject is interferometry, energy filtering and
+  coherence; the 7 pi step phase is the only published step phase on a silicon surface found here, and it
+  is on Si(111), not Si(001).
 * Herring, Proc. MSA 53, 116 (1995) proposes reflection diffracted-beam interferometry; the abstract read
   does not show that a reflection interferogram was recorded.
 * Nothing after 2003, and nothing on Si(001) or on ion-milled surfaces, was found in the citation graph
@@ -68,7 +73,14 @@ from an abstract and 28 from the title only (L4 sections 2 and 3). Result:
   PMC, arXiv and the Crossref top-100 lists recorded in L4 section 4 (the OpenAlex topic queries did not
   run). The nine citing works after 2003 are reviews, transmission holography, one REM encyclopedia
   entry and three unrelated papers (four of the nine classified from the title only, UNVERIFIED). This is an absence in the databases and queries named, not proof of
-  absence; the Japanese databases are the most likely place for more work by the Tokyo group.
+  absence. Revision 4: the Japanese databases (J-STAGE, CiNii Research, NDL) were searched by L7 (section 3):
+  the Osakabe 1989/1990 Physical Society of Japan abstracts are open (the reference is set on a defect-free
+  region, p. 451; Delta_phi = 2 K_perp Delta_z, p. 451; Pt(111) 2.3 A step about 0.5 lambda, p. 452;
+  SECTION_READ, re-read by E6); Takeguchi 1990 is J. Electron Microsc. 39(4), 269-272 (CiNii/NDL, B4);
+  Osakabe's 1995 thesis (chapter 4, reflection holography) can be ordered as an NDL remote copy; none of
+  P01, P02, P03, P08, Suzuki 2001, Osakabe 1993 or Herring 1995 has an open copy. No Si(001) step phase was
+  found in the sources searched; the closed reflection-holography papers, the theses and the book chapters
+  were not read, so this is not a claim that none has been reported (E6 M5).
 
 ## Reflection ptychography
 

@@ -1,6 +1,6 @@
 # Reading plan for the reference library of the instruction file
 
-Status: 2026-09-22, revision 2 (after Phase 1: steps 1 to 3 of the order of work are done; see
+Status: 2026-09-24, revision 3 (Phase 4: upload items 23-27 added and Takeguchi 1990 resolved, reports L6, L7, B4, E6); 2026-09-22, revision 2 (after Phase 1: steps 1 to 3 of the order of work are done; see
 "Status after Phase 1" at the end). Every source below is in `docs/references.bib` under the same ID. "Access" is the
 expected route once the environment's network access is Full; paywalled items need a PDF or chapter
 uploaded by Ali (instruction file section 1.6: a legitimately supplied chapter or author manuscript).
@@ -120,10 +120,24 @@ doi:10.1143/jjap.40.2527 (the post-1993 reflection interferometry paper with the
 flagged free by OpenAlex, not retrievable here); 16 Osakabe et al., Ultramicroscopy 48, 483 (1993) and
 Osakabe, Surf. Sci. 298, 345 (1993); 17 Herring, Proc. MSA 53, 116 (1995); 18 Takeguchi, Harada and
 Shimizu, J. Electron Microsc. (1990), doi:10.1093/oxfordjournals.jmicro.a050815 (per L4; the Crossref
-record lacks authors, volume and pages, so references.bib keeps TAKEGUCHI1990 UNVERIFIED); 19 the journal version
+record lacks authors, volume and pages; revision 3: now J. Electron Microsc. 39(4), 269-272 from the CiNii/NDL
+record, verified in B4); 19 the journal version
 of P49 (Comput. Phys. Commun. 296, 109029); 20 "Optik Suppl. 3, 77 (1987) p. 4", the prior art cited by
 the patent (unidentified; library request); 21 the printed Contents pages of B01, B02, B03, B04 and B08;
 22 optionally an OpenAlex API key to rerun the five OpenAlex topic queries that hit the rate limit.
 Later book uploads (not in the step-4 order): the locators of the book table above, including B09
 ch. 13, B03 ch. 58, 63, 65-66, B04 ch. 71, 74, 78, B11 ch. 4 and sec. 6.2, B13, B15, and the B08
 RHEED-routine appendix (one of App. A-D, pp. 470-500).
+
+Phase 4 additions (reports L6 section 8, L7 section 7, review E6; keys in `docs/references.bib`), in priority
+order for making the simulation citable: 23 Osakabe's 1995 thesis, chapter 4 (reflection holography;
+[OSAKABE1995THESIS], NDL remote copy); 24 Mendis, Ultramicroscopy 206 (2019) 112816 with the corrigendum
+Ultramicroscopy 212 (2020) 112957 ([MENDIS19], [MENDIS20C]; the Si plasmon mean free path behind the 0.65 V
+bracket of item 21); 25 Wu and Spiecker, Ultramicroscopy 176 (2017) 233-245 ([WUSPIECKER17]; Si mean inner
+potential 12.48 +- 0.22 V, body unread); upload 11 above (Kruse et al. 2006, [KRUSE06]) stays first for the
+mean inner potential; 26 Gajdardziska-Josifovska et al., Ultramicroscopy 50 (1993) 285-299 ([GAJDARDZISKA93]);
+27 Lehmpfuhl and Dowell, Acta Cryst. A 42 (1986) 569-577 ([LEHMPFUHLDOWELL86]; best lead for a high-energy
+Si rocking-curve benchmark); then items 6-13 of L6 section 8 (Peng et al. 1996 x2, Wang 1996 REM book
+chapters, B08 pp. 228-310 and 454-469, Radi 1970, Dudarev et al. 1995, Menadue 1972, Ichimiya 1985 and
+Horio and Ichimiya 1983, Flensburg and Stewart 1999). Tanishiro 2003 is now read (open on J-STAGE).
+None of items 1-4, 15-17 has an open copy (L7 section 3, including J-STAGE and CiNii).

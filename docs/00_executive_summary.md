@@ -84,8 +84,8 @@ a condenser-side biprism; it describes the prior art, P01 and an unidentified 19
 interference between reflected waves (a statement of the patent, UNVERIFIED for P01).
 The citation graph and the searches of report L4 found post-1993 reflection interferometry by one group
 only, the Tokyo Institute of Technology (Si(111)7x7, 2001 to 2003), and no electron reflection-mode
-ptychography; the Japanese databases were not searched, so this is an absence in the sources searched,
-not proof of absence (`docs/02_literature_position.md`).
+ptychography; the Japanese databases were searched in Phase 4 (report L7) without changing this, and it
+remains an absence in the sources searched, not proof of absence (`docs/02_literature_position.md`).
 
 ## What is needed from the laboratory
 
