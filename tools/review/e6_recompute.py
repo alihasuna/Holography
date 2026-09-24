@@ -335,6 +335,15 @@ for Vov in (10.0, 12.0):
            2 * kpo * h, "{:.3f}")
 for lab, h in (("a/4", A_B2 / 4), ("a/2", A_B2 / 2)):
     pr(f"geometric step phase 2 k sin(theta) h, {lab} (rad)  [L7: 10.98 / 21.95]", 2 * kp * h, "{:.3f}")
+kpo_iam = math.sqrt(kp**2 + 2 * k * sig * 13.903)
+pr("V_ov = 13.903 V (= engine V0): buried a/4 step, flat-topped overlayer 2 k'_perp h (rad)", 2 * kpo_iam * A_B2 / 4, "{:.4f}")
+pr("  same / pi  (the internal kinematic value 2 pi h/d_008 = 4 pi)", 2 * kpo_iam * A_B2 / 4 / math.pi, "{:.4f}")
+pr("a/4 step phase spread conformal (10.976) -> planarising V_ov = V0 (rad); in height (A)",
+   f"{2 * kpo_iam * A_B2 / 4 - 2 * kp * A_B2 / 4:.3f}; {(2 * kpo_iam * A_B2 / 4 - 2 * kp * A_B2 / 4) / (2 * kp):.4f}")
+pr("crystal-topography leverage 2 k_perp (rad per A of height)", 2 * kp, "{:.3f}")
+for ep in (16.7, 17.0):
+    pr(f"bulk-plasmon surface (begrenzungs) length v/omega_p at 200 keV, hbar omega_p = {ep} eV (nm)",
+       v200 / (ep * E / HBAR) * 1e9, "{:.2f}")
 pr("wrap period lambda/(2 sin theta) (A)", B200["lam"] / (2 * st), "{:.4f}")
 # Tanishiro 2003 consistency
 h111 = A_R1 / math.sqrt(3)

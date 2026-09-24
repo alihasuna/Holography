@@ -218,6 +218,14 @@ this section is printed by the tool's default (report) mode; the log below only 
   dz = 0.005 (A).
 - 22:41-22:43 UTC: main curves on the 0.02 mrad grid, 12-22 mrad (501 angles): `fine_a100_N6_r010`
   (21 s + 42 s), `fine_a110_N9_r010` (50 s + 91 s).
+- 22:52-23:00 UTC: solver at exactly the engine angles (N = 6 / 9, approach A), rod sensitivity at the
+  engine angles (N = 8, 10 at [100], N = 12 at [110], approach B), r = 0 curves (ML = 150, 300).
+- 23:10-23:16 UTC: a HOLZ test with every rod |g| <= 8/a on the 1 mrad grid was stopped after one
+  angle (about 10 min per angle with 101 rods on the loaded machine, load average 14-17) and replaced by
+  three angles with every rod |g| <= 6/a (61 rods) against the ZOLZ row |h| <= 3; solver at H2's angle
+  16.1347 mrad (cross-check of H2's stored plateaus).
+- 23:40 UTC: [110] orientation check (solver with the top-layer back-bonds perpendicular to the beam)
+  and the (0,0)-rod-only fine curve.
 
 ### 3.3 Convention, reference plane and units: one-beam test (REPRODUCED; tool report section 3)
 
