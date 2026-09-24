@@ -13,8 +13,9 @@ the code (as run_translation): expected = -(k_out - k_in).R and E_B = E_A exp(+i
     an amplitude bump centred at z_s = 7250 A peaks in the bin [7000, 7500);
   * a smooth Gaussian excess on B only: the bins and the convergence distance follow from the bin
     means of the known excess (tolerances 1e-2 as in the null-test criteria);
-  * no phase factor on B: every bin fails; the verdict is "not converged" (X2: converged_beyond_A
-    is then the end of the last included bin and `converged` is False; E1's code returned None);
+  * no phase factor on B: every bin fails; the verdict is "not converged": `converged` is False,
+    converged_beyond_A is None (E1's contract; X2 had returned the end of the last included bin
+    there, restored after audit A7-3) and that end is reported as last_examined_A;
   * X2 (audit A6 N-2): bins beyond the lit-end limit and bins below the amplitude floor are
     excluded from the verdict with their reason; a failing bin that is excluded does not decide it;
   * X2 (A6 N-1/N-3): the sheet beam (H, edge, gap) is required; study_depth100.yaml's beams light
@@ -102,6 +103,8 @@ def test_covariant_fields_give_zero_error_in_every_bin():
         assert q["n_px_A"] == q["n_px_B"] > 0
     assert r["converged_beyond_A"] == 0.0
     # X2: the bins ending beyond the lit-end limit are reported but excluded from the verdict
+    # (A7-3: last_examined_A is the end of the last included bin, also when converged)
+    assert r["last_examined_A"] == [q for q in r["rows"] if q["included"]][-1]["d_end_A"]
     lim = _lit_limit()
     assert r["lit_strip"]["lit_limit_A"] == pytest.approx(lim, abs=1e-6)
     for q in r["rows"]:
@@ -148,10 +151,10 @@ def test_local_excess_sets_the_convergence_distance():
 
 
 def test_unconverged_last_bin_gives_not_converged():
-    """E1 asserted `converged_beyond_A is None` here; X2 (A6 N-2, orchestrator: the definition must
-    not return None because of a single last bin) returns the first distance beyond which every
-    included bin passes, i.e. the end of the last included bin when that one fails, with
-    converged = False and no bin beyond."""
+    """E1 asserted `converged_beyond_A is None` here; X2 (A6 N-2) asserted instead that it equals
+    the end of the last included bin, with converged = False and no bin beyond. After audit A7-3
+    both hold, in two fields: converged_beyond_A is None (a number there always means converged)
+    and the end of the last included (failing) bin is last_examined_A."""
     eA = _ew(_flat, XS_A)
     eB = _ew(_flat, XS_B)                            # phase factor missing: every bin fails
     r = ntc.resolved_translation(eA, eB, _pair(3000.0, 3000.0), expected_rad=DELTA, **KW)
@@ -159,9 +162,18 @@ def test_unconverged_last_bin_gives_not_converged():
     inc = [q for q in r["rows"] if q["included"]]
     assert len(inc) > 5 and all(q["status"] == "fail" for q in inc)
     assert r["converged"] is False and r["n_bins_beyond"] == 0
-    assert r["converged_beyond_A"] == inc[-1]["d_end_A"]
+    assert r["converged_beyond_A"] is None                          # E1's contract (A7-3)
+    assert r["last_examined_A"] == inc[-1]["d_end_A"]               # X2's value, own field
+    assert inc[-1]["status"] == "fail" and r["last_bin"]["d_end_A"] >= r["last_examined_A"]
     assert r["verdict"].startswith("NOT converged")
     assert all(abs(q["err_rad"] + DELTA) < 1e-9 for q in r["rows"])   # err = 0 - Delta
+    # no bin included (the strip's lit-end limit lies before the later contact): not assessed,
+    # and neither distance field carries a number
+    rn = ntc.resolved_translation(eA, eB, _pair(3000.0, 3000.0, z_top=3500.0), expected_rad=DELTA,
+                                  **KW)
+    assert rn["n_bins"] > 0 and rn["n_included"] == 0 and rn["converged"] is False
+    assert rn["converged_beyond_A"] is None and rn["last_examined_A"] is None
+    assert rn["verdict"].startswith("no bin included")
 
 
 def test_excluded_last_bins_do_not_decide_the_verdict():
@@ -178,6 +190,8 @@ def test_excluded_last_bins_do_not_decide_the_verdict():
                        for q in bad)
     assert r["converged"] and r["converged_beyond_A"] == 0.0
     assert r["last_bin"]["status"] == "excluded"
+    inc = [q for q in r["rows"] if q["included"]]
+    assert r["last_examined_A"] == inc[-1]["d_end_A"] < r["last_bin"]["d_end_A"]
     r9 = ntc.resolved_translation(eA, eA, _pair(3000.0, 3000.0, z_top=9000.0), expected_rad=0.0,
                                   **KW)
     assert r9["lit_strip"]["lit_limit_A"] == pytest.approx(_lit_limit(9000.0), abs=1e-6)
@@ -201,7 +215,8 @@ def test_amplitude_floor_excludes_the_noise_floor_and_is_required():
     assert r["converged"] and r["converged_beyond_A"] == 0.0
     r0 = ntc.resolved_translation(eA, eB, _pair(3000.0, 3000.0), expected_rad=DELTA,
                                   **dict(KW, amp_floor_rel=0.0))
-    assert not r0["converged"] and r0["converged_beyond_A"] == low[-1]["d_end_A"]
+    assert not r0["converged"] and r0["converged_beyond_A"] is None      # A7-3
+    assert r0["last_examined_A"] == low[-1]["d_end_A"]
     kw = dict(KW)
     del kw["amp_floor_rel"]
     with pytest.raises(TypeError, match="amp_floor_rel"):

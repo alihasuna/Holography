@@ -370,13 +370,18 @@ def resolved_translation(ewA, ewB, pair, *, expected_rad, radius_per_A, x_cut_A,
       * |E_A| or |E_B| is below amp_floor_rel times the largest bin amplitude of the same exit wave
         (REQUIRED; an unlit or decaying tail near the noise floor has no meaningful ratio).
     Verdict over the included bins, each passing when |err| <= tol_phase_rad and
-    |amp - 1| <= tol_amp:
-      converged_beyond_A  the first distance d (from the later contact) beyond which every included
-                          bin passes: the end of the last failing included bin, or the start of the
-                          first included bin if none fails; None only when no bin is included;
-      n_bins_beyond       included bins starting at or after d (all pass);
-      converged           n_bins_beyond >= 1 (False when the last included bin fails: then d is
-                          the end of that bin)."""
+    |amp - 1| <= tol_amp. Let d be the end of the last failing included bin, or the start of the
+    first included bin if none fails (distances from the later contact):
+      converged           at least one included bin starts at or after d (all of them pass); False
+                          when the last included bin fails, or when no bin is included;
+      converged_beyond_A  d when converged, else None (E1's contract, restored after audit A7-3:
+                          a number in this field always means "converged beyond it");
+      n_bins_beyond       included bins starting at or after d (all pass; 0 unless converged);
+      last_examined_A     the end of the last INCLUDED bin (the farthest distance the verdict
+                          examined; the excluded bins, wherever they lie, are listed in `excluded`
+                          with their reason), whether converged or not; None when no bin is
+                          included. When NOT converged, the last included bin fails and this is
+                          its end (the value X2 had put in converged_beyond_A)."""
     spec = _h2_specular_column()
     th = float(pair["params"].theta_out_ext_rad)
     L = float(ewA.z_A)
@@ -434,19 +439,22 @@ def resolved_translation(ewA, ewB, pair, *, expected_rad, radius_per_A, x_cut_A,
         q["status"] = "excluded" if why else ("pass" if q["passes"] else "fail")
     inc = [q for q in rows if q["included"]]
     if not inc:
-        conv, n_after = None, 0
+        conv, n_after, last_examined = None, 0, None
         verdict = ("no bin included (none under the lit core above the amplitude floor): "
                    "convergence not assessed")
     else:
         fails = [q for q in inc if not q["passes"]]
-        conv = fails[-1]["d_end_A"] if fails else inc[0]["d_start_A"]
-        n_after = sum(1 for q in inc if q["d_start_A"] >= conv - 1e-9)
-        verdict = (f"converged beyond {conv:.1f} A from the later contact ({n_after} included "
+        d = fails[-1]["d_end_A"] if fails else inc[0]["d_start_A"]
+        n_after = sum(1 for q in inc if q["d_start_A"] >= d - 1e-9)
+        last_examined = inc[-1]["d_end_A"]
+        conv = d if n_after >= 1 else None           # A7-3: None unless converged (E1's contract)
+        verdict = (f"converged beyond {d:.1f} A from the later contact ({n_after} included "
                    f"bin(s) beyond, all within tolerance)" if n_after else
-                   f"NOT converged: the last included bin (ending {conv:.1f} A from the later "
-                   f"contact) fails")
+                   f"NOT converged: the last included bin (ending {last_examined:.1f} A from the "
+                   f"later contact, last_examined_A) fails")
     return dict(rows=rows, converged_beyond_A=conv, converged=bool(n_after >= 1),
-                n_bins_beyond=n_after, n_bins=len(rows), n_included=len(inc), verdict=verdict,
+                n_bins_beyond=n_after, last_examined_A=last_examined, n_bins=len(rows),
+                n_included=len(inc), verdict=verdict,
                 excluded=[dict(z_start_A=q["z_start_A"], z_end_A=q["z_end_A"],
                                because=q["excluded_because"]) for q in rows if not q["included"]],
                 last_bin=(rows[-1] if rows else None), lit_strip=lit,

@@ -30,7 +30,9 @@ Two study files (every key required; see run_study.py):
   clean depth converges the absolute reflection), fixed-beam translation at [110] and at exact [100] (16.1347 mrad; a four-beam case there,
   H2 2.2), moved-beam controls at both azimuths, the M2 step points at [110] with r >= 0.05, and the
   surface-position-resolved read-out of H2 2.4 (`surface_resolved`: per z_s bin `err_rad`,
-  `amp_ratio`, `status` and `excluded_because`; `converged_beyond_A`, `converged`, `verdict`). Every
+  `amp_ratio`, `status` and `excluded_because`; `converged`, `converged_beyond_A` (a distance only
+  when converged, else null; audit A7-3), `last_examined_A` (end of the last bin the verdict
+  examined, also when not converged), `verdict`). Every
   point's sheet beam lights the surface up to the exit plane (`beam_height_A = L_z tan(theta) - gap -
   a/2 - 1 A`, H2 2.6; X2 after audit A6 N-1), bins beyond the lit-end limit or below the amplitude
   floor `amp_floor_rel` are excluded from the verdict with their reason (A6 N-2). Its estimate

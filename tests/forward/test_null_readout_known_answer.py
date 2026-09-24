@@ -13,7 +13,12 @@ fixed, the same where the reflection has built up (P2 5.3: >= 2600 A at r = 0.1)
     750 A): converged beyond 2500 A. Its last bin (|B|/|A| = 1.029, 254 A before the end of B's lit
     core) is EXCLUDED by the lit-end limit and no longer decides the verdict (E1's code: None).
   * non-converged case: the study's beam and read-out in a cell shorter than the build-up
-    (L 2500 A): every included bin fails, converged is False.
+    (L 2500 A): every included bin fails, converged is False, converged_beyond_A is None and the
+    end of the last included bin is last_examined_A (audit A7-3).
+  * A7-3's case: crystal B translated half a pixel (0.0125 A) further than the R_x from which the
+    expected phase is computed, moved beam (covariant otherwise): every included bin carries the
+    phase error -2 k sin(theta) 0.0125 A = -0.10 rad and fails; not converged, converged_beyond_A
+    None.
   * the study's beam (study_depth100.yaml: H = L_z tan(theta) - gap - a/2 - 1 A, edge 2, gap 2) and
     the study's surface_resolved block at the L_z of its L5k points, r = 0.1: the fixed-beam ratio
     converges and the moved-beam control passes in every bin. With RH_NULL_READOUT_LONG=1 also at
@@ -48,13 +53,15 @@ def _study_block():
     return {k: float(v) for k, v in cfg["surface_resolved"].items()}, cfg["points"]
 
 
-def _cells(r, L, H):
+def _cells(r, L, H, dB=0.0):
+    """A and B (B translated by R_x + dB; dB != 0 only for A7-3's mis-translated case) in boxes of
+    the same extent and the same grid."""
     ent, dx = 10.0, 0.025
     vacA = H + 2.0 + RX + L * np.tan(TH) + 60.0
     nx = int(np.ceil((XS_A + vacA + 10.0) / dx))
     top = nx * dx - XS_A - vacA
     out = {}
-    for key, xs, vac in (("A", XS_A, vacA), ("B", XS_A + RX, vacA - RX)):
+    for key, xs, vac in (("A", XS_A, vacA), ("B", XS_A + RX + dB, vacA - RX - dB)):
         cell = build_continuum_cell(extent_y_A=10.0, terrace_y_bounds_A=[0.0, 10.0],
                                     terrace_heights_A=[0.0], crystal_length_z_A=L - ent,
                                     vacuum_above_A=vac, depth_below_A=xs, bulk_absorber_A=15.0,
@@ -141,7 +148,41 @@ def test_short_cell_with_the_study_beam_is_not_converged():
     inc = [q for q in r["rows"] if q["included"]]
     assert inc and all(q["status"] == "fail" for q in inc)
     assert not r["converged"] and r["n_bins_beyond"] == 0
-    assert r["converged_beyond_A"] == inc[-1]["d_end_A"]
+    assert r["converged_beyond_A"] is None                           # A7-3 (E1's contract)
+    assert r["last_examined_A"] == inc[-1]["d_end_A"]                # X2's value, own field
+    assert r["verdict"].startswith("NOT converged")
+
+
+def test_crystal_shifted_half_a_pixel_is_not_converged_and_gives_no_distance(a6_case):
+    """Audit A7-3's reproduction: B translated by R_x + 0.0125 A (half a 0.025 A pixel) while the
+    expected phase is computed from R_x; A's moved-beam run of A6's case is reused and B's beam is
+    moved with B (covariant up to the extra 0.0125 A). Every included bin must fail with the phase
+    error -2 k sin(theta) dB (DERIVED: the translation phase -(k_out - k_in).R for the extra dB;
+    -0.101 rad; tolerance 5e-3 rad, about twice A6's measured sub-pixel error 2.4e-3 rad), and the
+    result must carry no distance in converged_beyond_A (before A7-3's fix A7's probe of this case
+    read converged_beyond_A = 4500.0 with converged = False)."""
+    ews, pairs, expected = a6_case
+    L, dB, gap = 6000.0, 0.0125, 2.0
+    H = L * np.tan(TH) - 6.0                                         # a6_case's beam (edge 4 A)
+    cells, params = _cells(0.1, L, H, dB=dB)
+    assert params.nx == pairs["moved"]["params"].nx
+    assert pairs["moved"]["A"][0].extent_x_A == pytest.approx(cells["B"][0].extent_x_A, abs=1e-9)
+    bB = SheetBeam(x_bottom_A=XS_A + RX + dB + gap, height_A=H, edge_A=4.0,
+                   theta_in_ext_rad=TH, theta_label=LAB)
+    ewB = run_realisation(cells["B"][0], potential=cells["B"][1], beam=bB, params=params,
+                          realisation=0, seed=None)
+    ews = dict(ews, B=ewB)
+    pair = dict(params=params, A=pairs["moved"]["A"], B=cells["B"],
+                beams=dict(A=pairs["moved"]["beams"]["A"], B=bB))
+    r = readout(ews, dict(moved=pair), expected, "moved", A6_KW)
+    lam = ewB.metadata["beam"]["wavelength_A"]
+    want = -2.0 * (2 * np.pi / lam) * np.sin(TH) * dB
+    inc = [q for q in r["rows"] if q["included"]]
+    assert len(inc) >= 5 and all(q["status"] == "fail" for q in inc)
+    assert all(abs(q["err_rad"] - want) < 5e-3 for q in inc), want
+    assert r["converged"] is False and r["n_bins_beyond"] == 0
+    assert r["converged_beyond_A"] is None
+    assert r["last_examined_A"] == inc[-1]["d_end_A"]
     assert r["verdict"].startswith("NOT converged")
 
 

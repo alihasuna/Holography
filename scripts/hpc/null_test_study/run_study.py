@@ -25,9 +25,12 @@ null_test_cases.RESOLVED_KEYS, including the amplitude floor `amp_floor_rel`) ad
 surface-position-resolved read-out of H2 section 2.4 to every translation point (N12); a
 translation point whose beam meets either crystal before L_z - exit_excl_A is then refused
 (null_test_cases.check_lit_to_exit, also with --estimate); without the block that read-out is not
-computed (and the result says so). TEST_ONLY labels mark stand-ins for PROJECT_INPUT items (azimuth
-item 8, angle item 7, absorption item 21). Status: UNVALIDATED engine. Ladder rungs 1 and 2 (R2-A)
-pass; rung 3 has passed ONLY for the continuum null tests and the atomistic MOVED-beam translation:
+computed (and the result says so). Its verdict (result["surface_resolved"]): `converged`,
+`converged_beyond_A` (a distance ONLY when converged, else null: audit A7-3), `last_examined_A`
+(end of the last bin the verdict examined, also when not converged), `n_bins_beyond`, `excluded`
+and `verdict` (printed after each translation point). TEST_ONLY labels mark stand-ins for
+PROJECT_INPUT items (azimuth item 8, angle item 7, absorption item 21). Status: UNVALIDATED
+engine. Ladder rungs 1 and 2 (R2-A) pass; rung 3 has passed ONLY for the continuum null tests and the atomistic MOVED-beam translation:
 the atomistic FIXED-beam translation check that docs/05 4.4 item 3 requires before any step-phase
 run has NOT passed (this study is meant to test it); the abTEM multislice cross-check is not run.
 Study files: study.yaml (the M2 reproduction set, legacy clean depth), study_depth100.yaml (clean
@@ -183,6 +186,12 @@ def main(argv=None):
             if resolved is None:
                 res["surface_resolved"] = ("not computed: no surface_resolved block in the study "
                                            "file")
+            else:
+                sr = res["surface_resolved"]
+                print(f"  surface-resolved: {sr['verdict']} (converged {sr['converged']}, "
+                      f"converged_beyond_A {sr['converged_beyond_A']}, last_examined_A "
+                      f"{sr['last_examined_A']}, {sr['n_included']} of {sr['n_bins']} bins "
+                      f"included)", flush=True)
         else:
             cell, pot, beam, params = obj
             ew = run_realisation(cell, potential=pot, beam=beam, params=params, realisation=0,
