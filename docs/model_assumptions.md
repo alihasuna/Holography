@@ -32,6 +32,16 @@ every physics change (instruction file section 10). Labels follow section 1.4 of
 | B9 | Shadowed regions are excluded from quantification. | DERIVED_HERE | A step transverse to the beam shadows `h/tan(theta_ext)` of surface (139 A per bilayer and 444 nm for a 10 nm mesa at 22.5 mrad; 230 A and 733 nm at the (4,-4,4) angle of 13.6 mrad); the model must ray-trace visibility at the operating angle. |
 | B10 | The illumination convergence is small enough that the step phase is not averaged out. | PROJECT_INPUT | 1 rad of phase spread at 0.64 mrad semi-angle for a bilayer, 0.20 mrad for 1 nm, 0.020 mrad for 10 nm (200 keV). |
 
+## 2b. Assumptions of the buried-defect model (added 2026-09-30, docs/08)
+
+| # | Assumption | Label | Sensitivity |
+|---|---|---|---|
+| D1 | Straight dislocation lines parallel to a planar traction-free surface; isotropic linear elasticity; Volterra cut parallel to the surface; no core relaxation, no surface stress or reconstruction. | ASSUMPTION | The surface relief of a line parallel to the surface does not depend on Poisson's ratio (tested). Anisotropy of Si (Zener ratio about 1.56) changes the relief shape and height at the level of tens of percent (estimate, not computed). Cores are unphysical within about `b` of the line. |
+| D2 | Poisson ratio 0.22 for Si. | ASSUMPTION | Enters only the bulk field (strain contrast), not the surface relief. |
+| D3 | Effective penetration depth `Lambda` of the geometric model, scanned between 3 and 40 A. | ASSUMPTION | The phase changes by less than 3 percent over this range for the tested dipole. The column amplitude above the cores ranges from 0.98 to 0.50. `Lambda` must come from the dynamical calculation with a sourced absorptive potential. |
+| D4 | Absorptive potential proportional to the real one, `V_i = 0.05 V_r`, in the multislice smoke tests. | ASSUMPTION (placeholder, not sourced) | Sets the specular intensity and the depth probed. It must be replaced by a sourced optical potential (PROJECT_INPUT item 21) before any quantitative use. |
+| D5 | Peng et al. 1996 high-angle scattering factors (Si coefficients from abTEM 1.0.6's data file), Debye-Waller B = 0.46 A^2, projection approximation per 1.92 A slice. | SECTION_READ of the data file; the paper was not read; B is an ASSUMPTION | The mean inner potential of this potential is 13.91 V, compared with the 12.0 V of B1. The operating angle follows the potential's own value, and both are reported. |
+
 ## 3. Known limitations of the analysis performed here
 
 * No multislice or dynamical reflection simulation was executed in this analysis. Every engine

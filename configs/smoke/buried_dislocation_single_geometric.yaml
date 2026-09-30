@@ -1,0 +1,30 @@
+# Geometry-mode smoke test: ONE buried 60-degree dislocation whose line runs along [011], i.e. at
+# 60 degrees to the beam azimuth [110] in the (1,-1,1) surface. Produces a 2D phase map on the surface
+# (y, z_s) and its foreshortened image-plane version (z_s sin(theta_ext)).
+name: smoke_si111_buried_60deg_single_line60_geometric
+configuration: CFG-A (si111_cleaved_110azimuth, docs/05 section 2)
+
+beam:
+  energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}
+
+crystal:
+  a_A: {value: 5.4309, label: ASSUMPTION, note: "B2"}
+  V0_V: {value: 12.0, label: ASSUMPTION, note: "B1"}
+
+reflection:
+  hkl: {value: [4, -4, 4], label: ASSUMPTION, note: "PROJECT_INPUT items 4 and 9 pending"}
+
+defects:
+  nu: {value: 0.22, label: ASSUMPTION, note: "D2"}
+  dislocations:
+    label: ASSUMPTION
+    note: "b = a/2[110] (60 degrees to the line [011]), on the (1,-1,1) glide plane parallel to the surface, 40 A deep"
+    value:
+      - {burgers_over_a: [0.5, 0.5, 0], line_uvw: [0, 1, 1], depth_A: 40.0, position_yz_A: [0.0, 0.0], sign: 1}
+
+geometric:
+  penetration_A: {value: [3.0, 12.0, 40.0], label: ASSUMPTION, note: "scanned, not computed"}
+  n_layers: {value: 80, label: SMOKE_TEST}
+  y_window_A: {value: [-300.0, 300.0, 301], label: SMOKE_TEST}
+  z_window_A: {value: [-600.0, 600.0, 601], label: SMOKE_TEST, note: "along the beam on the surface; image axis is z_s sin(theta_ext)"}
+  periodic_Ly_A: {value: null, label: SMOKE_TEST, note: "isolated dislocation, no periodic images"}

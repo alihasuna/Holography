@@ -44,3 +44,11 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 20. Silicon mean inner potential `V0` with a citable measured or calculated value and uncertainty. The value 12.0 V used in this repository is an ASSUMPTION; a change of 1 V shifts the single-bilayer step phase at the (4,-4,4) condition by about 0.34 rad, and a height inferred from a fixed measured phase is biased by about +0.05 A per volt by which `V0` is underestimated.
 21. Absorptive (imaginary) potential parameters for Si at the working energy, from a named parameterisation, for the dynamical reflection calculations.
 22. Specimen charging: evidence (phase drift versus dose or time on a flat region) that the oxide-covered surface does not charge under the grazing-incidence illumination footprint, or the measured drift if it does.
+
+## G. Buried defects (added 2026-09-30 with the buried-dislocation model, docs/08)
+
+23. (blocking for defect work) Which buried defect is intended, and how is it produced: misfit dislocations at a buried interface (for example SiGe/Si, with the layer thickness), end-of-range loops after implantation (species, energy, dose, anneal), ion-milling damage, or dislocations introduced by deformation or indentation?
+24. Burgers vector and line direction, if known from TEM (for Si, perfect `a/2<110>` dislocations along `<110>`, often 60 degree type). A pure screw parallel to the surface is invisible in the specular beam, so the answer also decides whether a non-specular reflection is needed.
+25. Depth below the surface (nm), or the thickness of the capping layer. The width of the surface relief is about `2 x depth`, so the field of view and resolution must cover several depths.
+26. Areal density or spacing of the defects, and whether they form a periodic array (misfit network) or are isolated. This fixes the simulation cell and whether neighbouring fields overlap.
+27. Any independent characterisation of the same sample, to serve as ground truth for a blind comparison: cross-sectional TEM, AFM of the surface relief (the model predicts a bump of about `b_parallel/pi`, about 1 A for a 60 degree dislocation, at any depth), or X-ray topography.

@@ -1,0 +1,53 @@
+# Smoke test: buried 60-degree dislocation dipole in Si(1,-1,1), lines along the beam azimuth [110].
+# CPU-sized (numpy). The full-resolution version for a 12 GB GPU is buried_dislocation_gpu.yaml.
+# Every physical parameter is {value, label, note}; the loader refuses missing keys and labels.
+# SMOKE_TEST marks numerical choices made only to keep this run small; they are not physics inputs.
+name: smoke_si111_buried_60deg_dipole_cpu
+configuration: CFG-A (si111_cleaved_110azimuth, docs/05 section 2)
+
+beam:
+  energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}
+
+crystal:
+  a_A: {value: 5.4309, label: ASSUMPTION, note: "B2, room temperature"}
+  V0_V: {value: 12.0, label: ASSUMPTION, note: "B1; geometric model only. The multislice uses the MIP of its own potential and reports both"}
+
+reflection:
+  hkl: {value: [4, -4, 4], label: ASSUMPTION, note: "first recommended specular order; PROJECT_INPUT items 4 and 9 pending"}
+
+defects:
+  nu: {value: 0.22, label: ASSUMPTION, note: "isotropic Poisson ratio for Si (D2); the surface relief does not depend on it"}
+  periodic_images_y: {value: 3, label: SMOKE_TEST, note: "images of the dipole at +-k Ly so the field is continuous across the periodic y boundary"}
+  dislocations:
+    label: ASSUMPTION
+    note: >
+      Perfect 60-degree dislocations b = a/2[011] on the (1,-1,1) glide plane, which is parallel to the
+      surface, lines along [110] (the beam). Opposite signs make a dipole (e.g. the two sides of a
+      glide loop) so that the field decays as 1/r^2 and the cell can be periodic in y. Depth and spacing
+      are illustrative; PROJECT_INPUT items 23 to 27 (docs/06) are needed for the real defect.
+    value:
+      - {burgers_over_a: [0, 0.5, 0.5], line_uvw: [1, 1, 0], depth_A: 20.0, position_yz_A: [49.885, 0.0], sign: 1}
+      - {burgers_over_a: [0, 0.5, 0.5], line_uvw: [1, 1, 0], depth_A: 20.0, position_yz_A: [149.656, 0.0], sign: -1}
+
+geometric:
+  penetration_A: {value: [3.0, 6.0, 12.0, 25.0], label: ASSUMPTION, note: "effective depth of the reflection; not computed dynamically, scanned"}
+  n_layers: {value: 60, label: SMOKE_TEST, note: "bilayers summed (188 A), >> 5 x max penetration"}
+  y_window_A: {value: [0.0, 199.54, 800], label: SMOKE_TEST}
+  z_window_A: {value: [0.0, 0.0, 1], label: SMOKE_TEST, note: "lines along the beam: no z dependence"}
+  periodic_Ly_A: {value: 199.54, label: SMOKE_TEST, note: "30 lattice periods of 6.651 A along [1,-1,-2]; same cell as the multislice"}
+
+multislice:
+  n_y_periods: {value: 30, label: SMOKE_TEST, note: "Ly = 199.54 A"}
+  ny: {value: 512, label: SMOKE_TEST, note: "dy = 0.39 A; coarse in y to fit a CPU; the GPU config uses 0.13 A"}
+  nx: {value: 1024, label: SMOKE_TEST}
+  dx_A: {value: 0.1, label: SMOKE_TEST, note: "2/3 band 3.33/A along the normal; beam at 0.53/A"}
+  x0_A: {value: -60.0, label: SMOKE_TEST, note: "cell spans x = -60 to +42.4 A; surface at x = 0"}
+  crystal_depth_A: {value: 56.0, label: SMOKE_TEST}
+  slices_per_period: {value: 2, label: SMOKE_TEST, note: "one atomic layer per slice, dz = 1.92 A"}
+  debye_waller_B_A2: {value: 0.46, label: ASSUMPTION, note: "room-temperature Si, value not sourced here"}
+  absorption_ratio: {value: 0.05, label: ASSUMPTION, note: "V_i = 0.05 V_r; placeholder, NOT a sourced optical potential (PROJECT_INPUT item 21)"}
+  bulk_absorber_top_width_Vmax: {value: [-38.0, 14.0, 60.0], label: SMOKE_TEST, note: "quadratic imaginary-potential ramp on the bulk side (A, A, V)"}
+  illumination_center_height_edge_A: {value: [22.0, 20.0, 4.0], label: SMOKE_TEST, note: "sheet beam 12-32 A above the surface"}
+  aperture_radius_per_A: {value: 0.06, label: ASSUMPTION, note: "1.5 mrad objective aperture semi-angle; PROJECT_INPUT item 4 pending"}
+  vacuum_mask_x_edge_A: {value: [2.0, 3.0], label: SMOKE_TEST, note: "exit wave kept for x > 2-5 A (vacuum only)"}
+  angle_offsets_mrad: {value: [0.0], label: SMOKE_TEST, note: "offsets from the internal-Bragg external angle"}
