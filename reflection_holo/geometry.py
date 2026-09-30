@@ -115,6 +115,9 @@ class SlabFrame:
 # CFG-A benchmark frame (docs/physics_conventions.md): (1,-1,1) surface, beam along [110].
 SI111_FRAME = SlabFrame("si111_cleaved_110azimuth", (1, -1, 1), (1, -1, -2), (1, 1, 0))
 
+# CFG-B frame: (001) surface, beam azimuth [110] (PROJECT_INPUT item 8 still open: [110] or [100]).
+SI001_FRAME = SlabFrame("si001_110azimuth", (0, 0, 1), (1, -1, 0), (1, 1, 0))
+
 
 @dataclass(frozen=True)
 class SpecularCondition:

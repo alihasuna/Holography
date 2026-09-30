@@ -1,0 +1,38 @@
+# Si(001) three-section sample (proposal 2026-09-30, awaiting Ali's approval before any run):
+#   section 1  reference terrace (x = 0)
+#   section 2  raised by 4 atomic layers (h = a = 5.431 A, a lattice translation)
+#   section 3  same height as section 1, buried Lomer edge dislocation (extra half-plane from the
+#              core up to the surface, as in the textbook picture)
+# Strips run parallel to the beam [110]; step edges are parallel to the beam (no shadowing).
+name: si001_three_sections_cpu
+configuration: CFG-B (si001_patterned, docs/05 section 2)
+
+beam:
+  energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}
+
+crystal:
+  a_A: {value: 5.4309, label: ASSUMPTION, note: "B2"}
+  V0_V: {value: 12.0, label: ASSUMPTION, note: "B1; geometric model only"}
+  termination: {value: bulk, label: ASSUMPTION, note: "B3: unreconstructed; the 2x1 dimer reconstruction is not modelled"}
+
+reflection:
+  hkl: {value: [0, 0, 8], label: ASSUMPTION, note: "CFG-B working condition (docs/05); PROJECT_INPUT items 4 and 9 pending"}
+
+sample:
+  periods_per_section: {value: [40, 40, 40], label: SMOKE_TEST, note: "3.840 A periods along [1-10]: 153.6 A per section, cell 460.8 A"}
+  raise_layers: {value: [0, 4, 0], label: ASSUMPTION, note: "'a few layers higher' = 4 layers of a/4 = one lattice constant; PROJECT_INPUT item 13"}
+  depth_A: {value: 56.0, label: SMOKE_TEST}
+  seam_y_A: {value: 76.8, label: SMOKE_TEST, note: "periodic seam (extra-plane insertion, ramp anchor) in the middle of the reference strip, away from step edges; leaves a 0.024 A tilt across the cell (about 0.19 rad phase ramp at (008)), removed by the ramp fit"}
+
+defects:
+  nu: {value: 0.22, label: ASSUMPTION, note: "D2"}
+  periodic_images_y: {value: 0, label: SMOKE_TEST, note: "single dislocation; the periodic seam is handled by plane insertion (reflection_holo/structure/sections.py)"}
+  dislocations:
+    label: ASSUMPTION
+    note: >
+      Lomer dislocation b = a/2[-1,1,0] (pure edge, 3.84 A, in the surface plane, perpendicular to
+      the line), line along [110] (the beam), 25 A below the surface in the middle of section 3.
+      This sign puts the extra half-plane above the core (surface bulges up). The typical misfit
+      dislocation at (001) SiGe/Si interfaces; PROJECT_INPUT items 23 to 27.
+    value:
+      - {burgers_over_a: [-0.5, 0.5, 0.0], line_uvw: [1, 1, 0], depth_A: 25.0, position_yz_A: [384.0, 0.0], sign: 1}

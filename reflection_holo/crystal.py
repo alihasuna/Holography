@@ -52,14 +52,18 @@ def build_slab(frame: SlabFrame, a_A: float, n_y: int, depth_A: float, n_z: int 
     levels = np.unique(np.round(pos[:, 0], 4))[::-1]
     gaps = -np.diff(levels)
     x_top = None
+    if np.ptp(gaps) < 1e-3:  # equally spaced layers, e.g. Si(001): any layer is a termination
+        x_top = levels[levels < 0.5 * a_A][0]
     for i in range(len(levels) - 1):
+        if x_top is not None:
+            break
         if levels[i] < 0.5 * a_A and gaps[i] < 0.5 * gaps.max():
             x_top = levels[i]
-            break
     if x_top is None:
         raise RuntimeError("could not identify a bilayer termination")
     pos[:, 0] -= x_top
-    pos = pos[(pos[:, 0] <= 1e-6) & (pos[:, 0] >= -depth_A)]
+    pos = pos[(pos[:, 0] <= 1e-3) & (pos[:, 0] >= -depth_A)]  # x_top is rounded to 1e-4 A
+    pos[:, 0] -= pos[np.abs(pos[:, 0]) < 1e-3, 0].mean()  # top layer exactly at x = 0
     return pos, Ly, Lz
 
 

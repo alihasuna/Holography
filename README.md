@@ -25,6 +25,7 @@ that can be contrasted with the real reflection-mode dark-field holography exper
 | `docs/06_project_inputs_required.md` | Laboratory inputs the simulation cannot supply (PROJECT_INPUT list, 22 items). |
 | `docs/07_reading_plan.md` | Every reference of the instruction file (B01-B15, C01-C03, P01-P07, S01-S02) with its expected access, what to extract, and the upload order for paywalled items. |
 | `docs/08_buried_defects.md` | Buried dislocations: why they are visible in reflection (depth-independent surface bump `b_parallel/pi`), the models, verification and the geometry-mode and multislice smoke-test results. |
+| `docs/10_si001_three_sections_plan.md` | Proposal: Si(001) sample in three strips (reference, raised 4 layers, buried Lomer edge dislocation), renders and what will be measured. |
 | `docs/09_gpu_runbook_arbutus.md` | How to run the multislice on the Arbutus GPU VM (driver check, cupy, tmux, acceptance checks). |
 | `docs/physics_conventions.md`, `docs/model_assumptions.md`, `docs/source_map.tsv`, `docs/references.bib` | Provenance files required by the instruction file (section 10). |
 | `docs/agent_reports/` | The full reports of the delegated audits: A (code), B (literature) with B2 (bibliography verification log), C (physics derivations) with the calculator output, D (software provenance), E and E2 (two adversarial review passes of the summary documents; every finding is applied in revision 2 of the summaries or explicitly declined with a reason), plus the orchestrator's independent sanity numbers. |
