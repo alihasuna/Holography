@@ -85,3 +85,10 @@ def test_slab_density_and_bilayer_termination():
     n_bilayers = int(np.floor(20.0 / d)) + 1
     assert len(pos) == 4 * n_bilayers * 3  # 4 atoms per bilayer per 6.651 x 3.840 A rectangle
     assert Lz == pytest.approx(5.4309 / np.sqrt(2), rel=1e-12)
+
+
+def test_specular_at_angle_matches_bragg_condition():
+    c = geo.SpecularAtAngle(200, 12.0, 5.4309, (4, -4, 4), COND.theta_ext)
+    assert c.theta_int == pytest.approx(COND.theta_int, rel=1e-9)
+    assert c.q_int == pytest.approx(COND.G, rel=1e-9)  # internal Bragg condition: q_int = G
+    assert c.q_ext == pytest.approx(COND.q_ext, rel=1e-12)

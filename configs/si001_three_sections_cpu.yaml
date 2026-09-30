@@ -36,3 +36,29 @@ defects:
       dislocation at (001) SiGe/Si interfaces; PROJECT_INPUT items 23 to 27.
     value:
       - {burgers_over_a: [-0.5, 0.5, 0.0], line_uvw: [1, 1, 0], depth_A: 25.0, position_yz_A: [384.0, 0.0], sign: 1}
+
+reflections_to_run: {value: [[0, 0, 8], [0, 0, 12]], label: ASSUMPTION, note: "allowed specular orders of Si(001) that exit well above theta_c; (004) exits at 2-4 mrad and is shown in geometry mode only"}
+
+geometric:
+  penetration_A: {value: [3.0, 12.0], label: ASSUMPTION, note: "scanned, not computed (D3)"}
+  n_layers: {value: 120, label: SMOKE_TEST, note: "layers of a/4 summed (163 A)"}
+
+multislice:
+  ny: {value: 3600, label: SMOKE_TEST, note: "dy = 0.128 A over 460.8 A; the specular reflectivity is converged to 3 percent at this dy (0.40 A underestimates (008) by 40 percent)"}
+  nx: {value: 1728, label: SMOKE_TEST}
+  dx_A: {value: 0.1, label: SMOKE_TEST}
+  x0_A: {value: -58.0, label: SMOKE_TEST, note: "cell x from -58 to +114.8 A; the band reflected by strip 2 exits 2h = 10.9 A higher than strip 1's and must stay inside the cell"}
+  slices_per_period: {value: 2, label: SMOKE_TEST}
+  debye_waller_B_A2: {value: 0.46, label: ASSUMPTION}
+  absorption_ratio: {value: 0.05, label: ASSUMPTION, note: "placeholder, NOT sourced (PROJECT_INPUT item 21)"}
+  bulk_absorber_top_width_Vmax: {value: [-38.0, 14.0, 60.0], label: SMOKE_TEST}
+  illumination_center_height_edge_A: {value: [51.0, 80.0, 4.0], label: SMOKE_TEST, note: "sheet 11-91 A above strip 1: footprint 3100 A at (0,0,12), 4700 A at (008), long enough for the dynamical build-up (scripts/step_buildup_check.py: a 1200 A footprint biases the (0,0,12) step phase by 0.8 rad)"}
+  aperture_radius_per_A: {value: 0.06, label: ASSUMPTION, note: "objective aperture; PROJECT_INPUT item 4"}
+  vacuum_mask_x_edge_A: {value: [8.0, 3.0], label: SMOKE_TEST, note: "above the raised strip (5.43 A)"}
+  operating_offset_mrad: {value: {"(0,0,8)": 0.8, "(0,0,12)": -0.6}, label: DERIVED_HERE, note: "reflectivity maximum of the flat-surface rocking curve of this kernel (scripts/rocking_flat.py, dy 0.128 A), relative to the refraction-corrected Bragg angle with the potential's V0; as an experimenter would set the angle"}
+
+holography:
+  carrier_per_A: {value: [0.0, 0.2], label: ASSUMPTION, note: "fringes 5 A apart along y at the specimen, > 3 x aperture radius; PROJECT_INPUT item 16"}
+  mask_radius_per_A: {value: 0.06, label: ASSUMPTION, note: "equal to the objective aperture; PROJECT_INPUT item 19"}
+  dose_counts_per_pixel: {value: 400, label: SMOKE_TEST, note: "Poisson noise for the noisy reconstruction; the noiseless one is always shown too"}
+  noise_seed: {value: 20260930, label: SMOKE_TEST}

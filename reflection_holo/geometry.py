@@ -163,3 +163,39 @@ class SpecularCondition:
     def q_int(self) -> float:
         k_int = k_rad_per_A(self.E_keV) * np.sqrt(1 + refraction_delta(self.E_keV, self.V0_V))
         return 2 * k_int * np.sin(self.theta_int)
+
+
+@dataclass(frozen=True)
+class SpecularAtAngle:
+    """Specular reflection of order hkl for an arbitrary external glancing angle (off-Bragg allowed)."""
+
+    E_keV: float
+    V0_V: float
+    a_A: float
+    hkl: tuple
+    theta_ext: float
+
+    @property
+    def d_A(self) -> float:
+        return self.a_A / float(np.linalg.norm(self.hkl))
+
+    @property
+    def lam(self) -> float:
+        return wavelength_A(self.E_keV)
+
+    @property
+    def theta_int(self) -> float:
+        return theta_int_from_ext(self.theta_ext, self.E_keV, self.V0_V)
+
+    @property
+    def G(self) -> float:
+        return 2 * np.pi / self.d_A
+
+    @property
+    def q_ext(self) -> float:
+        return 2 * k_rad_per_A(self.E_keV) * np.sin(self.theta_ext)
+
+    @property
+    def q_int(self) -> float:
+        k_int = k_rad_per_A(self.E_keV) * np.sqrt(1 + refraction_delta(self.E_keV, self.V0_V))
+        return 2 * k_int * np.sin(self.theta_int)

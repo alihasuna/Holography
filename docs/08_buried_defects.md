@@ -81,7 +81,7 @@ run and one defect run. Total time 65 s on 4 CPU cores.
 | Quantity | Value |
 |---|---|
 | Operating angle (internal Bragg, V0 of the potential) | theta_ext 13.227 mrad |
-| Specular intensity in a 1.5 mrad aperture, flat / defect | 0.1925 / 0.1391 of the incident flux |
+| Specular intensity in a 1.5 mrad aperture, flat / defect | 0.1925 / 0.1391 of the incident flux (NOT converged: see the correction below) |
 | Multislice phase change, peak-to-peak (defect minus flat) | 12.54 rad |
 | Geometric model, same observable (deformed coordinates + same aperture), peak-to-peak | 13.16 / 13.12 / 12.93 / 12.55 rad for Lambda = 3 / 6 / 12 / 25 A |
 | RMS residual multislice minus geometric (intensity-weighted) | 0.24 / 0.32 / 0.45 / 0.57 rad for Lambda = 3 / 6 / 12 / 25 A (0.34 to 0.63 rad without the deformed-coordinate mapping and aperture) |
@@ -100,6 +100,20 @@ Reading:
   show this offset. This is expected physics, not tuned away.
 * The defect reduces the specular intensity by 28 percent. Part of this is intensity scattered
   outside the aperture by the phase gradients (up to 0.5 rad/A), and part is strain contrast.
+
+**Correction (2026-09-30, sampling convergence).** The specular reflectivity is not converged at
+the lateral pixel dy = 0.39 A used in this CPU smoke run. A flat-surface convergence study
+(`scripts/rocking_flat.py`, narrow cells) gives the following R at the Bragg angle:
+
+| Reflection | dy = 0.67 A | 0.39 A | 0.20 A | 0.13 A | 0.064 A |
+|---|---|---|---|---|---|
+| Si(111) (4,-4,4) | 0.006 | 0.125 | 0.080 | 0.080 | n/a |
+| Si(001) (0,0,8) | n/a | 0.0065 | 0.0093 | 0.0110 | 0.0113 |
+| Si(001) (0,0,12) | n/a | n/a | n/a | 0.00082 | 0.00086 |
+
+dx = 0.1 A is converged (0.05 A changes R by < 2 percent). Production runs need dy <= 0.13 A,
+which is the value in the spec and in the GPU config. The phase profile of this section is dominated by the
+surface relief and is expected to be less sensitive, but it has not been re-run at 0.13 A.
 
 NOT RUN: the cupy backend (no GPU in this environment; see docs/09); the GPU-sized config with its
 rocking scan; abTEM cross-validation and the phase-validation ladder (M2); hologram formation and

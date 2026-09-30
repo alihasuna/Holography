@@ -35,6 +35,7 @@ class SectionSample:
     boundaries: np.ndarray  # y of the section boundaries, A (len n_sections + 1)
     heights: np.ndarray  # terrace height of each section, A
     info: dict
+    u_func: object = None  # r (..., 3) -> elastic displacement applied to the atoms (same field)
 
 
 def build_sections(frame, a_A, periods, raise_layers, depth_A, defects=None, margin_periods=3,
@@ -115,6 +116,15 @@ def build_sections(frame, a_A, periods, raise_layers, depth_A, defects=None, mar
         info["seam_ramp_residual_surface_A"] = resid[np.argmin(np.abs(layers))].tolist()
         info["seam_ramp_max_strain"] = float(np.abs(resid).max() / Ly)
 
+        def u_func(r, _d=defects, _L=layers, _R=resid, _Y0=Y0, _u0=u_ref):
+            r = np.array(r, float)
+            r[..., 1] = _Y0 + np.mod(r[..., 1] - _Y0, Ly)
+            ramp = np.stack([np.interp(r[..., 0], _L, _R[:, k]) for k in range(3)], -1)
+            return _d.displacement(r) + ramp * ((r[..., 1] - _Y0) / Ly)[..., None] - _u0
+    else:
+        def u_func(r):
+            return np.zeros(np.shape(r))
+
     pos = sites + u
     pos[:, 1] = np.mod(pos[:, 1], Ly)
     pos[:, 2] = np.mod(pos[:, 2], Lz)
@@ -132,7 +142,7 @@ def build_sections(frame, a_A, periods, raise_layers, depth_A, defects=None, mar
     pos, u = pos[~drop], u[~drop]
     info["merged_atoms"] = int(drop.sum())
     section = np.clip(np.searchsorted(boundaries, pos[:, 1], side="right") - 1, 0, len(periods) - 1)
-    return SectionSample(pos, section, u, Ly, Lz, boundaries, heights, info)
+    return SectionSample(pos, section, u, Ly, Lz, boundaries, heights, info, u_func)
 
 
 def nearest_neighbour_distances(sample: SectionSample):

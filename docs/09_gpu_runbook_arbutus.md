@@ -71,7 +71,8 @@ back with `scp -r` or commit a summary, not the arrays.
 
 1. The cupy-vs-numpy test passes.
 2. The CPU-sized config run with `--backend cupy` reproduces the numpy numbers in
-   `docs/08_buried_defects.md` section 5: R_flat 0.1925, multislice phase peak-to-peak 12.54 rad,
+   `docs/08_buried_defects.md` section 5 (numbers at the unconverged dy = 0.39 A, which is fine for a
+   backend comparison): R_flat 0.1925, multislice phase peak-to-peak 12.54 rad,
    and RMS residual 0.24 rad against the geometric model at Lambda = 3 A. The tolerance is 1e-3
    relative, allowing for float32 FFT differences.
 3. In the GPU config's rocking scan, the flat-surface specular intensity peaks near offset 0. If

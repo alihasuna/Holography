@@ -1,7 +1,7 @@
 # Plan: Si(001) three-section sample (reference, raised terrace, buried edge dislocation)
 
-Status: 2026-09-30, PROPOSAL. The sample is built and rendered; no simulation has been run on it
-yet. Config: `configs/si001_three_sections_cpu.yaml`. Renders:
+Status: 2026-09-30. The sample is built and rendered, and it has been simulated at (008) and (0,0,12):
+see `docs/11_si001_reconstruction_results.md`. Config: `configs/si001_three_sections_cpu.yaml`. Renders:
 `docs/figures/si001_three_sections_endon.png` (the simulation cell) and
 `docs/figures/si001_three_sections_block3d.png` (a reduced-size 3D illustration).
 
