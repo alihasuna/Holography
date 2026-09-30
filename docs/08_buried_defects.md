@@ -117,3 +117,23 @@ actually used (items 4, 7 and 9), and a sourced absorptive potential (item 21), 
 * `docs/figures/buried_dipole_geometric.png`: surface relief, specular phase and column amplitude (dipole, geometry mode).
 * `docs/figures/buried_single_line60_geometric.png`: single line at 60 degrees to the beam, surface map, foreshortened wrapped phase, profile along the beam.
 * `docs/figures/buried_dipole_multislice_cpu.png`: exit wave, exit spectrum with the aperture, dark-field phase map (defect minus flat), multislice-versus-geometric profiles, specular intensity.
+
+## 8. Atomic coordinates
+
+`python scripts/export_atoms.py --config <cfg>` writes the exact positions that the multislice
+uses, as extended XYZ (readable by OVITO, ASE and VESTA via ASE). The files are in the slab frame:
+x is the outward normal [1,-1,1] with the surface at 0, y is [1,-1,-2], z is the beam [110], in A.
+The cell is periodic along y and z and open along x. The dislocated file also carries the
+displacement `disp` per atom. For the CPU smoke config, the files
+`docs/structures/si111_dipole_cpu_{perfect,dislocated}.xyz` hold 2160 atoms in a
+199.544 x 3.840 A cell, 56 A deep.
+
+* The field includes a near-uniform rigid shift (u_y about -1.1 to -2.0 A and u_z about 0.3 to 1.5 A
+  everywhere), which comes from the cut convention and the summed periodic images. A rigid
+  translation adds only a constant phase and a lateral shift. The comparison with the geometric
+  model accounts for it by using the same displacement field.
+* Linear elasticity is not valid at the cores: 3 atoms come closer than 2.0 A to a neighbour
+  (minimum 1.82 A, against the 2.35 A Si bond). No atom is closer than 1.8 A. A relaxed core (from an
+  interatomic potential or DFT) is not modelled.
+* `docs/figures/buried_dipole_atoms_cross_section.png`: the cell viewed along the beam, coloured by
+  u_x, and a zoom on one core with the window-mean displacement removed for display.
