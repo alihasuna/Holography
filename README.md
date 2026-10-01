@@ -65,5 +65,7 @@ python3 -m venv venv && venv/bin/pip install numpy scipy matplotlib pytest pyyam
 venv/bin/python -m pytest -q                      # 40 pass; the cupy test is skipped without a GPU
 venv/bin/python scripts/run_buried_dislocation.py geometric  --config configs/smoke/buried_dislocation_cpu.yaml
 venv/bin/python scripts/run_buried_dislocation.py multislice --config configs/smoke/buried_dislocation_cpu.yaml   # about 1 min on CPU
+venv/bin/python scripts/run_sections.py --config configs/si001_three_sections_cpu.yaml          # Si(001) three strips: holograms and reconstructions (about 45 min on CPU)
+venv/bin/python scripts/figures_holography.py --config configs/si001_three_sections_cpu.yaml --data outputs/si001_three_sections_cpu/reconstruction --geo outputs/si001_three_sections_cpu/reconstruction/results.npz   # Nature-style figures, captions in docs/figures/CAPTIONS.md
 # GPU: add --backend cupy and use configs/smoke/buried_dislocation_gpu.yaml; see docs/09
 ```

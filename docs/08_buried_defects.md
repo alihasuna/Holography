@@ -128,9 +128,9 @@ actually used (items 4, 7 and 9), and a sourced absorptive potential (item 21), 
 
 ## 7. Figures
 
-* `docs/figures/buried_dipole_geometric.png`: surface relief, specular phase and column amplitude (dipole, geometry mode).
-* `docs/figures/buried_single_line60_geometric.png`: single line at 60 degrees to the beam, surface map, foreshortened wrapped phase, profile along the beam.
-* `docs/figures/buried_dipole_multislice_cpu.png`: exit wave, exit spectrum with the aperture, dark-field phase map (defect minus flat), multislice-versus-geometric profiles, specular intensity.
+* `docs/figures/legacy/buried_dipole_geometric.png`: surface relief, specular phase and column amplitude (dipole, geometry mode).
+* `docs/figures/legacy/buried_single_line60_geometric.png`: single line at 60 degrees to the beam, surface map, foreshortened wrapped phase, profile along the beam.
+* `docs/figures/legacy/buried_dipole_multislice_cpu.png`: exit wave, exit spectrum with the aperture, dark-field phase map (defect minus flat), multislice-versus-geometric profiles, specular intensity.
 
 ## 8. Atomic coordinates
 
@@ -149,5 +149,5 @@ displacement `disp` per atom. For the CPU smoke config, the files
 * Linear elasticity is not valid at the cores: 3 atoms come closer than 2.0 A to a neighbour
   (minimum 1.82 A, against the 2.35 A Si bond). No atom is closer than 1.8 A. A relaxed core (from an
   interatomic potential or DFT) is not modelled.
-* `docs/figures/buried_dipole_atoms_cross_section.png`: the cell viewed along the beam, coloured by
+* `docs/figures/legacy/buried_dipole_atoms_cross_section.png`: the cell viewed along the beam, coloured by
   u_x, and a zoom on one core with the window-mean displacement removed for display.

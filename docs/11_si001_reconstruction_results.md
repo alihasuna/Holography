@@ -18,7 +18,7 @@ geometric ASSUMPTION):
 | (008) | 18.47 | 16.13 | 16.93 (+0.8) | 0.019 | 0.74 | **working reflection** |
 | (0,0,12) | 27.71 | 26.21 | 25.61 (-0.6) | 0.0011 | 0.49 | about 18 times weaker; about 1.5 times more phase per A of height |
 
-Rocking curves: `docs/figures/rocking_si001_008.png`, `docs/figures/rocking_si001_0012.png`
+Rocking curves: `docs/figures/fig_rocking_si001.png`
 (flat surface, dy = 0.128 A). The operating angle is the rocking-curve maximum, as an
 experimenter would set it.
 
@@ -37,7 +37,7 @@ exact (1e-9) for a band-limited object when the carrier exceeds 3 x the aperture
 ## 3. Results
 
 Converged sampling: dy = 0.128 A, dx = 0.1 A, sheet H = 80 A (see section 4). Figures:
-`docs/figures/si001_three_sections_recon_008.png`, `..._recon_0012.png`, `..._overview.png`.
+`docs/figures/fig_hologram_si001_008.png`, `fig_hologram_si001_0012.png`, `fig_reflections_si001.png`.
 Each figure shows the hologram (zoom), the reconstructed phase map (noiseless and noisy), the
 amplitude map and the profiles, with multislice and geometry mode through the same code. The
 recon figure titles print the wrap period at the Bragg angle (0.777 A for (008)); at the
@@ -64,7 +64,7 @@ Reading:
 * **(0,0,12): the dislocation agrees (2 percent against the local reference), but the step does not
   converge in this cell.** The reflected intensity along the band still oscillates over the 80 A
   sheet, and the raised strip's pattern is displaced by about 2h (figure
-  `docs/figures/si001_0012_step_phase_per_row.png`). The per-row step phase spans -0.3 to -1.5
+  `docs/figures/fig_step_rows_0012.png`). The per-row step phase spans -0.3 to -1.5 (to -2.1 at the band edges)
   rad, and geometry mode's -1.23 lies inside that range. A converged (0,0,12) step needs a
   footprint of micrometres (a GPU job).
 * **(004)** exits at 2.1 mrad. It is 8 times less sensitive to height than (008) (1.05 against 8.48 rad/A), and the
@@ -107,3 +107,22 @@ Reading:
   in both models. An earlier +20 percent spike at the core came from the short 30 A sheet and
   disappears when the footprint is converged. At the current accuracy the amplitude does not yet
   separate buried strain from surface relief.
+
+## 6. Figures (Nature format)
+
+All result figures are single-column (89 mm) or double-column (183 mm), with sans-serif text,
+bold lowercase panel letters and no titles inside panels. They are saved as vector PDF and
+450 dpi PNG, with captions in `docs/figures/CAPTIONS.md`. Shared style:
+`reflection_holo/plotstyle.py`.
+
+| Figure | Content | Script |
+|---|---|---|
+| `fig_sample_si001` | the simulated sample: cell, step, dislocation core | `scripts/figures_structure.py` |
+| `fig_hologram_si001_008`, `fig_hologram_si001_0012` | hologram, reconstructed phase and amplitude, fringe bending, profiles | `scripts/figures_holography.py` |
+| `fig_rocking_si001` | flat-surface rocking curves and operating angles | `scripts/figures_results.py` |
+| `fig_reflections_si001` | phase and amplitude profiles by reflection | `scripts/figures_results.py` |
+| `fig_convergence` | lateral-sampling and footprint convergence | `scripts/figures_results.py` |
+| `fig_step_rows_0012` | why the (0,0,12) step phase is not converged | `scripts/figures_results.py` |
+
+The holography figures are built from the saved dark-field waves (`rows_<hkl>.npz`, written by
+`scripts/run_sections.py`), so they can be regenerated without re-running the multislice.

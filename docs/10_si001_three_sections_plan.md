@@ -2,8 +2,8 @@
 
 Status: 2026-09-30. The sample is built and rendered, and it has been simulated at (008) and (0,0,12):
 see `docs/11_si001_reconstruction_results.md`. Config: `configs/si001_three_sections_cpu.yaml`. Renders:
-`docs/figures/si001_three_sections_endon.png` (the simulation cell) and
-`docs/figures/si001_three_sections_block3d.png` (a reduced-size 3D illustration).
+`docs/figures/fig_sample_si001.png` (the simulation cell, the step and the dislocation core;
+caption in `docs/figures/CAPTIONS.md`).
 
 ## 1. The sample
 
