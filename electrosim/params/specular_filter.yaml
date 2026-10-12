@@ -2,7 +2,9 @@
 tilt_select_mrad: null            # [θx, θy] to pick one tilt of a tilt series (by value); null for one exit wave
 tilt_tolerance_mrad: 0.001
 spot:
-  mode: direct_beam               # direct_beam (bright field) | hkl (dark field, needs --slab) | vector
+  mode: direct_beam               # direct_beam (bright field) | specular (the beam reflected into vacuum,
+                                  #   q = 2 sin θ_ext/λ n̂; needs surface_normal_xy) | hkl (bulk Bragg beam at g_xy,
+                                  #   needs --slab) | vector (q_inv_A)
   refine_radius_inv_A: null       # report the centroid of the spot within this radius; null = do not
 objective:
   radius_mrad: 6.0                # 0.239 1/Å: excludes the (111) reflections (0.319 1/Å) -> phase of the

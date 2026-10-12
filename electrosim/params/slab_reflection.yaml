@@ -7,7 +7,7 @@ n_x_si: 9
 n_y: 12
 n_z_si: 36                        # 138 Å along the beam, as the original generator's default
 x_vacuum_A: 60.0
-z_vacuum_A: 1.0
+z_vacuum_A: 0.9600566             # box = 73 (220) spacings (see slab.yaml)
 terraces_bilayers: [0, 1, 2, 1]
 target_reflection:
   hkl: [4, -4, 4]                 # allowed specular reflection (|F|/f = 8); (6,-6,6) and (2,-2,2) are refused

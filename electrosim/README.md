@@ -8,9 +8,10 @@ a vacuum reference hologram, a true sideband reconstruction, and validation agai
 controls that must fail.
 
 Status (2026-10-12): developed and tested in local copies of the ElectroSim environments (same package versions,
-Python 3.13 instead of 3.12, CPU only). **Not yet run on ElectroSim and never run on a GPU**: the GPU code path
-(`device: gpu`) is written to gemicro 0.5.6's rules (`.get()` before any numpy use, memory released) but its
-first execution will be yours.
+Python 3.13 instead of 3.12, CPU only), then audited independently (findings and fixes in `PORTING.md` §3).
+**Not yet run on ElectroSim and never run on a GPU.** The GPU code path (`device: gpu`) follows gemicro 0.5.6's
+rules (`.get()` before any numpy use, memory pools released). The audit ran it with every abTEM array replaced by
+a CuPy-like object that refuses implicit conversion, and it completed. A real GPU run will happen first on ElectroSim.
 
 ## 1. What is in this folder
 
@@ -134,8 +135,9 @@ profile view of the (1,-1,1) surface), 200 keV.
   must reproduce.
 * Four 20 Å-wide terraces lowered by [0, 1, 2, 1] bilayers: every terrace boundary is a known ±3.1355 Å
   (d_111) shift of the surface edge, with both signs (a sign test) and no hidden step across the periodic boundary.
-* Size: grid 2048 × 800 at 0.1 Å, 54 slices, 33 696 atoms. The forward model estimates 0.43 GB of GPU memory and
-  refuses to start above `limits.max_device_memory_GB` (6 GB). The exit wave is 13 MB.
+* Size: grid 2048 × 800 at 0.1 Å, 53 slices of 1.9201 Å (one (220) plane each: the box is 53 plane spacings long),
+  33 696 atoms. The forward model estimates 0.43 GB of GPU memory and refuses to start above
+  `limits.max_device_memory_GB` (6 GB). The exit wave is 13 MB.
 
 Optics (`specular_filter.yaml`, `hologram.yaml`): a 6 mrad bright-field objective aperture (0.24 1/Å; it excludes the
 (111) beams, so this is mean-inner-potential holography); 0.8 Å fringes at 30°, 0.2 Å detector pixels
@@ -153,36 +155,36 @@ float32 rounding), the whole chain run through gemicro 0.5.6 in a test project a
 
 | Quantity | Value | Where |
 |---|---|---|
-| exit-wave grid, sampling, band limit | 2048 × 800, 0.0999 × 0.0998 Å, 83.7 mrad | `sims/exit-wave/exit_wave.json` |
-| mean inner potential of the Lobato parametrisation | 14.07 V (neutral atoms; the sourced V0 is 12-12.5 V, ASSUMPTION) | same |
+| exit-wave grid, sampling, slices, band limit | 2048 × 800, 0.0999 × 0.0998 Å, 53 × 1.9201 Å, 83.7 mrad | `sims/exit-wave/exit_wave.json` |
+| mean inner potential of the Lobato parametrisation | 13.96 V over whole bilayer periods (neutral atoms; the sourced V0 is 12-12.5 V, ASSUMPTION) | same |
 | vacuum fringe contrast, predicted / measured | 0.2960 / 0.2960 | `derived/hologram/hologram.json` |
 | located carrier, spacing | (1.0813, 0.6264) 1/Å, 0.8003 Å (set: 0.8 Å at 30°) | `derived/holo-recon/recon.json` |
-| HoloSpy engine vs numpy engine | max phase difference 4e-12 rad | same |
+| HoloSpy engine vs numpy engine | max phase difference 3e-12 rad | same |
 | vacuum phase noise, predicted √2/(μ√N) / measured | 0.0495 / 0.0492 rad | same |
 | residues | 0 | same |
 | **NCC against T_holo** (noise limit) | **0.988** (0.992) | `derived/holo-validate/validate.json` |
-| **phase-scale slope against T_holo** | **0.9999** | same |
-| residual RMS / predicted noise | 1.25 (noise is higher in the crystal, where the amplitude is lower) | same, `residual_map.png` |
+| **phase-scale slope against T_holo** | **1.0002** | same |
+| residual RMS / local shot-noise prediction | 1.00 (1.25 against the vacuum value: noise is higher where the crystal lowers the amplitude) | same, `residual_map.png` |
 | registration shift | (0, 0) px | same |
-| terrace steps (true ±3.1355 Å) | -3.151, -3.145, +3.037, +3.258 Å | same, `terrace_profiles.png` |
-| edge width 10-90 %, rec / T_holo | 5.23 / 5.27 Å (aperture resolution 3.33 Å) | same |
-| mask sensitivity ±20 % | RMS phase change 0.035 rad; steps move ≤ 0.04 Å | same |
-| NCC / slope against σ·V_proj (projection approximation) | 0.971 / 0.76 | same |
-| control: no reference normalisation | NCC 0.59, slope 1.32, residual 21 × noise; residual vs injected distortion NCC 0.98: FAIL as expected | `derived/holo-validate-control-no-reference/` |
-| control: wrong sideband | NCC -0.988, slope -0.9999, residual 16 × noise: FAIL as expected | `derived/holo-validate-control-wrong-sideband/` |
+| terrace steps (true ±3.1355 Å) | -3.164, -3.110, +3.171, +3.102 Å | same, `terrace_profiles.png` |
+| edge width 10-90 % of T_holo | 5.27 Å (aperture resolution 3.33 Å); single noisy profiles of the reconstruction give 5-7 Å | same |
+| mask sensitivity ±20 % | RMS phase change 0.034-0.036 rad; steps move ≤ 0.06 Å | same |
+| NCC / slope against σ·V_proj (projection approximation) | 0.970 / 0.75 | same |
+| control: no reference normalisation | NCC 0.59, slope 1.33, residual 20 × noise; residual vs injected distortion NCC 0.97; holo_recon warns that the vacuum phase std is 7.7 × the prediction: FAIL as expected | `derived/holo-validate-control-no-reference/` |
+| control: wrong sideband | NCC -0.988, slope -1.0002, residual 13 × noise: FAIL as expected | `derived/holo-validate-control-wrong-sideband/` |
 
 Reading the two truths: **T_holo** is the image wave's phase band-limited by the same aperture: what a perfect
 reconstruction of these holograms returns. It tests the hologram chain, and the reconstruction meets it to the
 shot-noise limit. **T_proj** (σ·V_proj, the thin-object phase) is matched in shape (NCC 0.97) but not in scale (slope
-0.76): on the [110] zone axis, dynamical scattering and the aperture (which removes the Bragg beams) lower the
+0.75): on the [110] zone axis, dynamical scattering and the aperture (which removes the Bragg beams) lower the
 direct-beam phase by about a quarter. That difference is physics, not a reconstruction error, and is why a
 holographic mean-inner-potential measurement is made off the zone axis. The terrace-edge positions are
 insensitive to both deliberate errors (a position survives a phase sign flip or a smooth distortion); the phase
 values are not.
 
-Run times on a 4-core cloud CPU (wall clock, from each sidecar's `wall_time_s`): slab 2 s; exit wave 17 s on the CPU
+Run times on a 4-core cloud CPU (wall clock, from each sidecar's `wall_time_s`): slab 2 s; exit wave 18 s on the CPU
 (the H100 slice should take a few seconds; not measured); image wave 3 s; holograms 2 s; reconstruction 3 s
-(each control 3 s); validation 2 s; the whole `run_pipeline.sh` 44 s. Disk: about 120 MB for `sims/` and `derived/`.
+(each control 3 s); validation 2 s; the whole `run_pipeline.sh` 47 s. Disk: about 120 MB for `sims/` and `derived/`.
 
 Files: each stage writes its `.npy` arrays, its sidecar `<stage>.json`, and PNGs:
 `exit_wave_phase.png`, `exit_wave_amplitude.png`, `ground_truth_phase.png`; `exit_wave_spectrum.png` (aperture),
@@ -190,7 +192,7 @@ Files: each stage writes its `.npy` arrays, its sidecar `<stage>.json`, and PNGs
 `phase.png`, `phase_wrapped_raw.png`, `amplitude.png`, `sideband_selection.png`; `truth_T_holo.png`,
 `reconstructed_phase.png`, `residual_map.png`, `phase_scale.png`, `terrace_profiles.png`.
 
-## 5. Tests (laptop CPU, no GPU, under 30 s)
+## 5. Tests (laptop CPU, no GPU, under a minute)
 
 ```bash
 /opt/envs/em-holography/bin/python code/tests/run_tests.py     # on ElectroSim (pytest is not in the envs)
@@ -199,8 +201,8 @@ python -m pytest -q electrosim/tests                           # on a laptop wit
 ```
 
 On a laptop: `python3.12 -m venv v && v/bin/pip install "abtem==1.0.10" "holospy==0.3" "hyperspy==2.4.0" scikit-image
-pyyaml pytest` gives one environment in which all 27 tests run (26 pass in em-holography alone, the abTEM test in
-em-abtem). The physics checks include:
+pyyaml pytest` gives one environment in which all 30 tests pass (39 s with pytest; 29 run in em-holography alone,
+the abTEM test in em-abtem). The physics checks include:
 
 * the fringe spacing and orientation of a vacuum hologram match the biprism setting (< 0.5 %, < 0.5°);
 * the vacuum fringe contrast equals coherence × drift sinc;
@@ -214,10 +216,15 @@ em-abtem). The physics checks include:
 * the wrong sideband inverts the phase;
 * biprism overlap and Fresnel edges behave as expected;
 * seeds are deterministic;
-* pixel-centre resampling registers with binning;
+* pixel-centre resampling registers with binning, including on grid sizes such as 400, 405 and 384 (the
+  independent audit found wrong Fourier bins there);
 * signed step heights, the branch and the no-step control;
 * forbidden and non-specular reflections are refused;
-* strict parameters (a typo is refused), and outputs refuse raw/ and NaN.
+* the specular spot at 2 sin θ_ext/λ;
+* the step relation refused for a bulk-Bragg spot;
+* a phase reference region outside the biprism overlap refused;
+* strict parameters (a typo is refused);
+* outputs refuse raw/ (and gemicro's declared raw roots) and NaN, and a failed run leaves nothing behind.
 
 The tests also run the full CLI chain with the shipped parameter files and both controls. The abTEM test runs
 the generator and forward model on the CPU, checks the vacuum amplitude and the sign of the phase, and checks
@@ -227,13 +234,23 @@ that a tilt series is selected by value (a missing tilt is an error, never index
 
 * **The reflection geometry is not validated.** `slab_reflection.yaml`, `tilt_series.yaml` and
   `process_all_tilts.yaml` run the (4,-4,4) tilt series on the legacy CFG-A cell (θx from -12 to -16 mrad, through
-  the 13.64 mrad refraction-shifted peak). This exercises the code path only. In this cell almost no reflected
-  amplitude reaches the vacuum above the surface: `step_height_reflection_formula.py` reports "no step detected"
-  with about 1 rad uncertainty rather than inventing a height. The audit's milestone M2 (absorbing reflection cell
-  with confined illumination, validated against a dynamical solver) is still needed before any reflection phase is
-  compared with experiment. abTEM's propagator-shear tilt is recommended below about 17 mrad; the sweep stays below.
-* The exit wave is in abTEM's incident-beam frame (the direct beam at q = 0, a reflection g at q = g_xy) and on
-  the exit face of the potential box; thinner columns include vacuum propagation to that plane.
+  the 13.64 mrad refraction-shifted peak). This exercises the code path only.
+  * The dark-field aperture is on the beam reflected into vacuum (`spot.mode: specular`, q = 2 sin θ_ext/λ along the
+    surface normal: 1.088 1/Å at 13.64 mrad). That equals the (4,-4,4) g_x = 1.276 1/Å only at the 16.00 mrad vacuum
+    Bragg angle. The measured spot centroids agree with this position, and `step_height_reflection_formula.py`
+    takes θ_ext from the selected spot.
+  * In this cell only 1e-4 to 1e-2 of the intensity reaches that spot. Of 20 terrace steps (5 tilts × 4 steps),
+    19 are reported as "no step detected" (σ = 1-5 rad), and one crossed the 3σ threshold with a wrong value. So
+    nothing from this cell is a reflection result.
+  * The audit's milestone M2 (absorbing reflection cell with confined illumination, validated against a dynamical
+    solver) is needed before any reflection phase is compared with experiment.
+  * abTEM's propagator-shear tilt is recommended below about 17 mrad; the sweep stays below.
+* The exit wave is in abTEM's incident-beam frame (the direct beam at q = 0, a bulk Bragg beam at q = g_xy, the
+  beam reflected into vacuum at q = 2 sin θ_ext/λ n̂) and on the exit face of the potential box; thinner columns
+  include vacuum propagation to that plane.
+* The validation's residual criterion uses a local shot-noise prediction
+  σ² = σ_obj²(a_o²|ψ|² + a_r²)/|ψ|² + σ_ref², with |ψ| from the band-limited truth wave. The detector MTF and pixel
+  integration across the sideband are not in T_holo (about 0.002 rad).
 * Hologram model: intensities are averaged over phonon configurations after squaring; the reference branch is
   common to all configurations; the MTF is applied to the expected intensity, then Poisson noise (white noise);
   aberrations are relative to the selected spot (centred dark field). The degree of coherence (0.40), MTF

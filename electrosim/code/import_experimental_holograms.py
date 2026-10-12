@@ -74,23 +74,23 @@ def main(argv=None):
     if crop is not None:
         x0, x1, y0, y1 = crop
         obj, ref = obj[x0:x1, y0:y1], ref[x0:x1, y0:y1]
-    out = hc.Output(a.output, a.overwrite)
-    units = f"counts ({cpe} per electron)"
-    out.save_array("hologram", obj, units=units, axes=["x", "y"], sampling_A=pix,
-                   description=f"experimental object hologram from {a.object}")
-    out.save_array("reference_hologram", ref, units=units, axes=["x", "y"], sampling_A=pix,
-                   description=f"experimental vacuum reference hologram from {a.reference}")
-    out.save_array("overlap_mask", np.ones(obj.shape, bool), units="bool", axes=["x", "y"], sampling_A=pix,
-                   description="whole field (crop_px selects the overlap region)")
-    physics = {"energy_keV": energy, "wavelength_A": hc.wavelength_A(energy), "detector_pixel_A": list(pix),
-               "pixel_size_source": "parameter override" if pix_override is not None else "file axes",
-               "file_pixel_A": {"object": pix_o, "reference": pix_r}, "file_notes": [note_o, note_r],
-               "detector": {"counts_per_electron": cpe}, "crop_px": crop, "simulated": False}
-    summary = {"shape": list(obj.shape), "pixel_A": list(pix), "mean_counts_object": float(obj.mean()),
-               "mean_counts_reference": float(ref.mean()), "plots": []}
-    prov = hc.provenance(sys.argv, a.params, {"object": a.object, "reference": a.reference})
-    hc.write_sidecar(out, "hologram", raw, prov, physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        units = f"counts ({cpe} per electron)"
+        out.save_array("hologram", obj, units=units, axes=["x", "y"], sampling_A=pix,
+                       description=f"experimental object hologram from {a.object}")
+        out.save_array("reference_hologram", ref, units=units, axes=["x", "y"], sampling_A=pix,
+                       description=f"experimental vacuum reference hologram from {a.reference}")
+        out.save_array("overlap_mask", np.ones(obj.shape, bool), units="bool", axes=["x", "y"], sampling_A=pix,
+                       description="whole field (crop_px selects the overlap region)")
+        physics = {"energy_keV": energy, "wavelength_A": hc.wavelength_A(energy), "detector_pixel_A": list(pix),
+                   "pixel_size_source": "parameter override" if pix_override is not None else "file axes",
+                   "file_pixel_A": {"object": pix_o, "reference": pix_r}, "file_notes": [note_o, note_r],
+                   "detector": {"counts_per_electron": cpe}, "crop_px": crop, "simulated": False}
+        summary = {"shape": list(obj.shape), "pixel_A": list(pix), "mean_counts_object": float(obj.mean()),
+                   "mean_counts_reference": float(ref.mean()), "plots": []}
+        prov = hc.provenance(sys.argv, a.params, {"object": a.object, "reference": a.reference})
+        hc.write_sidecar(out, "hologram", raw, prov, physics, summary)
+        out.publish()
     hc.print_summary("imported holograms", summary, out.final, out.files)
 
 

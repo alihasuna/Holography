@@ -10,7 +10,9 @@ Runs in: em-holography (CPU; numpy).
 
 Relation (docs/physics_conventions.md, exp(+i k·r) convention): for the specular beam
     Δφ = φ(terrace j) - φ(terrace i) = -(4π/λ) h sin θ_ext,    h = height(j) - height(i),
-so h = -Δφ λ / (4π sin θ_ext), known only modulo the wrap period h_2π = λ / (2 sin θ_ext). Every height is
+so h = -Δφ λ / (4π sin θ_ext), known only modulo the wrap period h_2π = λ / (2 sin θ_ext). The angle is that of
+the beam selected by specular_filter (spot.mode: specular), read from the reconstruction's record; for
+experimental holograms it is the parameter theta_ext_mrad. Every height is
 reported with its branch family h + n h_2π; a single hologram does not fix n (a rocking series does).
 
 Fixes relative to the si110 script (audit A): the sign is kept, steps are taken in a fixed spatial order
@@ -34,7 +36,8 @@ import holo_common as hc  # noqa: E402
 
 
 def read(P):
-    p = {"theta": P.num("theta_ext_mrad", lo=0.0, lo_open=True) * 1e-3,
+    th = P.num("theta_ext_mrad", lo=0.0, lo_open=True, allow_none=True)
+    p = {"theta": None if th is None else th * 1e-3,
          "xband": P.vec("terrace_x_band_A", 2),
          "margin": P.num("terrace_margin_A", lo=0.0),
          "nsig": P.num("no_step_sigma", lo=0.0, lo_open=True),
@@ -44,10 +47,29 @@ def read(P):
     return p
 
 
-def terrace_stats(phase, pix, y_edges, xband, margin, area_q):
+def angle_from_chain(image_wave, theta_param):
+    """The external glancing angle of the beam that was actually imaged. The specular relation holds only for the
+    beam reflected into vacuum (specular_filter spot.mode: specular); a bulk Bragg beam (mode: hkl) carries a
+    momentum transfer g, for which single-bilayer lattice steps are invisible (Δφ ≡ 0 mod 2π)."""
+    spot = (image_wave or {}).get("spot")
+    if spot is None:  # experimental data: the angle must be given
+        if theta_param is None:
+            raise hc.ParamError("theta_ext_mrad is required when the reconstruction has no simulated image-wave "
+                                "record (experimental holograms)")
+        return theta_param, "parameter"
+    if spot.get("mode") != "specular":
+        raise SystemExit(f"the image wave was selected with spot.mode {spot.get('mode')!r}: the specular step "
+                         f"relation does not apply (use spot.mode: specular in specular_filter)")
+    th = spot["theta_in_ext_mrad"] * 1e-3
+    if theta_param is not None and abs(theta_param - th) > 1e-5:
+        raise SystemExit(f"theta_ext_mrad {theta_param * 1e3} disagrees with the selected beam's {th * 1e3} mrad")
+    return th, "image-wave record (specular spot, angle from the simulated tilt)"
+
+
+def terrace_stats(phase, pix, y_edges, xband, margin, area_q, binning):
     """Mean phase of every terrace band and its standard error (independent samples = resolution cells)."""
-    x = (np.arange(phase.shape[0]) + 0.5) * pix[0]
-    y = (np.arange(phase.shape[1]) + 0.5) * pix[1]
+    x = hc.pixel_centres(phase.shape[0], pix[0], binning)
+    y = hc.pixel_centres(phase.shape[1], pix[1], binning)
     rows = (x >= xband[0]) & (x <= xband[1])
     out = []
     for i in range(len(y_edges) - 1):
@@ -62,8 +84,9 @@ def terrace_stats(phase, pix, y_edges, xband, margin, area_q):
     return out
 
 
-def quantify(stats, lam, theta, nsig, maxfrac, true_tops=None):
-    s = math.sin(theta)
+def quantify(stats, lam, theta, nsig, maxfrac, true_tops=None, theta_out=None):
+    """Specular relation with external angles: Δφ = -(2π/λ)(sin θ_in + sin θ_out) h (θ_out = θ_in by default)."""
+    s = 0.5 * (math.sin(theta) + math.sin(theta if theta_out is None else theta_out))
     h2pi = lam / (2.0 * s)
     k = 4.0 * math.pi * s / lam  # rad per Å of height
     steps = []
@@ -108,11 +131,13 @@ def run(P, recon_dir, slab_dir, out):
     pix = rs.sampling("phase_unwrapped")
     lam = rs.meta["physics"]["wavelength_A"]
     area_q = rs.meta["physics"]["aperture"]["noise_equivalent_area_inv_A2"]
+    theta, src = angle_from_chain(rs.meta["physics"].get("image_wave"), p["theta"])
     slab = hc.Stage(slab_dir, "slab").meta["physics"]
     g = slab["geometry"]
-    stats = terrace_stats(phase, pix, g["terrace_y_edges_A"], p["xband"], p["margin"], area_q)
-    steps, h2pi = quantify(stats, lam, p["theta"], p["nsig"], p["maxfrac"], g["x_top_atom_A"])
-    physics = {"theta_ext_mrad": p["theta"] * 1e3, "wavelength_A": lam, "wrap_period_A": h2pi,
+    stats = terrace_stats(phase, pix, g["terrace_y_edges_A"], p["xband"], p["margin"], area_q,
+                          rs.meta["physics"].get("detector_binning", 1))
+    steps, h2pi = quantify(stats, lam, theta, p["nsig"], p["maxfrac"], g["x_top_atom_A"])
+    physics = {"theta_ext_mrad": theta * 1e3, "theta_source": src, "wavelength_A": lam, "wrap_period_A": h2pi,
                "relation": "h = -Δφ λ / (4π sin θ_ext), Δφ = φ(to) - φ(from), modulo h_2π = λ/(2 sin θ_ext)",
                "terraces": stats, "steps": steps, "terrace_x_band_A": p["xband"],
                "recon_sidecar": str(rs.sidecar_path)}
@@ -131,11 +156,11 @@ def main(argv=None):
                         ("--slab", "output folder of si110_cleave_slab_generator.py (terrace geometry)")])
     a = ap.parse_args(argv)
     raw = hc.load_params(a.params)
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary, rs = run(hc.Section(raw), a.recon, a.slab, out)
-    hc.write_sidecar(out, "step_height", raw, hc.provenance(sys.argv, a.params, {"recon": rs.sidecar_path}),
-                     physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary, rs = run(hc.Section(raw), a.recon, a.slab, out)
+        hc.write_sidecar(out, "step_height", raw, hc.provenance(sys.argv, a.params, {"recon": rs.sidecar_path}),
+                         physics, summary)
+        out.publish()
     hc.print_summary("step heights", summary, out.final, out.files)
 
 

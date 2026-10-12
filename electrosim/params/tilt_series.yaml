@@ -4,7 +4,7 @@ device: gpu
 seed: 20261012
 potential:
   sampling_A: 0.1                 # band limit 84 mrad > (4,-4,4) at 32 mrad + aperture
-  slice_thickness_A: 1.9201131
+  slice_thickness_A: 1.92012      # see exit_wave.yaml: 73 slices of the 140.168 Å box
   parametrization: lobato
   projection: infinite
 tilt_series:

@@ -197,6 +197,7 @@ def run(P, image_dir, out):
         "seeds": {"object_noise": [p["seed"], 1], "reference_noise": [p["seed"], 2], "gain_map": [p["seed"], 3]},
         "energy_keV": phys_in["energy_keV"], "wavelength_A": phys_in["wavelength_A"],
         "image_wave_sidecar": str(stage.sidecar_path), "n_configs_averaged": int(waves.shape[0]),
+        "image_wave": {"spot": phys_in["spot"], "tilt_mrad": phys_in["tilt_mrad"]},  # carried to recon/step height
         "warnings": warnings}
     summary = {"detector_shape": list(det_shape), "pixel_A": [round(v, 5) for v in pix],
                "fringe_spacing_A": p["spacing"], "pixels_per_fringe": round(ppf, 3),
@@ -212,12 +213,12 @@ def main(argv=None):
                        [("--image-wave", "output folder of specular_filter.py")])
     a = ap.parse_args(argv)
     raw = hc.load_params(a.params)
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary, stage = run(hc.Section(raw), a.image_wave, out)
-    prov = hc.provenance(sys.argv, a.params, {"image_wave_sidecar": stage.sidecar_path},
-                         seeds=physics["seeds"])
-    hc.write_sidecar(out, "hologram", raw, prov, physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary, stage = run(hc.Section(raw), a.image_wave, out)
+        prov = hc.provenance(sys.argv, a.params, {"image_wave_sidecar": stage.sidecar_path},
+                             seeds=physics["seeds"])
+        hc.write_sidecar(out, "hologram", raw, prov, physics, summary)
+        out.publish()
     hc.print_summary("holograms", summary, out.final, out.files)
 
 

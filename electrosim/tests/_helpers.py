@@ -51,7 +51,7 @@ def run_script(script, *args, cwd=None):
                           capture_output=True, text=True, env=env)
 
 
-def write_exit_wave_stage(folder, psi, sampling, energy_keV=200.0, gt=None):
+def write_exit_wave_stage(folder, psi, sampling, energy_keV=200.0, gt=None, tilt_mrad=(0.0, 0.0)):
     """A minimal exit_wave stage folder (as written by multislice_forward_model.py) from an array."""
     import numpy as np
     import holo_common as hc
@@ -61,7 +61,7 @@ def write_exit_wave_stage(folder, psi, sampling, energy_keV=200.0, gt=None):
     out.save_array("ground_truth_phase", (np.angle(psi) if gt is None else gt).astype(np.float32), units="rad",
                    axes=["x", "y"], sampling_A=sampling, description="synthetic truth")
     lam = hc.wavelength_A(energy_keV)
-    physics = {"energy_keV": energy_keV, "wavelength_A": lam, "tilts_mrad": [[0.0, 0.0]],
+    physics = {"energy_keV": energy_keV, "wavelength_A": lam, "tilts_mrad": [list(tilt_mrad)],
                "antialias_cutoff_inv_A": (2.0 / 3.0) / (2.0 * max(sampling)),
                "wave_plane": "synthetic", "frozen_phonons": {"seeds": []}}
     hc.write_sidecar(out, "exit_wave", {}, {"synthetic": True}, physics, {"plots": []})

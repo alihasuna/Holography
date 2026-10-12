@@ -17,7 +17,7 @@ Defect IDs refer to `docs/agent_reports/A_code_audit.md` (A), the specification
 | (none) | `code/holo_validate.py` | New: NCC, phase-scale slope, residual map against the shot-noise prediction, registration, resolution, terrace-edge steps, mask sensitivity, expected-failure controls. |
 | (none) | `code/import_experimental_holograms.py` | New: experimental holograms enter the same reconstruction (spec §5.7). |
 | `requirements.txt` (unpinned) | ElectroSim's fixed environments; versions recorded by gemicro and in every sidecar (M16) |  |
-| no tests | `tests/` (27 tests, runner without pytest) (M19) |  |
+| no tests | `tests/` (30 tests, runner without pytest) (M19) |  |
 
 ## Audit defects and their status
 
@@ -29,7 +29,7 @@ Defect IDs refer to `docs/agent_reports/A_code_audit.md` (A), the specification
 | C4 wrap/branch ignored | fixed in the quantification (wrap period, branch family, branch matching the truth for simulations); a single hologram still cannot fix the branch: rocking-series inversion is future work |
 | C5 tilt index 0 | fixed (selection by value, failure when absent; test) |
 | C6 advisory pixel size | fixed (pixel sizes only from sidecars) |
-| C7 search radius from |g| | fixed (spot vector from the crystal in abTEM's incident-beam frame) |
+| C7 search radius from |g| | fixed: the spot is computed, never searched for. `specular` mode puts the aperture on the beam reflected into vacuum (2 sin θ_ext/λ n̂, from the tilt); `hkl` mode on the bulk Bragg beam g_xy (they agree only at the vacuum Bragg angle). The first version used g_xy for the reflected beam; the independent audit found it (§3) |
 | C8 sign destroyed | fixed (signed, fixed order; test) |
 | M1 no hologram | fixed (hologram + reference + reconstruction stages) |
 | M2 reflection cell | **open**: needs milestone M2 (absorbing reflection cell, confined illumination, dynamical-solver validation); the reflection example is labelled exploratory |
@@ -48,4 +48,22 @@ Defect IDs refer to `docs/agent_reports/A_code_audit.md` (A), the specification
 | M16 nothing pinned | the ElectroSim environments are fixed; versions recorded per run |
 | M17 memory estimate | fixed (estimate of what is allocated; hard limit) |
 | M18 README inconsistencies | not carried over (new README) |
-| M19 no tests | 27 tests |
+| M19 no tests | 30 tests |
+
+## 3. Independent audit of this port (2026-10-12) and the fixes
+
+The project's code-auditor agent read the whole port against the installed abTEM 1.0.10, HoloSpy 0.3 and dask
+sources and reproduced each finding on synthetic data. It confirmed the hologram sign, the HoloSpy conjugate-index
+handling, the noise prediction, the step-height sign, the refraction formula and the gemicro contract. Its findings:
+
+| Finding | Fix |
+|---|---|
+| MAJOR: `resample_to_pixel_centres` truncated `fftfreq(N)*N` (28.999… -> 28), picking wrong Fourier bins for 78 of 182 possible grid sizes and corrupting the validation truth (residual/noise 2.21 at nx = 768) | `np.rint`; regression test on N = 400, 405, 384, 392, 525 (error 1.0 before, 4e-14 after) |
+| MAJOR: the dark-field aperture for the reflected beam sat at g_xy, while the beam reflected into vacuum is at 2 sin θ_ext/λ n̂ (1.088 vs 1.276 1/Å at 13.64 mrad); the step relation was applied to whichever beam was selected | `spot.mode: specular`; the step height takes θ_ext from the selected spot and refuses a bulk-Bragg spot; tests |
+| MEDIUM: a phase reference region outside the biprism overlap was accepted | refused; a warning when the vacuum phase std exceeds 2 × the prediction; test |
+| LOW: mean inner potential over a non-integer number of periods (14.07 vs 13.96 V) | whole d_111 periods |
+| LOW: residual criterion used the vacuum noise everywhere | local, amplitude-aware prediction (the shipped case: 1.00 instead of 1.25) |
+| LOW: output guard ignored gemicro's `raw_roots` | read from gemicro.json; test |
+| LOW: arrays read were not hashed | every file read is hashed into the sidecar's provenance (`files_read`) |
+| LOW: abTEM settings not recorded; realised slice thickness 1.886 Å for a requested 1.920 Å | settings recorded; box made 53 (220) spacings long, slice thickness 1.92012 Å, realised value recorded with a warning on mismatch |
+| LOW: comments (MTF 0.53, 53 slices), terrace bound in periods, half-pixel coordinate offset, staging folders left by failed runs | corrected; exact detector pixel centres; a failed run removes its staging folder |

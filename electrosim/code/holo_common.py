@@ -170,6 +170,19 @@ class Section:
 # ---------------------------------------------------------------------------------------------------------------
 # Output folder: written atomically, never through a link, never inside raw/ or .gemicro/ of a gemicro project.
 # ---------------------------------------------------------------------------------------------------------------
+def raw_roots(root):
+    """Raw-data roots declared in the project's gemicro.json (`raw_roots`), resolved against the project root."""
+    try:
+        cfg = json.loads((Path(root) / "gemicro.json").read_text())
+    except (OSError, ValueError):
+        return []
+    out = []
+    for r in cfg.get("raw_roots") or []:
+        q = Path(os.path.expanduser(str(r)))
+        out.append((q if q.is_absolute() else Path(root) / q).resolve())
+    return out
+
+
 def find_project_root(start):
     """The nearest ancestor that holds gemicro.json (a gemicro project), or None."""
     p = Path(start).resolve()
@@ -219,6 +232,9 @@ class Output:
             rel = resolved.relative_to(root) if str(resolved).startswith(str(root)) else None
             if rel is not None and rel.parts and rel.parts[0] in ("raw", ".gemicro", "gemicro.json"):
                 raise SystemExit(f"output {p} is inside {rel.parts[0]} of the gemicro project {root}; refusing")
+            for rr in raw_roots(root):
+                if resolved == rr or rr in resolved.parents:
+                    raise SystemExit(f"output {p} is inside the raw-data root {rr} declared in gemicro.json")
         if p.exists() and not p.is_dir():
             raise SystemExit(f"output {p} exists and is not a folder")
         if p.exists():
@@ -226,6 +242,7 @@ class Output:
             if existing and not overwrite:
                 raise SystemExit(f"output folder {p} is not empty ({len(existing)} entries); pass --overwrite to "
                                  f"replace its contents, or choose a new folder")
+        self.created = not p.exists()
         p.mkdir(parents=True, exist_ok=True)
         self.final = p
         self.overwrite = overwrite
@@ -233,6 +250,18 @@ class Output:
         self.arrays = {}
         self.files = []
         self.t0 = time.time()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        """On an error, remove the staging folder (and the output folder if this run created it and it is empty),
+        so a failed run leaves nothing that looks like a result."""
+        if exc_type is not None and self.staging.exists():
+            shutil.rmtree(self.staging, ignore_errors=True)
+            if self.created and self.final.is_dir() and not any(self.final.iterdir()):
+                self.final.rmdir()
+        return False
 
     def path(self, name):
         """Path for a file written by the caller (plots); recorded in the file list."""
@@ -313,6 +342,7 @@ def provenance(argv, params_path, inputs, seeds=None, extra=None):
         "params_sha256": sha256_file(params_path),
         "inputs": {str(k): {"path": str(v), "sha256": sha256_file(v)} for k, v in inputs.items()
                    if v is not None and Path(v).is_file()},
+        "files_read": {str(p): sha256_file(p) for p in FILES_READ if p.is_file()},
         "packages": {k: _version(k) for k in ("numpy", "scipy", "abtem", "ase", "cupy", "holospy", "hyperspy",
                                               "skimage", "matplotlib", "yaml") if _version(k)},
         "threads": {k: os.environ.get(k) for k in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "NUMBA_NUM_THREADS")},
@@ -336,6 +366,15 @@ def write_sidecar(out, stage, params_data, prov, physics, summary, name=None):
 # ---------------------------------------------------------------------------------------------------------------
 # Reading a stage folder back, with assertions instead of guesses (audit A, C5/C6: never trust an advisory value).
 # ---------------------------------------------------------------------------------------------------------------
+FILES_READ = []  # every stage file read in this process (sidecars and arrays), hashed into the provenance
+
+
+def _note_read(path):
+    p = Path(path)
+    if p not in FILES_READ:
+        FILES_READ.append(p)
+
+
 class Stage:
     def __init__(self, folder, stage):
         folder = Path(folder)
@@ -347,6 +386,7 @@ class Stage:
         self.folder = folder
         self.sidecar_path = side
         self.meta = json.loads(side.read_text())
+        _note_read(side)
         if self.meta.get("format") != FORMAT or self.meta.get("stage") != stage:
             raise SystemExit(f"{side}: format {self.meta.get('format')!r} stage {self.meta.get('stage')!r}, "
                              f"expected {FORMAT!r} {stage!r}")
@@ -363,6 +403,7 @@ class Stage:
     def array(self, key):
         e = self.entry(key)
         a = np.load(self.folder / e["file"], allow_pickle=False)
+        _note_read(self.folder / e["file"])
         if list(a.shape) != e["shape"] or str(a.dtype) != e["dtype"]:
             raise SystemExit(f"{self.folder / e['file']}: shape {a.shape} dtype {a.dtype} disagree with the sidecar "
                              f"({e['shape']} {e['dtype']})")
@@ -395,6 +436,12 @@ def fft_freqs(shape, sampling):
     qx = np.fft.fftfreq(shape[0], sampling[0])[:, None]
     qy = np.fft.fftfreq(shape[1], sampling[1])[None, :]
     return np.broadcast_to(qx, shape), np.broadcast_to(qy, shape)
+
+
+def pixel_centres(n, pixel_A, binning):
+    """Positions (Å, simulation-box coordinates) of detector pixel centres: pixel K integrates the simulation
+    samples k = K b ... K b + b - 1, which abTEM places at k Δ, so its centre is K p + (b - 1) Δ / 2."""
+    return np.arange(n) * pixel_A + 0.5 * (binning - 1) * pixel_A / binning
 
 
 def region_mask(shape, fractions):

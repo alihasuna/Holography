@@ -151,6 +151,7 @@ def simulate(atoms, s, tilts_mrad):
         at = atoms if s["num_configs"] == 0 else displaced(atoms, s["sigma_A"], s["seed"] + 1000 + c)
         pot = abtem.Potential(at, gpts=tuple(gpts), slice_thickness=s["slice_thickness_A"],
                               parametrization=s["parametrization"], projection=s["projection"])
+        slices = [float(v) for v in pot.slice_thickness]
         for t, tilt in enumerate(tilts_mrad):
             wave = abtem.PlaneWave(energy=energy, tilt=tuple(tilt)).multislice(pot)
             wave = wave.compute(progress_bar=False, scheduler="synchronous")
@@ -158,7 +159,9 @@ def simulate(atoms, s, tilts_mrad):
             del wave
     grid = {"gpts": gpts, "extent_A": [float(L[0]), float(L[1])], "box_length_along_beam_A": float(L[2]),
             "sampling_A": [float(L[0] / gpts[0]), float(L[1] / gpts[1])], "n_slices": n_slices,
-            "device_memory_estimate_GB": est}
+            "device_memory_estimate_GB": est,
+            "realised_slice_thickness_A": [min(slices), max(slices)], "requested_slice_thickness_A":
+            s["slice_thickness_A"]}
     return out, grid
 
 
@@ -179,14 +182,16 @@ def mean_inner_potential(vproj, sampling, slab_meta):
         return None
     g = slab_meta["physics"]["geometry"]
     t = g["z_last_atom_A"] - g["z_first_atom_A"] + 0.5 * g["period_z_A"]  # (220) planes every period_z/2
-    margin = 2.0 * g["d_111_A"]
-    x = (np.arange(vproj.shape[0]) + 0.5) * sampling[0]
-    rows = (x > g["x_back_atom_A"] + margin) & (x < min(g["x_top_atom_A"]) - margin)
-    if rows.sum() < 3:
+    d = g["d_111_A"]
+    x0 = g["x_back_atom_A"] + 2.0 * d
+    n_per = int((min(g["x_top_atom_A"]) - 2.0 * d - x0) // d)  # a whole number of (1,-1,1) bilayer periods
+    if n_per < 1:
         return None
+    x = np.arange(vproj.shape[0]) * sampling[0]  # abTEM samples at k Δx
+    rows = (x >= x0) & (x < x0 + n_per * d)
     v0 = float(vproj[rows].mean() / t)
-    return {"V0_parametrisation_V": v0, "thickness_along_beam_A": t, "region": "slab interior below the lowest "
-            "terrace, 2 d_111 from the faces", "note": "compare with the sourced V0 (ASSUMPTION B1: 12.0 V; "
+    return {"V0_parametrisation_V": v0, "thickness_along_beam_A": t, "bilayer_periods_averaged": n_per,
+            "region": "a whole number of d_111 periods of the slab interior below the lowest terrace", "note": "compare with the sourced V0 (ASSUMPTION B1: 12.0 V; "
             "instrument file 12.5 V OPEN)"}
 
 
@@ -228,7 +233,16 @@ def write_outputs(out, waves, tilts, grid, s, atoms, slab_meta, gt, vproj, sigma
     if max_tilt > SHEAR_TILT_LIMIT_MRAD:
         warnings.append(f"tilt {max_tilt:.1f} mrad exceeds abTEM's recommended ~17 mrad for propagator-shear tilt; "
                         f"the spec's milestone M2 convergence test (shear vs Fourier-component tilt) applies")
-    cutoff_mrad = 1e3 * lam * (2.0 / 3.0) / (2.0 * max(samp))
+    import abtem
+    aa = float(abtem.config.get("antialias.cutoff"))
+    cutoff_mrad = 1e3 * lam * aa / (2.0 * max(samp))
+    abtem_cfg = {k: abtem.config.get(k) for k in ("device", "precision", "fft", "antialias.cutoff",
+                                                   "antialias.taper", "dask.lazy", "dask.chunk-size",
+                                                   "dask.chunk-size-gpu")}
+    rs = grid["realised_slice_thickness_A"]
+    if abs(rs[1] / s["slice_thickness_A"] - 1) > 0.01:
+        warnings.append(f"abTEM realised slices of {rs[0]:.4f}-{rs[1]:.4f} Å for the requested "
+                        f"{s['slice_thickness_A']} Å (box not a multiple of it)")
     physics = {"energy_keV": s["energy_keV"], "wavelength_A": lam, "sigma_rad_per_V_A": sig,
                "sigma_abtem_rad_per_V_A": sigma_abtem, "grid": grid, "tilts_mrad": [list(t) for t in tilts],
                "tilt_convention": "abTEM propagator-shear tilt; array in the incident-beam frame (direct beam at "
@@ -239,11 +253,12 @@ def write_outputs(out, waves, tilts, grid, s, atoms, slab_meta, gt, vproj, sigma
                "potential": {k: s[k] for k in ("slice_thickness_A", "parametrization", "projection")},
                "frozen_phonons": {"num_configs": s["num_configs"], "sigma_A": s["sigma_A"],
                                   "seeds": [s["seed"] + 1000 + c for c in range(s["num_configs"])]},
-               "n_atoms": len(atoms), "mean_inner_potential": mip, "device": dev_info, "warnings": warnings}
+               "n_atoms": len(atoms), "mean_inner_potential": mip, "device": dev_info, "warnings": warnings,
+               "abtem_config": abtem_cfg}
     vac = None
     if slab_meta is not None:
         g = slab_meta["physics"]["geometry"]
-        x = (np.arange(w0.shape[0]) + 0.5) * samp[0]
+        x = np.arange(w0.shape[0]) * samp[0]
         rows = x > max(g["x_top_atom_A"]) + 10.0
         if rows.any():
             vac = float(np.abs(w0[rows]).std())
@@ -280,11 +295,11 @@ def main(argv=None):
                        [("--structure", "structure file with an orthogonal cell (extxyz/CIF), beam along z")])
     a = ap.parse_args(argv)
     raw = hc.load_params(a.params)
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary, inputs, s = run(raw, a.structure, out)
-    prov = hc.provenance(sys.argv, a.params, inputs, seeds={"phonons": physics["frozen_phonons"]["seeds"]})
-    hc.write_sidecar(out, "exit_wave", raw, prov, physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary, inputs, s = run(raw, a.structure, out)
+        prov = hc.provenance(sys.argv, a.params, inputs, seeds={"phonons": physics["frozen_phonons"]["seeds"]})
+        hc.write_sidecar(out, "exit_wave", raw, prov, physics, summary)
+        out.publish()
     hc.print_summary("exit wave", summary, out.final, out.files)
 
 

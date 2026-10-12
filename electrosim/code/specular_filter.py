@@ -14,9 +14,10 @@ the biprism: an objective aperture (bright field around the direct beam, or dark
 optional defocus and Cs, and recentring of the selected beam. The hologram is formed by hologram_formation.py
 and reconstructed by holo_recon.py, from intensities only.
 
-Fixes (audit A): the spot vector is computed from the crystal (g in the slab frame; abTEM's incident-beam frame
-puts it at q = g_xy for any tilt: C7), forbidden reflections are refused, the tilt of a series is selected by
-value (C5), the pixel size is read from the exit wave's sidecar (C6), the aperture is in mrad (M6), the
+Fixes (audit A): the spot vector is computed, never searched for (C7): `specular` puts the aperture on the beam
+reflected into vacuum, q = 2 sin(θ_ext)/λ n̂ in abTEM's incident-beam frame (θ_ext from the selected tilt);
+`hkl` on the bulk Bragg beam q = g_xy (the two agree only at the vacuum Bragg angle); forbidden reflections
+are refused, the tilt of a series is selected by value (C5), the pixel size is read from the exit wave's sidecar (C6), the aperture is in mrad (M6), the
 spot is moved to q = 0 by an exact phase ramp (M13), and the measured centroid of the spot is reported next
 to the prediction instead of replacing it (C3).
 """
@@ -64,7 +65,7 @@ def run(P, exit_dir, slab_dir, out):
     tilt_select = P.vec("tilt_select_mrad", 2, allow_none=True)
     tol = P.num("tilt_tolerance_mrad", lo=0.0, lo_open=True)
     S = P.sub("spot")
-    mode = S.choice("mode", ("direct_beam", "hkl", "vector"))
+    mode = S.choice("mode", ("direct_beam", "specular", "hkl", "vector"))
     O = P.sub("objective")
     radius_mrad = O.num("radius_mrad", lo=0.0, lo_open=True)
     edge = O.choice("edge", ("hard", "hann", "hamming", "tanh"))
@@ -82,6 +83,22 @@ def run(P, exit_dir, slab_dir, out):
         q_spot = np.zeros(2)
     elif mode == "vector":
         q_spot = np.asarray(S.vec("q_inv_A", 2))
+    elif mode == "specular":
+        # The beam reflected into vacuum keeps the surface-parallel momentum and leaves at the mirror angle:
+        # k_out - k_in = 2 k sin(θ_ext) n̂. In abTEM's incident-beam frame it sits at q = 2 sin(θ_ext)/λ n̂.
+        # It coincides with the bulk Bragg beam g only at the vacuum Bragg angle.
+        n = np.asarray(S.vec("surface_normal_xy", 2))
+        if np.linalg.norm(n) == 0:
+            raise hc.ParamError("spot.surface_normal_xy must be a non-zero [nx, ny]")
+        n = n / np.linalg.norm(n)
+        th = -1e-3 * float(np.dot(tilt, n))  # glancing angle of the incident beam onto the surface
+        if th <= 0:
+            raise SystemExit(f"tilt {tilt} mrad does not send the beam onto a surface with outward normal {n.tolist()} "
+                             f"(needs tilt·n < 0)")
+        q_spot = 2.0 * math.sin(th) / lam * n
+        spot_info.update({"surface_normal_xy": n.tolist(), "theta_in_ext_mrad": 1e3 * th,
+                          "theta_out_ext_mrad": 1e3 * th,
+                          "relation": "specular: Δφ = -(2π/λ)(sin θ_in + sin θ_out) h"})
     else:
         hkl = S.vec("hkl", 3, integer=True)
         if slab_dir is None:
@@ -95,14 +112,17 @@ def run(P, exit_dir, slab_dir, out):
             raise SystemExit(f"{hkl} has a component {g[2]:.4g} 1/Å along the beam: not in the zero-order Laue "
                              f"zone of this exit wave")
         q_spot = g[:2]
-        spot_info.update({"hkl": hkl, "abs_F_over_f": abs(F), "g_slab_inv_A": g.tolist()})
+        spot_info.update({"hkl": hkl, "abs_F_over_f": abs(F), "g_slab_inv_A": g.tolist(),
+                          "relation": "bulk Bragg (Laue) beam at q = g_xy in the incident-beam frame; NOT the "
+                                      "beam reflected into vacuum except at the vacuum Bragg angle"})
     P.finish()
 
     radius_q = radius_mrad * 1e-3 / lam
     taper_q = taper_mrad * 1e-3 / lam
     cutoff = stage.meta["physics"]["antialias_cutoff_inv_A"]
-    if math.hypot(*q_spot) + radius_q > cutoff:
-        raise SystemExit(f"aperture edge at {math.hypot(*q_spot) + radius_q:.3f} 1/Å lies beyond the simulation's "
+    if math.hypot(*q_spot) + radius_q + 0.5 * taper_q > cutoff:
+        raise SystemExit(f"aperture edge at {math.hypot(*q_spot) + radius_q + 0.5 * taper_q:.3f} 1/Å lies beyond the "
+                         f"simulation's "
                          f"band limit {cutoff:.3f} 1/Å (sampling too coarse for this spot and aperture)")
     spot_info["predicted_q_inv_A"] = q_spot.tolist()
     spot_info["predicted_mrad"] = (1e3 * lam * q_spot).tolist()
@@ -154,11 +174,11 @@ def main(argv=None):
     ap.add_argument("--slab", default=None, help="output folder of si110_cleave_slab_generator (spot.mode: hkl)")
     a = ap.parse_args(argv)
     raw = hc.load_params(a.params)
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary, stage = run(hc.Section(raw), a.exit_wave, a.slab, out)
-    inputs = {"exit_wave_sidecar": stage.sidecar_path}
-    hc.write_sidecar(out, "image_wave", raw, hc.provenance(sys.argv, a.params, inputs), physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary, stage = run(hc.Section(raw), a.exit_wave, a.slab, out)
+        inputs = {"exit_wave_sidecar": stage.sidecar_path}
+        hc.write_sidecar(out, "image_wave", raw, hc.provenance(sys.argv, a.params, inputs), physics, summary)
+        out.publish()
     hc.print_summary("image wave", summary, out.final, out.files)
 
 

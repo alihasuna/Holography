@@ -242,3 +242,17 @@ def test_apodisation_cancels_in_the_ratio_and_removes_boundary_leakage():
         amp = np.abs(w / bandlimit(psi, A))[16:-16, 16:-16]
         assert np.abs(amp - 1).max() < 0.05  # the window cancels in object / reference
     assert errs[1] < 0.2 * errs[0], errs
+
+
+def test_pixel_centre_resampling_on_awkward_grid_sizes():
+    # audit MAJOR-1: fftfreq(N)*N truncated to int picked wrong bins for 78 of 182 grid sizes (e.g. 400, 405, 384)
+    for nc in (400, 405, 384, 392, 525):
+        n, b, d = 2 * nc, 2, 0.1
+        L = n * d
+        x = (np.arange(n) * d)[:, None] * np.ones((n, 4))
+        X = ((np.arange(nc) * b + 0.5 * (b - 1)) * d)[:, None] * np.ones((nc, 2))  # y is binned too
+        for m in (7, 28, 29, 58, 116):
+            if m >= nc // 2:
+                continue
+            r = ho.resample_to_pixel_centres(np.exp(2j * math.pi * m * x / L), b)
+            assert np.abs(r - np.exp(2j * math.pi * m * X / L)).max() < 1e-9, (nc, m)

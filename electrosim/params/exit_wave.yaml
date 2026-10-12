@@ -4,7 +4,8 @@ device: gpu                       # gpu | cpu  (cpu gives identical numbers to f
 seed: 20261012                    # seeds the frozen-phonon displacements (unused when num_configs is 0)
 potential:
   sampling_A: 0.1                 # target; realised 0.0999 x 0.0998 Å (grid 2048 x 800); band limit 84 mrad
-  slice_thickness_A: 1.9201131    # a/(2√2): one (220) plane per slice along [110]
+  slice_thickness_A: 1.92012      # a/(2√2) = 1.9201131 Å, rounded UP so that abTEM's ceil(box/dz) gives exactly
+                                  #   53 slices of the 101.766 Å box (one (220) plane each); realised value recorded
   parametrization: lobato
   projection: infinite
 illumination:

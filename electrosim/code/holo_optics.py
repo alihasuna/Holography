@@ -204,11 +204,11 @@ def resample_to_pixel_centres(psi, b):
         nx, ny = Nx * b, Ny * b
     F = np.fft.fft2(psi, axes=(-2, -1))
     s = 0.5 * (b - 1)
-    kx = np.fft.fftfreq(nx)[:, None] * nx  # integer frequency indices
-    ky = np.fft.fftfreq(ny)[None, :] * ny
+    kx = np.rint(np.fft.fftfreq(nx) * nx)[:, None]  # integer frequency indices
+    ky = np.rint(np.fft.fftfreq(ny) * ny)[None, :]
     F = F * np.exp(2j * np.pi * (kx * s / nx + ky * s / ny))
-    ix = (np.fft.fftfreq(Nx) * Nx).astype(int) % nx
-    iy = (np.fft.fftfreq(Ny) * Ny).astype(int) % ny
+    ix = np.rint(np.fft.fftfreq(Nx) * Nx).astype(int) % nx  # rint: fftfreq(N)*N gives 28.999999...
+    iy = np.rint(np.fft.fftfreq(Ny) * Ny).astype(int) % ny
     Fc = F[..., ix[:, None], iy[None, :]]
     out = np.fft.ifft2(Fc, axes=(-2, -1)) / (b * b)
     return out.reshape(lead + (Nx, Ny))

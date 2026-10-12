@@ -111,6 +111,9 @@ def run(P, holo_dir, out):
         raise SystemExit(f"aperture radius {radius:.3f} (+taper/2) exceeds half the carrier frequency {qn:.3f} 1/Å: "
                          f"it would include the centre band")
     region = hc.region_mask(holo.shape, p["region"]) if p["region"] is not None else None
+    if region is not None and st.has("overlap_mask") and not st.array("overlap_mask")[region].all():
+        raise SystemExit("the phase reference region extends outside the biprism overlap (pixels without fringes); "
+                         "move phase_reference_region inside it")
     win = hs.tukey_window(holo.shape, p["tukey"])
     if region is not None and win[region].min() < 0.999:
         raise SystemExit("the phase reference region lies inside the apodisation taper; move it inwards or "
@@ -151,6 +154,13 @@ def run(P, holo_dir, out):
     dose_o = float(holo_raw[vac & ov].mean()) / (cpe * pix[0] * pix[1])
     dose_r = float(ref_raw[ov].mean()) / (cpe * pix[0] * pix[1])
     sigma_pred = ho.predicted_phase_noise(mu_ref, dose_o, dose_r if p["normalize"] else None, area)
+    sigma_obj = ho.predicted_phase_noise(mu_ref, dose_o, None, area)  # object-hologram part (vacuum)
+    sigma_ref = ho.predicted_phase_noise(mu_ref, dose_r, None, area) if p["normalize"] else 0.0
+    warnings = []
+    vac_std = float(unw[vac].std()) if vac is not None else None
+    if vac_std is not None and vac_std > 2.0 * sigma_pred:
+        warnings.append(f"reference-region phase std {vac_std:.4f} rad is {vac_std / sigma_pred:.1f} × the shot-noise "
+                        f"prediction: not a flat vacuum region, residues, or a reconstruction problem")
     resid = hs.count_residues(np.where(ov & (win > 0.5), np.angle(wave), 0.0))  # not where the window ~ 0
     try:
         hstat = hs.holospy_statistics(ref_raw, pix, car["q_refined_inv_A"], energy)
@@ -194,17 +204,20 @@ def run(P, holo_dir, out):
         "residues_counted_where": "overlap and apodisation window > 0.5",
         "contrast_reference_median": mu_ref, "dose_object_e_per_A2": dose_o, "dose_reference_e_per_A2": dose_r,
         "predicted_vacuum_phase_noise_rad": sigma_pred,
+        "predicted_noise_components_rad": {"object_hologram": sigma_obj, "reference_hologram": sigma_ref},
+        "warnings": warnings,
         "measured_reference_region_phase_std_rad": float(unw[vac].std()) if vac is not None else None,
         "holospy_statistics_reference": hstat,
         "holospy_vs_numpy_max_abs_phase_diff_rad": cross, "mask_sensitivity_scales": p["scales"],
-        "energy_keV": energy, "wavelength_A": lam, "hologram_sidecar": str(st.sidecar_path)}
+        "energy_keV": energy, "wavelength_A": lam, "hologram_sidecar": str(st.sidecar_path),
+        "image_wave": meta.get("image_wave"), "detector_binning": meta.get("binning", 1)}
     summary = {"carrier_inv_A": [round(float(v), 5) for v in qc], "fringe_spacing_A": round(car["spacing_A"], 5),
                "aperture_radius_inv_A": round(radius, 5), "resolution_A": round(1.0 / radius, 3),
                "reference_normalization": p["normalize"], "contrast_ref": round(mu_ref, 4),
                "phase_range_rad": [round(float(unw.min()), 4), round(float(unw.max()), 4)],
                "reference_region_std_rad": None if vac is None else round(float(unw[vac].std()), 5),
                "predicted_noise_rad": round(sigma_pred, 5), "residues": resid,
-               "holospy_vs_numpy_rad": cross, "plots": [x for x in plots if x]}
+               "holospy_vs_numpy_rad": cross, "plots": [x for x in plots if x], "warnings": warnings}
     return physics, summary, st
 
 
@@ -213,13 +226,13 @@ def main(argv=None):
                        [("--hologram", "output folder of hologram_formation.py or import_experimental_holograms.py")])
     a = ap.parse_args(argv)
     raw = hc.load_params(a.params)
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary, st = run(hc.Section(raw), a.hologram, out)
-    inputs = {"hologram": st.folder / st.entry("hologram")["file"],
-              "reference_hologram": st.folder / st.entry("reference_hologram")["file"],
-              "hologram_sidecar": st.sidecar_path}
-    hc.write_sidecar(out, "recon", raw, hc.provenance(sys.argv, a.params, inputs), physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary, st = run(hc.Section(raw), a.hologram, out)
+        inputs = {"hologram": st.folder / st.entry("hologram")["file"],
+                  "reference_hologram": st.folder / st.entry("reference_hologram")["file"],
+                  "hologram_sidecar": st.sidecar_path}
+        hc.write_sidecar(out, "recon", raw, hc.provenance(sys.argv, a.params, inputs), physics, summary)
+        out.publish()
     hc.print_summary("reconstruction", summary, out.final, out.files)
 
 

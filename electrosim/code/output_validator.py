@@ -84,14 +84,14 @@ def main(argv=None):
     P = hc.Section(raw)
     require_plots = P.boolean("require_plots")
     P.finish()
-    out = hc.Output(a.output, a.overwrite)
-    reports = [check_folder(f, require_plots) for f in a.stage]
-    ok = all(r["ok"] for r in reports)
-    summary = {"folders": len(reports), "all_ok": ok,
-               "failed": [r["folder"] for r in reports if not r["ok"]]}
-    hc.write_sidecar(out, "output_check", raw, hc.provenance(sys.argv, a.params, {}), {"reports": reports},
-                     summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        reports = [check_folder(f, require_plots) for f in a.stage]
+        ok = all(r["ok"] for r in reports)
+        summary = {"folders": len(reports), "all_ok": ok,
+                   "failed": [r["folder"] for r in reports if not r["ok"]]}
+        hc.write_sidecar(out, "output_check", raw, hc.provenance(sys.argv, a.params, {}), {"reports": reports},
+                         summary)
+        out.publish()
     for r in reports:
         print(f"   {'OK  ' if r['ok'] else 'FAIL'} {r['folder']} ({r.get('stage')})"
               + ("" if r["ok"] else ": " + "; ".join(r["errors"])))

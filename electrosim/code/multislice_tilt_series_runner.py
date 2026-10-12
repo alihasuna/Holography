@@ -59,11 +59,11 @@ def main(argv=None):
     raw = hc.load_params(a.params)
     P = hc.Section(raw)
     tilts = tilt_list(P.sub("tilt_series"))
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary, inputs, s = fm.run(raw, a.structure, out, tilts=tilts, series=True, P=P)
-    prov = hc.provenance(sys.argv, a.params, inputs, seeds={"phonons": physics["frozen_phonons"]["seeds"]})
-    hc.write_sidecar(out, "exit_wave", raw, prov, physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary, inputs, s = fm.run(raw, a.structure, out, tilts=tilts, series=True, P=P)
+        prov = hc.provenance(sys.argv, a.params, inputs, seeds={"phonons": physics["frozen_phonons"]["seeds"]})
+        hc.write_sidecar(out, "exit_wave", raw, prov, physics, summary)
+        out.publish()
     hc.print_summary(f"exit-wave tilt series ({len(tilts)} tilts)", summary, out.final, out.files)
 
 

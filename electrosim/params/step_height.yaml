@@ -1,5 +1,6 @@
 # step_height_reflection_formula.py  (env: em-holography, CPU). For one reflection reconstruction.
-theta_ext_mrad: 13.64             # external glancing angle of the specular beam (|θx| of the simulated tilt)
+theta_ext_mrad: null              # null: the angle of the specular beam selected by specular_filter (spot.mode:
+                                  #   specular), from the reconstruction's record; a number for experimental holograms
 terrace_x_band_A: [145.5, 152.0]  # x band of the image where the terraces are measured (Å, exit plane)
 terrace_margin_A: 7.0             # exclude this much on each side of every terrace boundary along y
 no_step_sigma: 3.0                # |Δφ| < 3σ is reported as "no step detected" (no-step control)

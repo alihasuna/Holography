@@ -56,13 +56,15 @@ def read(P):
     return p
 
 
-def truth_phase(psi_or_phase, aperture, region, ramp_mode, pix, seed, is_wave):
+def truth_phase(psi_or_phase, aperture, region, ramp_mode, pix, seed, is_wave, amp_out=None):
     """Band-limit a truth with the reconstruction aperture and give it the reconstruction's offset/ramp."""
     if is_wave:
         w = np.fft.ifft2(np.fft.fft2(psi_or_phase) * aperture)
         if region is not None:
             w = w * np.exp(-1j * np.angle(w[region].mean()))
         t = hs.unwrap(np.angle(w), seed)
+        if amp_out is not None:
+            amp_out.append(np.abs(w))
     else:
         t = hm.band_limit_real(psi_or_phase, aperture)
     if region is not None:
@@ -80,11 +82,11 @@ def compare(rec, truth, mask):
             "residual_rms_rad": float(r[mask].std()), "truth_std_rad": float(truth[mask].std())}, r
 
 
-def terrace_edges(rec, truths, pix, slab, p, res_A):
+def terrace_edges(rec, truths, pix, slab, p, res_A, binning):
     """Surface edge (50 % crossing) of every terrace on y-averaged x profiles, for rec and each truth."""
     g = slab["physics"]["geometry"]
-    x = (np.arange(rec.shape[0]) + 0.5) * pix[0]
-    y = (np.arange(rec.shape[1]) + 0.5) * pix[1]
+    x = hc.pixel_centres(rec.shape[0], pix[0], binning)
+    y = hc.pixel_centres(rec.shape[1], pix[1], binning)
     edges_y = g["terrace_y_edges_A"]
     tops = g["x_top_atom_A"]
     rows = []
@@ -134,7 +136,8 @@ def run(P, recon_dir, holo_dir, exit_dir, slab_dir, out):
     ramp_mode = rphys["ramp_removal"]
 
     psi = hs_.array("image_wave_detector").astype(np.complex128)
-    truths = {"T_holo": truth_phase(psi, A, region, ramp_mode, pix, seed, True)}
+    amp_box = []
+    truths = {"T_holo": truth_phase(psi, A, region, ramp_mode, pix, seed, True, amp_box)}
     if exit_dir is not None:
         es = hc.Stage(exit_dir, "exit_wave")
         gt = es.array("ground_truth_phase").astype(np.float64)
@@ -180,7 +183,7 @@ def run(P, recon_dir, holo_dir, exit_dir, slab_dir, out):
         if slab_dir is None:
             raise hc.ParamError("profile_edges.enabled needs --slab")
         slab = hc.Stage(slab_dir, "slab").meta
-        rows, steps = terrace_edges(rec, truths, pix, slab, p, res_A)
+        rows, steps = terrace_edges(rec, truths, pix, slab, p, res_A, hphys["binning"])
         widths = [r["rec"]["width_10_90_A"] for r in rows if r.get("rec") and r["rec"]["width_10_90_A"]]
         resolution["measured_edge_width_10_90_A_rec"] = float(np.median(widths)) if widths else None
         tw = [r["T_holo"]["width_10_90_A"] for r in rows if r.get("T_holo") and r["T_holo"]["width_10_90_A"]]
@@ -195,14 +198,24 @@ def run(P, recon_dir, holo_dir, exit_dir, slab_dir, out):
         row = {"scale": s, "rms_change_rad": float((d[mask] - d[mask].mean()).std()),
                "ncc_vs_T_holo_nominal_aperture": hm.ncc(img, truths["T_holo"], mask)}
         if edges is not None:
-            _, st2 = terrace_edges(img.astype(np.float64), {}, pix, slab, p, res_A)
+            _, st2 = terrace_edges(img.astype(np.float64), {}, pix, slab, p, res_A, hphys["binning"])
             row["steps_rec_A"] = [x.get("rec_step_A") for x in st2]
         sens.append(row)
 
+    # local shot-noise prediction: the object sideband scales with |ψ| while its noise scales with the local
+    # intensity a_o²|ψ|² + a_r² (vacuum = 1), so σ² = σ_obj² (a_o²|ψ|² + a_r²)/|ψ|² + σ_ref²
+    comp = rphys["predicted_noise_components_rad"]
+    rw = hphys["reference_wave"]
+    a_amp = np.maximum(amp_box[0], 0.05)
+    sig_loc = np.sqrt(comp["object_hologram"] ** 2 * (rw["amp_obj"] ** 2 * a_amp ** 2 + rw["amp_ref"] ** 2)
+                      / a_amp ** 2 + comp["reference_hologram"] ** 2)
+    z = resid[mask] / sig_loc[mask]
     th = results["T_holo"]
+    th["residual_rms_over_local_noise"] = float(z.std())
     th["ncc_expected_from_noise"] = 1.0 / math.sqrt(1.0 + (noise_pred / th["truth_std_rad"]) ** 2) \
         if th["truth_std_rad"] > 0 else None
-    ratio = th["residual_rms_rad"] / noise_pred if noise_pred > 0 else float("inf")
+    ratio_vac = th["residual_rms_rad"] / noise_pred if noise_pred > 0 else float("inf")
+    ratio = th["residual_rms_over_local_noise"]
     checks = {"ncc": th["ncc"] >= p["min_ncc"], "slope": abs(th["slope"] - 1.0) <= p["max_slope_err"],
               "residual_vs_noise": ratio <= p["max_noise_ratio"]}
     if edges is not None:
@@ -240,8 +253,8 @@ def run(P, recon_dir, holo_dir, exit_dir, slab_dir, out):
         plt.close(fig)
         plots.append("phase_scale.png")
         if edges is not None:
-            x = (np.arange(rec.shape[0]) + 0.5) * pix[0]
-            y = (np.arange(rec.shape[1]) + 0.5) * pix[1]
+            x = hc.pixel_centres(rec.shape[0], pix[0], hphys["binning"])
+            y = hc.pixel_centres(rec.shape[1], pix[1], hphys["binning"])
             g = slab["physics"]["geometry"]
             fig, ax = plt.subplots(figsize=(7, 4.2))
             for i, top in enumerate(g["x_top_atom_A"]):
@@ -277,7 +290,10 @@ def run(P, recon_dir, holo_dir, exit_dir, slab_dir, out):
 
     physics = {"comparisons": results, "noise": {"predicted_rad": noise_pred,
                                                  "reference_region_std_rad": vac_std,
-                                                 "residual_rms_over_predicted": ratio},
+                                                 "residual_rms_over_vacuum_prediction": ratio_vac,
+                                                 "residual_rms_over_local_prediction": ratio,
+                                                 "local_prediction": "σ² = σ_obj² (a_o²|ψ|² + a_r²)/|ψ|² + σ_ref², "
+                                                                     "|ψ| from T_holo's band-limited wave"},
                "resolution": resolution, "terrace_edges": edges, "mask_sensitivity": sens,
                "criteria": {k: p[k] for k in ("min_ncc", "max_slope_err", "max_noise_ratio")},
                "checks": checks, "verdict": verdict, "expected_outcome": p["expected"],
@@ -290,7 +306,7 @@ def run(P, recon_dir, holo_dir, exit_dir, slab_dir, out):
                "ncc_expected_from_noise": None if th["ncc_expected_from_noise"] is None
                else round(th["ncc_expected_from_noise"], 5), "slope_T_holo": round(th["slope"], 5),
                "residual_rms_rad": round(th["residual_rms_rad"], 5), "predicted_noise_rad": round(noise_pred, 5),
-               "residual_over_noise": round(ratio, 3),
+               "residual_over_noise": round(ratio, 3), "residual_over_vacuum_noise": round(ratio_vac, 3),
                "residual_vs_distortion_ncc": None if results["residual_vs_injected_distortion_ncc"] is None
                else round(results["residual_vs_injected_distortion_ncc"], 4),
                "registration_shift_px": results["registration_shift_px_vs_T_holo"],
@@ -316,10 +332,10 @@ def main(argv=None):
     ap.add_argument("--slab", default=None, help="slab folder (terrace edges; needed with profile_edges)")
     a = ap.parse_args(argv)
     raw = hc.load_params(a.params)
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary, matched, inputs = run(hc.Section(raw), a.recon, a.hologram, a.exit_wave, a.slab, out)
-    hc.write_sidecar(out, "validate", raw, hc.provenance(sys.argv, a.params, inputs), physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary, matched, inputs = run(hc.Section(raw), a.recon, a.hologram, a.exit_wave, a.slab, out)
+        hc.write_sidecar(out, "validate", raw, hc.provenance(sys.argv, a.params, inputs), physics, summary)
+        out.publish()
     hc.print_summary("validation", summary, out.final, out.files)
     if matched:
         print(f"   OUTCOME: {summary['verdict'].upper()} as expected"

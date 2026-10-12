@@ -3,9 +3,11 @@ tilts_mrad: all                   # or [[θx, θy], ...] selected by value
 tilt_tolerance_mrad: 0.001
 specular_filter:                  # as params/specular_filter.yaml without tilt_select_mrad / tilt_tolerance_mrad
   spot:
-    mode: hkl
-    hkl: [4, -4, 4]               # dark field on the specular beam: q = g_xy = (1.2757, 0) 1/Å in abTEM's frame
-    refine_radius_inv_A: 0.05     # report where the intensity actually is (refraction, Laue transmission)
+    mode: specular                # the beam reflected into vacuum: q = 2 sin θ_ext/λ along the surface normal, in
+                                  #   abTEM's incident-beam frame (1.088 1/Å at 13.64 mrad; equal to the (4,-4,4)
+                                  #   g_x = 1.276 1/Å only at the 16.00 mrad vacuum Bragg angle). θ_ext from each tilt
+    surface_normal_xy: [1.0, 0.0] # outward normal of the (1,-1,1) surface in the exit-wave frame (+x)
+    refine_radius_inv_A: 0.05     # report where the intensity actually is
   objective:
     radius_mrad: 3.0              # 0.12 1/Å around the specular spot
     edge: hann
@@ -35,8 +37,9 @@ recon:                            # as params/holo.yaml
   phase_reference_region: [0.06, 0.20, 0.06, 0.94]
   ramp_removal: none
   mask_sensitivity_scales: [0.8, 1.2]
-step_height:                      # as params/step_height.yaml without theta_ext_mrad (|θx| of each tilt)
-  terrace_x_band_A: [145.5, 152.0]   # just above the highest terrace top (144.7 Å) in the exit plane
+step_height:                      # as params/step_height.yaml
+  theta_ext_mrad: null            # read from each tilt's specular-beam record
+  terrace_x_band_A: [145.5, 152.0]   # just above the highest terrace top (143.9 Å) in the exit plane
   terrace_margin_A: 7.0           # about one resolution length (1/0.15 Å) from each terrace boundary
   no_step_sigma: 3.0
   max_sigma_h_over_wrap: 0.25

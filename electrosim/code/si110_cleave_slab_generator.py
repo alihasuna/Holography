@@ -169,8 +169,8 @@ def run(P, out):
     terr = P.vec("terraces_bilayers", integer=True)
     if not terr:
         raise hc.ParamError("terraces_bilayers needs at least one entry ([0] = flat slab)")
-    if min(terr) < 0 or max(terr) >= n_x:
-        raise hc.ParamError(f"terraces_bilayers {terr} must lie in [0, n_x_si) bilayers")
+    if min(terr) < 0 or max(terr) >= 3 * n_x:  # one x period (a√3) holds 3 bilayers (d_111 = a/√3)
+        raise hc.ParamError(f"terraces_bilayers {terr} must lie in [0, 3 n_x_si) = [0, {3 * n_x}) bilayers")
     steps = [terr[(i + 1) % len(terr)] - terr[i] for i in range(len(terr))]
     if len(terr) > 1 and abs(steps[-1]) > 1:
         raise hc.ParamError(f"terraces_bilayers {terr}: the periodic boundary joins the last terrace to the first "
@@ -240,11 +240,11 @@ def main(argv=None):
     ap = hc.common_cli("Si[110] cleave-edge slab with (1,-1,1) terraces (env: em-abtem)", [])
     a = ap.parse_args(argv)
     raw = hc.load_params(a.params)
-    out = hc.Output(a.output, a.overwrite)
-    physics, summary = run(hc.Section(raw), out)
-    prov = hc.provenance(sys.argv, a.params, {})
-    hc.write_sidecar(out, "slab", raw, prov, physics, summary)
-    out.publish()
+    with hc.Output(a.output, a.overwrite) as out:
+        physics, summary = run(hc.Section(raw), out)
+        prov = hc.provenance(sys.argv, a.params, {})
+        hc.write_sidecar(out, "slab", raw, prov, physics, summary)
+        out.publish()
     hc.print_summary("si110 slab", summary, out.final, out.files)
 
 

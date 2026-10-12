@@ -81,7 +81,8 @@ def test_output_refuses_raw_and_nonempty(tmp_path):
     proj = tmp_path / "proj"
     (proj / "raw").mkdir(parents=True)
     (proj / "gemicro.json").write_text("{}")
-    for bad in (proj / "raw" / "x", proj / ".gemicro" / "y", proj):
+    (proj / "gemicro.json").write_text('{"raw_roots": ["data/microscope"]}')  # gemicro's declared raw root
+    for bad in (proj / "raw" / "x", proj / ".gemicro" / "y", proj, proj / "data" / "microscope" / "s1"):
         try:
             hc.Output(bad)
         except SystemExit:

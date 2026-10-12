@@ -99,6 +99,7 @@ def test_unknown_parameter_is_refused(tmp_path):
     p = _helpers.write_yaml(tmp_path / "sf.yaml", d)
     r = _helpers.run_script("specular_filter.py", "--params", p, "--exit-wave", ew, "--output", tmp_path / "o")
     assert r.returncode != 0 and "radius_mrd" in r.stderr
+    assert not (tmp_path / "o").exists()  # a failed run leaves no output folder or staging behind
 
 
 def test_too_few_pixels_per_fringe_is_refused(tmp_path):
@@ -110,3 +111,47 @@ def test_too_few_pixels_per_fringe_is_refused(tmp_path):
     r = _helpers.run_script("hologram_formation.py", "--params", hg, "--image-wave", tmp_path / "i",
                             "--output", tmp_path / "h")
     assert r.returncode != 0 and "pixels per fringe" in r.stderr
+
+
+def test_specular_spot_is_at_2_sin_theta_over_lambda_and_steps_need_it(tmp_path):
+    _helpers.need("yaml")
+    import math as m
+    import holo_common as hc
+    import step_height_reflection_formula as shf
+    n, d = (256, 256), (0.1, 0.1)
+    ew = _helpers.write_exit_wave_stage(tmp_path / "ew", np.ones(n, complex), d, tilt_mrad=(-13.64, 0.0))
+    sf = _helpers.load_yaml("specular_filter.yaml")
+    sf["spot"] = {"mode": "specular", "surface_normal_xy": [1.0, 0.0], "refine_radius_inv_A": None}
+    sf["objective"]["radius_mrad"] = 3.0
+    _check(_helpers.run_script("specular_filter.py", "--params", _helpers.write_yaml(tmp_path / "sf.yaml", sf),
+                               "--exit-wave", ew, "--output", tmp_path / "img"))
+    spot = json.loads((tmp_path / "img" / "image_wave.json").read_text())["physics"]["spot"]
+    lam = hc.wavelength_A(200.0)
+    assert abs(spot["predicted_q_inv_A"][0] - 2 * m.sin(13.64e-3) / lam) < 1e-9   # 1.0877 1/Å, not g_x = 1.2757
+    assert abs(spot["theta_in_ext_mrad"] - 13.64) < 1e-9
+    th, _ = shf.angle_from_chain({"spot": spot}, None)
+    assert abs(th - 13.64e-3) < 1e-12
+    try:
+        shf.angle_from_chain({"spot": {"mode": "hkl"}}, None)  # a bulk Bragg beam: the relation does not apply
+    except SystemExit:
+        pass
+    else:
+        raise AssertionError("step height accepted a bulk-Bragg (hkl) spot")
+    away = _helpers.write_exit_wave_stage(tmp_path / "ew2", np.ones(n, complex), d, tilt_mrad=(13.64, 0.0))
+    r = _helpers.run_script("specular_filter.py", "--params", tmp_path / "sf.yaml", "--exit-wave", away,
+                            "--output", tmp_path / "img2")
+    assert r.returncode != 0 and "onto a surface" in r.stderr
+
+
+def test_reference_region_outside_the_biprism_overlap_is_refused(tmp_path):
+    _helpers.need("yaml")
+    _helpers.need("scipy")
+    ew = _synthetic_exit_wave(tmp_path / "ew")
+    sf = _params(tmp_path, "specular_filter.yaml", {})
+    _check(_helpers.run_script("specular_filter.py", "--params", sf, "--exit-wave", ew, "--output", tmp_path / "i"))
+    hg = _params(tmp_path, "hologram.yaml", {"biprism.overlap_width_A": 12.0, "biprism.fresnel_edge_width_A": 0.3})
+    _check(_helpers.run_script("hologram_formation.py", "--params", hg, "--image-wave", tmp_path / "i",
+                               "--output", tmp_path / "h"))
+    rc = _params(tmp_path, "holo.yaml", {"engine": "numpy"})
+    r = _helpers.run_script("holo_recon.py", "--params", rc, "--hologram", tmp_path / "h", "--output", tmp_path / "r")
+    assert r.returncode != 0 and "outside the biprism overlap" in r.stderr
