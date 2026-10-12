@@ -75,7 +75,7 @@ been made yet.
 |---|---|---|
 | GPU check | 1 | the cupy path agrees with numpy; establishes the GPU timings |
 | Rocking curves (008), (0,0,12) | 1 | operating angles on the production GPU |
-| Converged three-strip run | 1 | reproduces docs/11 on the GPU (step −2.61 rad, dislocation −11.1 rad at (008)) |
+| Converged three-strip run | 1 | reproduces docs/11 on the GPU (step −2.61 rad, dislocation −11.2 rad at (008)) |
 | Footprint convergence of the (0,0,12) step (sheet height 160–320 Å) | 3–4 | settles the open (0,0,12) step phase (docs/11 section 3) |
 | Depth × reflection × angle sweep | 18 | how the dislocation signal scales with depth; sensitivity to the angle |
 | Wide cell with a realistic dislocation (50 nm deep, 60° and Lomer types) | 2–4 | the lab-scale prediction; needs a new wide config and the 60° Burgers vector |
