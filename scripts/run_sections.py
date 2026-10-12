@@ -114,6 +114,7 @@ def main():
     ap.add_argument("--backend", default="numpy", choices=["numpy", "cupy"])
     ap.add_argument("--out", default="outputs")
     ap.add_argument("--only", default=None, help='run the multislice only for this reflection, e.g. "(0,0,12)"')
+    ap.add_argument("--dry-run", action="store_true", help="build the sample, print grid, memory and slice counts, exit")
     args = ap.parse_args()
     cfg = Config(args.config)
     out = Path(args.out) / cfg.data["name"] / "reconstruction"
@@ -145,6 +146,19 @@ def main():
     seed = int(cfg.get("holography.noise_seed"))
     y = grid.y
 
+    if args.dry_run:
+        dz = s.Lz / int(cfg.get("multislice.slices_per_period"))
+        npts = nx * ny
+        print(f"atoms per repeat {len(s.positions)}; grid {nx} x {ny} = {npts/1e6:.1f} M points; "
+              f"dx {grid.dx:.3f} A, dy {grid.dy:.4f} A")
+        print(f"memory estimate: wave + 2 transmissions + propagator + FFT work ~ {6 * npts * 8 / 1e9:.1f} GB "
+              f"(complex64); potential build adds ~{npts * 16 / 1e9:.1f} GB (complex128)")
+        for hkl in [tuple(h) for h in cfg.get("reflections_to_run")]:
+            name = hkl_name(hkl)
+            th = geo.SpecularCondition(E, V0_ms, a, hkl).theta_ext + float(cfg.get("multislice.operating_offset_mrad")[name]) * 1e-3
+            n = int(np.ceil(2 * xc / np.tan(th) / dz))
+            print(f"{name}: theta_ext {th*1e3:.2f} mrad, {n} slices, footprint {Hh/np.tan(th):.0f} A")
+        return
     t0 = time.time()
     V, dz = ms.slice_potentials(s.positions, s.Lz, int(cfg.get("multislice.slices_per_period")), grid,
                                 float(cfg.get("multislice.debye_waller_B_A2")),
