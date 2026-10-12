@@ -1,0 +1,15 @@
+# EXPLORATORY reflection set-up (CFG-A, docs/05_final_repository_specification.md §2): the legacy si110 cell.
+# NOT a validated reflection simulation: the M2 reflection cell (absorbing bulk side, illumination confined to
+# the vacuum band, cell length 0.08-0.42 µm along the beam) does not exist yet, and in this cell most of the
+# beam enters the end face (audit A, M2; docs/model_assumptions.md A2). It exercises the tilt-series path.
+lattice_constant_A: 5.4309
+n_x_si: 9
+n_y: 12
+n_z_si: 36                        # 138 Å along the beam, as the original generator's default
+x_vacuum_A: 60.0
+z_vacuum_A: 1.0
+terraces_bilayers: [0, 1, 2, 1]
+target_reflection:
+  hkl: [4, -4, 4]                 # allowed specular reflection (|F|/f = 8); (6,-6,6) and (2,-2,2) are refused
+  energy_keV: 200.0
+  mean_inner_potential_V: 12.0    # ASSUMPTION B1 (instrument file: 12.5 V, OPEN): only for θ_ext at the peak

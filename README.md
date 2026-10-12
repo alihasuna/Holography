@@ -4,7 +4,8 @@ Prepared 2026-09-21 for Ali (analysis of `https://github.com/hussienba/si110-ref
 commit `6694959`), following the source policy in the project instruction file
 (`ba72277e-si110_reflection_holography_agent_instructions.txt`).
 
-This repository contains no simulation results yet. It contains the audit of the existing simulation
+This repository contains no simulation results yet (the first holography test case of `electrosim/` was run on a
+CPU during development; its numbers are in `electrosim/README.md`). It contains the audit of the existing simulation
 repository, the physics it must reproduce, the software facts that determine what it currently computes,
 the literature position (with the access limitations stated), and the specification of the final version
 that can be contrasted with the real reflection-mode dark-field holography experiment.
@@ -24,6 +25,7 @@ that can be contrasted with the real reflection-mode dark-field holography exper
 | `docs/physics_conventions.md`, `docs/model_assumptions.md`, `docs/source_map.tsv`, `docs/references.bib` | Provenance files required by the instruction file (section 10). |
 | `docs/agent_reports/` | The full reports of the delegated audits: A (code), B (literature) with B2 (bibliography verification log), C (physics derivations) with the calculator output, D (software provenance), E and E2 (two adversarial review passes of the summary documents; every finding is applied in revision 2 of the summaries or explicitly declined with a reason), plus the orchestrator's independent sanity numbers. |
 | `tools/reflection_step_phase_calculator.py` | Numpy-only reference calculator reproducing every number in the physics report; 25 self-checks. |
+| `electrosim/` | **The holography pipeline ported to ElectroSim and gemicro** (2026-10-12): the si110 stages on abTEM (GPU) and HoloSpy (CPU), with hologram formation, a vacuum reference hologram, sideband reconstruction, validation against the truth and expected-failure controls, parameter files for the first test case, and tests. Start with `electrosim/README.md`; `electrosim/PORTING.md` maps every audit defect to its fix. |
 | `tools/provenance_checks/` | Scripts that exercise the prismatique 0.0.1 API exactly as the inspected pipeline does (no simulation run). |
 
 ## Evidence labels

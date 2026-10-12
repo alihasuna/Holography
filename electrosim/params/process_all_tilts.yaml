@@ -1,0 +1,42 @@
+# process_all_tilts.py  (env: em-holography, CPU). EXPLORATORY: see slab_reflection.yaml.
+tilts_mrad: all                   # or [[θx, θy], ...] selected by value
+tilt_tolerance_mrad: 0.001
+specular_filter:                  # as params/specular_filter.yaml without tilt_select_mrad / tilt_tolerance_mrad
+  spot:
+    mode: hkl
+    hkl: [4, -4, 4]               # dark field on the specular beam: q = g_xy = (1.2757, 0) 1/Å in abTEM's frame
+    refine_radius_inv_A: 0.05     # report where the intensity actually is (refraction, Laue transmission)
+  objective:
+    radius_mrad: 3.0              # 0.12 1/Å around the specular spot
+    edge: hann
+    taper_mrad: 0.5
+    defocus_A: 0.0
+    Cs_mm: 0.0
+hologram:                         # as params/hologram.yaml
+  seed: 7
+  biprism: {fringe_spacing_A: 0.8, fringe_orientation_deg: 30.0, overlap_width_A: null, fresnel_edge_width_A: 0.0}
+  reference_wave: {model: R1_plane, intensity_ratio: 1.0}
+  coherence: {degree_of_coherence: 0.40, fringe_drift_A: 0.10}
+  detector:
+    binning: 2
+    mtf: {model: gaussian, sigma_px: 0.4}
+    dose_e_per_A2: 5000.0
+    reference_dose_e_per_A2: 5000.0
+    counts_per_electron: 1.0
+    gain_rms: 0.0
+recon:                            # as params/holo.yaml
+  engine: holospy
+  seed: 3
+  sideband: {half_plane_deg: 30.0, exclude_radius_inv_A: 0.4, expected_carrier_inv_A: [1.0825318, 0.625],
+             tolerance_inv_A: 0.02}
+  aperture: {radius_inv_A: 0.15, radius_fraction_of_carrier: null, edge: tanh, taper_inv_A: 0.02}
+  apodization_tukey_alpha: 0.1
+  reference_normalization: true
+  phase_reference_region: [0.06, 0.20, 0.06, 0.94]
+  ramp_removal: none
+  mask_sensitivity_scales: [0.8, 1.2]
+step_height:                      # as params/step_height.yaml without theta_ext_mrad (|θx| of each tilt)
+  terrace_x_band_A: [145.5, 152.0]   # just above the highest terrace top (144.7 Å) in the exit plane
+  terrace_margin_A: 7.0           # about one resolution length (1/0.15 Å) from each terrace boundary
+  no_step_sigma: 3.0
+  max_sigma_h_over_wrap: 0.25

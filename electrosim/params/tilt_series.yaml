@@ -1,0 +1,20 @@
+# multislice_tilt_series_runner.py  (env: em-abtem, GPU). EXPLORATORY: see slab_reflection.yaml.
+energy_keV: 200.0
+device: gpu
+seed: 20261012
+potential:
+  sampling_A: 0.1                 # band limit 84 mrad > (4,-4,4) at 32 mrad + aperture
+  slice_thickness_A: 1.9201131
+  parametrization: lobato
+  projection: infinite
+tilt_series:
+  mode: sweep                     # sweep | explicit (tilts_mrad: [[θx, θy], ...])
+  azimuth_deg: 180.0              # θx < 0: the beam travels toward -x, onto the surface (normal +x)
+  start_mrad: 12.0                # |θ| through the refraction-shifted (4,-4,4) peak at 13.64 mrad (V0 = 12 V)
+  stop_mrad: 16.0                 # <= 17 mrad: abTEM's propagator-shear tilt limit
+  step_mrad: 1.0
+frozen_phonons:
+  num_configs: 0
+  sigma_A: 0.0
+limits:
+  max_device_memory_GB: 6.0

@@ -1,0 +1,5 @@
+# import_experimental_holograms.py  (env: em-holography): experimental holograms -> hologram stage folder
+energy_keV: 200.0                 # from the session record (PROJECT_INPUT 1)
+pixel_size_A: null                # null = from the file axes; [px, py] in Å (specimen-referred) to override
+counts_per_electron: 1.0          # PROJECT_INPUT: detector conversion factor (counting detector: 1)
+crop_px: null                     # [x0, x1, y0, y1] pixels: restrict to the biprism overlap; null = whole image

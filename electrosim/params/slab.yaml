@@ -1,0 +1,19 @@
+# si110_cleave_slab_generator.py  (env: em-abtem, CPU, ~10 s)
+# First ElectroSim test case: the si110 cleave-edge slab seen in TRANSMISSION along the [110] beam at zero tilt
+# (profile view of the (1,-1,1) surface). Why this case:
+#  - same structure, frame and generator as the reflection work, so the GPU test exercises the code path the
+#    reflection runs will use;
+#  - 60 Å of vacuum on both sides of the slab inside the field: the phase reference and the "edge" a hologram
+#    must reproduce;
+#  - 10 nm along the beam (26 × 3.840 Å): a mean-inner-potential phase of about 0.8 rad, below π, typical of
+#    a holography specimen, and small enough for the 12 GB GPU slice (grid 2048 × 800, 53 slices, ~0.5 GB);
+#  - four terraces lowered by [0, 1, 2, 1] bilayers (d_111 = 3.1355 Å): every terrace boundary is a known
+#    ±3.14 Å shift of the surface edge, with both signs (sign test) and a cyclic sequence (spec §4.2).
+lattice_constant_A: 5.4309        # Si at room temperature (ASSUMPTION B2, docs/model_assumptions.md)
+n_x_si: 9                         # x periods a√3 = 9.4066 Å along the surface normal [1,-1,1]: 84.7 Å of Si
+n_y: 12                           # y periods a√(3/2) = 6.6515 Å, periodic: 79.8 Å, 3 periods per terrace
+n_z_si: 26                        # z periods a/√2 = 3.8402 Å along the beam [110]: 99.8 Å (10 nm) thick
+x_vacuum_A: 60.0                  # vacuum above the surface and below the back face (each side)
+z_vacuum_A: 1.0                   # vacuum before and after the slab along the beam (each side)
+terraces_bilayers: [0, 1, 2, 1]   # surface depth of each y-terrace in bilayers (cyclic: no hidden step)
+target_reflection: null           # transmission test; see slab_reflection.yaml for the (4,-4,4) set-up

@@ -63,3 +63,20 @@ every physics change (instruction file section 10). Labels follow section 1.4 of
 4. What is the reflected amplitude from an oxide-covered, ion-milled surface at the working angle, and is there enough coherent Bragg-reflected intensity to form a hologram at all?
 5. How is the intrinsic `2 theta` angle between a vacuum reference and the specular object wave compensated in the laboratory's optics, and what carrier fringe spacing results?
 6. Does the laboratory's illumination convergence permit any phase contrast for the nanometre-scale patterned features (item B10), or must the experiment target atomic steps?
+
+## 5. Assumptions of the ElectroSim off-axis pipeline (`electrosim/`, added 2026-10-12)
+
+The first ElectroSim test case and the hologram model. Each value lives in a parameter file under
+`electrosim/params/`; none is a silent default in code.
+
+| # | Assumption | Label | Where / sensitivity |
+|---|---|---|---|
+| C1 | Degree of coherence 0.40 at 0.8 Å fringe spacing (fringe contrast before drift, MTF and pixel integration). | ASSUMPTION; PROJECT_INPUT for the experiment (measure on a vacuum hologram) | `hologram.yaml`. Phase noise ∝ 1/μ. |
+| C2 | Detector MTF: Gaussian point spread of 0.4 px (MTF 0.82 at the carrier, 0.25 cycles/px); the Merlin MTF is not measured. | ASSUMPTION (OPEN) | `hologram.yaml` (`mtf.model: table` takes a measured curve). |
+| C3 | MTF applied to the expected intensity, then Poisson noise (white). | ASSUMPTION | Appropriate for a counting detector; a scintillator detector also blurs the noise. |
+| C4 | Fringe drift 0.1 Å during the exposure (contrast factor sinc(q_c d) = 0.97). | ASSUMPTION | `hologram.yaml`. |
+| C5 | Reference wave R3: 1.5 rad quadratic curvature (corner relative to centre) plus a linear ramp, common to the object and reference holograms. | ASSUMPTION (a test of the normalisation, not a measured distortion) | `hologram.yaml`; the no-reference control fails on it by design. |
+| C6 | Dose 5000 e/Å² per hologram (200 counts per 0.2 Å pixel), counting detector (1 count per electron), no fixed-pattern gain error. | ASSUMPTION | `hologram.yaml`; σ_φ = √2/(μ√N) is reproduced to within 1 % in vacuum. |
+| C7 | Objective aperture 6 mrad (bright field, excludes the (111) beams), no defocus, no Cs. | ASSUMPTION; PROJECT_INPUT 4 for the experiment | `specular_filter.yaml`. |
+| C8 | Static lattice (no frozen phonons) for the first test; the Lobato parametrisation's mean inner potential of Si is 14.07 V (neutral atoms) against the sourced 12-12.5 V. | ASSUMPTION; REPRODUCED (14.07 V computed by the forward model) | `exit_wave.yaml`. The projected-potential phase σ V0 t is scaled accordingly. |
+| C9 | The transmission profile view of the si110 slab at zero tilt is used as the holography test case; the reflection tilt series on the same cell is exploratory (assumption A2 still holds). | DERIVED_HERE (the choice), ASSUMPTION A2 (reflection) | `electrosim/README.md` §3 and §6. |

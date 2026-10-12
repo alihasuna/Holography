@@ -1,0 +1,16 @@
+# multislice_forward_model.py  (env: em-abtem, GPU). Check `gemicro gpu` first.
+energy_keV: 200.0                 # PROJECT_INPUT (supplied 2026-09-22): 200 keV for every configuration
+device: gpu                       # gpu | cpu  (cpu gives identical numbers to float32 rounding, ~20x slower)
+seed: 20261012                    # seeds the frozen-phonon displacements (unused when num_configs is 0)
+potential:
+  sampling_A: 0.1                 # target; realised 0.0999 x 0.0998 Å (grid 2048 x 800); band limit 84 mrad
+  slice_thickness_A: 1.9201131    # a/(2√2): one (220) plane per slice along [110]
+  parametrization: lobato
+  projection: infinite
+illumination:
+  tilt_mrad: [0.0, 0.0]           # (θx, θy); abTEM propagator-shear tilt, keep below ~17 mrad
+frozen_phonons:
+  num_configs: 0                  # 0 = static lattice (the first test); 8+ for a quantitative dark-field run
+  sigma_A: 0.0                    # per-axis RMS displacement when num_configs > 0 (e.g. 0.076 Å for Si at RT)
+limits:
+  max_device_memory_GB: 6.0       # refuse to start above this estimate: the ~12 GB MIG slice is shared

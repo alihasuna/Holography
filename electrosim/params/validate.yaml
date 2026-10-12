@@ -1,0 +1,13 @@
+# holo_validate.py  (env: em-holography, CPU, ~10 s). Exit status 0 when the verdict matches expected_outcome.
+expected_outcome: pass
+analysis_region: [0.0, 1.0, 0.0, 1.0]   # [x0, x1, y0, y1] fractions (intersected with the biprism overlap)
+edge_margin_A: 10.0                     # drop pixels near the field edge: the apodisation taper (Tukey 0.1)
+criteria:
+  min_ncc: 0.97                         # NCC(rec, T_holo); shot noise alone allows ~0.99 here
+  max_abs_slope_error: 0.03             # |slope - 1| of rec against T_holo (NCC is blind to the phase scale)
+  max_residual_rms_over_noise: 1.5      # residual RMS / predicted shot-noise phase error sqrt(2)/(μ√N)
+profile_edges:                          # surface edge (50 % crossing) of each terrace on y-averaged x profiles
+  enabled: true
+  plateau_window_A: 8.0                 # crystal plateau and vacuum level: medians over this width...
+  gap_A: 5.0                            # ...starting this far from the top atom (about 1.5 × resolution)
+  max_step_error_A: 0.5                 # |measured - true| terrace step (true steps are ±3.1355 Å)

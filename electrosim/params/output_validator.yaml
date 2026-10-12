@@ -1,0 +1,2 @@
+# output_validator.py  (env: either): read-only check of stage folders given with --stage
+require_plots: true               # fail a folder whose stage listed no PNG (matplotlib missing in the env)

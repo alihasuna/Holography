@@ -1,0 +1,22 @@
+# CONTROL (expected to fail): no reference-hologram normalisation. The R3 reference distortion
+# (curvature 1.5 rad, ramp) and the sub-pixel carrier ramp stay in the phase; validation must report it.
+# holo_recon.py  (env: em-holography, CPU, ~10 s; HoloSpy engine)
+engine: holospy                   # holospy (tanh aperture) | numpy (hard | hann | hamming | tanh)
+seed: 3                           # skimage unwrap_phase rng
+sideband:
+  half_plane_deg: 30.0            # take the sideband with q·d > 0, d at this angle from +x (= the biprism
+                                  #   orientation that puts +object phase in that sideband; flip by 180° = control)
+  exclude_radius_inv_A: 0.6       # ignore the centre band (autocorrelation extends to 2 × 0.239 = 0.48 1/Å)
+  expected_carrier_inv_A: [1.0825318, 0.625]   # from hologram.json; fail if the carrier is > tolerance away
+  tolerance_inv_A: 0.02
+aperture:
+  radius_inv_A: 0.30              # resolution 1/0.30 = 3.3 Å (4.2 fringe spacings); > object band 0.25 1/Å
+  radius_fraction_of_carrier: null
+  edge: tanh
+  taper_inv_A: 0.03
+apodization_tukey_alpha: 0.1        # Tukey window on both holograms (cancels in the ratio; 0 = none)
+reference_normalization: false    # CONTROL: the reference hologram is used to find the carrier only
+phase_reference_region: [0.06, 0.20, 0.06, 0.94]   # [x0, x1, y0, y1]: vacuum below the back face,
+                                  #   inside the apodisation taper (5 % per side)
+ramp_removal: none                # none | plane_in_reference_region (never a whole-field detrend: audit M5)
+mask_sensitivity_scales: [0.8, 1.2]   # ±20 % aperture radius (gemicro /holography control)
