@@ -93,3 +93,18 @@ itself contributes only its refraction residual. **e**, Zoom on the amplitude. A
 the column (geometric) model through the full hologram and reconstruction chain, at 200 keV with
 the 1.5 mrad aperture. They do not change between penetration depths of 3 and 12 Å. The
 multislice run is pending.
+
+## fig_hologram_50nm_geometric_preview
+
+**Off-axis holograms and reconstructed (008) waves of 50 nm deep 60° and Lomer dislocations
+(geometric model).**
+**a, b**, Recorded holograms at 400 counts per pixel, 10 nm crops. The object hologram (bottom) sits
+under the empty reference hologram (top); the fringes are 0.5 nm apart. **a**, 60° dislocation,
+crop on the slip step 35 nm from the core: the fringes shift abruptly at the step (refraction
+residual of a 2-layer step) and the amplitude dips (aperture ringing). **b**, Lomer dislocation,
+crop on the core: a uniform fringe shift relative to the reference. **c, d**, Reconstructed
+complex wave over ±200 nm; hue is phase, brightness is amplitude (wheel). **e, f**, Holographic
+interferogram cos φ, one dark band per 2π. The 60° dislocation (g·b = 4) leaves four net bands of
+phase on one side of the core. The Lomer dislocation (g·b = 0) gives a symmetric pattern that
+returns to the starting phase. Dashed line, slip step; dotted line, core. Geometric (column)
+model: every image row is identical. The multislice adds the dependence on exit height.
