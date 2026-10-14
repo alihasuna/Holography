@@ -318,3 +318,170 @@ holography of strain or dislocations was found in this pass.
   in a dark-field hologram (fringe "rupture") and a DFEH vs GPA strain map around them with the
   reconstruction mask stated; also gives the biprism voltage, fringe spacing, exposure and the
   "std in the unstrained substrate" precision recipe in one place.
+
+---
+
+## Papers located but NOT opened in full (kept out of the table)
+
+Abstracts below were read on the page named (publisher page, PubMed record or Crossref deposit), so
+they are METADATA_VERIFIED + abstract read; nothing beyond the abstract is claimed.
+
+| Paper | DOI | Where the abstract was read | Why not in the table | What it would add |
+|---|---|---|---|---|
+| Y.-Y. Wang, Z. Wang, Z. Yang, Q. Jin, "Dislocation Strain Field Mapping Using Dark-Field Electron Holography", Microscopy Today 33(6), 43-49 (2025) | 10.1093/mictod/qaaf097 | Crossref deposit (api.crossref.org) and OUP abstract page https://academic.oup.com/mt/article/33/6/43/8382564 | OUP: "This PDF is available to Subscribers Only" | THE closest paper to this project: DFEH of dislocation strain fields in SiGe/Si; abstract says "two edge dislocation cores of 2.9nm apart were resolved" and that DFEH "can be used to determine Burgers vector orientation" with strain around the core; compares with dark-field imaging and PED. Conditions, figures and numbers UNVERIFIED. |
+| Cooper, Denneulin, Bernier, Béché, Rouvière, "Strain mapping of semiconductor specimens with nm-scale resolution in a transmission electron microscope", Micron 80, 145-165 (2016) | 10.1016/j.micron.2015.09.001 | PubMed PMID 26606463 | Open access (CC BY-NC-ND per Crossref) but ScienceDirect 403 here; archived copy unreachable | Benchmark of DFEH vs HAADF-STEM GPA vs NBED vs PED on five sample types (abstract). Key source for side-by-side precision/resolution numbers. |
+| Béché, Rouvière, Barnes, Cooper, "Strain measurement at the nanoscale: comparison between CBED, NBED, high resolution imaging and dark field electron holography", Ultramicroscopy 131, 10-23 (2013) | 10.1016/j.ultramic.2013.03.014 | PubMed PMID 23673283 | closed, ScienceDirect 403 | Five techniques compared "in terms of strain precision and accuracy, spatial resolution, field of view" (abstract). |
+| Béché, Rouvière, Barnes, Cooper, "Dark field electron holography for strain measurement", Ultramicroscopy 111, 227-238 (2011) | 10.1016/j.ultramic.2010.11.030 | PubMed PMID 21333860 | closed | Parameter study: "biprism voltage, sample thickness, exposure time, tilt angle and choice of diffracted beam" (abstract). |
+| Hÿtch, Houdellier, Hüe, Snoeck, "Dark-field electron holography for the measurement of geometric phase", Ultramicroscopy 111(8), 1328-1337 (2011) | 10.1016/j.ultramic.2011.04.008 | PubMed PMID 21864773 | closed (HAL record has no file) | Theory paper: total phase = crystalline + electrostatic + magnetic + geometric; BF-hologram thickness correction (abstract). |
+| Javon et al., "Dynamical effects in strain measurements by dark-field electron holography", Ultramicroscopy 147, 70-85 (2014) | 10.1016/j.ultramic.2014.06.005 | PubMed PMID 25062040 | closed | Projected strain simulated with a two-beam dynamical weighting function vs simple averaging; FEM of SiGe/Si superlattice; deviation parameter as main residual (abstract). |
+| Lubk et al., "Dynamic scattering theory for dark-field electron holography of 3D strain fields", Ultramicroscopy 136, 42-49 (2014) | 10.1016/j.ultramic.2013.07.007 | Crossref record + HAL notice only (no abstract read this pass) | closed | Two-beam first-order theory; its Eq. B.6 is quoted and used in P2 (READ there, not in Lubk). |
+| Denneulin, Houdellier, Hÿtch, "Differential phase-contrast dark-field electron holography for strain mapping", Ultramicroscopy 160, 98-109 (2016) | 10.1016/j.ultramic.2015.10.002 | PubMed PMID 26476802 | closed | Condenser-biprism variant measuring the phase derivative directly; "noise ... is isotropic and more homogeneous" (abstract). |
+| Denneulin, Hÿtch, "Four-wave dark-field electron holography for imaging strain fields", J. Phys. D 49, 244003 (2016) | 10.1088/0022-3727/49/24/244003 | IOPscience abstract page | paywalled ("not registered by an institution with a subscription") | Two perpendicular biprisms, three reference waves + one object wave; equi-displacement lines as amplitude modulation (abstract). |
+| Meißner, Niermann, Berger, Lehmann, "Dynamical diffraction effects on the geometric phase of inhomogeneous strain fields", Ultramicroscopy 207, 112844 (2019) | 10.1016/j.ultramic.2019.112844 | Semantic Scholar record (title, CC BY flag) only; cited as ref. 12 in P2 | CC BY but ScienceDirect 403; no repository copy found | DFEH phases for tilts away from two-beam (per P2's description). |
+| Cherns, Jiao, "Electron holography studies of the charge on dislocations in GaN", Phys. Rev. Lett. 87, 205504 (2001) | 10.1103/PhysRevLett.87.205504 | PubMed PMID 11690485 (and Jiao & Cherns, J. Electron Microsc. 51, 105 (2002), PMID 12005163) | APS 403; Bristol record has no PDF | Foundational OFF-AXIS (bright-field) holography of dislocations: inner potential reduced within 10 nm of threading edge dislocations, "up to 2.5 V", line charge about 2 e/c (abstracts). Electrostatic, not strain, contrast. |
+
+Searches for modern (2015-2026) OFF-AXIS holography of dislocations (Crossref title/bibliographic
+queries, PMC, HAL, arXiv, J-STAGE, web search) returned only the 2001-2011 charged-dislocation work
+(GaN, ZnO, 4H-SiC, YBCO grain-boundary dislocations; titles seen in Crossref, not read) and the DFEH
+items above. Inference: category (B) is thin in the modern literature; the dislocation-specific
+holography evidence is P8 (fringe rupture at misfit dislocations), P7 (dark lines/abrupt strain at
+threading dislocations), P4 (2 pi g.R phase step at a planar fault), P2/P3 (dynamical depth effects)
+and the unread Wang et al. 2025.
+
+---
+
+## Common figure types and metrics
+
+Counts are over the seven holography papers read in full (P1, P2, P4, P5, P6, P7, P8); P3 (4D-STEM)
+is counted separately where relevant. Each count is from the captions/text I read (READ); where a
+paper's SI was not read, the count may be an undercount (NOT VERIFIED).
+
+### Figure types, most frequent first
+
+1. Comparison with an independent technique or method on the same specimen - 6/7: HRXRD (P1),
+   SCBED (P2), bright-field 000 holography as a control (P4), STEM-GPA and 4D-STEM (P5), HRTEM-GPA
+   (P7), HAADF-STEM GPA around dislocations (P8). (P3 compares 4D-STEM with DHW simulation.)
+2. Strain / deformation maps - 5/7 (P1 eps_zz; P5 eps_xx, eps_zz; P6 planar spacing and rotation; P7
+   eps_zz, eps_xx, eps_xz, R_xz; P8 exx, ezz). The in-plane/out-of-plane pair from two g's and a
+   rotation map is the standard set.
+3. Raw dark-field hologram, usually with an enlarged inset showing the fringes - 5/7 (P1, P4, P6, P7,
+   P8); P5 shows its DF focal series only in the SI.
+4. Line profiles across the feature of interest, averaged over a stated width - 5/7 (P2 phase/contrast
+   columns, P4 phase profiles, P5, P7 averaged over 10 nm, P8 averaged over 6 nm or 15 nm).
+5. Experiment vs elastic model (FEM) - 5/7 (P1, P2, P5, P7, P8), usually maps side by side plus
+   profiles with the model as dotted lines; P2 and P3 add dynamical (DHW) simulation.
+6. Reconstructed phase map in the main text - 4/7 (P1, P2, P4, P6).
+7. Amplitude / fringe-contrast map - 3/7 (P2 DFEH contrast, P6 amplitude, P7 numerically magnified
+   moiré amplitude).
+8. Hologram FFT showing the sideband - 2/7 (P1 Fig. 6, P6 Fig. 3a).
+9. Measured vs calculated phase/contrast as a function of beam tilt (excitation error) and position -
+   1/7 (P2); the same layout for 4D-STEM in P3, with MSE maps over thickness and depth.
+10. Rarely or never shown in what I read: noise/precision maps, histograms (only P1 mentions a
+    histogram maximum, 1.17 %), error bars on profiles (P5 gives +- on averaged values), dose maps.
+
+### Numbers quoted, most frequent first
+
+1. Spatial resolution (6/7): 4 nm (P1, set by the Fourier mask radius), 6 nm (P7), 6.6 nm FWHM of the
+   mask's inverse FT (P8), 4 nm (P6, cited), aperture radius 1.16 nm^-1 (P2); about 2 nm for 4D-STEM
+   (P5). Always tied to the reconstruction mask, not to the optics.
+2. Strain precision / sensitivity (5/7): 5e-4 (P1), 2e-4 at 4 nm (P6, cited), +-0.1 % at 6 nm (P7),
+   0.02-0.06 % (P8); phase uncertainty about 0.3 rad (P4). The recipe in P1 and P8 is the standard
+   deviation of strain in an unstrained substrate region.
+3. Fringe spacing (4/7): 1.08 nm (P1), 1-2 nm (P6), 2 nm (P7), 2 nm at +180 V biprism (P8).
+   Biprism voltage itself is given only in P8.
+4. Exposure / averaging (4/7): 10 s (P1), 15 x 5 s averaged (P2), 6 s per focal-series image (P5),
+   64 s (P8). Electron dose in e/A^2 or e/nm^2 was not stated in any text I read.
+5. Field of view (4/7): 546 nm (P1), 300-500 nm hologram width and "several microns" length (P6),
+   300 nm (P7), 600 x 600 nm^2 (P8, cited).
+6. Reference: always an unstrained crystal region in the same specimen (substrate or matrix) whose
+   diffracted beam is the reference wave (P1, P2, P4, P6, P7, P8); strain = (d - d_ref)/d_ref.
+7. Fringe contrast: only P1 (13 %). Specimen thickness: 48-200 nm in all.
+8. Dislocation-specific numbers: none in the DFEH papers I read (no core width, no g.b phase winding,
+   no Burgers vector from phase). P4 gives a planar-defect phase step (about 2.3 rad vs pi); P3 gives
+   dislocation depths from 4D-STEM; Wang et al. 2025 (not read) claims 2.9 nm core separation.
+
+### How dislocations are treated in what I read
+
+* As local disturbances in the hologram: "rupture of the interference fringes" (P8) and dark lines
+  in the hologram with abrupt strain jumps (P7). No paper I read counts extra fringes or reports the
+  2 pi g.b phase winding explicitly (READ: absent from those texts).
+* As phase discontinuities of 2 pi g.R at a planar fault, selectable by choice of g (P4), smaller than
+  kinematic under real (dynamical) conditions.
+* As sources of 2 pi phase jumps where the diffracted amplitude vanishes (P2, inclined layer, not a
+  dislocation).
+* As depth-dependent dynamical contrast fitted by DHW simulation (P3, 4D-STEM).
+
+---
+
+## What a simulation paper should show to be comparable (inference, not from any single source)
+
+1. A simulated dark-field hologram with a zoomed inset at the dislocation, and its FFT with the
+   sideband and the mask drawn; state the mask radius and the resulting resolution as P1/P8 do.
+2. Reconstructed amplitude and phase maps, with the reference region marked, and the phase both
+   wrapped and unwrapped; show where the phase winds by 2 pi g.b around the outcrop (none of the read
+   papers shows this, so it is a contribution, but the fringe "rupture" of P8 is the experimental
+   counterpart).
+3. Displacement and strain/rotation maps for the components accessible with (008) (and, if possible,
+   a second g), next to the input elastic field (analytic or FEM) as P1/P5/P7/P8 do with FEM.
+4. Line profiles across the dislocation, averaged over a stated width, simulation vs input model,
+   with uncertainty bands.
+5. A precision figure: standard deviation of strain (or phase) in a dislocation-free reference strip
+   vs dose/fringe contrast, so the numbers can be set against 2e-4 to 5e-4 at 4-7 nm (P1, P6, P7, P8)
+   and 0.3 rad (P4). Quote fringe spacing, fringe contrast, field of view and exposure/dose, since
+   these are what the experimental papers quote.
+6. A dynamical-effects figure: phase and amplitude vs excitation error (tilt) and vs dislocation
+   depth, compared with the kinematic -2 pi g.u prediction, in the (q, x) format of P2 Fig. 5/10 and
+   P3 Figs. 2-3; flag 2 pi jumps at amplitude zeros (P2).
+7. A g-selection control: a reflection with g.b = 0 (or g.R = 0) showing no phase discontinuity, as
+   P4 does with 200 vs 100.
+
+---
+
+## Facts that update existing project records (for the orchestrator; references.bib NOT edited)
+
+* Sign of the geometric phase: phi_G = -2 pi g.u is written as Eq. 4 in P6 (Hÿtch et al. 2010), Eq. 10
+  in P1 (Boureau et al. 2020) and Eq. 3 in P2 (Niermann et al. 2025) (READ). This addresses the gap
+  flagged in references.bib entry P31 for these papers; Hÿtch et al. 2011 itself was still not read.
+* P31 (Hÿtch et al. 2011): DOI 10.1016/j.ultramic.2011.04.008, Ultramicroscopy 111(8):1328-37,
+  PMID 21864773 (PubMed record READ; HAL notice hal-01742047 gives the same DOI).
+* P32 (Lubk et al. 2014): Ultramicroscopy 136, 42-49, DOI 10.1016/j.ultramic.2013.07.007 (Crossref and
+  HAL hal-01721153; METADATA_VERIFIED).
+* P33 (Meißner et al. 2019): authors L. Meißner, T. Niermann, D. Berger, M. Lehmann, Ultramicroscopy
+  207 (2019) 112844 as cited in P2's reference list (READ); DOI 10.1016/j.ultramic.2019.112844 from
+  Semantic Scholar/OpenAlex (METADATA_VERIFIED).
+* U08 (Javon et al. 2014): Ultramicroscopy 147, 70-85, DOI 10.1016/j.ultramic.2014.06.005, PMID 25062040.
+* U09 (Denneulin, Houdellier, Hÿtch 2016): Ultramicroscopy 160, 98-109, DOI 10.1016/j.ultramic.2015.10.002, PMID 26476802.
+* U10 (Niermann, Niermann, Lehmann 2025): now SECTION_READ, see P2.
+* U11 (four-wave DFEH): T. Denneulin, M. Hÿtch, J. Phys. D: Appl. Phys. 49, 244003 (2016), DOI
+  10.1088/0022-3727/49/24/244003 (IOP abstract page READ).
+* P30 (Nature 2008): PubMed abstract READ; full text still unread.
+
+---
+
+## Documents to request from Ali (in priority order)
+
+1. Wang, Wang, Yang, Jin, Microscopy Today 33(6), 43-49 (2025), doi:10.1093/mictod/qaaf097 (OUP
+   paywall) - DFEH of dislocations, Burgers-vector orientation, 2.9 nm core separation.
+2. Cooper et al., Micron 80, 145-165 (2016), doi:10.1016/j.micron.2015.09.001 (open access at the
+   publisher, blocked here) - DFEH vs GPA vs NBED vs PED benchmark numbers.
+3. Hÿtch et al., Nature 453, 1086-1089 (2008), doi:10.1038/nature07049, and Hÿtch et al.,
+   Ultramicroscopy 111, 1328-1337 (2011), doi:10.1016/j.ultramic.2011.04.008 - founding DFEH papers.
+4. Lubk et al. 2014 (doi:10.1016/j.ultramic.2013.07.007) and Javon et al. 2014
+   (doi:10.1016/j.ultramic.2014.06.005) - two-beam dynamical theory of the DFEH phase.
+5. Béché et al., Ultramicroscopy 131, 10-23 (2013), doi:10.1016/j.ultramic.2013.03.014 - five-technique
+   comparison.
+6. Meißner et al., Ultramicroscopy 207, 112844 (2019), doi:10.1016/j.ultramic.2019.112844 (CC BY) -
+   DFEH phase away from two-beam conditions.
+
+---
+
+## Separation of facts and inferences
+
+* Facts (READ) are the bibliographic data, conditions, numbers and quotations in the P1-P8 entries
+  and the table, each with the URL I opened. Abstract-level facts are confined to the "not opened in
+  full" table.
+* Inferences (marked "Relevance (inference)" or in the "What a simulation paper should show" and
+  "Common figure types" commentary): the relevance statements, the frequency ranking as a guide to
+  what referees expect, the claim that category (B) is thin in modern literature (based on the
+  searches listed, not exhaustive), and every statement about how these transmission results bear on
+  reflection-geometry DFEH at Si(001) (008).
