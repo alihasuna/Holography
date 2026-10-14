@@ -5,6 +5,9 @@
 RH_PYTHON_MODULE=${RH_PYTHON_MODULE:-python/3.11}
 RH_CUDA_MODULE=${RH_CUDA_MODULE:-cuda}
 RH_ENV_DIR=${RH_ENV_DIR:-$HOME/envs/reflection_holo}
+# start from a clean module set: modules loaded by the login profile (for example
+# jupyterlab-apps) must not leak into the environment build or the jobs
+module purge
 module load StdEnv/2023 "$RH_PYTHON_MODULE" "$RH_CUDA_MODULE"
 if [ -f "$RH_ENV_DIR/bin/activate" ]; then
     source "$RH_ENV_DIR/bin/activate"
