@@ -34,6 +34,8 @@ holography of strain or dislocations was found in this pass.
 | P7 | Denneulin et al., J. Phys.: Condens. Matter 30, 215701 (2018), 10.1088/1361-648X/aabd00 | pure.rug.nl .../Denneulin_2018_..._1_.pdf (publisher PDF) | full text + captions | Hitachi HF-3300 (I2TEM), 300 kV, Lorentz upper stage, double biprism, fringe spacing 2 nm, hologram width 300 nm, g = (002), (200); HRTEM-GPA on Tecnai 200 kV; 2D anisotropic FEM | DF holograms; eps_zz, eps_xx, eps_xz, R_xz maps vs FEM; profiles; numerical moiré magnification of hologram fringes vs FEM moiré | DFEH +-0.1 % at 6 nm vs HRTEM-GPA +-0.5 % at 2 nm; extra 2 nm Gaussian smoothing; threading dislocations seen as dark lines in the (200) hologram and abrupt jumps in eps_xx |
 | P8 (older) | Denneulin, Cooper, Hartmann, Rouvière, J. Appl. Phys. 112, 094314 (2012), 10.1063/1.4764045 | hal.science/hal-02145343/document | full text + captions | FEI Titan, 200 kV, Lorentz lens, single biprism at +180 V giving 2 nm fringes, 10 um aperture, g = (004), (220), 64 s exposure, Gaussian mask (resolution 6.6 nm FWHM); 3D FEM | Lorentz images; DF holograms; exx/ezz maps vs FEM; profiles; zoom of hologram and exx map at two misfit dislocations next to STEM-HAADF and its GPA map; depth profiles for 5 process variants | precision = std in non-strained Si: 0.02-0.06 %; misfit (60 deg, 1/2<110>) dislocations visible as "rupture of the interference fringes"; DFEH and HAADF-GPA maps around them "fairly coherent" with the same mask |
 
+---
+
 ## Paper entries
 
 ### P1. Boureau et al. 2020, J. Appl. Cryst. (DFEH vs HRXRD on 22 nm-node MOSFETs)
