@@ -1351,6 +1351,56 @@ The other 34 rung-1 and rung-2 windows pass, with margins of 2 or more. Rung 3 a
 are 3D runs. Rung 3 for Si(111) is previewed in section 17 (rung 3); the Si(001) rung-3 tasks and the
 beam-independence tasks were not run here.
 
+### 17 (rung 3). Rung 3, Si(1,-1,1) bilayer null test at production numerics (s20, s22, s23)
+
+The two rung-3 tasks for Si(111) (levels 0 and 1, windows 13.3, 20.0 and 26.5 mrad, dx = 0.08 A,
+5376 x 84 grid, complex128, production numerics) were run on CPU. Both stopped adaptively close to
+their planned lengths (18,800 and 19,000 planes; cap 74,746 and 75,974). The verdict uses the
+repository's own `stitch` and `terrace_ratio` and the `rung3_null` tolerances, as
+`aggregate_validation` does.
+
+```
+level 0 window 0: z_end 36097 A, stopped at cap: False, max truncation estimate (weight >= 0.05) 2.74e-05
+level 0 window 1: z_end 31488 A, stopped at cap: False, max truncation estimate (weight >= 0.05) 1.74e-06
+level 0 window 2: z_end 29184 A, stopped at cap: False, max truncation estimate (weight >= 0.05) 2.57e-06
+level 1 window 0: z_end 36481 A, stopped at cap: False, max truncation estimate (weight >= 0.05) 3.28e-05
+level 1 window 1: z_end 32256 A, stopped at cap: False, max truncation estimate (weight >= 0.05) 5.36e-07
+level 1 window 2: z_end 29952 A, stopped at cap: False, max truncation estimate (weight >= 0.05) 1.65e-06
+Si(111) bilayer null test: 411 points with |r| >= 0.01: max |residual| 4.87e-03 rad, beyond uncertainty 4.71e-03 rad (tol 0.003); max |amp ratio - 1| 4.41e-03, beyond uncertainty 4.28e-03 (tol 0.003); max uncertainty 8.87e-04
+rung 3 Si(111): FAIL
+
+417 common points; 411 with |r0| >= 1e-2
+ theta(mrad)  |r0|       residual(rad)  |amp ratio - 1|  uncertainty
+    26.40   1.633e-02   +2.109e-03     5.865e-05      3.6e-05
+    26.44   1.401e-02   -2.377e-03     3.434e-03      4.1e-05
+    26.46   1.589e-02   -4.184e-03     3.523e-04      3.5e-05
+    26.50   2.366e-02   +2.585e-03     2.123e-03      2.3e-05
+    26.52   2.913e-02   +2.314e-03     1.953e-03      1.8e-05
+    27.16   1.016e-02   +2.963e-03     7.275e-04      1.8e-04
+    27.18   1.083e-02   -2.418e-03     2.412e-03      1.7e-04
+    27.22   1.309e-02   +3.377e-03     4.998e-04      1.3e-04
+    27.26   1.620e-02   -2.700e-03     1.199e-03      1.0e-04
+    27.54   2.447e-02   +2.206e-03     5.956e-04      4.3e-05
+    27.58   1.449e-02   -4.593e-03     9.913e-04      9.4e-05
+    27.62   1.038e-02   +4.873e-03     1.094e-03      1.6e-04
+  band 11.0-12.5 mrad:  29 points, max|res| 3.30e-05 rad, median|res| 8.93e-06, max|amp-1| 4.17e-05, |r0| 1.42e-01..3.19e-01
+  band 12.5-14.0 mrad:  75 points, max|res| 1.73e-05 rad, median|res| 7.01e-06, max|amp-1| 1.72e-05, |r0| 2.95e-01..6.10e-01
+  band 14.0-15.5 mrad:  35 points, max|res| 1.73e-04 rad, median|res| 1.21e-05, max|amp-1| 2.07e-04, |r0| 6.78e-02..4.33e-01
+  band 17.8-22.2 mrad: 138 points, max|res| 5.64e-04 rad, median|res| 2.04e-05, max|amp-1| 4.57e-04, |r0| 1.14e-02..2.18e-01
+  band 24.3-28.7 mrad: 134 points, max|res| 4.87e-03 rad, median|res| 7.53e-04, max|amp-1| 4.41e-03, |r0| 1.01e-02..1.34e-01
+```
+
+The translation null test fails the gate only in the 26.5 mrad window: maximum residual 4.87e-3 rad
+(4.71e-3 beyond the stated uncertainty) and maximum |amplitude ratio - 1| 4.41e-3 (4.28e-3 beyond),
+against 3e-3. In the 13.3 mrad window (Bragg (4,-4,4), |r| up to 0.61) the residual is at most
+3.3e-5 rad, and in the 20.0 mrad window at most 5.6e-4 rad. The translation covariance of the whole
+chain is therefore verified to 3e-5 rad where |r| is large. The failing points are at
+|r| = 0.010 to 0.029 near the (7,-7,7) condition (26.51 mrad at 13.90 V), and their sign alternates
+from one 0.02 mrad point to the next. That is the signature of truncation ringing: a record of
+length about 30,000 A gives `2 pi/(L k theta)` of about 0.03 mrad. The implied absolute error, about
+5e-5, is 20 times the stored truncation estimate (about 2e-6, cf. F-m3); the two terraces stopped at
+different lengths (29,184 and 29,952 A). s24 tests this hypothesis (next subsection).
+
 ## 18. Summary table
 
 | ID | Item | Rank | Category | Finding | Evidence |
