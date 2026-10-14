@@ -1,0 +1,70 @@
+# Si(001), realistic buried dislocation: a 60 degree dislocation 50 nm below the surface, formed by
+# glide on a {111} plane from the surface, so it leaves a 2-layer slip step where the glide plane
+# meets the surface. Same three-strip layout as configs/si001_three_sections_cpu.yaml, but the
+# cell is 0.74 um wide so the field of a 50 nm deep line fits:
+#   section 1  reference terrace (x = 0), 1229 A
+#   section 2  raised by 4 atomic layers (h = a = 5.431 A), 1229 A
+#   section 3  same height as section 1, 4915 A wide, 60 degree dislocation 500 A deep in its middle
+# Strips run parallel to the beam [110]; step edges are parallel to the beam (no shadowing).
+name: si001_60deg_50nm
+configuration: CFG-B (si001_patterned, docs/05 section 2)
+
+beam:
+  energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}
+
+crystal:
+  a_A: {value: 5.4309, label: ASSUMPTION, note: "B2"}
+  V0_V: {value: 12.0, label: ASSUMPTION, note: "B1; geometric model only"}
+  termination: {value: bulk, label: ASSUMPTION, note: "B3: unreconstructed; the 2x1 dimer reconstruction is not modelled"}
+
+reflection:
+  hkl: {value: [0, 0, 8], label: ASSUMPTION, note: "CFG-B working condition (docs/05); PROJECT_INPUT items 4 and 9 pending"}
+
+sample:
+  periods_per_section: {value: [320, 320, 1280], label: ASSUMPTION, note: "3.840 A periods along [1-10]: 1229 + 1229 + 4915 A, cell 7373 A = 0.74 um, about 15 times the dislocation depth"}
+  raise_layers: {value: [0, 4, 0], label: ASSUMPTION, note: "as in the 25 A smoke test; the raised strip is the in-image height calibration"}
+  depth_A: {value: 56.0, label: SMOKE_TEST, note: "atoms down to 56 A; the electrons are absorbed above 38 A. The dislocation core at 500 A lies far below the simulated slab: only its elastic field enters"}
+  seam_y_A: {value: 4561.94, label: DERIVED_HERE, note: "the periodic seam (where the cell inserts the Burgers-vector offset) is placed on the slip trace, y_core - d/sqrt(2), where the (1-11) glide plane meets the surface. The seam then IS the slip step of a dislocation that glided in from the surface (cut along the glide plane), and the far fields on both sides match. With the periodic images the seam mismatch is b to 0.05 A, so no appreciable ramp is needed"}
+
+defects:
+  nu: {value: 0.22, label: ASSUMPTION, note: "D2"}
+  periodic_images_y: {value: 20, label: DERIVED_HERE, note: "the cell is a periodic array of dislocations 0.74 um apart; the field is summed over +-20 images, each taken relative to its value above the primary line (converged: the surface relief changes by < 0.001 A between 5 and 40 images, tests/test_sections.py)"}
+  dislocations:
+    label: ASSUMPTION
+    note: >
+      60 degree (mixed) dislocation b = a/2[011] (3.84 A at 60 degrees to the line), line along
+      [110] (the beam), glide plane (1-11), 500 A below the surface in the middle of section 3.
+      In the slab frame b = (2.715, -1.920, 1.920) A: normal edge component 2.715 A (gives a
+      step-like surface rise of b_n over about 2d), in-plane edge component 1.920 A (a bump of
+      b/pi = 0.61 A, same sense as the Lomer smoke test: extra half-plane up), screw component
+      1.920 A along the beam. The usual glissile dislocation in diamond-cubic Si (introduced by
+      surface damage, scratches, indentation, thermal stress or relaxation of a strained layer).
+      Isotropic half-space field (docs/08); the core is not modelled (it is 50 nm away).
+    value:
+      - {burgers_over_a: [0.0, 0.5, 0.5], line_uvw: [1, 1, 0], depth_A: 500.0, position_yz_A: [4915.49, 0.0], sign: 1}
+
+reflections_to_run: {value: [[0, 0, 8], [0, 0, 12]], label: ASSUMPTION, note: "as in the smoke test"}
+
+geometric:
+  penetration_A: {value: [3.0, 12.0], label: ASSUMPTION, note: "scanned, not computed (D3)"}
+  n_layers: {value: 120, label: SMOKE_TEST, note: "layers of a/4 summed (163 A)"}
+
+multislice:
+  ny: {value: 57600, label: SMOKE_TEST, note: "dy = 0.128 A over 7373 A (converged lateral sampling, docs/08); 57600 = 2^8 3^2 5^2 for fast FFTs"}
+  nx: {value: 1728, label: SMOKE_TEST}
+  dx_A: {value: 0.1, label: SMOKE_TEST}
+  x0_A: {value: -58.0, label: SMOKE_TEST, note: "cell x from -58 to +114.8 A; surface relief of the dislocation -1.9 to +0.8 A (slip step 2.6 A), raised strip +5.4 A"}
+  slices_per_period: {value: 2, label: SMOKE_TEST}
+  debye_waller_B_A2: {value: 0.46, label: ASSUMPTION}
+  absorption_ratio: {value: 0.05, label: ASSUMPTION, note: "placeholder, NOT sourced (PROJECT_INPUT item 21)"}
+  bulk_absorber_top_width_Vmax: {value: [-38.0, 14.0, 60.0], label: SMOKE_TEST}
+  illumination_center_height_edge_A: {value: [51.0, 80.0, 4.0], label: SMOKE_TEST, note: "as in the converged smoke test: footprint 4700 A at (008), 3100 A at (0,0,12)"}
+  aperture_radius_per_A: {value: 0.06, label: ASSUMPTION, note: "objective aperture; PROJECT_INPUT item 4"}
+  vacuum_mask_x_edge_A: {value: [8.0, 3.0], label: SMOKE_TEST, note: "above the raised strip (5.43 A)"}
+  operating_offset_mrad: {value: {"(0,0,8)": 0.8, "(0,0,12)": -0.6}, label: DERIVED_HERE, note: "rocking-curve maxima of the flat surface (scripts/rocking_flat.py), as in the smoke test"}
+
+holography:
+  carrier_per_A: {value: [0.0, 0.2], label: ASSUMPTION, note: "fringes 5 A apart along y at the specimen; PROJECT_INPUT item 16"}
+  mask_radius_per_A: {value: 0.06, label: ASSUMPTION, note: "equal to the objective aperture; PROJECT_INPUT item 19"}
+  dose_counts_per_pixel: {value: 400, label: SMOKE_TEST, note: "Poisson noise for the noisy reconstruction; the noiseless one is always shown too"}
+  noise_seed: {value: 20260930, label: SMOKE_TEST}

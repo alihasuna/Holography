@@ -71,7 +71,7 @@ def build_sections(frame, a_A, periods, raise_layers, depth_A, defects=None, mar
     if seam_y is None:
         seam_y = 0.0
         if defects is not None and len(defects.items):
-            d0 = defects.items[0]
+            d0 = defects.items[0]  # the primary dislocation (images follow it)
             y_line = -d0.offset if d0.e1[1] < 0 else d0.offset  # lines along the beam: e1 = -+y
             seam_y = np.mod(y_line + Ly / 2, Ly)
     Y0 = float(np.round(seam_y / py) * py)  # sites must stay on the lattice
@@ -87,7 +87,7 @@ def build_sections(frame, a_A, periods, raise_layers, depth_A, defects=None, mar
     u = np.zeros_like(sites)
     if defects is not None and len(defects.items):
         u = defects.displacement(sites)
-        B = np.sum([d.burgers for d in defects.items], axis=0)
+        B = np.sum([d.burgers for d in defects.items if not getattr(d, "is_image", False)], axis=0)  # per cell
         layers = np.unique(np.round(sites[:, 0], 3))
         r0 = np.stack([layers, np.full_like(layers, Y0), np.zeros_like(layers)], -1)
         r1 = r0 + np.array([0.0, Ly, 0.0])
@@ -107,8 +107,12 @@ def build_sections(frame, a_A, periods, raise_layers, depth_A, defects=None, mar
         if y_ref != r_ref[0, 1]:
             u_ref = defects.displacement(r_ref + [0, y_ref - r_ref[0, 1], 0])[0] + \
                 resid[np.argmin(np.abs(layers))] * (y_ref - Y0) / Ly
-        if np.linalg.norm(B) > 1e-9:  # a shift by a lattice vector is not a rigid shift to remove
-            u_ref = u_ref - B * np.round(u_ref @ B / (B @ B))
+        # Remove the normal component in full (the reference surface sits at x = 0 even when the
+        # far field is offset by a b with a normal component: two layers for a 60 degree
+        # dislocation), and the in-plane components modulo the lattice periods along y and z, so
+        # no atom moves by more than half a period in the plane (a larger in-plane shift would
+        # move atoms across strip labels; periodic images add a constant multiple of b).
+        u_ref = u_ref - np.array([0.0, py * np.round(u_ref[1] / py), Lz * np.round(u_ref[2] / Lz)])
         u = u - u_ref
         info["rigid_shift_removed_A"] = u_ref.tolist()
         info["net_burgers_A"] = B.tolist()

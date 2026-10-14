@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from reflection_holo import geometry as geo  # noqa: E402
 from reflection_holo import holography as H  # noqa: E402
+from reflection_holo.crystal import lattice_period  # noqa: E402
 from reflection_holo.defects.dislocation import from_config  # noqa: E402
 from reflection_holo.forward import geometric as gm  # noqa: E402
 from reflection_holo.forward import multislice as ms  # noqa: E402
@@ -90,20 +91,23 @@ def process(psi2d, s, y, dy, dx, carrier, mask_r, dose, seed):
     return res
 
 
-def metrics(ph, y, s, core_y):
+def metrics(ph, y, s, core_y, depth=25.0):
+    """Strip levels and dislocation measures. The windows around the core scale with the depth
+    (the surface field spreads over about 2 x depth); they are the original ones at 25 A."""
+    f = max(1.0, depth / 25.0)
     wins = strip_windows(s, core_y)
     lvl = []
     for lo, hi in wins[:2]:  # strip 3 has no field-free interior: its signal is the profile itself
         sel = (y > lo) & (y < hi)
         lvl.append(float(np.median(ph[sel])))
-    core = np.abs(y - core_y) < 60
+    core = np.abs(y - core_y) < 60 * f
     j = np.argmax(np.abs(ph[core] - lvl[0]))
     peak = float(ph[core][j] - lvl[0])
     half = np.abs(ph - lvl[0]) > abs(peak) / 2
-    fwhm = float(np.sum(half & (np.abs(y - core_y) < 100)) * (y[1] - y[0]))
+    fwhm = float(np.sum(half & (np.abs(y - core_y) < 100 * f)) * (y[1] - y[0]))
     s3 = (y > s.boundaries[2] + 8) & (y < s.boundaries[3] - 8)
-    flank = s3 & (np.abs(y - core_y) > 55)
-    local = float(np.mean(ph[np.abs(y - core_y) < 1.5]) - np.mean(ph[flank]))  # no path through strip 2
+    flank = s3 & (np.abs(y - core_y) > 55 * f)
+    local = float(np.mean(ph[np.abs(y - core_y) < 1.5 * f]) - np.mean(ph[flank]))  # no path through strip 2
     return {"dislocation_rel_strip3_flanks_rad": local, "step_21_rad": lvl[1] - lvl[0], "step_21_wrapped_rad": float(np.angle(np.exp(1j * (lvl[1] - lvl[0])))),
             "dislocation_peak_rad": peak, "dislocation_fwhm_A": fwhm}
 
@@ -125,10 +129,13 @@ def main():
     a = float(cfg.get("crystal.a_A"))
     V0_geo = float(cfg.get("crystal.V0_V"))
     entries = cfg.get("defects.dislocations")
-    defects = from_config(entries, float(cfg.get("defects.nu")), a, FRAME, None, 0)
+    n_img = int(cfg.get("defects.periodic_images_y"))
+    Ly_cell = sum(cfg.get("sample.periods_per_section")) * lattice_period(FRAME, FRAME.y_uvw, a)
+    defects = from_config(entries, float(cfg.get("defects.nu")), a, FRAME, Ly_cell if n_img else None, n_img)
     s = build_sections(FRAME, a, cfg.get("sample.periods_per_section"), cfg.get("sample.raise_layers"),
                        float(cfg.get("sample.depth_A")), defects, seam_y=cfg.get("sample.seam_y_A"))
     core_y = float(entries[0]["position_yz_A"][0])
+    depth0 = float(entries[0]["depth_A"])
 
     nx, ny = int(cfg.get("multislice.nx")), int(cfg.get("multislice.ny"))
     grid = ms.Grid(nx=nx, ny=ny, dx=float(cfg.get("multislice.dx_A")), dy=s.Ly / ny, x0=float(cfg.get("multislice.x0_A")))
@@ -165,7 +172,9 @@ def main():
                                 float(cfg.get("multislice.absorption_ratio")), xp=xp)
     band = xp.asarray(grid.band_mask())
     absorber = ms.absorber_profile(grid, abs_top, abs_w, abs_V)
-    T = [ms.transmission(v, sigma, absorber, dz, band, xp=xp) for v in V]
+    T = []
+    while V:  # free each potential as soon as its transmission exists (large grids)
+        T.append(ms.transmission(V.pop(0), sigma, absorber, dz, band, xp=xp))
     print(f"{len(s.positions)} atoms, potentials in {time.time() - t0:.1f} s; V0 of potential {V0_ms:.2f} V")
 
     summary = {"n_atoms": len(s.positions), "V0_potential_V": V0_ms, "V0_geometric_V": V0_geo, "reflections": {}}
@@ -187,7 +196,7 @@ def main():
         g_rows = {p: np.broadcast_to(w, (40, ny)) for p, w in geo_w.items()}
         rec_geo = {p: process(np.ascontiguousarray(g), s, y, grid.dy, 0.5, carrier, mask_r, dose, seed)
                    for p, g in g_rows.items()}
-        entry["geometric"] = {str(p): metrics(r["noiseless"]["phase"], y, s, core_y) for p, r in rec_geo.items()}
+        entry["geometric"] = {str(p): metrics(r["noiseless"]["phase"], y, s, core_y, depth0) for p, r in rec_geo.items()}
         rec_ms = None
         if hkl in [tuple(h) for h in cfg.get("reflections_to_run")] and args.only in (None, name):
             off = float(cfg.get("multislice.operating_offset_mrad")[name])
@@ -196,7 +205,10 @@ def main():
             n_steps = int(np.ceil(2 * xc / np.tan(theta) / dz))
             psi0 = ms.illumination(grid, theta, lam, xc, Hh, edge)
             t1 = time.time()
-            psi = ms.to_numpy(ms.run(psi0, T, ms.propagator(grid, dz, lam, xp=xp), n_steps, xp=xp))
+            def progress(j, _psi, _t=t1, _n=n_steps):
+                if (j + 1) % 500 == 0:
+                    print(f"  {name}: slice {j + 1}/{_n}, {time.time() - _t:.0f} s", flush=True)
+            psi = ms.to_numpy(ms.run(psi0, T, ms.propagator(grid, dz, lam, xp=xp), n_steps, xp=xp, callback=progress))
             psi_df, spec = ms.dark_field(psi, grid, theta, lam, q_ap, vac_x, vac_e)
             # effective reflected angle: intensity centroid of the specular spot inside the aperture
             QX = grid.qx[:, None] * np.ones((1, ny))
@@ -230,8 +242,8 @@ def main():
                                        float(np.angle(np.exp(-1j * c_eff.q_ext * s.heights[1]))),
                                    "n_slices": n_steps, "runtime_s": time.time() - t1, "specular_fraction": R,
                                    "image_rows_exit_height_A": [float(grid.x[roi].min()), float(grid.x[roi].max())],
-                                   "noiseless": metrics(rec_ms["noiseless"]["phase"], y, s, core_y),
-                                   "noisy": metrics(rec_ms["noisy"]["phase"], y, s, core_y),
+                                   "noiseless": metrics(rec_ms["noiseless"]["phase"], y, s, core_y, depth0),
+                                   "noisy": metrics(rec_ms["noisy"]["phase"], y, s, core_y, depth0),
                                    "carrier_found": rec_ms["noiseless"]["carrier"]}
             print(f"{name}: theta_ext {theta*1e3:.2f} mrad, {n_steps} slices, {entry['multislice']['runtime_s']:.0f} s, "
                   f"R {R:.3f}; step {entry['multislice']['noiseless']['step_21_wrapped_rad']:+.3f} rad "

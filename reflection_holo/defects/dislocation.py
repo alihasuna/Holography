@@ -61,6 +61,8 @@ class BuriedDislocation:
     nu: float
     surface_height: float = 0.0
     normal: np.ndarray = field(default_factory=lambda: np.array([1.0, 0.0, 0.0]))
+    is_image: bool = False  # periodic image of a dislocation in the cell (not counted in the cell's net b)
+    ref_point: np.ndarray | None = None  # if set, the field is taken relative to its value here
 
     def __post_init__(self):
         self.burgers = np.asarray(self.burgers, float)
@@ -116,6 +118,12 @@ class BuriedDislocation:
 
     def displacement(self, r: np.ndarray) -> np.ndarray:
         """Displacement (slab frame, A) at points r of shape (..., 3)."""
+        u = self._displacement(r)
+        if self.ref_point is not None:
+            u = u - self._displacement(np.asarray(self.ref_point, float))
+        return u
+
+    def _displacement(self, r):
         s, h = self.local_coords(r)
         u1, u2, u3 = self.displacement_local(s, h)
         return u1[..., None] * self.e1 + u2[..., None] * self.e2 + u3[..., None] * self.e3
@@ -140,7 +148,11 @@ def from_config(entries, nu: float, a_A: float, frame, Ly: float | None = None, 
 
     Each entry: burgers_over_a (cubic, units of a), line_uvw (cubic), depth_A, position_yz_A (a point
     of the line in the surface plane, slab frame), sign (+1 or -1). With n_images > 0, images at
-    +-k Ly along y are added (lines along the beam only), for cells periodic in y. A non-lattice
+    +-k Ly along y are added (lines along the beam only), for cells periodic in y: the summed field
+    is that of a periodic array. Each image is taken relative to its own value at the surface point
+    above the primary line, so the sum converges absolutely (the 1/s tails and the log terms of the
+    +k and -k images cancel pairwise) and adds no large constant; the field still advances by
+    exactly one b per cell. Images carry is_image=True and the primary dislocation comes first. A non-lattice
     Burgers vector is refused: partial dislocations need a stacking-fault model not implemented here.
     """
     from ..geometry import is_fcc_lattice_vector
@@ -158,9 +170,12 @@ def from_config(entries, nu: float, a_A: float, frame, Ly: float | None = None, 
         if n_images:
             if abs(abs(line[2]) - 1) > 1e-9:
                 raise ValueError("periodic images along y require lines along the beam (z)")
-            shifts = range(-n_images, n_images + 1)
+            if not Ly:
+                raise ValueError("periodic images need the cell length Ly")
+            shifts = [0] + [k for j in range(1, n_images + 1) for k in (j, -j)]  # primary first
         for k in shifts:
-            D = BuriedDislocation(burgers=b, line=line, depth=float(e["depth_A"]), offset=0.0, nu=nu)
+            D = BuriedDislocation(burgers=b, line=line, depth=float(e["depth_A"]), offset=0.0, nu=nu,
+                                  is_image=k != 0, ref_point=None if k == 0 else np.array([0.0, y, z]))
             D.offset = float(np.array([0.0, y + k * (Ly or 0.0), z]) @ D.e1)
             items.append(D)
     return DefectSet(items)

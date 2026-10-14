@@ -50,6 +50,22 @@ def to_numpy(a):
     return a.get() if hasattr(a, "get") else np.asarray(a)
 
 
+def fft2(a, xp=np):
+    """2-D FFT: cupy on the GPU; on the CPU scipy.fft, multithreaded and keeping single precision
+    (numpy.fft is about 25 times slower on 10^8-point grids)."""
+    if xp is np:
+        import scipy.fft as sf
+        return sf.fft2(a, workers=-1)
+    return xp.fft.fft2(a)
+
+
+def ifft2(a, xp=np):
+    if xp is np:
+        import scipy.fft as sf
+        return sf.ifft2(a, workers=-1)
+    return xp.fft.ifft2(a)
+
+
 def fe_peng(q, params=PENG_HIGH_SI):
     """Electron scattering factor (A) at spatial frequency q (cycles/A)."""
     s2 = (q / 2.0) ** 2
@@ -100,13 +116,16 @@ class Grid:
 
 
 def slice_potentials(positions, Lz, n_slices, grid: Grid, B_A2: float, absorption_ratio: float,
-                     xp=np, chunk: int = 4096, params=PENG_HIGH_SI):
+                     xp=np, chunk: int | None = None, params=PENG_HIGH_SI, chunk_bytes: float = 1e9):
     """Projected potentials (V A) of the n_slices slices of one z-period, complex (V_r + i V_i).
 
     Each atom is projected entirely into the slice whose centre is nearest to it (projection
     approximation). Structure factors are evaluated exactly (no pixel splatting) by a separable
     matrix product. The Debye-Waller factor exp(-B s^2) damps f_e (static-lattice average).
+    Atoms are processed in chunks whose (chunk x ny) phase matrix stays below chunk_bytes.
     """
+    if chunk is None:
+        chunk = int(max(64, min(4096, chunk_bytes // (16 * grid.ny))))
     dz = Lz / n_slices
     zc = (np.floor(np.mod(positions[:, 2] + dz / 2, Lz) / dz)).astype(int) % n_slices
     qx = xp.asarray(grid.qx)
@@ -125,7 +144,8 @@ def slice_potentials(positions, Lz, n_slices, grid: Grid, B_A2: float, absorptio
             A = xp.exp(-2j * np.pi * qx[:, None] * xs[None, :])
             Bm = xp.exp(-2j * np.pi * ys[:, None] * qy[None, :])
             S += A @ Bm
-        V = xp.fft.ifft2(FE_TO_POTENTIAL_V_A2 * fe * S).real / (grid.dx * grid.dy)
+        V = ifft2(FE_TO_POTENTIAL_V_A2 * fe * S, xp).real / (grid.dx * grid.dy)
+        del S
         out.append(V * (1.0 + 1j * absorption_ratio))
     return out, dz
 
@@ -164,7 +184,7 @@ def transmission(V_slice, sigma, absorber_x, dz, band, xp=np):
     """t = exp(i sigma (V_r + i V_i)) with the bulk absorber added, then band-limited."""
     Vabs = xp.asarray(absorber_x)[:, None] * dz
     t = xp.exp(1j * sigma * (V_slice + 1j * Vabs))
-    t = xp.fft.ifft2(xp.fft.fft2(t) * band)
+    t = ifft2(fft2(t, xp) * band, xp)
     return t.astype(xp.complex64)
 
 
@@ -173,7 +193,7 @@ def run(psi0, transmissions, P, n_steps, xp=np, callback=None):
     psi = xp.asarray(psi0.astype(np.complex64))
     m = len(transmissions)
     for j in range(n_steps):
-        psi = xp.fft.ifft2(xp.fft.fft2(psi * transmissions[j % m]) * P)
+        psi = ifft2(fft2(psi * transmissions[j % m], xp) * P, xp)
         if callback is not None:
             callback(j, psi)
     return psi
@@ -186,11 +206,10 @@ def dark_field(psi_exit, grid: Grid, theta_out: float, lam: float, q_aperture: f
     x = grid.x
     m = np.clip((x - vacuum_x) / vacuum_edge, 0.0, 1.0)
     m = 0.5 * (1 - np.cos(np.pi * m))
-    F = np.fft.fft2(psi_exit * m[:, None])
+    F = fft2(psi_exit * m[:, None].astype(np.float32))
     q0 = np.sin(theta_out) / lam
-    QX, QY = np.meshgrid(grid.qx, grid.qy, indexing="ij")
-    ap = (QX - q0) ** 2 + QY**2 < q_aperture**2
-    psi = np.fft.ifft2(F * ap) * np.exp(-2j * np.pi * q0 * x)[:, None]
+    ap = (grid.qx[:, None] - q0) ** 2 + grid.qy[None, :] ** 2 < q_aperture**2
+    psi = ifft2(F * ap) * np.exp(-2j * np.pi * q0 * x)[:, None].astype(np.complex64)
     return psi, np.abs(F) ** 2
 
 
