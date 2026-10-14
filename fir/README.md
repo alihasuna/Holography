@@ -84,3 +84,26 @@ scratch is purged.
 Copy `summary/` (small) back into the repository under `results/fir_m2_v1/`. Keep the
 `.h5` files on `$PROJECT`. The summary JSON files are the inputs for the comparison
 documents. Every number in them traces to a task file and a manifest.
+
+## 6. Running from a JupyterHub terminal
+
+A JupyterHub terminal on Fir works like a login session for everything above, with
+two differences.
+
+* The terminal usually runs inside a Slurm job and inherits that job's `SLURM_*`
+  variables and the Jupyter Python environment (for example `PYTHONPATH`). `sbatch`
+  copies the submitting environment into the job, so submit from a clean login shell:
+
+  ```bash
+  env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" TERM="$TERM" bash -l
+  env | grep -c '^SLURM_'      # expect 0
+  echo "$SCRATCH"              # expect /scratch/<user>
+  ```
+
+  Run the setup, the tests and the submission in that shell. Leave it with `exit`.
+* Compute nodes have no internet access. If `git clone` or `bash fir/setup_env.sh`
+  cannot download, do section 1 once in an SSH session on a Fir login node. `$HOME` is
+  shared, so the clone and the environment are then visible from JupyterHub.
+
+Submitted jobs do not depend on the JupyterHub session. Closing it or letting it time
+out does not stop the campaign.

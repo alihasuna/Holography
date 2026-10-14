@@ -95,9 +95,12 @@ output verbatim.
 
 ## Step 4: submit
 
+Submit from a clean login shell, so that the `SLURM_*` variables and the Python
+environment of the JupyterHub session do not leak into the jobs (`fir/README.md`, section 6):
+
 ```bash
-export FIR_ACCOUNT=<FIR_ACCOUNT>
-bash fir/submit_campaign.sh $SCRATCH/rh_m2_v1
+env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" bash -lc \
+  'cd ~/Holography && export FIR_ACCOUNT=<FIR_ACCOUNT> && bash fir/submit_campaign.sh $SCRATCH/rh_m2_v1'
 squeue -u $USER
 cat $SCRATCH/rh_m2_v1/job_ids.txt
 ```
