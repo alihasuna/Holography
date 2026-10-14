@@ -10,8 +10,8 @@ import time
 
 import numpy as np
 
-from .analysis import (smooth_window, truncation_bound, vdp_pattern, vdp_reflectivity,
-                       vdp_spectrum)
+from .analysis import (smooth_window, truncation_bound, vdp_angle_resolved, vdp_pattern,
+                       vdp_reflectivity, vdp_spectrum)
 from .backend import get_xp, to_numpy
 from .beams import entrance_wave, plan_beam
 from .constants import interaction_constant, k_rad_per_A, wavelength_A
@@ -398,6 +398,15 @@ def _run_reflection(task, log):
                                 theta_max=th0 + num["spectrum_theta_margin_mrad"] * 1e-3,
                                 qy_max_mrad=num.get("spectrum_qy_max_mrad", None), xp=xp)
             wres.update(spec)
+        if (task["kind"] == "step_image" and task["structure"]["kind"] == "steps_parallel") \
+                or task.get("save_spectrum", False):
+            # exact plane-wave response across y for every angle of the window
+            cols = np.nonzero(np.abs(grid.qy) * lam <= num.get("spectrum_qy_max_mrad", 15.0) * 1e-3)[0]
+            wsel = weight >= num.get("angle_resolved_min_weight", 0.01)
+            wres["ar_theta"] = th[wsel]
+            wres["ar_qy"] = grid.qy[cols]
+            wres["ar_rho"] = vdp_angle_resolved(rec[0], rec[1], x1, x2, zr, th[wsel], lam, grid,
+                                                cols, A_neg[wsel], xp=xp).astype(np.complex64)
         if cell_Py is not None and task["kind"] != "step_image":
             # intensity pattern (RHEED rods and diffuse) binned in the exit angle
             spec_p = vdp_spectrum(rec[0], rec[1], x1, x2, zr, lam, grid,

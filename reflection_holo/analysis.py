@@ -252,3 +252,36 @@ def truncation_bound(f, z, q, lam, A_in_neg, segment_planes=1000):
     F_last = _fourier_z(last, z[n - seg:], kappa)
     fac = rho / (1.0 - rho) if rho < 0.98 else 50.0
     return np.abs(F_last) * fac * (2.0 * np.pi * np.asarray(q) / kz) / np.abs(A_in_neg), rho
+
+
+def vdp_angle_resolved(rec1, rec2, x1, x2, z, theta, lam, grid, cols, A_in_neg, xp=np):
+    """Exact plane-wave response rho(theta, qy) of a structure that is uniform along
+    the beam, from the two-line detector records (n_planes, Ny) (DERIVED_HERE,
+    docs/08 appendix A13).
+
+    kappa is conserved, so incidence at angle theta (kappa_theta) excites only the
+    outgoing components at the same kappa.  For every qy column the records are
+    Fourier transformed at exactly kappa_theta, separated into up/down parts with
+    K_x(kappa_theta, qy), and normalised with the Jacobian and density of the
+    INCIDENT component: rho = U (2 pi q / kz) / A(-q).  The reflected field at the
+    surface plane is then r(y; theta) = sum_qy rho(theta, qy) exp(2 pi i qy y).
+    Returns rho as a (n_theta, n_cols) complex array."""
+    theta = np.asarray(theta, float)
+    q = np.sin(theta) / lam
+    kz = kz_of_q(q, lam)
+    kap = kz - 2.0 * np.pi / lam
+    dz = float(z[1] - z[0])
+    k = 2.0 * np.pi / lam
+    Ny = rec1.shape[1]
+    cg = xp.asarray(cols)
+    E = xp.asarray(np.exp(-1j * np.outer(kap, np.asarray(z, float))) * dz)
+    G = []
+    for rec in (rec1, rec2):
+        Sy = xp.fft.fft(rec, axis=1)[:, cg] / Ny
+        Gj = E @ Sy
+        G.append(np.asarray(Gj.get() if hasattr(Gj, "get") else Gj))
+    qy = grid.qy[cols]
+    Kx = np.sqrt(np.clip(k**2 - (k + kap)[:, None] ** 2 - (2 * np.pi * qy)[None, :] ** 2, 0, None))
+    U, _ = updown(G[0], G[1], Kx * x1, Kx * x2)
+    U[Kx == 0] = 0.0
+    return U * (2.0 * np.pi * q / kz / A_in_neg)[:, None]

@@ -123,23 +123,28 @@ stages:
     W_scan_V: [0.25, 1.0]
     onset_scan_A: [0.25, 1.0]
   steps:
-    w0_A: 30.0
+    w0_A: 15.0            # parallel steps: +-1.4 mrad per run, so 1 mrad spacing overlaps
     Ly_target_A: 200.0
     phonon_configs: 32
     parallel:
       # static runs every 1 mrad over the first orders (step phase versus angle, the
-      # rocking series that resolves the 2 pi branch); frozen phonons at the Bragg
-      # conditions and between them
+      # rocking series that resolves the 2 pi branch); the analysis is angle-resolved
+      # (exact plane-wave response across y), so the beam's angular spread does not
+      # smear the step phase; frozen phonons at the Bragg conditions and between them
       - {surface: si111_110, levels: [0, 1], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 13.3, 14.0, 15.0, 16.0, 17.0, 17.9, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.5, 27.0, 28.0, 29.0, 30.0, 30.6, 31.0, 32.0], phonon_angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6]}
       - {surface: si001_110, levels: [0, 1], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 16.2, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.3, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0], phonon_angles_mrad: [16.2, 21.0, 26.3]}
       - {surface: si001_110, levels: [0, 2], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 16.2, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.3, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0], phonon_angles_mrad: [16.2, 21.0, 26.3]}
       - {surface: si001_100, levels: [0, 1], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 16.2, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.3, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0], phonon_angles_mrad: [16.2, 21.0, 26.3]}
+      # control: no step (both strips level 0) must reproduce the flat terrace
+      - {surface: si111_110, levels: [0, 0], angles_mrad: [13.3, 20.0]}
     transverse:
-      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6]}
-      - {surface: si111_110, levels: [1, 0], angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6]}
-      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 21.0, 26.3]}
-      - {surface: si001_110, levels: [1, 0], angles_mrad: [16.2, 21.0, 26.3]}
-      - {surface: si001_110, levels: [0, 2], angles_mrad: [16.2, 21.0, 26.3]}
-      - {surface: si001_110, levels: [2, 0], angles_mrad: [16.2, 21.0, 26.3]}
-      - {surface: si001_110, levels: [0, 74], angles_mrad: [16.2, 26.3], preset: mesa, label: "10 nm mesa edge (74 x a/4 = 100.5 A), up-step"}
-      - {surface: si001_110, levels: [74, 0], angles_mrad: [16.2, 26.3], preset: mesa, label: "10 nm mesa edge, down-step"}
+      # image runs: broad beams (60 A waist, angular half-width 0.13 mrad); Si(111)
+      # also at 30 and 120 A to measure the dependence on the illumination
+      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6], w0_list_A: [30.0, 60.0, 120.0]}
+      - {surface: si111_110, levels: [1, 0], angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6], w0_list_A: [30.0, 60.0, 120.0]}
+      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 21.0, 26.3], w0_A: 60.0}
+      - {surface: si001_110, levels: [1, 0], angles_mrad: [16.2, 21.0, 26.3], w0_A: 60.0}
+      - {surface: si001_110, levels: [0, 2], angles_mrad: [16.2, 21.0, 26.3], w0_A: 60.0}
+      - {surface: si001_110, levels: [2, 0], angles_mrad: [16.2, 21.0, 26.3], w0_A: 60.0}
+      - {surface: si001_110, levels: [0, 74], angles_mrad: [16.2, 26.3], w0_A: 60.0, label: "10 nm mesa edge (74 x a/4 = 100.5 A), up-step"}
+      - {surface: si001_110, levels: [74, 0], angles_mrad: [16.2, 26.3], w0_A: 60.0, label: "10 nm mesa edge, down-step"}

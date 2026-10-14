@@ -228,6 +228,26 @@ def stage_rocking(cfg):
     return tasks
 
 
+def auto_Nx(cfg, num, surface, max_level, theta_mrad, w0):
+    """Smallest FFT-friendly Nx (same dx and x0) whose cell holds the detector line of
+    a beam of waist w0 above a structure of the given top level."""
+    a = cfg["physics"]["lattice_parameter_A"]["value"]
+    from .crystal import TerraceStructure, flat
+    lam = float(wavelength_A(cfg["physics"]["beam_energy_keV"]["value"]))
+    cell = SurfaceCell(surface, a)
+    ts = TerraceStructure(cell, Ly=cell.periods[1], x_bottom=-10.0, level=flat(0),
+                          max_level=max_level)
+    beam, z_hit = plan_beam(theta_mrad * 1e-3, w0, lam, num["clearance_sigmas"],
+                            num["clearance_margin_A"], float(ts.cut(max_level)))
+    top_in = beam.axis_height(0.0) + num["clearance_sigmas"] * beam.width_at(z_hit, lam)
+    x_need = (top_in + num["detector_margin_A"] + num["detector_spacing_A"]
+              + num["detector_top_margin_A"] + num["absorber_top_width_A"] + 1.0)
+    n = int(np.ceil((x_need - num["x0_A"]) / num["dx_A"]))
+    while not _fft_friendly(n):
+        n += 1
+    return max(n, num["Nx"])
+
+
 def _hit_point(cfg, num, surface, max_level, theta_mrad, w0):
     a = cfg["physics"]["lattice_parameter_A"]["value"]
     from .crystal import TerraceStructure, flat
@@ -241,44 +261,59 @@ def _hit_point(cfg, num, surface, max_level, theta_mrad, w0):
 
 
 def stage_steps(cfg):
+    """Explicit step runs.  Each item may set its own beam waist w0_A (default the
+    stage's) and a list of waists w0_list_A (beam-dependence study); the cell height
+    is chosen automatically (auto_Nx) unless the item names a preset."""
     sc = cfg["stages"]["steps"]
     a = cfg["physics"]["lattice_parameter_A"]["value"]
     tasks = []
-    w0 = sc["w0_A"]
+
+    def item_numerics(item, surf, lev, th, w0):
+        if "preset" in item:
+            num = numerics(cfg, item["preset"], spectrum_qy_max_mrad=15.0)
+        else:
+            num = numerics(cfg, spectrum_qy_max_mrad=15.0)
+            num["Nx"] = auto_Nx(cfg, num, surf, max(lev), th, w0)
+        return num
+
     for item in sc["parallel"]:
         surf, lev = item["surface"], list(item["levels"])
         nyp, _ = periods_for(surf, sc["Ly_target_A"], a)
-        num = numerics(cfg, item.get("preset", "tall"), spectrum_qy_max_mrad=15.0)
         st = dict(kind="steps_parallel", levels=lev, n_y_periods=nyp)
+        w0 = item.get("w0_A", sc["w0_A"])
         for th in item["angles_mrad"]:
+            num = item_numerics(item, surf, lev, th, w0)
             w = windows([th], w0)
             tasks.append(make_task(cfg, "steps", "step_image", surf, st, w, num,
                                    label=f"parallel steps {surf} {lev} {th} mrad"))
-            for L in sorted(set(lev)):    # flat references, one y period
+            for L in sorted(set(lev)):    # flat references, one y period, same beam
                 tasks.append(make_task(cfg, "steps", "flat_rocking", surf,
                                        dict(kind="flat", level=L, clearance_level=max(lev)), w, num,
                                        extra=dict(save_spectrum=True),
                                        label=f"reference flat {surf} level {L} {th} mrad"))
         for th in item.get("phonon_angles_mrad", []):
+            num = item_numerics(item, surf, lev, th, w0)
             for seed in range(sc["phonon_configs"]):
                 tasks.append(make_task(cfg, "steps", "step_image", surf, st, windows([th], w0),
                                        num, mode="frozen_phonon", seed=seed,
                                        label=f"parallel steps {surf} {lev} {th} mrad phonon {seed}"))
     for item in sc["transverse"]:
         surf, lev = item["surface"], list(item["levels"])
-        num = numerics(cfg, item.get("preset", "tall"), spectrum_qy_max_mrad=15.0)
-        for th in item["angles_mrad"]:
-            z_edge = _hit_point(cfg, num, surf, max(lev), th, w0)
-            st = dict(kind="steps_transverse", levels=lev, edges_z_A=[float(z_edge)],
-                      n_y_periods=1)
-            w = windows([th], w0)
-            tasks.append(make_task(cfg, "steps", "step_image", surf, st, w, num,
-                                   label=item.get("label", f"transverse step {surf} {lev} {th} mrad")))
-            for L in sorted(set(lev)):
-                tasks.append(make_task(cfg, "steps", "flat_rocking", surf,
-                                       dict(kind="flat", level=L, clearance_level=max(lev)), w, num,
-                                       extra=dict(save_spectrum=True),
-                                       label=f"reference flat {surf} level {L} {th} mrad ({max(lev)})"))
+        for w0 in item.get("w0_list_A", [item.get("w0_A", sc["w0_A"])]):
+            for th in item["angles_mrad"]:
+                num = item_numerics(item, surf, lev, th, w0)
+                z_edge = _hit_point(cfg, num, surf, max(lev), th, w0)
+                st = dict(kind="steps_transverse", levels=lev, edges_z_A=[float(z_edge)],
+                          n_y_periods=1)
+                w = windows([th], w0)
+                tasks.append(make_task(cfg, "steps", "step_image", surf, st, w, num,
+                                       label=item.get("label", f"transverse step {surf} {lev} {th} mrad")
+                                       + f" w0 {w0} A"))
+                for L in sorted(set(lev)):
+                    tasks.append(make_task(cfg, "steps", "flat_rocking", surf,
+                                           dict(kind="flat", level=L, clearance_level=max(lev)), w, num,
+                                           extra=dict(save_spectrum=True),
+                                           label=f"reference flat {surf} level {L} {th} mrad w0 {w0} A"))
     return tasks
 
 

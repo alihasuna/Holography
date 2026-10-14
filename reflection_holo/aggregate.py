@@ -388,7 +388,44 @@ def synthesize_y(psi_q, qy, Ly, Ny_out):
     return y, psi_q @ np.exp(2j * np.pi * np.outer(qy, y))
 
 
+def angle_resolved_profile(w, Ly, Ny_out, qy_max=None, y0=0.0):
+    """r(y; theta) at the surface plane from the stored exact plane-wave response
+    rho(theta, qy) (simulate: vdp_angle_resolved).  qy_max optionally low-passes the
+    profile (below the first surface rod it shows the step-induced envelope)."""
+    rho = np.asarray(w["ar_rho"]).astype(complex)
+    qy = np.asarray(w["ar_qy"])
+    if qy_max is not None:
+        rho = rho * (np.abs(qy) <= qy_max)[None, :]
+    y = y0 + np.arange(Ny_out) * Ly / Ny_out
+    return np.asarray(w["ar_theta"]), y, rho @ np.exp(2j * np.pi * np.outer(qy, y))
+
+
+def _strip_mean(r, y, lo, hi, Py):
+    """Mean over an integer number of y periods centred in [lo, hi] (None if the
+    strip is shorter than one period): a partial period would mix in the
+    non-specular rods."""
+    n = int(np.floor((hi - lo) / Py + 1e-9))
+    if n < 1:
+        return None
+    c = 0.5 * (lo + hi)
+    sel = (y >= c - 0.5 * n * Py) & (y < c + 0.5 * n * Py)
+    return r[:, sel].mean(axis=1)
+
+
+def _beam_of(res):
+    from .beams import GaussianSheetBeam
+    b = res["beams"][0]
+    return GaussianSheetBeam(b["theta0_mrad"] * 1e-3, b["w0_A"], 0.0, b["z_hit_A"])
+
+
 def aggregate_steps(results, bm):
+    """Steps parallel to the beam: angle-resolved plane-wave profiles r(y; theta)
+    (no smearing by the beam's angular spread), the step phase and its dynamical
+    residual far from the risers versus angle, the strip-versus-flat null test, and
+    the near-riser deviation profile.  Steps transverse to the beam: image waves
+    through objective apertures, each side divided by the flat-terrace image of its
+    own level with the same beam, so that only the riser's influence and the shadow
+    remain; the flat images give the step phase at the beam's central angle."""
     from .geometry import shadow_length
     refs = {}
     steps = []
@@ -396,74 +433,107 @@ def aggregate_steps(results, bm):
         t = res["task"]
         if t["kind"] == "flat_rocking":
             key = (t["surface"], t["structure"]["level"], t["structure"].get("clearance_level"),
-                   t["beams"][0]["theta0_mrad"], t["numerics"]["Nx"])
+                   t["beams"][0]["theta0_mrad"], t["beams"][0]["w0_A"], t["numerics"]["Nx"])
             refs[key] = res
         else:
             steps.append(res)
     S = dict(parallel={}, transverse={})
     arrays = {}
     a = 5.4309
+    wmin = bm["weight_min"]
     for res in steps:
         t = res["task"]
         st = t["structure"]
         lev = st["levels"]
         th0 = t["beams"][0]["theta0_mrad"] * 1e-3
         w = res["windows"][0]
-        key0 = (t["surface"], lev[0], max(lev), t["beams"][0]["theta0_mrad"], t["numerics"]["Nx"])
-        ref = refs.get(key0)
-        b = res["beams"][0]
-        zc = float(b["z_hit_A"])
-        half = 4.5 * float(b["w0_A"]) / np.tan(th0) * bm["image"]["footprint_fraction"]
-        z_s = np.linspace(zc - half, zc + half, 801)
         cell = SurfaceCell(t["surface"], a)
-        Ly = cell.periods[1] * st.get("n_y_periods", 1)
-        h = h_unit(t["surface"]) * (lev[-1] - lev[0])
-        geo = -2.0 * K * np.sin(th0) * h
-        for apm in bm["image"]["aperture_semi_angles_mrad"]:
-            ap = apm * 1e-3
-            pq, qy = image_from_spectrum(w, z_s, 0.0, th0, ap)
-            Ny_out = 256 if st["kind"] == "steps_parallel" else 1
-            y, img = synthesize_y(pq, qy, Ly, Ny_out)
-            if ref is not None:
-                pr, qyr = image_from_spectrum(ref["windows"][0], z_s, 0.0, th0, ap)
-                j0 = int(np.argmin(np.abs(qyr)))
-                img_ref = pr[:, j0][:, None]
-            else:
-                img_ref = np.ones((len(z_s), 1))
-            ratio = img / img_ref
-            name = f"{t['surface']}|{st['kind']}|{lev}|{1e3 * th0:.1f}mrad|{t.get('mode')}|seed{t.get('seed')}|ap{apm}"
-            entry = dict(h_A=h, geometric_phase_rad=geo, geometric_phase_wrapped=float(np.angle(np.exp(1j * geo))),
-                         aperture_mrad=apm, reference_found=ref is not None)
-            if st["kind"] == "steps_parallel":
-                ex = bm["image"]["edge_exclusion_A"]
-                yy = y % Ly
-                s0 = (yy > ex) & (yy < Ly / 2 - ex)
-                s1 = (yy > Ly / 2 + ex) & (yy < Ly - ex)
-                p0 = np.angle(np.mean(ratio[:, s0]))
-                p1 = np.angle(np.mean(ratio[:, s1]))
-                entry.update(step_phase_rad=float(np.angle(np.exp(1j * (p1 - p0)))),
-                             residual_rad=float(np.angle(np.exp(1j * (p1 - p0 - geo)))),
-                             phase_profile_y=np.angle(np.mean(ratio, axis=0)).tolist(),
-                             y_A=y.tolist())
-                S["parallel"][name] = entry
-            else:
-                edge = st["edges_z_A"][0]
-                amp = np.abs(ratio[:, 0])
-                ph = np.angle(ratio[:, 0])
-                L_sh = float(shadow_length(abs(h), th0))
-                before = z_s < edge - L_sh - 200
-                after = z_s > edge + L_sh + 200
-                if before.any() and after.any():
-                    dphi = np.angle(np.mean(ratio[after, 0]) / np.mean(ratio[before, 0]))
-                else:
-                    dphi = np.nan
-                entry.update(edge_z_A=edge, shadow_length_geometric_A=L_sh,
-                             step_phase_rad=float(dphi),
-                             residual_rad=float(np.angle(np.exp(1j * (dphi - geo)))) if np.isfinite(dphi) else None,
-                             z_s_A=z_s.tolist(), amplitude_ratio=amp.tolist(), phase_ratio=ph.tolist())
-                S["transverse"][name] = entry
-            arrays[name] = dict(z_s=z_s, y=y, ratio=ratio.astype(np.complex64))
+        hu = h_unit(t["surface"])
+        rkey = lambda L: (t["surface"], L, max(lev), t["beams"][0]["theta0_mrad"],  # noqa: E731
+                          t["beams"][0]["w0_A"], t["numerics"]["Nx"])
+        name = (f"{t['surface']}|{st['kind']}|{lev}|{1e3 * th0:.1f}mrad|{t.get('mode')}"
+                f"|seed{t.get('seed')}")
+        if st["kind"] == "steps_parallel":
+            Py = cell.periods[1]
+            Ly = Py * st.get("n_y_periods", 1)
+            Ny_out = int(max(64, round(Ly / 0.25)))
+            theta, y, r = angle_resolved_profile(w, Ly, Ny_out)
+            m = np.interp(theta, w["theta"], w["weight"]) >= wmin
+            theta, r = theta[m], r[m]
+            ex = min(bm["image"]["edge_exclusion_A"], Ly / 8)
+            r0 = _strip_mean(r, y, ex, Ly / 2 - ex, Py)
+            r1 = _strip_mean(r, y, Ly / 2 + ex, Ly - ex, Py)
+            h = hu * (lev[1] - lev[0])
+            geo = -2.0 * K * np.sin(theta) * h
+            entry = dict(h_A=h, theta_mrad=(theta * 1e3).tolist(), edge_exclusion_A=ex,
+                         geometric_phase_rad=geo.tolist())
+            if r0 is not None and r1 is not None:
+                resid = np.angle(r1 / r0 * np.exp(-1j * geo))
+                entry.update(step_phase_rad=np.angle(r1 / r0).tolist(), residual_rad=resid.tolist(),
+                             abs_r_strip0=np.abs(r0).tolist(), abs_r_strip1=np.abs(r1).tolist())
+                for L, rs in ((lev[0], r0), (lev[1], r1)):
+                    ref = refs.get(rkey(L))
+                    if ref is None:
+                        continue
+                    wr = ref["windows"][0]
+                    kr = dict(zip(np.round(wr["theta"] * 1e5).astype(int), wr["r"]))
+                    rf = np.array([kr.get(int(k), np.nan) for k in np.round(theta * 1e5)])
+                    ok = np.isfinite(rf) & (np.abs(rf) >= bm["rung3_null"]["min_abs_r"])
+                    entry[f"strip_vs_flat_level{L}_max_abs_dev"] = (
+                        float(np.max(np.abs(rs - rf)[ok])) if ok.any() else None)
+            # step-induced envelope: profile low-passed below the first surface rod
+            _, _, rl = angle_resolved_profile(w, Ly, Ny_out, qy_max=0.5 / Py)
+            rl = rl[m]
+            entry["y_A"] = y.tolist()
+            entry["envelope_abs_mean_over_theta"] = np.abs(rl).mean(axis=0).tolist()
+            S["parallel"][name] = entry
+            arrays[name] = dict(theta=theta, y=y, r=r.astype(np.complex64),
+                                envelope=rl.astype(np.complex64))
+        else:
+            b = res["beams"][0]
+            zc = float(b["z_hit_A"])
+            half = 4.5 * float(b["w0_A"]) / np.tan(th0) * bm["image"]["footprint_fraction"]
+            z_s = np.linspace(zc - half, zc + half, 1601)
+            edge = st["edges_z_A"][0]
+            h = hu * (lev[1] - lev[0])
+            L_sh = float(shadow_length(abs(h), th0))
+            refL = [refs.get(rkey(L)) for L in lev]
+            for apm in bm["image"]["aperture_semi_angles_mrad"]:
+                ap = apm * 1e-3
+                pq, qy = image_from_spectrum(w, z_s, 0.0, th0, ap)
+                img = pq[:, int(np.argmin(np.abs(qy)))]
+                entry = dict(h_A=h, edge_z_A=edge, shadow_length_geometric_A=L_sh,
+                             aperture_mrad=apm, beam_w0_A=float(b["w0_A"]),
+                             beam_angular_halfwidth_mrad=1e3 * LAM / (np.pi * float(b["w0_A"])),
+                             step_phase_smear_per_mrad_rad=float(2 * K * abs(h) * np.cos(th0) * 1e-3),
+                             z_s_A=z_s.tolist())
+                if all(r_ is not None for r_ in refL):
+                    flats = []
+                    for r_ in refL:
+                        pr, qyr = image_from_spectrum(r_["windows"][0], z_s, 0.0, th0, ap)
+                        flats.append(pr[:, int(np.argmin(np.abs(qyr)))])
+                    local = np.where(z_s < edge, flats[0], flats[1])
+                    ratio = img / local
+                    flat_step = np.angle(flats[1] / flats[0])
+                    jc = int(np.argmin(np.abs(z_s - edge)))
+                    entry.update(local_ratio_amplitude=np.abs(ratio).tolist(),
+                                 local_ratio_phase=np.angle(ratio).tolist(),
+                                 flat_image_step_phase_at_edge_rad=float(flat_step[jc]),
+                                 geometric_phase_wrapped=float(np.angle(np.exp(-2j * K * np.sin(th0) * h))),
+                                 riser_influence_upstream_A=_influence(z_s, ratio, edge, -1),
+                                 riser_influence_downstream_A=_influence(z_s, ratio, edge, +1))
+                    arrays[name + f"|ap{apm}"] = dict(z_s=z_s, ratio=ratio.astype(np.complex64),
+                                                      img=img.astype(np.complex64))
+                S["transverse"][name + f"|ap{apm}"] = entry
     return S, arrays
+
+
+def _influence(z_s, ratio, edge, side, tol=0.05):
+    """Distance from the edge over which |ratio - 1| exceeds tol on one side."""
+    sel = (z_s - edge) * side > 0
+    d = np.abs(z_s[sel] - edge)
+    bad = np.abs(ratio[sel] - 1) > tol
+    return float(d[bad].max()) if bad.any() else 0.0
 
 
 def _jsonable(o):
@@ -513,19 +583,26 @@ def plots(stage, arrays, out_dir):
             files.append(f)
     if stage == "steps":
         for name, d in arrays.items():
-            if "steps_parallel" not in name:
-                continue
             fig, ax = plt.subplots(1, 2, figsize=(11, 4))
-            ext = [d["y"][0], d["y"][-1], d["z_s"][0], d["z_s"][-1]]
-            ax[0].imshow(np.abs(d["ratio"]), aspect="auto", origin="lower", extent=ext)
-            ax[0].set_title("|image / flat reference|")
-            ax[1].imshow(np.angle(d["ratio"]), aspect="auto", origin="lower", extent=ext, cmap="twilight")
-            ax[1].set_title("phase (rad)")
-            for a_ in ax:
-                a_.set_xlabel("y (A)")
-                a_.set_ylabel("z_s along the beam (A)")
+            if "r" in d:          # parallel steps: angle-resolved profiles
+                ext = [d["y"][0], d["y"][-1], d["theta"][0] * 1e3, d["theta"][-1] * 1e3]
+                ax[0].imshow(np.abs(d["r"]), aspect="auto", origin="lower", extent=ext)
+                ax[0].set_title("|r(y; theta)|")
+                ax[1].imshow(np.angle(d["r"]), aspect="auto", origin="lower", extent=ext, cmap="twilight")
+                ax[1].set_title("arg r(y; theta)")
+                for a_ in ax:
+                    a_.set_xlabel("y across the steps (A)")
+                    a_.set_ylabel("glancing angle (mrad)")
+            else:                 # transverse steps: image divided by the local flat image
+                zs = d["z_s"]
+                ax[0].plot(zs, np.abs(d["ratio"]))
+                ax[0].set_title("|image / flat image of the local terrace|")
+                ax[1].plot(zs, np.angle(d["ratio"]))
+                ax[1].set_title("phase (rad)")
+                for a_ in ax:
+                    a_.set_xlabel("z_s along the beam (A)")
             fig.suptitle(name, fontsize=8)
-            f = os.path.join(out_dir, "step_" + name.replace("|", "_").replace(" ", "") + ".png")
+            f = os.path.join(out_dir, "step_" + name.replace("|", "_").replace(" ", "").replace(",", "") + ".png")
             fig.savefig(f, dpi=110)
             plt.close(fig)
             files.append(f)
