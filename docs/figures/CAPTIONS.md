@@ -75,3 +75,21 @@ raised strip's pattern is displaced, because its reflection builds up at a diffe
 footprint. **b**, Step phase (strip 2 minus strip 1) evaluated row by row. It varies between -0.3
 and -2.1 rad. The geometric-model value (dashed) lies within this range. A footprint of several
 micrometres is needed for a converged value.
+
+## fig_50nm_geometric_preview
+
+**Buried 60° and Lomer dislocations 50 nm below Si(001): geometric-model prediction at (008).**
+**a**, Surface height from the isotropic half-space field (top) for a 60° dislocation b = a/2[011]
+(blue) and a Lomer dislocation b = a/2[-110] (orange), both 50 nm deep in the middle of strip 3 of a
+0.74 µm three-strip cell (1 reference, 2 raised by 5.43 Å, 3 dislocation). The 60° dislocation
+glided in on the (1-11) plane (cross-section, bottom), leaving a 2-layer slip step 35 nm from the
+core. The cell is a periodic array, with the field summed over ±20 images. **b**, Reconstructed
+(008) phase across the cell; the ramp is fitted on strip 1. **c**, Reconstructed amplitude: the
+spikes are aperture ringing at sharp steps; the dislocations give no amplitude contrast in this
+model. **d**, Zoom over the dislocation. The Lomer dislocation gives a −10 rad bump, FWHM 101 nm
+(about 2 × depth), returning to zero (g·b = 0). The 60° dislocation gives a net offset of
+−2π g·b = −8π (four extra fringes, g·b = 4), most of it within 50 nm of the core. The slip step
+itself contributes only its refraction residual. **e**, Zoom on the amplitude. All curves are from
+the column (geometric) model through the full hologram and reconstruction chain, at 200 keV with
+the 1.5 mrad aperture. They do not change between penetration depths of 3 and 12 Å. The
+multislice run is pending.
