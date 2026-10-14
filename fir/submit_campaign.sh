@@ -24,10 +24,10 @@ pip freeze > "$RUN_DIR/pip-freeze.txt"
 echo "planning tasks (dry geometric check of every task) ..."
 python -m reflection_holo.campaign plan --config configs/fir_m2_campaign.yaml --stage all --out "$RUN_DIR"
 
-T_VALIDATION=${T_VALIDATION:-02:00:00}
-T_CONVERGENCE=${T_CONVERGENCE:-03:00:00}
-T_ROCKING=${T_ROCKING:-08:00:00}
-T_STEPS=${T_STEPS:-08:00:00}
+T_VALIDATION=${T_VALIDATION:-03:00:00}
+T_CONVERGENCE=${T_CONVERGENCE:-12:00:00}
+T_ROCKING=${T_ROCKING:-24:00:00}
+T_STEPS=${T_STEPS:-24:00:00}
 
 j0=$(sbatch --parsable --account="$FIR_ACCOUNT" fir/selftest.sbatch "$RUN_DIR")
 j1=$(sbatch --parsable --account="$FIR_ACCOUNT" --time="$T_VALIDATION" --dependency=afterok:$j0 \

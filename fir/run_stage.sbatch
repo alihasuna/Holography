@@ -16,7 +16,7 @@
 set -euo pipefail
 RUN_DIR=${1:?usage: run_stage.sbatch RUN_DIR STAGE}
 STAGE=${2:?usage: run_stage.sbatch RUN_DIR STAGE}
-RH_MAX_RESUBMIT=${RH_MAX_RESUBMIT:-3}
+RH_MAX_RESUBMIT=${RH_MAX_RESUBMIT:-8}
 RH_RESUBMIT_COUNT=${RH_RESUBMIT_COUNT:-0}
 cd "${SLURM_SUBMIT_DIR:-$(pwd)}"
 source fir/env.sh

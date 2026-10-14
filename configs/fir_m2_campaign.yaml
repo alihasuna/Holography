@@ -56,10 +56,10 @@ numerics:
     max_end_face_fraction: 1.0e-12
     exit_extra_A: 1500.0
     delay_decay_lengths: 7.0
-    tail_tol: 1.0e-4          # adaptive stop: detector record below 1e-4 of its peak
+    tail_tol: 1.0e-5          # adaptive stop: detector record below 1e-5 of its peak
     tail_window_planes: 400
     tail_check_every: 200
-    cell_cap_factor: 2.5      # hard cap on the cell length, times the planned length
+    cell_cap_factor: 4.0      # hard cap on the cell length, times the planned length
     detector_margin_A: 3.0
     detector_spacing_A: 0.16
     detector_top_margin_A: 5.0
@@ -107,10 +107,10 @@ stages:
     angles_mrad: [13.3, 20.0, 30.6]
     Nx_list: [4320, 5376, 6480]      # same cell height as production, dx = Lx / Nx
     delay_decay_lengths: [5.0, 7.0, 9.0]
-    tail_tol: [1.0e-5]
+    tail_tol: [1.0e-6]
     absorber: [[60.0, 40.0], [100.0, 20.0], [100.0, 80.0], [140.0, 40.0]]
-    phonon_Ly_periods: [1, 2, 4, 8]
-    phonon_configs: 16
+    phonon_Ly_periods: [1, 2, 4, 8, 16]
+    phonon_configs: 32
     phonon_angles_mrad: [13.3, 20.0]
   rocking:
     theta_min_mrad: 7.0
@@ -118,24 +118,28 @@ stages:
     theta_spacing_mrad: 2.5
     w0_A: 10.0
     windows_per_task: 4
-    phonon_Ly_target_A: 27.0
-    phonon_configs: 32
+    phonon_Ly_target_A: 54.0
+    phonon_configs: 64
     W_scan_V: [0.25, 1.0]
     onset_scan_A: [0.25, 1.0]
   steps:
     w0_A: 30.0
     Ly_target_A: 200.0
-    phonon_configs: 8
+    phonon_configs: 32
     parallel:
-      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 17.9, 20.0, 26.5], phonon_angles_mrad: [13.3, 20.0]}
-      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 21.0, 26.3], phonon_angles_mrad: [16.2]}
-      - {surface: si001_110, levels: [0, 2], angles_mrad: [16.2, 21.0, 26.3], phonon_angles_mrad: [16.2]}
-      - {surface: si001_100, levels: [0, 1], angles_mrad: [16.2, 21.0, 26.3], phonon_angles_mrad: [16.2]}
+      # static runs every 1 mrad over the first orders (step phase versus angle, the
+      # rocking series that resolves the 2 pi branch); frozen phonons at the Bragg
+      # conditions and between them
+      - {surface: si111_110, levels: [0, 1], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 13.3, 14.0, 15.0, 16.0, 17.0, 17.9, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.5, 27.0, 28.0, 29.0, 30.0, 30.6, 31.0, 32.0], phonon_angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6]}
+      - {surface: si001_110, levels: [0, 1], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 16.2, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.3, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0], phonon_angles_mrad: [16.2, 21.0, 26.3]}
+      - {surface: si001_110, levels: [0, 2], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 16.2, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.3, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0], phonon_angles_mrad: [16.2, 21.0, 26.3]}
+      - {surface: si001_100, levels: [0, 1], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 16.2, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.3, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0], phonon_angles_mrad: [16.2, 21.0, 26.3]}
     transverse:
-      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 26.5]}
-      - {surface: si111_110, levels: [1, 0], angles_mrad: [13.3, 26.5]}
-      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 26.3]}
-      - {surface: si001_110, levels: [1, 0], angles_mrad: [16.2, 26.3]}
-      - {surface: si001_110, levels: [0, 2], angles_mrad: [16.2, 26.3]}
-      - {surface: si001_110, levels: [0, 74], angles_mrad: [16.2], preset: mesa, label: "10 nm mesa edge (74 x a/4 = 100.5 A), up-step"}
-      - {surface: si001_110, levels: [74, 0], angles_mrad: [16.2], preset: mesa, label: "10 nm mesa edge, down-step"}
+      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6]}
+      - {surface: si111_110, levels: [1, 0], angles_mrad: [13.3, 17.9, 20.0, 26.5, 30.6]}
+      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 21.0, 26.3]}
+      - {surface: si001_110, levels: [1, 0], angles_mrad: [16.2, 21.0, 26.3]}
+      - {surface: si001_110, levels: [0, 2], angles_mrad: [16.2, 21.0, 26.3]}
+      - {surface: si001_110, levels: [2, 0], angles_mrad: [16.2, 21.0, 26.3]}
+      - {surface: si001_110, levels: [0, 74], angles_mrad: [16.2, 26.3], preset: mesa, label: "10 nm mesa edge (74 x a/4 = 100.5 A), up-step"}
+      - {surface: si001_110, levels: [74, 0], angles_mrad: [16.2, 26.3], preset: mesa, label: "10 nm mesa edge, down-step"}
