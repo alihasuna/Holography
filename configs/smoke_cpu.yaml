@@ -57,7 +57,7 @@ numerics:
     theta_step_mrad: 0.02
     n_rods: 4
     reference_top_A: 30.0
-    reference_upsample: 8
+    reference_upsample: 16
     uniform_dz_A: 1.92
     side_view_every: 0
     atom_chunk: 4096
@@ -69,6 +69,7 @@ numerics:
     tail_window_planes: 400
     tail_check_every: 200
     cell_cap_factor: 2.5
+    truncation_segment_planes: 1000
   tall:
     Nx: 3072
   mesa:

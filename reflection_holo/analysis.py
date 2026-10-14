@@ -228,3 +228,27 @@ def vdp_pattern(spec, lam, bin_mrad, theta_max_mrad):
     for j in range(len(qy)):
         out[:, j] = np.bincount(idx[:, j], weights=S2[:, j] * (Kx2[:, j] > 0), minlength=nb + 1)
     return (out[:nb] * dk / (2 * np.pi)).astype(np.float32)
+
+
+def truncation_bound(f, z, q, lam, A_in_neg, segment_planes=1000):
+    """Estimated error of r(q) from stopping the march while the detector record
+    still carries a decaying tail (long-lived surface resonances).
+
+    The record beyond the last plane is modelled as successive copies of the last
+    segment, each scaled by rho = rms(last segment)/rms(previous segment) (geometric
+    continuation, rho < 1).  The missing Fourier integral is then
+    F_last(kappa) rho/(1 - rho); converted to r units with the same Jacobian and
+    incident density as vdp_reflectivity.  Segment length min(segment_planes, n/4).
+    Returns (bound array, rho).  A non-decaying tail (rho >= 0.98) gives 50 F_last.
+    This is an estimate, validated on the smoke validation (docs/08 section 3.3)."""
+    f = np.asarray(f)
+    z = np.asarray(z, float)
+    n = len(f)
+    seg = max(2, min(int(segment_planes), n // 4))
+    last, prev = f[n - seg:], f[n - 2 * seg: n - seg]
+    rho = float(np.sqrt(np.mean(np.abs(last) ** 2) / max(np.mean(np.abs(prev) ** 2), 1e-300)))
+    kz = kz_of_q(q, lam)
+    kappa = kz - 2.0 * np.pi / lam
+    F_last = _fourier_z(last, z[n - seg:], kappa)
+    fac = rho / (1.0 - rho) if rho < 0.98 else 50.0
+    return np.abs(F_last) * fac * (2.0 * np.pi * np.asarray(q) / kz) / np.abs(A_in_neg), rho

@@ -69,7 +69,8 @@ numerics:
     pattern_bin_mrad: 0.1
     n_rods: 4
     reference_top_A: 30.0
-    reference_upsample: 8
+    reference_upsample: 16
+    truncation_segment_planes: 1000
     uniform_dz_A: 1.92
     side_view_every: 100
     atom_chunk: 4096

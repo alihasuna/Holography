@@ -11,7 +11,8 @@ import time
 import numpy as np
 
 from . import geometry
-from .analysis import (smooth_window, vdp_pattern, vdp_reflectivity, vdp_spectrum)
+from .analysis import (smooth_window, truncation_bound, vdp_pattern, vdp_reflectivity,
+                       vdp_spectrum)
 from .backend import get_xp, to_numpy
 from .beams import entrance_wave, plan_beam
 from .constants import interaction_constant, k_rad_per_A, wavelength_A
@@ -376,12 +377,15 @@ def _run_reflection(task, log):
         weight = np.abs(A_neg) / (grid.Lx * np.abs(beam.spectrum(np.array([-np.sin(th0) / lam]), lam))[0])
         x1, x2 = float(x_det_grid[b]), float(x_det_grid[b] + delta[b])
         r, d_rel, r_single = vdp_reflectivity(f[0], f[1], zr, q, lam, x1, x2, 0.0, A_neg)
+        r_bound, tail_rho = truncation_bound(f[0], zr, q, lam, A_neg,
+                                             num.get("truncation_segment_planes", 1000))
         absf = np.abs(f[0])
         nedge = max(1, n_used // 50)
         wres = dict(theta0_mrad=bi["theta0_mrad"], w0_A=bi["w0_A"], z_end_A=float(ze),
                     z_planned_A=float(z_plan[b]), z_cap_A=float(z_cap[b]),
                     stopped_at_cap=bool(ze >= z_cap[b] - dz_plane),
                     x_det_A=x1, x_det2_A=x2, theta=th, q=q, r=r, weight=weight,
+                    r_truncation_bound=r_bound, tail_rho=tail_rho,
                     down_over_incident=np.abs(d_rel),
                     single_line_minus_r=np.abs(r_single - r),
                     record_head_rel=float(absf[:nedge].max() / absf.max()),

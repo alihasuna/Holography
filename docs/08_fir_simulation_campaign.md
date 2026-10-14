@@ -110,3 +110,20 @@ specular direction, is
 over the components inside the aperture. This is the ideal, aberration-free dark-field
 image of the plane `x = x_ref`, focused point by point. Instrument transfer, the reference
 wave and hologram formation are milestone M3 and are not applied here.
+
+**A12. Truncation uncertainty of r (adaptive cell length).** A flat surface can host long-lived
+surface resonances: waves trapped along the surface that leak into the specular channel slowly.
+They decay far more slowly than the bulk absorption predicts, because they spend most of their
+path outside the absorbing crystal. In the smoke validation, the amplitude e-folding length of
+the record tail along the beam was 5,000 to 12,000 A at W_in = 2 V, depending on the run and on
+the segment used to measure it, against 1/(sigma W) = 690 A for a wave inside the crystal. The march therefore
+stops adaptively, when the detector record over the last 400 planes has fallen below 1e-4 of its
+peak, or at 2.5 times the planned length. The part of the record that is never computed is
+estimated by geometric continuation of the last segment of S planes (S = min(1000, n/4)), scaled
+by `rho = rms(last segment)/rms(previous segment)` per segment:
+`delta F(kappa) ~ F_last(kappa) rho/(1 - rho)`. It is converted to r units like the record
+itself. The estimate is stored with every point as `r_truncation_bound`. All validation and
+convergence comparisons subtract it before applying their tolerances. On the smoke validation it
+is 6e-6 at a Bragg peak, 3e-5 typically and 1.3e-3 at the narrow resonance near 15 mrad, where
+it covered the observed beam-to-beam difference of 6.7e-4. A 3000-plane segment underestimated
+it, because the previous segment then reached back into the main reflected pulse.

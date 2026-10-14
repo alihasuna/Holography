@@ -44,25 +44,28 @@ def wmask(w, bm, min_abs=None, ref=None):
 
 
 def stitch(results, bm, theta_step_mrad=0.02):
-    """Weighted combination of the windows of several tasks on one theta grid.
-    Weight = |a|^2 of each window; returns theta, r, and the largest disagreement
-    between overlapping windows (|r_i - r_j|)."""
+    """Weighted combination of the windows of several tasks on the shared absolute
+    theta grid (multiples of theta_step).  Weight = |a|^2 of each window.  Returns
+    theta, r, the largest disagreement between overlapping windows, and the
+    truncation bound of each point (weighted like r)."""
     pts = defaultdict(list)
     for res in results:
         for w in windows_of(res):
             m = w["weight"] >= bm["weight_min"]
-            for th, r, wt in zip(w["theta"][m], w["r"][m], w["weight"][m]):
+            bnd = w.get("r_truncation_bound", np.zeros(len(w["theta"])))
+            for th, r, wt, b in zip(w["theta"][m], w["r"][m], w["weight"][m], bnd[m]):
                 key = int(round(th * 1e3 / theta_step_mrad))
-                pts[key].append((r, wt**2))
+                pts[key].append((r, wt**2, b))
     keys = sorted(pts)
     th = np.array(keys) * theta_step_mrad * 1e-3
-    r = np.array([sum(a * b for a, b in pts[k]) / sum(b for _, b in pts[k]) for k in keys])
+    r = np.array([sum(a * c for a, c, _ in pts[k]) / sum(c for _, c, _ in pts[k]) for k in keys])
+    bound = np.array([sum(b * c for _, c, b in pts[k]) / sum(c for _, c, _ in pts[k]) for k in keys])
     overlap = 0.0
     for k in keys:
         if len(pts[k]) > 1:
-            rr = [a for a, _ in pts[k]]
+            rr = [a for a, _, _ in pts[k]]
             overlap = max(overlap, max(abs(x - y) for x in rr for y in rr))
-    return th, r, overlap
+    return th, r, overlap, bound
 
 
 def group_key(res):
@@ -79,7 +82,7 @@ def ensemble(results, bm):
         per_seed[res["task"]["seed"]].append(res)
     curves = []
     for seed, rs in sorted(per_seed.items()):
-        th, r, _ = stitch(rs, bm)
+        th, r, _, _ = stitch(rs, bm)
         curves.append(dict(zip(np.round(th * 1e5).astype(int), r)))
     common = sorted(set.intersection(*[set(c) for c in curves])) if curves else []
     R = np.array([[c[k] for k in common] for c in curves])
@@ -91,18 +94,31 @@ def ensemble(results, bm):
                 I_coherent=np.abs(mean) ** 2, n=len(R))
 
 
-def compare_curves(th1, r1, th2, r2, min_abs):
-    k1 = dict(zip(np.round(th1 * 1e5).astype(int), r1))
-    k2 = dict(zip(np.round(th2 * 1e5).astype(int), r2))
+def compare_curves(th1, r1, th2, r2, min_abs, b1=None, b2=None):
+    """Differences of two curves on their common theta points with |r| >= min_abs.
+    b1, b2 are truncation bounds; 'excess' quantities subtract them (amplitude) or
+    their phase equivalents (b/|r|), so that a comparison fails only beyond the
+    stated numerical uncertainty."""
+    b1 = np.zeros(len(th1)) if b1 is None else b1
+    b2 = np.zeros(len(th2)) if b2 is None else b2
+    k1 = dict(zip(np.round(th1 * 1e5).astype(int), zip(r1, b1)))
+    k2 = dict(zip(np.round(th2 * 1e5).astype(int), zip(r2, b2)))
     keys = sorted(set(k1) & set(k2))
-    a = np.array([k1[k] for k in keys])
-    b = np.array([k2[k] for k in keys])
+    a = np.array([k1[k][0] for k in keys])
+    b = np.array([k2[k][0] for k in keys])
+    allow = np.array([k1[k][1] + k2[k][1] for k in keys])
     m = (np.abs(a) >= min_abs) & (np.abs(b) >= min_abs)
     if not m.any():
         return dict(n=0)
-    return dict(n=int(m.sum()), max_abs_diff=float(np.max(np.abs(a - b)[m])),
-                max_phase_diff=float(np.max(np.abs(np.angle(a[m] / b[m])))),
-                max_rel_diff=float(np.max(np.abs(a - b)[m] / np.abs(b[m]))))
+    d = np.abs(a - b)[m]
+    ph = np.abs(np.angle(a[m] / b[m]))
+    al = allow[m]
+    return dict(n=int(m.sum()), max_abs_diff=float(d.max()), max_phase_diff=float(ph.max()),
+                max_rel_diff=float(np.max(d / np.abs(b[m]))),
+                max_abs_excess=float(np.max(d - al)),
+                max_phase_excess=float(np.max(ph - al / np.minimum(np.abs(a[m]), np.abs(b[m])))),
+                max_truncation_bound=float(al.max()),
+                n_points_bound_above_1e-4=int(np.sum(al > 1e-4)))
 
 
 def h_unit(surface, a=5.4309):
@@ -139,14 +155,16 @@ def local_maxima(th, absr, min_height=0.02):
 def check_reference(w, tol, bm):
     rp = w["r_parratt_multislice"]
     m = w["weight"] >= bm["weight_min"]
+    bnd = w.get("r_truncation_bound", np.zeros(len(rp)))
     err = np.abs(w["r"] - rp)
-    amp_ok = np.all(err[m] <= np.maximum(tol["amp_rel"] * np.abs(rp[m]), tol["amp_abs_floor"]))
+    amp_ok = np.all(err[m] <= np.maximum(tol["amp_rel"] * np.abs(rp[m]), tol["amp_abs_floor"]) + bnd[m])
     mp = m & (np.abs(rp) >= tol["phase_min_abs_r"])
-    ph = np.abs(np.angle(w["r"][mp] / rp[mp])) if mp.any() else np.array([0.0])
+    ph = (np.abs(np.angle(w["r"][mp] / rp[mp])) - bnd[mp] / np.abs(rp[mp])) if mp.any() else np.array([0.0])
     rs = w["r_parratt_schroedinger"]
     return dict(theta0_mrad=float(w["theta0_mrad"]), max_abs_err=float(err[m].max()),
                 max_rel_err=float((err[m] / np.abs(rp[m])).max()),
-                max_phase_err=float(ph.max()), pass_amp=bool(amp_ok),
+                max_phase_err_beyond_bound=float(ph.max()), pass_amp=bool(amp_ok),
+                max_truncation_bound=float(bnd[m].max()),
                 pass_phase=bool(ph.max() <= tol["phase_rad"]),
                 multislice_vs_schroedinger_model_max_rel=float(
                     (np.abs(rp - rs)[m] / np.abs(rs[m])).max()),
@@ -155,24 +173,29 @@ def check_reference(w, tol, bm):
 
 
 def terrace_ratio(curves, surface, levels, min_abs):
-    """arg(r_L / r_0) + 2 K_ext h L: zero for translation- or mirror-related terraces."""
-    th0, r0 = curves[0]
+    """arg(r_L / r_0) + 2 K_ext h L: zero for translation- or mirror-related terraces.
+    curves[L] = (theta, r, truncation bound); the phase uncertainty of the ratio is
+    b_0/|r_0| + b_L/|r_L|."""
+    th0, r0, b0 = curves[0]
     out = {}
     h = h_unit(surface)
     for L in levels:
         if L == 0 or L not in curves:
             continue
-        thL, rL = curves[L]
-        k0 = dict(zip(np.round(th0 * 1e5).astype(int), r0))
-        kL = dict(zip(np.round(thL * 1e5).astype(int), rL))
+        thL, rL, bL = curves[L]
+        k0 = dict(zip(np.round(th0 * 1e5).astype(int), zip(r0, b0)))
+        kL = dict(zip(np.round(thL * 1e5).astype(int), zip(rL, bL)))
         keys = sorted(set(k0) & set(kL))
         th = np.array(keys) * 1e-5
-        a, b = np.array([k0[k] for k in keys]), np.array([kL[k] for k in keys])
+        a = np.array([k0[k][0] for k in keys])
+        b = np.array([kL[k][0] for k in keys])
+        unc = np.array([k0[k][1] for k in keys]) / np.maximum(np.abs(a), 1e-300) \
+            + np.array([kL[k][1] for k in keys]) / np.maximum(np.abs(b), 1e-300)
         m = (np.abs(a) >= min_abs) & (np.abs(b) >= min_abs)
         geo = -2.0 * K * np.sin(th) * h * L
         resid = np.angle(b / a * np.exp(-1j * geo))
         out[L] = dict(theta=th[m], residual_rad=resid[m], amp_ratio=np.abs(b / a)[m],
-                      geometric_phase=geo[m], h_A=h * L)
+                      geometric_phase=geo[m], h_A=h * L, uncertainty_rad=unc[m])
     return out
 
 
@@ -195,12 +218,11 @@ def aggregate_validation(results, bm):
                          V0_parametrization_V=float(res["V0_parametrization_V"]))
                 S["rung2"].append(d)
         elif t["kind"] == "flat_rocking":
+            th, r, ov, bnd = stitch([res], bm)
             if t["label"].startswith("beam waist"):
-                th, r, _ = stitch([res], bm)
-                waists[t["beams"][0]["w0_A"]] = (th, r)
+                waists[t["beams"][0]["w0_A"]] = (th, r, bnd)
             else:
-                th, r, ov = stitch([res], bm)
-                flat[t["surface"]][t["structure"]["level"]] = (th, r)
+                flat[t["surface"]][t["structure"]["level"]] = (th, r, bnd)
     tol = bm["rung3_null"]
     for surf, curves in flat.items():
         if 0 not in curves:
@@ -209,22 +231,30 @@ def aggregate_validation(results, bm):
         for L, d in tr.items():
             kind = ("translation" if (surf == "si111_110" or (surf == "si001_110" and L % 2 == 0))
                     else "mirror (si001 [100])" if surf == "si001_100" else "screw: physics result")
-            entry = dict(h_A=d["h_A"], relation=kind, n=int(len(d["theta"])),
-                         max_abs_residual_rad=float(np.max(np.abs(d["residual_rad"]))) if len(d["theta"]) else None,
-                         max_amp_ratio_dev=float(np.max(np.abs(d["amp_ratio"] - 1))) if len(d["theta"]) else None,
+            n = len(d["theta"])
+            entry = dict(h_A=d["h_A"], relation=kind, n=int(n),
+                         max_abs_residual_rad=float(np.max(np.abs(d["residual_rad"]))) if n else None,
+                         max_residual_beyond_uncertainty_rad=float(np.max(np.abs(d["residual_rad"]) - d["uncertainty_rad"])) if n else None,
+                         max_amp_ratio_dev=float(np.max(np.abs(d["amp_ratio"] - 1))) if n else None,
+                         max_amp_dev_beyond_uncertainty=float(np.max(np.abs(d["amp_ratio"] - 1) - d["uncertainty_rad"])) if n else None,
+                         max_uncertainty_rad=float(np.max(d["uncertainty_rad"])) if n else None,
                          theta_mrad=(d["theta"] * 1e3).tolist(), residual_rad=d["residual_rad"].tolist(),
-                         amp_ratio=d["amp_ratio"].tolist())
-            if kind != "screw: physics result" and entry["n"]:
-                entry["pass"] = bool(entry["max_abs_residual_rad"] <= tol["phase_rad"]
-                                     and entry["max_amp_ratio_dev"] <= tol["amp_rel"])
+                         uncertainty_rad=d["uncertainty_rad"].tolist(), amp_ratio=d["amp_ratio"].tolist())
+            if kind != "screw: physics result" and n:
+                entry["pass"] = bool(entry["max_residual_beyond_uncertainty_rad"] <= tol["phase_rad"]
+                                     and entry["max_amp_dev_beyond_uncertainty"] <= tol["amp_rel"])
             S["rung3"][f"{surf} level {L}"] = entry
     if waists:
-        ref = waists.get(10.0) or next(iter(waists.values()))
-        for w0, (th, r) in waists.items():
-            c = compare_curves(th, r, ref[0], ref[1], bm["beam_independence"]["min_abs_r"])
+        ref_w0 = 10.0 if 10.0 in waists else sorted(waists)[len(waists) // 2]
+        ref = waists[ref_w0]
+        S["beam_independence_reference_w0_A"] = ref_w0
+        for w0, (th, r, bnd) in waists.items():
+            if w0 == ref_w0:
+                continue
+            c = compare_curves(th, r, ref[0], ref[1], bm["beam_independence"]["min_abs_r"], bnd, ref[2])
             if c.get("n"):
-                c["pass"] = bool(c["max_abs_diff"] <= bm["beam_independence"]["amp_abs"]
-                                 and c["max_phase_diff"] <= bm["beam_independence"]["phase_rad"])
+                c["pass"] = bool(c["max_abs_excess"] <= bm["beam_independence"]["amp_abs"]
+                                 and c["max_phase_excess"] <= bm["beam_independence"]["phase_rad"])
             S["beam_independence"][str(w0)] = c
     S["all_pass"] = bool(all(d["pass_amp"] and d["pass_phase"] for d in S["rung1"] + S["rung2"])
                          and all(v.get("pass", True) for v in S["rung3"].values())
@@ -245,23 +275,23 @@ def aggregate_convergence(results, bm):
     for (label, mode), rs in groups.items():
         if mode == "frozen_phonon":
             e = ensemble(rs, bm)
-            curves[label] = (e["theta"], e["r_mean"], e)
+            curves[label] = (e["theta"], e["r_mean"], e, np.abs(e["r_se"]))
         else:
-            th, r, ov = stitch(rs, bm)
-            curves[label] = (th, r, None)
+            th, r, ov, bnd = stitch(rs, bm)
+            curves[label] = (th, r, None, bnd)
     prod = [lab for lab in curves if lab.endswith("(production)")]
     ref = curves[prod[0]] if prod else None
     S = dict(reference=prod[0] if prod else None, variants={})
     tol = bm["convergence"]
     roles = {res["task"]["label"]: res["task"].get("convergence_role", "info") for res in results}
-    for label, (th, r, e) in curves.items():
+    for label, (th, r, e, bnd) in curves.items():
         if ref is None or label.startswith("phonon") or roles.get(label) == "reference":
             continue
-        c = compare_curves(th, r, ref[0], ref[1], tol["min_abs_r"])
+        c = compare_curves(th, r, ref[0], ref[1], tol["min_abs_r"], bnd, ref[3])
         c["role"] = roles.get(label, "info")
         if c.get("n"):
-            c["within_tolerance"] = bool(c["max_abs_diff"] <= tol["amp_abs"]
-                                         and c["max_phase_diff"] <= tol["phase_rad"])
+            c["within_tolerance"] = bool(c["max_abs_excess"] <= tol["amp_abs"]
+                                         and c["max_phase_excess"] <= tol["phase_rad"])
         S["variants"][label] = c
     gates = [v for v in S["variants"].values() if v["role"] == "gate"]
     S["converged"] = bool(ref is not None and gates and all(v.get("within_tolerance") for v in gates))
@@ -270,8 +300,8 @@ def aggregate_convergence(results, bm):
         best = max(ph, key=lambda s: int(s.split("Ly=")[1].split()[0]))
         S["phonon_reference"] = best
         S["phonon"] = {}
-        for lab, (th, r, e) in ph.items():
-            c = compare_curves(th, r, ph[best][0], ph[best][1], tol["min_abs_r"])
+        for lab, (th, r, e, se) in ph.items():
+            c = compare_curves(th, r, ph[best][0], ph[best][1], tol["min_abs_r"], se, ph[best][3])
             c["n_configs"] = e["n"]
             c["median_standard_error"] = float(np.nanmedian(np.abs(e["r_se"])))
             S["phonon"][lab] = c
@@ -291,17 +321,19 @@ def aggregate_rocking(results, bm, V0_assumed=12.0):
         name = f"{surf}|L{lev}|{mode}|{variant}"
         if mode == "frozen_phonon":
             e = ensemble(rs, bm)
-            th, r = e["theta"], e["r_mean"]
+            th, r, bnd = e["theta"], e["r_mean"], np.abs(e["r_se"])
             arrays[name] = dict(theta=th, r=r, r_se=e["r_se"], I_incoherent=e["I_incoherent"])
             S["curves"][name] = dict(n_configs=e["n"], median_se=float(np.nanmedian(np.abs(e["r_se"]))),
                                      diffuse_fraction_median=float(np.median(
                                          1 - e["I_coherent"] / np.maximum(e["I_incoherent"], 1e-30))))
         else:
-            th, r, ov = stitch(rs, bm)
-            arrays[name] = dict(theta=th, r=r)
-            S["curves"][name] = dict(overlap_max_abs_diff=float(ov), n_points=int(len(th)))
+            th, r, ov, bnd = stitch(rs, bm)
+            arrays[name] = dict(theta=th, r=r, truncation_bound=bnd)
+            S["curves"][name] = dict(overlap_max_abs_diff=float(ov), n_points=int(len(th)),
+                                     max_truncation_bound=float(bnd.max()) if len(bnd) else None,
+                                     theta_mrad_bound_above_1e-3=(th[bnd > 1e-3] * 1e3).tolist())
         if variant == "default":
-            default_curves[mode][surf][lev] = (th, r)
+            default_curves[mode][surf][lev] = (th, r, bnd)
         S["peaks"][name] = local_maxima(th, np.abs(r))
     for mode, by_surf in default_curves.items():
         for surf, curves in by_surf.items():
@@ -312,6 +344,7 @@ def aggregate_rocking(results, bm, V0_assumed=12.0):
                 S["terrace_ratios"][f"{surf}|L{L}|{mode}"] = dict(
                     h_A=d["h_A"], theta_mrad=(d["theta"] * 1e3).tolist(),
                     residual_rad=d["residual_rad"].tolist(), amp_ratio=d["amp_ratio"].tolist(),
+                    uncertainty_rad=d["uncertainty_rad"].tolist(),
                     max_abs_residual_rad=float(np.max(np.abs(d["residual_rad"]))) if len(d["theta"]) else None)
     S["bragg_conditions"] = {s: dict(V0_parametrization=bragg_angles(s, V0p) if V0p else None,
                                      V0_assumed_12V=bragg_angles(s, V0_assumed))
