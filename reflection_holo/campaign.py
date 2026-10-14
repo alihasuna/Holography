@@ -22,7 +22,7 @@ import numpy as np
 from .beams import plan_beam
 from .constants import wavelength_A
 from .crystal import SurfaceCell
-from .grid import Grid, _fft_friendly
+from .grid import _fft_friendly
 
 STAGES = ("validation", "convergence", "rocking", "steps")
 

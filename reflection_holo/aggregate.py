@@ -113,12 +113,12 @@ def compare_curves(th1, r1, th2, r2, min_abs, b1=None, b2=None):
     d = np.abs(a - b)[m]
     ph = np.abs(np.angle(a[m] / b[m]))
     al = allow[m]
-    return dict(n=int(m.sum()), max_abs_diff=float(d.max()), max_phase_diff=float(ph.max()),
-                max_rel_diff=float(np.max(d / np.abs(b[m]))),
-                max_abs_excess=float(np.max(d - al)),
-                max_phase_excess=float(np.max(ph - al / np.minimum(np.abs(a[m]), np.abs(b[m])))),
-                max_truncation_bound=float(al.max()),
-                n_points_bound_above_1e-4=int(np.sum(al > 1e-4)))
+    return {"n": int(m.sum()), "max_abs_diff": float(d.max()), "max_phase_diff": float(ph.max()),
+            "max_rel_diff": float(np.max(d / np.abs(b[m]))),
+            "max_abs_excess": float(np.max(d - al)),
+            "max_phase_excess": float(np.max(ph - al / np.minimum(np.abs(a[m]), np.abs(b[m])))),
+            "max_truncation_bound": float(al.max()),
+            "n_points_bound_above_1e-4": int(np.sum(al > 1e-4))}
 
 
 def h_unit(surface, a=5.4309):
@@ -329,9 +329,9 @@ def aggregate_rocking(results, bm, V0_assumed=12.0):
         else:
             th, r, ov, bnd = stitch(rs, bm)
             arrays[name] = dict(theta=th, r=r, truncation_bound=bnd)
-            S["curves"][name] = dict(overlap_max_abs_diff=float(ov), n_points=int(len(th)),
-                                     max_truncation_bound=float(bnd.max()) if len(bnd) else None,
-                                     theta_mrad_bound_above_1e-3=(th[bnd > 1e-3] * 1e3).tolist())
+            S["curves"][name] = {"overlap_max_abs_diff": float(ov), "n_points": int(len(th)),
+                                 "max_truncation_bound": float(bnd.max()) if len(bnd) else None,
+                                 "theta_mrad_bound_above_1e-3": (th[bnd > 1e-3] * 1e3).tolist()}
         if variant == "default":
             default_curves[mode][surf][lev] = (th, r, bnd)
         S["peaks"][name] = local_maxima(th, np.abs(r))

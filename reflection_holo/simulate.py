@@ -10,7 +10,6 @@ import time
 
 import numpy as np
 
-from . import geometry
 from .analysis import (smooth_window, truncation_bound, vdp_pattern, vdp_reflectivity,
                        vdp_spectrum)
 from .backend import get_xp, to_numpy

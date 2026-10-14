@@ -4,7 +4,7 @@ import pytest
 
 from reflection_holo.constants import TWO_PI_A0_E_V_A2
 from reflection_holo.grid import Grid
-from reflection_holo.potential import (PotentialBuilder, load_parameters,
+from reflection_holo.potential import (PotentialBuilder,
                                        mean_inner_potential, scattering_factor)
 
 

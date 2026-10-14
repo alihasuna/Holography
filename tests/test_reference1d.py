@@ -1,6 +1,5 @@
 """One-dimensional reflection references (Parratt and transfer matrix)."""
 import numpy as np
-import pytest
 
 from reflection_holo.constants import interaction_constant, k_rad_per_A
 from reflection_holo.reference1d import (fermi_step_R, layers_from_profile, parratt,
