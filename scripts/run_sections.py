@@ -119,6 +119,8 @@ def main():
     ap.add_argument("--out", default="outputs")
     ap.add_argument("--only", default=None, help='run the multislice only for this reflection, e.g. "(0,0,12)"')
     ap.add_argument("--dry-run", action="store_true", help="build the sample, print grid, memory and slice counts, exit")
+    ap.add_argument("--geometric-only", action="store_true",
+                    help="skip the multislice: geometric (column) model through the same hologram chain, any CPU")
     args = ap.parse_args()
     cfg = Config(args.config)
     out = Path(args.out) / cfg.data["name"] / "reconstruction"
@@ -167,10 +169,12 @@ def main():
             print(f"{name}: theta_ext {th*1e3:.2f} mrad, {n} slices, footprint {Hh/np.tan(th):.0f} A")
         return
     t0 = time.time()
-    V, dz = ms.slice_potentials(s.positions, s.Lz, int(cfg.get("multislice.slices_per_period")), grid,
+    if args.geometric_only:
+        args.only = "none"  # no reflection gets a multislice run
+    V, dz = ([], None) if args.geometric_only else ms.slice_potentials(s.positions, s.Lz, int(cfg.get("multislice.slices_per_period")), grid,
                                 float(cfg.get("multislice.debye_waller_B_A2")),
                                 float(cfg.get("multislice.absorption_ratio")), xp=xp)
-    band = xp.asarray(grid.band_mask())
+    band = None if args.geometric_only else xp.asarray(grid.band_mask())
     absorber = ms.absorber_profile(grid, abs_top, abs_w, abs_V)
     T = []
     while V:  # free each potential as soon as its transmission exists (large grids)

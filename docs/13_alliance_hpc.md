@@ -80,3 +80,22 @@ been made yet.
 | Depth × reflection × angle sweep | 18 | how the dislocation signal scales with depth; sensitivity to the angle |
 | Wide cell with a realistic dislocation (50 nm deep, 60° and Lomer types) | 2–4 | the lab-scale prediction; needs a new wide config and the 60° Burgers vector |
 | abTEM cross-validation of the kernel | a few | milestone M2: required before any result is called validated |
+
+## 5. The 50 nm deep dislocation cases (Fir or any cluster with a data-centre GPU)
+
+Configs: `configs/si001_60deg_50nm.yaml` (60 degree dislocation with its slip step) and
+`configs/si001_lomer_50nm.yaml` (Lomer, for comparison). Both use a 0.74 µm cell, 1728 × 57 600 =
+99.5 M grid points and about 82 000 atoms per 3.84 Å repeat. Expected footprint: under 12 GB of GPU
+memory and about 12 GB of host memory. The 2 h default of `job_sections.sh` is ample on a GPU.
+
+```bash
+python scripts/run_sections.py --config configs/si001_60deg_50nm.yaml --dry-run      # check the sizes
+sbatch hpc/job_sections.sh configs/si001_60deg_50nm.yaml     # both (008) and (0,0,12)
+sbatch hpc/job_sections.sh configs/si001_lomer_50nm.yaml
+# if the cluster requires a GPU type (check its documentation), for example:
+# sbatch --gpus-per-node=h100:1 hpc/job_sections.sh configs/si001_60deg_50nm.yaml
+```
+
+On a 4-core CPU the same run takes about 40 min for the potentials plus about 1.7 h per
+reflection, using the multithreaded scipy.fft path. `--geometric-only` gives the column-model
+prediction for the full cell in a few minutes on any CPU.
