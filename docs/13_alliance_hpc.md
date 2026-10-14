@@ -92,9 +92,22 @@ memory and about 12 GB of host memory. The 2 h default of `job_sections.sh` is a
 python scripts/run_sections.py --config configs/si001_60deg_50nm.yaml --dry-run      # check the sizes
 sbatch hpc/job_sections.sh configs/si001_60deg_50nm.yaml     # both (008) and (0,0,12)
 sbatch hpc/job_sections.sh configs/si001_lomer_50nm.yaml
-# if the cluster requires a GPU type (check its documentation), for example:
-# sbatch --gpus-per-node=h100:1 hpc/job_sections.sh configs/si001_60deg_50nm.yaml
 ```
+
+**Fir (checked 2026-10-14).** A GPU model is mandatory. Fir accepts `h100` (the whole 80 GB card)
+or MIG slices `nvidia_h100_80gb_hbm3_3g.40gb`, `nvidia_h100_80gb_hbm3_2g.20gb` and
+`nvidia_h100_80gb_hbm3_1g.10gb`. Command-line options override the `#SBATCH` lines, so the scripts
+need no edits:
+
+```bash
+sbatch --account=def-<PI> --gpus-per-node=nvidia_h100_80gb_hbm3_1g.10gb:1 hpc/job_gpu_check.sh
+sbatch --account=def-<PI> --gpus-per-node=nvidia_h100_80gb_hbm3_2g.20gb:1 hpc/job_sections.sh configs/si001_60deg_50nm.yaml
+sbatch --account=def-<PI> --gpus-per-node=nvidia_h100_80gb_hbm3_2g.20gb:1 hpc/job_sections.sh configs/si001_lomer_50nm.yaml
+```
+
+Replace `<PI>` with your group's account name, without spaces or angle brackets (list accounts with
+`sacctmgr show assoc user=$USER format=account%30`). If the job's virtualenv is not
+`$HOME/venvs/holo`, run `export HOLO_VENV=<path>` before `sbatch`.
 
 On a 4-core CPU the same run takes about 40 min for the potentials plus about 1.7 h per
 reflection, using the multithreaded scipy.fft path. `--geometric-only` gives the column-model
