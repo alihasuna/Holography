@@ -278,7 +278,7 @@ def stage_steps(cfg):
 
     for item in sc["parallel"]:
         surf, lev = item["surface"], list(item["levels"])
-        nyp, _ = periods_for(surf, sc["Ly_target_A"], a)
+        nyp, _ = periods_for(surf, item.get("Ly_target_A", sc["Ly_target_A"]), a)
         st = dict(kind="steps_parallel", levels=lev, n_y_periods=nyp)
         w0 = item.get("w0_A", sc["w0_A"])
         for th in item["angles_mrad"]:

@@ -137,6 +137,11 @@ stages:
       - {surface: si001_100, levels: [0, 1], angles_mrad: [9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 16.2, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0, 26.0, 26.3, 27.0, 28.0, 29.0, 30.0, 31.0, 32.0], phonon_angles_mrad: [16.2, 21.0, 26.3]}
       # control: no step (both strips level 0) must reproduce the flat terrace
       - {surface: si111_110, levels: [0, 0], angles_mrad: [13.3, 20.0]}
+      # terrace-width convergence: cells of 100 and 400 A (terraces 50 and 200 A)
+      # beside the 200 A production cell; the far-from-riser step phase must converge
+      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 20.0, 26.5], Ly_target_A: 100.0}
+      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 20.0, 26.5], Ly_target_A: 400.0}
+      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 21.0], Ly_target_A: 400.0}
     transverse:
       # image runs: broad beams (60 A waist, angular half-width 0.13 mrad); Si(111)
       # also at 30 and 120 A to measure the dependence on the illumination

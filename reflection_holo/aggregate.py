@@ -400,16 +400,19 @@ def angle_resolved_profile(w, Ly, Ny_out, qy_max=None, y0=0.0):
     return np.asarray(w["ar_theta"]), y, rho @ np.exp(2j * np.pi * np.outer(qy, y))
 
 
-def _strip_mean(r, y, lo, hi, Py):
-    """Mean over an integer number of y periods centred in [lo, hi] (None if the
-    strip is shorter than one period): a partial period would mix in the
-    non-specular rods."""
+def strip_mean(w, lo, hi, Py):
+    """Exact mean of r(y; theta) over an integer number n of y periods centred in
+    [lo, hi), computed in qy space: mean over [c - L/2, c + L/2) of exp(2 pi i qy y)
+    is exp(2 pi i qy c) sinc(qy L), which vanishes on every surface rod qy = m/Py
+    (m != 0) for L = n Py.  Returns None if the strip is shorter than one period."""
     n = int(np.floor((hi - lo) / Py + 1e-9))
     if n < 1:
         return None
+    L = n * Py
     c = 0.5 * (lo + hi)
-    sel = (y >= c - 0.5 * n * Py) & (y < c + 0.5 * n * Py)
-    return r[:, sel].mean(axis=1)
+    qy = np.asarray(w["ar_qy"])
+    rho = np.asarray(w["ar_rho"]).astype(complex)
+    return rho @ (np.exp(2j * np.pi * qy * c) * np.sinc(qy * L))
 
 
 def _beam_of(res):
@@ -461,8 +464,10 @@ def aggregate_steps(results, bm):
             m = np.interp(theta, w["theta"], w["weight"]) >= wmin
             theta, r = theta[m], r[m]
             ex = min(bm["image"]["edge_exclusion_A"], Ly / 8)
-            r0 = _strip_mean(r, y, ex, Ly / 2 - ex, Py)
-            r1 = _strip_mean(r, y, Ly / 2 + ex, Ly - ex, Py)
+            r0 = strip_mean(w, ex, Ly / 2 - ex, Py)
+            r1 = strip_mean(w, Ly / 2 + ex, Ly - ex, Py)
+            r0 = None if r0 is None else r0[m]
+            r1 = None if r1 is None else r1[m]
             h = hu * (lev[1] - lev[0])
             geo = -2.0 * K * np.sin(theta) * h
             entry = dict(h_A=h, theta_mrad=(theta * 1e3).tolist(), edge_exclusion_A=ex,

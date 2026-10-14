@@ -224,7 +224,28 @@ the question left open in docs/05 section 11: abTEM's propagator-shear tilt agre
 explicit tilted beam at 48 mrad to 1e-3 over this 38 A slab. The long reflection cells are a
 different regime and are not covered by this comparison.
 
-### 3.6 Unit tests and what was not run
+### 3.6 Steps parallel to the beam (CPU test)
+
+A Si(111) bilayer step was run in a 53 A cell, eight surface periods with two 26.6 A terraces,
+at 13.3 mrad. A no-step control with both strips at level 0, and flat references of levels 0
+and 1 sharing the beam, ran alongside it. All used smoke numerics with a 6 A waist.
+
+| Check | Result |
+|---|---|
+| Exact angle-resolved response, averaged over y, against the flat terrace's own r | 5e-8 relative |
+| No-step control: terrace strips against the flat terrace | 3.0e-4 |
+| Bilayer step: strips against the flat terraces | 4e-2 to 6e-2 |
+| Bilayer step: residual `arg(r_1/r_0) + 2 K h` | up to 1 rad (median 0.19 rad) |
+| Flat references: residual of the same quantity | 1.9e-3 rad |
+
+The control's 3.0e-4 comes from the different y-sampling of the 8-period and 1-period cells at
+0.1 A. It was 2.5e-3 before strip averages were made exact in qy space. With terraces this
+narrow, about 13 A from the nearest riser, the step array acts as a lateral grating, and the
+strips are not yet infinite terraces. Production uses 100 A terraces. The steps stage adds a
+terrace-width series (cells of 100, 200 and 400 A) and a no-step control, so the far-from-riser
+step phase can be shown to converge.
+
+### 3.7 Unit tests and what was not run
 
 `python -m pytest -q -m "not slow"` passes 49 tests in under a second:
 - geometry against the reference calculator (T1 to T14 values);
