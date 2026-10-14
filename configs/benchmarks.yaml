@@ -1,0 +1,32 @@
+# Tolerances of the validation ladder and convergence checks (docs/05 section 0 item 2
+# and section 4.4).  Values are PROPOSED (ASSUMPTION) and were set from the local CPU
+# validation recorded in validation/local_validation_report.json; they must not be
+# loosened to make a run pass.
+weight_min: 0.05          # use only angles where the incident spectrum exceeds 5 % of its peak
+rung1_uniform_step:       # Fermi-function potential step versus the Parratt recursion
+  amp_rel: 3.0e-3
+  amp_abs_floor: 1.0e-6
+  phase_rad: 3.0e-3
+  phase_min_abs_r: 1.0e-4
+rung2_averaged_crystal:   # laterally averaged crystal potential versus the Parratt recursion
+  amp_rel: 3.0e-3
+  amp_abs_floor: 1.0e-5
+  phase_rad: 3.0e-3
+  phase_min_abs_r: 1.0e-3
+rung3_null:               # translation or mirror related terraces: r_L / r_0 = exp(-2 i K h L)
+  amp_rel: 3.0e-3
+  phase_rad: 3.0e-3
+  min_abs_r: 1.0e-2
+beam_independence:        # waists 8, 10, 14 A on the same structure
+  amp_abs: 2.0e-3
+  phase_rad: 3.0e-3
+  min_abs_r: 1.0e-2
+convergence:              # variant versus production numerics
+  amp_abs: 3.0e-3
+  phase_rad: 5.0e-3
+  min_abs_r: 1.0e-2
+dynamical_residual_acceptance_rad: 0.1   # docs/05 section 0 item 3 (proposed initial value, ASSUMPTION)
+image:
+  aperture_semi_angles_mrad: [1.0, 2.0, 4.0]   # PROJECT_INPUT 4 unknown: scanned (ASSUMPTION)
+  edge_exclusion_A: 25.0
+  footprint_fraction: 0.5      # analyse |z_s - z_hit| < fraction * footprint half-length

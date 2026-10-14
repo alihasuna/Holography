@@ -1,0 +1,140 @@
+# Milestone M2 campaign: grazing-incidence multislice reflection of Si surfaces at
+# 200 keV, run on the Alliance cluster Fir (4 x H100 SXM5 80 GB per GPU node).
+# Every physical input carries value, label and source; the runner refuses a task in
+# which any of them is missing (docs/05 section 0 item 5).  Numerical parameters are
+# convergence-tested in stage `convergence`.
+campaign: m2_reflection_multislice_v1
+backend: cupy
+
+physics:
+  beam_energy_keV:
+    value: 200.0
+    label: PROJECT_INPUT
+    source: "Ali, 2026-09-22 (docs/06_project_inputs_required.md item 1)"
+  lattice_parameter_A:
+    value: 5.4309
+    label: ASSUMPTION
+    source: "docs/model_assumptions.md B2 (room temperature, standard value)"
+  parametrization:
+    value: kirkland
+    label: "SECTION_READ (abTEM 1.0.10 data file); primary source UNVERIFIED"
+    source: "reflection_holo/data/si_parametrizations.json"
+  absorptive_fraction:
+    value: 0.0
+    label: ASSUMPTION
+    source: "no imaginary potential proportional to the atomic potential; thermal diffuse absorption enters through frozen phonons"
+  inelastic_absorption_W_V:
+    value: 0.5
+    label: ASSUMPTION
+    source: "placeholder for PROJECT_INPUT 21 (docs/06): uniform imaginary potential for all inelastic losses; 0.5 V = intensity mean free path 1/(2 sigma W) = 137 nm at 200 keV (DERIVED_HERE); scanned 0.25/0.5/1.0 V in stage rocking"
+  absorption_onset_width_A:
+    value: 0.5
+    label: ASSUMPTION
+    source: "tanh onset of the inelastic absorption at the mid-gap cut above the local top sheet; scanned 0.25/1.0 A"
+  u_rms_A:
+    value: 0.076
+    label: ASSUMPTION
+    source: "Einstein-model RMS displacement per axis inherited from the inspected repository (docs/model_assumptions.md A7); B = 8 pi^2 u^2 = 0.456 A^2"
+
+# Numerical presets (lengths in A).  The grid runs from x0 (bulk side) to x0 + Nx dx;
+# the level-0 surface (outermost atomic sheet) is at x = 0.
+numerics:
+  production:
+    Nx: 5376
+    dx_A: 0.08
+    x0_A: -230.0
+    precision: complex128
+    propagator: exact
+    absorber_bottom_width_A: 100.0
+    absorber_top_width_A: 60.0
+    absorber_W_max_V: 40.0
+    absorber_power: 3
+    atoms_bottom_margin_A: 5.0
+    crystal_start_z_A: 0.5
+    clearance_sigmas: 4.5
+    clearance_margin_A: 5.0
+    max_end_face_fraction: 1.0e-12
+    exit_extra_A: 1500.0
+    delay_decay_lengths: 7.0
+    tail_tol: 1.0e-4          # adaptive stop: detector record below 1e-4 of its peak
+    tail_window_planes: 400
+    tail_check_every: 200
+    cell_cap_factor: 2.5      # hard cap on the cell length, times the planned length
+    detector_margin_A: 3.0
+    detector_spacing_A: 0.16
+    detector_top_margin_A: 5.0
+    theta_step_mrad: 0.02
+    spectrum_theta_margin_mrad: 15.0
+    pattern_theta_max_mrad: 60.0
+    pattern_bin_mrad: 0.1
+    n_rods: 4
+    reference_top_A: 30.0
+    reference_upsample: 8
+    uniform_dz_A: 1.92
+    side_view_every: 100
+    atom_chunk: 4096
+  # taller cells (same dx) for the broad beams of the step images and the 10 nm mesa;
+  # unlisted keys are taken from `production`
+  tall:
+    Nx: 7680
+  mesa:
+    Nx: 9216
+
+# target dy (A); Ny is the FFT-friendly value giving the closest dy (within 10 percent)
+dy_target_A: 0.08
+
+surfaces:
+  si111_110: {levels: [0, 1], label: "CFG-A (1,-1,1) surface, [110] azimuth"}
+  si001_110: {levels: [0, 1, 2], label: "CFG-B (001) surface, [110] azimuth"}
+  si001_100: {levels: [0, 1], label: "CFG-B (001) surface, [100] azimuth"}
+
+stages:
+  validation:
+    w0_A: 10.0
+    rung1_angles_mrad: [6.0, 13.0, 20.0, 30.0, 40.0]
+    rung1_widths_A: [0.05, 0.2]
+    rung1_W_V: [0.0, 0.5]
+    rung1_V0_V: 13.9
+    rung2_W_V: [0.5, 1.0]
+    null_test_angles_mrad:
+      si111_110: [13.3, 20.0, 26.5]
+      si001_100: [16.2, 21.0, 26.3]
+      si001_110: [16.2, 21.0, 26.3]
+    beam_waists_A: [8.0, 10.0, 14.0]
+  convergence:
+    w0_A: 10.0
+    angles_mrad: [13.3, 20.0, 30.6]
+    Nx_list: [4320, 5376, 6480]      # same cell height as production, dx = Lx / Nx
+    delay_decay_lengths: [5.0, 7.0, 9.0]
+    tail_tol: [1.0e-5]
+    absorber: [[60.0, 40.0], [100.0, 20.0], [100.0, 80.0], [140.0, 40.0]]
+    phonon_Ly_periods: [1, 2, 4, 8]
+    phonon_configs: 16
+    phonon_angles_mrad: [13.3, 20.0]
+  rocking:
+    theta_min_mrad: 7.0
+    theta_max_mrad: 44.5
+    theta_spacing_mrad: 2.5
+    w0_A: 10.0
+    windows_per_task: 4
+    phonon_Ly_target_A: 27.0
+    phonon_configs: 32
+    W_scan_V: [0.25, 1.0]
+    onset_scan_A: [0.25, 1.0]
+  steps:
+    w0_A: 30.0
+    Ly_target_A: 200.0
+    phonon_configs: 8
+    parallel:
+      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 17.9, 20.0, 26.5], phonon_angles_mrad: [13.3, 20.0]}
+      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 21.0, 26.3], phonon_angles_mrad: [16.2]}
+      - {surface: si001_110, levels: [0, 2], angles_mrad: [16.2, 21.0, 26.3], phonon_angles_mrad: [16.2]}
+      - {surface: si001_100, levels: [0, 1], angles_mrad: [16.2, 21.0, 26.3], phonon_angles_mrad: [16.2]}
+    transverse:
+      - {surface: si111_110, levels: [0, 1], angles_mrad: [13.3, 26.5]}
+      - {surface: si111_110, levels: [1, 0], angles_mrad: [13.3, 26.5]}
+      - {surface: si001_110, levels: [0, 1], angles_mrad: [16.2, 26.3]}
+      - {surface: si001_110, levels: [1, 0], angles_mrad: [16.2, 26.3]}
+      - {surface: si001_110, levels: [0, 2], angles_mrad: [16.2, 26.3]}
+      - {surface: si001_110, levels: [0, 74], angles_mrad: [16.2], preset: mesa, label: "10 nm mesa edge (74 x a/4 = 100.5 A), up-step"}
+      - {surface: si001_110, levels: [74, 0], angles_mrad: [16.2], preset: mesa, label: "10 nm mesa edge, down-step"}

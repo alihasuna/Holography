@@ -1,0 +1,170 @@
+# SMOKE TEST configuration for CPU (numpy): reduced grids, strong absorption, few tasks.
+# It exercises plan -> worker -> aggregate end to end; its numbers are NOT physics results.
+campaign: smoke_cpu
+backend: numpy
+physics:
+  beam_energy_keV:
+    value: 200.0
+    label: PROJECT_INPUT
+    source: Ali, 2026-09-22 (docs/06_project_inputs_required.md item 1)
+  lattice_parameter_A:
+    value: 5.4309
+    label: ASSUMPTION
+    source: docs/model_assumptions.md B2 (room temperature, standard value)
+  parametrization:
+    value: kirkland
+    label: SECTION_READ (abTEM 1.0.10 data file); primary source UNVERIFIED
+    source: reflection_holo/data/si_parametrizations.json
+  absorptive_fraction:
+    value: 0.0
+    label: ASSUMPTION
+    source: no imaginary potential proportional to the atomic potential; thermal diffuse absorption enters through
+      frozen phonons
+  inelastic_absorption_W_V:
+    value: 2.0
+    label: ASSUMPTION
+    source: 'SMOKE TEST ONLY: strong absorption to shorten the cells'
+  absorption_onset_width_A:
+    value: 0.5
+    label: ASSUMPTION
+    source: tanh onset of the inelastic absorption at the mid-gap cut above the local top sheet; scanned 0.25/1.0
+      A
+  u_rms_A:
+    value: 0.076
+    label: ASSUMPTION
+    source: Einstein-model RMS displacement per axis inherited from the inspected repository (docs/model_assumptions.md
+      A7); B = 8 pi^2 u^2 = 0.456 A^2
+numerics:
+  production:
+    Nx: 2304
+    dx_A: 0.1
+    x0_A: -100.0
+    precision: complex128
+    propagator: exact
+    absorber_bottom_width_A: 60.0
+    absorber_top_width_A: 40.0
+    absorber_W_max_V: 40.0
+    atoms_bottom_margin_A: 5.0
+    crystal_start_z_A: 0.5
+    clearance_sigmas: 4.5
+    clearance_margin_A: 5.0
+    max_end_face_fraction: 1.0e-12
+    exit_extra_A: 1500.0
+    delay_decay_lengths: 7.0
+    detector_margin_A: 3.0
+    detector_spacing_A: 0.2
+    detector_top_margin_A: 5.0
+    theta_step_mrad: 0.02
+    n_rods: 4
+    reference_top_A: 30.0
+    reference_upsample: 8
+    uniform_dz_A: 1.92
+    side_view_every: 0
+    atom_chunk: 4096
+    spectrum_theta_margin_mrad: 15.0
+    pattern_theta_max_mrad: 60.0
+    pattern_bin_mrad: 0.1
+    absorber_power: 3
+    tail_tol: 0.0001
+    tail_window_planes: 400
+    tail_check_every: 200
+    cell_cap_factor: 2.5
+  tall:
+    Nx: 3072
+  mesa:
+    Nx: 3072
+dy_target_A: 0.1
+surfaces:
+  si111_110:
+    levels:
+    - 0
+    - 1
+    label: CFG-A
+  si001_110:
+    levels:
+    - 0
+    - 1
+    label: CFG-B
+  si001_100:
+    levels:
+    - 0
+    - 1
+    label: CFG-B [100]
+stages:
+  validation:
+    rung1_angles_mrad:
+    - 13.0
+    - 25.0
+    rung1_widths_A:
+    - 0.2
+    rung1_W_V:
+    - 0.0
+    - 2.0
+    rung1_V0_V: 13.9
+    rung2_W_V:
+    - 2.0
+    null_test_angles_mrad:
+      si111_110:
+      - 13.3
+      - 20.0
+      si001_100:
+      - 16.2
+      si001_110:
+      - 16.2
+    beam_waists_A:
+    - 6.0
+    - 8.0
+    w0_A: 6.0
+  convergence:
+    angles_mrad:
+    - 13.3
+    - 20.0
+    delay_decay_lengths:
+    - 5.0
+    absorber:
+    - - 80.0
+      - 40.0
+    phonon_Ly_periods:
+    - 1
+    - 2
+    phonon_configs: 2
+    phonon_angles_mrad:
+    - 13.3
+    w0_A: 6.0
+    Nx_list:
+    - 2304
+    - 2880
+    tail_tol:
+    - 1.0e-05
+  rocking:
+    theta_min_mrad: 13.0
+    theta_max_mrad: 20.0
+    theta_spacing_mrad: 3.5
+    w0_A: 6.0
+    windows_per_task: 3
+    phonon_Ly_target_A: 7.0
+    phonon_configs: 2
+    W_scan_V:
+    - 1.0
+    onset_scan_A:
+    - 1.0
+  steps:
+    w0_A: 8.0
+    Ly_target_A: 27.0
+    phonon_configs: 1
+    parallel:
+    - surface: si111_110
+      levels:
+      - 0
+      - 1
+      angles_mrad:
+      - 13.3
+      phonon_angles_mrad:
+      - 13.3
+    transverse:
+    - surface: si111_110
+      levels:
+      - 0
+      - 1
+      angles_mrad:
+      - 13.3

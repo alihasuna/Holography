@@ -32,6 +32,22 @@ every physics change (instruction file section 10). Labels follow section 1.4 of
 | B9 | Shadowed regions are excluded from quantification. | DERIVED_HERE | A step transverse to the beam shadows `h/tan(theta_ext)` of surface (139 A per bilayer and 444 nm for a 10 nm mesa at 22.5 mrad; 230 A and 733 nm at the (4,-4,4) angle of 13.6 mrad); the model must ray-trace visibility at the operating angle. |
 | B10 | The illumination convergence is small enough that the step phase is not averaged out. | PROJECT_INPUT | 1 rad of phase spread at 0.64 mrad semi-angle for a bilayer, 0.20 mrad for 1 nm, 0.020 mrad for 10 nm (200 keV). |
 
+## 2b. Assumptions of the M2 reflection-multislice campaign (`reflection_holo/`, `configs/fir_m2_campaign.yaml`)
+
+Added 2026-10-14. Each is a field with value, label and source in the campaign configuration; a task
+missing any of them is refused. Sensitivity scans listed here run in the Fir stage `rocking`.
+
+| # | Assumption | Label | Status and sensitivity |
+|---|---|---|---|
+| C1 | Projection approximation: every atom contributes its full projected potential to the plane perpendicular to the beam that contains its nominal position; plane spacing 1.920 A ([110] azimuth) or 1.358 A ([100] azimuth); symmetric splitting with the exact propagator. | ASSUMPTION | Standard multislice practice; tested against abTEM in transmission (docs/08 section 3.6) and by the validation ladder in reflection. A finite-projection (sub-slice) variant is not implemented. |
+| C2 | Si electron scattering factors from the Kirkland parametrisation (free neutral atoms), copied with checksums from the abTEM 1.0.10 data files. | SECTION_READ of the data file; primary source UNVERIFIED | Implies a mean inner potential of 13.90 V (Lobato: 13.95 V), against the 12.0 V ASSUMPTION B1; scanned with the Lobato parametrisation. Bonding is not represented. |
+| C3 | All inelastic losses (plasmons, core and valence excitations) are represented by a uniform imaginary potential W_in = 0.5 V inside the crystal, with a tanh onset of width 0.5 A at the mid-gap plane above the local top sheet. | ASSUMPTION (placeholder for PROJECT_INPUT 21) | W_in = 0.5 V is an intensity mean free path of 137 nm at 200 keV (DERIVED_HERE). Scanned at 0.25 and 1.0 V and onset 0.25 and 1.0 A. Without W_in the reflected wave never completes inside a finite cell (docs/08 appendix A4). |
+| C4 | Thermal diffuse absorption from frozen phonons: independent Gaussian displacements in x and y with u_rms = 0.076 A per axis (Einstein model); displacements along the beam are not applied (C1). | ASSUMPTION (value inherited from A7) | The coherent average of the reflection coefficient over seeds is the quantity a hologram measures (docs/08 appendix A9). Correlated displacements (phonon dispersion) are not modelled. |
+| C5 | Bulk-terminated, unreconstructed, unrelaxed surfaces; no adatoms, no oxide. | ASSUMPTION (same as B3, B7) | Si(001) 2x1 dimers and Si(111) 7x7 are absent, so absolute reflectivities and the a/4 residual apply to ideal terminations only. |
+| C6 | The crystal is semi-infinite: the artificial absorber (cubic imaginary ramp, 100 A, 40 V on the bulk side; 60 A, 40 V at the top of the vacuum) removes everything that would leave the physical region. | ASSUMPTION, tested | Ramp reflection below 2e-5 at 3 to 48 mrad and attenuation beyond exp(-25) round trip at 45 mrad (Parratt computation, docs/08 section 3.4); convergence stage varies width and strength. |
+| C7 | The illumination is a coherent Gaussian sheet beam, uniform along y, with its waist on the surface; reflection coefficients are extracted per plane-wave component, so they do not depend on the beam (tested). Convergence, energy spread and source size are not applied. | ASSUMPTION for the step images; tested for r(theta) | Partial coherence enters at milestone M3 (docs/05 section 5). |
+| C8 | Lattice parameter 5.4309 A; beam energy 200 keV. | ASSUMPTION B2; PROJECT_INPUT item 1 | As in section 2. |
+
 ## 3. Known limitations of the analysis performed here
 
 * No multislice or dynamical reflection simulation was executed in this analysis. Every engine

@@ -1,0 +1,52 @@
+{
+ "_provenance": {
+  "copied_from": "abTEM 1.0.10 (PyPI wheel abtem-1.0.10-py3-none-any.whl), files abtem/parametrizations/data/kirkland.json and lobato.json, entry 'Si'",
+  "sha256_kirkland_json": "9a3f6642a92e3db2670d4ae939f5cf3b05c5838cdbf7c9c3c38b8afcb4792e05",
+  "sha256_lobato_json": "ea21f3ac2a99910149fe30264bcd0d75e49d4eba02f4f0ecba16778c941130ba",
+  "evidence": "SECTION_READ of the abTEM data files and of abtem/parametrizations/functions/{kirkland,lobato}.py (formula for scattering_factor with raw parameters). The primary sources (Kirkland 2010, Advanced Computing in Electron Microscopy, 2nd ed., Appendix C; Lobato and Van Dyck 2014, Acta Cryst. A 70, 636-649) were NOT read: the transcription of the values into abTEM is UNVERIFIED against them.",
+  "kirkland_formula": "f_e(q) = sum_i a_i/(q^2 + b_i) + sum_i c_i exp(-d_i q^2); rows are [a1,a2,a3],[b1,b2,b3],[c1,c2,c3],[d1,d2,d3]; q in cycles/A (q = 1/d), f_e in A",
+  "lobato_formula": "f_e(q) = sum_i a_i (2 + b_i q^2)/(1 + b_i q^2)^2; rows are [a1..a5],[b1..b5]; q in cycles/A, f_e in A"
+ },
+ "kirkland": {
+  "Si": [
+   [
+    1.06543892,
+    0.120143691,
+    0.180915263
+   ],
+   [
+    1.04118455,
+    68.7113368,
+    0.0887533926
+   ],
+   [
+    1.1206562,
+    0.0305452816,
+    1.59963502
+   ],
+   [
+    3.70062619,
+    0.214097897,
+    9.99096638
+   ]
+  ]
+ },
+ "lobato": {
+  "Si": [
+   [
+    2.87189142611612,
+    -2.06173501195173,
+    2.17114024204478,
+    -0.0663073633058801,
+    0.00301070709670513
+   ],
+   [
+    5.08487103642989,
+    0.429178185305126,
+    0.366485434192162,
+    0.119710611296903,
+    0.0143994536128397
+   ]
+  ]
+ }
+}
