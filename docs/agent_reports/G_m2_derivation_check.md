@@ -5,6 +5,23 @@ Status: IN PROGRESS (written incrementally; this line is replaced when the repor
 branch `trixode-studios-claude/sweet-carson-2grkn2`, commit d404587. No repository file other than
 this report was modified.
 
+Abstract. Every derivation in Appendix A of docs/08 (A1 to A13) was re-derived independently and
+checked numerically, using independent toy multislice codes and the repository's own functions. All
+formulas the code relies on are correct and correctly implemented. That covers the factors of 2 pi,
+the Jacobian `2 pi q/kz`, `A = L_x a`, the up/down separation, the sign of the reference-plane
+factor, the exact propagator, refraction and the signed step phase at 200 keV, the band limit, the
+delay allowance, the truncation estimate, the sinc strip mean, the plane-wave response of steps
+parallel to the beam, and the mean inner potentials 13.90 and 13.95 V.
+
+The decisive result is operational (F-B1, section 17). At production numerics the repository's own
+validation tasks fail the gate in `configs/benchmarks.yaml` on four windows: rung 1 at 40 mrad with
+the 0.05 A step, and rung 2 Si(111) at 20 mrad. The cause is amplitude tolerances set below the
+attainable accuracy at the band edge and between Bragg orders, not an error. `fir/run_stage.sbatch`
+stops the `afterok` chain, so convergence, rocking and steps will not start unless the gate is
+resolved by a recorded decision. Two Major findings (F-M1 diffuse fraction, F-M2 near-grazing
+components in the parallel-step strip means at 9 to 16 mrad) are post-processing only. Summary table
+and verdict: sections 18 and 19.
+
 ## 0. Scope, procedure, conventions, labels
 
 Scope: Appendix A (A1 to A13) of `docs/08_fir_simulation_campaign.md`, the formulas and numbers of
@@ -15,15 +32,18 @@ orchestrator). Read beforehand: `docs/physics_conventions.md`, `docs/03_physics_
 repository).
 
 Procedure. For every item the premises were restated and the result derived and checked numerically
-BEFORE any implementation file was opened (sections 1 to 14 below, scripts s0 to s8). The
-implementation was read only afterwards (section 15). The numerical checks of the virtual-detector
+BEFORE any implementation file was opened (scripts s0 to s9, written before the code was read). The
+implementation was read and exercised afterwards. s10, s12, s13 and s16 to s21 apply the
+repository's own functions and planner. s11 repeats my own A13 test with longer cells and also
+applies the repository's `vdp_angle_resolved` and `strip_mean`. The numerical checks of the virtual-detector
 formulas use an independent toy multislice written for this check (`toyms.py`, about 120 lines,
 written from the derivation, not from the repository). Scripts and outputs:
 `/tmp/claude-0/-home-user-Holography/57d40492-0c74-558e-a50e-ca09e117ea85/scratchpad/G_derive/`
 (`sN_*.py`, output `sN_*.out`), run with `/tmp/claude-0/venv/bin/python` (Python 3.13.16, numpy
-2.5.4, scipy 1.18.1, abTEM 1.0.10 installed in the venv). Every script contains self-checks with
-explicit tolerances. Checks labelled "doc value" compare with a number printed in docs/08. When such
-a check fails, the failure is the finding.
+2.5.4, scipy 1.18.1, abTEM 1.0.10 installed in the venv). Every derivation script contains self-checks
+with explicit tolerances. The planner and preview scripts (s12, s13, s15 to s21) are informational and
+print the repository's own verdicts. Checks labelled "doc value" compare with a number printed in
+docs/08. When such a check fails, the failure is the finding.
 
 Conventions (`docs/physics_conventions.md`): `exp(+i(k.r - wt))`; x = outward normal (into vacuum),
 y in-plane transverse, z = beam azimuth; glancing angles to the surface; `q` in cycles/A, `K = 2 pi q`
@@ -461,9 +481,9 @@ peak at about 43.1 mrad (`theta_int = 44.0 mrad`), should carry a stated accurac
 a dx = 0.0664 A comparison exists there. That comparison is post-processing plus a few extra tasks,
 and it does not affect the step stage (9 to 32 mrad). (ii) Validation rung 1 includes 40 mrad with a
 0.05 A Fermi width at dx = 0.08. My toy gives 3.3e-3 relative and 2.3e-3 rad there against tolerances
-of 3e-3 (amplitude, with a 1e-6 absolute floor) and 3e-3 rad. Depending on how the floor is combined,
-this sits at the edge of the gate, and a failure there would stop the chain before the rocking stage.
-Any such failure is a gate artefact of the sharpest test profile, not evidence of a defect.
+of 3e-3 (amplitude, with a 1e-6 absolute floor) and 3e-3 rad. The repository's own task fails the
+gate there (3.69e-3; section 17, F-B1). That is a gate artefact of the sharpest test profile, not
+evidence of a defect.
 
 ## 6. A4, delay allowance (s0, s8)
 
@@ -716,7 +736,7 @@ exit 0
 
 The coherent average is beam independent (difference 2.3e-5, 1.2 standard errors), as A9 requires.
 The variance changes by a factor of 4.25 when the waist is doubled (the kinematic estimate is 2; the
-excess is presumably dynamical). **Finding F-M1 (Major, category (a): post-processing only).**
+excess was not investigated further). **Finding F-M1 (Major, category (a): post-processing only).**
 `aggregate.aggregate_rocking` reports `diffuse_fraction_median = median(1 - |<r>|^2/<|r|^2>)` for
 every frozen-phonon curve, and docs/08 sections 1 (item 4), 5 and A9 present it as "the thermal
 diffuse fraction in the specular channel". As computed it depends on w0 (10 A in rocking, 15 A in
@@ -752,121 +772,6 @@ and absolute-z phases. The aperture is a circle of radius alpha in (theta_x, the
 are zeroed. All of this is consistent with the derivation. x_ref = 0 is used for both sides of a
 transverse step, and the local ratio (image / flat image of the same level at the same x_ref)
 cancels the resulting `exp(i K_x h)` offset. Verdict: correct.
-
-## 15. Comparison with the implementation (read after the derivations; s10, s12, s13)
-
-The code was read at d404587. `git diff d404587 HEAD` is empty for `reflection_holo/`, `configs/` and
-docs/08, because later commits on the branch touch only `docs/agent_reports/`. s10 imports
-`reflection_holo` read-only and applies its functions to the independent toy records of s3 and s8.
-
-```
-repo constants: lambda 0.0250793405 A, k 250.532318, sigma 7.288401e-04, MIP kirkland 13.9028 V, lobato 13.9548 V, theta_c(12 V) 8.356 mrad
-  CHECK PASS: repo lambda = 0.025079340 A 
-  CHECK PASS: repo sigma = 7.288401e-4 
-  CHECK PASS: repo MIP 13.903 / 13.955 V 
-   repo SpecularCondition (n=4, 13.90 V): theta_ext 13.2301 mrad (s1 Schroedinger: 13.2301)
-  CHECK PASS: repo Bragg n=4 matches s1 to 2 urad 
-   repo SpecularCondition (n=5, 13.90 V): theta_ext 17.8606 mrad (s1 Schroedinger: 17.8606)
-  CHECK PASS: repo Bragg n=5 matches s1 to 2 urad 
-   repo SpecularCondition (n=8, 13.90 V): theta_ext 30.7086 mrad (s1 Schroedinger: 30.7086)
-  CHECK PASS: repo Bragg n=8 matches s1 to 2 urad 
-   repo step phase h=3.1355 A at 13.231 mrad: -20.7865 rad (s0: -20.7865)
-  CHECK PASS: repo signed specular step phase 
-   repo max_specular_angle(dx=0.08): 52.272 mrad; window_half_range(w0=10) 2.098 mrad, (15) 1.399, (60) 0.350
-  CHECK PASS: max specular angle 52.27 mrad 
-   repo delay_allowance_A(W=0.5, n=7): (19208.60271175074, True)
-  CHECK PASS: delay allowance 19,209 A 
-repo vdp_reflectivity on the s3 toy record: max |r_repo/r_Parratt - 1| = 1.68e-04; max |D/A| = 1.6e-07
-  CHECK PASS: repo vdp_reflectivity reproduces Parratt on the toy record (< 1e-3) 
-repo parratt(multislice) vs my Parratt(MS): max rel 1.42e-05
-  CHECK PASS: repo parratt = my parratt (< 1e-4 rel; layering differs slightly) 
-repo truncation_bound at the planned length: max 3.98e-05 (rho 0.683); true truncation error max 2.97e-06
-  CHECK PASS: repo truncation_bound equals the s8 estimate (4.0e-5) within 5% 
-repo absorber_profile: W(-230) = 40.00 V, W(-130) = 0.00e+00, W(-180) = 5.000 (40*(0.5)^3 = 5.0), W(140.08) = 3.37e-20, W(200.08) = 40.00
-  CHECK PASS: absorber ramps: cubic, zero at inner edges, 40 V at the cell edges 
-
-SUMMARY: 13 of 13 checks passed
-
-si111_110 h_unit = 3.13553 A periods (x,y,z) = ['9.4066', '6.6515', '3.8402'] planes per z period: 2 slice 1.92011
-si001_110 h_unit = 1.35773 A periods (x,y,z) = ['5.4309', '3.8402', '3.8402'] planes per z period: 2 slice 1.92011
-si001_100 h_unit = 1.35773 A periods (x,y,z) = ['5.4309', '5.4309', '5.4309'] planes per z period: 4 slice 1.35773
-
-validation: 36 tasks; planned planes 3430 .. 37268; planned cell length 0.66 .. 7.16 um; cap planes max 149072; memory max 0.7 GB  (0 s)
-convergence: 172 tasks; planned planes 15828 .. 21545; planned cell length 3.04 .. 4.14 um; cap planes max 86178; memory max 7.5 GB  (5 s)
-rocking: 1892 tasks; planned planes 7835 .. 57113; planned cell length 1.50 .. 7.78 um; cap planes max 228449; memory max 16.0 GB  (46 s)
-steps: 867 tasks; planned planes 14797 .. 96020; planned cell length 2.84 .. 18.44 um; cap planes max 384080; memory max 17.4 GB  (117 s)
-total tasks: 2967
-rocking: highest window edge 46.60 mrad (band limit 52.27 mrad at dx = 0.08 A; 89 percent)
-
-steps parallel (static): surface, levels, Ly, theta0, x_det, planned z_end, lowest fully recorded elevation, q, |qy| above which truncated, number of truncated qy columns, strip length, |sinc| at the cut
-  si111_110 (0, 1) Ly=199.5 th0=  9.0 x_det=153.9 z_end=55873 th_min=3.90 mrad q=0.359 qy_cut=0.323 cols=14 L=46.6 |sinc|=0.004
-  si111_110 (0, 1) Ly=199.5 th0= 14.0 x_det=149.9 z_end=41520 th_min=4.82 mrad q=0.558 qy_cut=0.524 cols=14 L=46.6 |sinc|=0.012
-  si111_110 (0, 1) Ly=199.5 th0= 20.0 x_det=148.6 z_end=34450 th_min=5.47 mrad q=0.797 qy_cut=0.767 cols=12 L=46.6 |sinc|=0.007
-  si111_110 (0, 1) Ly=199.5 th0= 26.0 x_det=148.1 z_end=30796 th_min=5.87 mrad q=1.037 qy_cut=1.010 cols=10 L=46.6 |sinc|=0.000
-  si111_110 (0, 1) Ly=199.5 th0= 30.6 x_det=147.8 z_end=28999 th_min=6.10 mrad q=1.220 qy_cut=1.195 cols=10 L=46.6 |sinc|=0.005
-  si001_110 (0, 1) Ly=199.7 th0= 12.0 x_det=148.4 z_end=45201 th_min=4.47 mrad q=0.478 qy_cut=0.444 cols=14 L=49.9 |sinc|=0.007
-  si001_110 (0, 1) Ly=199.7 th0= 17.0 x_det=146.7 z_end=37024 th_min=5.13 mrad q=0.678 qy_cut=0.646 cols=12 L=49.9 |sinc|=0.007
-  si001_110 (0, 1) Ly=199.7 th0= 23.0 x_det=145.9 z_end=32165 th_min=5.63 mrad q=0.917 qy_cut=0.889 cols=12 L=49.9 |sinc|=0.007
-  si001_110 (0, 1) Ly=199.7 th0= 28.0 x_det=145.6 z_end=29771 th_min=5.91 mrad q=1.116 qy_cut=1.091 cols=10 L=49.9 |sinc|=0.006
-  si001_110 (0, 2) Ly=199.7 th0= 10.0 x_det=151.5 z_end=51439 th_min=4.12 mrad q=0.399 qy_cut=0.363 cols=14 L=49.9 |sinc|=0.007
-  si001_110 (0, 2) Ly=199.7 th0= 16.0 x_det=148.3 z_end=38401 th_min=5.05 mrad q=0.638 qy_cut=0.605 cols=14 L=49.9 |sinc|=0.007
-  si001_110 (0, 2) Ly=199.7 th0= 21.0 x_det=147.5 z_end=33596 th_min=5.52 mrad q=0.837 qy_cut=0.808 cols=12 L=49.9 |sinc|=0.007
-  si001_110 (0, 2) Ly=199.7 th0= 26.3 x_det=147.1 z_end=30586 th_min=5.86 mrad q=1.049 qy_cut=1.022 cols=10 L=49.9 |sinc|=0.001
-  si001_110 (0, 2) Ly=199.7 th0= 32.0 x_det=146.9 z_end=28499 th_min=6.12 mrad q=1.276 qy_cut=1.252 cols=8 L=49.9 |sinc|=0.005
-  si001_100 (0, 1) Ly=200.9 th0= 14.0 x_det=147.5 z_end=41159 th_min=4.77 mrad q=0.558 qy_cut=0.525 cols=14 L=48.9 |sinc|=0.011
-  si001_100 (0, 1) Ly=200.9 th0= 19.0 x_det=146.4 z_end=35042 th_min=5.32 mrad q=0.758 qy_cut=0.727 cols=12 L=48.9 |sinc|=0.009
-  si001_100 (0, 1) Ly=200.9 th0= 25.0 x_det=145.8 z_end=31087 th_min=5.75 mrad q=0.997 qy_cut=0.970 cols=12 L=48.9 |sinc|=0.006
-  si001_100 (0, 1) Ly=200.9 th0= 30.0 x_det=145.6 z_end=29044 th_min=6.00 mrad q=1.196 qy_cut=1.172 cols=10 L=48.9 |sinc|=0.004
-  si111_110 (0, 1) Ly=99.8 th0= 20.0 x_det=148.6 z_end=34450 th_min=5.47 mrad q=0.797 qy_cut=0.767 cols=6 L=20.0 |sinc|=0.017
-  si001_110 (0, 1) Ly=399.4 th0= 21.0 x_det=146.1 z_end=33459 th_min=5.48 mrad q=0.837 qy_cut=0.808 cols=24 L=145.9 |sinc|=0.000
-  si111_110 (0, 1) Ly=399.1 th0= 26.5 x_det=148.0 z_end=30569 th_min=5.90 mrad q=1.057 qy_cut=1.030 cols=20 L=146.3 |sinc|=0.002
-  si001_110 (0, 1) Ly=399.4 th0= 16.2 x_det=146.9 z_end=37965 th_min=5.05 mrad q=0.646 qy_cut=0.614 cols=24 L=145.9 |sinc|=0.003
-  si001_110 (0, 1) Ly=399.4 th0= 21.0 x_det=146.1 z_end=33459 th_min=5.48 mrad q=0.837 qy_cut=0.808 cols=24 L=145.9 |sinc|=0.000
-lowest fully recorded exit elevation over all 115 static parallel-step tasks: 3.87 .. 6.15 mrad
-```
-
-| Function | Derivation it must implement | Verdict |
-|---|---|---|
-| `constants.wavelength_A`, `k_rad_per_A`, `interaction_constant` | s0 | identical to 1e-12 (s10) |
-| `constants.refraction_delta`, `E_eff_V` | exact relativistic `Delta = V0/E_eff`; equals `2 sigma V0/k` to 1e-5 | correct |
-| `geometry.theta_int_from_ext`, `SpecularCondition` | `K_int = pi n/d`, `K_ext^2 = K_int^2 - dK^2` | correct; Bragg angles equal s1 to 1e-7 |
-| `geometry.specular_step_phase` | `-2 h k sin(theta_ext)` (signed) | correct |
-| `potential.scattering_factor`, `mean_inner_potential` | A7 | 13.9028 V and 13.9548 V, identical to s0 |
-| `potential.PotentialBuilder.projected` | `c(q) = 2 pi a0 e f_e(q) D(q)/(Lx Ly) sum_j e^{-2 pi i q.r_j}`, 2/3 band, `D = exp(-B q^2/4)` | correct |
-| `potential.PotentialBuilder.transmission` | `exp(i sigma v - sigma (alpha v + W dz))`, band-limited after exponentiation | correct (attractive v advances the phase, as exp(+ik.r) requires) |
-| `potential.absorber_profile` | cubic ramps, 0 at the inner edges, W_max at the cell edges | correct (s10). Docstring "below 2e-5 ... at all angles above 3 mrad" is 5.3e-5 at 3.0 mrad (F-N3) |
-| `beams.kz_minus_k`, `multislice.Propagator` | `exp(i (kz - k) dz)`, written without cancellation | correct sign and form |
-| `multislice.run_multislice` | symmetric splitting, record at z_p | full propagation between plane centres with T at each plane is the Strang scheme; record after T at z_p, consistent with the z_p used in the FT |
-| `beams.GaussianSheetBeam.spectrum`, `entrance_wave` | grid coefficient a(q), q0 = -sin(theta0)/lambda, exact back-propagation from the waist | correct |
-| `simulate` (A_neg) | `A(-q) = L_x a(-q)`, analytic | `grid.Lx * beam.spectrum(-q)`: correct |
-| `analysis.kz_of_q`, `updown`, `vdp_reflectivity` | A3 | correct; on the s3 toy record it reproduces Parratt to 1.68e-4, identical to my extraction |
-| `analysis.vdp_spectrum` | U(kappa, qy) with absolute-z phases, 1/Ny, dz | correct; aliases kappa > 0 to kappa - 2 pi/dz (harmless, physical kappa <= 0); zeroes components below about 1.25 mrad elevation |
-| `analysis.truncation_bound` | A12 | identical to my estimate (3.98e-5 at the s8 planned length; true error 2.97e-6) |
-| `analysis.vdp_angle_resolved` | A13 | formula correct (incident Jacobian, K_x(qy) in the separation); near-grazing components are not masked (only K_x = 0); see section 14 and F-M2 |
-| `reference1d.K_profile`, `parratt`, `transfer_matrix`, `layers_from_profile` | A1, A2 | correct; repo Parratt equals mine to 1.4e-5 (different layering) |
-| `reference1d.fermi_step_R` | closed form | correct; the docs/08 value 2.3597e-5 is not produced by it at the stated parameters (F-m1) |
-| `simulate.delay_allowance_A` | `n/(sigma W)` | 19,208.6 A (s10) |
-| `simulate.window_half_range` | `sqrt(ln 1000) lambda/(pi w0)` | 2.098, 1.399 and 0.350 mrad for 10, 15 and 60 A |
-| `simulate.max_specular_angle` | `arcsin(q_band lambda/2)`, `q_band = (2/3) min(Nyquist_x, Nyquist_y)` | 52.27 mrad at dx = 0.08; uses the y Nyquist too (correct for dy > dx) |
-| `simulate.plan_windows`, absolute grid | footprint + delay + rise at theta_low; theta on multiples of 0.02 mrad; `q = sin(theta)/lambda` | correct; x_ref = 0 for every terrace level, consistent with `terrace_ratio` |
-| `aggregate.terrace_ratio` | `arg(r_L/r_0) + 2 k sin(theta) h L` with h = 3.13553 A (Si(111)) or 1.35773 A (Si(001)) | correct (s13) |
-| `aggregate.strip_mean` | exact sinc kernel | correct (s4 c) |
-| `aggregate.angle_resolved_profile`, `image_from_spectrum` | A13, A11 | correct |
-| `aggregate.ensemble` | coherent average, standard error | correct; `diffuse_fraction_median` misinterpreted (F-M1) |
-| `aggregate.aggregate_steps` | A9 coherent average for frozen phonons | not formed (F-m4) |
-
-Plan-level numbers (s12): 36 + 172 + 1,892 + 867 = 2,967 tasks, maximum memory 17.4 GB, as in
-docs/08 section 4. The highest rocking window edge is 46.60 mrad, 89 percent of the 52.27 mrad band
-limit. **F-N7 (Nit, docs/08 section 1):** "2.5 to 10 um long: 13,000 to 96,000 atomic planes" does
-not match the planner. Planned lengths are 1.50 to 7.78 um in rocking (7,835 to 57,113 planes) and
-2.84 to 18.44 um in steps (14,797 to 96,020 planes). The adaptive cap allows 4 times that.
-**F-N4 (Nit):** sections 3.1 and A12 state the adaptive stop as "1e-4 of its peak ... cap at 2.5
-times". Those are the smoke values; production uses tail_tol 1e-5 and cap 4, as section 4 says.
-**F-N5 (Nit):** section 3.1 says r is "referred to the outermost atomic plane". The code refers every
-terrace to x = 0, the level-0 outermost sheet, which is what the terrace-ratio formula requires.
-**F-N6 (Nit):** A12 quotes an observed beam-to-beam difference of 6.7e-4 at the 15 mrad resonance,
-section 3.3 quotes 7.7e-4, and section 3.3's "stays within ... the excess beyond it is 1.1e-5"
-contradicts itself (a positive excess is not "within").
 
 ## 14. A13, angle-resolved response of steps parallel to the beam (s4, s11, s12, s14)
 
@@ -984,3 +889,488 @@ numerical averaging) and removes rods exactly for whole periods (s4 c). (iv) Wit
 for the specular rise only (s4 a), the rods leaving at 4 to 8 mrad had not finished crossing the
 detector, and flux was violated by up to 22 percent.
 
+### 14 (addendum). Near-grazing lateral components and the repository's strip means (s11 b, s18)
+
+s11(b) marches the stepped Fermi surface (20 A terraces, 13 mrad, W = 2 V) to 3.5 times the
+repository's planned length and applies the repository's own `analysis.vdp_angle_resolved` and
+`aggregate.strip_mean` to the record stopped at the planned length and at the full length. Exit
+elevations below a threshold are optionally masked. s18 lists, for every steps-parallel angle, the
+lowest exit elevation that survives the `spectrum_qy_max_mrad = 15` column cap of `simulate.py`.
+
+```
+(b) stepped Fermi surface, Ly = 40 A, theta0 = 13 mrad, w0 = 6 A, W_in = 2 V
+   planned length (repository formula) 16452 A = 8569 planes; marched 29991 planes in 701 s
+/home/user/Holography/reflection_holo/analysis.py:129: RuntimeWarning: divide by zero encountered in divide
+  U = (G2 * e2 - G1 * e1) / (e2**2 - e1**2)
+/home/user/Holography/reflection_holo/analysis.py:130: RuntimeWarning: divide by zero encountered in divide
+  D = (G2 / e2 - G1 / e1) / (1 / e2**2 - 1 / e1**2)
+   planned length  mask elev < 0.00 mrad: max|<r>_0/r_flat-1| = 5.269e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 6.688e-02, max|residual| = 1.917e-02 rad
+   planned length  mask elev < 1.25 mrad: max|<r>_0/r_flat-1| = 5.196e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 6.688e-02, max|residual| = 1.884e-02 rad
+   planned length  mask elev < 3.00 mrad: max|<r>_0/r_flat-1| = 5.179e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 6.688e-02, max|residual| = 1.736e-02 rad
+   planned length  mask elev < 6.00 mrad: max|<r>_0/r_flat-1| = 5.723e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 5.915e-02, max|residual| = 1.769e-02 rad
+   3.5 x planned   mask elev < 0.00 mrad: max|<r>_0/r_flat-1| = 8.848e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 7.784e-02, max|residual| = 7.611e-02 rad
+   3.5 x planned   mask elev < 1.25 mrad: max|<r>_0/r_flat-1| = 8.848e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 7.465e-02, max|residual| = 7.611e-02 rad
+   3.5 x planned   mask elev < 3.00 mrad: max|<r>_0/r_flat-1| = 6.262e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 7.006e-02, max|residual| = 1.876e-02 rad
+   3.5 x planned   mask elev < 6.00 mrad: max|<r>_0/r_flat-1| = 5.634e-02, max|<r>_1/(r_flat e^-2iKh)-1| = 5.809e-02, max|residual| = 1.748e-02 rad
+   strip mean change between planned and 3.5x length: unmasked 5.974e-02, masked (<3 mrad) 3.345e-02 (relative to max|r|)
+  CHECK PASS: (b) near-grazing truncation changes the unmasked strip mean by more than the masked one 
+
+SUMMARY: 2 of 2 checks passed
+exit 0
+
+ theta (mrad)   lowest included exit elevation (mrad)
+     9.0            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    10.0            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    11.0            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    12.0            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    13.0            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    13.3            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    14.0            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    15.0            0.00     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    16.0            5.57     near-grazing components INCLUDED (truncated below ~4-6 mrad)
+    16.2            6.12     
+    17.0            8.00     
+    17.9            9.77     
+    18.0            9.95     
+    19.0           11.66     
+    20.0           13.23     
+    21.0           14.70     
+    22.0           16.09     
+    23.0           17.43     
+    24.0           18.73     
+    25.0           20.00     
+    26.0           21.23     
+    26.3           21.60     
+    26.5           21.84     
+    27.0           22.45     
+    28.0           23.64     
+    29.0           24.82     
+    30.0           25.98     
+    30.6           26.67     
+    31.0           27.13     
+    32.0           28.26     
+affected step angles: [9, 10, 11, 12, 13, 13.3, 14, 15, 16]
+```
+
+**Finding F-M2 (Major, category (a): post-processing only).** Read unmasked, as `aggregate_steps`
+uses it, the steps-parallel analysis depends on the arbitrary cell length. In the toy the strip-mean
+step residual is 1.9e-2 rad at the planned length and 7.6e-2 rad at 3.5 times that length (strip
+means move by 6.0e-2 of max|r|). That is comparable to the 0.1 rad acceptance criterion of docs/05.
+The cause is lateral components leaving at low elevation. They need `x_det/tan(theta_x)` of z to
+reach the detector, but the cell is planned for the specular rise only and the adaptive stop watches
+only qy = 0. In production, components below 3.9 to 6.2 mrad are incomplete (s12). They are also
+ill-conditioned in the two-line separation, since `vdp_angle_resolved` masks only K_x = 0. With
+components below 3 mrad masked, the result no longer depends on the cell length (1.7e-2 against
+1.9e-2 rad); with 6 mrad masked, 1.77e-2 against 1.75e-2 rad.
+
+The column cap |qy| lambda <= 15 mrad already excludes these components for theta >= 16.2 mrad. The
+affected production angles are 9, 10, 11, 12, 13, 13.3, 14, 15 and 16 mrad of the steps-parallel
+scans of all four step types, including the Si(111) (4,-4,4) condition at 13.3 mrad, and the
+terrace-width series at 13.3 mrad. These components lie 7 to 13 mrad from the specular direction, so
+no objective aperture collects them, and the hologram observable does not contain them.
+
+Fix, post-processing: before forming strip means, zero `ar_rho` where the exit elevation
+`arcsin(sqrt(K^2 - (2 pi qy)^2)/k)` is below the fully recorded threshold of the task (s12, at least
+about 6 mrad). Better, restrict qy to an objective aperture, as the transverse-step images already
+do. `ar_rho`, `ar_qy` and `ar_theta` are stored, so no GPU run has to change. Only if the full-band
+r(y; theta), including components outside any aperture, were wanted would the cells need to be
+planned for the lowest elevation and the stop criterion extended to all qy (category b). I do not
+recommend that.
+
+## 15. Comparison with the implementation (read after the derivations; s10, s12, s13)
+
+The code was read at d404587. `git diff d404587 HEAD` is empty for `reflection_holo/`, `configs/` and
+docs/08, because later commits on the branch touch only `docs/agent_reports/`. s10 imports
+`reflection_holo` read-only and applies its functions to the independent toy records of s3 and s8.
+
+```
+repo constants: lambda 0.0250793405 A, k 250.532318, sigma 7.288401e-04, MIP kirkland 13.9028 V, lobato 13.9548 V, theta_c(12 V) 8.356 mrad
+  CHECK PASS: repo lambda = 0.025079340 A 
+  CHECK PASS: repo sigma = 7.288401e-4 
+  CHECK PASS: repo MIP 13.903 / 13.955 V 
+   repo SpecularCondition (n=4, 13.90 V): theta_ext 13.2301 mrad (s1 Schroedinger: 13.2301)
+  CHECK PASS: repo Bragg n=4 matches s1 to 2 urad 
+   repo SpecularCondition (n=5, 13.90 V): theta_ext 17.8606 mrad (s1 Schroedinger: 17.8606)
+  CHECK PASS: repo Bragg n=5 matches s1 to 2 urad 
+   repo SpecularCondition (n=8, 13.90 V): theta_ext 30.7086 mrad (s1 Schroedinger: 30.7086)
+  CHECK PASS: repo Bragg n=8 matches s1 to 2 urad 
+   repo step phase h=3.1355 A at 13.231 mrad: -20.7865 rad (s0: -20.7865)
+  CHECK PASS: repo signed specular step phase 
+   repo max_specular_angle(dx=0.08): 52.272 mrad; window_half_range(w0=10) 2.098 mrad, (15) 1.399, (60) 0.350
+  CHECK PASS: max specular angle 52.27 mrad 
+   repo delay_allowance_A(W=0.5, n=7): (19208.60271175074, True)
+  CHECK PASS: delay allowance 19,209 A 
+repo vdp_reflectivity on the s3 toy record: max |r_repo/r_Parratt - 1| = 1.68e-04; max |D/A| = 1.6e-07
+  CHECK PASS: repo vdp_reflectivity reproduces Parratt on the toy record (< 1e-3) 
+repo parratt(multislice) vs my Parratt(MS): max rel 1.42e-05
+  CHECK PASS: repo parratt = my parratt (< 1e-4 rel; layering differs slightly) 
+repo truncation_bound at the planned length: max 3.98e-05 (rho 0.683); true truncation error max 2.97e-06
+  CHECK PASS: repo truncation_bound equals the s8 estimate (4.0e-5) within 5% 
+repo absorber_profile: W(-230) = 40.00 V, W(-130) = 0.00e+00, W(-180) = 5.000 (40*(0.5)^3 = 5.0), W(140.08) = 3.37e-20, W(200.08) = 40.00
+  CHECK PASS: absorber ramps: cubic, zero at inner edges, 40 V at the cell edges 
+
+SUMMARY: 13 of 13 checks passed
+
+si111_110 h_unit = 3.13553 A periods (x,y,z) = ['9.4066', '6.6515', '3.8402'] planes per z period: 2 slice 1.92011
+si001_110 h_unit = 1.35773 A periods (x,y,z) = ['5.4309', '3.8402', '3.8402'] planes per z period: 2 slice 1.92011
+si001_100 h_unit = 1.35773 A periods (x,y,z) = ['5.4309', '5.4309', '5.4309'] planes per z period: 4 slice 1.35773
+
+validation: 36 tasks; planned planes 3430 .. 37268; planned cell length 0.66 .. 7.16 um; cap planes max 149072; memory max 0.7 GB  (0 s)
+convergence: 172 tasks; planned planes 15828 .. 21545; planned cell length 3.04 .. 4.14 um; cap planes max 86178; memory max 7.5 GB  (5 s)
+rocking: 1892 tasks; planned planes 7835 .. 57113; planned cell length 1.50 .. 7.78 um; cap planes max 228449; memory max 16.0 GB  (46 s)
+steps: 867 tasks; planned planes 14797 .. 96020; planned cell length 2.84 .. 18.44 um; cap planes max 384080; memory max 17.4 GB  (117 s)
+total tasks: 2967
+rocking: highest window edge 46.60 mrad (band limit 52.27 mrad at dx = 0.08 A; 89 percent)
+
+steps parallel (static): surface, levels, Ly, theta0, x_det, planned z_end, lowest fully recorded elevation, q, |qy| above which truncated, number of truncated qy columns, strip length, |sinc| at the cut
+  si111_110 (0, 1) Ly=199.5 th0=  9.0 x_det=153.9 z_end=55873 th_min=3.90 mrad q=0.359 qy_cut=0.323 cols=14 L=46.6 |sinc|=0.004
+  si111_110 (0, 1) Ly=199.5 th0= 14.0 x_det=149.9 z_end=41520 th_min=4.82 mrad q=0.558 qy_cut=0.524 cols=14 L=46.6 |sinc|=0.012
+  si111_110 (0, 1) Ly=199.5 th0= 20.0 x_det=148.6 z_end=34450 th_min=5.47 mrad q=0.797 qy_cut=0.767 cols=12 L=46.6 |sinc|=0.007
+  si111_110 (0, 1) Ly=199.5 th0= 26.0 x_det=148.1 z_end=30796 th_min=5.87 mrad q=1.037 qy_cut=1.010 cols=10 L=46.6 |sinc|=0.000
+  si111_110 (0, 1) Ly=199.5 th0= 30.6 x_det=147.8 z_end=28999 th_min=6.10 mrad q=1.220 qy_cut=1.195 cols=10 L=46.6 |sinc|=0.005
+  si001_110 (0, 1) Ly=199.7 th0= 12.0 x_det=148.4 z_end=45201 th_min=4.47 mrad q=0.478 qy_cut=0.444 cols=14 L=49.9 |sinc|=0.007
+  si001_110 (0, 1) Ly=199.7 th0= 17.0 x_det=146.7 z_end=37024 th_min=5.13 mrad q=0.678 qy_cut=0.646 cols=12 L=49.9 |sinc|=0.007
+  si001_110 (0, 1) Ly=199.7 th0= 23.0 x_det=145.9 z_end=32165 th_min=5.63 mrad q=0.917 qy_cut=0.889 cols=12 L=49.9 |sinc|=0.007
+  si001_110 (0, 1) Ly=199.7 th0= 28.0 x_det=145.6 z_end=29771 th_min=5.91 mrad q=1.116 qy_cut=1.091 cols=10 L=49.9 |sinc|=0.006
+  si001_110 (0, 2) Ly=199.7 th0= 10.0 x_det=151.5 z_end=51439 th_min=4.12 mrad q=0.399 qy_cut=0.363 cols=14 L=49.9 |sinc|=0.007
+  si001_110 (0, 2) Ly=199.7 th0= 16.0 x_det=148.3 z_end=38401 th_min=5.05 mrad q=0.638 qy_cut=0.605 cols=14 L=49.9 |sinc|=0.007
+  si001_110 (0, 2) Ly=199.7 th0= 21.0 x_det=147.5 z_end=33596 th_min=5.52 mrad q=0.837 qy_cut=0.808 cols=12 L=49.9 |sinc|=0.007
+  si001_110 (0, 2) Ly=199.7 th0= 26.3 x_det=147.1 z_end=30586 th_min=5.86 mrad q=1.049 qy_cut=1.022 cols=10 L=49.9 |sinc|=0.001
+  si001_110 (0, 2) Ly=199.7 th0= 32.0 x_det=146.9 z_end=28499 th_min=6.12 mrad q=1.276 qy_cut=1.252 cols=8 L=49.9 |sinc|=0.005
+  si001_100 (0, 1) Ly=200.9 th0= 14.0 x_det=147.5 z_end=41159 th_min=4.77 mrad q=0.558 qy_cut=0.525 cols=14 L=48.9 |sinc|=0.011
+  si001_100 (0, 1) Ly=200.9 th0= 19.0 x_det=146.4 z_end=35042 th_min=5.32 mrad q=0.758 qy_cut=0.727 cols=12 L=48.9 |sinc|=0.009
+  si001_100 (0, 1) Ly=200.9 th0= 25.0 x_det=145.8 z_end=31087 th_min=5.75 mrad q=0.997 qy_cut=0.970 cols=12 L=48.9 |sinc|=0.006
+  si001_100 (0, 1) Ly=200.9 th0= 30.0 x_det=145.6 z_end=29044 th_min=6.00 mrad q=1.196 qy_cut=1.172 cols=10 L=48.9 |sinc|=0.004
+  si111_110 (0, 1) Ly=99.8 th0= 20.0 x_det=148.6 z_end=34450 th_min=5.47 mrad q=0.797 qy_cut=0.767 cols=6 L=20.0 |sinc|=0.017
+  si001_110 (0, 1) Ly=399.4 th0= 21.0 x_det=146.1 z_end=33459 th_min=5.48 mrad q=0.837 qy_cut=0.808 cols=24 L=145.9 |sinc|=0.000
+  si111_110 (0, 1) Ly=399.1 th0= 26.5 x_det=148.0 z_end=30569 th_min=5.90 mrad q=1.057 qy_cut=1.030 cols=20 L=146.3 |sinc|=0.002
+  si001_110 (0, 1) Ly=399.4 th0= 16.2 x_det=146.9 z_end=37965 th_min=5.05 mrad q=0.646 qy_cut=0.614 cols=24 L=145.9 |sinc|=0.003
+  si001_110 (0, 1) Ly=399.4 th0= 21.0 x_det=146.1 z_end=33459 th_min=5.48 mrad q=0.837 qy_cut=0.808 cols=24 L=145.9 |sinc|=0.000
+lowest fully recorded exit elevation over all 115 static parallel-step tasks: 3.87 .. 6.15 mrad
+```
+
+| Function | Derivation it must implement | Verdict |
+|---|---|---|
+| `constants.wavelength_A`, `k_rad_per_A`, `interaction_constant` | s0 | identical to 1e-12 (s10) |
+| `constants.refraction_delta`, `E_eff_V` | exact relativistic `Delta = V0/E_eff`; equals `2 sigma V0/k` to 1e-5 | correct |
+| `geometry.theta_int_from_ext`, `SpecularCondition` | `K_int = pi n/d`, `K_ext^2 = K_int^2 - dK^2` | correct; Bragg angles equal s1 to 1e-7 |
+| `geometry.specular_step_phase` | `-2 h k sin(theta_ext)` (signed) | correct |
+| `potential.scattering_factor`, `mean_inner_potential` | A7 | 13.9028 V and 13.9548 V, identical to s0 |
+| `potential.PotentialBuilder.projected` | `c(q) = 2 pi a0 e f_e(q) D(q)/(Lx Ly) sum_j e^{-2 pi i q.r_j}`, 2/3 band, `D = exp(-B q^2/4)` | correct |
+| `potential.PotentialBuilder.transmission` | `exp(i sigma v - sigma (alpha v + W dz))`, band-limited after exponentiation | correct (attractive v advances the phase, as exp(+ik.r) requires) |
+| `potential.absorber_profile` | cubic ramps, 0 at the inner edges, W_max at the cell edges | correct (s10). Docstring "below 2e-5 ... at all angles above 3 mrad" is 5.3e-5 at 3.0 mrad (F-N3) |
+| `beams.kz_minus_k`, `multislice.Propagator` | `exp(i (kz - k) dz)`, written without cancellation | correct sign and form |
+| `multislice.run_multislice` | symmetric splitting, record at z_p | full propagation between plane centres with T at each plane is the Strang scheme; record after T at z_p, consistent with the z_p used in the FT |
+| `beams.GaussianSheetBeam.spectrum`, `entrance_wave` | grid coefficient a(q), q0 = -sin(theta0)/lambda, exact back-propagation from the waist | correct |
+| `simulate` (A_neg) | `A(-q) = L_x a(-q)`, analytic | `grid.Lx * beam.spectrum(-q)`: correct |
+| `analysis.kz_of_q`, `updown`, `vdp_reflectivity` | A3 | correct; on the s3 toy record it reproduces Parratt to 1.68e-4, identical to my extraction |
+| `analysis.vdp_spectrum` | U(kappa, qy) with absolute-z phases, 1/Ny, dz | correct; aliases kappa > 0 to kappa - 2 pi/dz (harmless, physical kappa <= 0); zeroes components below about 1.25 mrad elevation |
+| `analysis.truncation_bound` | A12 | identical to my estimate (3.98e-5 at the s8 planned length; true error 2.97e-6) |
+| `analysis.vdp_angle_resolved` | A13 | formula correct (incident Jacobian, K_x(qy) in the separation); near-grazing components are not masked (only K_x = 0); see section 14 and F-M2 |
+| `reference1d.K_profile`, `parratt`, `transfer_matrix`, `layers_from_profile` | A1, A2 | correct; repo Parratt equals mine to 1.4e-5 (different layering) |
+| `reference1d.fermi_step_R` | closed form | correct; the docs/08 value 2.3597e-5 is not produced by it at the stated parameters (F-m1) |
+| `simulate.delay_allowance_A` | `n/(sigma W)` | 19,208.6 A (s10) |
+| `simulate.window_half_range` | `sqrt(ln 1000) lambda/(pi w0)` | 2.098, 1.399 and 0.350 mrad for 10, 15 and 60 A |
+| `simulate.max_specular_angle` | `arcsin(q_band lambda/2)`, `q_band = (2/3) min(Nyquist_x, Nyquist_y)` | 52.27 mrad at dx = 0.08; uses the y Nyquist too (correct for dy > dx) |
+| `simulate.plan_windows`, absolute grid | footprint + delay + rise at theta_low; theta on multiples of 0.02 mrad; `q = sin(theta)/lambda` | correct; x_ref = 0 for every terrace level, consistent with `terrace_ratio` |
+| `aggregate.terrace_ratio` | `arg(r_L/r_0) + 2 k sin(theta) h L` with h = 3.13553 A (Si(111)) or 1.35773 A (Si(001)) | correct (s13) |
+| `aggregate.strip_mean` | exact sinc kernel | correct (s4 c) |
+| `aggregate.angle_resolved_profile`, `image_from_spectrum` | A13, A11 | correct |
+| `aggregate.ensemble` | coherent average, standard error | correct; `diffuse_fraction_median` misinterpreted (F-M1) |
+| `aggregate.aggregate_steps` | A9 coherent average for frozen phonons | not formed (F-m4) |
+
+Plan-level numbers (s12): 36 + 172 + 1,892 + 867 = 2,967 tasks, maximum memory 17.4 GB, as in
+docs/08 section 4. The highest rocking window edge is 46.60 mrad, 89 percent of the 52.27 mrad band
+limit. **F-N7 (Nit, docs/08 section 1):** "2.5 to 10 um long: 13,000 to 96,000 atomic planes" does
+not match the planner. Planned lengths are 1.50 to 7.78 um in rocking (7,835 to 57,113 planes) and
+2.84 to 18.44 um in steps (14,797 to 96,020 planes). The adaptive cap allows 4 times that.
+**F-N4 (Nit):** sections 3.1 and A12 state the adaptive stop as "1e-4 of its peak ... cap at 2.5
+times". Those are the smoke values; production uses tail_tol 1e-5 and cap 4, as section 4 says.
+**F-N5 (Nit):** section 3.1 says r is "referred to the outermost atomic plane". The code refers every
+terrace to x = 0, the level-0 outermost sheet, which is what the terrace-ratio formula requires.
+**F-N6 (Nit):** A12 quotes an observed beam-to-beam difference of 6.7e-4 at the 15 mrad resonance,
+section 3.3 quotes 7.7e-4, and section 3.3's "stays within ... the excess beyond it is 1.1e-5"
+contradicts itself (a positive excess is not "within").
+
+## 16. Findings other than the validation gate
+
+Confirmed correct, derived independently and checked against the implementation:
+- A1, multislice dispersion and refraction;
+- A2, Parratt recursion, reference plane and boundary condition;
+- A3, the virtual-detector reflectivity: every factor of 2 pi, the Jacobian `2 pi q/kz`, `A = L_x a`,
+  the two-line up/down separation and the sign of `exp(+4 pi i q x_ref)`;
+- A4, the delay `n/(sigma W)` = 19,209 A for n = 7;
+- A5, the absorber attenuation exponents;
+- A6, the translation null tests and the Si(001) [100] symmetry argument;
+- A7, 13.90 and 13.95 V;
+- A8, 52.3 and 42.8 mrad as hard limits;
+- A10, 137 nm;
+- A11, the image formula;
+- A12, the continuation formula as an estimate;
+- A13, the plane-wave response with the incident-component Jacobian (flux conserved to 2e-3) and the
+  exact sinc strip mean;
+- the 200 keV constants (lambda = 0.02507934 A, sigma = 7.2884e-4 rad/(V A)), the signed specular
+  step phase, the refraction formula and the Bragg conditions.
+
+**F-M1 (Major, category (a), post-processing only)**: the A9 diffuse fraction is beam- and
+cell-dependent; see section 12.
+
+**F-M2 (Major, category (a), post-processing only)**: in the steps-parallel strip means at 9 to
+16 mrad, near-grazing lateral components make the step residual depend on the cell length (1.9e-2
+against 7.6e-2 rad in the toy). Mask exit elevations below about 6 mrad, or restrict to an
+objective aperture; see the section 14 addendum.
+
+**F-m1 (Minor, documentation)**: docs/08 section 3.2's closed-form value 2.3597e-5 is not
+reproduced at the stated parameters: 2.3357e-5 (Schroedinger K) or 2.3353e-5 (multislice K). The
+repository's `fermi_step_R` is correct (section 3).
+
+**F-m2 (Minor)**: accuracy degrades before the band limit, depends only on dx, and the convergence
+stage tests sampling only up to 30.6 mrad. The rocking points above about 38 mrad, including Si(111)
+(11,-11,11) at 43.08 mrad and Si(001) (0,0,20) at 45.31 mrad, carry relative errors of a few 1e-3
+(sections 5 and 17). That should be stated with them, or checked by a dx = 0.0664 A run at 44.5 mrad.
+
+**F-m3 (Minor)**: `r_truncation_bound` is an estimate, not a bound. It undershoots by up to about 100
+for multi-component tails or segments reaching into the main pulse, and overshoots by up to
+`(1+rho)/(1-rho)`. Subtracting it in the comparisons is lenient where it overshoots (section 11).
+
+**F-m4 (Minor, category (a))**: `aggregate_steps` never forms the coherent average over the 32
+frozen-phonon seeds. 448 of the 867 steps tasks are frozen-phonon step runs, and their per-seed
+"null tests" are made against static references (section 12).
+
+**F-m5 (Minor, wording)**: three wording issues, none with a numerical consequence:
+- A9's attenuation statement holds only relative to the Debye-Waller static run;
+- A13 calls the structure z-invariant, but it is z-periodic (kappa is conserved modulo 2 pi/P_z; the
+  first Laue zone of the [100] azimuth lies inside the band below 41.4 mrad but cannot enter the
+  analysis, s14);
+- A6 omits the d-glides as a second relation between L and L+1 (same conclusion).
+
+**Nits (documentation)**:
+- F-N1: window centres called Bragg conditions differ by up to 0.11 mrad from the 13.90 V values.
+- F-N2: one historical absorber value (2.6e-6, not 1.6e-6).
+- F-N3: the absorber scan range and the "below 2e-5" claim; 5.3e-5 at 3.0 mrad.
+- F-N4: section 3.1 and A12 quote the smoke adaptive-stop values (1e-4, 2.5 times) instead of the
+  production ones (1e-5, 4 times).
+- F-N5: "referred to the outermost atomic plane" means x = 0 for every level.
+- F-N6: section 3.3 and A12 give inconsistent resonance numbers.
+- F-N7: section 1's cell-length and plane-count ranges do not match the planner.
+
+## 17. Preview of the validation gate at production numerics (s16, s17)
+
+The Fermi-step (rung 1) and laterally averaged (rung 2) tasks are one pixel wide, so the repository's
+own production validation tasks (`campaign.build(cfg, "validation")`, dx = 0.08 A, Nx = 5376,
+complex128, all production numerics) can be run on CPU with the numpy backend. s16 does this and
+applies `aggregate.check_reference` with `configs/benchmarks.yaml`, exactly as the Fir validation
+job does (`fir/run_stage.sbatch` lines 77 to 83: the job exits with "validation ladder FAILED" if
+`all_pass` is false, and convergence, rocking and steps depend on it through `afterok`). The
+selftest asserts numpy/CuPy agreement to 1e-9, so the GPU verdicts must match these.
+
+```
+rung1: 20 tasks
+  width 0.05 A W 0.00 V    6.0 mrad: max|dr| 1.97e-05  max rel 8.75e-05  phase beyond bound 7.72e-05 rad  bound 5.1e-06  tail 9.4e-06  MS-vs-Schr 2.9e-05  amp PASS phase PASS  (40 s)
+  width 0.05 A W 0.00 V   13.0 mrad: max|dr| 1.42e-05  max rel 1.86e-04  phase beyond bound 1.86e-04 rad  bound 1.3e-12  tail 2.5e-08  MS-vs-Schr 1.0e-04  amp PASS phase PASS  (25 s)
+  width 0.05 A W 0.00 V   20.0 mrad: max|dr| 9.44e-06  max rel 3.21e-04  phase beyond bound 3.21e-04 rad  bound 1.6e-17  tail 2.4e-09  MS-vs-Schr 2.2e-04  amp PASS phase PASS  (21 s)
+  width 0.05 A W 0.00 V   30.0 mrad: max|dr| 6.76e-06  max rel 8.31e-04  phase beyond bound 7.20e-04 rad  bound 6.9e-17  tail 6.6e-11  MS-vs-Schr 4.8e-04  amp PASS phase PASS  (14 s)
+  width 0.05 A W 0.00 V   40.0 mrad: max|dr| 1.06e-05  max rel 3.69e-03  phase beyond bound 2.48e-03 rad  bound 7.2e-23  tail 8.6e-12  MS-vs-Schr 8.3e-04  amp FAIL phase PASS  (10 s)
+  width 0.05 A W 0.50 V    6.0 mrad: max|dr| 1.82e-05  max rel 8.43e-05  phase beyond bound 7.39e-05 rad  bound 4.1e-06  tail 4.5e-08  MS-vs-Schr 2.9e-05  amp PASS phase PASS  (36 s)
+  width 0.05 A W 0.50 V   13.0 mrad: max|dr| 1.40e-05  max rel 1.86e-04  phase beyond bound 1.85e-04 rad  bound 2.3e-09  tail 9.7e-10  MS-vs-Schr 1.0e-04  amp PASS phase PASS  (25 s)
+  width 0.05 A W 0.50 V   20.0 mrad: max|dr| 9.37e-06  max rel 3.20e-04  phase beyond bound 3.20e-04 rad  bound 3.3e-14  tail 3.7e-14  MS-vs-Schr 2.2e-04  amp PASS phase PASS  (25 s)
+  width 0.05 A W 0.50 V   30.0 mrad: max|dr| 6.76e-06  max rel 8.33e-04  phase beyond bound 7.18e-04 rad  bound 6.0e-15  tail 5.0e-14  MS-vs-Schr 4.8e-04  amp PASS phase PASS  (22 s)
+  width 0.05 A W 0.50 V   40.0 mrad: max|dr| 1.06e-05  max rel 3.70e-03  phase beyond bound 2.48e-03 rad  bound 4.2e-15  tail 1.4e-13  MS-vs-Schr 8.3e-04  amp FAIL phase PASS  (22 s)
+  width 0.2 A  W 0.00 V    6.0 mrad: max|dr| 5.84e-06  max rel 4.97e-05  phase beyond bound 3.71e-05 rad  bound 2.6e-06  tail 1.1e-05  MS-vs-Schr 1.9e-05  amp PASS phase PASS  (35 s)
+  width 0.2 A  W 0.00 V   13.0 mrad: max|dr| 1.54e-06  max rel 1.46e-04  phase beyond bound 1.45e-04 rad  bound 1.6e-13  tail 2.7e-08  MS-vs-Schr 7.4e-05  amp PASS phase PASS  (18 s)
+  width 0.2 A  W 0.00 V   20.0 mrad: max|dr| 3.47e-07  max rel 3.56e-04  phase beyond bound 3.52e-04 rad  bound 4.5e-19  tail 2.6e-09  MS-vs-Schr 1.8e-04  amp PASS phase PASS  (20 s)
+  width 0.2 A  W 0.00 V   30.0 mrad: max|dr| 3.29e-08  max rel 1.05e-03  phase beyond bound 0.00e+00 rad  bound 3.5e-19  tail 1.8e-10  MS-vs-Schr 4.1e-04  amp PASS phase PASS  (12 s)
+  width 0.2 A  W 0.00 V   40.0 mrad: max|dr| 4.69e-08  max rel 8.11e-02  phase beyond bound 0.00e+00 rad  bound 4.0e-21  tail 1.4e-08  MS-vs-Schr 7.5e-04  amp PASS phase PASS  (16 s)
+
+W = 0.0 V, dx = 0.0800 A: max rel 3.69e-03, phase 2.48e-03 rad, amp FAIL; window 38.62..41.38 mrad; failing points: 57 at [40.16, 40.18, 40.2, 40.22, 40.24, 40.36] ...
+     theta 38.62 mrad: |r - r_P|/|r_P| = 2.26e-03
+     theta 38.86 mrad: |r - r_P|/|r_P| = 2.32e-03
+     theta 39.10 mrad: |r - r_P|/|r_P| = 2.39e-03
+     theta 39.34 mrad: |r - r_P|/|r_P| = 2.47e-03
+     theta 39.58 mrad: |r - r_P|/|r_P| = 2.56e-03
+     theta 39.82 mrad: |r - r_P|/|r_P| = 2.65e-03
+     theta 40.06 mrad: |r - r_P|/|r_P| = 2.76e-03
+     theta 40.30 mrad: |r - r_P|/|r_P| = 2.88e-03
+     theta 40.54 mrad: |r - r_P|/|r_P| = 3.02e-03
+     theta 40.78 mrad: |r - r_P|/|r_P| = 3.18e-03
+     theta 41.02 mrad: |r - r_P|/|r_P| = 3.34e-03
+     theta 41.26 mrad: |r - r_P|/|r_P| = 3.52e-03
+W = 0.0 V, dx = 0.0664 A: max rel 1.07e-03, phase 9.32e-04 rad, amp PASS; window 38.62..41.38 mrad; failing points: 0 at []
+     theta 38.62 mrad: |r - r_P|/|r_P| = 8.22e-04
+     theta 38.86 mrad: |r - r_P|/|r_P| = 8.42e-04
+     theta 39.10 mrad: |r - r_P|/|r_P| = 8.64e-04
+     theta 39.34 mrad: |r - r_P|/|r_P| = 8.89e-04
+     theta 39.58 mrad: |r - r_P|/|r_P| = 9.15e-04
+     theta 39.82 mrad: |r - r_P|/|r_P| = 9.41e-04
+     theta 40.06 mrad: |r - r_P|/|r_P| = 9.67e-04
+     theta 40.30 mrad: |r - r_P|/|r_P| = 9.92e-04
+     theta 40.54 mrad: |r - r_P|/|r_P| = 1.02e-03
+     theta 40.78 mrad: |r - r_P|/|r_P| = 1.04e-03
+     theta 41.02 mrad: |r - r_P|/|r_P| = 1.05e-03
+     theta 41.26 mrad: |r - r_P|/|r_P| = 1.07e-03
+W = 0.5 V, dx = 0.0800 A: max rel 3.70e-03, phase 2.48e-03 rad, amp FAIL; window 38.62..41.38 mrad; failing points: 58 at [40.14, 40.16, 40.18, 40.2, 40.22, 40.24] ...
+     theta 38.62 mrad: |r - r_P|/|r_P| = 2.27e-03
+     theta 38.86 mrad: |r - r_P|/|r_P| = 2.33e-03
+     theta 39.10 mrad: |r - r_P|/|r_P| = 2.40e-03
+     theta 39.34 mrad: |r - r_P|/|r_P| = 2.48e-03
+     theta 39.58 mrad: |r - r_P|/|r_P| = 2.56e-03
+     theta 39.82 mrad: |r - r_P|/|r_P| = 2.66e-03
+     theta 40.06 mrad: |r - r_P|/|r_P| = 2.77e-03
+     theta 40.30 mrad: |r - r_P|/|r_P| = 2.89e-03
+     theta 40.54 mrad: |r - r_P|/|r_P| = 3.03e-03
+     theta 40.78 mrad: |r - r_P|/|r_P| = 3.19e-03
+     theta 41.02 mrad: |r - r_P|/|r_P| = 3.35e-03
+     theta 41.26 mrad: |r - r_P|/|r_P| = 3.54e-03
+W = 0.5 V, dx = 0.0664 A: max rel 1.07e-03, phase 9.33e-04 rad, amp PASS; window 38.62..41.38 mrad; failing points: 0 at []
+     theta 38.62 mrad: |r - r_P|/|r_P| = 8.18e-04
+     theta 38.86 mrad: |r - r_P|/|r_P| = 8.37e-04
+     theta 39.10 mrad: |r - r_P|/|r_P| = 8.60e-04
+     theta 39.34 mrad: |r - r_P|/|r_P| = 8.84e-04
+     theta 39.58 mrad: |r - r_P|/|r_P| = 9.10e-04
+     theta 39.82 mrad: |r - r_P|/|r_P| = 9.36e-04
+     theta 40.06 mrad: |r - r_P|/|r_P| = 9.63e-04
+     theta 40.30 mrad: |r - r_P|/|r_P| = 9.88e-04
+     theta 40.54 mrad: |r - r_P|/|r_P| = 1.01e-03
+     theta 40.78 mrad: |r - r_P|/|r_P| = 1.03e-03
+     theta 41.02 mrad: |r - r_P|/|r_P| = 1.05e-03
+     theta 41.26 mrad: |r - r_P|/|r_P| = 1.07e-03
+```
+
+**Finding F-B1, part 1: rung 1 (Blocker for the schedule, not for correctness; category (a): no
+simulation output changes; the complete statement follows the rung-2 results below).** The
+validation gate is predicted to fail. Rung 1 at 40 mrad with the 0.05 A Fermi width
+fails the amplitude criterion `|dr| <= max(3e-3 |r|, 1e-6) + bound`, for both W = 0 and W = 0.5 V:
+maximum relative error 3.69e-3 and 3.70e-3, with 57 and 58 points above about 40.1 mrad. The phase
+passes (2.48e-3 rad against 3e-3). The error is smooth and systematic. It rises from 2.3e-3 at
+38.6 mrad to 3.5e-3 at 41.3 mrad, and it falls to 0.8e-3 to 1.07e-3 when only the sampling is refined
+to dx = 0.0664 A at the same cell height, after which every point passes. It is the band-edge
+sampling error of section 5, not a defect of the code or of any derivation (2q/q_band = 0.79 at
+41.4 mrad). Consequence: `all_pass = False`, the validation job exits with an error, and convergence,
+rocking and steps never start, unless the operators act. Options, each a decision for the
+orchestrator and the user:
+1. Before the validation job aggregates, or after it fails: treat rung 1 at 40 mrad with the
+   0.05 A width as informational, or give the rung-1 amplitude tolerance an explicit band-edge
+   allowance justified by the dx convergence above. Then re-run
+   `python -m reflection_holo.aggregate --stage validation` on the existing results and resubmit
+   convergence, rocking and steps. Nothing has to be recomputed. `configs/benchmarks.yaml` says its
+   tolerances "must not be loosened to make a run pass", so this needs a recorded decision with this
+   evidence, not a silent edit.
+2. Alternatively, leave the gate as it is and accept that the production chain stops after
+   validation.
+Either way, the production rocking curves above about 38 mrad carry a sampling error of this order
+(2e-3 to 4e-3 relative for the sharpest test profile), which should be stated with them (F-m2).
+
+### 17 (continued). Rung 2 at production numerics (s16 rung2, s19, and my own toy s8b)
+
+```
+rung2: 6 tasks
+  si111_110    W 0.50 V   13.3 mrad: max|dr| 2.34e-04  max rel 4.34e-04  phase beyond bound 4.10e-04 rad  bound 2.8e-05  tail 9.8e-06  MS-vs-Schr 1.6e-03  amp PASS phase PASS  (141 s)
+  si111_110    W 0.50 V   20.0 mrad: max|dr| 1.78e-05  max rel 2.62e-02  phase beyond bound 7.01e-04 rad  bound 3.8e-08  tail 1.8e-06  MS-vs-Schr 1.2e-02  amp FAIL phase PASS  (141 s)
+  si111_110    W 0.50 V   26.5 mrad: max|dr| 2.31e-04  max rel 7.07e-04  phase beyond bound 6.68e-04 rad  bound 2.4e-06  tail 4.4e-06  MS-vs-Schr 8.0e-03  amp PASS phase PASS  (141 s)
+  si111_110    W 1.00 V   13.3 mrad: max|dr| 1.13e-04  max rel 3.17e-04  phase beyond bound 3.02e-04 rad  bound 6.0e-06  tail 2.5e-06  MS-vs-Schr 1.1e-03  amp PASS phase PASS  (113 s)
+  si111_110    W 1.00 V   20.0 mrad: max|dr| 1.75e-05  max rel 1.32e-02  phase beyond bound 7.02e-04 rad  bound 2.8e-08  tail 1.1e-06  MS-vs-Schr 6.1e-03  amp FAIL phase PASS  (113 s)
+  si111_110    W 1.00 V   26.5 mrad: max|dr| 8.38e-05  max rel 6.38e-04  phase beyond bound 4.24e-04 rad  bound 4.3e-06  tail 4.7e-06  MS-vs-Schr 4.8e-03  amp PASS phase PASS  (113 s)
+  si001_100    W 0.50 V   16.2 mrad: max|dr| 1.24e-04  max rel 2.48e-04  phase beyond bound 2.09e-04 rad  bound 1.9e-05  tail 1.3e-05  MS-vs-Schr 2.2e-03  amp PASS phase PASS  (144 s)
+  si001_100    W 0.50 V   21.0 mrad: max|dr| 4.09e-06  max rel 2.67e-04  phase beyond bound 1.66e-04 rad  bound 3.4e-13  tail 8.8e-13  MS-vs-Schr 2.8e-04  amp PASS phase PASS  (144 s)
+  si001_100    W 0.50 V   26.3 mrad: max|dr| 1.45e-04  max rel 4.19e-04  phase beyond bound 2.84e-04 rad  bound 4.8e-06  tail 9.2e-06  MS-vs-Schr 7.2e-03  amp PASS phase PASS  (144 s)
+  si001_100    W 1.00 V   16.2 mrad: max|dr| 5.64e-05  max rel 1.65e-04  phase beyond bound 1.26e-04 rad  bound 1.5e-05  tail 7.3e-06  MS-vs-Schr 1.6e-03  amp PASS phase PASS  (152 s)
+  si001_100    W 1.00 V   21.0 mrad: max|dr| 4.06e-06  max rel 2.66e-04  phase beyond bound 1.66e-04 rad  bound 4.6e-10  tail 1.3e-10  MS-vs-Schr 2.8e-04  amp PASS phase PASS  (152 s)
+  si001_100    W 1.00 V   26.3 mrad: max|dr| 6.51e-05  max rel 3.65e-04  phase beyond bound 1.61e-04 rad  bound 4.4e-06  tail 6.1e-06  MS-vs-Schr 4.5e-03  amp PASS phase PASS  (152 s)
+  si001_110    W 0.50 V   16.2 mrad: max|dr| 1.95e-04  max rel 3.66e-04  phase beyond bound 3.41e-04 rad  bound 3.0e-05  tail 9.2e-06  MS-vs-Schr 2.2e-03  amp PASS phase PASS  (153 s)
+  si001_110    W 0.50 V   21.0 mrad: max|dr| 3.84e-06  max rel 2.45e-04  phase beyond bound 1.87e-04 rad  bound 4.5e-13  tail 8.3e-13  MS-vs-Schr 2.8e-04  amp PASS phase PASS  (153 s)
+  si001_110    W 0.50 V   26.3 mrad: max|dr| 2.25e-04  max rel 6.28e-04  phase beyond bound 4.90e-04 rad  bound 6.9e-06  tail 7.7e-06  MS-vs-Schr 7.2e-03  amp PASS phase PASS  (153 s)
+  si001_110    W 1.00 V   16.2 mrad: max|dr| 9.27e-05  max rel 2.47e-04  phase beyond bound 2.31e-04 rad  bound 1.3e-05  tail 7.5e-06  MS-vs-Schr 1.6e-03  amp PASS phase PASS  (140 s)
+  si001_110    W 1.00 V   21.0 mrad: max|dr| 3.80e-06  max rel 2.44e-04  phase beyond bound 1.88e-04 rad  bound 5.0e-10  tail 1.2e-10  MS-vs-Schr 2.8e-04  amp PASS phase PASS  (140 s)
+  si001_110    W 1.00 V   26.3 mrad: max|dr| 9.13e-05  max rel 4.30e-04  phase beyond bound 2.94e-04 rad  bound 8.8e-06  tail 2.0e-06  MS-vs-Schr 4.5e-03  amp PASS phase PASS  (140 s)
+rung2 all pass: False
+exit 0
+
+dx = 0.0800 A, reference layering dx/16: max|dr| 1.78e-05, max rel 2.62e-02, amp FAIL, phase 7.01e-04 rad; |r| range 4.42e-04..3.11e-02; failing points 22
+     theta 18.62 mrad: |r_P| = 3.106e-02, |r - r_P| = 1.41e-05
+     theta 18.90 mrad: |r_P| = 2.005e-02, |r - r_P| = 4.71e-06
+     theta 19.18 mrad: |r_P| = 1.396e-02, |r - r_P| = 1.35e-05
+     theta 19.46 mrad: |r_P| = 1.011e-02, |r - r_P| = 7.68e-06
+     theta 19.74 mrad: |r_P| = 7.412e-03, |r - r_P| = 6.00e-06
+     theta 20.02 mrad: |r_P| = 5.341e-03, |r - r_P| = 1.17e-05
+     theta 20.30 mrad: |r_P| = 3.637e-03, |r - r_P| = 5.66e-06
+     theta 20.58 mrad: |r_P| = 2.058e-03, |r - r_P| = 7.59e-06
+     theta 20.86 mrad: |r_P| = 5.562e-04, |r - r_P| = 1.14e-05
+     theta 21.14 mrad: |r_P| = 1.732e-03, |r - r_P| = 4.02e-06
+dx = 0.0800 A, reference layering dx/32: max|dr| 1.51e-05, max rel 2.63e-02, amp FAIL, phase 6.87e-04 rad; |r| range 4.42e-04..3.11e-02; failing points 23
+     theta 18.62 mrad: |r_P| = 3.107e-02, |r - r_P| = 1.09e-05
+     theta 18.90 mrad: |r_P| = 2.005e-02, |r - r_P| = 4.62e-06
+     theta 19.18 mrad: |r_P| = 1.396e-02, |r - r_P| = 1.22e-05
+     theta 19.46 mrad: |r_P| = 1.011e-02, |r - r_P| = 7.07e-06
+     theta 19.74 mrad: |r_P| = 7.412e-03, |r - r_P| = 6.30e-06
+     theta 20.02 mrad: |r_P| = 5.341e-03, |r - r_P| = 1.11e-05
+     theta 20.30 mrad: |r_P| = 3.638e-03, |r - r_P| = 5.58e-06
+     theta 20.58 mrad: |r_P| = 2.058e-03, |r - r_P| = 7.78e-06
+     theta 20.86 mrad: |r_P| = 5.568e-04, |r - r_P| = 1.14e-05
+     theta 21.14 mrad: |r_P| = 1.732e-03, |r - r_P| = 3.79e-06
+dx = 0.0664 A, reference layering dx/16: max|dr| 1.28e-05, max rel 1.53e-02, amp FAIL, phase 4.24e-04 rad; |r| range 4.48e-04..3.11e-02; failing points 5
+     theta 18.62 mrad: |r_P| = 3.107e-02, |r - r_P| = 4.92e-06
+     theta 18.90 mrad: |r_P| = 2.004e-02, |r - r_P| = 1.15e-05
+     theta 19.18 mrad: |r_P| = 1.396e-02, |r - r_P| = 9.93e-06
+     theta 19.46 mrad: |r_P| = 1.011e-02, |r - r_P| = 2.57e-06
+     theta 19.74 mrad: |r_P| = 7.404e-03, |r - r_P| = 1.18e-05
+     theta 20.02 mrad: |r_P| = 5.349e-03, |r - r_P| = 1.27e-05
+     theta 20.30 mrad: |r_P| = 3.636e-03, |r - r_P| = 5.55e-06
+     theta 20.58 mrad: |r_P| = 2.053e-03, |r - r_P| = 1.09e-05
+     theta 20.86 mrad: |r_P| = 5.622e-04, |r - r_P| = 4.15e-06
+     theta 21.14 mrad: |r_P| = 1.734e-03, |r - r_P| = 5.79e-06
+exit 0
+
+my own toy (s8b, laterally averaged Si(1,-1,1), W = 0.5 V, dx = 0.08 A, dx/16 layering, 20.0 mrad):
+ stop length     max|r-r_P|  max rel   phase(|r|>=1e-2)  true trunc |r(L)-r(2.5x)|  A12 estimate  max(true/est)
+ 0.6 x planned  2.194e-05  1.339e-02  7.614e-04         1.624e-05             7.002e-05     0.692
+ 0.8 x planned  9.619e-06  1.287e-02  1.465e-04         4.121e-08             4.168e-08     1.097
+ 1.0 x planned  9.585e-06  1.287e-02  1.461e-04         3.893e-10             4.743e-10     0.910
+ 1.5 x planned  9.585e-06  1.287e-02  1.461e-04         4.366e-15             2.240e-14     0.257
+ 2.5 x planned  9.585e-06  1.287e-02  1.461e-04         0.000e+00             3.772e-14     nan
+  CHECK PASS: at 1.0 x planned length (7 decay lengths) the true truncation error is below 1e-3 of max|r| 
+max|dr| at 2.5x planned: 9.585480215086375e-06
+
+SUMMARY: 3 of 3 checks passed
+```
+
+Updated statement of **F-B1 (Blocker for the schedule; category (a): no simulation output changes)**.
+At production numerics the validation gate (`aggregate_validation` `all_pass`, enforced by
+`fir/run_stage.sbatch`) is predicted to fail on four windows. Every phase test passes; every failure
+is an amplitude tolerance set below the accuracy the method attains there.
+1. Rung 1, Fermi step 0.05 A, 40 mrad, W = 0 and W = 0.5 V: relative error 2.3e-3 to 3.7e-3
+   against 3e-3. This is the band-edge sampling error. It falls to 1.07e-3 at dx = 0.0664 A.
+2. Rung 2, Si(1,-1,1) laterally averaged, 20.0 mrad (between Bragg orders), W = 0.5 and 1.0 V:
+   absolute error 1.78e-5 and 1.75e-5 against the 1e-5 floor, at |r| down to 4.4e-4. The error is
+   spread over the window at the 0.4e-5 to 1.4e-5 level. Doubling the reference layering
+   (dx/32: 1.51e-5) and refining the sampling (dx = 0.0664 A: 1.28e-5) reduce it only slightly. My
+   independent toy has a floor of 9.6e-6 for its own version of the profile. The floor tolerance of
+   1e-5 is at or below the attainable agreement between orders; docs/08 section 3.2 itself reports a
+   shared reference/multislice floor of about 4e-5 at smoke numerics.
+
+The other 34 rung-1 and rung-2 windows pass, with margins of 2 or more. Rung 3 and beam independence
+are 3D runs. Rung 3 for Si(111) is previewed in section 17 (rung 3); the Si(001) rung-3 tasks and the
+beam-independence tasks were not run here.
+
+## 18. Summary table
+
+| ID | Item | Rank | Category | Finding | Evidence |
+|---|---|---|---|---|---|
+| F-B1 | Validation gate (rung 1, rung 2) | Blocker for the schedule (results are not wrong) | (a): gate decision, re-aggregation of the existing validation results, resubmission of convergence, rocking and steps | At production numerics `all_pass` is predicted False on 4 windows: rung 1 at 40 mrad with the 0.05 A step (relative error 3.7e-3 against 3e-3; band-edge sampling, 1.1e-3 at dx = 0.0664), and rung 2 Si(111) at 20 mrad (absolute error 1.8e-5 against the 1e-5 floor). `run_stage.sbatch` then exits with an error, and the `afterok` chain never starts convergence, rocking or steps | s16, s17, s19, s8b; sections 5 and 17 |
+| F-M1 | A9 diffuse fraction | Major | (a) | `<|r|^2> - |<r>|^2` per extracted component scales with the beam's angular width and 1/Ly; `diffuse_fraction_median` is not a surface property | s9 (factor 4.25 for w0 6 against 12 A); section 12 |
+| F-M2 | A13 strip means at 9 to 16 mrad | Major | (a) (mask exit elevations below about 6 mrad, or restrict to an aperture); (b) only if full-band profiles are wanted | Near-grazing lateral components are truncated by the planned cell and ill-conditioned; the step residual depends on the cell length (1.9e-2 against 7.6e-2 rad in the toy); stable once masked | s4, s11, s12, s18; section 14 addendum |
+| F-m1 | docs/08 section 3.2 closed-form value | Minor | documentation | 2.3597e-5 not reproduced (2.3357e-5) | s2, s2b |
+| F-m2 | Accuracy near the band limit | Minor | documentation plus an optional extra check | Error grows toward the band edge: 2e-3 to 4e-3 relative at 38 to 41 mrad, about 8e-3 at 45 mrad in the toy; the convergence stage does not test above 30.6 mrad | s3c, s3d, s15, s17 |
+| F-m3 | A12 "bound" | Minor | (a) | An estimate (true/estimate from 0.17 to 98), subtracted from differences in the comparisons | s5, s8, s10 |
+| F-m4 | Frozen-phonon steps | Minor | (a) | No coherent average over seeds in `aggregate_steps`; per-seed null tests against static references | section 12, s12 |
+| F-m5 | Wording A6, A9, A13 | Minor | documentation | d-glides; Debye-Waller qualifier; z-periodic, not invariant | s7, s14 |
+| F-N1 to F-N7 | Documentation numbers | Nit | documentation | Window labels, one absorber value, the absorber scan range, adaptive-stop parameters, the reference-plane wording, the A12 and 3.3 resonance numbers, cell-length ranges | sections 1, 7, 15 |
+| (none) | A1, A2, A3, A4, A5, A6, A7, A8, A10, A11, A12 (formula), A13 (formula), 200 keV constants, refraction, signed step phase | correct | none | Derived independently, checked numerically, and the implementation matches | s0 to s15 |
+
+## 19. Verdict
+
+The rocking and steps stages will not start as planned. The validation gate is predicted to fail
+(F-B1). The cause is two amplitude tolerances in `configs/benchmarks.yaml` set below the accuracy the
+method attains at the 40 mrad band edge and between Bragg orders at 20 mrad, not a physics or code
+error, so the orchestrator and the user must make a recorded gate decision now. Once the gate is
+resolved and the chain resubmitted, both stages can run as planned, because every other Major finding
+is post-processing only.
