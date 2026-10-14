@@ -26,10 +26,18 @@ PLAUSIBLE (not reproduced; what would confirm it is stated), SECTION_READ (code 
 | 13 | task_id uniqueness check (inline python) | 36/172/1892/867 unique ids, no id shared between stages |
 | 14 | parallel-step cell parity (inline python) | si001_100 (37 periods) and the 100 A Si(111) cell (15 periods): second riser mid-period (F-08) |
 | 15 | `git diff --stat d404587 HEAD` | only docs/agent_reports changed since the audited commit |
+| 16 | `python $S/r7_phonon_beam_dependence.py static 0 $S/fp/static.npz` (smoke numerics, 'tall' preset, Si(111) L0, one march with two beams w0 = 6 and 12 A at 16 mrad) | 1389 s; 26585 planes; w0 = 6 A beam stopped at its cap, w0 = 12 A adaptively; static beam independence max \|r_w6 - r_w12\| = 3.6e-4 over 115 shared angles (bounds sum <= 2.5e-3) |
+| 17 | `python $S/r7_phonon_beam_dependence.py frozen_phonon {1,2,3} ...` then `python $S/r7_analyse.py $S` | see F-03 |
+| 18 | micro end-to-end run: `$S/micro.yaml` (smoke physics, dx 0.2 A, Si(111) only), `campaign plan` (10 rocking + 6 steps tasks), `worker run`, `worker status`, `aggregate --stage rocking` and `--stage steps` (`$S/run_micro.sh`) | 10/10 rocking tasks, aggregate exit 0; steps aggregate on 4 real results exit 0 (one phonon-step worker stopped by me to free CPU): the aggregators do not crash on real `.h5` output |
+| 19 | `python $S/r11_tail_content.py $S/RUN_micro/results/rocking/*.h5`, `python $S/r12_r_vs_weight.py ...`, inline stop-behaviour listing | every frozen-phonon window ran to the cap with a near-grazing tail; static 13 mrad windows stopped at 1.0x planned (F-14, F-03) |
 
-(continued below as the audit proceeds)
+NOT RUN: anything on a GPU or with CuPy (no GPU here; CuPy paths checked by reading only); the slow CPU
+validation tests (`pytest -m slow`, about 30 min on four free cores; the cores were in use by the
+runs above); any production-size task; `validation/abtem_crosscheck.py`; the Slurm scripts (no
+Slurm here; checked by reading and a bash pattern check only).
 
-## Findings (provisional, being filled in)
+
+## Findings (ordered by severity)
 
 ### F-01 (Major, type a+c) Validation and convergence verdicts fail open on missing or empty inputs — REPRODUCED
 
@@ -83,6 +91,61 @@ Fix (aggregation only): group step results by (surface, levels, angle, w0, Ly) a
 complex `ar_rho` over seeds before forming strip means, report the seed count and standard error.
 The per-seed `ar_rho` is stored (complex64) in every `.h5`, so no GPU rerun is needed.
 
+### F-03 (Major, type a) Per-seed frozen-phonon r, the incoherent intensity and the "diffuse fraction" depend on the beam — DERIVED_HERE; reproduction PENDING (see below)
+
+(being filled in)
+
+### F-04 (Major, type c, process) The jobs execute whatever code is checked out at run time — SECTION_READ
+
+`fir/run_stage.sbatch:21-22,25,37,77` `cd` to the submit directory (the repository) and run
+`python -m reflection_holo.worker` / `aggregate` from the working tree. Tasks are frozen in
+`tasks_<stage>.jsonl` at submission (`fir/submit_campaign.sh:112`), but the simulation and aggregation
+code is whatever the checkout contains when each job (and each resubmission) starts. A `git pull`
+or edit on Fir while rocking or steps runs would mix code versions inside a stage; the task_id
+(content hash) does not change, so finished results are silently reused. `provenance.py:28-37`
+records the commit and a dirty flag per task, so a mix is detectable after the fact.
+Consequence for the decision now: aggregation-only fixes (F-01, F-02, F-03, F-11) can safely be
+applied by re-running `python -m reflection_holo.aggregate` later on the existing `.h5` files, but
+nothing in `reflection_holo/` should be changed in the Fir checkout while a stage is running. If a
+fix to `aggregate.py` is wanted for the automatic end-of-stage aggregation, it must not touch
+simulate/analysis/potential/multislice. Check afterwards that `manifest.git.commit` is identical
+for all `.h5` of a stage.
+
+### F-14 (Minor for results, Major for the schedule) Frozen-phonon records never meet the tail criterion: every phonon task runs to the 4x cap, and its truncation bound is meaningless — REPRODUCED (micro scale)
+
+`multislice.py:91-99` stops a beam when max |y-mean of the line-1 record| over the last 400 planes
+falls below `tail_tol` x its running maximum. In a frozen-phonon configuration the crystal is not
+uniform along z, so diffuse scattering fills near-grazing exit directions (theta_x of 1-2 mrad,
+qy = 0 included); those waves cross the detector line tens of micrometres downstream and keep the
+record from decaying. Micro run (`$S/micro.yaml`: smoke physics, dx 0.2 A, Si(111) level 1, seed 1;
+`python -m reflection_holo.worker run ...`, then `python $S/r11_tail_content.py ...`):
+```
+si111_110 level 1 phonon 1 th0=13.0: n=24131, stop z=46333 (cap True), |r| 1.36e-02-1.04e+00, bound max 1.4e+00, tail_rho 0.953
+   envelope (max|f| per 500 planes / peak, every 10th block): 3e-04 1e+00 9e-03 6e-03 5e-03
+   tail power: exit angle < 2 mrad: 0.11; within +-2.5 mrad of the window centre: 0.000; strongest components at theta_x (mrad): [1.79 1.89 1.67 2.   1.55]
+si111_110 level 1 phonon 1 th0=16.5: n=18946, stop z=36377 (cap True), |r| 6.17e-03-1.75e+00, bound max 7.1e-01, tail_rho 0.956
+   tail power: ... within +-2.5 mrad of the window centre: 0.000; strongest components at theta_x (mrad): [2.09 2.19 2.   2.28 1.89]
+```
+The tail plateaus at 5e-3 to 2e-2 of the peak, two to three orders above the smoke tail_tol (1e-4)
+and three above production (1e-5). Its power sits at theta_x ~ 2 mrad, none near the specular
+window, yet `truncation_bound` (`analysis.py:233-254`, an unwindowed transform of the last segment
+times rho/(1-rho) = 20) reports 1.4 and 0.71 in r units because the near-grazing tail leaks into the
+specular kappa. Consequences:
+* Every frozen-phonon task (1792 of 1892 in rocking, 448 of 867 in steps) will run to
+  `cell_cap_factor` = 4 times its planned length. The planner's 10.8 h (rocking) and 8.9 h (steps) on
+  4 GPUs assume the planned lengths; at the cap they are 43 h and 36 h (command 12). Rocking will
+  need the self-resubmission path (F-06), and steps will start correspondingly later than planned.
+  The static w0 = 6 A smoke beam also ran to its cap (R7, 0.1 A sampling, tail_tol 1e-4), so static
+  tasks may also run long at the stricter production 1e-5.
+* `r_truncation_bound` of frozen-phonon windows is not a truncation estimate. The aggregator does
+  not use it for phonon ensembles (it uses the seed standard error, `aggregate.py:322-324`), so the
+  summary is unaffected, but the stored per-window bounds must not be quoted.
+* The coherent mean is not biased by this (the near-grazing field has zero configuration mean), but
+  per-seed quantities are contaminated (F-03).
+Fix (only if the schedule matters): base the stop test on the up-going part at the window's kappa
+range, for example on the windowed spectrum of the record, or on the coherent qy = 0 component
+within the beam's kappa band; compute the bound with a tapered transform.
+
 ### F-05 (Minor, type c) Claim cleanup races and a vanished claim kills the worker — REPRODUCED
 
 * `reflection_holo/worker.py:141-153`: a claim whose JSON is not yet written (created by O_EXCL a
@@ -104,22 +167,6 @@ Fix: write the claim content via a temporary file and `os.link`, or treat unread
 than a few minutes as alive; use `os.remove` with `FileNotFoundError` suppressed, outside the try.
 Not a risk for the planned chain (stage jobs never overlap), only for manual reruns.
 
-### F-04 (Major, type c, process) The jobs execute whatever code is checked out at run time — SECTION_READ
-
-`fir/run_stage.sbatch:21-22,25,37,77` `cd` to the submit directory (the repository) and run
-`python -m reflection_holo.worker` / `aggregate` from the working tree. Tasks are frozen in
-`tasks_<stage>.jsonl` at submission (`fir/submit_campaign.sh:112`), but the simulation and aggregation
-code is whatever the checkout contains when each job (and each resubmission) starts. A `git pull`
-or edit on Fir while rocking or steps runs would mix code versions inside a stage; the task_id
-(content hash) does not change, so finished results are silently reused. `provenance.py:28-37`
-records the commit and a dirty flag per task, so a mix is detectable after the fact.
-Consequence for the decision now: aggregation-only fixes (F-01, F-02, F-03, F-11) can safely be
-applied by re-running `python -m reflection_holo.aggregate` later on the existing `.h5` files, but
-nothing in `reflection_holo/` should be changed in the Fir checkout while a stage is running. If a
-fix to `aggregate.py` is wanted for the automatic end-of-stage aggregation, it must not touch
-simulate/analysis/potential/multislice. Check afterwards that `manifest.git.commit` is identical
-for all `.h5` of a stage.
-
 ### F-06 (Minor, type c) A worker overrunning the walltime breaks the chain — PLAUSIBLE
 
 `fir/run_stage.sbatch` has no `--signal`/trap; resubmission and the dependency hand-off
@@ -133,6 +180,21 @@ kills the job, no resubmission happens, the next stage's `afterok` can never be 
 never starts. Tasks are sorted longest first, so the risk is small. Confirm with: the rocking job's
 `sacct` state (TIMEOUT vs exit 3). Fix: `#SBATCH --signal=B:USR1@1800` with a trap that stops
 claiming and runs the resubmission block; base `need` on the cap.
+
+### F-07 (Minor, type b for a stronger test; a for reporting) Rung-1 checks at 0.2 A width, 30 and 40 mrad are nearly vacuous — REPRODUCED
+
+`configs/benchmarks.yaml` rung 1: amp_abs_floor 1e-6, phase only where |r| >= 1e-4. With the production
+rung-1 tasks the Parratt |r| over the weight >= 0.05 window is 1.7e-5..4.3e-5 at 30 mrad and
+5.8e-7..1.46e-6 at 40 mrad for the 0.2 A step. Largest uniform error that still passes
+(`$S/r2b_rung1_tolerance.py`):
+```
+width  W   theta0  max eps passing   max phase error passing (rad)
+ 0.20  0.5   30.0     0.0230            0.0230
+ 0.20  0.5   40.0     0.6825            0.6961
+(all 0.05 A cases and the 0.2 A cases at 6-20 mrad: 0.0030 and 0.002-0.003)
+```
+The 0.05 A step keeps rung 1 meaningful up to 40 mrad (|r| ~ 3e-3), so the ladder as a whole is not
+vacuous; the 0.2 A / 40 mrad entries should not be quoted as passing checks.
 
 ### F-08 (Minor, type b) Second riser placed mid-period in two parallel-step cell families — REPRODUCED
 
@@ -186,52 +248,13 @@ is tail_tol 1e-5, cap 4 (section 4 and the YAML). docs/model_assumptions.md C1 c
 `fir/setup_env.sh:20` installs an unpinned `abtem` from PyPI after the wheelhouse packages, which can
 replace numpy/scipy in the environment (the abTEM check is informational).
 
-### F-14 (Minor for results, Major for the schedule) Frozen-phonon records never meet the tail criterion: every phonon task runs to the 4x cap, and its truncation bound is meaningless — REPRODUCED (micro scale)
+### F-15 (Nit) Dependency-match prefix collision; dead code — REPRODUCED / SECTION_READ
 
-`multislice.py:91-99` stops a beam when max |y-mean of the line-1 record| over the last 400 planes
-falls below `tail_tol` x its running maximum. In a frozen-phonon configuration the crystal is not
-uniform along z, so diffuse scattering fills near-grazing exit directions (theta_x of 1-2 mrad,
-qy = 0 included); those waves cross the detector line tens of micrometres downstream and keep the
-record from decaying. Micro run (`$S/micro.yaml`: smoke physics, dx 0.2 A, Si(111) level 1, seed 1;
-`python -m reflection_holo.worker run ...`, then `python $S/r11_tail_content.py ...`):
-```
-si111_110 level 1 phonon 1 th0=13.0: n=24131, stop z=46333 (cap True), |r| 1.36e-02-1.04e+00, bound max 1.4e+00, tail_rho 0.953
-   envelope (max|f| per 500 planes / peak, every 10th block): 3e-04 1e+00 9e-03 6e-03 5e-03
-   tail power: exit angle < 2 mrad: 0.11; within +-2.5 mrad of the window centre: 0.000; strongest components at theta_x (mrad): [1.79 1.89 1.67 2.   1.55]
-si111_110 level 1 phonon 1 th0=16.5: n=18946, stop z=36377 (cap True), |r| 6.17e-03-1.75e+00, bound max 7.1e-01, tail_rho 0.956
-   tail power: ... within +-2.5 mrad of the window centre: 0.000; strongest components at theta_x (mrad): [2.09 2.19 2.   2.28 1.89]
-```
-The tail plateaus at 5e-3 to 2e-2 of the peak, two to three orders above the smoke tail_tol (1e-4)
-and three above production (1e-5). Its power sits at theta_x ~ 2 mrad, none near the specular
-window, yet `truncation_bound` (`analysis.py:233-254`, an unwindowed transform of the last segment
-times rho/(1-rho) = 20) reports 1.4 and 0.71 in r units because the near-grazing tail leaks into the
-specular kappa. Consequences:
-* Every frozen-phonon task (1792 of 1892 in rocking, 448 of 867 in steps) will run to
-  `cell_cap_factor` = 4 times its planned length. The planner's 10.8 h (rocking) and 8.9 h (steps) on
-  4 GPUs assume the planned lengths; at the cap they are 43 h and 36 h (command 12). Rocking will
-  need the self-resubmission path (F-06), and steps will start correspondingly later than planned.
-  The static w0 = 6 A smoke beam also ran to its cap (R7, 0.1 A sampling, tail_tol 1e-4), so static
-  tasks may also run long at the stricter production 1e-5.
-* `r_truncation_bound` of frozen-phonon windows is not a truncation estimate. The aggregator does
-  not use it for phonon ensembles (it uses the seed standard error, `aggregate.py:322-324`), so the
-  summary is unaffected, but the stored per-window bounds must not be quoted.
-* The coherent mean is not biased by this (the near-grazing field has zero configuration mean), but
-  per-seed quantities are contaminated (F-03).
-Fix (only if the schedule matters): base the stop test on the up-going part at the window's kappa
-range, for example on the windowed spectrum of the record, or on the coherent qy = 0 component
-within the beam's kappa band; compute the bound with a tapered transform.
+* `fir/run_stage.sbatch:65` matches `*"afterok:${SLURM_JOB_ID}"*`, which also matches a dependency on
+  any job whose id starts with the current id (bash check: `afterok:123456(unfulfilled)` matches job
+  12345). It could move an unrelated job's dependency; with Fir job ids of equal length this needs
+  ids differing by a factor of ten, so it is theoretical. Fix: match `afterok:${SLURM_JOB_ID}(`.
+* `analysis.py:9-99` (`fourier_coefficients`, `specular_reflectivity`, `rod_intensities`,
+  `image_wave_on_plane`) and `simulate.py:185-188` (`extraction_window`, which reads numerics keys
+  that no configuration defines) are unused.
 
-### F-07 (Minor, type b for a stronger test; a for reporting) Rung-1 checks at 0.2 A width, 30 and 40 mrad are nearly vacuous — REPRODUCED
-
-`configs/benchmarks.yaml` rung 1: amp_abs_floor 1e-6, phase only where |r| >= 1e-4. With the production
-rung-1 tasks the Parratt |r| over the weight >= 0.05 window is 1.7e-5..4.3e-5 at 30 mrad and
-5.8e-7..1.46e-6 at 40 mrad for the 0.2 A step. Largest uniform error that still passes
-(`$S/r2b_rung1_tolerance.py`):
-```
-width  W   theta0  max eps passing   max phase error passing (rad)
- 0.20  0.5   30.0     0.0230            0.0230
- 0.20  0.5   40.0     0.6825            0.6961
-(all 0.05 A cases and the 0.2 A cases at 6-20 mrad: 0.0030 and 0.002-0.003)
-```
-The 0.05 A step keeps rung 1 meaningful up to 40 mrad (|r| ~ 3e-3), so the ladder as a whole is not
-vacuous; the 0.2 A / 40 mrad entries should not be quoted as passing checks.
