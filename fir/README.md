@@ -44,7 +44,7 @@ submits five dependent jobs:
 | validation | 4 H100 | 3 h | validation ladder at production sampling (rung 1 Fermi step, rung 2 laterally averaged crystals, rung 3 null tests, beam independence); 36 tasks | fails unless every check passes (`configs/benchmarks.yaml`) |
 | convergence | 4 H100 | 12 h | sampling, delay, tail-tolerance, absorber and phonon-cell variants; 172 tasks | fails unless the refinements agree with production numerics |
 | rocking | 4 H100 | 24 h | complex specular rocking curves, 7 to 45 mrad, three surfaces, all terraces, static / Debye-Waller / 64 frozen phonons, absorption and parametrisation scans; 1892 tasks | none |
-| steps | 4 H100 | 24 h | steps parallel to the beam every 1 mrad (angle-resolved), steps across the beam with 30/60/120 A beams, 10 nm mesa edge, 32 frozen phonons at the Bragg conditions; 859 tasks | none |
+| steps | 4 H100 | 24 h | steps parallel to the beam every 1 mrad (angle-resolved), steps across the beam with 30/60/120 A beams, 10 nm mesa edge, 32 frozen phonons at the Bragg conditions; terrace-width series in 100 and 400 A cells; 867 tasks | none |
 
 The provisional estimate, with assumed rather than measured H100 throughput, is about 81
 GPU-hours at the planned cell lengths, roughly 20 h of wall time on one 4 x H100 node.

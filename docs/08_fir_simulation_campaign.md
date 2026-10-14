@@ -35,7 +35,7 @@ The cost comes from the physics. With an inelastic mean free path of order 100 n
 wave keeps emerging for about 2 um downstream of where the beam lands (appendix A4). The cell must
 therefore be 2.5 to 10 um long: 13,000 to 96,000 atomic planes on grids sampled at 0.08 A, with
 5376 or more points across the normal. Frozen-phonon ensembles and 200 A wide step cells
-multiply that. The planned campaign is 2,959 tasks of up to 16 GB each.
+multiply that. The planned campaign is 2,967 tasks of up to 17.4 GB each.
 
 ## 2. Model and inputs
 
@@ -283,13 +283,16 @@ no production result exists without a passing validation.
 | validation | 36 | rung 1: Fermi step, 2 widths x 2 absorptions x 5 angles; rung 2: laterally averaged crystal of each surface at 2 absorptions; rung 3: terrace ratios of every level of the three surfaces; beam independence (waists 8, 10, 14 A) | every rung within tolerance |
 | convergence | 172 | Si(111) level 0 at 13.3, 20.0, 30.6 mrad: sampling (dx 0.0996, 0.080, 0.0664 A at fixed cell height); complex64; Fresnel propagator; delay 5/7/9 decay lengths; adaptive tail tolerance 1e-6; absorber width and strength; frozen-phonon cell 1, 2, 4, 8, 16 periods x 32 configurations | refinements agree with production numerics |
 | rocking | 1892 | 7 terraces x 16 windows (7.0 to 44.5 mrad, 4 windows per task): static; 64 frozen-phonon configurations in a 54 A cell; for level 0 also Debye-Waller, W_in 0.25 and 1.0 V, onset 0.25 and 1.0 A, Lobato parametrisation | none |
-| steps | 859 | see below | none |
+| steps | 867 | see below | none |
 
 The steps stage runs the following:
 - **Steps parallel to the beam, in a 200 A cell.** Static runs every 1 mrad from 9 to 32 mrad
   for the Si(111) bilayer, the Si(001) single and double layers at [110], and the Si(001) single
   layer at [100]. Each run uses a 15 A waist and comes with flat references sharing its beam.
   Frozen phonons, 32 configurations, run at every Bragg condition. A no-step control is included.
+- **Terrace-width series.** The Si(111) bilayer at 13.3, 20.0 and 26.5 mrad in 100 and 400 A
+  cells, and the Si(001) single layer at [110] at 16.2 and 21.0 mrad in a 400 A cell, beside the
+  200 A production cell. The step phase far from the riser must converge with terrace width.
 - **Steps across the beam.** Up and down steps at every Bragg condition with a 60 A waist. The
   Si(111) bilayer is also run at 30 and 120 A waists to measure the dependence on illumination.
 - **10 nm mesa edge.** 74 x a/4, up and down, at 16.2 and 26.3 mrad.
@@ -303,10 +306,10 @@ throughput of 5e9 point-planes per second and 3e12 complex multiply-adds per sec
 
 | Quantity | Value |
 |---|---|
-| Tasks | 2,959 |
-| GPU-hours at the planned cell lengths | 80.7 |
+| Tasks | 2,967 |
+| GPU-hours at the planned cell lengths | 80.9 |
 | Wall time on one 4 x H100 node | about 20 h |
-| Largest task memory | 16 GB |
+| Largest task memory | 17.4 GB |
 
 The self-test replaces the assumed throughput with a measured one and writes
 `cost_estimate.txt`. The adaptive stop (tail 1e-5, cap 4x) lengthens runs that see slow surface
