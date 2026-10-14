@@ -108,3 +108,22 @@ interferogram cos φ, one dark band per 2π. The 60° dislocation (g·b = 4) lea
 phase on one side of the core. The Lomer dislocation (g·b = 0) gives a symmetric pattern that
 returns to the starting phase. Dashed line, slip step; dotted line, core. Geometric (column)
 model: every image row is identical. The multislice adds the dependence on exit height.
+
+## fig_60deg_50nm
+
+**Buried 60° dislocation 50 nm below Si(001), multislice at (008), with a Lomer dislocation for
+comparison.** Panels as in fig_50nm_geometric_preview. The 60° curves are multislice (solid) with
+the geometric model (dashed, under the solid line: the two agree to 0.05 rad except at the step
+edges). The Lomer curves are geometric only. **c, e**, The multislice amplitude dips to 0.82 just
+past the slip step and recovers over about 50 nm, with 0.96 at the core: strain contrast that the
+column model lacks. Strip 2 is at 0.974. Kernel not validated (docs/08); the absorption is a
+placeholder.
+
+## fig_hologram_60deg_50nm
+
+**Holograms and reconstructed (008) wave of the 60° dislocation from multislice (left), next to
+the Lomer dislocation from the geometric model (right).** Panels as in
+fig_hologram_50nm_geometric_preview. Left, the image rows are the real exit heights of the
+reflected band, 2.8 to 7.9 nm above the surface. The wave varies with exit height (darker band near
+5 to 6 nm) as the reflected beam builds up dynamically. The object hologram in **a** shows the
+fringe shift at the slip step and the exit-height modulation.
