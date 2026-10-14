@@ -4,10 +4,35 @@ Prepared 2026-09-21 for Ali (analysis of `https://github.com/hussienba/si110-ref
 commit `6694959`), following the source policy in the project instruction file
 (`ba72277e-si110_reflection_holography_agent_instructions.txt`).
 
-This repository contains no simulation results yet. It contains the audit of the existing simulation
+This repository contains no production simulation results yet (the M2 multislice code and its Fir
+campaign are described below). It contains the audit of the existing simulation
 repository, the physics it must reproduce, the software facts that determine what it currently computes,
 the literature position (with the access limitations stated), and the specification of the final version
 that can be contrasted with the real reflection-mode dark-field holography experiment.
+
+## Simulation code and the Fir campaign (added 2026-10-14)
+
+`reflection_holo/` is the grazing-incidence reflection multislice of milestone M2: band-limited
+atomic potentials, an exact-propagator multislice along the beam, a semi-infinite crystal behind
+absorbers, Gaussian sheet beams above the surface, and a two-line virtual detector that returns the
+complex specular reflection coefficient, the RHEED pattern and the image wave on the surface plane.
+It runs on numpy (CPU) and CuPy (GPU) through one code path.
+
+| Path | What it is |
+|---|---|
+| `docs/08_fir_simulation_campaign.md` | What the campaign computes, the model, the local validation, the stages, the derivations (appendix A). |
+| `configs/fir_m2_campaign.yaml` | Every task of the campaign: physics inputs with evidence labels, numerics, stages. |
+| `configs/benchmarks.yaml` | Tolerances of the validation ladder and convergence checks. |
+| `fir/README.md` | How to set up and submit the campaign on Fir (4 x H100 per node). |
+| `tests/`, `validation/` | Unit tests (`pytest -m "not slow"`), the validation ladder at reduced size (`-m slow`), the abTEM cross-check. |
+
+```
+python -m pytest -q -m "not slow"                     # seconds
+python -m reflection_holo.campaign check --config configs/fir_m2_campaign.yaml --stage all
+```
+
+The GPU stages have not been run yet; `docs/08_fir_simulation_campaign.md` section 3 lists what was
+validated on the CPU.
 
 ## Read in this order
 
