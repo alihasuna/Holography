@@ -13,7 +13,7 @@ course project) are left out. Writes experiments.csv (one row per file) and expe
 section per session).
 
 Usage (in the virtual environment):
-  ~/venvs/holo-tools/bin/pip install rosettasciio
+  ~/venvs/holo-tools/bin/pip install rosettasciio h5py
   ~/venvs/holo-tools/bin/python experiments.py ~/Desktop/research_inventory/inventory.csv \
       --root ~/Desktop/"Research - 2026" --out ~/Desktop/research_inventory
 """
@@ -41,7 +41,53 @@ DM_KEYS = {  # regex on the flattened tag path -> column
     "device": r"(DataBar\.Device Name|Acquisition\.Device\.Name)$",
     "biprism": r"(Biprism|BP|Filament)[^.]*$",
 }
-COLS = ["session", "file", "ext", "size_MB", "shape", "pixel_size"] + list(DM_KEYS) + ["mib_header", "note"]
+NAME_TOKENS = {  # settings written in the file names, e.g. alpha4p1, tilt-10, BP106p8V, 500CL, 41kx, 10frames
+    "name_alpha_deg": r"(?:alpha|tilt)[_ ]?(minus[_ ]?)?(-?\d+(?:p\d+)?)",
+    "name_biprism_V": r"BP(?:\d[_ ]+)?(?:at[_ ]+)?(\d+(?:p\d+)?)V",
+    "name_CL": r"(\d+)CL|CL[_ ]?(\d+)",
+    "name_mag": r"(\d+(?:p\d+)?)kx",
+    "name_frames": r"(\d+)[_ ]?frames",
+}
+COLS = (["session", "file", "ext", "size_MB", "shape", "pixel_size"] + list(DM_KEYS) + list(NAME_TOKENS)
+        + ["hdf5_content", "mib_header", "note"])
+
+
+def name_tokens(name: str, row: dict):
+    for col, pat in NAME_TOKENS.items():
+        m = re.search(pat, name, re.I)
+        if not m:
+            continue
+        if col == "name_alpha_deg":
+            v = m.group(2).replace("p", ".")
+            if m.group(1) or v.startswith("-"):
+                v = "-" + v.lstrip("-")
+            row[col] = v
+        else:
+            row[col] = next(g for g in m.groups() if g).replace("p", ".")
+
+
+def read_hdf5(path: Path, row: dict, max_items=6):
+    """Dataset shapes and scalar attributes of an HDF5 file (.hm, .h5, .emd); no data is loaded."""
+    try:
+        import h5py
+    except ImportError:
+        row["note"] = "install h5py to read HDF5 (.hm) files"
+        return
+    items, attrs = [], []
+    with h5py.File(path, "r") as f:
+        def visit(name, obj):
+            if isinstance(obj, h5py.Dataset) and len(items) < max_items:
+                items.append(f"{name}{list(obj.shape)}")
+            for k, v in list(obj.attrs.items())[:20]:
+                if len(attrs) < 12 and getattr(v, "size", 1) == 1:
+                    attrs.append(f"{k}={v}")
+        f.visititems(visit)
+        for k, v in list(f.attrs.items())[:12]:
+            attrs.append(f"{k}={v}")
+    big = [i for i in items if "[" in i]
+    if big:
+        row["shape"] = big[0].split("[", 1)[1].rstrip("]").replace(", ", "x")
+    row["hdf5_content"] = ("; ".join(items) + (" | " + "; ".join(attrs) if attrs else ""))[:300]
 
 
 def flatten(d, prefix=""):
@@ -135,6 +181,8 @@ def main():
                 read_mib(p, row)
             elif r["ext"] in (".mrc", ".mrcs"):
                 read_mrc(p, row)
+            elif open(p, "rb").read(4) == b"\x89HDF":
+                read_hdf5(p, row)
             else:  # unknown format: the first bytes usually identify it
                 with open(p, "rb") as f:
                     head = f.read(24)
@@ -142,6 +190,7 @@ def main():
                     " | " + head[:12].hex(" ")
         except Exception as e:
             row["note"] = f"error: {type(e).__name__}: {e}"[:80]
+        name_tokens(row["file"], row)
         out_rows.append(row)
         if k % 50 == 0:
             print(f"  {k}/{len(todo)}")
@@ -156,7 +205,7 @@ def main():
     for r in out_rows:
         sessions[r["session"]].append(r)
     shown = ["file", "size_MB", "shape", "pixel_size", "voltage_V", "magnification", "camera_length", "mode",
-             "exposure_s", "alpha_tilt", "date", "note"]
+             "exposure_s", "name_alpha_deg", "name_biprism_V", "name_CL", "date", "hdf5_content", "note"]
     L = [f"# Experiment catalogue ({len(out_rows)} unique raw files, {len(sessions)} session folders)", "",
          f"Excluded: paths containing {', '.join(args.exclude)}. Settings read from file headers only.", ""]
     for s in sorted(sessions):
