@@ -6,7 +6,7 @@ Usage:
   python scripts/run_sections.py --config configs/si001_three_sections_cpu.yaml [--backend cupy]
 
 Outputs in outputs/<config name>/reconstruction/: recon_<hkl>.png per reflection, overview.png,
-results.npz, manifest.json. The multislice kernel is smoke-tested only (docs/08).
+results.npz, manifest.json. The multislice kernel is smoke-tested only (docs/theory/buried_defects.md).
 """
 
 from __future__ import annotations
@@ -266,7 +266,7 @@ def main():
         {n: {"ms": d["rec_ms"], **{f"geo{p:g}": d["rec_geo"][p] for p in pens}} for n, d in store.items()}.items()
         for t in v if v[t] is not None for q in ("phase", "amp")})
     write_manifest(out, cfg, {"mode": "sections_reconstruction", "summary": summary,
-                              "status": "SMOKE TEST: multislice not validated (docs/08)"}, backend=args.backend)
+                              "status": "SMOKE TEST: multislice not validated (docs/theory/buried_defects.md)"}, backend=args.backend)
     (out / "summary.json").write_text(json.dumps(summary, indent=2, default=float))
     print(json.dumps(summary, indent=2, default=float))
 

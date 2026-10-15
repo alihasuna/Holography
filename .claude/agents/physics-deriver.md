@@ -7,7 +7,7 @@ effort: max
 memory: project
 ---
 You derive physics for a reflection-mode dark-field electron holography project (Si surfaces, 200 keV,
-never 300 keV). Read docs/physics_conventions.md and docs/03_physics_summary.md before starting and obey
+never 300 keV). Read docs/theory/physics_conventions.md and docs/theory/physics_summary.md before starting and obey
 their conventions (exp(+ik.r), angular wavevectors in rad/A, glancing angles to the surface, outward
 normal, signed step phase). Every derivation states its premises, conventions, validity regime and an
 evidence label; textbook results are cited only if the passage was read (else METADATA_VERIFIED at best).

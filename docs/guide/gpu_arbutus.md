@@ -13,7 +13,7 @@ Run it first on the VM.
 | `buried_dislocation_gpu.yaml` | 2048 x 2048 | about 1730 | 10 (5 angles x 2) | < 1 GB | minutes (estimate, not measured) |
 
 12 GB leaves room for grids up to about 8192 x 8192 in complex64. That is enough for the
-production cells of docs/05 section 4.3: 0.13 A over 200 x 80 A, thousands of slices, and a
+production cells of docs/dev/05_final_repository_specification.md section 4.3: 0.13 A over 200 x 80 A, thousands of slices, and a
 cell length of 0.1 to 0.4 um along the beam.
 
 ## 1. GPU driver (once, as admin)
@@ -71,7 +71,7 @@ back with `scp -r` or commit a summary, not the arrays.
 
 1. The cupy-vs-numpy test passes.
 2. The CPU-sized config run with `--backend cupy` reproduces the numpy numbers in
-   `docs/08_buried_defects.md` section 5 (numbers at the unconverged dy = 0.39 A, which is fine for a
+   `docs/theory/buried_defects.md` section 5 (numbers at the unconverged dy = 0.39 A, which is fine for a
    backend comparison): R_flat 0.1925, multislice phase peak-to-peak 12.54 rad,
    and RMS residual 0.24 rad against the geometric model at Lambda = 3 A. The tolerance is 1e-3
    relative, allowing for float32 FFT differences.
@@ -85,4 +85,4 @@ back with `scp -r` or commit a summary, not the arrays.
 * To scan depth or penetration, copy a config, change `depth_A` or `penetration_A`, and change
   `name`. The output folder is named after it, so runs never overwrite each other.
 * Never change a SMOKE_TEST value into a physics claim. Values labelled PROJECT_INPUT or
-  ASSUMPTION must come from the laboratory (docs/06).
+  ASSUMPTION must come from the laboratory (docs/guide/experiment_inputs.md).

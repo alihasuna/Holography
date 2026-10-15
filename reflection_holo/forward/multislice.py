@@ -1,16 +1,16 @@
 """Custom grazing-incidence multislice kernel (numpy or cupy backend).
 
 STATUS: smoke-tested only. Not yet validated against abTEM or a dynamical reflection solver
-(docs/05_final_repository_specification.md section 4.3 and milestone M2). Do not use its absolute
+(docs/dev/05_final_repository_specification.md section 4.3 and milestone M2). Do not use its absolute
 phases or reflectivities as results.
 
-Cell (slab frame of docs/physics_conventions.md): x = outward surface normal (grid axis 0),
+Cell (slab frame of docs/theory/physics_conventions.md): x = outward surface normal (grid axis 0),
 y = in-plane perpendicular to the beam (grid axis 1, periodic with a lattice period), z = beam
 azimuth = propagation axis (slices). The crystal fills x < 0 over the whole z range and is periodic
 along z with the lattice period of the beam azimuth, so only a few distinct slice potentials exist.
 That is exact for defects whose fields do not vary along z (dislocation lines parallel to the beam).
 
-Requirements of docs/05 section 4.3 implemented here:
+Requirements of docs/dev/05_final_repository_specification.md section 4.3 implemented here:
  1. semi-infinite emulation: imaginary-potential absorber on the bulk side, nothing below it;
  2./3. illumination confined to an apodised band in the vacuum above the surface, tilted towards
     the surface by theta_ext as an entrance-plane Fourier component;

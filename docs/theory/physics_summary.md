@@ -1,10 +1,10 @@
 # Physics of reflection-mode dark-field electron holography of Si surfaces: what the simulation must reproduce
 
 Status: 2026-09-21, revision 2 (corrected after the adversarial review in
-`docs/agent_reports/E_review.md`; the review's blocker B1 and major items M1 to M9 are applied here).
-This is the orchestrator's synthesis of `docs/agent_reports/C_physics_derivations.md` (full
+`docs/dev/agent_reports/E_review.md`; the review's blocker B1 and major items M1 to M9 are applied here).
+This is the orchestrator's synthesis of `docs/dev/agent_reports/C_physics_derivations.md` (full
 derivations, 25 self-checked numbers reproduced by `tools/reflection_step_phase_calculator.py`) and of
-independent checks made during the analysis. Conventions: `docs/physics_conventions.md`. Evidence
+independent checks made during the analysis. Conventions: `docs/theory/physics_conventions.md`. Evidence
 labels follow the instruction file. Unless stated otherwise every formula below is DERIVED_HERE from
 stated premises; nothing is attributed to an unread source.
 
@@ -99,7 +99,7 @@ At the n-th order internal Bragg condition for spacing `d` the vacuum step phase
 
 (Values: `tools/reflection_step_phase_calculator.py`, checks T4 to T14 and T20; the (3,-3,3) and
 (7,-7,7) rows and the `theta_int` column are tabulated by the script but not asserted. The orchestrator
-reproduced the table independently, `docs/agent_reports/orchestrator_sanity_numbers.txt`, and the
+reproduced the table independently, `docs/dev/agent_reports/orchestrator_sanity_numbers.txt`, and the
 adversarial reviewer confirmed every printed digit.)
 A non-relativistic treatment (`Delta = V0/T`) would give 14.00 mrad and a step phase of 3.14 rad
 (indistinguishable from pi) at (4,-4,4); `V0/T` is 14 percent too small (equivalently the relativistic
@@ -109,11 +109,11 @@ Sensitivity to the mean inner potential: `d|Delta_phi|/dV0` is -0.34 rad/V at (4
 -0.20 rad/V at the (6,-6,6) setting; the external peak angle moves by -0.21 mrad/V and -0.13 mrad/V
 respectively. A height inferred from a fixed measured phase with the wrong `V0` is therefore biased by
 about +0.05 A per volt of underestimate at (4,-4,4). `V0` is a first-order systematic, not a
-correction, and must be a sourced input with an uncertainty (`docs/06_project_inputs_required.md`, item 20).
+correction, and must be a sourced input with an uncertainty (`docs/guide/experiment_inputs.md`, item 20).
 
 Si(001), single-layer step `a/4 = 1.358 A` (terraces NOT translation-related; the kinematic value is only
 indicative) and double-layer `a/2 = 2.716 A`, specular orders (004), (008), (0,0,12): see the calculator
-output section 5 (`docs/agent_reports/C_calculator_output.txt`).
+output section 5 (`docs/dev/agent_reports/C_calculator_output.txt`).
 
 ## 4. The 2 pi branch problem, coherence and shadowing
 
@@ -131,7 +131,7 @@ about 110 wraps at (4,-4,4). Consequences:
   illumination convergence semi-angle into an irreducible phase spread over the incoherent ensemble:
   1 rad of spread is reached at 0.64 mrad for a bilayer, 0.20 mrad for 1 nm and 0.020 mrad for 10 nm.
   A tilt step can be made finer; a convergence angle cannot, so this decides whether a 10 nm feature is
-  measurable at all (`docs/06_project_inputs_required.md`, item 3, blocking). Energy spread is harmless
+  measurable at all (`docs/guide/experiment_inputs.md`, item 3, blocking). Energy spread is harmless
   by comparison: `d ln(lambda)/dT = -2.9e-6 per eV`, so a 0.7 eV spread changes the step phase by less
   than 0.004 rad over the whole allowed rod, even for a 10 nm step.
 * Shadowing. A step transverse to the beam whose upper terrace is upstream casts a geometric shadow of
@@ -160,7 +160,7 @@ about 110 wraps at (4,-4,4). Consequences:
   small because they expand the cosine in the angle rather than in the transverse wavevector). The error
   is common-mode between two terraces reflecting into the same `k_out` and cancels in the step phase,
   but it is not negligible against the 0.028 rad phase-noise figure of section 4 for absolute phases,
-  which is why an exact propagator is preferred (`docs/05_final_repository_specification.md`, section 4.3).
+  which is why an exact propagator is preferred (`docs/dev/05_final_repository_specification.md`, section 4.3).
 * Boundary conditions ARE the obstacle. With the inspected repository's defaults (10 A declared vacuum
   above and below an 85 A plate, 138 A of crystal along the beam, periodic in the surface normal):
   only rays within `L_z,si tan(theta) = 3.11 A` of the surface reach it inside the crystal (31 percent of
@@ -219,10 +219,10 @@ about 110 wraps at (4,-4,4). Consequences:
 
 ## 7. Numbers a corrected repository must reproduce
 
-See `docs/agent_reports/C_physics_derivations.md` section 8 (checks T1 to T25) and the qualitative
+See `docs/dev/agent_reports/C_physics_derivations.md` section 8 (checks T1 to T25) and the qualitative
 checks listed there: sign test for a down-step, forbidden-reflection guard, accessibility guard
 (`G.n_hat >= 2 dK`, `dK = k sqrt(Delta)`), small-denominator policy with a propagated height
 uncertainty, periodic-boundary continuity of the terrace staircase, footprint and wrap-around
 assertions, rocking-series branch resolution, the carrier-location test, and (added after the review)
 a shadow-mask test (`h/tan(theta)`) and a phase-validation ladder for the reflection engine
-(`docs/05_final_repository_specification.md`, section 4.4).
+(`docs/dev/05_final_repository_specification.md`, section 4.4).

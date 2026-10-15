@@ -2,7 +2,7 @@
 
 The strips run parallel to the beam (along z), so every strip is imaged side by side in the same
 dark-field image and step edges cast no shadow. All strips are truncations of ONE continuous
-lattice (docs/05 section 4.2); a strip raised by n atomic layers differs from the reference by the
+lattice (docs/dev/05_final_repository_specification.md section 4.2); a strip raised by n atomic layers differs from the reference by the
 lattice translation n * (layer spacing) along the normal only when n * spacing is a lattice
 translation (for Si(001): n a multiple of 2; n = 1 or 3 gives 4_1-screw-related terraces).
 

@@ -1,6 +1,6 @@
 # Figure captions
 
-All figures are smoke-test results of this repository's simulation (status in docs/08 and docs/11).
+All figures are smoke-test results of this repository's simulation (status in docs/theory/buried_defects.md and docs/results/three_strips_results.md).
 The multislice kernel has not yet been validated against abTEM or a dynamical reflection solver.
 Figures are in Nature format (89 mm single column, 183 mm double column), as vector PDF and
 450 dpi PNG. Source data and scripts are named under each caption.
@@ -116,7 +116,7 @@ comparison.** Panels as in fig_50nm_geometric_preview. The 60° curves are multi
 the geometric model (dashed, under the solid line: the two agree to 0.05 rad except at the step
 edges). The Lomer curves are geometric only. **c, e**, The multislice amplitude dips to 0.82 just
 past the slip step and recovers over about 50 nm, with 0.96 at the core: strain contrast that the
-column model lacks. Strip 2 is at 0.974. Kernel not validated (docs/08); the absorption is a
+column model lacks. Strip 2 is at 0.974. Kernel not validated (docs/theory/buried_defects.md); the absorption is a
 placeholder.
 
 ## fig_hologram_60deg_50nm

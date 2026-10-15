@@ -45,7 +45,7 @@ sections 1.4, 2, 9.4). Items marked (blocking) prevent a quantitative comparison
 21. Absorptive (imaginary) potential parameters for Si at the working energy, from a named parameterisation, for the dynamical reflection calculations.
 22. Specimen charging: evidence (phase drift versus dose or time on a flat region) that the oxide-covered surface does not charge under the grazing-incidence illumination footprint, or the measured drift if it does.
 
-## G. Buried defects (added 2026-09-30 with the buried-dislocation model, docs/08)
+## G. Buried defects (added 2026-09-30 with the buried-dislocation model, docs/theory/buried_defects.md)
 
 23. (blocking for defect work) Which buried defect is intended, and how is it produced: misfit dislocations at a buried interface (for example SiGe/Si, with the layer thickness), end-of-range loops after implantation (species, energy, dose, anneal), ion-milling damage, or dislocations introduced by deformation or indentation?
 24. Burgers vector and line direction, if known from TEM (for Si, perfect `a/2<110>` dislocations along `<110>`, often 60 degree type). A pure screw parallel to the surface is invisible in the specular beam, so the answer also decides whether a non-specular reflection is needed.

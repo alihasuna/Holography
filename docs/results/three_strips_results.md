@@ -1,7 +1,7 @@
 # Si(001) three-strip sample: simulated holograms and reconstructed phase and amplitude
 
 Status: 2026-09-30, smoke-test results. The multislice kernel is not validated against abTEM or a
-dynamical solver (docs/08). The sample is the one proposed in docs/10: strip 1 is the reference,
+dynamical solver (docs/theory/buried_defects.md). The sample is the one proposed in docs/results/three_strips_plan.md: strip 1 is the reference,
 strip 2 is raised by 4 layers (5.431 A), and strip 3 is at reference height with a Lomer edge
 dislocation 25 A deep. Command:
 `python scripts/run_sections.py --config configs/si001_three_sections_cpu.yaml`.
@@ -29,7 +29,7 @@ aperture and demodulation. A tilted plane-wave reference (R1) with fringes 5 A a
 the specimen is added. The hologram is recorded as `I = |psi + R|^2`, both noiseless and with
 Poisson noise at 400 counts per pixel. The sideband is reconstructed with the carrier located on
 an empty hologram, a mask radius of 0.06 A^-1 and division by the empty hologram. The phase is
-unwrapped along y and a linear ramp is fitted on the reference strip only. Geometry mode (docs/08
+unwrapped along y and a linear ramp is fitted on the reference strip only. Geometry mode (docs/theory/buried_defects.md
 column model, same displacement field as the atoms, same terrace heights) goes through the
 identical hologram and reconstruction code. `tests/test_holography.py` checks that the chain is
 exact (1e-9) for a band-limited object when the carrier exceeds 3 x the aperture radius.
@@ -72,7 +72,7 @@ Reading:
 
 ## 4. Two numerical requirements found on the way
 
-1. **Lateral sampling.** The specular reflectivity converges only for dy <= 0.13 A (docs/08,
+1. **Lateral sampling.** The specular reflectivity converges only for dy <= 0.13 A (docs/theory/buried_defects.md,
    correction). The CPU runs here use dy = 0.128 A over the 460.8 A cell (3600 pixels).
 2. **Illuminated footprint.** A finite sheet beam of height H illuminates a footprint of
    H/tan(theta) along the beam. A strip raised by h is illuminated h/tan(theta) earlier, so at a

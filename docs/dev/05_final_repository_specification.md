@@ -1,14 +1,14 @@
 # Specification: what the final theoretical simulation repository must look like
 
 Status: 2026-09-21, version 0.2 (orchestrator synthesis of reports A to D, independent checks, and
-the corrections required by the adversarial review `docs/agent_reports/E_review.md`).
+the corrections required by the adversarial review `docs/dev/agent_reports/E_review.md`).
 Purpose: define the repository that will produce simulated observables to be contrasted with the
 real reflection-mode dark-field electron holography experiment on silicon surfaces (Osakabe-type
 measurement), starting from the inspected repository `hussienba/si110-reflection-holography`
 (commit 6694959) and its instruction file. Everything here follows the source policy of that
 instruction file; unresolved items are labelled PROJECT_INPUT, ASSUMPTION or UNVERIFIED.
 Reflection indices are written with their signs: the specular rod of the (1,-1,1) surface is
-`(n,-n,n)`, not `(n,n,n)` (see `docs/physics_conventions.md`).
+`(n,-n,n)`, not `(n,n,n)` (see `docs/theory/physics_conventions.md`).
 
 ## 0. Acceptance criteria (definition of "final")
 
@@ -19,7 +19,7 @@ The repository is final when all of the following hold:
    masks, reference wave under a declared model, ensemble-averaged hologram intensity with detector
    effects, reconstructed phase produced by the same code used on the experimental holograms, and
    quantified heights with uncertainties and branch information.
-2. The forward model passes the physics test plan (`docs/03_physics_summary.md` section 7; checks
+2. The forward model passes the physics test plan (`docs/theory/physics_summary.md` section 7; checks
    T1 to T25 with the tolerances stated in the calculator, plus the qualitative checks), the
    phase-validation ladder of section 4.4 (each rung with a tolerance recorded in
    `configs/benchmarks.yaml` when the rung is implemented), and a flat-surface rocking-curve benchmark
@@ -31,7 +31,7 @@ The repository is final when all of the following hold:
    threshold recorded in `configs/benchmarks.yaml` (proposed initial value 0.1 rad, ASSUMPTION).
    Comparison with Osakabe 1988 is deferred until P01 is read; its surface and conditions are
    currently UNVERIFIED.
-4. Every physical claim, material parameter and algorithm has a `docs/source_map.tsv` record with an
+4. Every physical claim, material parameter and algorithm has a `docs/literature/source_map.tsv` record with an
    evidence label, and every run writes a provenance manifest.
 5. No result depends on a default silently substituted for a missing PROJECT_INPUT; such runs fail.
 
@@ -45,14 +45,14 @@ wave it reads is the supercell mid-plane wave, not an exit wave; its default vac
 sampling make end-face Laue transmission, not surface reflection, the dominant channel; its named
 specular condition (6,-6,6) is a forbidden reflection; its default target (2,-2,0) is inaccessible in
 reflection geometry; and its phase-to-height step cannot resolve the 2 pi branch. The itemised audit is
-in `docs/01_repository_audit.md` and the agent reports under `docs/agent_reports/`.
+in `docs/dev/01_repository_audit.md` and the agent reports under `docs/dev/agent_reports/`.
 
 ## 2. Named configurations (kept separate; instruction file section 2)
 
 | ID | Name | Surface, azimuth | Steps and features | Specular conditions | Status |
 |---|---|---|---|---|---|
 | CFG-A | `si111_cleaved_110azimuth` | (1,-1,1) surface, beam azimuth [110] | lattice-translation bilayer steps `h = m d_111`, `R = m (a/2)[1,0,1]` (stacking-correct in-plane shift); step edges parallel or transverse to the beam (transverse edges shadow 230 A per bilayer at (4,-4,4), 102 A at (8,-8,8)) | (4,-4,4), (5,-5,5), (7,-7,7), (8,-8,8); (3,-3,3) is allowed but exits at 8.6 mrad, barely above `theta_c`, with 116x foreshortening, so it is not recommended; never (6,-6,6) or (2,-2,2) | benchmark inherited from the inspected repository; geometry consistent (normal.beam = 0) |
-| CFG-B | `si001_patterned` | (001) surface, 200 keV (PROJECT_INPUT, supplied), azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces, dynamical difference expected), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad and 733 nm at the (4,-4,4) angle), optional oxide/amorphous overlayer (item 12) | (008) as the working condition (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); (0,0,12) as the second condition; (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface; (002), (006), (0,0,10) forbidden | Ali's experiment; remaining unknowns listed in `docs/06_project_inputs_required.md` |
+| CFG-B | `si001_patterned` | (001) surface, 200 keV (PROJECT_INPUT, supplied), azimuth [110] or [100] (PROJECT_INPUT item 8) | single-layer `a/4` steps (screw-related terraces, dynamical difference expected), double-layer `a/2` steps, patterned mesas/trenches of nm height (PROJECT_INPUT item 13; a 10 nm mesa shadows 444 nm at 22.5 mrad and 733 nm at the (4,-4,4) angle), optional oxide/amorphous overlayer (item 12) | (008) as the working condition (theta_int 18.5 mrad, theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A, foreshortening 61x); (0,0,12) as the second condition; (004) exits at 3.9 mrad and is not usable on an overlayer-covered surface; (002), (006), (0,0,10) forbidden | Ali's experiment; remaining unknowns listed in `docs/guide/experiment_inputs.md` |
 | CFG-O | `osakabe_1988_reproduction` | UNVERIFIED (P01 not readable here) | monatomic steps | UNVERIFIED | placeholder until P01 (and P08, Osakabe 1992) are read |
 
 Each configuration is a versioned YAML/JSON file with every parameter labelled by evidence level.
@@ -219,7 +219,7 @@ not valid. Used for experiment planning and for the rocking-series inversion.
    mask radius and apodisation recorded; raw wrapped phase, unwrapped phase, masks and fitted ramps all
    preserved; the resolution of the reconstruction (about three fringe spacings) reported.
 8. Quantification: `h = -Delta_phi lambda/(2 pi (sin theta_in,ext + sin theta_out,ext))` for the
-   specular beam in the `exp(+ik.r)` convention of `docs/physics_conventions.md` (a down-step must
+   specular beam in the `exp(+ik.r)` convention of `docs/theory/physics_conventions.md` (a down-step must
    reverse the sign; this is a required unit test), with the wrap period and branch stated; rocking-series
    inversion for absolute heights; terrace segmentation with uncertainties from the measured fringe
    contrast and dose; shadowed strips excluded; refusal (not division) when the sensitivity `|q.n_hat|`
@@ -227,9 +227,9 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 
 ## 6. Provenance requirements
 
-* `docs/references.bib` (verified entries separated from unverified candidates), `docs/source_map.tsv`
-  (claim, source, locator, evidence, implementation, test, status), `docs/physics_conventions.md`,
-  `docs/model_assumptions.md`, all kept current.
+* `docs/literature/references.bib` (verified entries separated from unverified candidates), `docs/literature/source_map.tsv`
+  (claim, source, locator, evidence, implementation, test, status), `docs/theory/physics_conventions.md`,
+  `docs/theory/model_assumptions.md`, all kept current.
 * Every run writes a manifest: package versions (`pip freeze`), engine commit and build flags and
   licence (Prismatic and prismatique are GPL; `sim-trhepd-rheed` is GPL; the distribution licence of this
   repository must be decided against them), numeric precision, random seeds and thread count (Prismatic's
@@ -287,7 +287,7 @@ not valid. Used for experiment planning and for the rocking-series inversion.
 | M5 Experimental comparison | Calibration, blind comparison, uncertainty budget, paper figures | M4 and PROJECT_INPUT items 1 to 22 |
 | M6 Reflection ptychography (optional) | Differentiable dynamical forward model; multiplicative-object algorithms explicitly not assumed valid | M2 |
 
-## 10. Literature position (from `docs/agent_reports/B_literature.md`, index-level evidence only)
+## 10. Literature position (from `docs/dev/agent_reports/B_literature.md`, index-level evidence only)
 
 * Starting point: Osakabe et al. 1988 (P01) and 1989 (P02, GaAs(110), dislocation surface undulation,
   0.01 A precision claimed at abstract level), Osakabe 1992 (P08), Banzhof and Herrmann 1993 (P03),
@@ -316,4 +316,4 @@ not valid. Used for experiment planning and for the rocking-series inversion.
   (its docstring recommends below one degree; UNVERIFIED; tested in M2).
 * Which quantities `sim-trhepd-rheed` exposes (phase of the reflected beams or intensities only).
 * The dynamical residual threshold of acceptance criterion 3 (0.1 rad proposed, ASSUMPTION).
-* All PROJECT_INPUT items in `docs/06_project_inputs_required.md`.
+* All PROJECT_INPUT items in `docs/guide/experiment_inputs.md`.

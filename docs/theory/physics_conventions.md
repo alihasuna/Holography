@@ -1,9 +1,9 @@
 # Physics conventions for the reflection-holography simulation repository
 
-Status: revision 2, 2026-09-21 (corrected after `docs/agent_reports/E_review.md`). Every formula in
+Status: revision 2, 2026-09-21 (corrected after `docs/dev/agent_reports/E_review.md`). Every formula in
 this repository must obey these conventions or state explicitly where it deviates. (Required by
 instruction file section 9.8; the same conventions are used in
-`docs/agent_reports/C_physics_derivations.md` and `tools/reflection_step_phase_calculator.py`.)
+`docs/dev/agent_reports/C_physics_derivations.md` and `tools/reflection_step_phase_calculator.py`.)
 
 ## Wave and sign conventions
 

@@ -1,11 +1,11 @@
 # Audit of `hussienba/si110-reflection-holography` (commit 6694959)
 
-Status: 2026-09-21, revision 2 (after `docs/agent_reports/E2_review.md`). Orchestrator's synthesis
-of the full code audit (`docs/agent_reports/A_code_audit.md`, 1413 lines, every file read,
+Status: 2026-09-21, revision 2 (after `docs/dev/agent_reports/E2_review.md`). Orchestrator's synthesis
+of the full code audit (`docs/dev/agent_reports/A_code_audit.md`, 1413 lines, every file read,
 generator/filter/step-height scripts executed on synthetic data), the software-provenance audit
-(`docs/agent_reports/D_software_provenance.md`, version-matched source of prismatique 0.0.1,
+(`docs/dev/agent_reports/D_software_provenance.md`, version-matched source of prismatique 0.0.1,
 embeam 0.0.1 and the Prismatic tree at commit d155fb9) and the physics report
-(`docs/agent_reports/C_physics_derivations.md`). File and line numbers refer to the inspected
+(`docs/dev/agent_reports/C_physics_derivations.md`). File and line numbers refer to the inspected
 commit. Evidence labels as in the instruction file: REPRODUCED means the behaviour was executed or the
 API exercised here, SECTION_READ means the pinned source was read, DERIVED_HERE means computed from the
 repository's own parameters. No prismatique simulation was executed (no compiled engine); the forward
@@ -197,7 +197,7 @@ uncertainty); locate the spot from `k_in + g` with sub-pixel refinement, specify
 physical units, detrend off by default, save raw phase; make the grid and geometry explicit and write
 the realised extents into the metadata; add the hologram-formation and reconstruction stages as separate
 tested operations; add the tests of instruction section 10. These are the M0 and M1 milestones of
-`docs/05_final_repository_specification.md`. Whether the reflection geometry can be modelled with this
+`docs/dev/05_final_repository_specification.md`. Whether the reflection geometry can be modelled with this
 engine at all is a separate decision (M2): with periodic boundaries along the surface normal and no
 absorber, Prismatic cannot represent a semi-infinite surface, and the maintainers describe it as no
 longer actively maintained.

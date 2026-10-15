@@ -1,6 +1,6 @@
 """Geometry core: wavelength, interaction constant, refraction, Si lattice and slab frame.
 
-Formulas follow docs/physics_conventions.md and tools/reflection_step_phase_calculator.py
+Formulas follow docs/theory/physics_conventions.md and tools/reflection_step_phase_calculator.py
 (source-map rows SM01, SM02, SM04). Angles are glancing angles in radians, lengths in A,
 beam energy in keV, potentials in V.
 """
@@ -92,7 +92,7 @@ def is_fcc_lattice_vector(v_over_a, tol: float = 1e-9) -> bool:
 class SlabFrame:
     """Rows are the slab axes in cubic coordinates: x = outward normal, y = in-plane, z = beam azimuth.
 
-    Active rotation r_slab = R @ r_cubic (docs/physics_conventions.md).
+    Active rotation r_slab = R @ r_cubic (docs/theory/physics_conventions.md).
     """
 
     name: str
@@ -112,7 +112,7 @@ class SlabFrame:
         return self.R @ np.asarray(v_cubic, float)
 
 
-# CFG-A benchmark frame (docs/physics_conventions.md): (1,-1,1) surface, beam along [110].
+# CFG-A benchmark frame (docs/theory/physics_conventions.md): (1,-1,1) surface, beam along [110].
 SI111_FRAME = SlabFrame("si111_cleaved_110azimuth", (1, -1, 1), (1, -1, -2), (1, 1, 0))
 
 # CFG-B frame: (001) surface, beam azimuth [110] (PROJECT_INPUT item 8 still open: [110] or [100]).

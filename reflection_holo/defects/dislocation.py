@@ -1,6 +1,6 @@
 """Straight dislocation buried below a free surface, isotropic linear elasticity (half-space).
 
-Premises (labels as in docs/model_assumptions.md, rows D1 to D4):
+Premises (labels as in docs/theory/model_assumptions.md, rows D1 to D4):
 
 * Straight, infinitely long dislocation line parallel to the free surface at depth ``d`` below it
   (buried: the line does not meet the surface). ASSUMPTION of the defect model.

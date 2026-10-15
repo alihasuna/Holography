@@ -1,4 +1,4 @@
-# Software provenance summary (full report in `docs/agent_reports/D_software_provenance.md`)
+# Software provenance summary (full report in `docs/dev/agent_reports/D_software_provenance.md`)
 
 Status: 2026-09-21. Established from version-matched source code (prismatique 0.0.1 and 0.0.4,
 embeam 0.0.1 and 0.0.5 from PyPI; Prismatic from `prism-em/prismatic` at commit d155fb9,

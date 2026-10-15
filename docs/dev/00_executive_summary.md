@@ -6,7 +6,7 @@ simulation repository must look like to be contrasted with the real reflection-m
 electron holography experiment, taking Osakabe's reflection holography as the starting point. Four
 delegated audits (code, literature, physics, software provenance) were run and cross-checked, and two
 adversarial reviews of the summary documents were applied; their full reports are under
-`docs/agent_reports/`.
+`docs/dev/agent_reports/`.
 
 ## Headline findings
 
@@ -47,7 +47,7 @@ adversarial reviews of the summary documents were applied; their full reports ar
 
 ## What the final version must look like
 
-The specification is `docs/05_final_repository_specification.md`. In short: a geometry module with
+The specification is `docs/dev/05_final_repository_specification.md`. In short: a geometry module with
 refraction, structure factors and guards (forbidden and inaccessible reflections, invisibility
 condition, shadow lengths); stacking-correct step builders and named configurations (Si(111) benchmark
 kept separate from the Si(001) patterned experiment); a reflection forward model with a validated
@@ -61,7 +61,7 @@ experimental data; a quantification module with the signed refraction-corrected 
 resolution by rocking series or lattice constraint, shadow exclusion and propagated uncertainties; and
 a provenance system (references, source map, conventions, assumptions, run manifests with licences)
 with the test suite of the instruction file. The physics that the model must reproduce, with numbers,
-is in `docs/03_physics_summary.md`; the reference calculator `tools/reflection_step_phase_calculator.py`
+is in `docs/theory/physics_summary.md`; the reference calculator `tools/reflection_step_phase_calculator.py`
 passes 25 self-checks.
 
 ## Osakabe as the starting point
@@ -78,7 +78,7 @@ must not be stated as fact.
 
 ## What is needed from the laboratory
 
-`docs/06_project_inputs_required.md` lists 22 items, nine of them blocking: the accelerating voltage
+`docs/guide/experiment_inputs.md` lists 22 items, nine of them blocking: the accelerating voltage
 (1); the illumination convergence semi-angle (3), which alone decides whether nanometre features can
 show phase contrast (a 10 nm step reaches 1 rad of phase spread at 0.02 mrad); the objective-aperture
 semi-angle and which beam it selects (4); the detector pixel size and magnification (5); the external

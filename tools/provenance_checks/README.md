@@ -1,6 +1,6 @@
 # Provenance checks for the prismatique/embeam API (from report D)
 
-These scripts were written by the software-provenance audit (docs/agent_reports/D_software_provenance.md,
+These scripts were written by the software-provenance audit (docs/dev/agent_reports/D_software_provenance.md,
 section 0, commands 14-17). They exercise, without running any simulation, the exact API calls made by
 `si110-reflection-holography/pipeline/multislice_forward_model.py` and
 `multislice_tilt_series_runner.py` against an installed `prismatique` + `embeam`, and they demonstrate:

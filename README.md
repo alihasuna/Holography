@@ -1,74 +1,123 @@
-# Reflection-mode dark-field electron holography of Si surfaces: analysis and specification of the theoretical simulation repository
+# reflection-holo
 
-Prepared 2026-09-21 for Ali (analysis of `https://github.com/hussienba/si110-reflection-holography`,
-commit `6694959`), following the source policy in the project instruction file
-(`ba72277e-si110_reflection_holography_agent_instructions.txt`).
+**Simulation of reflection-mode (RHEED-geometry) dark-field off-axis electron holography of crystal
+surfaces and buried defects.**
 
-Since 2026-09-30 it also contains a first code subset (`reflection_holo/`): the geometry core, buried
-dislocations in a half-space, a geometric-phase forward model and a grazing-incidence multislice kernel
-(numpy/cupy), with smoke-test results only (`docs/08_buried_defects.md`; the kernel is not yet validated).
-Beyond that, it contains the audit of the existing simulation
-repository, the physics it must reproduce, the software facts that determine what it currently computes,
-the literature position (with the access limitations stated), and the specification of the final version
-that can be contrasted with the real reflection-mode dark-field holography experiment.
+A fast electron beam (200 keV) grazes a crystal surface at about 1°, and one Bragg reflection from
+the planes parallel to the surface is selected. That reflected wave is then interfered with a
+reference wave to record a hologram. The reconstructed phase maps surface steps, and the
+near-surface strain of defects buried tens of nanometres below the surface. This repository
+simulates the whole chain: atoms → dislocation field → multislice → hologram → reconstructed phase
+and amplitude. It also documents the physics, the parameters and the literature, so that future
+students can extend it.
 
-## Read in this order
+![Holograms and reconstructed wave of a 60° and a Lomer dislocation 50 nm below Si(001)](docs/figures/fig_hologram_60deg_50nm.png)
+*A 60° dislocation 50 nm below Si(001), reflection (008), leaves four net phase fringes (g·b = 4).
+A Lomer dislocation (g·b = 0) leaves none. Details: [docs/results/dislocations_50nm.md](docs/results/dislocations_50nm.md).*
 
-| File | What it is |
+## Status
+
+* **Research code (version 0.1).**
+* **Validated so far:**
+  * the multislice kernel agrees with an independent geometric model, to 0.05 rad on the phase;
+  * the step phase matches the refraction formula (Osakabe 1990);
+  * the hologram chain is exact on test objects.
+* **Not yet validated** against an independent multislice code (abTEM), so absolute amplitudes are
+  provisional. See [Limitations](#limitations).
+
+## Install
+
+```bash
+git clone https://github.com/alihasuna/Holography.git && cd Holography
+python -m venv venv && source venv/bin/activate
+pip install -e ".[dev]"        # numpy, scipy, matplotlib, pyyaml, pytest
+pip install -e ".[gpu]"        # optional: cupy for NVIDIA GPUs
+python -m pytest -q            # 48 tests; the GPU test is skipped without cupy
+```
+
+## Quick start
+
+```bash
+python examples/01_first_hologram.py                 # whole chain in about 2 s: writes first_hologram.png
+python scripts/run_sections.py --config configs/si001_three_sections_cpu.yaml --dry-run           # size a run
+python scripts/run_sections.py --config configs/si001_three_sections_cpu.yaml --geometric-only    # fast model, any CPU
+python scripts/run_sections.py --config configs/si001_three_sections_cpu.yaml --only "(0,0,8)"    # full multislice, about 7 min on 4 cores
+```
+
+Larger cases (0.74 µm cells, 50 nm deep dislocations) take about 2 h per reflection on a 4-core
+CPU, or minutes on a GPU. Slurm scripts for Digital Research Alliance of Canada clusters are in
+`hpc/`, with instructions in [docs/guide/hpc_alliance.md](docs/guide/hpc_alliance.md).
+
+## The pipeline
+
+| Step | What happens | Code |
+|---|---|---|
+| 1. Crystal | Si(001) slab in side-by-side strips (reference, raised step, defect) | `reflection_holo/crystal.py`, `structure/sections.py` |
+| 2. Defect | analytic elastic field of a buried dislocation (half-space, periodic images, slip step) | `reflection_holo/defects/dislocation.py` |
+| 3a. Multislice | grazing sheet beam, about 3000 slices, absorber, objective aperture → dark-field wave | `reflection_holo/forward/multislice.py` |
+| 3b. Geometric model | fast column model of the same wave, used as a cross-check | `reflection_holo/forward/geometric.py` |
+| 4. Hologram | tilted reference wave, Poisson noise, empty hologram | `reflection_holo/holography.py` |
+| 5. Reconstruction | FFT, sideband, inverse FFT, reference correction, unwrapping, ramp removal | `reflection_holo/holography.py` |
+| 6. Analysis | profiles, metrics, Nature-style figures | `scripts/run_sections.py`, `scripts/figures_*.py` |
+
+Step-by-step explanation: [docs/guide/pipeline.md](docs/guide/pipeline.md).
+
+## Repository map
+
+```
+reflection_holo/   the library: geometry, crystal, defects, forward models, holography, provenance
+configs/           sample definitions (YAML); every value carries an evidence label
+examples/          short, commented tutorials
+scripts/           run, sweep and figure scripts
+hpc/               Slurm job scripts for Alliance clusters (Fir, Narval, ...)
+tests/             pytest suite (physics checks, round trips, CPU/GPU agreement)
+tools/             standalone step-phase calculator and software-provenance checks
+docs/
+  guide/           pipeline, parameters, running on GPUs and clusters, inputs needed from experiment
+  theory/          physics summary, conventions, model assumptions, buried defects
+  results/         three-strip sample, 60° and Lomer dislocations at 50 nm
+  literature/      literature position, surveys (reflection holography, dark-field strain), references.bib
+  figures/         all figures (PDF + PNG) with captions in CAPTIONS.md
+  dev/             project history: original audit, specification, agent reports
+```
+
+## Documentation: where to start
+
+| If you want to... | Read |
 |---|---|
-| `docs/00_executive_summary.md` | Findings and decisions in two pages. |
-| `docs/01_repository_audit.md` | What the inspected repository actually simulates, defect list with file:line, section-9 checklist. |
-| `docs/02_literature_position.md` | Osakabe as the starting point, the theory to read, current analogues; access limitations. |
-| `docs/03_physics_summary.md` | The physics the simulation must reproduce: step phase, refraction, wrap period, coherence and shadowing, multislice validity, hologram formation, with numbers. |
-| `docs/04_software_provenance_summary.md` | What prismatique/Prismatic actually compute (mid-plane wave, schema, tilt, ensembles) and the consequences. |
-| `docs/05_final_repository_specification.md` | What the final theoretical simulation repository must look like: acceptance criteria, configurations, architecture, forward-model and holography requirements, phase-validation ladder, provenance, comparison protocol, tests, milestones. |
-| `docs/06_project_inputs_required.md` | Laboratory inputs the simulation cannot supply (PROJECT_INPUT list, 22 items). |
-| `docs/07_reading_plan.md` | Every reference of the instruction file (B01-B15, C01-C03, P01-P07, S01-S02) with its expected access, what to extract, and the upload order for paywalled items. |
-| `docs/08_buried_defects.md` | Buried dislocations: why they are visible in reflection (depth-independent surface bump `b_parallel/pi`), the models, verification and the geometry-mode and multislice smoke-test results. |
-| `docs/14_buried_dislocations_50nm.md` | 60° and Lomer dislocations 50 nm deep at (008): multislice and geometric results, g·b fringe count, strain amplitude contrast. |
-| `docs/13_alliance_hpc.md` | Running on Alliance clusters: what runs where, Slurm job scripts (hpc/), sweeps, sizes, first campaign. |
-| `docs/12_simulation_parameters.md` | Every simulation and supercell parameter with its value, meaning, reason and evidence label. |
-| `docs/11_si001_reconstruction_results.md` | Simulated holograms and reconstructed phase and amplitude of the three-strip sample at (008) and (0,0,12), with convergence findings. |
-| `docs/10_si001_three_sections_plan.md` | Proposal: Si(001) sample in three strips (reference, raised 4 layers, buried Lomer edge dislocation), renders and what will be measured. |
-| `docs/09_gpu_runbook_arbutus.md` | How to run the multislice on the Arbutus GPU VM (driver check, cupy, tmux, acceptance checks). |
-| `docs/physics_conventions.md`, `docs/model_assumptions.md`, `docs/source_map.tsv`, `docs/references.bib` | Provenance files required by the instruction file (section 10). |
-| `docs/agent_reports/` | The full reports of the delegated audits: A (code), B (literature) with B2 (bibliography verification log), C (physics derivations) with the calculator output, D (software provenance), E and E2 (two adversarial review passes of the summary documents; every finding is applied in revision 2 of the summaries or explicitly declined with a reason), plus the orchestrator's independent sanity numbers. |
-| `tools/reflection_step_phase_calculator.py` | Numpy-only reference calculator reproducing every number in the physics report; 25 self-checks. |
-| `tools/provenance_checks/` | Scripts that exercise the prismatique 0.0.1 API exactly as the inspected pipeline does (no simulation run). |
+| understand the method in one go | [docs/guide/pipeline.md](docs/guide/pipeline.md) |
+| know what every parameter means | [docs/guide/parameters.md](docs/guide/parameters.md) |
+| understand the physics (refraction, step phase, wrap period, dynamical effects) | [docs/theory/physics_summary.md](docs/theory/physics_summary.md) |
+| learn why buried dislocations are visible in reflection | [docs/theory/buried_defects.md](docs/theory/buried_defects.md) |
+| see the results | [docs/results/three_strips_results.md](docs/results/three_strips_results.md), [docs/results/dislocations_50nm.md](docs/results/dislocations_50nm.md) |
+| run on a GPU or a cluster | [docs/guide/gpu_arbutus.md](docs/guide/gpu_arbutus.md), [docs/guide/hpc_alliance.md](docs/guide/hpc_alliance.md) |
+| connect the simulation to a real experiment | [docs/guide/experiment_inputs.md](docs/guide/experiment_inputs.md) |
+| place the work in the literature | [docs/literature/reflection_holography.md](docs/literature/reflection_holography.md), [docs/literature/dark_field_strain.md](docs/literature/dark_field_strain.md) |
 
-## Evidence labels
+## Conventions
 
-METADATA_VERIFIED, SECTION_READ, REPRODUCED, PROJECT_INPUT, ASSUMPTION, DERIVED_HERE, UNVERIFIED, as
-defined in the instruction file. Two session-specific qualifiers are used in the literature report:
-`METADATA_VERIFIED(index)` (seen in a search index, not in a publisher record) and `+ABSTRACT(index)`.
+* **Units:** Å, mrad, rad and keV.
+* **Slab frame:** x is the outward surface normal, y is across the beam, z is along the beam.
+* **Phase convention:** see [docs/theory/physics_conventions.md](docs/theory/physics_conventions.md).
+* **Evidence labels:** every parameter and claim carries one, so it is always clear what was given,
+  assumed, derived, read in a source, or only smoke-tested. Labels include PROJECT_INPUT,
+  ASSUMPTION, DERIVED_HERE, SECTION_READ and SMOKE_TEST
+  ([docs/theory/model_assumptions.md](docs/theory/model_assumptions.md)).
 
-## Limitations of this analysis (read before citing anything)
+## Limitations
 
-* The analysis environment blocked every scholarly host (publishers, doi.org, Crossref, Semantic Scholar,
-  OpenAlex, PMC, arXiv). No paper or book chapter was read; literature evidence is index-level only and
-  Osakabe et al. 1988 could not be read at all.
-* No multislice or dynamical reflection simulation was executed. Software statements come from reading the
-  version-matched source code and exercising the Python API without the compiled engine.
-* All physics is derived from stated premises and reproduced numerically; it has not been checked against
-  the textbook sections it would normally be attributed to. The adversarial review found and the summaries
-  correct two numerical slips in the physics report (paraxial error, step projection width); the agent
-  reports themselves are kept unedited as the record.
+* **No independent validation yet:** the multislice kernel has not been checked against abTEM or a
+  dynamical reflection solver (milestone M2 in `docs/dev/05_final_repository_specification.md`).
+* **Placeholder absorption:** the absorption value is not sourced, and it sets the size of the
+  amplitude contrast.
+* **Simplified elasticity and surface:**
+  * the elasticity is isotropic (silicon's Zener ratio is 1.56);
+  * the surface is unreconstructed (no 2×1 dimers) and has no oxide;
+  * dislocations are perfect, not dissociated.
+* **Missing experimental inputs:** objective aperture, beam azimuth, absorption and the others
+  listed in [docs/guide/experiment_inputs.md](docs/guide/experiment_inputs.md).
 
-## Reproducing the numbers
+## Citing
 
-```
-python3 -m venv venv && venv/bin/pip install numpy
-venv/bin/python tools/reflection_step_phase_calculator.py   # prints 25/25 checks pass
-```
-
-## Running the code (buried-dislocation smoke tests)
-
-```
-python3 -m venv venv && venv/bin/pip install numpy scipy matplotlib pytest pyyaml
-venv/bin/python -m pytest -q                      # 40 pass; the cupy test is skipped without a GPU
-venv/bin/python scripts/run_buried_dislocation.py geometric  --config configs/smoke/buried_dislocation_cpu.yaml
-venv/bin/python scripts/run_buried_dislocation.py multislice --config configs/smoke/buried_dislocation_cpu.yaml   # about 1 min on CPU
-venv/bin/python scripts/run_sections.py --config configs/si001_three_sections_cpu.yaml          # Si(001) three strips: holograms and reconstructions (about 45 min on CPU)
-venv/bin/python scripts/figures_holography.py --config configs/si001_three_sections_cpu.yaml --data outputs/si001_three_sections_cpu/reconstruction --geo outputs/si001_three_sections_cpu/reconstruction/results.npz   # Nature-style figures, captions in docs/figures/CAPTIONS.md
-# GPU: add --backend cupy and use configs/smoke/buried_dislocation_gpu.yaml; see docs/09
-```
+See [CITATION.cff](CITATION.cff) (GitHub shows a "Cite this repository" button). Released under
+the [MIT licence](LICENSE).

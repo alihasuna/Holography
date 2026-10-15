@@ -1,10 +1,10 @@
 # Reading plan for the reference library of the instruction file
 
-Status: 2026-09-22. Every source below is in `docs/references.bib` under the same ID. "Access" is the
+Status: 2026-09-22. Every source below is in `docs/literature/references.bib` under the same ID. "Access" is the
 expected route once the environment's network access is Full; paywalled items need a PDF or chapter
 uploaded by Ali (instruction file section 1.6: a legitimately supplied chapter or author manuscript).
 The target label after reading is SECTION_READ with a chapter, section or equation locator recorded in
-`docs/source_map.tsv`; identity checks alone give METADATA_VERIFIED. Nothing below is to be attributed
+`docs/literature/source_map.tsv`; identity checks alone give METADATA_VERIFIED. Nothing below is to be attributed
 to a source before it has been read.
 
 ## Papers and software
@@ -50,11 +50,11 @@ P23 Yagi 1987, P25 Uchida and Lehmpfuhl 1987, P26 Yao and Cowley 1990, P30 and P
 and 2011, P32 Lubk et al. 2014, P33 Meißner et al. 2019, P36 Zhu et al. 2015, P45 and P46 Tanigaki
 et al. 2012 and 2014, P47 Harada et al. 2004, P42 Blackburn and McLeod 2021, P43 and P44 Herring
 2021 and 2022, P49 Kudo et al. 2023 (arXiv, open), Z. L. Wang 1996 chapter 3, and the Hitachi patent
-US 4,998,788 (patent full text is public). Details and current labels: `docs/agent_reports/B_literature.md`.
+US 4,998,788 (patent full text is public). Details and current labels: `docs/dev/agent_reports/B_literature.md`.
 
 ## Order of work for the session with network access
 
-1. Crossref check of every DOI in `docs/references.bib`; fix any record that differs; log in `B2_bib_verification_log.md`.
+1. Crossref check of every DOI in `docs/literature/references.bib`; fix any record that differs; log in `B2_bib_verification_log.md`.
 2. Read P04, P07, S01, S02, P49 and the patent in full; upgrade labels; extract the items in the tables above.
 3. Fetch publisher tables of contents for B01 to B15 and record chapter titles and numbers for the edition named.
 4. Request uploads, in this order: P01, P08, P02 with P02E, P03, B07 dynamical chapters, B08 ch. 5 and 13,

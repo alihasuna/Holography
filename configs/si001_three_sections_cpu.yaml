@@ -5,7 +5,7 @@
 #              core up to the surface, as in the textbook picture)
 # Strips run parallel to the beam [110]; step edges are parallel to the beam (no shadowing).
 name: si001_three_sections_cpu
-configuration: CFG-B (si001_patterned, docs/05 section 2)
+configuration: CFG-B (si001_patterned, docs/dev/05_final_repository_specification.md section 2)
 
 beam:
   energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}
@@ -16,7 +16,7 @@ crystal:
   termination: {value: bulk, label: ASSUMPTION, note: "B3: unreconstructed; the 2x1 dimer reconstruction is not modelled"}
 
 reflection:
-  hkl: {value: [0, 0, 8], label: ASSUMPTION, note: "CFG-B working condition (docs/05); PROJECT_INPUT items 4 and 9 pending"}
+  hkl: {value: [0, 0, 8], label: ASSUMPTION, note: "CFG-B working condition (docs/dev/05_final_repository_specification.md); PROJECT_INPUT items 4 and 9 pending"}
 
 sample:
   periods_per_section: {value: [40, 40, 40], label: SMOKE_TEST, note: "3.840 A periods along [1-10]: 153.6 A per section, cell 460.8 A"}

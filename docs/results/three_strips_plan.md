@@ -1,7 +1,7 @@
 # Plan: Si(001) three-section sample (reference, raised terrace, buried edge dislocation)
 
 Status: 2026-09-30. The sample is built and rendered, and it has been simulated at (008) and (0,0,12):
-see `docs/11_si001_reconstruction_results.md`. Config: `configs/si001_three_sections_cpu.yaml`. Renders:
+see `docs/results/three_strips_results.md`. Config: `configs/si001_three_sections_cpu.yaml`. Renders:
 `docs/figures/fig_sample_si001.png` (the simulation cell, the step and the dislocation core;
 caption in `docs/figures/CAPTIONS.md`).
 
@@ -23,7 +23,7 @@ caption in `docs/figures/CAPTIONS.md`).
   (red in the render).
 * Construction: all strips are cut from one continuous lattice. The extra half-plane is inserted
   explicitly, adding 20 atoms per 3.84 A period (19 layers above the core plus one at the core).
-  Isotropic half-space elasticity (docs/08) moves the atoms. The periodic seam lies in the middle of
+  Isotropic half-space elasticity (docs/theory/buried_defects.md) moves the atoms. The periodic seam lies in the middle of
   strip 1, away from the steps. Checks, all tested in `tests/test_sections.py`: terrace heights,
   +1 half-plane, surface bulge over the core of about `b/pi` = 1.2 A, reference strip flat to
   0.05 A, step edges undisturbed, and only 2 atoms (at the core) closer than 2.0 A.
@@ -47,9 +47,9 @@ At (008) and 200 keV (theta_ext 16.5 mrad at V0 = 12 V, wrap period 0.76 A):
    3.84 A, exactly as for Si(111). There is one run per sample, because strip 1 is the in-image
    reference, plus a perfect-crystal control. The strip differences are compared with step 1.
 3. GPU run on Arbutus (`--backend cupy`, full sampling 0.05 x 0.13 A, rocking scan of +-0.6 mrad
-   around (008)) following docs/09.
+   around (008)) following docs/guide/gpu_arbutus.md.
 4. Sign test (strip 2 lowered instead of raised), depth scan of the dislocation (15, 25, 50 A), and
-   a report in docs/08.
+   a report in docs/theory/buried_defects.md.
 
 ## 4. Choices to confirm
 

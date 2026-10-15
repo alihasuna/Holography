@@ -4,7 +4,7 @@
 # Every physical parameter is {value, label, note}; the loader refuses missing keys and labels.
 # SMOKE_TEST marks numerical choices made only to keep this run small; they are not physics inputs.
 name: si111_buried_60deg_dipole_gpu
-configuration: CFG-A (si111_cleaved_110azimuth, docs/05 section 2)
+configuration: CFG-A (si111_cleaved_110azimuth, docs/dev/05_final_repository_specification.md section 2)
 
 beam:
   energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}
@@ -25,7 +25,7 @@ defects:
       Perfect 60-degree dislocations b = a/2[011] on the (1,-1,1) glide plane, which is parallel to the
       surface, lines along [110] (the beam). Opposite signs make a dipole (e.g. the two sides of a
       glide loop) so that the field decays as 1/r^2 and the cell can be periodic in y. Depth and spacing
-      are illustrative; PROJECT_INPUT items 23 to 27 (docs/06) are needed for the real defect.
+      are illustrative; PROJECT_INPUT items 23 to 27 (docs/guide/experiment_inputs.md) are needed for the real defect.
     value:
       - {burgers_over_a: [0, 0.5, 0.5], line_uvw: [1, 1, 0], depth_A: 30.0, position_yz_A: [66.515, 0.0], sign: 1}
       - {burgers_over_a: [0, 0.5, 0.5], line_uvw: [1, 1, 0], depth_A: 30.0, position_yz_A: [199.544, 0.0], sign: -1}

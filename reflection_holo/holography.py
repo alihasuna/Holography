@@ -2,10 +2,10 @@
 
 Implemented: reference model R1 (tilted plane wave of uniform amplitude; perfectly coherent and
 stable), intensity I = |psi_o + R|^2, optional Poisson detector noise at a stated dose (seeded),
-carrier located on an EMPTY hologram (never on the object hologram: docs/03 section 6), a circular
+carrier located on an EMPTY hologram (never on the object hologram: docs/theory/physics_summary.md section 6), a circular
 sideband mask, reference correction by the empty hologram, and phase unwrapping along one axis.
 
-Not implemented (declared options of docs/05 section 5 still to come): R2/R3 references, biprism
+Not implemented (declared options of docs/dev/05_final_repository_specification.md section 5 still to come): R2/R3 references, biprism
 Fresnel fringes and finite overlap width, partial coherence envelopes, drift, charging, detector
 MTF. The same reconstruct() must be used on experimental holograms.
 """

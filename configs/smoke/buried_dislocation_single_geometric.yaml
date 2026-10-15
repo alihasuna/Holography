@@ -2,7 +2,7 @@
 # 60 degrees to the beam azimuth [110] in the (1,-1,1) surface. Produces a 2D phase map on the surface
 # (y, z_s) and its foreshortened image-plane version (z_s sin(theta_ext)).
 name: smoke_si111_buried_60deg_single_line60_geometric
-configuration: CFG-A (si111_cleaved_110azimuth, docs/05 section 2)
+configuration: CFG-A (si111_cleaved_110azimuth, docs/dev/05_final_repository_specification.md section 2)
 
 beam:
   energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}

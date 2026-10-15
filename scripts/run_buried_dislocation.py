@@ -259,7 +259,7 @@ def run_multislice(cfg: Config, out: Path, backend: str):
         "geometric_vs_multislice": comp,
         "pure_path_phase_ptp_rad": float(cond_ms.q_ext * np.ptp(ux_s[:, 0])),
         "runtime_potential_s": t_pot,
-        "status": "SMOKE TEST: kernel not validated against abTEM or a dynamical solver (docs/05 M2)",
+        "status": "SMOKE TEST: kernel not validated against abTEM or a dynamical solver (docs/dev/05_final_repository_specification.md M2)",
     }
     np.savez_compressed(
         out / "multislice.npz", x=grid.x, y=y, offsets_mrad=offsets,

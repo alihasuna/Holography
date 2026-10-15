@@ -3,15 +3,15 @@
 Reviewer: agent E2, 2026-09-21. Working to
 `ba72277e-si110_reflection_holography_agent_instructions.txt` sections 1, 9, 10.
 
-**Part A** verifies every finding of the first review (`docs/agent_reports/E_review.md`)
+**Part A** verifies every finding of the first review (`docs/dev/agent_reports/E_review.md`)
 against the revised files. **Part B** reviews the four documents the first review never saw:
-`docs/00_executive_summary.md`, `docs/01_repository_audit.md`,
-`docs/02_literature_position.md`, `docs/04_software_provenance_summary.md`.
+`docs/dev/00_executive_summary.md`, `docs/dev/01_repository_audit.md`,
+`docs/literature/literature_position.md`, `docs/dev/04_software_provenance_summary.md`.
 
 Independent verification: all physics numbers were recomputed from scratch in numpy
 (`scratchpad/e2_check.py`, `e2_nonrel.py`) without reading the calculator's implementation;
 `tools/reflection_step_phase_calculator.py` was re-executed (25/25 PASS, output still
-**byte-identical** to `docs/agent_reports/C_calculator_output.txt`); every number in 00, 01,
+**byte-identical** to `docs/dev/agent_reports/C_calculator_output.txt`); every number in 00, 01,
 02 and 04 was traced to the locator implied, in `A_code_audit.md`, `B_literature.md`,
 `B2_bib_verification_log.md`, `C_physics_derivations.md`, `D_software_provenance.md` or the
 read-only clone of the inspected repository.
@@ -28,7 +28,7 @@ source policy forbids.
 | ID | Status | Quoted revised text (or note) |
 |---|---|---|
 | **B1** paraxial error | **APPLIED** | 03 §5: "The paraxial Fresnel error `k dz sin^4(alpha)/8` over the 198 A default cell is 0.002 rad at the 24 mrad tilt, 0.026 rad at the 45 mrad specular scattering angle and 0.106 rad at the 64 mrad band edge". E2 recomputed exactly (exact minus `exp(-i pi lambda dz q^2)`, L=198.248 A): **0.002060 / 0.025450 / 0.106054 rad**. SM08, `model_assumptions` A1 and 05 §4.3.9 all carry the same three numbers; 05 §8 carries "expected 0.026 rad at 45 mrad over 198 A". Consistent everywhere. (See N19 for a notation nit.) |
-| **B2** README points at absent files | **APPLIED** | All five now exist: `docs/00_…`, `01_…`, `02_…`, `04_…`, `references.bib` (96 `@` entries), `agent_reports/A_code_audit.md` (1413 lines, as 01 states). README no longer says "four": "The full reports of the delegated audits: A (code), B (literature) with B2 …, C …, D …, E (adversarial review …)". 05 §1 "The itemised audit is in `docs/01_repository_audit.md`" now resolves. |
+| **B2** README points at absent files | **APPLIED** | All five now exist: `docs/00_…`, `01_…`, `02_…`, `04_…`, `references.bib` (96 `@` entries), `agent_reports/A_code_audit.md` (1413 lines, as 01 states). README no longer says "four": "The full reports of the delegated audits: A (code), B (literature) with B2 …, C …, D …, E (adversarial review …)". 05 §1 "The itemised audit is in `docs/dev/01_repository_audit.md`" now resolves. |
 | **B3** table attributed to the instruction file | **APPLIED** | 03 §3: "A non-relativistic treatment (`Delta = V0/T`) would give 14.00 mrad and a step phase of 3.140 rad (indistinguishable from pi) at (4,-4,4)". No attribution to the instruction file survives. (See N20 for a 4th-digit nit.) |
 | **M1** `(n,-n,n)` | **APPLIED** | 03 Notation: "an implementer must copy `(4,-4,4)`, not `(4,4,4)`"; table header "Rod order (n,-n,n)"; 05 §2 CFG-A "(4,-4,4), (5,-5,5), (7,-7,7), (8,-8,8); never (6,-6,6) or (2,-2,2)"; 05 §4.1 "(2,-2,2), (6,-6,6), (10,-10,10)"; `physics_conventions` "`(4,4,4)` is inclined at 70.5 degrees to the rod" (E2 confirms `arccos(1/3) = 70.53 deg`). |
 | **M2** total external reflection | **APPLIED** | 03 §3: "the internal glancing angle below which a beam inside the crystal cannot escape into vacuum … Because V0 > 0 the refractive index exceeds 1 … there is no total external reflection for electrons." Same in `physics_conventions`. (Formatting nit N21.) |
@@ -84,8 +84,8 @@ source policy forbids.
 
 #### F1. The executive summary, the new audit and the source map all promote SECTION_READ claims to REPRODUCED
 
-*Files:* `docs/00_executive_summary.md` headline 4; `docs/01_repository_audit.md` §3.1 heading;
-`docs/source_map.tsv` SM11a.
+*Files:* `docs/dev/00_executive_summary.md` headline 4; `docs/dev/01_repository_audit.md` §3.1 heading;
+`docs/literature/source_map.tsv` SM11a.
 
 Quoted (00, headline 4): "the saved wave is Fresnel back-propagated to the supercell mid-plane,
 not an exit wave; **the tilt runner writes no wavefunction at all** (two nonexistent keyword
@@ -146,9 +146,9 @@ evidence that the runner writes nothing?" finds none.
 
 #### F2. 00's list of blocking laboratory inputs contradicts 06 — it drops the two that 06 marks blocking and adds two that it does not
 
-*File:* `docs/00_executive_summary.md`, "What is needed from the laboratory".
+*File:* `docs/dev/00_executive_summary.md`, "What is needed from the laboratory".
 
-Quoted: "`docs/06_project_inputs_required.md` lists 22 items. **The blocking ones:** accelerating
+Quoted: "`docs/guide/experiment_inputs.md` lists 22 items. **The blocking ones:** accelerating
 voltage, the selected reflection and objective-aperture angle, the external glancing angle and
 its calibration …, the beam azimuth, the sample orientation and surface state …, **the pattern
 heights**, the reference-wave trajectory, and **the measured carrier fringe spacing and
@@ -176,7 +176,7 @@ curve (9), because it fixes the angle scale and the mean inner potential togethe
 
 #### F3. "The best end-to-end result … is 0.12 A" is not what the code audit calls the best result
 
-*File:* `docs/00_executive_summary.md`, headline 5.
+*File:* `docs/dev/00_executive_summary.md`, headline 5.
 
 Quoted: "**The best end-to-end result on ideal synthetic data with the defaults is 0.12 A for a
 3.14 A step.**"
@@ -199,7 +199,7 @@ returns only 0.80 A, because the 2 pi branch is never resolved (A report §5.5).
 
 #### F4. 01 omits A-M9 — the repository's only self-validation path is broken — while its "what survived scrutiny" section reports that the rotation matrix is clean
 
-*File:* `docs/01_repository_audit.md` §3 (defect list) and §4 ("What survived scrutiny").
+*File:* `docs/dev/01_repository_audit.md` §3 (defect list) and §4 ("What survived scrutiny").
 
 Quoted (01 §4): "The slab rotation matrix is orthonormal (2e-16) and right-handed; the facet is
 {111} and the beam is a <110> in-plane direction."
@@ -234,7 +234,7 @@ A-M9)".
 
 #### F5. 02 lists a journal paper among "software actually verified from READMEs", upgrading its evidence level
 
-*File:* `docs/02_literature_position.md`, last bullet of "Methodological analogues".
+*File:* `docs/literature/literature_position.md`, last bullet of "Methodological analogues".
 
 Quoted: "Modern reflection simulation software **actually verified from READMEs**:
 `sim-trhepd-rheed` (dynamical, Fortran, GPL), `rheedium` (JAX, kinematic with optional
@@ -259,8 +259,8 @@ RHEED/TRHEPD boundary-value problem as an initial-value matrix ODE."
 
 #### F6. 03 §5 calls the *nominal* 20 A vacuum channel "true"; the code audit measured 16.1 A
 
-*File:* `docs/03_physics_summary.md` §5, bullet 2 (and, in the opposite direction,
-`docs/00_executive_summary.md` headline 2 and `docs/01_repository_audit.md` §1).
+*File:* `docs/theory/physics_summary.md` §5, bullet 2 (and, in the opposite direction,
+`docs/dev/00_executive_summary.md` headline 2 and `docs/dev/01_repository_audit.md` §1).
 
 Quoted (03 §5): "only rays within `L_z,si tan(theta) = 3.11 A` of the surface reach it inside
 the crystal (31 percent of the **nominal** 10 A gap, 16 percent of the **true 20 A** periodic
@@ -280,7 +280,7 @@ and 01 ("a 16 A image gap") use the audited value; only 03 calls 20 A "true".
 
 #### F7. 01 §4 reports that "the two wavelength formulas are algebraically identical" — there are three, and the third is the cause of the NaN file 01 reports in §3.1
 
-*File:* `docs/01_repository_audit.md` §4, bullet 3.
+*File:* `docs/dev/01_repository_audit.md` §4, bullet 3.
 
 Quoted: "The two wavelength formulas are algebraically identical (1e-6 percent difference)."
 
@@ -305,7 +305,7 @@ named constants source (instruction §9.8)."
 
 #### F8. 02 gives P08 and P09 — the same volume of the same journal — two different journal names, and states for P08 the name B leaves unresolved
 
-*File:* `docs/02_literature_position.md`, Osakabe table, rows P08 and P09.
+*File:* `docs/literature/literature_position.md`, Osakabe table, rows P08 and P09.
 
 Quoted: "| P08 | Osakabe, **Microsc. Res. Tech.** 20, 457 (1992) … Best accessible statement of
 the method; journal masthead for volume 20 to be checked. |" and "| P09 | Banzhof, Herrmann and
@@ -556,7 +556,7 @@ foreshortening)."
    declined item (C's internal path to its companion script) is declined for a stated reason
    (the agent reports are frozen as the record).
 2. `tools/reflection_step_phase_calculator.py` still runs clean, prints **25/25 checks pass**,
-   and its output is **byte-identical** to `docs/agent_reports/C_calculator_output.txt`. The
+   and its output is **byte-identical** to `docs/dev/agent_reports/C_calculator_output.txt`. The
    README recipe works as written.
 3. Every corrected physics number recomputed independently and confirmed: paraxial error
    0.00206 / 0.02545 / 0.10605 rad; `Delta = 6.98200e-5`; 14.06 % / 16.37 %; the whole

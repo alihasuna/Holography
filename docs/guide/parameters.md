@@ -1,7 +1,7 @@
 # Simulation parameters, explained
 
 Status: 2026-10-01. This is the parameter reference for the Si(001) three-strip simulation behind
-the figures in `docs/figures/` (results: `docs/11_si001_reconstruction_results.md`). Values come
+the figures in `docs/figures/` (results: `docs/results/three_strips_results.md`). Values come
 from `configs/si001_three_sections_cpu.yaml` and the run manifests; derived numbers were
 recomputed with the repository code. The Status column uses the project's evidence labels:
 
@@ -50,7 +50,7 @@ measured from the surface, and phases are in rad.
 |---|---|---|---|
 | Type | Lomer dislocation, pure edge | The usual misfit dislocation at (001) Si/SiGe interfaces. It matches your textbook picture: an extra half-plane of atoms that ends inside the crystal. | ASSUMPTION (PROJECT_INPUT items 23–24) |
 | Burgers vector b | a/2[-110], length 3.840 Å | The closure failure of a loop of atomic steps around the line. Here it lies in the surface plane, perpendicular to the line. It is a full lattice vector, so the crystal is perfect away from the core. | ASSUMPTION |
-| Sign convention | b = circuit integral of du, counter-clockwise about the line direction | With this sign the extra half-plane points up to the surface and the surface bulges upward. | convention (docs/08) |
+| Sign convention | b = circuit integral of du, counter-clockwise about the line direction | With this sign the extra half-plane points up to the surface and the surface bulges upward. | convention (docs/theory/buried_defects.md) |
 | Line direction | [110], along the beam | The line runs along the beam, so the field varies only across the beam. | ASSUMPTION |
 | Depth | 25 Å (2.5 nm) | Distance from the surface to the core. The surface bump is about 2 × depth = 5 nm wide; its height does not depend on depth. | ASSUMPTION (PROJECT_INPUT item 25) |
 | Position | y = 384 Å (centre of strip 3) | | layout |
@@ -93,7 +93,7 @@ measured from the surface, and phases are in rad.
 | Number of slices | 3137 (008), 2074 (0,0,12) | Enough for the sheet to descend to the surface, reflect and rise back to its starting height. | DERIVED_HERE |
 | Path length along the beam | 6023 Å (008), 3982 Å (0,0,12) | 2 × (sheet centre height) / tan θ. | DERIVED_HERE |
 | Anti-aliasing band | 2/3 of Nyquist: 3.33 Å⁻¹ (x), 2.60 Å⁻¹ (y) | Spatial frequencies above this are removed every slice, to avoid wrap-around errors. Both beams (at most 1.0 Å⁻¹) are well inside it. | NUMERICAL |
-| Propagator | exact (non-paraxial) | The free-space step uses the exact dispersion relation, which avoids the paraxial phase error (0.026 rad at 45 mrad over a 198 A cell; docs/03 section 5). | method |
+| Propagator | exact (non-paraxial) | The free-space step uses the exact dispersion relation, which avoids the paraxial phase error (0.026 rad at 45 mrad over a 198 A cell; docs/theory/physics_summary.md section 5). | method |
 | Output plane | exit plane of the cell, no back-propagation | The wave is taken where it physically leaves the cell. The previous repository took it at the mid-plane by mistake. | method |
 | Precision | complex64 waves, complex128 potential sums | Single precision for propagation, double for building the potentials. | NUMERICAL |
 | Runtime | 26 min (008), 17 min (0,0,12) on a 4-core CPU | Expected to be minutes on the 12 GB GPU. | record |
@@ -154,7 +154,7 @@ measured from the surface, and phases are in rad.
 ## Which parameters must come from the laboratory
 
 Before any quantitative comparison with experiment, these assumptions must be replaced by
-measured values (PROJECT_INPUT items in `docs/06_project_inputs_required.md`):
+measured values (PROJECT_INPUT items in `docs/guide/experiment_inputs.md`):
 
 * the reflection and glancing angle, with a measured rocking curve (items 4, 7, 9);
 * the beam azimuth (8);

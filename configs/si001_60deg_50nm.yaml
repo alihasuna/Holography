@@ -7,7 +7,7 @@
 #   section 3  same height as section 1, 4915 A wide, 60 degree dislocation 500 A deep in its middle
 # Strips run parallel to the beam [110]; step edges are parallel to the beam (no shadowing).
 name: si001_60deg_50nm
-configuration: CFG-B (si001_patterned, docs/05 section 2)
+configuration: CFG-B (si001_patterned, docs/dev/05_final_repository_specification.md section 2)
 
 beam:
   energy_keV: {value: 200, label: PROJECT_INPUT, note: "supplied by Ali, 2026-09-22"}
@@ -18,7 +18,7 @@ crystal:
   termination: {value: bulk, label: ASSUMPTION, note: "B3: unreconstructed; the 2x1 dimer reconstruction is not modelled"}
 
 reflection:
-  hkl: {value: [0, 0, 8], label: ASSUMPTION, note: "CFG-B working condition (docs/05); PROJECT_INPUT items 4 and 9 pending"}
+  hkl: {value: [0, 0, 8], label: ASSUMPTION, note: "CFG-B working condition (docs/dev/05_final_repository_specification.md); PROJECT_INPUT items 4 and 9 pending"}
 
 sample:
   periods_per_section: {value: [320, 320, 1280], label: ASSUMPTION, note: "3.840 A periods along [1-10]: 1229 + 1229 + 4915 A, cell 7373 A = 0.74 um, about 15 times the dislocation depth"}
@@ -39,7 +39,7 @@ defects:
       b/pi = 0.61 A, same sense as the Lomer smoke test: extra half-plane up), screw component
       1.920 A along the beam. The usual glissile dislocation in diamond-cubic Si (introduced by
       surface damage, scratches, indentation, thermal stress or relaxation of a strained layer).
-      Isotropic half-space field (docs/08); the core is not modelled (it is 50 nm away).
+      Isotropic half-space field (docs/theory/buried_defects.md); the core is not modelled (it is 50 nm away).
     value:
       - {burgers_over_a: [0.0, 0.5, 0.5], line_uvw: [1, 1, 0], depth_A: 500.0, position_yz_A: [4915.49, 0.0], sign: 1}
 
@@ -50,7 +50,7 @@ geometric:
   n_layers: {value: 120, label: SMOKE_TEST, note: "layers of a/4 summed (163 A)"}
 
 multislice:
-  ny: {value: 57600, label: SMOKE_TEST, note: "dy = 0.128 A over 7373 A (converged lateral sampling, docs/08); 57600 = 2^8 3^2 5^2 for fast FFTs"}
+  ny: {value: 57600, label: SMOKE_TEST, note: "dy = 0.128 A over 7373 A (converged lateral sampling, docs/theory/buried_defects.md); 57600 = 2^8 3^2 5^2 for fast FFTs"}
   nx: {value: 1728, label: SMOKE_TEST}
   dx_A: {value: 0.1, label: SMOKE_TEST}
   x0_A: {value: -58.0, label: SMOKE_TEST, note: "cell x from -58 to +114.8 A; surface relief of the dislocation -1.9 to +0.8 A (slip step 2.6 A), raised strip +5.4 A"}

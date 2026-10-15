@@ -2,11 +2,11 @@
 
 Reviewer: agent E, 2026-09-21. Working to
 `ba72277e-si110_reflection_holography_agent_instructions.txt` sections 1, 9, 10.
-Documents under review: `README.md`, `docs/03_physics_summary.md`,
-`docs/05_final_repository_specification.md`, `docs/physics_conventions.md`,
-`docs/model_assumptions.md`, `docs/06_project_inputs_required.md`,
-`docs/source_map.tsv`, `tools/provenance_checks/README.md`.
-Supporting material read: `docs/agent_reports/{B,C,D}*`, `C_calculator_output.txt`,
+Documents under review: `README.md`, `docs/theory/physics_summary.md`,
+`docs/dev/05_final_repository_specification.md`, `docs/theory/physics_conventions.md`,
+`docs/theory/model_assumptions.md`, `docs/guide/experiment_inputs.md`,
+`docs/literature/source_map.tsv`, `tools/provenance_checks/README.md`.
+Supporting material read: `docs/dev/agent_reports/{B,C,D}*`, `C_calculator_output.txt`,
 `orchestrator_sanity_numbers.txt`, `tools/reflection_step_phase_calculator.py`,
 the read-only clone of `si110-reflection-holography`.
 
@@ -48,8 +48,8 @@ Review complete: 3 Blockers, 11 Major, 19 Minor, 6 Nit, plus a list of 20 items 
 
 ### B1. The paraxial-propagator error is understated by a factor of 3; the quoted 0.04 rad is wrong (0.106 rad)
 
-*File:* `docs/03_physics_summary.md` §5, first bullet; `docs/source_map.tsv` SM08;
-`docs/model_assumptions.md` A1; `docs/05_final_repository_specification.md` §4.3 item 9.
+*File:* `docs/theory/physics_summary.md` §5, first bullet; `docs/literature/source_map.tsv` SM08;
+`docs/theory/model_assumptions.md` A1; `docs/dev/05_final_repository_specification.md` §4.3 item 9.
 
 Quoted (03 §5): "the longitudinal component is unchanged, so the wave is forward-propagating along the
 beam axis and **the paraxial Fresnel error over a 200 A cell is below 0.04 rad** (C section 5.1)."
@@ -95,18 +95,18 @@ Also fix SM08 and the same claim in `model_assumptions.md` A1 ("below 0.04 rad o
 
 *File:* `README.md`, "Read in this order" table and §"Reproducing the numbers".
 
-Quoted: "| `docs/00_executive_summary.md` | Findings and decisions in two pages. |",
-"| `docs/01_repository_audit.md` | ... |",
-"`docs/physics_conventions.md`, `docs/model_assumptions.md`, `docs/source_map.tsv`, `docs/references.bib` |",
-"`docs/agent_reports/` | The full reports of the **four** delegated audits: **A (code)**, B (literature),
+Quoted: "| `docs/dev/00_executive_summary.md` | Findings and decisions in two pages. |",
+"| `docs/dev/01_repository_audit.md` | ... |",
+"`docs/theory/physics_conventions.md`, `docs/theory/model_assumptions.md`, `docs/literature/source_map.tsv`, `docs/literature/references.bib` |",
+"`docs/dev/agent_reports/` | The full reports of the **four** delegated audits: **A (code)**, B (literature),
 C (physics derivations), D (software provenance) ...".
 
 **What is wrong.** `ls docs/` gives only `03_physics_summary.md`, `05_final_repository_specification.md`,
 `06_project_inputs_required.md`, `model_assumptions.md`, `physics_conventions.md`, `source_map.tsv`,
-`agent_reports/{B,C,D}...`. `docs/00_executive_summary.md`, `docs/01_repository_audit.md`,
-`docs/references.bib` and the A (code) report do not exist. They are also cited as if they existed from
-inside the documents under review: 05 §1 ("The itemised audit is in `docs/01_repository_audit.md`"),
-05 §6 and 05 §3 (`docs/references.bib`), and the README's own numbering (00, 01, 03, 05, 06) advertises
+`agent_reports/{B,C,D}...`. `docs/dev/00_executive_summary.md`, `docs/dev/01_repository_audit.md`,
+`docs/literature/references.bib` and the A (code) report do not exist. They are also cited as if they existed from
+inside the documents under review: 05 §1 ("The itemised audit is in `docs/dev/01_repository_audit.md`"),
+05 §6 and 05 §3 (`docs/literature/references.bib`), and the README's own numbering (00, 01, 03, 05, 06) advertises
 02 and 04 as missing as well.
 
 A source-policy repository whose own index points at absent evidence files is the single most
@@ -114,11 +114,11 @@ embarrassing defect in the set: every claim marked "see the audit" is currently 
 
 **Proposed fix:** either commit the four missing artefacts, or delete/mark them as "not written in this
 analysis" and remove the "four delegated audits" claim (there are three), and re-point 05 §1 at
-`docs/agent_reports/D_software_provenance.md` + `C_physics_derivations.md`, which do contain the audit.
+`docs/dev/agent_reports/D_software_provenance.md` + `C_physics_derivations.md`, which do contain the audit.
 
 ### B3. `03 §3` attributes to the instruction file a table and a formula that are not in it
 
-*File:* `docs/03_physics_summary.md` §3, paragraph after the table.
+*File:* `docs/theory/physics_summary.md` §3, paragraph after the table.
 
 Quoted: "**The instruction-file version of the same table** using the non-relativistic `Delta = V0/T`
 gives 14.00 mrad and exactly pi at (444); that form underestimates `Delta` by 16 percent and must not
@@ -141,11 +141,11 @@ must not be used." (See M3 for the 16 percent.)
 
 ### M1. `(nnn)` is not the specular rod of a `(1,-1,1)` surface; it should be `(n,-n,n)` throughout
 
-*Files:* `docs/03_physics_summary.md` §3 table ("Rod order (nnn)" / rows 333-888);
-`docs/05_final_repository_specification.md` §2 CFG-A ("(444), (555), (777), (888); never (666) or
+*Files:* `docs/theory/physics_summary.md` §3 table ("Rod order (nnn)" / rows 333-888);
+`docs/dev/05_final_repository_specification.md` §2 CFG-A ("(444), (555), (777), (888); never (666) or
 (222)") and §4.1 ("`F_hkl = 0` refuses (222), (666), (10,10,10), (002), (006)").
 
-**What is wrong.** `docs/physics_conventions.md` fixes the outward normal as `[1,-1,1]/sqrt(3)`.
+**What is wrong.** `docs/theory/physics_conventions.md` fixes the outward normal as `[1,-1,1]/sqrt(3)`.
 The specular rod is therefore `G || [1,-1,1]`, i.e. the reflections `(n,-n,n)`, not `(n,n,n)`.
 E recomputed: `ghat_(444) . n_hat = 1/3`, not 1 — (444) is a NON-specular reflection from this
 surface, inclined at 70.5 degrees to the rod, and it is not the reflection whose angles the
@@ -166,7 +166,7 @@ for this surface." In 05 §4.1 list the forbidden specular orders as (2,-2,2), (
 
 ### M2. "critical angle for total external reflection" is the wrong phenomenon for electrons
 
-*File:* `docs/03_physics_summary.md` §3, formula box: "`theta_c = 8.356 mrad (critical angle for
+*File:* `docs/theory/physics_summary.md` §3, formula box: "`theta_c = 8.356 mrad (critical angle for
 total external reflection)`". (Same wording in `C_physics_derivations.md` §3.6 and in the
 calculator's INACCESSIBLE message, so it propagates.)
 
@@ -186,9 +186,9 @@ electrons; every externally incident beam enters, with `theta_int >= theta_c`."
 
 ### M3. "Refraction is the entire signal" is an overstatement, and it contradicts the report's own §4.4 and its only accessible description of the experiment
 
-*Files:* `docs/03_physics_summary.md` §2 last bullet ("refraction is the entire signal") and §3
+*Files:* `docs/theory/physics_summary.md` §2 last bullet ("refraction is the entire signal") and §3
 ("The entire holographic step signal at a specular Bragg condition is a refraction effect" in C);
-`docs/model_assumptions.md` A4 ("At the vacuum Bragg angle a single-bilayer step is invisible
+`docs/theory/model_assumptions.md` A4 ("At the vacuum Bragg angle a single-bilayer step is invisible
 (2 pi n); refraction is the entire signal").
 
 **What is wrong.** The statement is true only under four simultaneous conditions: (i) the beam is
@@ -217,7 +217,7 @@ refraction effect. Both regimes must be supported by the model; the operating po
 
 ### M4. Acceptance criteria 2 and 3 are not testable, and AC3 contradicts `model_assumptions` §3
 
-*File:* `docs/05_final_repository_specification.md` §0.
+*File:* `docs/dev/05_final_repository_specification.md` §0.
 
 Quoted AC2: "...and a flat-surface rocking-curve benchmark against an independent dynamical
 reflection solver, **within stated tolerances**." No tolerance is stated anywhere, and §4.4 admits
@@ -245,7 +245,7 @@ is deferred until P01 is read; its surface and conditions are currently UNVERIFI
 
 ### M5. `source_map.tsv` SM07 attributes the 1/40-1/70 foreshortening statement to P23; the B report says its provenance is unresolved
 
-*File:* `docs/source_map.tsv`, SM07, source column: "P23 (Yagi 1987 review, index-level 1/40-1/70
+*File:* `docs/literature/source_map.tsv`, SM07, source column: "P23 (Yagi 1987 review, index-level 1/40-1/70
 statement)".
 
 **What is wrong.** `B_literature.md` §9.6 introduces that sentence as: "Source level
@@ -264,7 +264,7 @@ evidence level `DERIVED_HERE`; the derivation and the numbers are the report's o
 
 ### M6. Geometric shadowing at grazing incidence is absent from the specification, and it dominates CFG-B
 
-*Files:* `docs/03_physics_summary.md` §4 bullet 2 and §6; `docs/05_final_repository_specification.md`
+*Files:* `docs/theory/physics_summary.md` §4 bullet 2 and §6; `docs/dev/05_final_repository_specification.md`
 §4.5, §5.2, §7.4. The word "shadow" does not occur in any document under review.
 
 **What is wrong.** At a glancing angle `theta` an up-step of height `h` casts a geometric shadow of
@@ -287,9 +287,9 @@ raytrace visibility, not only `-q.R`." Add a test: "shadowed-region mask matches
 
 ### M7. Illumination convergence is treated as a non-blocking input, but it is a first-order contrast killer for the intended nm-scale features
 
-*Files:* `docs/06_project_inputs_required.md` item 3 (not marked blocking);
-`docs/05_final_repository_specification.md` §5.4 (partial coherence listed with no numbers);
-`docs/03_physics_summary.md` §4 (gives the tilt-step requirement but not the divergence requirement).
+*Files:* `docs/guide/experiment_inputs.md` item 3 (not marked blocking);
+`docs/dev/05_final_repository_specification.md` §5.4 (partial coherence listed with no numbers);
+`docs/theory/physics_summary.md` §4 (gives the tilt-step requirement but not the divergence requirement).
 
 **What is wrong.** The same derivative that sets the rocking-series tilt step,
 `d(Delta_phi)/d(theta) = (4 pi h/lambda) cos(theta)`, also converts the illumination convergence
@@ -315,7 +315,7 @@ phase noise, is what decides whether a 10 nm feature is measurable.
 
 ### M8. The phase-precision-to-height conversion in 03 §4 is the (666) number, quoted as the (444) number
 
-*File:* `docs/03_physics_summary.md` §4, first bullet: "with fringe contrast 0.5 and 1e4 counts in
+*File:* `docs/theory/physics_summary.md` §4, first bullet: "with fringe contrast 0.5 and 1e4 counts in
 the aperture area, `sigma_phi = 0.03 rad`, i.e. **0.003 A at (444)**."
 
 **E recomputed.** `sigma_phi = sqrt(2)/(0.5*sqrt(1e4)) = 0.02828 rad`. `sigma_h = h_2pi
@@ -327,7 +327,7 @@ forbidden and the same document forbids its use.
 
 ### M9. The quantification formula in 05 §5.7 drops the sign that `physics_conventions.md` says must never be dropped
 
-*Files:* `docs/05_final_repository_specification.md` §5 item 7 versus `docs/physics_conventions.md`
+*Files:* `docs/dev/05_final_repository_specification.md` §5 item 7 versus `docs/theory/physics_conventions.md`
 "Step phase" row.
 
 Conventions: "`Delta_phi = ... = -(k_out - k_in).R` ... For the specular beam this is
@@ -348,7 +348,7 @@ right-hand side inside the modulus.
 
 ### M10. Model elements missing from the specification that the experiment will certainly contain
 
-*File:* `docs/05_final_repository_specification.md` §5 (optics/hologram/reconstruction) and §11.
+*File:* `docs/dev/05_final_repository_specification.md` §5 (optics/hologram/reconstruction) and §11.
 
 None of the following appears anywhere in the documents under review (verified by grep over all
 eight files):
@@ -373,7 +373,7 @@ treatment (B6, §4.3.7, item 21), surface reconstruction (B3, §4.2), oxide/dama
 
 ### M11. Nothing in the validation chain independently tests the reflection PHASE - the measurand
 
-*File:* `docs/05_final_repository_specification.md` §0.2, §4.3 ("Engine plan"), §4.4, §4.5, §8.
+*File:* `docs/dev/05_final_repository_specification.md` §0.2, §4.3 ("Engine plan"), §4.4, §4.5, §8.
 
 The chain as specified is: custom numpy/cupy kernel = reference engine, "benchmarked in a
 **transmission** configuration against abTEM 1.1 and Prismatic, then used in reflection"; abTEM as
@@ -600,7 +600,7 @@ contradicts C's own header claim that "Every number in every table below is prod
 ### m17. 05's own quantitative claims carry no evidence label and no source-map row, which breaks its acceptance criterion 4
 
 05 §0.4 requires that "Every physical claim, material parameter and algorithm has a
-`docs/source_map.tsv` record with an evidence label". 05 §4.3 then states, unlabelled and
+`docs/literature/source_map.tsv` record with an evidence label". 05 §4.3 then states, unlabelled and
 unrecorded: the 890 A footprint minimum, the 0.1-0.4 um dynamical build-up length, "grids of order
 1500 x 600 pixels and thousands of 1 A slices", and the 64 mrad / 48 mrad sampling ceilings. The
 source map has rows for the wavelength, structure factor, step phase, refraction, wrap period,
@@ -727,7 +727,7 @@ Independently recomputed and confirmed (my script, separate constants and formul
     0.0627 mrad for `h = 10 nm`; 3.41 wraps for a bilayer at (444); 109 wraps for 10 nm.
 15. `dDelta_phi/dV0 = -0.335 rad/V` at (444) (-> "-0.34" is right).
 16. `tools/reflection_step_phase_calculator.py` runs clean and prints 25/25 PASS, and its output is
-    **byte-identical** to `docs/agent_reports/C_calculator_output.txt`. The README's reproduction
+    **byte-identical** to `docs/dev/agent_reports/C_calculator_output.txt`. The README's reproduction
     recipe works.
 17. Crystallographic frame in `physics_conventions.md`: `x_hat, y_hat, z_hat` are orthonormal and
     right-handed (`x_hat x y_hat = z_hat` exactly), and the criticism of the inspected repository's

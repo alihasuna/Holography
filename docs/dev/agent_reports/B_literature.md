@@ -639,7 +639,7 @@ with k = 2π/λ. θ always denotes the **glancing angle measured from the surfac
 cycles per length (|g| = 1/d), so phases carry an explicit 2π; **q** = 2π**g** is the
 angular-units version. Switching to the exp(+iωt) convention or to the opposite FFT sign
 flips every phase sign below. *(Instruction §9.8 requires this paragraph to be mirrored into
-`docs/physics_conventions.md`.)*
+`docs/theory/physics_conventions.md`.)*
 
 ### 9.2 The step-phase relation — derivation (`DERIVED_HERE`)
 
@@ -956,7 +956,7 @@ Ordered by how much they change the code.
     (normal · beam ≈ 0 to within the glancing angle) to the generator, per instruction §9.2.
 12. **Record the dependency risk.** Prismatic's own README now states it is no longer
     actively maintained and points to abTEM. abTEM and py_multislice have **no** reflection
-    support in their READMEs. Note this in `docs/model_assumptions.md`; do **not** migrate
+    support in their READMEs. Note this in `docs/theory/model_assumptions.md`; do **not** migrate
     on that basis alone (instruction §S).
 13. **Bibliography hygiene.** The repository README cites [B11] as "Tomita & Shindo (2022)";
     the publisher order is **Shindo & Tomita**. Also add [P08] (Osakabe's own method

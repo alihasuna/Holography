@@ -13,7 +13,7 @@ The reflected wave probes only the top few nanometres (the extinction and absorp
 
 1. **Surface relaxation.** The traction-free surface moves by the elastic displacement field of the
    buried line. The reflected wave picks up the vacuum path difference `-(k_out - k_in).u_s` (the
-   same translation-covariance phase as a step, docs/physics_conventions.md). For a line at depth
+   same translation-covariance phase as a step, docs/theory/physics_conventions.md). For a line at depth
    `d`, the normal surface displacement is, exactly for an isotropic half-space and independently
    of Poisson's ratio (tested):
 
@@ -53,7 +53,7 @@ Consequences for the experiment:
 The mean inner potential of the parameterisation is 13.91 V. The same value is recovered from
 the grid potential to 0.2 percent (tested). It differs from the 12.0 V ASSUMPTION B1, so the
 multislice runs at its own internal Bragg condition (theta_ext 13.23 mrad instead of 13.64 mrad)
-and reports both values. This is requirement 6 of docs/05 section 4.3 (source-map row SM17).
+and reports both values. This is requirement 6 of docs/dev/05_final_repository_specification.md section 4.3 (source-map row SM17).
 
 ## 3. Verification of the elastic solution (tests/test_dislocation.py)
 
@@ -90,7 +90,7 @@ Reading:
 
 * The two models agree in shape, sign and magnitude. The profile is set by the surface relief, as
   argued in section 1. The residual is smallest for small `Lambda`. This is a **consistency check,
-  not a validation**: both rest on the same translation-covariance identity (docs/05 section 4.4).
+  not a validation**: both rest on the same translation-covariance identity (docs/dev/05_final_repository_specification.md section 4.4).
   The best-matching `Lambda` is not a measured penetration depth, because the absorption is a
   placeholder.
 * The remaining residual of about 0.2 rad has two visible parts. The peaks are blunted by the
@@ -115,13 +115,13 @@ dx = 0.1 A is converged (0.05 A changes R by < 2 percent). Production runs need 
 which is the value in the spec and in the GPU config. The phase profile of this section is dominated by the
 surface relief and is expected to be less sensitive, but it has not been re-run at 0.13 A.
 
-NOT RUN: the cupy backend (no GPU in this environment; see docs/09); the GPU-sized config with its
+NOT RUN: the cupy backend (no GPU in this environment; see docs/guide/gpu_arbutus.md); the GPU-sized config with its
 rocking scan; abTEM cross-validation and the phase-validation ladder (M2); hologram formation and
 reconstruction of these waves (M3); inclined or emerging lines; anisotropic elasticity; Si(001).
 
 ## 6. What is needed to turn this into a prediction for the real sample
 
-The questions in docs/06 section G (items 23 to 27): defect type and origin, Burgers vector and
+The questions in docs/guide/experiment_inputs.md section G (items 23 to 27): defect type and origin, Burgers vector and
 line direction, depth, spacing, and independent characterisation. Also the reflection and angle
 actually used (items 4, 7 and 9), and a sourced absorptive potential (item 21), which fixes
 `Lambda` and therefore the strain-contrast amplitude.

@@ -246,7 +246,7 @@ Recommended set for the Si(001) (008) simulation (INFERENCE from the above):
   * 4-layer step (5.431 Å, n = 8): 44.83 rad (wrapped +0.85 rad) at V0 = 12 V; 43.91 rad (wrapped
     −0.08 rad) at 13.9 V.
   * 1-layer step (1.358 Å, n = 2): 11.21 rad (wrapped −1.36 rad) at V0 = 12 V.
-  * This matches the magnitudes in docs/10_si001_three_sections_plan.md (−44.8 rad, wrapped −0.85 at
+  * This matches the magnitudes in docs/results/three_strips_plan.md (−44.8 rad, wrapped −0.85 at
     12 V; 0.08 at 13.9 V; the sign differs by convention).
   * So the project's "refraction residual" result has a published kinematic counterpart (A3).
   * A3's own wording uses V0/E. That non-relativistic form gives 45.63 rad.

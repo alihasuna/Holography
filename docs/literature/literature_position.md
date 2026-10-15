@@ -1,11 +1,11 @@
-# Literature position (summary; full review in `docs/agent_reports/B_literature.md`)
+# Literature position (summary; full review in `docs/dev/agent_reports/B_literature.md`)
 
-Status: 2026-09-21, revision 2 (after `docs/agent_reports/E2_review.md`). Read the access conditions
+Status: 2026-09-21, revision 2 (after `docs/dev/agent_reports/E2_review.md`). Read the access conditions
 first: the analysis environment blocked every scholarly host, so the full review rests on the web-search
 index only. Its labels `METADATA_VERIFIED(index)` and `+ABSTRACT(index)` are weaker than
 `METADATA_VERIFIED` and `SECTION_READ`; no paper or book chapter was read. The bibliography
-`docs/references.bib` (96 entries, 78 index-verified, 18 quarantined as UNVERIFIED) and the
-verification log `docs/agent_reports/B2_bib_verification_log.md` record the provenance of every entry.
+`docs/literature/references.bib` (96 entries, 78 index-verified, 18 quarantined as UNVERIFIED) and the
+verification log `docs/dev/agent_reports/B2_bib_verification_log.md` record the provenance of every entry.
 
 ## Starting point: Osakabe's reflection electron holography
 
@@ -58,4 +58,4 @@ Dudarev and Whelan (B08) chapters on dynamical RHEED; Z. L. Wang 1996 (REM book,
 
 Read P07 (Harada 2021, open access at PMC7850541), P01, P02E, P08 and Hÿtch 2011; Crossref every
 bibliography entry; run the Semantic Scholar or OpenAlex citation lists of P01, P02 and P03 to settle the
-"nothing since 1993" question honestly. Details in `docs/agent_reports/B_literature.md` section 12.
+"nothing since 1993" question honestly. Details in `docs/dev/agent_reports/B_literature.md` section 12.

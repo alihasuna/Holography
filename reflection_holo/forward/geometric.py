@@ -1,6 +1,6 @@
 """Geometric-phase forward model for strained or displaced surfaces ("geometry mode").
 
-Model (DERIVED_HERE; premises in docs/08_buried_defects.md section 2):
+Model (DERIVED_HERE; premises in docs/theory/buried_defects.md section 2):
 
     A(r_par) = sum_l w_l exp(-i (q_int - G).(R_l - R_0)) exp(-i G.u(R_l, r_par))
     phi(r_par) = arg A(r_par) - (q_ext - G).u(R_0, r_par)
@@ -13,12 +13,12 @@ Model (DERIVED_HERE; premises in docs/08_buried_defects.md section 2):
 * The second term is the vacuum path difference of the displaced surface, with the refraction-
   corrected external momentum transfer.
 * For a rigid translation u = R the model returns exactly -q_ext.R, the translation-covariance step
-  phase of docs/physics_conventions.md, independently of Lambda (tested).
+  phase of docs/theory/physics_conventions.md, independently of Lambda (tested).
 
 Limitations: no dynamical scattering (valid as a small-strain kinematic approximation inside the
 extinction depth), no shadowing (the relief of a buried dislocation is smooth, slopes << theta),
 no lateral propagation blur, specular or single-reflection only. Agreement with the multislice is a
-consistency check, not an independent validation (docs/05 section 4.4).
+consistency check, not an independent validation (docs/dev/05_final_repository_specification.md section 4.4).
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ def specular_vectors(cond):
 
 
 def rigid_step_phase(cond, R_vec) -> float:
-    """Reference: -q_ext.R for a lattice-translation step (docs/physics_conventions.md)."""
+    """Reference: -q_ext.R for a lattice-translation step (docs/theory/physics_conventions.md)."""
     return float(-cond.q_ext * np.asarray(R_vec, float)[0])
 
 

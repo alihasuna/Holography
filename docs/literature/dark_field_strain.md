@@ -6,7 +6,7 @@ applies: labels METADATA_VERIFIED, SECTION_READ, UNVERIFIED (+ABSTRACT(index) wh
 summary was seen). In this report every claim is additionally marked **READ** (text seen by me on the
 page/PDF named) or **NOT VERIFIED**.
 
-Access in this session (differs from earlier sessions recorded in `docs/02_literature_position.md`):
+Access in this session (differs from earlier sessions recorded in `docs/literature/literature_position.md`):
 reachable and used: HAL (hal.science + API), PubMed/PMC E-utilities, Crossref API, arXiv API, J-STAGE,
 TU Berlin DepositOnce, University of Groningen Pure; IOPscience served abstract pages only (PDF links
 returned a bot-check page). Refused with HTTP 403 by the site (no proxy relay failure logged):

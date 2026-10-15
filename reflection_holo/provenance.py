@@ -1,4 +1,4 @@
-"""Run manifests and labelled configuration loading (docs/05 section 6)."""
+"""Run manifests and labelled configuration loading (docs/dev/05_final_repository_specification.md section 6)."""
 
 from __future__ import annotations
 

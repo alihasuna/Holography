@@ -12,7 +12,7 @@ COND = geo.SpecularCondition(200, 12.0, 5.4309, (4, -4, 4))
 
 
 def test_specular_angles_match_reference_calculator():
-    # docs/03_physics_summary.md section 3 table (tools/reflection_step_phase_calculator.py)
+    # docs/theory/physics_summary.md section 3 table (tools/reflection_step_phase_calculator.py)
     assert COND.theta_int * 1e3 == pytest.approx(16.00, abs=0.005)
     assert COND.theta_ext * 1e3 == pytest.approx(13.64, abs=0.005)
     assert 2 * np.pi / COND.q_ext == pytest.approx(0.919, abs=0.001)  # h_2pi

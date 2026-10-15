@@ -1,6 +1,6 @@
 ---
 name: literature-researcher
-description: Retrieves and reads scientific sources (papers, chapters, software documentation) and records what was actually read with locators and evidence labels. Use for literature questions, source verification and the reading plan in docs/07_reading_plan.md.
+description: Retrieves and reads scientific sources (papers, chapters, software documentation) and records what was actually read with locators and evidence labels. Use for literature questions, source verification and the reading plan in docs/literature/reading_plan.md.
 tools: WebFetch, WebSearch, Read, Bash, Glob, Grep, Write
 model: opus
 effort: xhigh

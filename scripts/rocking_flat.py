@@ -3,7 +3,7 @@
 
 Cheap: a flat surface is uniform in y, so a narrow cell (a few lattice periods) is enough.
 Usage: python scripts/rocking_flat.py --surface 001 --hkl 0 0 8 [--span 2.0 --step 0.1]
-Writes outputs/rocking/rocking_<surface>_<hkl>.{png,json}. Smoke-test kernel (docs/08).
+Writes outputs/rocking/rocking_<surface>_<hkl>.{png,json}. Smoke-test kernel (docs/theory/buried_defects.md).
 """
 
 from __future__ import annotations

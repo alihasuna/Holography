@@ -2,8 +2,8 @@
 
 Status: 2026-10-14. The 60° case was simulated by multislice at (008) on a 4-core CPU. The Lomer
 case has only the geometric (column) model so far. (0,0,12) and the Lomer multislice are queued
-for Fir (docs/13 section 5). The multislice kernel is not validated against abTEM or a dynamical
-solver (docs/08), so absolute values are smoke-test results; multislice and geometric mode go
+for Fir (docs/guide/hpc_alliance.md section 5). The multislice kernel is not validated against abTEM or a dynamical
+solver (docs/theory/buried_defects.md), so absolute values are smoke-test results; multislice and geometric mode go
 through the identical hologram and reconstruction chain.
 
 ## 1. Samples
