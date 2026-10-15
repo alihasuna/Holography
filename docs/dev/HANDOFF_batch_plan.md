@@ -7,7 +7,8 @@ feeds Stages 3-4.
 
 Samples: the March 2026 data are from a cleaved Si(110) wafer, imaging the {111} cleavage facet
 (`SI111_FRAME`); current work is on Si(100) (`SI001_FRAME`). The research folder on Ali's Mac is
-mapped by `tools/research_inventory/` (inventory, duplicate plan, experiment catalogue).
+mapped by `tools/research_inventory/` (inventory, duplicate plan, experiment catalogue, Batch-API
+triage); what the triage found is in `docs/dev/research_folder_findings.md` (read section 1 first).
 
 ## 1. Where things stand
 

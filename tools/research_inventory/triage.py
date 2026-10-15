@@ -48,7 +48,7 @@ DOC_EXT = {".pdf", ".md", ".txt", ".tex", ".docx", ".pptx", ".ipynb", ".rtf"}
 EXCLUDE_WORDS = ["magnetite", "Fe3O4", "CuSn", ".obsidian", "_build", "/build/", "site-packages", "node_modules",
                  ".ipynb_checkpoints", "egg-info", "__pycache__", "/.git/", "venv/",
                  # third-party packages downloaded into the folder (agent skills, paper-writing templates)
-                 "scientific-agent-skills", "AI-Researcher", ".claude/skills", "writing_templates"]
+                 "scientific-agent-skills", "AI-Researcher", ".claude/skills", "writing_templates", "html/_sources"]
 
 KINDS = ["paper", "book_or_chapter", "thesis_or_report", "presentation_or_poster", "lecture_or_course_notes",
          "personal_research_notes", "meeting_or_supervisor_notes", "ai_generated_notes", "analysis_or_results",
@@ -88,7 +88,7 @@ electron ptychography (4D-STEM in reflection). Samples: cleaved Si(110) wafers i
 {{111}} cleavage facet (experiments in March 2026, partly with the supervisor Arthur), and now Si(100).
 Simulation work: grazing-incidence multislice (earlier with Prismatic/prismatique on the Fir cluster,
 now a custom code), buried dislocations, surface steps, Osakabe's 1989-1993 reflection holography as
-the starting point. Calibration work: Merlin detector MTF at 25-350 keV, beam-tilt and stage-tilt
+the starting point. Calibration work: Merlin detector MTF, NNPS and DQE versus threshold at 200 keV, beam-tilt and stage-tilt
 calibration, image-plane correction. There was a transfer exam (thesis milestone) with a report,
 talk and posters. Some folders were written by an AI research agent; label those notes
 "ai_generated_notes". A magnetite nanoparticle project is a separate course project.
@@ -290,7 +290,7 @@ def collect(args):
 def report(args):
     tri = args.out.expanduser() / "triage"
     paths = {r["custom_id"]: r["path"] for r in load_requests(tri)}
-    recs, cost, problems = [], 0.0, Counter()
+    recs, cost, problems, dropped = [], 0.0, Counter(), 0
     for line in open(tri / "results.jsonl", encoding="utf-8"):
         r = json.loads(line)
         u = r.get("usage")
@@ -299,12 +299,15 @@ def report(args):
         if r["type"] != "succeeded" or r.get("stop_reason") not in ("end_turn", None):
             problems[f"{r['type']}/{r.get('stop_reason')}"] += 1
             continue
+        if r["custom_id"] not in paths:  # file excluded at a later build (e.g. the junk found by --sample)
+            dropped += 1
+            continue
         try:
             d = json.loads(r["text"])
         except ValueError:
             problems["invalid JSON"] += 1
             continue
-        d["path"] = paths.get(r["custom_id"], r["custom_id"])
+        d["path"] = paths[r["custom_id"]]
         recs.append(d)
     cols = ["relevance", "kind", "suggested_folder", "status", "title", "authors_or_source", "year", "topics",
             "summary", "key_points", "experiment_dates_or_sessions", "path"]
@@ -323,7 +326,8 @@ def report(args):
     sessions = Counter(s for d in recs for s in d["experiment_dates_or_sessions"])
     L = ["# Research map", "",
          f"{len(recs)} files and code folders classified (actual cost ${cost:.2f}). "
-         f"Problems: {dict(problems) or 'none'}. Full table: `triage/triage.csv`.", "",
+         f"Problems: {dict(problems) or 'none'}. Left out (excluded at the last build): {dropped}. "
+         "Full table: `triage/triage.csv`.", "",
          "## At a glance", "",
          "| Relevance | Files |", "|---|---|"] + [f"| {k} | {rel[k]} |" for k in (5, 4, 3, 2, 1)]
     L += ["", "**Kinds:** " + ", ".join(f"{k} {n}" for k, n in kinds.most_common()),
