@@ -1,7 +1,13 @@
 # Handoff: theory-verification plan with the Claude Batch API (2026-10-15)
 
-For the next Claude session working on this repository (for example in Claude Science). Read this
-first, then `README.md` and `docs/guide/pipeline.md`.
+For the next Claude session working on this repository (for example in Claude Science). Read
+`docs/ROADMAP.md` first (the platform vision and stages), then this note, `README.md` and
+`docs/guide/pipeline.md`. The Batch-API plan below is Stage 2 of the roadmap; the ptychography design
+feeds Stages 3-4.
+
+Samples: the March 2026 data are from a cleaved Si(110) wafer, imaging the {111} cleavage facet
+(`SI111_FRAME`); current work is on Si(100) (`SI001_FRAME`). The research folder on Ali's Mac is
+mapped by `tools/research_inventory/` (inventory, duplicate plan, experiment catalogue).
 
 ## 1. Where things stand
 

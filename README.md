@@ -60,7 +60,8 @@ CPU, or minutes on a GPU. Slurm scripts for Digital Research Alliance of Canada 
 | 5. Reconstruction | FFT, sideband, inverse FFT, reference correction, unwrapping, ramp removal | `reflection_holo/holography.py` |
 | 6. Analysis | profiles, metrics, Nature-style figures | `scripts/run_sections.py`, `scripts/figures_*.py` |
 
-Step-by-step explanation: [docs/guide/pipeline.md](docs/guide/pipeline.md).
+Step-by-step explanation: [docs/guide/pipeline.md](docs/guide/pipeline.md). Where this is going (digital twin of the
+microscope, differentiable forward model, reflection ptychography): [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Repository map
 
