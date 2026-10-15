@@ -90,6 +90,8 @@ def read_hdf5(path: Path, row: dict, max_items=6):
                     v = obj[()]
                 except Exception:
                     return
+                if type(v).__name__ == "void":  # opaque HDF5 bytes
+                    v = bytes(v.tobytes())
                 if isinstance(v, bytes):
                     if v[:1] == b"\x80":
                         meta.append(f"{name}: pickled object (not read)")
