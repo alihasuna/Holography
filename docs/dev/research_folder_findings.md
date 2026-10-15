@@ -34,7 +34,11 @@ Both claims entered the transfer report. They need a derivation and a numerical 
   the reference is a re-acquisition of the same region).
 * **A Bloch-wave / R-matrix dynamical diffraction package (10 modules)** is mentioned in
   `research-agent/computational_simulations_3min_talk.md`. If it exists and works, it is a candidate for
-  step 2 of the validation ladder (an independent dynamical code). Location not yet found.
+  step 2 of the validation ladder (an independent dynamical code). Found in
+  `research-agent/MARCH/01_Si110_reflection_holography/2026-03-19_reflection_with_Arthur/07_VALID_measurements/diffraction_series/simulation/`
+  (`bloch_wave.py`, `r_matrix.py`, `multislice_3d.py`, `structure_factors.py`, `run_simulation.py`), with
+  the theory in `research-agent/MARCH/01_Si110_reflection_holography/bulk_reflection_diffraction_theory_report.md`
+  and `RHEED_simulation_report.md` (same folder). Not yet reviewed.
 * **Known open issues from the June progress report:** the Si(100) versus Si(110) model mismatch and the
   "666" filter Nyquist bug. `research/progress_report_2026-06-12.md`.
 
