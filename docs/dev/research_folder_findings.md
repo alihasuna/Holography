@@ -1,64 +1,52 @@
-# Findings from the research-folder triage (2026-10-15)
+# Research folder: what the new simulation may use (2026-10-15)
 
-Source: the Batch-API triage of Ali's research folder (`tools/research_inventory/triage.py`, Sonnet 5.5,
-low effort, 534 files and code folders). The model read only the **first ~6000 characters** of each file,
-so every item below is a pointer to check, not a verified result. Paths are relative to
-`Research - 2026/`.
+**Rule (Ali, 2026-10-15).** The simulation is being redone so that it rests only on
+**the literature** (papers, books, manuals) and **real measurements** (raw microscope files). Earlier
+AI-generated material is not a source: notes, simulations, reports, figures, and the claims built on
+them, including those in the transfer-exam documents. Any of it may be re-derived from the
+literature, but it is never cited as evidence.
 
-## 1. Conflicts between the transfer report and this repository's theory (check first)
+Folder map: `tools/research_inventory/` (inventory, duplicates, experiment catalogue, Batch-API
+triage). `sources.py` writes the list of usable sources (`sources.md`) on Ali's Mac.
 
-| Claim in the transfer-exam material | This repository | Where |
-|---|---|---|
-| A symmetric specular reflection on the {111} facet is "phase-blind" to a single d111 step (phase exactly 2π). | Not blind: refraction makes the measured step phase `2π m n sin θ_ext / sin θ_int`, not an integer multiple of 2π (`docs/theory/physics_summary.md`, section 2, table of rod orders). | `transfer exam/claude-figures/fig_crystallography_standalone.pdf`; `transfer exam/outputs/figures/4_silicon_reciprocal_space.pdf`; `transfer exam/DATA/APRIL/make_reflection_selection_figure.py` |
-| The asymmetric Si(2,-2,0) reflection gives 2π/3 per bilayer step, so it is the one to use. | The full `G·R` for (2,-2,0) is exactly 2π (invisible at the vacuum Bragg condition); 2π/3 comes from dropping the in-plane term `g_par·R_par` (`physics_summary.md`, section 2). | same files |
+## 1. Real measurements (to compare with the simulation)
 
-Both claims entered the transfer report. They need a derivation and a numerical test (Phase A of
-`HANDOFF_batch_plan.md`) before they are repeated.
+Catalogued from file headers in `experiments.csv` (317 unique raw files, 82 session folders). Main sets:
 
-## 2. Facts that change the plan
+* **March 2026, cleaved Si(110) wafer, {111} facet, HF-3300 at 200 kV:**
+  * off-axis holograms (13 March; biprism 106.8 V, 0.0242 nm per pixel);
+  * dark field (16 March);
+  * reflection session with Arthur (19 March; stage alpha 3.5-4.5 deg, camera length 500, diffraction at
+    tilt 4.1 deg), Merlin `.hm` files in `research-agent/MARCH/01_Si110_reflection_holography/2026-03-19_reflection_with_Arthur/07_VALID_measurements/`.
+* **Merlin (Medipix3) detector series:** raw files in `MTF_CALIBRATIN_MERLIN/`. Whether the
+  "50-350 keV" labels are beam energies or threshold settings must be read from the raw headers
+  (an AI-written report says thresholds at a fixed 200 keV; not yet checked).
+* **Beam-tilt calibration** with Au powder rings (Nov 2025), `Research - 2025 2/` and
+  `beam_tilt_calibration_verification/`; **image-plane correction** (Jan 2026).
+* **SEM** of the cleaved Si(110) edge (18 March 2026, S-4800), `research-agent/SILICON (110)/`.
 
-* **Merlin "50-350 keV" series are threshold settings at a fixed 200 keV beam**, not beam energies.
-  The detector report gives MTF, NNPS and relative DQE versus threshold.
-  `MTF_CALIBRATIN_MERLIN/results/report.md`, code in `MTF_CALIBRATIN_MERLIN/merlin/` (15 modules, with tests).
-  `docs/ROADMAP.md` is corrected.
-* **Si(666) is forbidden** in diamond cubic (and beyond Nyquist at the stored sampling), so the earlier
-  Prismatique simulations that isolate Si(666) are illustrative only.
-  `transfer exam/committee_deck_extracted/README_committee_deck.md`; `research/progress_report_2026-06-12.md`.
-* **The March phase step (1.84 rad) is degenerate** with a lens plus dynamical phase ramp; the proposed fix
-  is split illumination with a flat reference terrace (objective O1). This is the same layout as the
-  repository's three-strip sample (reference strip, step strip, defect strip).
-  `transfer exam/report/figures/fig_honest_standalone.pdf`.
-* **Measured phase noise is about 1.7 x the shot-noise prediction** (March holograms).
-  `transfer exam/report/figures/fig_holo_diag.pdf`; analysis in
-  `research-agent/MARCH/01_Si110_reflection_holography/analysis_2026-05-23/REPORT.md` (differential phase:
-  the reference is a re-acquisition of the same region).
-* **A Bloch-wave / R-matrix dynamical diffraction package (10 modules)** is mentioned in
-  `research-agent/computational_simulations_3min_talk.md`. If it exists and works, it is a candidate for
-  step 2 of the validation ladder (an independent dynamical code). Found in
-  `research-agent/MARCH/01_Si110_reflection_holography/2026-03-19_reflection_with_Arthur/07_VALID_measurements/diffraction_series/simulation/`
-  (`bloch_wave.py`, `r_matrix.py`, `multislice_3d.py`, `structure_factors.py`, `run_simulation.py`), with
-  the theory in `research-agent/MARCH/01_Si110_reflection_holography/bulk_reflection_diffraction_theory_report.md`
-  and `RHEED_simulation_report.md` (same folder). Not yet reviewed.
-* **Known open issues from the June progress report:** the Si(100) versus Si(110) model mismatch and the
-  "666" filter Nyquist bug. `research/progress_report_2026-06-12.md`.
+## 2. Literature already in the folder
 
-## 3. Useful existing material
+Listed by `sources.py` (papers, books and chapters, manuals; relevance 3 or more). Examples: Kirkland,
+*Advanced Computing in Electron Microscopy* (3rd ed., 2020); the aPIE paper on angle calibration for
+reflection ptychography (Optics Letters 47(8), 1949; optical). Books from shadow libraries should be
+replaced by library-licensed copies before any text is sent to an API. Missing items:
+`docs/literature/download_checklist.md`.
 
-* Transfer report: many versions. Candidates for the latest: `transfer exam/report/transfer_report.pdf`
-  (24 pp.) and `transfer exam/outputs/deliverables/transfer_report.pdf` (17 pp.). Talk:
-  `transfer exam/presentation/transfer_talk.pdf` (29 June 2026). Committee Q&A prep:
-  `transfer exam/prep/defense_qa.pdf`.
-* PtyRAD offline install bundle for Fir: `CODE/ptyrad_fir_1.0/`.
-* Beam-tilt calibration code (BTX/BTY to mrad from Au 111 rings): `Research - 2025 2/`,
-  `beam tilt and gold powder /`, `beam_tilt_calibration_verification/`.
-* Reflection-diffraction processing of Merlin `.hm` files:
-  `research-agent/MARCH/01_Si110_reflection_holography/2026-03-19_reflection_with_Arthur/07_VALID_measurements/diffraction_series/`.
-* A reflection-ptychography paper already in the folder: aPIE, angle calibration for reflection
-  ptychography (Optics Letters 47(8), 1949; optical, near-infrared): `papers/ol-47-8-1949 (1).pdf`.
-  Citation not yet verified for `docs/literature/`.
+## 3. Not used
 
-## 4. Not part of this project
+* **The March 2026 Bloch-wave / R-matrix code** (`legacy/march2026_bloch_rmatrix/`, AI-written). An
+  audit found that every reflectivity it outputs is wrong: no mean inner potential, no relativistic
+  factor, sign errors in absorption, and a regularised boundary solve
+  (`docs/dev/audits/legacy_bloch_rmatrix_review.md`). It is kept only as a record.
+* **Earlier Prismatique simulations, AI-written reports, posters and figures.**
+* **Not this project:** PHYS550 lecture boards, the magnetite/Mn-ferrite course project, TurboQuant
+  notes, the third-party Sphinx docs in `Research - 2025 2/tilt_beam_BT/1.3.0/html/`.
 
-PHYS550 lecture boards (`_inbox_loose/Lecture boards.html/`), the magnetite/Mn-ferrite course project,
-TurboQuant notes (`research-agent/MARCH/ENGINEERING_REVIEW.md`, `RUNNING.md`), the third-party Sphinx docs
-in `Research - 2025 2/tilt_beam_BT/1.3.0/html/`, and a stray Nature Nanotechnology paper on spin helicity.
+## 4. Open question for the repository's own simulation (from the audit, to settle from the literature)
+
+The audit's independent one-rod model puts the Si(001) (008) reflectivity maximum only about 0.02 mrad
+above the refraction-corrected Bragg angle. The repository's multislice puts it 0.8 mrad above, and
+the holograms are simulated there (16.93 mrad, `docs/guide/parameters.md`). The audit's 3-D check did not
+converge, so the difference may come from coupling between rods, or from the illumination edge
+effects of Ma & Marks (1990). This is the first test in Phase A (`HANDOFF_batch_plan.md`).

@@ -49,8 +49,8 @@ geometry.
 
 **Digital twin of the HF-3300 and the Merlin detector.** These come from measurements already in the
 research folder:
-* the **Merlin MTF, NNPS and relative DQE** (slanted edge, flat field). Note: the "50-350 keV" series are
-  threshold settings at a fixed 200 keV beam, not beam energies (`MTF_CALIBRATIN_MERLIN/results/report.md`);
+* the **Merlin MTF series** (slanted edge, flat field). Whether its "50-350 keV" labels are beam energies
+  or threshold settings at 200 keV must be read from the raw file headers;
 * the beam-tilt and stage-tilt calibration on Si(100) (Nov 2025);
 * the image-plane correction (Jan 2026);
 * the biprism settings (106.8 V, 0.0242 nm per pixel).

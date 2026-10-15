@@ -46,3 +46,15 @@ $P $T status --out $O                                                           
 $P $T collect --out $O && $P $T report --out $O                                         # look at triage/research_map.md
 $P $T submit --out $O                                                                   # the rest (asks "yes", cap $20)
 ```
+
+## Step 3: the sources list (free, local)
+
+The new simulation may rely only on the literature and on real measurements. `sources.py` keeps
+exactly those: papers, books and manuals from `triage/triage.csv`, and the raw microscope sessions from
+`experiments.csv`. It leaves out AI-generated notes, earlier simulations, reports and figures.
+
+```bash
+~/venvs/holo-tools/bin/python tools/research_inventory/sources.py --out ~/Desktop/research_inventory
+```
+
+It writes `sources.md` and `sources_literature.csv`.
