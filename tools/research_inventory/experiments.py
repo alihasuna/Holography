@@ -67,85 +67,43 @@ def name_tokens(name: str, row: dict):
 
 
 def read_hdf5(path: Path, row: dict, max_items=6):
-    """Dataset shapes and scalar attributes of an HDF5 file (.hm, .h5, .emd); no data is loaded."""
+    """Dataset shapes and small metadata of an HDF5 file (.hm, .h5, .emd); image data is not loaded.
+    Text or JSON metadata is shown; pickled Python objects are never unpickled (only flagged)."""
     try:
         import h5py
     except ImportError:
         row["note"] = "install h5py to read HDF5 (.hm) files"
         return
-    items, attrs = [], []
+    import json
+    items, meta, largest = [], [], (0, "")
     with h5py.File(path, "r") as f:
         def visit(name, obj):
-            if isinstance(obj, h5py.Dataset) and len(items) < max_items:
+            nonlocal largest
+            if not isinstance(obj, h5py.Dataset):
+                return
+            if len(items) < max_items:
                 items.append(f"{name}{list(obj.shape)}")
-            for k, v in list(obj.attrs.items())[:20]:
-                if len(attrs) < 12 and getattr(v, "size", 1) == 1:
-                    attrs.append(f"{k}={v}")
+            if obj.size > largest[0]:
+                largest = (obj.size, "x".join(map(str, obj.shape)))
+            if obj.size <= 1 and len(meta) < 3:  # small scalar entries usually hold the settings
+                try:
+                    v = obj[()]
+                except Exception:
+                    return
+                if isinstance(v, bytes):
+                    if v[:1] == b"\x80":
+                        meta.append(f"{name}: pickled object (not read)")
+                        return
+                    v = v.decode("utf-8", "replace")
+                if isinstance(v, str):
+                    try:
+                        v = json.dumps(json.loads(v))
+                    except ValueError:
+                        pass
+                meta.append(f"{name}: {str(v)[:200]}")
         f.visititems(visit)
-        for k, v in list(f.attrs.items())[:12]:
-            attrs.append(f"{k}={v}")
-    big = [i for i in items if "[" in i]
-    if big:
-        row["shape"] = big[0].split("[", 1)[1].rstrip("]").replace(", ", "x")
-    row["hdf5_content"] = ("; ".join(items) + (" | " + "; ".join(attrs) if attrs else ""))[:300]
-
-
-def flatten(d, prefix=""):
-    if isinstance(d, dict):
-        for k, v in d.items():
-            yield from flatten(v, f"{prefix}.{k}" if prefix else str(k))
-    else:
-        yield prefix, d
-
-
-def read_dm(path: Path, row: dict):
-    try:
-        from rsciio.digitalmicrograph import file_reader
-    except ImportError:
-        row["note"] = "install rosettasciio to read .dm3/.dm4 settings"
-        return
-    try:
-        sigs = file_reader(str(path), lazy=True)
-    except Exception as e:
-        row["note"] = f"unreadable: {type(e).__name__}"
-        return
-    s = sigs[0]
-    row["shape"] = "x".join(str(a.get("size", "?")) for a in s.get("axes", []))
-    sc = [a for a in s.get("axes", []) if a.get("units") and a.get("scale")]
-    if sc:
-        row["pixel_size"] = f"{sc[-1]['scale']:.4g} {sc[-1]['units']}"
-    flat = list(flatten(s.get("original_metadata", {})))
-    for col, pat in DM_KEYS.items():
-        rx = re.compile(pat, re.I)
-        for k, v in flat:
-            if rx.search(k) and not isinstance(v, (bytes, bytearray)):
-                row[col] = str(v)[:40]
-                break
-    if len(sigs) > 1:
-        row["note"] = f"{len(sigs)} images in file"
-
-
-def read_mib(path: Path, row: dict):
-    with open(path, "rb") as f:
-        head = f.read(768).decode("ascii", "replace")
-    parts = head.split(",")
-    if parts and parts[0].startswith("MQ1"):
-        row["shape"] = f"{parts[4]}x{parts[5]}" if len(parts) > 5 else ""
-        row["mib_header"] = ",".join(p.strip() for p in parts[:12])[:160]
-    else:
-        row["note"] = "no MQ1 header"
-
-
-def read_mrc(path: Path, row: dict):
-    import struct
-    with open(path, "rb") as f:
-        h = f.read(1024)
-    nx, ny, nz = struct.unpack("<3i", h[0:12])
-    mx = struct.unpack("<i", h[28:32])[0] or 1
-    xlen = struct.unpack("<f", h[40:44])[0]
-    row["shape"] = f"{nx}x{ny}x{nz}"
-    if xlen:
-        row["pixel_size"] = f"{xlen / mx:.4g} A"
+    row["shape"] = largest[1]
+    row["hdf5_content"] = ("; ".join(items) + (" | " + " | ".join(meta) if meta else ""))[:400]
 
 
 def main():
