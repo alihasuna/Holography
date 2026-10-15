@@ -1,16 +1,12 @@
 # Reading list: theory of reflection electron diffraction and imaging
 
-Status: IN PROGRESS (written incrementally by the literature-researcher agent, 2026-10-15).
+Status: COMPLETE (2026-10-15, literature-researcher agent). 35 items: 10 MUST, 12 SHOULD, 13 OPTIONAL. Nothing here may be cited for content until it is SECTION_READ; see section 0.
 
 Scope: what a PhD student must download to ground the forward model of this repository
 (reflection-mode, RHEED-geometry dark-field electron holography at 200 keV and about 1 degree glancing
 incidence; next milestone reflection-mode electron ptychography) in the theory of reflection high-energy
 electron diffraction (RHEED) and reflection electron microscopy (REM).
 
-Sections to come: 0 access log and labels; 1 dynamical RHEED theory; 2 REM imaging and step contrast;
-3 refraction, mean inner potential, absorption and TDS; 4 multislice (general and grazing) and
-reflection codes as benchmarks; 5 download-first checklist; 6 facts vs inferences; 7 documents to
-request from Ali.
 
 ## 0. Access log, labels and how to use this list
 
@@ -118,10 +114,214 @@ Debye-Waller factor.
 
 | ID | PRIORITY | Citation (DOI / ISBN) | WHAT TO READ | WHY (pipeline step) | ACCESS | VERIFIED |
 |---|---|---|---|---|---|---|
-| RT33 (bib SIMTRHEPD, SIMTRHEPD-CPC) | **MUST** | Hanada, T., Motoyama, Y., Yoshimi, K. & Hoshi, T. (2022). sim-trhepd-rheed - Open-source simulator of total-reflection high-energy positron diffraction (TRHEPD) and reflection high-energy electron diffraction (RHEED). *Comput. Phys. Commun.* 277, 108371. DOI 10.1016/j.cpc.2022.108371. arXiv:2110.09477. Code: https://github.com/sim-trhepd-rheed/sim-trhepd-rheed (Fortran). | arXiv v3: sect. 2 "Overview of the proposed method" (eq. 1 and the potential and absorption model, PDF p. 3); sect. 3 "Software"; sect. 4 "Numerical examples"; sect. 5.1, the RHEED comparison for Si(111) (PDF p. 9). README: "Mode switching". | **Benchmark (M2):** a flat-surface rocking curve from an independent surface-parallel (Ichimiya) solver, compared with `scripts/rocking_flat.py`. Its absorption model has the same form as the placeholder here (section 6.1), so the two can be compared like for like. | **Open:** arXiv PDF and README (raw.githubusercontent.com), both opened. CPC version: library journal. | `ABS-arXiv`, SECTION_READ (arXiv v3 sect. 2, 5.1), `README`, `MV-CR`. This supplies the real article title missing from the bib entry. The `doc/` manual path given in the README returned 404. |
+| RT33 (bib SIMTRHEPD, SIMTRHEPD-CPC) | **MUST** | Hanada, T., Motoyama, Y., Yoshimi, K. & Hoshi, T. (2022). sim-trhepd-rheed - Open-source simulator of total-reflection high-energy positron diffraction (TRHEPD) and reflection high-energy electron diffraction (RHEED). *Comput. Phys. Commun.* 277, 108371. DOI 10.1016/j.cpc.2022.108371. arXiv:2110.09477. Code: https://github.com/sim-trhepd-rheed/sim-trhepd-rheed (Fortran). | arXiv v3: sect. 2 "Overview of the proposed method" (eq. 1 and the potential and absorption model, PDF pp. 2-3); sect. 3 "Software"; sect. 4 "Numerical examples"; sect. 5.1, the RHEED comparison for Si(111) (PDF pp. 8-9). README: "Mode switching". | **Benchmark (M2):** a flat-surface rocking curve from an independent surface-parallel (Ichimiya) solver, compared with `scripts/rocking_flat.py`. Its absorption model has the same form as the placeholder here (section 6.1), so the two can be compared like for like. | **Open:** arXiv PDF and README (raw.githubusercontent.com), both opened. CPC version: library journal. | `ABS-arXiv`, SECTION_READ (arXiv v3 sect. 2, 5.1), `README`, `MV-CR`. This supplies the real article title missing from the bib entry. The `doc/` manual path given in the README returned 404. |
 | RT34 (bib P49) | SHOULD | Kudo, S., Yamamoto, Y. & Hoshi, T. (2024). A fast and efficient computation method for reflective diffraction simulations. *Comput. Phys. Commun.* 296, 109029. DOI 10.1016/j.cpc.2023.109029. Preprint: arXiv:2306.00271 ("A fast and *accurate* computation method ..."). | arXiv abstract read; method sections when rocking series become expensive. | Faster benchmark runs for rocking series (the 2π-branch problem, physics_summary section 4). | **Open:** arXiv. CPC: library journal. | `ABS-arXiv` + `MV-CR`. This resolves the P49 title discrepancy (preprint "accurate", journal "efficient") and adds the full author list, volume, article number and DOI. |
 | RT35 (bib HANADA95) | OPTIONAL | Hanada, T., Daimon, H. & Ino, S. (1995). Rocking-curve analysis of reflection high-energy electron diffraction from the Si(111)-(√3 x √3)R30°-Al, -Ga, and -In surfaces. *Phys. Rev. B* 51(19), 13320-13325. DOI 10.1103/PhysRevB.51.13320. | Methods and rocking-curve figures. | Reference rocking-curve data and settings used with the code in RT33 (the README asks users to cite it). | Library journal (APS). | `MV-CR`. This supplies the missing title and DOI of bib HANADA95. |
 
 Not a reflection benchmark: abTEM (bib ABTEM) is transmission-only, as recorded in `references.bib`. It can
 check the potential and the propagator in a transmission test (README milestone M2), not the reflection
 geometry.
+
+## 5. Download first (in this order; one afternoon)
+
+There are 10 MUST items: RT01, RT02, RT08, RT09, RT16, RT24, RT25, RT26, RT27 and RT33. The checklist
+groups them into 8 actions. Items 1 and 2 are free and can be read today.
+
+1. [ ] **RT26 + RT27: Ma and Marks, *Acta Cryst.* A46, 11-32 (1990) and A47, 707-715 (1991).** Free
+   author copies at numis.northwestern.edu (`/Research/Articles/1990/` and `/1991/`). Read RT26 sect. V-VI
+   (pp. 30-32) and RT27 pp. 707-709. They test this repository's tilted-sheet-beam illumination and give
+   the edge-patching fix. Also get the A46 p. 626 erratum (library).
+2. [ ] **RT33: Hanada et al., CPC 277, 108371 (2022).** Free preprint arXiv:2110.09477. Clone
+   `github.com/sim-trhepd-rheed/sim-trhepd-rheed`, and set `ep='E'` before compiling. This is the
+   independent flat-surface rocking-curve benchmark.
+3. [ ] **RT25: Peng and Cowley, Surf. Sci. 199, 609-622 (1988), with Acta Cryst. A42, 545-552 (1986).**
+   Library journal. This is the method the kernel implements.
+4. [ ] **RT24: Kirkland, 3rd ed. (2020), ch. 4 (pp. 81-98) and ch. 6 (pp. 143-195).** Library e-book.
+   Propagator, sampling and slice thickness.
+5. [ ] **RT01: Ichimiya and Cohen (2004), ch. 4-5, 11, 12, 14 and App. F.** Library e-book (Cambridge Core).
+   Refraction and the rocking-curve theory behind RT33.
+6. [ ] **RT02: Peng, Dudarev and Whelan (2004), ch. 5 (pp. 117-185), ch. 13 (pp. 427-453) and ch. 14
+   (pp. 454-469).** Library e-book (Oxford Academic). RHEED Bloch waves, optical potential and
+   Debye-Waller factors.
+7. [ ] **RT16: Peng, Ren, Dudarev and Whelan, Acta Cryst. A52, 257-276 (1996).** Library journal. This is
+   the source of the parameterisation already in the code and of the absorptive potential. Fetch RT17
+   (A52, 456-470) in the same session.
+8. [ ] **RT08 + RT09: Wang (1996) ch. 6 (pp. 166-198), plus ch. 3, 4 and 9 and App. B; and McCoy and
+   Maksym, Surf. Sci. 310, 217-225 (1994).** Library e-book and library journal. Step and dislocation
+   contrast, with the published Si(001) step simulation as the acceptance target.
+
+## 6. Facts read versus inferences
+
+### 6.1 Facts (quoted only from text actually read; source, URL, locator)
+
+**Ma and Marks (1990)**
+* URL read: numis.northwestern.edu/Research/Articles/1990/, the PDF named in RT26.
+* Abstract, p. 11: "the Bloch-wave approach for reflection is shown to yield a stationary solution in
+  multislice, except for a small effect from the surface truncation"; and "The introduction of
+  absorption improves the consistency between the two methods."
+* Sect. I, p. 12, on the Peng and Cowley approach: "the difficulty is that the incident wave is taken as
+  a top-hat function (with smooth sides) that is allowed to impinge upon the surface, and it is hard to
+  reach a stationary solution (as dictated by the symmetry in reflection) since the size of the input
+  incident wave is limited and edge effects are unavoidable."
+* Sect. IV.1, p. 20: "All the following calculations were performed for 100 keV electrons."
+* Sect. V, p. 30: "a plane wave smoothed by a Gaussian function tilted towards the crystal surface is
+  introduced into the left part of the unit cell in the vacuum. The tilt angle is 25 mrad." Then
+  "Owing to the edge effects, it appears, however, that the solution is unstable. If absorption is
+  introduced [Fig. 16(ii)], the result is not much better."
+* Sect. VI, p. 32: "One obvious problem is edge effects; multislice is not a true numerical solution
+  since its periodic continuation leads to edge effects. One can overcome these problems to some extent
+  by using very long unit cells as we have done." Also: "using an incident top-hat wave function does not
+  seem to be a reliable approach."
+
+**Ma and Marks (1991)**
+* URL read: numis.northwestern.edu/Research/Articles/1991/1991_Robust_Solution.pdf.
+* Abstract, p. 707: "A new method of solving the reflection diffraction problem using a stabilized edge
+  in a multislice-type calculation is described."
+* p. 708: "Physically, the patched region plays the role of an infinite plane-wave source in a finite
+  numerical unit cell."
+* p. 709: "The patching has been implemented on the left outer part of the unit cell (0 < z < 0.25,
+  where z is normal to the surface ...) with the crystal located in the region 0.75 < z < 1.0".
+
+**Bonevich, Ma and Marks (1991)**
+* URL read: numis.northwestern.edu/Research/Articles/1991/1991_Dynamical_RHEED.pdf.
+* Abstract, p. 789: simulated "using the multislice approach with the edge-patching method."
+
+**Ma and Marks (1990b)**
+* URL read: numis.northwestern.edu/Research/Articles/1990/, the PDF named in RT28.
+* Abstract, p. 594: "the results of simulations of surface steps are shown and their effects on the
+  wave field analyzed numerically."
+
+**Hanada et al., arXiv:2110.09477v3**
+* URL read: arxiv.org/pdf/2110.09477v3.
+* Sect. 2, PDF p. 3: "The absorption effect of the beams is taken into account through the imaginary
+  potential, which is simply assumed as εm(n) times the real potential in terms of the individual
+  contribution from atom n."
+* Sect. 2, PDF p. 2: the method solves the equation "in a two-dimensional periodic potential of the
+  crystal surface".
+* Fig. 1(b) caption, PDF p. 2: "the beam energy is 15 keV, the glancing angle θ is 2°".
+* Sect. 5.1, PDF p. 9: "STR employs a much simpler parameter of sap, which can fairly approximate the
+  absorption effect of beams by adjusting its value."
+
+**sim-trhepd-rheed README**
+* URL read: raw.githubusercontent.com/sim-trhepd-rheed/sim-trhepd-rheed/master/README.md.
+* "The default setting is the TRHEPD (positron) mode. If one would like to use the RHEED (electron)
+  mode, one should modify the line ep='P' into ep='E' of the files src/surfm.f90 and src/bulkm.f90 before
+  the compilation."
+* The quote marks in the README are typographic; they are rendered as plain quotes here.
+
+**Wang (1996), Cambridge Core chapter summaries (`SUM`)**
+* Ch. 6, chapter DOI 10.1017/CBO9780511525254.008: "Attempts have been made to simulate surface step
+  images (Peng and Cowley, 1986; Ma and Marks, 1990), but the results are still not very satisfactory."
+* Ch. 6 also: "Phase contrast (or Fresnel contrast) is produced by the path-length difference (or phase
+  shift) of electron waves due to the change in surface morphology. This contrast dominates the images of
+  atom-high surface steps." And: "Diffraction contrast (or Bragg contrast) is produced by the variation
+  of local Bragg reflection angles due to lattice distortion from dislocations, local strain and crystal
+  boundaries."
+* Ch. 2, chapter DOI ...525254.004: "the incident electron beam strikes the sample surface at a grazing
+  angle of 1–3°. The electron energy can be as low as a few kilo-electron-volts and as high as 1000 keV
+  (in TEM only)."
+* Ch. 4, chapter DOI ...525254.006: "The intensity is increased by almost an order of magnitude if the
+  surface resonance is excited".
+* Ch. 9, chapter DOI ...525254.011: "The mean-free-path length of inelastic scattering is about 50–300 nm
+  for most materials".
+
+**Ichimiya and Cohen (2004), Cambridge Core chapter summaries (`SUM`)**
+* Ch. 12, chapter DOI 10.1017/CBO9780511735097.013: "In Chapters 12–14 we present methods due to
+  Ichimiya (1983, 1985), Zhao et al. (1988) and Maksym and Beeby (1981) in sufficient detail that the
+  reader should be able to perform these calculations for real surfaces."
+* Ch. 12 also: "Only elastic scattering is considered, with the electron momentum conserved up to a
+  reciprocal lattice vector of the two-dimiensional [sic] crystal."
+* Ch. 13, chapter DOI ...735097.014: "It is also a multi-slice method, in which the crystal is modelled
+  as a slab divided into many thin slices parallel to the surface."
+
+**Peng, Dudarev and Whelan (2004), abstracts in the Crossref deposit**
+* Ch. 13: "the effects of inelastic scattering on the elastic scattering may be taken into account by
+  representing the interaction between the incident electron and the solid by a complex potential
+  (Yoshioka, 1957). This complex potential is usually called the optical potential".
+* Book abstract: "temperature dependent Debye-Waller factors given for over 100 elemental crystals and
+  compounds".
+
+### 6.2 Inferences (mine, to be tested; not findings from the sources)
+
+* **I1, stationarity of the kernel.**
+  * The repository launches a sheet beam in vacuum, tilted towards the surface (`pipeline.md` 3a.2).
+    This is the kind of illumination that Ma and Marks (1990, sect. V) found unstable because of edge
+    effects. Their test used 100 keV and 25 mrad, with cells up to 405 Å along the beam (Fig. 16
+    caption).
+  * The repository's countermeasures are about 3100 slices (about 0.6 µm), a bulk absorber and a vacuum
+    mask. These belong to the "very long unit cells" remedy, which Ma and Marks say helps "to some
+    extent".
+  * Whether the repository's dark-field wave is stationary is therefore open. The agreement with the
+    geometric model to 0.05 rad tests the phase, not stationarity.
+  * Proposed tests:
+    1. the flat-surface rocking curve against RT33;
+    2. the exit wave versus cell length;
+    3. an edge-patched run (RT27).
+* **I2, scope of the benchmark.** RT33 assumes a 2-D-periodic surface (fact above). So it can benchmark
+  only the flat reference strip (reflectivity and rocking curve), not steps or dislocations. Its use at
+  200 keV is NOT VERIFIED: the examples seen were at 10 and 15 keV.
+* **I3, absorption.** RT33 and this repository both use an imaginary potential proportional to the real
+  one. Agreement between them would therefore not validate the absorption value. RT16 and RT17 (or RT21)
+  are needed for a physically sourced V_i.
+* **I4, a possible V0 inconsistency (check the code).**
+  * The multislice refracts with the potential it is given, whose mean is 13.91 V (SM17).
+  * The geometric model and the step-phase calculator are documented with V0 = 12 V.
+  * If the geometric model in a run really uses 12 V, the 0.05 rad agreement between the two models may
+    involve compensating choices.
+  * This was not checked in the code during this literature pass.
+* **I5, novelty.** No item found here treats a 200 keV beam-perpendicular multislice with an absorber
+  for off-axis holography. This is based on a targeted search, not a citation-graph search, so it is
+  not evidence of absence.
+* **I6, ptychography.** Reflection-mode ptychography theory was outside this list's four topics. Only
+  RT15 (scanning REM) bears on it; see `references.bib` C03 and U03.
+
+### 6.3 Corrections and additions for `references.bib` (from Crossref; NOT applied to the file)
+
+| Bib key | Correction or addition (all from Crossref records read in this pass) |
+|---|---|
+| P17 | DOI 10.1143/JJAP.22.176 verified. Add the correction JJAP 24(10R), 1365 (1985), DOI 10.1143/JJAP.24.1365. |
+| P18 | DOI 10.1107/S0108767386098756 verified; issue 6. |
+| P19 | Confirmed: Surf. Sci. 199(3), 609-622, DOI 10.1016/0039-6028(88)90925-9. |
+| P20 | Pages 174-182, issue 2; DOI 10.1107/S0108767388010888 verified. |
+| P21 | DOI 10.1107/S0108767389009141 verified. Add the erratum A46(7), 626, DOI 10.1107/S0108767390004810. |
+| P22 | Issue 7; DOI 10.1107/S0108767390002781. |
+| P23 | Confirmed: DOI 10.1107/S0021889887086916. |
+| P24 | First author Y. Uchida (not N.); Crossref gives "J. Jäger" (the bib has W.); pages 325-327; issue 3; DOI 10.1016/0304-3991(84)90210-9. |
+| P25 | First author Y. Uchida; pages 53-59; issue 1; DOI 10.1016/0304-3991(87)90226-9. |
+| P26 | Issue 4; DOI 10.1016/0304-3991(90)90041-J. |
+| P49 | Journal version: Kudo, S., Yamamoto, Y. & Hoshi, T., "A fast and efficient computation method for reflective diffraction simulations", CPC 296, 109029 (2024), DOI 10.1016/j.cpc.2023.109029. The arXiv title says "accurate". |
+| B06 | Crossref chapter list: 8 chapters (ch. 4 pp. 81-98, ch. 6 pp. 143-195, ch. 7 pp. 197-239). ISBNs 9783030332594 and 9783030332600. |
+| B07 | DOI 10.1017/CBO9780511735097; ISBNs 9780521453738, 9780521184021; full contents in RT01. |
+| B08 | Chapter DOIs 10.1093/oso/9780198500742.003.0001 to .0014 with pages; the year conflict is still open. |
+| ZLWANG96 | DOI 10.1017/CBO9780511525254; full contents in RT08. |
+| SIMTRHEPD-CPC | Real title: "sim-trhepd-rheed – Open-source simulator of total-reflection high-energy positron diffraction (TRHEPD) and reflection high-energy electron diffraction (RHEED)"; arXiv:2110.09477. |
+| HANADA95 | Title "Rocking-curve analysis of reflection high-energy electron diffraction from the Si(111)-(√3 × √3)R30°-Al, -Ga, and -In surfaces"; issue 19; DOI 10.1103/PhysRevB.51.13320. |
+| U01 | Resolved into three McCoy and Maksym papers: Surf. Sci. 297, 113-126 (1993); 298, 468-472 (1993); 310, 217-225 (1994). |
+| U02 | Beeby, J. L., Surf. Sci. 298(2-3), 307-315 (1993), DOI 10.1016/0039-6028(93)90043-J. |
+| U04 | Title "Invariant-embedding R-matrix scheme for reflection high-energy electron diffraction"; PRB 38(2), 1172-1182; DOI 10.1103/PhysRevB.38.1172. |
+| U13 | Ishizuka, K., "Multislice formula for inclined illumination", Acta Cryst. A38(6), 773-779 (1982), DOI 10.1107/S0567739482001594. |
+
+## 7. Documents to request from Ali (paywalled or blocked here; nothing below was read)
+
+In priority order:
+
+1. Peng and Cowley 1988 (Surf. Sci. 199, 609) and 1986 (Acta Cryst. A42, 545): full PDFs.
+2. McCoy and Maksym 1994 (Surf. Sci. 310, 217) and 1993 (Surf. Sci. 297, 113): full PDFs.
+3. Peng, Ren, Dudarev and Whelan 1996: Acta Cryst. A52, 257 and A52, 456.
+4. Kirkland 3rd ed.: ch. 4 and 6, and the atomic-potential appendix. Also a scan of the printed contents
+   pages, to settle the chapter-title discrepancy.
+5. Ichimiya and Cohen 2004: ch. 4, 5, 11, 12, 14 and App. F.
+6. Peng, Dudarev and Whelan 2004: ch. 5, 13 and 14, plus the appendix list (it is unclear which holds
+   the RHEED program).
+7. Wang 1996: ch. 6, 3, 4 and 9, and App. B.
+8. Kruse et al. 2006 (Ultramicroscopy 106, 105): for the Si mean inner potential.
+9. Ma and Marks 1990 erratum (Acta Cryst. A46, 626) and Ma 1991 (Acta Cryst. A47, 137).
+10. Ishizuka 1982 (Acta Cryst. A38, 773); Yao and Cowley 1990 (Ultramicroscopy 33, 237); Ichimiya 1983
+    and the 1985 correction (JJAP); Maksym and Beeby 1981 (Surf. Sci. 110, 423); Peng and Cowley 1989
+    (Ultramicroscopy 29, 168).
+
+**Hosts that blocked this session:**
+* journals.iucr.org (HTTP 403);
+* academic.oup.com (HTTP 403);
+* link.springer.com (JavaScript challenge);
+* github.com HTML and the GitHub API for sim-trhepd-rheed (403). raw.githubusercontent.com worked.
