@@ -45,8 +45,10 @@ MODEL = "claude-sonnet-5-5"
 PRICE_PER_MTOK = {"input": 1.00, "output": 5.00, "cache_read": 0.10, "cache_write": 1.25}  # Batch API, Sonnet 5.5
 MAX_CHARS = 6000
 DOC_EXT = {".pdf", ".md", ".txt", ".tex", ".docx", ".pptx", ".ipynb", ".rtf"}
-EXCLUDE_WORDS = ["magnetite", "CuSn", ".obsidian", "_build", "/build/", "site-packages", "node_modules",
-                 ".ipynb_checkpoints", "egg-info"]
+EXCLUDE_WORDS = ["magnetite", "Fe3O4", "CuSn", ".obsidian", "_build", "/build/", "site-packages", "node_modules",
+                 ".ipynb_checkpoints", "egg-info", "__pycache__", "/.git/", "venv/",
+                 # third-party packages downloaded into the folder (agent skills, paper-writing templates)
+                 "scientific-agent-skills", "AI-Researcher", ".claude/skills", "writing_templates"]
 
 KINDS = ["paper", "book_or_chapter", "thesis_or_report", "presentation_or_poster", "lecture_or_course_notes",
          "personal_research_notes", "meeting_or_supervisor_notes", "ai_generated_notes", "analysis_or_results",
@@ -161,7 +163,7 @@ def build(args):
     seen, docs, code_dirs = set(), [], defaultdict(list)
     for r in sorted(rows, key=lambda r: (any(w in r["path"] for w in ("archiv", "_inbox", "copy")), len(r["path"]))):
         p = r["path"]
-        if any(w.lower() in p.lower() for w in EXCLUDE_WORDS):
+        if any(w.lower() in p.lower() for w in EXCLUDE_WORDS + args.exclude):
             continue
         g = r["dup_group"]
         if g and g in seen:
@@ -197,6 +199,10 @@ def build(args):
     print(f"{len(reqs)} requests ({len(docs)} documents considered, {len(code_dirs)} code folders); skipped: "
           f"{dict(skipped) or 'none'}")
     print(f"wrote {tri / 'requests.jsonl'}; rough estimate: {estimate(len(reqs), n_in)}")
+    top = Counter("/".join(Path(path).parts[:2]) for path, _ in reqs).most_common(25)
+    print("\nrequests per folder (check for downloaded packages or other projects; drop them with --exclude WORD):")
+    for folder, n in top:
+        print(f"  {n:5d}  {folder}")
 
 
 def estimate(n, n_input_tokens, out_per_req=700):
@@ -345,6 +351,7 @@ def main():
     ap.add_argument("--out", type=Path, required=True, help="the research_inventory folder")
     ap.add_argument("--inventory", type=Path, help="inventory.csv (build)")
     ap.add_argument("--root", type=Path, help="the research folder (build)")
+    ap.add_argument("--exclude", nargs="*", default=[], help="build: also skip paths containing these words")
     ap.add_argument("--sample", type=int, default=0, help="submit only N requests (a quality check)")
     ap.add_argument("--max-usd", type=float, default=20.0, help="refuse to submit above this estimate")
     args = ap.parse_args()
