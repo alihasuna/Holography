@@ -11,3 +11,5 @@ logs/
 *.egg-info/
 build/
 dist/
+# private literature PDFs (copyright): never commit
+literature_pdfs/
