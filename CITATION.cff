@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "reflection-holo: simulation of reflection-mode dark-field electron holography"
+version: 0.1.0
+date-released: 2026-10-15
+license: MIT
+repository-code: "https://github.com/alihasuna/Holography"
+authors:
+  # TODO: replace with full names (and ORCID iDs if available) before making the repository public
+  - given-names: "Ali"
+    family-names: "FAMILY NAME TO BE FILLED IN"
+  - given-names: "Arthur"
+    family-names: "FAMILY NAME TO BE FILLED IN"
+keywords:
+  - electron holography
+  - reflection electron microscopy
+  - multislice
+  - dislocations
