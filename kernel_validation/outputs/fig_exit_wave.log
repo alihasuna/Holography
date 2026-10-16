@@ -1,0 +1,13 @@
+flux in 1.0000; out 0.4936 (rest absorbed by bottom absorber slice)
+  vacuum (h > 5 A) 0.4897 = 0.992 of out;  crystal 0.0039
+  vacuum rods: m=-3: 0.0000, m=-2: 0.0157, m=-1: 0.0712, m=+0: 0.3159, m=+1: 0.0712, m=+2: 0.0157, m=+3: 0.0000
+y-mean vs step_quick.npz prof_step: max|diff| = 3.16e-10 (max|prof| 0.019)
+object wave (back-propagated to step) vs step_quick_analysis o_step: max|diff| = 5.06e-10
+exit plane: h_A = 569 A, h_lo = 163 A
+  |spec|^2 terrace A band 0.507, terrace B band 0.208
+  arg(B/A) far-downstream B band -1.665 rad; geometric 2K sin(th) h mod 2pi -1.512
+specular rod peak at 16.26 mrad (incidence 16.25)
+rod m=1: peak exit angle 14.88 mrad; elastic prediction sqrt(theta^2-(m lam/b)^2) = 14.88 mrad
+rod m=2: peak exit angle 9.66 mrad; elastic prediction sqrt(theta^2-(m lam/b)^2) = 9.67 mrad
+fraction of m=0 vacuum spectral weight inside 1 mrad aperture: 0.996
+saved figures/fig_exit_wave.{pdf,png}, outputs/exit_wave_analysis.npz

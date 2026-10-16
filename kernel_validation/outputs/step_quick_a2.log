@@ -1,0 +1,10 @@
+grid ny=51 nz=25000 dy=0.0753 dz=0.04; dx=1.920; periods=13021 (slices 26042); Hw=647 A; vacuum=892 A; removed top-layer atoms per slice [2, 0]
+  step period 0/13021  0s
+  step period 2000/13021  57s
+  step period 4000/13021  114s
+  step period 6000/13021  171s
+  step period 8000/13021  231s
+  step period 10000/13021  294s
+  step period 12000/13021  358s
+flat run 0s, step run 390s; flux out/in step 0.6281
+saved outputs/step_quick.npz

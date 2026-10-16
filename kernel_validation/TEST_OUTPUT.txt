@@ -1,0 +1,29 @@
+ASSUMPTION used: V0_SI = 12.0
+.............s......................................................ASSUMPTION used: absorption_model = {'name': 'proportional', 'kappa': 0.1} (label ASSUMPTION)
+.....................sssx...................{'coarse_med': 0.025892742533915443, 'fine_med': 0.014898475942361425, 'fine_max': 0.02176602234541701, 'fine_dR': 0.011782625293056667}
+............T-transmission-limit: Si [100], 10 cells (54.31 A), 128^2 px, E = 200 keV, mapping = direct
+ (k_z,k_y) index | I_kernel | I_abTEM | |diff| | tol
+ ( +0, +0)       | 0.81148  | 0.81136 | 0.00012 | 0.05057
+ ( +2, -2)       | 0.03420  | 0.03412 | 0.00008 | 0.01171
+ ( -2, +2)       | 0.03420  | 0.03412 | 0.00008 | 0.01171
+ ( +2, +2)       | 0.03419  | 0.03412 | 0.00007 | 0.01171
+ ( -2, -2)       | 0.03419  | 0.03412 | 0.00008 | 0.01171
+ ( +4, +0)       | 0.01019  | 0.01016 | 0.00003 | 0.01051
+ ( -4, +0)       | 0.01019  | 0.01016 | 0.00003 | 0.01051
+ ( +0, -4)       | 0.01019  | 0.01016 | 0.00003 | 0.01051
+ ( +0, +4)       | 0.01019  | 0.01016 | 0.00003 | 0.01051
+ ( -4, -4)       | 0.00079  | 0.00078 | 0.00000 | 0.01004
+ ( +4, +4)       | 0.00079  | 0.00078 | 0.00000 | 0.01004
+ ( -4, +4)       | 0.00079  | 0.00078 | 0.00000 | 0.01004
+ ( +4, -4)       | 0.00079  | 0.00078 | 0.00000 | 0.01004
+ ( -6, -2)       | 0.00024  | 0.00024 | 0.00000 | 0.01001
+ ( -2, -6)       | 0.00024  | 0.00024 | 0.00000 | 0.01001
+ total intensity kernel 0.99998, abTEM 0.99932; beams_ok=True, flux_ok=True
+.
+=============================== warnings summary ===============================
+tests/test_potential.py::test_fourier_vs_realspace_C20
+  /Users/trixodestudios/.claude-science/orgs/521ae760-9bcc-42c1-b8bd-0f76ea7f8579/workspaces/c15963a0-3b50-4171-b913-f0618fa1f7d9/batch_pipeline/package/s2_split/tests/test_potential.py:37: UserWarning: retained q up to 14.14/A exceeds the Kirkland fit range 12/A [kirkland_appC p.7]
+    V = P.projected_potential(c, 14, g, 0.0, 2.0, absorption=False, bandwidth=None).real
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+120 passed, 4 skipped, 1 xfailed, 1 warning in 260.10s (0:04:20)
