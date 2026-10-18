@@ -46,8 +46,11 @@ E9  Potential band-limited to 2/3 of k_max, k_max = min(1/(2dy), 1/(2dz)). Kirkl
     SECTION_READ: "set the maximum spatial frequency (or bandwidth) of both functions to be
     2/3 of the maximum sampling frequency"; the limit "appears as a circle" [Kirkland 2020
     Sect. 6.8, printed p.177, reflib kirkland2020:c282; k_max Eq. 6.92, printed p.176].
-    Kirkland applies it to the wave and the transmission function; applying it to V as
-    well is a repository choice (DERIVED_HERE: t = exp(i sigma v) is then band-limited too).
+    Kirkland applies it to the wave and the transmission function; filtering V as well is a
+    repository choice. It is NOT a substitute for filtering t: exp(i sigma v) of a band-limited
+    v generates higher spatial harmonics, so t must be band-limited separately (as
+    reflectivity.period_transmissions does with bandlimit_t=True, and propagate.
+    transmissions_from_potentials does by default). DERIVED_HERE.
 """
 from __future__ import annotations
 
