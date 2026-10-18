@@ -169,7 +169,9 @@ def atom_areal_profile(dz_rel, B: float, params=KIRKLAND_SI_CARD):
     * The lateral integral selects q_x = q_y = 0, so P(z) = 2 pi a0 e * integral f_e(q_z) exp(-2 pi i q_z z) dq_z.
     * Each Lorentzian term transforms to a pi/sqrt(b) exp(-2 pi sqrt(b)|z|).
     * Each Gaussian term transforms to c sqrt(pi/d) exp(-pi^2 z^2/d).
-    * Debye-Waller: T = exp(-B s^2) with s = q/2 [Peng ch13 13.52, p.11; Kirkland q = 2s, appC p.7].
+    * Debye-Waller: T = exp(-B s^2) with s = q/2 [Peng ch13 13.52, p.11; Peng 2004 printed p.437].
+      s = q/2 is DERIVED_HERE from the Fourier conventions (Kirkland Eq. C.5, |q| = 1/d; Peng
+      s = g/(4 pi), g = 2 pi/d) and REPRODUCED against Peng Table 13.3; see potential.py E4.
       This equals exp(-2 pi^2 sigma^2 q^2) with sigma^2 = B/(8 pi^2), the per-axis mean-square
       displacement [Peng ch13 13.50-13.51; ch14 eqn 14.3]. It is a Gaussian convolution in z: d -> d + B/4
       for the Gaussian terms, and _exp_abs_conv for the Lorentzian terms.

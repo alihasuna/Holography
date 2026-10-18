@@ -14,13 +14,23 @@ E2  Projected potential of one slice built in Fourier space:
         V_z(r) = (1/A) sum_q V_z(q) exp(+2 pi i q.r)
     The prefactor h^2/(2 pi m0 e) = 2 pi e a0 (card: a0 = 0.5292 A, e = 14.4 V A,
     [kirkland_appC p.6, p.11]) is DERIVED_HERE from exact constants (47.877 V A^2).
+    The printed value 47.86, with the rest mass m0, is Kirkland Eq. 6.10 [kirkland_ch06 p.7;
+    Kirkland 2020 printed p.149], SECTION_READ (reflib kirkland2020:p158:b2, both readers
+    and the PDF text layer agree). 47.86 is 0.037 % below the exact value: the book rounds.
     numpy's forward FFT has exp(-2 pi i) (repo conventions), so an atom at r_j carries
     exp(-2 pi i q.r_j) here. DERIVED_HERE.
     The m/m0 factor is NOT in V; it enters only through sigma (constants.interaction_constant).
     The construction is periodic over the grid (FFT): atoms must NOT be added again as images.
 E3  Real-space reference, used only in tests: Eq. C.20 with K0 [kirkland_appC p.11].
 E4  Debye-Waller factor: T(q) = exp(-B s^2) with s = q/2, an AMPLITUDE factor on f_e
-    [peng_ch13 Eq. 13.52, p.11]; s = q/2 INFERRED on [kirkland_appC p.7].
+    [peng_ch13 Eq. 13.52, p.11; Peng 2004 printed p.437]. s = q/2 is DERIVED_HERE from the
+    two Fourier conventions: Kirkland's q is the variable of exp(2 pi i q.r) [Kirkland 2020
+    Eq. C.5, printed p.288], so |q| = 1/d; Peng's s = g/(4 pi) = sin(theta)/lambda with
+    exp(-i g.r), g = 2 pi/d [Peng 2004 Eq. 13.31 and text, printed p.432, p.448], so s = 1/(2d).
+    REPRODUCED: Peng Table 13.3 Si f(s) [printed p.450] equals Kirkland f_e(q = 2s) to about
+    1 % for 0 <= s <= 1.5 1/A, while q = s is off by a factor 2-3. Kirkland's prose
+    "q = sin(alpha)/lambda ... alpha is the scattering semi-angle" [printed p.287] would give
+    q = s and contradicts his Eqs. C.3/C.5: do not use it.
 E5  Frozen phonons: per-Cartesian-axis variance <u_x^2> = B/(8 pi^2). DERIVED_HERE from
     B = 8 pi^2 <u^2> with <u^2> the per-axis mean [peng_ch13 Eqs. 13.50-13.51, p.10-11].
 E6  Absorptive part: Peng form i*a_Im*exp(-(b_Im + B/2) s^2) [peng_ch13 p.21, Eq. 13.87].
@@ -32,8 +42,12 @@ E7  Transmission t = exp(i sigma v). With complex v = V + iW and W > 0, |t| = ex
     < 1, so W > 0 attenuates under exp(+i k.r). DERIVED_HERE.
 E8  Minimum slice thickness about 1 A for full-projection potentials. UNVERIFIED (Kirkland
     ch.6 card not attached in this integration set); kept as a warning only.
-E9  Potential band-limited to 2/3 of k_max, k_max = min(1/(2dy), 1/(2dz)). Kirkland 2/3 rule;
-    UNVERIFIED against an attached card in this set, kept as the repository rule.
+E9  Potential band-limited to 2/3 of k_max, k_max = min(1/(2dy), 1/(2dz)). Kirkland 2/3 rule,
+    SECTION_READ: "set the maximum spatial frequency (or bandwidth) of both functions to be
+    2/3 of the maximum sampling frequency"; the limit "appears as a circle" [Kirkland 2020
+    Sect. 6.8, printed p.177, reflib kirkland2020:c282; k_max Eq. 6.92, printed p.176].
+    Kirkland applies it to the wave and the transmission function; applying it to V as
+    well is a repository choice (DERIVED_HERE: t = exp(i sigma v) is then band-limited too).
 """
 from __future__ import annotations
 
@@ -62,7 +76,7 @@ _M0 = _MEC2_EV * _E / _C**2  # kg
 
 #: h^2/(2 pi m0 e) = 2 pi e a0, in V*A^2. DERIVED_HERE from exact constants (~47.877).
 PREF_V_A2: float = _H**2 / (2.0 * np.pi * _M0 * _E) * 1e20
-KIRKLAND_CH06_PREFACTOR_PRINTED: float = 47.86   # repository-quoted printed value
+KIRKLAND_CH06_PREFACTOR_PRINTED: float = 47.86   # Kirkland Eq. 6.10, printed p.149 (SECTION_READ, E2)
 KIRKLAND_FIT_QMAX: float = 12.0                  # 1/A, SECTION_READ [kirkland_appC p.7]
 MIN_SLICE_A: float = 1.0                         # A, UNVERIFIED (see E8)
 

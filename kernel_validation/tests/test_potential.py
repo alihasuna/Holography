@@ -112,3 +112,15 @@ def test_thin_slice_warns():
     g = P.Grid(ny=8, nz=8, dy=0.2, dz=0.2)
     with pytest.warns(UserWarning):
         P.projected_potential(np.array([[0.5, 0.5]]), 14, g, 0.5, 0.5, absorption=False)
+
+
+def test_s_is_half_q_peng_vs_kirkland():
+    """External fact: Peng Table 13.3 Si f(s) [printed p.450] and Kirkland Si f_e(q) [Eq. C.15, printed p.290]
+    describe the same scattering factor only if q = 2s (E4). Tol 3 % (two independent fits); q = s fails."""
+    from reflection_holo.constants import PENG_SI_ELASTIC as pe
+    co = P._coeffs_for(14, None)
+    a, b = np.array(pe["a"]), np.array(pe["b"])
+    s = np.array([0.1, 0.25, 0.5, 0.75, 1.0])
+    f_peng = (a[None, :] * np.exp(-b[None, :] * s[:, None] ** 2)).sum(axis=1)
+    assert np.max(np.abs(P.fe_kirkland(2 * s, co) / f_peng - 1)) < 0.03
+    assert np.min(np.abs(P.fe_kirkland(s, co) / f_peng - 1)) > 0.2

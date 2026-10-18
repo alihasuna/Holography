@@ -17,10 +17,15 @@ P3  Slice step  psi_{n+1} = IFFT{ P * FFT[t_n psi_n] }
 P4  Bandwidth: both P and t are set to zero outside 2/3 k_max, k_max = min(1/2dy, 1/2dz)
     SECTION_READ [kirkland_ch06 p.35-36, Eq. 6.92; Table 6.3 step 3].
 P5  Composition  P(dx1) P(dx2) = P(dx1 + dx2)  [kirkland_ch06 p.31, Eq. 6.88].
-P6  Optional propagator tilt  exp(+2 pi i dx (q_y tan th_y + q_z tan th_z))
-    [kirkland_ch06 p.39, Eq. 6.93]. The card limits it to about 1 degree, so a
-    warning is raised above 17.45 mrad. The engine does NOT use it: the glancing
-    angle enters as a phase ramp on the incident wave (illumination.py).
+P6  Optional propagator tilt. Kirkland writes exp(+2 pi i dz (k_x tan th_x + k_y tan th_y))
+    [kirkland_ch06 p.39, Eq. 6.93; Kirkland 2020 printed p.181] under HIS transform pair,
+    FT = sum exp(+2 pi i k.x), FT^-1 = (1/N) sum exp(-2 pi i k.x) [Kirkland 2020 Eqs. 4.6-4.7,
+    printed p.87]. numpy's fft2/ifft2 use the opposite signs, so the same physical tilt
+    (the wave moves by +dx tan th as it advances by dx) is exp(-2 pi i dx (q_y tan th_y +
+    q_z tan th_z)) here. DERIVED_HERE (shift theorem); checked by test_tilt_direction.
+    The card limits it to about 1 degree, so a warning is raised above 17.45 mrad. The
+    engine does NOT use it: the glancing angle enters as a phase ramp on the incident wave
+    (illumination.py).
 P7  Paraxial phase error (DERIVED_HERE from the expansion of R, [kirkland_ch06 p.27,
     Eq. 6.81]). The exact angular-spectrum phase per unit length minus the paraxial one is
         d_phi/dx = (2 pi/lambda)(sqrt(1 - alpha^2) - 1) + pi alpha^2/lambda
@@ -79,7 +84,7 @@ def fresnel_propagator(grid: Grid, dx: float, lam: float, bandwidth: float | Non
         if max(abs(ty), abs(tz)) > TILT_LIMIT_RAD:
             warnings.warn("propagator tilt > 1 degree is outside the card's validity "
                           "[kirkland_ch06 p.39]", UserWarning, stacklevel=2)
-        P = P * np.exp(2j * np.pi * dx * (qy * np.tan(ty) + qz * np.tan(tz)))
+        P = P * np.exp(-2j * np.pi * dx * (qy * np.tan(ty) + qz * np.tan(tz)))   # numpy sign (P6)
     m = _mask(grid, bandwidth)
     return P if m is None else P * m
 
