@@ -151,3 +151,20 @@ def test_absorber_step_reflection_detectable():
     (DERIVED_HERE, NOTES_B section 3). The test must see > 1e-4; this shows that the cos2 test is not vacuous."""
     r = pr.measure_absorber_reflection(20e-3, E0, shape="step")
     assert r["R"] > 1e-4
+
+
+def test_tilt_direction():
+    """External fact: Kirkland Eq. 6.93 [kirkland_ch06 p.39; printed p.181] under Kirkland's transform pair
+    (Eqs. 4.6-4.7, printed p.87) moves the wave by +dx*tan(theta) as it advances by dx (shift theorem).
+    With numpy's opposite FFT signs the propagator must reproduce that direction (P6). Tol 1e-9 A."""
+    g = Grid(ny=128, nz=128, dy=0.1, dz=0.1)
+    yc, zc = g.y.mean(), g.z.mean()
+    psi = np.exp(-((g.y[None, :] - yc) ** 2 + (g.z[:, None] - zc) ** 2) / (2 * 0.8**2)).astype(complex)
+    dx, ty, tz = 40.0, 0.012, -0.007          # A, rad (both below the 1 degree limit)
+    P = pr.fresnel_propagator(g, dx, LAM, bandwidth=None, tilt=(ty, tz))
+    out = pr.multislice(psi, [np.ones_like(psi)], P)
+    w = np.abs(out) ** 2
+    cy = (w * g.y[None, :]).sum() / w.sum() - yc
+    cz = (w * g.z[:, None]).sum() / w.sum() - zc
+    assert abs(cy - dx * math.tan(ty)) < 1e-9
+    assert abs(cz - dx * math.tan(tz)) < 1e-9
